@@ -28,13 +28,25 @@ import CloudKit
 
 class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate, NCShareDetail {
     func dismissShareAdvanceView(shouldSave: Bool) {
-        defer { navigationController?.popViewController(animated: true) }
-        guard shouldSave else { return }
+        guard shouldSave else {
+            let alert = UIAlertController(
+                title: NSLocalizedString("_cancel_request_", comment: ""),
+                message: NSLocalizedString("_discard_changes_info_", comment: ""),
+                preferredStyle: .alert)
+            alert.addAction(UIAlertAction(
+                title: NSLocalizedString("_discard_changes_", comment: ""),
+                style: .destructive,
+                handler: { _ in self.navigationController?.popViewController(animated: true) }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_editing_", comment: ""), style: .default))
+            self.present(alert, animated: true)
+            return
+        }
         if isNewShare {
             networking?.createShare(option: share)
         } else {
             networking?.updateShare(option: share)
         }
+        navigationController?.popViewController(animated: true)
     }
 
     var share: NCTableShareable!
@@ -46,7 +58,11 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
+
+        tableView.estimatedRowHeight = tableView.rowHeight
+        tableView.rowHeight = UITableView.automaticDimension
         self.setNavigationTitle()
+        self.navigationItem.hidesBackButton = true
         if #available(iOS 13.0, *) {
             // disbale pull to dimiss
             isModalInPresentation = true
@@ -115,6 +131,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             noteCell.detailTextLabel?.text = NSLocalizedString("_share_reshare_restricted_", comment: "")
             noteCell.detailTextLabel?.isEnabled = false
             noteCell.isUserInteractionEnabled = false
+            noteCell.detailTextLabel?.numberOfLines = 0
             return noteCell
         }
         if let cell = cell as? NCShareDateCell { cell.onReload = tableView.reloadData }

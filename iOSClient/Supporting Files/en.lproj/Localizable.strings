@@ -22,6 +22,7 @@
 
 "_cancel_"                  = "Cancel";
 "_tap_to_cancel_"           = "Tap to cancel";
+"_cancel_request_"          = "Do you want to cancel?";
 "_upload_file_"             = "Upload file";
 "_accessibility_add_upload_" = "Add and upload";
 "_download_file_"           = "Download file";
@@ -82,6 +83,7 @@
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
 "_continue_"                = "Continue";
+"_continue_editing_"        = "Continue editing";
 "_continue_request_"        = "Do you want to continue?";
 "_auto_upload_folder_"      = "Auto upload";
 "_gallery_"                 = "Gallery";
@@ -809,6 +811,7 @@
 "_save_as_copy_"            = "Save as copy";
 "_discard_changes_"         = "Close and discard changes";
 "_message_disable_overwrite_livephoto_" = "This image is a Live Photo, overwrite will not be possible";
+"_discard_changes_info_"    = "Your changes will be discarded.";
 "_delete_files_desc_"       = "Delete files to free up space";
 "_delete_old_files_"        = "Delete all files older than";
 "_never_"                   = "Never";

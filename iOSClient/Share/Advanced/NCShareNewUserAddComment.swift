@@ -29,7 +29,6 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
 
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var sharingLabel: UILabel!
-    @IBOutlet weak var sharingNote: UILabel!
     @IBOutlet weak var noteTextField: UITextView!
 
     let contentInsets: CGFloat = 16
@@ -45,8 +44,7 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
 
-        sharingLabel.text = NSLocalizedString("_sharing_", comment: "")
-        sharingNote.text = NSLocalizedString("_share_note_recipient_", comment: "")
+        sharingLabel.text = NSLocalizedString("_share_note_recipient_", comment: "")
 
         noteTextField.textContainerInset = UIEdgeInsets(top: contentInsets, left: contentInsets, bottom: contentInsets, right: contentInsets)
         noteTextField.text = share.note
@@ -60,7 +58,7 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
         }
 
         noteTextField.inputAccessoryView = toolbar
-        
+
         guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
         headerContainerView.addSubview(headerView)
         headerView.frame = headerContainerView.frame
