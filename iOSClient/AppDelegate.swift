@@ -188,14 +188,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
-        
+
         if !NCAskAuthorization.shared.isRequesting {
             // Privacy
             hidePrivacyProtectionWindow()
         }
-        
-        NCSettingsBundleHelper.setVersionAndBuildNumber()
-        
+
         NCSettingsBundleHelper.setVersionAndBuildNumber()
 
         if account == "" { return }
@@ -247,9 +245,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if account == "" { return }
 
-        // Privacy
-        showPrivacyProtectionWindow()
-                
+        if CCUtility.getPrivacyScreenEnabled() {
+            // Privacy
+            showPrivacyProtectionWindow()
+        }
+
         // Clear operation queue
         NCOperationQueue.shared.cancelAllQueue()
         // Clear download
@@ -268,20 +268,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidEnterBackground(_ application: UIApplication) {
 
         if account == "" { return }
-        
+
         // STOP TIMER UPLOAD PROCESS
         if NCUtility.shared.isSimulator() {
             networkingProcessUpload?.stopTimer()
         }
-                
+
         if #available(iOS 13.0, *) {
             scheduleAppRefresh()
             scheduleBackgroundProcessing()
         }
-        
+
         // Passcode
         presentPasscode { }
-        
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
 
@@ -299,7 +299,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return }
 
         NCCommunicationCommon.shared.writeLog("initialize Main")
-                
+
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
 
@@ -657,17 +657,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Account Request
 
     func accountRequestChangeAccount(account: String) {
-
         changeAccount(account)
     }
     
     func requestAccount() {
-              
+
         if isPasscodePresented() { return }
         if !CCUtility.getAccountRequest() { return }
-        
+
         let accounts = NCManageDatabase.shared.getAllAccount()
-        
+
         if accounts.count > 1 {
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
@@ -694,30 +693,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     // MARK: - Passcode
-    
+
     func presentPasscode(completion: @escaping () -> ()) {
 
         let laContext = LAContext()
         var error: NSError?
 
-        defer {
-            self.requestAccount()
-        }
+        defer { self.requestAccount() }
 
-        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled() else { return }
-        
-        // If activated hide the privacy protection
-        hidePrivacyProtectionWindow()
-
-        // Dismiss present window?.rootViewController? [ONLY PASSCODE]
         let presentedViewController = window?.rootViewController?.presentedViewController
-        if presentedViewController is NCLoginNavigationController {
-            return
-        } else {
-            presentedViewController?.dismiss(animated: false)
-        }
+        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled(), !(presentedViewController is NCLoginNavigationController) else { return }
 
-        let passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
+        // Make sure we have a privacy window (in case it's not enabled)
+        showPrivacyProtectionWindow()
+
+        let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
         if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
@@ -731,8 +721,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
-        
-        window?.rootViewController?.present(passcodeViewController, animated: true, completion: {
+
+        // show passcode on top of privacy window
+        privacyProtectionWindow?.rootViewController?.present(passcodeViewController, animated: true, completion: {
             completion()
         })
     }
@@ -763,6 +754,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         DispatchQueue.main.async {
             passcodeViewController.dismiss(animated: true) {
+                self.hidePrivacyProtectionWindow()
                 self.requestAccount()
             }
         }
@@ -775,23 +767,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Privacy Protection
        
     private func showPrivacyProtectionWindow() {
-        
-        guard CCUtility.getPrivacyScreenEnabled() else { return }
-        
+        guard privacyProtectionWindow == nil else {
+            privacyProtectionWindow?.isHidden = false
+            return
+        }
+
         privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
-          
+
         let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let initialViewController = storyboard.instantiateInitialViewController()
 
         self.privacyProtectionWindow?.rootViewController = initialViewController
-        
+
         privacyProtectionWindow?.windowLevel = .alert + 1
         privacyProtectionWindow?.makeKeyAndVisible()
     }
 
     func hidePrivacyProtectionWindow() {
-        privacyProtectionWindow?.isHidden = true
-        privacyProtectionWindow = nil
+        guard !(privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController) else { return }
+        UIWindow.animate(withDuration: 0.25) {
+            self.privacyProtectionWindow?.alpha = 0
+        } completion: { _ in
+            self.privacyProtectionWindow?.isHidden = true
+            self.privacyProtectionWindow = nil
+        }
     }
     
     // MARK: - Open URL
