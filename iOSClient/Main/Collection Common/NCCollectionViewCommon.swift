@@ -615,7 +615,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         button.action(for: .touchUpInside) { _ in
             
             let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-            if accounts.count > 0 {
+            if accounts.count > 0 && !NCBrandOptions.shared.disable_multiaccount && !NCBrandOptions.shared.disable_manage_account {
                 
                 if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                     
