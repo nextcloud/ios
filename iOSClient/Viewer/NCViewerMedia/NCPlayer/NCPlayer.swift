@@ -105,10 +105,7 @@ class NCPlayer: NSObject {
 #endif
 
         // Check already started
-        if isStartPlayer {
-            activateObserver()
-            return
-        }
+        if isStartPlayer { return }
 
         playerToolBar?.show()
         setUpForSubtitle()
