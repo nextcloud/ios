@@ -39,6 +39,8 @@ class NCPlayer: NSObject {
     internal var isProxy: Bool
     internal var isStartPlayer: Bool
     internal var isStartObserver: Bool
+    internal var subtitleUrls: [URL] = []
+    internal var currentSubtitle: URL?
 
     private weak var imageVideoContainer: imageVideoContainerView?
     private weak var detailView: NCViewerMediaDetailView?
@@ -50,7 +52,6 @@ class NCPlayer: NSObject {
     public var durationTime: CMTime = .zero
     public var metadata: tableMetadata
     public var videoLayer: AVPlayerLayer?
-    public var subtitleUrls: [URL] = []
 
     // MARK: - View Life Cycle
 
@@ -108,12 +109,11 @@ class NCPlayer: NSObject {
             return
         }
 
-        playerToolBar?.show()
-        setUpForSubtitle()
-
         print("Play URL: \(self.url)")
         player = AVPlayer(url: self.url)
+        playerToolBar?.show()
         playerToolBar?.setMetadata(self.metadata)
+        setUpForSubtitle()
 
         if metadata.livePhoto {
             player?.isMuted = false

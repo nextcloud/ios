@@ -164,11 +164,11 @@ extension NCPlayer {
          }
     }
 
-    func open(fileFromLocal filePath: URL) {
+    func open(fileFromLocal url: URL) {
 
         subtitleLabel?.text = ""
 
-        self.loadText(filePath: filePath) { contents in
+        self.loadText(filePath: url) { contents in
             guard let contents = contents else {
                 return
             }
@@ -182,11 +182,13 @@ extension NCPlayer {
     @objc public func hideSubtitle() {
         self.subtitleLabel?.isHidden = true
         self.subtitleContainerView?.isHidden = true
+        self.currentSubtitle = nil
     }
 
-    @objc public func showSubtitle() {
+    @objc public func showSubtitle(url: URL) {
         self.subtitleLabel?.isHidden = false
         self.subtitleContainerView?.isHidden = false
+        self.currentSubtitle = url
     }
 
     private func show(subtitles string: String) {
@@ -358,14 +360,14 @@ extension NCPlayer {
                 titleSubtitle = NSLocalizedString("_subtitle_", comment: "")
             }
 
-            alert.addAction(UIAlertAction(title: titleSubtitle, style: .default, handler: { [self] _ in
+            let action = UIAlertAction(title: titleSubtitle, style: .default, handler: { [self] _ in
 
                 if NCUtilityFileSystem.shared.getFileSize(filePath: url.path) > 0 {
 
                     self.open(fileFromLocal: url)
                     if let viewController = viewController {
                         self.addSubtitlesTo(viewController, self.playerToolBar)
-                        self.showSubtitle()
+                        self.showSubtitle(url: url)
                     }
 
                 } else {
@@ -375,12 +377,20 @@ extension NCPlayer {
 
                     viewController?.present(alertError, animated: true, completion: nil)
                 }
-            }))
+            })
+            alert.addAction(action)
+            if currentSubtitle == url {
+                action.setValue(true, forKey: "checked")
+            }
         }
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_disable_", comment: ""), style: .destructive, handler: { _ in
+        let disable = UIAlertAction(title: NSLocalizedString("_disable_", comment: ""), style: .default, handler: { _ in
             self.hideSubtitle()
-        }))
+        })
+        alert.addAction(disable)
+        if currentSubtitle == nil {
+            disable.setValue(true, forKey: "checked")
+        }
 
         alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
         }))

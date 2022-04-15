@@ -54,6 +54,19 @@ class NCPlayerToolBar: UIView {
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
 
+    private var timerAutoHideSeconds: Double {
+        get {
+            if NCUtility.shared.isSimulatorOrTestFlight() { // for test
+                return 15
+            } else {
+                return 3.5
+            }
+        }
+    }
+
+
+// NCUtility.shared.isSimulatorOrTestFlight()
+
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
 
@@ -319,7 +332,7 @@ class NCPlayerToolBar: UIView {
     private func startTimerAutoHide() {
 
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 3.5, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
+        timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
     }
 
     private func reStartTimerAutoHide() {
