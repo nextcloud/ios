@@ -126,12 +126,15 @@ extension NCPlayer {
                 }
             }
         }
-        let subtitles = NCManageDatabase.shared.getSubtitles(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName, exists: true)
-        if !subtitles.isEmpty {
-            for subtitle in subtitles {
+        let results = NCManageDatabase.shared.getSubtitles(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+        if !results.exists.isEmpty {
+            for subtitle in results.exists {
                 let subtitleUrl = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(subtitle.ocId, fileNameView: subtitle.fileName))
                 self.subtitleUrls.append(subtitleUrl)
             }
+        }
+        if results.all.count != results.exists.count {
+            NCContentPresenter.shared.messageNotification("_info_", description: "_subtitle_not_dowloaded_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
         }
         self.setSubtitleToolbarIcon(subtitleUrls: subtitleUrls)
         self.hideSubtitle()
