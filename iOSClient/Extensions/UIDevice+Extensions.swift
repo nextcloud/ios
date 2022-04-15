@@ -3,9 +3,9 @@
 //  Nextcloud
 //
 //  Created by Federico Malagoni on 23/02/22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2022 Federico Malagoni. All rights reserved.
 //
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Author Federico Malagoni <federico.malagoni@astrairidium.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by

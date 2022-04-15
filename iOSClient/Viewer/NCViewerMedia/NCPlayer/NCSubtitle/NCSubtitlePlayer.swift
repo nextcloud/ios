@@ -4,8 +4,10 @@
 //
 //  Created by Federico Malagoni on 18/02/22.
 //  Copyright © 2022 Federico Malagoni. All rights reserved.
+//  Copyright © 2022 Marino Faggiana All rights reserved.
 //
 //  Author Federico Malagoni <federico.malagoni@astrairidium.com>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
