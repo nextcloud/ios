@@ -56,7 +56,7 @@ class NCPlayerToolBar: UIView {
 
     private var timerAutoHideSeconds: Double {
         get {
-            if NCUtility.shared.isSimulatorOrTestFlight() { // for test
+            if NCUtility.shared.isSimulator() { // for test
                 return 15
             } else {
                 return 3.5
