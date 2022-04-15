@@ -27,22 +27,6 @@ import CommonCrypto
 
 extension String {
 
-    func urlSafeBase64Decoded() -> String? {
-        var st = self
-            .replacingOccurrences(of: "_", with: "/")
-            .replacingOccurrences(of: "-", with: "+")
-        let remainder = self.count % 4
-        if remainder > 0 {
-            st = self.padding(toLength: self.count + 4 - remainder,
-                              withPad: "=",
-                              startingAt: 0)
-        }
-        guard let d = Data(base64Encoded: st, options: .ignoreUnknownCharacters) else {
-            return nil
-        }
-        return String(data: d, encoding: .utf8)
-    }
-
     var alphanumeric: String {
         return self.components(separatedBy: CharacterSet.alphanumerics.inverted).joined().lowercased()
     }

@@ -38,6 +38,7 @@ class NCPlayer: NSObject {
     internal var autoPlay: Bool
     internal var isProxy: Bool
     internal var isStartPlayer: Bool
+    internal var isStartObserver: Bool
 
     private weak var imageVideoContainer: imageVideoContainerView?
     private weak var detailView: NCViewerMediaDetailView?
@@ -65,6 +66,7 @@ class NCPlayer: NSObject {
         self.autoPlay = autoPlay
         self.isProxy = isProxy
         self.isStartPlayer = false
+        self.isStartObserver = false
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -105,7 +107,12 @@ class NCPlayer: NSObject {
 #endif
 
         // Check already started
-        if isStartPlayer { return }
+        if isStartPlayer {
+            if !isStartObserver {
+                activateObserver()
+            }
+            return
+        }
 
         playerToolBar?.show()
         setUpForSubtitle()
@@ -266,6 +273,8 @@ class NCPlayer: NSObject {
         if let player = self.player {
             NotificationCenter.default.addObserver(self, selector: #selector(playerStalled), name: NSNotification.Name.AVPlayerItemPlaybackStalled, object: player.currentItem)
         }
+
+        isStartObserver = true
     }
 
     func deactivateObserver() {
@@ -299,6 +308,8 @@ class NCPlayer: NSObject {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
+
+        isStartObserver = false
     }
 
     // MARK: - NotificationCenter
