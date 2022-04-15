@@ -847,3 +847,5 @@
 "_conversion_max_compatibility_"    = "Max compatibility, the conversion can take much longer";
 "_video_tap_for_close_"     = "A slight pressure to close the processing";
 "_subtitle_not_found_"      = "Subtitle not found";
+"_disable_"                 = "Disable";
+

@@ -84,8 +84,8 @@ class NCPlayerToolBar: UIView {
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
         muteButton.isEnabled = false
 
-        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .lightGray), for: .normal)
-        subtitleButton.isEnabled = false
+        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
+        subtitleButton.isEnabled = true
         subtitleButton.isHidden = true
 
         playbackSlider.value = 0
@@ -496,7 +496,7 @@ class NCPlayerToolBar: UIView {
     }
 
     @IBAction func tapSubtitle(_ sender: Any) {
-        self.subtitleIconTapped()
+        self.ncplayer?.showAlertSubtitles()
     }
 
     func forward() {

@@ -50,12 +50,6 @@ class NCPlayer: NSObject {
     public var durationTime: CMTime = .zero
     public var metadata: tableMetadata
     public var videoLayer: AVPlayerLayer?
-
-    public var isSubtitleShowed: Bool = false{
-        didSet {
-            self.playerToolBar?.changeSubtitleIconTo(visible: isSubtitleShowed)
-        }
-    }
     public var subtitleUrls: [URL] = []
 
     // MARK: - View Life Cycle
@@ -116,7 +110,6 @@ class NCPlayer: NSObject {
 
         playerToolBar?.show()
         setUpForSubtitle()
-        isSubtitleShowed = false
 
         print("Play URL: \(self.url)")
         player = AVPlayer(url: self.url)

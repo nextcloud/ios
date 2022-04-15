@@ -133,14 +133,13 @@ extension NCPlayer {
         }
         self.setSubtitleToolbarIcon(subtitleUrls: subtitleUrls)
         self.hideSubtitle()
-        self.isSubtitleShowed = false
     }
 
     func setSubtitleToolbarIcon(subtitleUrls: [URL]) {
         if subtitleUrls.isEmpty {
-            self.playerToolBar?.hideIconSubtitle()
+            playerToolBar?.subtitleButton.isHidden = true
         } else {
-            self.playerToolBar?.showIconSubtitle()
+            playerToolBar?.subtitleButton.isHidden = false
         }
     }
 
@@ -339,5 +338,53 @@ extension NCPlayer {
         vc.view?.addConstraint(subtitleContainerViewWidthConstraint!)
         vc.view?.addConstraint(subtitleLabelWidthConstraint!)
         vc.view?.addConstraint(subtitleLabelBottomConstraint!)
+    }
+
+    internal func showAlertSubtitles() {
+
+        let alert = UIAlertController(title: nil, message: NSLocalizedString("_subtitle_", comment: ""), preferredStyle: .actionSheet)
+
+        for url in subtitleUrls {
+
+            print("Play Subtitle at:\n\(url.path)")
+
+            let videoUrlTitle = self.metadata.fileName.alphanumeric.dropLast(3)
+            let subtitleUrlTitle = url.lastPathComponent.alphanumeric.dropLast(3)
+
+            var titleSubtitle = String(subtitleUrlTitle.dropFirst(videoUrlTitle.count))
+            if titleSubtitle.isEmpty {
+                titleSubtitle = NSLocalizedString("_subtitle_", comment: "")
+            }
+
+            alert.addAction(UIAlertAction(title: titleSubtitle, style: .default, handler: { [self] _ in
+
+                if NCUtilityFileSystem.shared.getFileSize(filePath: url.path) > 0 {
+
+                    self.open(fileFromLocal: url)
+                    if let viewController = viewController {
+                        self.addSubtitlesTo(viewController, self.playerToolBar)
+                        self.showSubtitle()
+                    }
+
+                } else {
+
+                    let alertError = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_subtitle_not_found_", comment: ""), preferredStyle: .alert)
+                    alertError.addAction(UIKit.UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
+
+                    viewController?.present(alertError, animated: true, completion: nil)
+                }
+            }))
+        }
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_disable_", comment: ""), style: .destructive, handler: { _ in
+            self.hideSubtitle()
+        }))
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
+        }))
+
+        alert.popoverPresentationController?.sourceView = self.viewController?.view
+
+        self.viewController?.present(alert, animated: true, completion: nil)
     }
 }
