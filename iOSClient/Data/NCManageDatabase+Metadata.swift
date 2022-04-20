@@ -808,22 +808,18 @@ extension NCManageDatabase {
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
 
-    func getSubtitles(account: String, serverUrl: String, fileName: String, exists: Bool) -> [tableMetadata] {
+    func getSubtitles(account: String, serverUrl: String, fileName: String) -> (all:[tableMetadata], exists:[tableMetadata]) {
 
         let realm = try! Realm()
         let nameOnly = (fileName as NSString).deletingPathExtension + "."
         var metadatas: [tableMetadata] = []
 
         let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName BEGINSWITH[c] %@ AND fileName ENDSWITH[c] '.srt'", account, serverUrl, nameOnly)
-        if exists {
-            for result in results {
-                if CCUtility.fileProviderStorageExists(result) {
-                    metadatas.append(result)
-                }
+        for result in results {
+            if CCUtility.fileProviderStorageExists(result) {
+                metadatas.append(result)
             }
-            return Array(metadatas.map { tableMetadata.init(value: $0) })
-        } else {
-            return Array(results.map { tableMetadata.init(value: $0) })
         }
+        return(Array(results.map { tableMetadata.init(value: $0) }), Array(metadatas.map { tableMetadata.init(value: $0) }))
     }
 }

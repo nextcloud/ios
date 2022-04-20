@@ -38,6 +38,9 @@ class NCPlayer: NSObject {
     internal var autoPlay: Bool
     internal var isProxy: Bool
     internal var isStartPlayer: Bool
+    internal var isStartObserver: Bool
+    internal var subtitleUrls: [URL] = []
+    internal var currentSubtitle: URL?
 
     private weak var imageVideoContainer: imageVideoContainerView?
     private weak var detailView: NCViewerMediaDetailView?
@@ -50,13 +53,6 @@ class NCPlayer: NSObject {
     public var metadata: tableMetadata
     public var videoLayer: AVPlayerLayer?
 
-    public var isSubtitleShowed: Bool = false{
-        didSet {
-            self.playerToolBar?.changeSubtitleIconTo(visible: isSubtitleShowed)
-        }
-    }
-    public var subtitleUrls: [URL] = []
-
     // MARK: - View Life Cycle
 
     init(url: URL, autoPlay: Bool, isProxy: Bool, imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
@@ -65,6 +61,7 @@ class NCPlayer: NSObject {
         self.autoPlay = autoPlay
         self.isProxy = isProxy
         self.isStartPlayer = false
+        self.isStartObserver = false
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -105,15 +102,18 @@ class NCPlayer: NSObject {
 #endif
 
         // Check already started
-        if isStartPlayer { return }
-
-        playerToolBar?.show()
-        setUpForSubtitle()
-        isSubtitleShowed = false
+        if isStartPlayer {
+            if !isStartObserver {
+                activateObserver()
+            }
+            return
+        }
 
         print("Play URL: \(self.url)")
         player = AVPlayer(url: self.url)
+        playerToolBar?.show()
         playerToolBar?.setMetadata(self.metadata)
+        setUpForSubtitle()
 
         if metadata.livePhoto {
             player?.isMuted = false
@@ -266,6 +266,8 @@ class NCPlayer: NSObject {
         if let player = self.player {
             NotificationCenter.default.addObserver(self, selector: #selector(playerStalled), name: NSNotification.Name.AVPlayerItemPlaybackStalled, object: player.currentItem)
         }
+
+        isStartObserver = true
     }
 
     func deactivateObserver() {
@@ -299,6 +301,8 @@ class NCPlayer: NSObject {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
+
+        isStartObserver = false
     }
 
     // MARK: - NotificationCenter

@@ -54,6 +54,19 @@ class NCPlayerToolBar: UIView {
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
 
+    private var timerAutoHideSeconds: Double {
+        get {
+            if NCUtility.shared.isSimulator() { // for test
+                return 15
+            } else {
+                return 3.5
+            }
+        }
+    }
+
+
+// NCUtility.shared.isSimulatorOrTestFlight()
+
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
 
@@ -84,8 +97,8 @@ class NCPlayerToolBar: UIView {
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
         muteButton.isEnabled = false
 
-        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .lightGray), for: .normal)
-        subtitleButton.isEnabled = false
+        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
+        subtitleButton.isEnabled = true
         subtitleButton.isHidden = true
 
         playbackSlider.value = 0
@@ -319,7 +332,7 @@ class NCPlayerToolBar: UIView {
     private func startTimerAutoHide() {
 
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 3.5, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
+        timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
     }
 
     private func reStartTimerAutoHide() {
@@ -496,7 +509,7 @@ class NCPlayerToolBar: UIView {
     }
 
     @IBAction func tapSubtitle(_ sender: Any) {
-        self.subtitleIconTapped()
+        self.ncplayer?.showAlertSubtitles()
     }
 
     func forward() {

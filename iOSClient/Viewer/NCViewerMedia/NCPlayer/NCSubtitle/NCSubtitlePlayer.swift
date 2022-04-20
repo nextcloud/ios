@@ -4,8 +4,10 @@
 //
 //  Created by Federico Malagoni on 18/02/22.
 //  Copyright © 2022 Federico Malagoni. All rights reserved.
+//  Copyright © 2022 Marino Faggiana All rights reserved.
 //
 //  Author Federico Malagoni <federico.malagoni@astrairidium.com>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -124,23 +126,25 @@ extension NCPlayer {
                 }
             }
         }
-        let subtitles = NCManageDatabase.shared.getSubtitles(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName, exists: true)
-        if !subtitles.isEmpty {
-            for subtitle in subtitles {
+        let results = NCManageDatabase.shared.getSubtitles(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+        if !results.exists.isEmpty {
+            for subtitle in results.exists {
                 let subtitleUrl = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(subtitle.ocId, fileNameView: subtitle.fileName))
                 self.subtitleUrls.append(subtitleUrl)
             }
         }
+        if results.all.count != results.exists.count {
+            NCContentPresenter.shared.messageNotification("_info_", description: "_subtitle_not_dowloaded_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
+        }
         self.setSubtitleToolbarIcon(subtitleUrls: subtitleUrls)
         self.hideSubtitle()
-        self.isSubtitleShowed = false
     }
 
     func setSubtitleToolbarIcon(subtitleUrls: [URL]) {
         if subtitleUrls.isEmpty {
-            self.playerToolBar?.hideIconSubtitle()
+            playerToolBar?.subtitleButton.isHidden = true
         } else {
-            self.playerToolBar?.showIconSubtitle()
+            playerToolBar?.subtitleButton.isHidden = false
         }
     }
 
@@ -163,11 +167,11 @@ extension NCPlayer {
          }
     }
 
-    func open(fileFromLocal filePath: URL) {
+    func open(fileFromLocal url: URL) {
 
         subtitleLabel?.text = ""
 
-        self.loadText(filePath: filePath) { contents in
+        self.loadText(filePath: url) { contents in
             guard let contents = contents else {
                 return
             }
@@ -181,11 +185,13 @@ extension NCPlayer {
     @objc public func hideSubtitle() {
         self.subtitleLabel?.isHidden = true
         self.subtitleContainerView?.isHidden = true
+        self.currentSubtitle = nil
     }
 
-    @objc public func showSubtitle() {
+    @objc public func showSubtitle(url: URL) {
         self.subtitleLabel?.isHidden = false
         self.subtitleContainerView?.isHidden = false
+        self.currentSubtitle = url
     }
 
     private func show(subtitles string: String) {
@@ -339,5 +345,61 @@ extension NCPlayer {
         vc.view?.addConstraint(subtitleContainerViewWidthConstraint!)
         vc.view?.addConstraint(subtitleLabelWidthConstraint!)
         vc.view?.addConstraint(subtitleLabelBottomConstraint!)
+    }
+
+    internal func showAlertSubtitles() {
+
+        let alert = UIAlertController(title: nil, message: NSLocalizedString("_subtitle_", comment: ""), preferredStyle: .actionSheet)
+
+        for url in subtitleUrls {
+
+            print("Play Subtitle at:\n\(url.path)")
+
+            let videoUrlTitle = self.metadata.fileName.alphanumeric.dropLast(3)
+            let subtitleUrlTitle = url.lastPathComponent.alphanumeric.dropLast(3)
+
+            var titleSubtitle = String(subtitleUrlTitle.dropFirst(videoUrlTitle.count))
+            if titleSubtitle.isEmpty {
+                titleSubtitle = NSLocalizedString("_subtitle_", comment: "")
+            }
+
+            let action = UIAlertAction(title: titleSubtitle, style: .default, handler: { [self] _ in
+
+                if NCUtilityFileSystem.shared.getFileSize(filePath: url.path) > 0 {
+
+                    self.open(fileFromLocal: url)
+                    if let viewController = viewController {
+                        self.addSubtitlesTo(viewController, self.playerToolBar)
+                        self.showSubtitle(url: url)
+                    }
+
+                } else {
+
+                    let alertError = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_subtitle_not_found_", comment: ""), preferredStyle: .alert)
+                    alertError.addAction(UIKit.UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
+
+                    viewController?.present(alertError, animated: true, completion: nil)
+                }
+            })
+            alert.addAction(action)
+            if currentSubtitle == url {
+                action.setValue(true, forKey: "checked")
+            }
+        }
+
+        let disable = UIAlertAction(title: NSLocalizedString("_disable_", comment: ""), style: .default, handler: { _ in
+            self.hideSubtitle()
+        })
+        alert.addAction(disable)
+        if currentSubtitle == nil {
+            disable.setValue(true, forKey: "checked")
+        }
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
+        }))
+
+        alert.popoverPresentationController?.sourceView = self.viewController?.view
+
+        self.viewController?.present(alert, animated: true, completion: nil)
     }
 }
