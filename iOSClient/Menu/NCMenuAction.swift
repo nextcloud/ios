@@ -11,6 +11,7 @@ import UIKit
 
 class NCMenuAction {
     let title: String
+    let details: String?
     let icon: UIImage
     let selectable: Bool
     var onTitle: String?
@@ -18,17 +19,19 @@ class NCMenuAction {
     var selected: Bool = false
     var isOn: Bool = false
     var action: ((_ menuAction: NCMenuAction) -> Void)?
-    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? 3 : 60 }
+    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? 3 : self.details != nil ? 80 : 60 }
 
-    init(title: String, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, details: String? = nil, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
+        self.details = details
         self.icon = icon
         self.action = action
         self.selectable = false
     }
 
-    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
+        self.details = details
         self.icon = icon
         self.onTitle = onTitle ?? title
         self.onIcon = onIcon ?? icon
@@ -226,15 +229,9 @@ extension NCMenuAction {
 
     /// Lock or unlock a file using files_lock
     static func lockUnlockFiles(shouldLock: Bool, metadatas: [tableMetadata], completion: (() -> Void)? = nil) -> NCMenuAction {
-        let titleKey: String
-        if metadatas.count == 1 {
-            titleKey = shouldLock ? "_lock_file_" : "_unlock_file_"
-        } else {
-            titleKey = shouldLock ? "_lock_selected_files_" : "_unlock_selected_files_"
-        }
         let imageName = !shouldLock ? "lock.open" : "lock"
         return NCMenuAction(
-            title: NSLocalizedString(titleKey, comment: ""),
+            title: NSLocalizedString(shouldLock ? "_lock_action_" : "_unlock_action_", comment: ""),
             icon: NCUtility.shared.loadImage(named: imageName),
             action: { _ in
                 for metadata in metadatas where metadata.lock != shouldLock {

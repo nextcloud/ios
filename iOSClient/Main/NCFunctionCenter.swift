@@ -616,7 +616,7 @@ import SVGKit
             }
         }
         let titleOffline = isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: "")
-        let titleLock = metadata.lock ? NSLocalizedString("_unlock_file_", comment: "") :  NSLocalizedString("_lock_file_", comment: "")
+        let titleLock = metadata.lock ? NSLocalizedString("_unlock_action_", comment: "") :  NSLocalizedString("_lock_action_", comment: "")
         let iconLock = metadata.lock ? "lock.open" : "lock"
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
             self.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
