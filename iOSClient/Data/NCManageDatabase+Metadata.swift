@@ -329,11 +329,6 @@ extension NCManageDatabase {
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(tableMetadata.init(value: metadata), update: .all)
-                        } else if result.lock != metadata.lock {
-                            // FIXME: Etag should have changed!
-                            // https://github.com/nextcloud/files_lock/issues/57
-                            ocIdsUdate.append(metadata.ocId)
-                            realm.add(tableMetadata.init(value: metadata), update: .all)
                         }
                     } else {
                         // new
