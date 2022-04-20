@@ -96,8 +96,7 @@ extension NCMenuAction {
             }
         } // else: no metadata selected
 
-        let canDeleteServer = selectedMetadatas.contains(
-            where: { $0.canUnlock(as: (UIApplication.shared.delegate as? AppDelegate)?.userId ?? "") })
+        let canDeleteServer = selectedMetadatas.allSatisfy { $0.canUnlock(as: (UIApplication.shared.delegate as? AppDelegate)?.userId ?? "") }
         var fileList = ""
         for (ix, metadata) in selectedMetadatas.enumerated() {
             guard ix < 3 else { fileList += "\n - ..."; break }

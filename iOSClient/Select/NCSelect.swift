@@ -49,7 +49,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @objc var includeImages = false
     @objc var enableSelectFile = false
     @objc var type = ""
-    @objc var items: [Any] = []
+    @objc var items: [tableMetadata] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -141,7 +141,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             self.view.addSubview(selectCommandViewSelect!)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
-
+            let userId = NCManageDatabase.shared.getActiveAccount()?.userId ?? ""
+            if items.contains(where: { !$0.canUnlock(as: userId) }) {
+                selectCommandViewSelect?.moveButton?.isEnabled = false
+                selectCommandViewSelect?.moveButton?.titleLabel?.isEnabled = false
+            }
             selectCommandViewSelect?.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true

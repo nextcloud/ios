@@ -535,19 +535,19 @@ import SVGKit
         }
     }
 
-    func openSelectView(items: [Any]) {
+    func openSelectView(items: [tableMetadata]) {
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let topViewController = navigationController.topViewController as! NCSelect
         var listViewController = [NCSelect]()
 
-        var copyItems: [Any] = []
+        var copyItems: [tableMetadata] = []
         for item in items {
             copyItems.append(item)
         }
 
         let homeUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
-        var serverUrl = (copyItems[0] as! Nextcloud.tableMetadata).serverUrl
+        var serverUrl = copyItems[0].serverUrl
 
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
         while true {
