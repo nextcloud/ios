@@ -147,10 +147,12 @@
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
 
-/* Files lock */
-"_lock_action_"             = "Lock";
-"_unlock_action_"           = "Unlock";
+/* MARK: Files lock */
+
+"_lock_file_"               = "Lock";
+"_unlock_file_"             = "Unlock";
 "_locked_by_"               = "Locked by %@";
+"_file_locked_no_override_" = "This file is locked. It cannot be overridden.";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";

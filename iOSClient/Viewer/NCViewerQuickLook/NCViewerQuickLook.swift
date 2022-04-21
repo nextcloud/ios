@@ -85,15 +85,21 @@ import NCCommunication
         // called after `previewController(:didSaveEditedCopyOf:)`
         super.viewDidDisappear(animated)
 
-        guard isEditingEnabled, hasChanges else { return }
+        guard isEditingEnabled, hasChanges, let metadata = metadata else { return }
 
-        let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: "", preferredStyle: .alert)
+        let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
+        var message: String?
         let userId = (UIApplication.shared.delegate as? AppDelegate)?.userId ?? ""
-        if metadata?.livePhoto == false, metadata?.canUnlock(as: userId) != false {
+        if metadata.livePhoto {
+            message = NSLocalizedString("_message_disable_overwrite_livephoto_", comment: "")
+        } else if !metadata.canUnlock(as: userId) {
+            message = NSLocalizedString("_file_locked_no_override_", comment: "")
+        } else {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { _ in
                 self.saveModifiedFile(override: true)
             })
         }
+        alertController.message = message
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
             self.saveModifiedFile(override: false)
