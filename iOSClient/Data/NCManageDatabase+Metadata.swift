@@ -66,8 +66,10 @@ extension NCManageDatabase {
         metadata.ownerDisplayName = file.ownerDisplayName
         metadata.lock = file.lock
         metadata.lockOwner = file.lockOwner
+        metadata.lockOwnerType = file.lockOwnerType
         metadata.lockOwnerDisplayName = file.lockOwnerDisplayName
         metadata.lockTime = file.lockTime
+        metadata.lockTimeOut = file.lockTimeOut
         metadata.path = file.path
         metadata.permissions = file.permissions
         metadata.quotaUsedBytes = file.quotaUsedBytes

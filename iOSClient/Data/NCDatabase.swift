@@ -386,8 +386,10 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var ownerDisplayName = ""
     @objc public var lock = false
     @objc public var lockOwner = ""
+    @objc public var lockOwnerType = 0
     @objc public var lockOwnerDisplayName = ""
     @objc public var lockTime: Date?
+    @objc public var lockTimeOut: Date?
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var quotaUsedBytes: Int64 = 0
@@ -427,7 +429,7 @@ extension tableMetadata {
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
-        return !lock || lockOwner == user
+        return !lock || (lockOwner == user && lockOwnerType == 0)
     }
 }
 
