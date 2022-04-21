@@ -71,14 +71,21 @@ extension NCCollectionViewCommon {
                 action: nil
             )
         )
-        
+
         if metadata.lock {
-            let lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
-            let lockTime = DateFormatter.localizedString(from: metadata.lockTime ?? Date(), dateStyle: .short, timeStyle: .short)
+            var lockTimeString: String?
+            var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
+            if metadata.lockOwnerType != 0 { lockOwnerName += " app" }
+            if let lockTime = metadata.lockTimeOut, let timeInterval = (lockTime.timeIntervalSince1970 - Date().timeIntervalSince1970).format() {
+                lockTimeString = String(format: NSLocalizedString("_time_remaining_", comment: ""), timeInterval)
+            } else if let lockTime = metadata.lockTime {
+                lockTimeString = DateFormatter.localizedString(from: lockTime, dateStyle: .short, timeStyle: .short)
+            } // else: don't show date detail
+
             actions.append(
                 NCMenuAction(
                     title: String(format: NSLocalizedString("_locked_by_", comment: ""), lockOwnerName),
-                    details: lockTime,
+                    details: lockTimeString,
                     icon: NCUtility.shared.loadUserImage(
                         for: metadata.lockOwner,
                            displayName: lockOwnerName,
@@ -86,7 +93,7 @@ extension NCCollectionViewCommon {
                     action: nil)
             )
         }
-        
+
         actions.append(.seperator)
 
         //
@@ -106,10 +113,6 @@ extension NCCollectionViewCommon {
             )
         )
 
-        if !metadata.directory, canUnlock, NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1 {
-            actions.append(.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata]))
-        }
-
         //
         // DETAIL
         //
@@ -123,6 +126,15 @@ extension NCCollectionViewCommon {
                     }
                 )
             )
+        }
+        if !metadata.directory, canUnlock, NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1 {
+            let lockAction = NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata])
+            if metadata.lock {
+                // make unlock first action, after info rows & seperator
+                actions.insert(lockAction, at: 3)
+            } else {
+                actions.append(lockAction)
+            }
         }
 
         //
@@ -342,5 +354,16 @@ extension NCCollectionViewCommon {
         }
 
         presentMenu(with: actions)
+    }
+}
+
+
+extension TimeInterval {
+    func format() -> String? {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.day, .hour, .minute]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        return formatter.string(from: self)
     }
 }

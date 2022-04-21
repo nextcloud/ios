@@ -149,10 +149,12 @@
 
 /* MARK: Files lock */
 
-"_lock_file_"               = "Lock";
-"_unlock_file_"             = "Unlock";
-"_locked_by_"               = "Locked by %@";
-"_file_locked_no_override_" = "This file is locked. It cannot be overridden.";
+"_lock_file_"                       = "Lock file";
+"_unlock_file_"                     = "Unock file";
+"_lock_selected_files_"             = "Lock files";
+"_unlock_selected_files_"           = "Unock files";
+"_locked_by_"                       = "Locked by %@";
+"_file_locked_no_override_"         = "This file is locked. It cannot be overridden.";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
@@ -352,6 +354,7 @@
 "_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application";
 "_trial_"                       = "Trial";
 "_trial_expired_day_"           = "Days remaining";
+"_time_remaining_"              = "%@ remaining";
 "_disableLocalCacheAfterUpload_footer_" = "After uploading the file, do not keep it in the local cache";
 "_disableLocalCacheAfterUpload_"        = "Disable local cache";
 "_autoupload_"                      = "Auto upload photos/videos";
