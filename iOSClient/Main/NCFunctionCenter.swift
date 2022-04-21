@@ -748,9 +748,11 @@ import SVGKit
         var children: [UIMenuElement] = [favorite, offline, openIn, moveCopy, copy, copyPath]
         
         if metadata.canUnlock(as: appDelegate.userId) {
-            children.insert(rename, at: 3)
-            children.insert(lockUnlock, at: 2)
             children.append(delete)
+            children.insert(rename, at: 3)
+            if NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1 {
+                children.insert(lockUnlock, at: 2)
+            }
         } else if enableDeleteLocal {
             children.append(deleteConfirmLocal)
         }
