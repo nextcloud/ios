@@ -27,7 +27,6 @@ class NCShareAdvancePermissionHeader: UIView {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var info: UILabel!
-    @IBOutlet weak var favorite: UIButton!
     @IBOutlet weak var fullWidthImageView: UIImageView!
 
     func setupUI(with metadata: tableMetadata) {
@@ -44,12 +43,8 @@ class NCShareAdvancePermissionHeader: UIView {
                 imageView.image = UIImage(named: "file")
             }
         }
-        favorite.setNeedsUpdateConstraints()
-        favorite.layoutIfNeeded()
         fileName.text = metadata.fileNameView
         fileName.textColor = NCBrandColor.shared.label
-        let starColor = metadata.favorite ? NCBrandColor.shared.yellowFavorite : NCBrandColor.shared.systemGray
-        favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: starColor, size: 24), for: .normal)
         info.textColor = NCBrandColor.shared.secondaryLabel
         info.text = CCUtility.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
     }
