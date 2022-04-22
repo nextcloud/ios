@@ -28,18 +28,18 @@ extension UIToolbar {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         var buttons: [UIBarButtonItem] = []
+
+        if let onClear = onClear {
+            let clearButton = UIBarButtonItem(title: NSLocalizedString("_clear_", comment: ""), style: .plain) {
+                onClear()
+            }
+            buttons.append(clearButton)
+        }
+        buttons.append(UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil))
         let doneButton = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) {
             completion()
         }
         buttons.append(doneButton)
-
-        if let onClear = onClear {
-            let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-            let clearButton = UIBarButtonItem(title: NSLocalizedString("_clear_", comment: ""), style: .plain) {
-                onClear()
-            }
-            buttons.append(contentsOf: [spaceButton, clearButton])
-        }
         toolbar.setItems(buttons, animated: false)
         return toolbar
     }
