@@ -50,6 +50,7 @@ extension NCShare {
                         let navigationController = self.navigationController, !share.isInvalidated else { return }
                     advancePermission.networking = self.networking
                     advancePermission.share = tableShare(value: share)
+                    advancePermission.oldTableShare = tableShare(value: share)
                     advancePermission.metadata = self.metadata
                     navigationController.pushViewController(advancePermission, animated: true)
                 }

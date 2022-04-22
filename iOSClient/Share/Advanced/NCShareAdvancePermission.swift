@@ -29,6 +29,10 @@ import CloudKit
 class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate, NCShareDetail {
     func dismissShareAdvanceView(shouldSave: Bool) {
         guard shouldSave else {
+            guard oldTableShare?.hasChanges(comparedTo: share) != false else {
+                navigationController?.popViewController(animated: true)
+                return
+            }
             let alert = UIAlertController(
                 title: NSLocalizedString("_cancel_request_", comment: ""),
                 message: NSLocalizedString("_discard_changes_info_", comment: ""),
@@ -49,6 +53,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         navigationController?.popViewController(animated: true)
     }
 
+    var oldTableShare: tableShare?
     var share: NCTableShareable!
     var isNewShare: Bool { NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare) == nil }
     var metadata: tableMetadata!

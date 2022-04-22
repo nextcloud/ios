@@ -49,6 +49,17 @@ extension NCTableShareable {
         dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
         return dateFormatter.string(from: date as Date)
     }
+
+    func hasChanges(comparedTo other: NCTableShareable) -> Bool {
+        return other.account != account
+        || other.shareType != shareType
+        || other.permissions != permissions
+        || other.hideDownload != hideDownload
+        || other.password != password
+        || other.label != label
+        || other.note != note
+        || other.expirationDate != expirationDate
+    }
 }
 
 class NCTableShareOptions: NCTableShareable {
