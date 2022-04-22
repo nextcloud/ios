@@ -18,18 +18,16 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bZc-Ai-h3y">
-                        <rect key="frame" x="8" y="426" width="321" height="28"/>
-                        <constraints>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="28" id="bXT-nO-EeQ"/>
-                        </constraints>
+                        <rect key="frame" x="8" y="426.5" width="321" height="27.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="23"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" image="intro1" translatesAutoresizingMaskIntoConstraints="NO" id="f3T-nC-cwA">
-                        <rect key="frame" x="93.5" y="167" width="150" height="128"/>
+                        <rect key="frame" x="93.5" y="156" width="150" height="150"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="150" id="jne-Xj-IAh"/>
+                            <constraint firstAttribute="width" secondItem="f3T-nC-cwA" secondAttribute="height" multiplier="1:1" id="mhZ-Cn-42Q"/>
                         </constraints>
                     </imageView>
                 </subviews>
@@ -38,20 +36,13 @@
             <color key="backgroundColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="f3T-nC-cwA" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="4le-ih-K34"/>
-                <constraint firstItem="bZc-Ai-h3y" firstAttribute="top" relation="lessThanOrEqual" secondItem="f3T-nC-cwA" secondAttribute="bottom" constant="8" id="AWt-Zg-Blt"/>
-                <constraint firstItem="f3T-nC-cwA" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="8" id="Eh0-Bq-FKp"/>
                 <constraint firstAttribute="bottom" secondItem="bZc-Ai-h3y" secondAttribute="bottom" constant="8" id="YBJ-eg-EmZ"/>
+                <constraint firstItem="bZc-Ai-h3y" firstAttribute="top" relation="greaterThanOrEqual" secondItem="f3T-nC-cwA" secondAttribute="bottom" constant="16" id="av5-zS-GLQ"/>
                 <constraint firstItem="bZc-Ai-h3y" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="eNj-fx-een"/>
-                <constraint firstItem="f3T-nC-cwA" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="haX-eS-EOe"/>
+                <constraint firstItem="f3T-nC-cwA" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" priority="250" id="haX-eS-EOe"/>
                 <constraint firstAttribute="trailing" secondItem="bZc-Ai-h3y" secondAttribute="trailing" constant="8" id="uif-cW-sAI"/>
             </constraints>
             <size key="customSize" width="337" height="428"/>
-            <variation key="default">
-                <mask key="constraints">
-                    <exclude reference="Eh0-Bq-FKp"/>
-                    <exclude reference="AWt-Zg-Blt"/>
-                </mask>
-            </variation>
             <connections>
                 <outlet property="imageView" destination="f3T-nC-cwA" id="aRR-4x-Dwk"/>
                 <outlet property="titleLabel" destination="bZc-Ai-h3y" id="WAd-FO-VtY"/>
