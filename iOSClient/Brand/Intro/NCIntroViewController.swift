@@ -89,6 +89,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         buttonSignUp.layer.borderWidth = 1.0
         buttonSignUp.setTitleColor(textColor, for: .normal)
         buttonSignUp.backgroundColor = NCBrandColor.shared.customer
+        buttonSignUp.titleLabel?.adjustsFontSizeToFitWidth = true
+        buttonSignUp.titleEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
 
         buttonHost.layer.cornerRadius = 20
