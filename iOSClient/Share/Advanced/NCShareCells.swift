@@ -284,7 +284,7 @@ class NCShareDateCell: UITableViewCell {
             self.onReload?()
         }
 
-        textField.inputAccessoryView = toolbar
+        textField.inputAccessoryView = toolbar.wrappedSafeAreaContainer
         textField.inputView = picker
 
         if let expDate = share.expirationDate {

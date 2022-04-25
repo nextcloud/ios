@@ -57,7 +57,7 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
             self.share.note = self.noteTextField.text
         }
 
-        noteTextField.inputAccessoryView = toolbar
+        noteTextField.inputAccessoryView = toolbar.wrappedSafeAreaContainer
 
         guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
         headerContainerView.addSubview(headerView)
