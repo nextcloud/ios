@@ -97,6 +97,7 @@
             [row.cellConfig setObject:[[UIImage imageNamed:@"plus"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+            [row.cellConfig setObject:@0 forKey:@"textLabel.numberOfLines"];
             row.action.formSelector = @selector(addAccount:);
             [section addFormRow:row];
         }
@@ -110,6 +111,7 @@
                 [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
                 [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
                 [row.cellConfig setObject:[[UIImage imageNamed:@"userStatusAway"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+                [row.cellConfig setObject:@0 forKey:@"textLabel.numberOfLines"];
                 [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
                 row.action.formSelector = @selector(setUserStatus:);
                 if (accounts.count == 0) row.disabled = @YES;
@@ -124,6 +126,7 @@
             [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
             [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+            [row.cellConfig setObject:@0 forKey:@"textLabel.numberOfLines"];
             if ([CCUtility getAccountRequest]) row.value = @1;
             else row.value = @0;
             [section addFormRow:row];
@@ -141,6 +144,7 @@
     [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@0 forKey:@"textLabel.numberOfLines"];
     row.action.formSelector = @selector(certificateDetails:);
     [section addFormRow:row];
         
@@ -150,6 +154,7 @@
     [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@0 forKey:@"textLabel.numberOfLines"];
     row.action.formSelector = @selector(certificatePNDetails:);
     [section addFormRow:row];
     

@@ -262,7 +262,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if indexPath.section == 0 {
             return 100
         } else {
-            return NCGlobal.shared.heightCellSettings
+            return UITableView.automaticDimension
         }
     }
 
