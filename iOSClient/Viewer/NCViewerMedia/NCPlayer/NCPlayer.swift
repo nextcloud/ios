@@ -459,9 +459,9 @@ class NCPlayer: NSObject {
                     self.url = url
                     self.isProxy = urlVideo.isProxy
                     if requiredConvert {
-                        #if MFFFLIB
+#if MFFFLIB
                         self.convertVideo(withAlert: false)
-                        #endif
+#endif
                     } else {
                         self.openAVPlayer()
                     }
