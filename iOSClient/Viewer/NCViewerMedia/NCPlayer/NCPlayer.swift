@@ -243,6 +243,8 @@ class NCPlayer: NSObject {
 
     func activateObserver() {
 
+        print("activate Observer")
+
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) {  [weak self] notification in
 
