@@ -108,7 +108,8 @@ class NCViewerMediaPage: UIViewController {
     }
 
     deinit {
-        print("#deinit NCViewerMediaPage")
+        
+        print("deinit NCViewerMediaPage")
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -469,16 +470,12 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
             direction = .reverse
         }
 
-        currentViewController.ncplayer?.deactivateObserver()
-        
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
     }
     
     func reloadCurrentPage() {
-        
-        currentViewController.ncplayer?.deactivateObserver()
-        
+
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         viewerMedia.autoPlay = false
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: false, completion: nil)
@@ -487,8 +484,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
     func goTo(index: Int, direction: UIPageViewController.NavigationDirection, autoPlay: Bool) {
 
         currentIndex = index
-
-        currentViewController.ncplayer?.deactivateObserver()
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         viewerMedia.autoPlay = autoPlay

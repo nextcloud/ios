@@ -808,7 +808,7 @@ extension NCManageDatabase {
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
 
-    func getSubtitles(account: String, serverUrl: String, fileName: String) -> (all:[tableMetadata], exists:[tableMetadata]) {
+    func getSubtitles(account: String, serverUrl: String, fileName: String) -> (all:[tableMetadata], existing:[tableMetadata]) {
 
         let realm = try! Realm()
         let nameOnly = (fileName as NSString).deletingPathExtension + "."
