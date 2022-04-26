@@ -135,15 +135,8 @@ class NCPlayer: NSObject {
                 }
 
                 if (playerItem.status == .readyToPlay || playerItem.status == .failed) {
-                    if (playerItem.status == .readyToPlay) {
-                        if self.isPlayerReady(player) {
-                            print("Player ready")
-                            self.startPlayer()
-                        }
-                    } else {
-                        print("Player ready to convert")
-                        self.startPlayer()
-                    }
+                    print("Player ready")
+                    self.startPlayer()
                 } else {
                     print("Player not ready")
                 }
