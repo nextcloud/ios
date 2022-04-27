@@ -128,12 +128,14 @@ class NCPlayer: NSObject {
 
         let observerAVPlayertStatus = self.player?.currentItem?.observe(\.status, options: [.new,.initial]) { player, change in
 
-            if let player = self.player, let playerItem = player.currentItem, let object = player.currentItem, playerItem === object {
+            if let player = self.player,
+               let playerItem = player.currentItem,
+               let object = player.currentItem,
+               playerItem === object {
 
                 if self.isStartPlayer {
                     return
                 }
-
                 if (playerItem.status == .readyToPlay || playerItem.status == .failed) {
                     print("Player ready")
                     self.startPlayer()
@@ -146,19 +148,6 @@ class NCPlayer: NSObject {
         if let observerAVPlayertStatus = observerAVPlayertStatus{
             kvoPlayerObservers.insert(observerAVPlayertStatus)
         }
-
-    }
-
-    private func isPlayerReady(_ player: AVPlayer) -> Bool {
-
-        let ready = player.currentItem?.status == .readyToPlay || player.currentItem?.status == .failed
-
-        let timeRange = player.currentItem?.loadedTimeRanges.first as? CMTimeRange
-        guard let duration = timeRange?.duration else { return false } // Fail when loadedTimeRanges is empty
-        let timeLoaded = Int(duration.value) / Int(duration.timescale) // value/timescale = seconds
-        let loaded = timeLoaded > 0
-
-        return ready && loaded
     }
 
     func startPlayer() {
@@ -235,8 +224,8 @@ class NCPlayer: NSObject {
     }
 
     func activateObserver() {
-
-        print("activate Observer")
+        
+        print("activating Observer ocId \(metadata.ocId)")
 
         // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) {  [weak self] notification in
@@ -287,7 +276,7 @@ class NCPlayer: NSObject {
 
     func deactivateObserver() {
 
-        print("deactivating Observer")
+        print("deactivating Observer ocId \(metadata.ocId)")
 
         if isPlay() {
             playerPause()
@@ -301,7 +290,8 @@ class NCPlayer: NSObject {
         }
         observerAVPlayerItemDidPlayToEndTime = nil
 
-        if let observerAVPlayertTime = self.observerAVPlayertTime, let player = player {
+        if let observerAVPlayertTime = self.observerAVPlayertTime,
+           let player = player {
             player.removeTimeObserver(observerAVPlayertTime)
         }
         observerAVPlayertTime = nil
@@ -314,7 +304,7 @@ class NCPlayer: NSObject {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
-
+        
         isStartObserver = false
     }
 
