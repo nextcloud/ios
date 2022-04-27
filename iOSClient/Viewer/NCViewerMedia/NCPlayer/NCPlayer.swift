@@ -227,7 +227,6 @@ class NCPlayer: NSObject {
         
         print("activating Observer ocId \(metadata.ocId)")
 
-        // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) {  [weak self] notification in
 
             guard let self = self else {
