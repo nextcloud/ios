@@ -234,7 +234,7 @@ extension NCMenuAction {
         } else {
             titleKey = shouldLock ? "_lock_selected_files_" : "_unlock_selected_files_"
         }
-        let imageName = !shouldLock ? "lock.open" : "lock"
+        let imageName = !shouldLock ? "lock_open" : "lock"
         return NCMenuAction(
             title: NSLocalizedString(titleKey, comment: ""),
             icon: NCUtility.shared.loadImage(named: imageName),

@@ -487,25 +487,27 @@ class NCUtility: NSObject {
         return ""
     }
 
-    func loadImage(named: String, color: UIColor = NCBrandColor.shared.gray, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
+    func loadImage(named imageName: String, color: UIColor = NCBrandColor.shared.gray, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
 
         var image: UIImage?
 
         if #available(iOS 13.0, *) {
+            // see https://stackoverflow.com/questions/71764255
+            let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
             if let symbolConfiguration = symbolConfiguration {
-                image = UIImage(systemName: named, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
+                image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
             } else {
-                image = UIImage(systemName: named)?.imageColor(color)
+                image = UIImage(systemName: sfSymbolName)?.imageColor(color)
             }
             if image == nil {
-                image = UIImage(named: named)?.image(color: color, size: size)
+                image = UIImage(named: imageName)?.image(color: color, size: size)
             }
         } else {
-            image = UIImage(named: named)?.image(color: color, size: size)
+            image = UIImage(named: imageName)?.image(color: color, size: size)
         }
 
-        if image != nil {
-            return image!
+        if let image = image {
+            return image
         }
 
         return  UIImage(named: "file")!.image(color: color, size: size)
