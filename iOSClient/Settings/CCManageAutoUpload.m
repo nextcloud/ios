@@ -219,20 +219,7 @@
     [super viewWillAppear:animated];
     
     appDelegate.activeViewController = self;
-    
-    // Request permission for camera roll access
-    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-        switch (status) {
-            case PHAuthorizationStatusRestricted:
-                NSLog(@"[LOG] user can't grant access to camera roll");
-                break;
-            case PHAuthorizationStatusDenied:
-                NSLog(@"[LOG] user denied access to camera roll");
-                break;
-            default:
-                break;
-        }
-    }];
+    [[NCAskAuthorization shared] askAuthorizationPhotoLibraryWithViewController:self completion:^(BOOL status) { }];
 }
 
 - (void)initialize

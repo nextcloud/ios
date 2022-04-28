@@ -85,6 +85,8 @@
 		<string>Inconsolata-ExtraBold.ttf</string>
 		<string>Inconsolata-Black.ttf</string>
 	</array>
+	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

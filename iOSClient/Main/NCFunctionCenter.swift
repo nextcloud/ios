@@ -306,27 +306,18 @@ import SVGKit
     func saveAlbum(metadata: tableMetadata) {
 
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let status = PHPhotoLibrary.authorizationStatus()
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && status == PHAuthorizationStatus.authorized {
-
-            if let image = UIImage(contentsOfFile: fileNamePath) {
-                UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.mainTabBar?.window?.rootViewController) { hasPermission in
+            guard hasPermission else {
+                return NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
+            }
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let image = UIImage(contentsOfFile: fileNamePath) {
+                UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
+                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
             } else {
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
             }
-
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && status == PHAuthorizationStatus.authorized {
-
-            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
-                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-            } else {
-                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
-            }
-
-        } else if status != PHAuthorizationStatus.authorized {
-
-            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
         }
     }
 
