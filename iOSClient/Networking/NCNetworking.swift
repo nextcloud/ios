@@ -1172,9 +1172,10 @@ import Queuer
     // MARK: - Lock Files
 
     @objc func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NCCommunication.shared.lockUnlockFile(shouldLock: shoulLock, fileId: metadata.fileId) { errorCode, errorDescription in
-            guard errorCode == 0 else {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
+        NCCommunication.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { errorCode, errorDescription in
+            // 0: lock was successful; 412: lock did not change, no error, refresh
+            guard errorCode == 0 || errorCode == 412 else {
+                NCContentPresenter.shared.messageNotification(metadata.fileName, description: "_files_lock_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
                 return
             }
             NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { account, metadata, errorCode, errorDescription in
