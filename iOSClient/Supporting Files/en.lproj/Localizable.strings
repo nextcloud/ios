@@ -147,7 +147,6 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
-"_misc_"                    = "Miscellaneous";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
@@ -340,6 +339,7 @@
 "_user_editprofile_"            = "Edit profile";
 "_select_offline_warning_"      = "Making multiple files and folders available offline may take a while and use a lot of memory while doing so.";
 "_advanced_"                    = "Advanced";
+"_permissions_"                 = "Permissions";
 "_disable_files_app_"           = "Disable Files App integration";
 "_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application";
 "_trial_"                       = "Trial";

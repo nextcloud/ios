@@ -36,11 +36,11 @@ class NCShareAdvancePermissionHeader: UIView {
             imageView.isHidden = true
         } else {
             if metadata.directory {
-                imageView.image = UIImage(named: "folder")
+                imageView.image = NCBrandColor.cacheImages.folder
             } else if !metadata.iconName.isEmpty {
                 imageView.image = UIImage(named: metadata.iconName)
             } else {
-                imageView.image = UIImage(named: "file")
+                imageView.image = NCBrandColor.cacheImages.file
             }
         }
         fileName.text = metadata.fileNameView
