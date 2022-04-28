@@ -47,7 +47,7 @@ class NCPlayer: NSObject {
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var observerAVPlayertTime: Any?
 
-    var kvoPlayerObservers: Set<NSKeyValueObservation> = []
+    var kvoPlayerObserver: NSKeyValueObservation?
     var player: AVPlayer?
     var durationTime: CMTime = .zero
     var metadata: tableMetadata
@@ -146,7 +146,7 @@ class NCPlayer: NSObject {
         }
 
         if let observerAVPlayertStatus = observerAVPlayertStatus{
-            kvoPlayerObservers.insert(observerAVPlayertStatus)
+            kvoPlayerObserver = observerAVPlayertStatus
         }
     }
 
@@ -224,7 +224,6 @@ class NCPlayer: NSObject {
     }
 
     func activateObserver() {
-        
         print("activating Observer ocId \(metadata.ocId)")
 
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) {  [weak self] notification in
@@ -280,9 +279,9 @@ class NCPlayer: NSObject {
         if isPlay() {
             playerPause()
         }
-
-        self.kvoPlayerObservers.forEach { $0.invalidate() }
-        self.kvoPlayerObservers.removeAll()
+        
+        self.kvoPlayerObserver?.invalidate()
+        self.kvoPlayerObserver = nil
 
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
