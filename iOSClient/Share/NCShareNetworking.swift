@@ -78,9 +78,11 @@ class NCShareNetworking: NSObject {
             NCUtility.shared.stopActivityIndicator()
             if errorCode == 0, let share = share {
                 option.idShare = share.idShare
-                self.updateShare(option: option)
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
+                if option.hasChanges(comparedTo: share) {
+                    self.updateShare(option: option)
+                }
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }

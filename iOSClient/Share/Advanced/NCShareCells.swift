@@ -115,7 +115,9 @@ enum NCLinkPermission: NCPermission {
                 andCanCreate: false,
                 andCanChange: false,
                 andCanDelete: false,
-                andCanShare: false,
+                // not possible to create "read-only" shares without reshare option
+                // https://github.com/nextcloud/server/blame/f99876997a9119518fe5f7ad3a3a51d33459d4cc/apps/files_sharing/lib/Controller/ShareAPIController.php#L1104-L1107
+                andCanShare: true,
                 andIsFolder: true)
         case .uploadEdit:
             return CCUtility.getPermissionsValue(

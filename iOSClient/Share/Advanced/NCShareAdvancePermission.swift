@@ -55,7 +55,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     var oldTableShare: tableShare?
     var share: NCTableShareable!
-    var isNewShare: Bool { NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare) == nil }
+    var isNewShare: Bool { share is NCTableShareOptions }
     var metadata: tableMetadata!
     var shareConfig: NCShareConfig!
     var networking: NCShareNetworking?

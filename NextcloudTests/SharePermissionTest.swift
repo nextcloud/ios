@@ -67,10 +67,8 @@ class SharePermissionTest: XCTestCase {
         XCTAssertFalse(NCLinkPermission.allowEdit.hasResharePermission(for: 13))
         XCTAssertFalse(NCLinkPermission.allowEdit.hasResharePermission(for: 1))
 
-        XCTAssertTrue(NCLinkPermission.viewOnly.hasResharePermission(for: 15))
-        XCTAssertTrue(NCLinkPermission.viewOnly.hasResharePermission(for: 11))
-        XCTAssertTrue(NCLinkPermission.viewOnly.hasResharePermission(for: 7))
-        XCTAssertTrue(NCLinkPermission.viewOnly.hasResharePermission(for: 1))
+        XCTAssertTrue(NCLinkPermission.viewOnly.hasResharePermission(for: 25))
+        XCTAssertTrue(NCLinkPermission.viewOnly.hasResharePermission(for: 17))
         XCTAssertFalse(NCLinkPermission.viewOnly.hasResharePermission(for: 12))
         XCTAssertFalse(NCLinkPermission.viewOnly.hasResharePermission(for: 2))
 

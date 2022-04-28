@@ -25,15 +25,15 @@ import UIKit
 import NCCommunication
 
 extension tableShare: NCTableShareable { }
+extension NCCommunicationShare: NCTableShareable { }
+
 protocol NCTableShareable: AnyObject {
     var shareType: Int { get set }
     var permissions: Int { get set }
 
-    var account: String { get }
-
     var idShare: Int { get set }
     var shareWith: String { get set }
-//    var publicUpload: Bool? = false
+
     var hideDownload: Bool { get set }
     var password: String { get set }
     var label: String { get set }
@@ -51,8 +51,7 @@ extension NCTableShareable {
     }
 
     func hasChanges(comparedTo other: NCTableShareable) -> Bool {
-        return other.account != account
-        || other.shareType != shareType
+        return other.shareType != shareType
         || other.permissions != permissions
         || other.hideDownload != hideDownload
         || other.password != password
@@ -66,11 +65,9 @@ class NCTableShareOptions: NCTableShareable {
     var shareType: Int
     var permissions: Int
 
-    let account: String
-
     var idShare: Int = 0
     var shareWith: String = ""
-//    var publicUpload: Bool? = false
+
     var hideDownload: Bool = false
     var password: String = ""
     var label: String = ""
@@ -81,7 +78,6 @@ class NCTableShareOptions: NCTableShareable {
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
         self.permissions = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]) & metadata.sharePermissionsCollaborationServices
         self.shareType = shareType
-        self.account = metadata.account
         if let password = password {
             self.password = password
         }
