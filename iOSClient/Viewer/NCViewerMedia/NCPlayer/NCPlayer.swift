@@ -104,7 +104,9 @@ class NCPlayer: NSObject {
         // Check already started
         if isStartPlayer {
             if !isStartObserver {
+                print("Play already started - URL: \(self.url)")
                 activateObserver()
+                playerToolBar?.show()
             }
             return
         }
