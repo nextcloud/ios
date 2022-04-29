@@ -504,7 +504,6 @@
 		AF36077527BFB019001A243D /* ParallelWorkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParallelWorkerTest.swift; sourceTree = "<group>"; };
 		AF3F909928213BEA0048A93E /* UserAgentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgentTests.swift; sourceTree = "<group>"; };
 		AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCTrash+CollectionView.swift"; sourceTree = "<group>"; };
-		AF4AFEED27905AF100577007 /* ios-communication-library */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "ios-communication-library"; path = "../ios-communication-library"; sourceTree = "<group>"; };
 		AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Account.swift"; sourceTree = "<group>"; };
 		AF4BF61827562A4B0081CEEF /* NCManageDatabase+Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Metadata.swift"; sourceTree = "<group>"; };
 		AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Activity.swift"; sourceTree = "<group>"; };
@@ -1756,7 +1755,6 @@
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
-				AF4AFEED27905AF100577007 /* ios-communication-library */,
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F771E3D120E2392D00AFB62D /* File Provider Extension */,
