@@ -60,11 +60,13 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     var capabilities: NSFileProviderItemCapabilities {
-        if metadata.directory {
+        guard !metadata.directory else {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
-        } else {
-            return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
         }
+        guard metadata.canUnlock(as: fileProviderData.shared.userId) else {
+            return [ .allowsReading ]
+        }
+        return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
     }
 
     var isTrashed: Bool {
