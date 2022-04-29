@@ -75,7 +75,13 @@ extension NCCollectionViewCommon {
         if metadata.lock {
             var lockTimeString: String?
             var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
-            if metadata.lockOwnerType != 0 { lockOwnerName += " app" }
+            var lockIcon = NCUtility.shared.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
+            if metadata.lockOwnerType != 0 {
+                lockOwnerName += " app"
+                if !metadata.lockOwnerEditor.isEmpty, let appIcon = UIImage(named: metadata.lockOwnerEditor) {
+                    lockIcon = appIcon
+                }
+            }
             if let lockTime = metadata.lockTimeOut, let timeInterval = (lockTime.timeIntervalSince1970 - Date().timeIntervalSince1970).format() {
                 lockTimeString = String(format: NSLocalizedString("_time_remaining_", comment: ""), timeInterval)
             } else if let lockTime = metadata.lockTime {
@@ -86,10 +92,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: String(format: NSLocalizedString("_locked_by_", comment: ""), lockOwnerName),
                     details: lockTimeString,
-                    icon: NCUtility.shared.loadUserImage(
-                        for: metadata.lockOwner,
-                           displayName: lockOwnerName,
-                           userBaseUrl: metadata),
+                    icon: lockIcon,
                     action: nil)
             )
         }

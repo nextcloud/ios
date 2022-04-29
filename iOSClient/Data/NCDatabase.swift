@@ -386,6 +386,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var ownerDisplayName = ""
     @objc public var lock = false
     @objc public var lockOwner = ""
+    @objc public var lockOwnerEditor = ""
     @objc public var lockOwnerType = 0
     @objc public var lockOwnerDisplayName = ""
     @objc public var lockTime: Date?
