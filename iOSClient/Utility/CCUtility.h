@@ -180,9 +180,6 @@
 + (NSInteger)getCleanUpDay;
 + (void)setCleanUpDay:(NSInteger)days;
 
-+ (PDFDisplayDirection)getPDFDisplayDirection;
-+ (void)setPDFDisplayDirection:(PDFDisplayDirection)direction;
-
 + (BOOL)getPrivacyScreenEnabled;
 + (void)setPrivacyScreenEnabled:(BOOL)set;
 
