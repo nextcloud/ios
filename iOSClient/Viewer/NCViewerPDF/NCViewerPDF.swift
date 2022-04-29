@@ -427,7 +427,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         let endY = visibleRect.origin.y + visibleRect.height + thumbnailViewHeight
 
         if currentPageY < startY {
-            if gotoY < 0 { gotoY = -UIApplication.shared.statusBarFrame.height }
+            if gotoY < 0 {
+                if navigationController?.isNavigationBarHidden ?? true {
+                    gotoY = -UIApplication.shared.statusBarFrame.height
+                } else {
+                    gotoY = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) == 0 ? -UIApplication.shared.statusBarFrame.height : -((UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + UIApplication.shared.statusBarFrame.height)
+                }
+            }
             pdfThumbnailScrollView.setContentOffset(CGPoint(x: 0, y: gotoY), animated: true)
         } else if currentPageY > endY {
             if gotoY > pdfThumbnailView.frame.height - visibleRect.height { gotoY = pdfThumbnailView.frame.height - visibleRect.height}
