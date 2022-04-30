@@ -97,7 +97,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         view.addSubview(pdfThumbnailScrollView)
 
         NSLayoutConstraint.activate([
-            pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             pdfThumbnailScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         pdfThumbnailScrollViewleadingAnchor = pdfThumbnailScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
@@ -342,9 +342,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
     @objc func tapPdfView(_ recognizer: UITapGestureRecognizer) {
 
         if navigationController?.isNavigationBarHidden ?? false {
-            navigationController?.setNavigationBarHidden(false, animated: false)
+            navigationController?.setNavigationBarHidden(false, animated: true)
         } else {
-            navigationController?.setNavigationBarHidden(true, animated: false)
+            navigationController?.setNavigationBarHidden(true, animated: true)
         }
     }
 
@@ -427,15 +427,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         let endY = visibleRect.origin.y + visibleRect.height + thumbnailViewHeight
 
         if currentPageY < startY {
-            if gotoY < 0 {
-                let safeAreaInsetsTop = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
-                let statusBarFrameHeight = UIApplication.shared.statusBarFrame.height
-                if navigationController?.isNavigationBarHidden ?? true {
-                    gotoY = -statusBarFrameHeight
-                } else {
-                    gotoY = safeAreaInsetsTop == 0 ? -statusBarFrameHeight : -(safeAreaInsetsTop + statusBarFrameHeight)
-                }
-            }
+            if gotoY < 0 { gotoY = 0 }
             pdfThumbnailScrollView.setContentOffset(CGPoint(x: 0, y: gotoY), animated: true)
         } else if currentPageY > endY {
             if gotoY > pdfThumbnailView.frame.height - visibleRect.height {
