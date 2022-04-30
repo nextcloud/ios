@@ -78,6 +78,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfView.translatesAutoresizingMaskIntoConstraints = false
         pdfView.document = pdfDocument
+        pdfView.autoScales = true
         pdfView.displayMode = .singlePageContinuous
         pdfView.displayDirection = .vertical
         pdfView.maxScaleFactor = 4.0
