@@ -333,6 +333,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
     // MARK: - Action
 
     @objc func openMenuMore() {
+        
         if imageIcon == nil { imageIcon = UIImage(named: "file_pdf") }
         NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
     }
