@@ -617,7 +617,7 @@ import SVGKit
         }
         let titleOffline = isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: "")
         let titleLock = metadata.lock ? NSLocalizedString("_unlock_file_", comment: "") :  NSLocalizedString("_lock_file_", comment: "")
-        let iconLock = metadata.lock ? "lock_open" : "lock"
+        let iconLock = metadata.lock ? "lock.open" : "lock"
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
             self.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
@@ -745,16 +745,18 @@ import SVGKit
 
         // FILE
 
-        var children: [UIMenuElement] = [favorite, offline, openIn, moveCopy, copy, copyPath]
+        var children: [UIMenuElement] = [offline, openIn, moveCopy, copy, copyPath]
         
-        if metadata.canUnlock(as: appDelegate.userId) {
+        if !metadata.lock {
+            children.insert(favorite, at: 0)
             children.append(delete)
             children.insert(rename, at: 3)
-            if NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1 {
-                children.insert(lockUnlock, at: metadata.lock ? 0 : 1)
-            }
         } else if enableDeleteLocal {
             children.append(deleteConfirmLocal)
+        }
+
+        if NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1, metadata.canUnlock(as: appDelegate.userId) {
+            children.insert(lockUnlock, at: metadata.lock ? 0 : 1)
         }
 
         if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {

@@ -92,7 +92,7 @@ import NCCommunication
         let userId = (UIApplication.shared.delegate as? AppDelegate)?.userId ?? ""
         if metadata.livePhoto {
             message = NSLocalizedString("_message_disable_overwrite_livephoto_", comment: "")
-        } else if !metadata.canUnlock(as: userId) {
+        } else if metadata.lock {
             message = NSLocalizedString("_file_locked_no_override_", comment: "")
         } else {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_overwrite_original_", comment: ""), style: .default) { _ in

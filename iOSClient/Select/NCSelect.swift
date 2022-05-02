@@ -141,8 +141,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             self.view.addSubview(selectCommandViewSelect!)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
-            let userId = NCManageDatabase.shared.getActiveAccount()?.userId ?? ""
-            if items.contains(where: { !$0.canUnlock(as: userId) }) {
+            if items.contains(where: { $0.lock }) {
                 selectCommandViewSelect?.moveButton?.isEnabled = false
                 selectCommandViewSelect?.moveButton?.titleLabel?.isEnabled = false
             }

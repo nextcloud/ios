@@ -63,7 +63,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         guard !metadata.directory else {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
         }
-        guard metadata.canUnlock(as: fileProviderData.shared.userId) else {
+        guard !metadata.lock else {
             return [ .allowsReading ]
         }
         return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
