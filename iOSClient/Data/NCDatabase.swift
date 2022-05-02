@@ -493,6 +493,11 @@ class tableTag: Object {
     }
 }
 
+class tableTip: Object {
+
+    @Persisted(primaryKey: true) var tipName = ""
+}
+
 class tableTrash: Object {
 
     @objc dynamic var account = ""

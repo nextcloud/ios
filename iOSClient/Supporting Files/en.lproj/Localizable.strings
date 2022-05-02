@@ -849,4 +849,5 @@
 "_subtitle_not_found_"      = "Subtitle not found";
 "_disable_"                 = "Disable";
 "_subtitle_not_dowloaded_"  = "There are subtitles not downloaded locally";
-
+// Tip
+"_tip_pdf_thumbnails_"      = "Swipe on left to open the thumbnails.";

@@ -112,7 +112,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 217
+    let databaseSchemaVersion: UInt64               = 218
 
     // Intro selector
     //
@@ -361,4 +361,8 @@ class NCGlobal: NSObject {
     let notificationCenterReloadMediaPage                       = "reloadMediaPage"
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
+
+    // Tip
+    //
+    let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
 }

@@ -191,6 +191,7 @@
 		F74E7720277A2EF40013B958 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = F74E771F277A2EF40013B958 /* XLForm */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
+		F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F753BA92281FD8020015BFB6 /* EasyTipView */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F7581D1A25EFDA61004DC699 /* NCLoginWeb+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7581D1925EFDA60004DC699 /* NCLoginWeb+Menu.swift */; };
 		F7581D2425EFDDDF004DC699 /* NCMedia+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7581D2325EFDDDF004DC699 /* NCMedia+Menu.swift */; };
@@ -1000,6 +1001,7 @@
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
 				F76DA96F277B78AE0082465B /* TLPhotoPicker in Frameworks */,
 				F76DA966277B76F30082465B /* UICKeyChainStore in Frameworks */,
+				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
 				F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */,
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
 				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
@@ -2053,6 +2055,7 @@
 				F7233B3927835FA400F40A43 /* ChromaColorPicker */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F758A01127A7F03E0069468B /* JGProgressHUD */,
+				F753BA92281FD8020015BFB6 /* EasyTipView */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -2180,6 +2183,7 @@
 				F7233B3827835FA300F40A43 /* XCRemoteSwiftPackageReference "ChromaColorPicker" */,
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
 				F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */,
+				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3169,6 +3173,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marinofaggiana/EasyTipView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SVGKit/SVGKit.git";
@@ -3352,6 +3364,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
 			productName = XLForm;
+		};
+		F753BA92281FD8020015BFB6 /* EasyTipView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */;
+			productName = EasyTipView;
 		};
 		F758A01127A7F03E0069468B /* JGProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;

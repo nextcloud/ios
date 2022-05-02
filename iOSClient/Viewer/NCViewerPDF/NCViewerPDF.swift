@@ -24,6 +24,7 @@
 import UIKit
 import PDFKit
 import SwiftUI
+import EasyTipView
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecognizerDelegate {
 
@@ -39,6 +40,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
     private var pdfDocument: PDFDocument?
     private let pageView = UIView()
     private let pageViewLabel = UILabel()
+    private var tipView: EasyTipView?
 
     private let thumbnailViewHeight: CGFloat = 70
     private let thumbnailViewWidth: CGFloat = 80
@@ -201,8 +203,34 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
 
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
 
+        // Tip
+        if UIDevice.current.userInterfaceIdiom == .phone && !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail){
+
+            var preferences = EasyTipView.Preferences()
+            preferences.drawing.foregroundColor = NCBrandColor.shared.brandText
+            preferences.drawing.backgroundColor = NCBrandColor.shared.customer
+            preferences.drawing.textAlignment = .left
+            preferences.drawing.arrowPosition = .right
+
+            preferences.positioning.bubbleInsets.right = UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0
+
+            preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+            preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+            preferences.animating.showInitialAlpha = 0
+            preferences.animating.showDuration = 1.5
+            preferences.animating.dismissDuration = 1.5
+
+            tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
+        }
+
         setConstraints()
         handlePageChange()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.view)
     }
 
     @objc func viewUnload() {
@@ -216,6 +244,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         coordinator.animate(alongsideTransition: { context in
             if UIDevice.current.userInterfaceIdiom == .phone {
                 // Close
+                self.tipView?.dismiss()
                 self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0)
                 self.pdfThumbnailScrollView.isHidden = true
             }
@@ -356,6 +385,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
 
         if UIDevice.current.userInterfaceIdiom == .phone && self.pdfThumbnailScrollView.isHidden {
+            if let tipView = self.tipView {
+                tipView.dismiss()
+                NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+                self.tipView = nil
+            }
             self.pdfThumbnailScrollView.isHidden = false
             self.pdfThumbnailScrollViewWidthAnchor?.constant = thumbnailViewWidth + (UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0)
             UIView.animate(withDuration: animateDuration, animations: {
@@ -458,4 +492,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
              }
          }
      }
+}
+
+extension NCViewerPDF: EasyTipViewDelegate {
+
+    func easyTipViewDidTap(_ tipView: EasyTipView) {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+    }
+
+    func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 }
