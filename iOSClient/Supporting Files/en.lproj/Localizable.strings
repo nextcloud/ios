@@ -92,7 +92,7 @@
 "_initialization_"          = "Initialization";
 "_experimental_"            = "Experimental";
 "_select_dir_media_tab_"    = "Select as folder \"Media\"";
-"_error_creation_file_"     = "Ops! Could not create the file";
+"_error_creation_file_"     = "Oops! Could not create the file";
 "_save_path_"               = "Save path";
 "_save_settings_"           = "Save settings";
 "_mode_filename_"           = "Filename mode";
