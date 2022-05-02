@@ -410,7 +410,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         var gotoY = currentPageY - centerPoint.y
 
         let startY = visibleRect.origin.y < 0 ? 0 : (visibleRect.origin.y + thumbnailViewHeight)
-        let endY = visibleRect.origin.y + visibleRect.height + thumbnailViewHeight
+        let endY = visibleRect.origin.y + visibleRect.height
 
         if currentPageY < startY {
             if gotoY < 0 { gotoY = 0 }
