@@ -28,6 +28,7 @@ import NCCommunication
 import PDFKit
 import Accelerate
 import CoreMedia
+import WebKit
 
 // MARK: - NCUtility
 
@@ -303,6 +304,19 @@ class NCUtility: NSObject {
             }
         }
         return true
+    }
+
+    @objc func getCustomUserAgentNCText() -> String {
+        let userAgent: String = CCUtility.getUserAgent()
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            // NOTE: Hardcoded (May 2022)
+            // Tested for iPhone SE (1st), iOS 12; iPhone Pro Max, iOS 15.4; iPhone X,
+            // 605.1.15 = WebKit build version
+            // 15E148 = frozen iOS build number according to: https://chromestatus.com/feature/4558585463832576
+            return userAgent + " " + "AppleWebKit/605.1.15 Mobile/15E148"
+        } else {
+            return userAgent
+        }
     }
 
     @objc func getCustomUserAgentOnlyOffice() -> String {

@@ -328,7 +328,9 @@ import XLForm
 
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
-            }
+            } else if editorId == NCGlobal.shared.editorText {
+                customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
+            } // else: use default
 
             NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
 
@@ -396,7 +398,10 @@ import XLForm
             var customUserAgent: String?
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
-            }
+            } else if editorId == NCGlobal.shared.editorText {
+                customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
+            } // else: use default
+
             NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { account, templates, errorCode, _ in
 
                 self.indicator.stopAnimating()
