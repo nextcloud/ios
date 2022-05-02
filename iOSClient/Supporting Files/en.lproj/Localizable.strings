@@ -162,7 +162,7 @@
 "_set_user_status_"         = "Set user status";
 "_open_settings_"           = "Open settings";
 "_rename_ext_title_"        = "Change file type?";
-"_rename_ext_message_"      = "This file may behave differently if you change it from .%@ to %@";
+"_rename_ext_message_"      = "This file may open in a different application if you change it from .%@ to %@";
 "_use_"                     = "Use";
 "_keep_"                    = "Keep";
 "_account_request_"         = "Request account";
