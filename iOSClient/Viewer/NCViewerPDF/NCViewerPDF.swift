@@ -23,7 +23,6 @@
 
 import UIKit
 import PDFKit
-import SwiftUI
 import EasyTipView
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecognizerDelegate {
@@ -31,7 +30,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
     var metadata = tableMetadata()
     var imageIcon: UIImage?
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var filePath = ""
 
     private var pdfView = PDFView()
@@ -72,8 +70,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
 
         // PDF VIEW
 
-        pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
-        pdfView.translatesAutoresizingMaskIntoConstraints = false
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
+        } else {
+            pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.frame.width-thumbnailViewWidth, height: view.frame.height))
+        }
+        pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin]
         pdfView.document = pdfDocument
         pdfView.autoScales = true
         pdfView.displayMode = .singlePageContinuous
@@ -81,17 +83,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         pdfView.maxScaleFactor = 4.0
         pdfView.minScaleFactor = pdfView.scaleFactorForSizeToFit
         view.addSubview(pdfView)
-
-        NSLayoutConstraint.activate([
-            pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
-        ])
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -thumbnailViewWidth).isActive = true
-        } else {
-            pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        }
 
         // PDF THUMBNAIL
 
@@ -114,10 +105,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         pdfThumbnailView.layoutMode = .vertical
         pdfThumbnailView.thumbnailSize = CGSize(width: thumbnailViewHeight, height: thumbnailViewHeight)
         pdfThumbnailView.backgroundColor = .clear
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            self.pdfThumbnailScrollView.isHidden = false
-        } else {
+        if UIDevice.current.userInterfaceIdiom == .phone {
             self.pdfThumbnailScrollView.isHidden = true
+        } else {
+            self.pdfThumbnailScrollView.isHidden = false
         }
         pdfThumbnailScrollView.addSubview(pdfThumbnailView)
 
@@ -380,6 +371,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         } else {
             navigationController?.setNavigationBarHidden(true, animated: true)
         }
+        handlePageChange()
     }
 
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {

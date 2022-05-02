@@ -850,4 +850,4 @@
 "_disable_"                 = "Disable";
 "_subtitle_not_dowloaded_"  = "There are subtitles not downloaded locally";
 // Tip
-"_tip_pdf_thumbnails_"      = "Swipe on left to open the thumbnails.";
+"_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
