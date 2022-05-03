@@ -204,6 +204,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
             preferences.drawing.backgroundColor = NCBrandColor.shared.customer
             preferences.drawing.textAlignment = .left
             preferences.drawing.arrowPosition = .right
+            preferences.drawing.cornerRadius = 10
 
             preferences.positioning.bubbleInsets.right = UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0
 
