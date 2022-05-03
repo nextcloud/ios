@@ -132,7 +132,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
 
         pageView.translatesAutoresizingMaskIntoConstraints = false
         pageView.layer.cornerRadius = 10
-        pageView.backgroundColor = UIColor.gray.withAlphaComponent(0.3)
+        pageView.backgroundColor = NCBrandColor.shared.systemBackground.withAlphaComponent(
+            UIAccessibility.isReduceTransparencyEnabled ? 1 : 0.5
+        )
         view.addSubview(pageView)
 
         NSLayoutConstraint.activate([
@@ -145,7 +147,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
 
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
         pageViewLabel.textAlignment = .center
-        pageViewLabel.textColor = .gray
+        pageViewLabel.textColor = NCBrandColor.shared.label
         pageView.addSubview(pageViewLabel)
 
         NSLayoutConstraint.activate([
