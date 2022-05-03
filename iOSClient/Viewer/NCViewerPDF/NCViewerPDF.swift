@@ -47,6 +47,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
 
     private var defaultBackgroundColor: UIColor = .clear
 
+    private var pdfThumbnailScrollViewTopAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewTrailingAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewWidthAnchor: NSLayoutConstraint?
     private var pageViewWidthAnchor: NSLayoutConstraint?
@@ -91,10 +92,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
         pdfThumbnailScrollView.showsVerticalScrollIndicator = false
         view.addSubview(pdfThumbnailScrollView)
 
-        NSLayoutConstraint.activate([
-            pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            pdfThumbnailScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        pdfThumbnailScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        pdfThumbnailScrollViewTopAnchor?.isActive = true
         pdfThumbnailScrollViewTrailingAnchor = pdfThumbnailScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         pdfThumbnailScrollViewTrailingAnchor?.isActive = true
         pdfThumbnailScrollViewWidthAnchor = pdfThumbnailScrollView.widthAnchor.constraint(equalToConstant: thumbnailViewWidth)
@@ -366,11 +366,19 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
 
     @objc func tapPdfView(_ recognizer: UITapGestureRecognizer) {
 
+        pdfThumbnailScrollViewTopAnchor?.isActive = false
+
         if navigationController?.isNavigationBarHidden ?? false {
             navigationController?.setNavigationBarHidden(false, animated: true)
+            pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+
         } else {
             navigationController?.setNavigationBarHidden(true, animated: true)
+            pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.topAnchor)
         }
+
+        pdfThumbnailScrollViewTopAnchor?.isActive = true
+
         handlePageChange()
     }
 
