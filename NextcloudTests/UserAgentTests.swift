@@ -58,7 +58,6 @@ class UserAgentTests: XCTestCase {
 
     func matches(for regex: String, in text: String) throws -> [NSTextCheckingResult] {
         let range = NSRange(location: 0, length: text.utf16.count)
-        print(regex, text)
         let regex = try NSRegularExpression(pattern: regex)
         return regex.matches(in: text, range: range)
     }
