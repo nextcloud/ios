@@ -25,7 +25,7 @@ import UIKit
 import PDFKit
 import EasyTipView
 
-class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecognizerDelegate {
+class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     var metadata = tableMetadata()
     var imageIcon: UIImage?
@@ -51,6 +51,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
     private var pdfThumbnailScrollViewTrailingAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewWidthAnchor: NSLayoutConstraint?
     private var pageViewWidthAnchor: NSLayoutConstraint?
+
+    private var swipePdfView: UISwipeGestureRecognizer?
+    private var edgePdfView: UIScreenEdgePanGestureRecognizer?
 
     // MARK: - View Life Cycle
 
@@ -168,21 +171,23 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
             tapPdfView.require(toFail: gesture)
         }
 
-        let swipePdfView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail))
-        swipePdfView.direction = .right
-        pdfView.addGestureRecognizer(swipePdfView)
+        swipePdfView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail))
+        if let swipePdfView = swipePdfView {
+            swipePdfView.direction = .right
+            swipePdfView.delegate = self
+            pdfView.addGestureRecognizer(swipePdfView)
+        }
+
+        edgePdfView = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(gestureOpenPdfThumbnail))
+        if let edgePdfView = edgePdfView {
+            edgePdfView.edges = .right
+            edgePdfView.delegate = self
+            pdfView.addGestureRecognizer(edgePdfView)
+        }
 
         let swipePdfThumbnailScrollView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail))
         swipePdfThumbnailScrollView.direction = .right
         pdfThumbnailScrollView.addGestureRecognizer(swipePdfThumbnailScrollView)
-
-        let edgePdfView = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(gestureOpenPdfThumbnail))
-        edgePdfView.edges = .right
-        pdfView.addGestureRecognizer(edgePdfView)
-
-        let edgeView = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(gestureOpenPdfThumbnail))
-        edgeView.edges = .right
-        view.addGestureRecognizer(edgeView)
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
@@ -495,6 +500,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate, UIGestureRecogni
              }
          }
      }
+}
+
+extension NCViewerPDF: UIGestureRecognizerDelegate {
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
 
 extension NCViewerPDF: EasyTipViewDelegate {
