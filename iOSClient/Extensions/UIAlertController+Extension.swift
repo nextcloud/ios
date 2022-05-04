@@ -66,4 +66,26 @@ extension UIAlertController {
         alertController.addAction(okAction)
         return alertController
     }
+
+    static func withTextField(titleKey: String, textFieldConfiguration: ((UITextField) -> Void)?, completion: @escaping (String?) -> Void) -> UIAlertController {
+        let alertController = UIAlertController(title: NSLocalizedString(titleKey, comment: ""), message: "", preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textFieldConfiguration?(textField)
+        }
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { _ in })
+        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in
+            completion(alertController.textFields?.first?.text)
+        }
+
+        alertController.addAction(okAction)
+        return alertController
+    }
+
+    static func password(titleKey: String, completion: @escaping (String?) -> Void) -> UIAlertController {
+        return .withTextField(titleKey: titleKey, textFieldConfiguration: { textField in
+            textField.isSecureTextEntry = true
+            textField.placeholder = NSLocalizedString("_password_", comment: "")
+        }, completion: completion)
+
+    }
 }

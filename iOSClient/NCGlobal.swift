@@ -351,8 +351,6 @@ class NCGlobal: NSObject {
     let notificationCenterChangedLocation                       = "changedLocation"
     let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
 
-    let notificationCenterShareChangePermissions                = "shareChangePermissions"          // userInfo: idShare, permissions, hideDownload
-
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 
     let notificationCenterHidePlayerToolBar                     = "hidePlayerToolBar"               // userInfo: ocId

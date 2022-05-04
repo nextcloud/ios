@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nhT-TJ-YvX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nhT-TJ-YvX">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="20" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="X49-xg-JXO">
-                                <rect key="frame" x="0.0" y="100" width="414" height="762"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tableCell" rowHeight="120" id="ggj-aE-fnh" customClass="NCActivityTableViewCell" customModule="Nextcloud" customModuleProvider="target">
@@ -113,66 +113,18 @@
                                     <outlet property="prefetchDataSource" destination="nhT-TJ-YvX" id="317-AD-uQe"/>
                                 </connections>
                             </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sG1-7f-3rF">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="100"/>
-                                <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hVn-Fn-7td">
-                                        <rect key="frame" x="10" y="10" width="40" height="40"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="eRU-q6-wZT"/>
-                                            <constraint firstAttribute="width" constant="40" id="nee-e2-atl"/>
-                                        </constraints>
-                                    </imageView>
-                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="Wz7-gw-foA">
-                                        <rect key="frame" x="60" y="60" width="344" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="30" id="4ni-Qx-ber"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                        <connections>
-                                            <action selector="newCommentFieldDidEndOnExitWithTextField:" destination="nhT-TJ-YvX" eventType="editingDidEndOnExit" id="vPB-Eu-qkb"/>
-                                        </connections>
-                                    </textField>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="user" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YRy-AS-CMk">
-                                        <rect key="frame" x="60" y="21.5" width="344" height="17"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="YRy-AS-CMk" firstAttribute="centerY" secondItem="hVn-Fn-7td" secondAttribute="centerY" id="CBB-vi-6Z1"/>
-                                    <constraint firstAttribute="trailing" secondItem="Wz7-gw-foA" secondAttribute="trailing" constant="10" id="CuV-5o-sFz"/>
-                                    <constraint firstItem="hVn-Fn-7td" firstAttribute="leading" secondItem="sG1-7f-3rF" secondAttribute="leading" constant="10" id="NWH-NK-FjI"/>
-                                    <constraint firstAttribute="height" constant="100" id="SfP-Sr-vbR"/>
-                                    <constraint firstItem="Wz7-gw-foA" firstAttribute="leading" secondItem="hVn-Fn-7td" secondAttribute="trailing" constant="10" id="baP-t5-Kut"/>
-                                    <constraint firstItem="Wz7-gw-foA" firstAttribute="top" secondItem="hVn-Fn-7td" secondAttribute="bottom" constant="10" id="bsh-yh-NR2"/>
-                                    <constraint firstItem="YRy-AS-CMk" firstAttribute="leading" secondItem="hVn-Fn-7td" secondAttribute="trailing" constant="10" id="chn-JO-eYr"/>
-                                    <constraint firstAttribute="bottom" secondItem="Wz7-gw-foA" secondAttribute="bottom" constant="10" id="e8b-hy-WHK"/>
-                                    <constraint firstAttribute="trailing" secondItem="YRy-AS-CMk" secondAttribute="trailing" constant="10" id="uaN-5Y-k6V"/>
-                                    <constraint firstItem="hVn-Fn-7td" firstAttribute="top" secondItem="sG1-7f-3rF" secondAttribute="top" constant="10" id="yLz-68-e22"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="USa-eR-a1s"/>
                         <constraints>
-                            <constraint firstItem="sG1-7f-3rF" firstAttribute="top" secondItem="vOO-VC-ekK" secondAttribute="top" id="0Wu-9f-jFf"/>
                             <constraint firstItem="X49-xg-JXO" firstAttribute="trailing" secondItem="USa-eR-a1s" secondAttribute="trailing" id="5we-Fh-GVu"/>
+                            <constraint firstItem="X49-xg-JXO" firstAttribute="top" secondItem="USa-eR-a1s" secondAttribute="top" id="E1U-4Q-6uu"/>
                             <constraint firstItem="USa-eR-a1s" firstAttribute="bottom" secondItem="X49-xg-JXO" secondAttribute="bottom" id="aHq-g4-dUG"/>
-                            <constraint firstItem="X49-xg-JXO" firstAttribute="top" secondItem="sG1-7f-3rF" secondAttribute="bottom" id="eeu-9y-t1U"/>
-                            <constraint firstItem="sG1-7f-3rF" firstAttribute="trailing" secondItem="vOO-VC-ekK" secondAttribute="trailing" id="htz-S1-01v"/>
-                            <constraint firstItem="sG1-7f-3rF" firstAttribute="leading" secondItem="vOO-VC-ekK" secondAttribute="leading" id="lLm-NY-aXQ"/>
                             <constraint firstItem="X49-xg-JXO" firstAttribute="leading" secondItem="USa-eR-a1s" secondAttribute="leading" id="pfF-ag-f7x"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="commentView" destination="sG1-7f-3rF" id="Nip-au-Ilu"/>
-                        <outlet property="imageItem" destination="hVn-Fn-7td" id="tqx-nV-WfA"/>
-                        <outlet property="labelUser" destination="YRy-AS-CMk" id="ijz-je-fBV"/>
-                        <outlet property="newCommentField" destination="Wz7-gw-foA" id="PDr-8b-iQY"/>
                         <outlet property="tableView" destination="X49-xg-JXO" id="GUb-8b-mIS"/>
-                        <outlet property="viewContainerConstraint" destination="0Wu-9f-jFf" id="TGF-fh-T7Y"/>
+                        <outlet property="viewContainerConstraint" destination="E1U-4Q-6uu" id="NpJ-Iz-DtL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UOE-pW-DRy" userLabel="First Responder" sceneMemberID="firstResponder"/>

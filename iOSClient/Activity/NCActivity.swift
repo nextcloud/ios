@@ -26,14 +26,12 @@ import UIKit
 import SwiftRichString
 import NCCommunication
 
-class NCActivity: UIViewController {
+class NCActivity: UIViewController, NCSharePagingContent {
 
     @IBOutlet weak var tableView: UITableView!
 
-    @IBOutlet weak var commentView: UIView!
-    @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var labelUser: UILabel!
-    @IBOutlet weak var newCommentField: UITextField!
+    var commentView: NCActivityCommentView?
+    var textField: UITextField? { commentView?.newCommentField }
 
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     var height: CGFloat = 0
@@ -76,46 +74,34 @@ class NCActivity: UIViewController {
 
         if showComments {
             setupComments()
-        } else {
-            commentView.isHidden = true
         }
     }
 
     func setupComments() {
-        tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
-
-        newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
-        viewContainerConstraint.constant = height
-
         // Display Name & Quota
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount(), height > 0 else {
-            commentView.isHidden = true
             return
         }
 
-        let fileName = appDelegate.userBaseUrl + "-" + appDelegate.user + ".png"
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-            imageItem.image = image
-        } else {
-            imageItem.image = UIImage(named: "avatar")
+        tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
+        commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
+        commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
+            guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
+            NCCommunication.shared.putComments(fileId: metadata.fileId, message: newComment) { _, errorCode, errorDescription in
+                if errorCode == 0 {
+                    self.commentView?.newCommentField.text?.removeAll()
+                    self.loadComments()
+                } else {
+                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
         }
-
-        if activeAccount.displayName.isEmpty {
-            labelUser.text = activeAccount.user
-        } else {
-            labelUser.text = activeAccount.displayName
-        }
-        labelUser.textColor = NCBrandColor.shared.label
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         appDelegate.activeViewController = self
-
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-
         initialize()
     }
 
@@ -127,6 +113,10 @@ class NCActivity: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         tableView.tableFooterView = makeTableFooterView()
+        tableView.tableHeaderView = commentView
+        commentView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        commentView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        viewContainerConstraint.constant = height
     }
 
     // MARK: - NotificationCenter
@@ -138,23 +128,6 @@ class NCActivity: UIViewController {
 
     @objc func changeTheming() {
         tableView.reloadData()
-    }
-
-    @IBAction func newCommentFieldDidEndOnExit(textField: UITextField) {
-        guard
-            let message = textField.text,
-            !message.isEmpty,
-            let metadata = self.metadata
-        else { return }
-
-        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { _, errorCode, errorDescription in
-            if errorCode == 0 {
-                self.newCommentField.text = ""
-                self.loadComments()
-            } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            }
-        }
     }
 
     func makeTableFooterView() -> UIView {
