@@ -715,23 +715,6 @@
     [UICKeyChainStore setString:daysString forKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (PDFDisplayDirection)getPDFDisplayDirection
-{
-    NSString *direction = [UICKeyChainStore stringForKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (direction == nil) {
-        return kPDFDisplayDirectionVertical;
-    } else {
-        return [direction integerValue];
-    }
-}
-
-+ (void)setPDFDisplayDirection:(PDFDisplayDirection)direction
-{
-    NSString *directionString = [@(direction) stringValue];
-    [UICKeyChainStore setString:directionString forKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getPrivacyScreenEnabled
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];

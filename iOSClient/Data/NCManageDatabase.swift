@@ -245,6 +245,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tablePhotoLibrary.self, account: account)
         self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
+        self.clearTable(tableTip.self)
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
@@ -1544,6 +1545,37 @@ class NCManageDatabase: NSObject {
         }
 
         return tableTag.init(value: result)
+    }
+
+    // MARK: -
+    // MARK: Table Tip
+
+    @objc func tipExists(_ tipName: String) -> Bool {
+
+        let realm = try! Realm()
+
+        guard (realm.objects(tableTip.self).where {
+            $0.tipName == tipName
+        }.first) == nil else {
+            return true
+        }
+
+        return false
+    }
+
+    @objc func addTip(_ tipName: String) {
+
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                let addObject = tableTip()
+                addObject.tipName = tipName
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
     }
 
     // MARK: -
