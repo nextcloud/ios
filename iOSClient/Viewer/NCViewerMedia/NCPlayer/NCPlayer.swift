@@ -46,12 +46,12 @@ class NCPlayer: NSObject {
     private weak var detailView: NCViewerMediaDetailView?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var observerAVPlayertTime: Any?
-    private var observerAVPlayertStatus: Any?
 
-    public var player: AVPlayer?
-    public var durationTime: CMTime = .zero
-    public var metadata: tableMetadata
-    public var videoLayer: AVPlayerLayer?
+    var kvoPlayerObserver: NSKeyValueObservation?
+    var player: AVPlayer?
+    var durationTime: CMTime = .zero
+    var metadata: tableMetadata
+    var videoLayer: AVPlayerLayer?
 
     // MARK: - View Life Cycle
 
@@ -104,7 +104,9 @@ class NCPlayer: NSObject {
         // Check already started
         if isStartPlayer {
             if !isStartObserver {
+                print("Play already started - URL: \(self.url)")
                 activateObserver()
+                playerToolBar?.show()
             }
             return
         }
@@ -113,7 +115,9 @@ class NCPlayer: NSObject {
         player = AVPlayer(url: self.url)
         playerToolBar?.show()
         playerToolBar?.setMetadata(self.metadata)
+#if MFFFLIB
         setUpForSubtitle()
+#endif
 
         if metadata.livePhoto {
             player?.isMuted = false
@@ -126,25 +130,27 @@ class NCPlayer: NSObject {
             }
         }
 
-        observerAVPlayertStatus = player?.currentItem?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
-    }
+        let observerAVPlayertStatus = self.player?.currentItem?.observe(\.status, options: [.new,.initial]) { player, change in
 
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        switch keyPath {
-        case "status":
-            if let playerItem = self.player?.currentItem,
-                let object = object as? AVPlayerItem,
-                playerItem === object{
+            if let player = self.player,
+               let playerItem = player.currentItem,
+               let object = player.currentItem,
+               playerItem === object {
+
+                if self.isStartPlayer {
+                    return
+                }
                 if (playerItem.status == .readyToPlay || playerItem.status == .failed) {
-                    print("player ready")
+                    print("Player ready")
                     self.startPlayer()
                 } else {
-                    print("player not ready")
+                    print("Player not ready")
                 }
             }
-            break
-        default:
-            break
+        }
+
+        if let observerAVPlayertStatus = observerAVPlayertStatus{
+            kvoPlayerObserver = observerAVPlayertStatus
         }
     }
 
@@ -222,8 +228,8 @@ class NCPlayer: NSObject {
     }
 
     func activateObserver() {
+        print("activating Observer ocId \(metadata.ocId)")
 
-        // At end go back to start & show toolbar
         observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) {  [weak self] notification in
 
             guard let self = self else {
@@ -272,26 +278,25 @@ class NCPlayer: NSObject {
 
     func deactivateObserver() {
 
-        print("deactivating Observer")
+        print("deactivating Observer ocId \(metadata.ocId)")
 
         if isPlay() {
             playerPause()
         }
+        
+        self.kvoPlayerObserver?.invalidate()
+        self.kvoPlayerObserver = nil
 
         if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
             NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
         }
         observerAVPlayerItemDidPlayToEndTime = nil
 
-        if let observerAVPlayertTime = self.observerAVPlayertTime {
-            player?.removeTimeObserver(observerAVPlayertTime)
+        if let observerAVPlayertTime = self.observerAVPlayertTime,
+           let player = player {
+            player.removeTimeObserver(observerAVPlayertTime)
         }
         observerAVPlayertTime = nil
-
-        if observerAVPlayertStatus != nil {
-            player?.currentItem?.removeObserver(self, forKeyPath: "status")
-        }
-        observerAVPlayertStatus = nil
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -301,7 +306,7 @@ class NCPlayer: NSObject {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
-
+        
         isStartObserver = false
     }
 
@@ -441,9 +446,9 @@ class NCPlayer: NSObject {
                     self.url = url
                     self.isProxy = urlVideo.isProxy
                     if requiredConvert {
-                        #if MFFFLIB
+#if MFFFLIB
                         self.convertVideo(withAlert: false)
-                        #endif
+#endif
                     } else {
                         self.openAVPlayer()
                     }
