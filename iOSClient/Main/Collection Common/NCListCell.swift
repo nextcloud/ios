@@ -80,6 +80,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
+        // use entire cell as accessibility element
+        accessibilityHint = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
+        isAccessibilityElement = true
+
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
@@ -103,6 +109,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
+        accessibilityHint = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
@@ -124,6 +133,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image
+
+        let moreName = named == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
+
+        self.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString("_share_", comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideShare)),
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString(moreName, comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore))
+        ]
     }
 
     func hideButtonMore(_ status: Bool) {

@@ -72,6 +72,12 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     override func awakeFromNib() {
         super.awakeFromNib()
 
+        // use entire cell as accessibility element
+        accessibilityHint = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
+        isAccessibilityElement = true
+
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
@@ -99,6 +105,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
+        accessibilityHint = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
@@ -116,6 +125,14 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         buttonMore.setImage(image, for: .normal)
+        let moreName = named == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
+
+        self.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString(moreName, comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore))
+        ]
     }
 
     func hideButtonMore(_ status: Bool) {

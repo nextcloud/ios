@@ -50,6 +50,20 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
+        isAccessibilityElement = true
+
+        self.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString("_restore_", comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideRestore)),
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString("_delete_", comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore))
+
+        ]
+
         imageRestore.image = NCBrandColor.cacheImages.buttonRestore
         imageMore.image = NCUtility.shared.loadImage(named: "trash")
 
@@ -119,18 +133,21 @@ protocol NCTrashCell {
     func selectMode(_ status: Bool)
     func selected(_ status: Bool)
 }
-extension NCTrashCell {
+
+extension NCTrashCell where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
         self.objectId = tableTrash.fileId
         self.labelTitle.text = tableTrash.trashbinFileName
         self.labelTitle.textColor = NCBrandColor.shared.label
-
+        let infoText: String
         if tableTrash.directory {
             self.imageItem.image = NCBrandColor.cacheImages.folder
-            self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date)
+            infoText = CCUtility.dateDiff(tableTrash.date as Date)
         } else {
             self.imageItem.image = image
-            self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date) + ", " + CCUtility.transformedSize(tableTrash.size)
+            infoText = CCUtility.dateDiff(tableTrash.date as Date) + ", " + CCUtility.transformedSize(tableTrash.size)
         }
+        self.labelInfo?.text = infoText
+        self.accessibilityLabel = tableTrash.trashbinFileName + ", " + infoText
     }
 }
