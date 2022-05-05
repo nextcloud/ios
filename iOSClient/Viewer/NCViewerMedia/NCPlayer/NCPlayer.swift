@@ -115,7 +115,9 @@ class NCPlayer: NSObject {
         player = AVPlayer(url: self.url)
         playerToolBar?.show()
         playerToolBar?.setMetadata(self.metadata)
+#if MFFFLIB
         setUpForSubtitle()
+#endif
 
         if metadata.livePhoto {
             player?.isMuted = false
