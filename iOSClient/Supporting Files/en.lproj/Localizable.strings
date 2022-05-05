@@ -150,9 +150,9 @@
 /* MARK: Files lock */
 
 "_lock_file_"                       = "Lock file";
-"_unlock_file_"                     = "Unock file";
+"_unlock_file_"                     = "Unlock file";
 "_lock_selected_files_"             = "Lock files";
-"_unlock_selected_files_"           = "Unock files";
+"_unlock_selected_files_"           = "Unlock files";
 "_locked_by_"                       = "Locked by %@";
 "_file_locked_no_override_"         = "This file is locked. It cannot be overridden.";
 
