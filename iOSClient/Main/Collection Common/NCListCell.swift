@@ -130,12 +130,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
 
-    func setButtonMore(named: String, image: UIImage) {
-        namedButtonMore = named
-        imageMore.image = image
-
-        let moreName = named == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
-
+    fileprivate func setA11yActions() {
+        let moreName = namedButtonMore == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
         self.accessibilityCustomActions = [
             UIAccessibilityCustomAction(
                 name: NSLocalizedString("_share_", comment: ""),
@@ -146,6 +142,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 target: self,
                 selector: #selector(touchUpInsideMore))
         ]
+    }
+    
+    func setButtonMore(named: String, image: UIImage) {
+        namedButtonMore = named
+        imageMore.image = image
+
+        setA11yActions()
     }
 
     func hideButtonMore(_ status: Bool) {
@@ -162,10 +165,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         if status {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
+            accessibilityCustomActions = nil
         } else {
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
             backgroundView = nil
+            setA11yActions()
         }
     }
 

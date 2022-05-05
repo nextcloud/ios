@@ -1509,7 +1509,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
                 a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
             }
-            cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
             // E2EE
             if metadata.e2eEncrypted || isEncryptedFolder {
@@ -1530,12 +1529,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.selectMode(true)
                 if selectOcId.contains(metadata.ocId) {
                     cell.selected(true)
+                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
                 } else {
                     cell.selected(false)
                 }
             } else {
                 cell.selectMode(false)
             }
+            cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
             // Disable Share Button
             if appDelegate.disableSharesView {
@@ -1644,19 +1645,20 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
                 a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
             }
-            cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
             // Edit mode
             if isEditMode {
                 cell.selectMode(true)
                 if selectOcId.contains(metadata.ocId) {
                     cell.selected(true)
+                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
                 } else {
                     cell.selected(false)
                 }
             } else {
                 cell.selectMode(false)
             }
+            cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
             return cell
         }

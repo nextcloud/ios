@@ -122,17 +122,21 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         delegate?.longPressGridItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
 
-    func setButtonMore(named: String, image: UIImage) {
-        namedButtonMore = named
-        buttonMore.setImage(image, for: .normal)
-        let moreName = named == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
-
+    fileprivate func setA11yActions() {
+        let moreName = namedButtonMore == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
+        
         self.accessibilityCustomActions = [
             UIAccessibilityCustomAction(
                 name: NSLocalizedString(moreName, comment: ""),
                 target: self,
                 selector: #selector(touchUpInsideMore))
         ]
+    }
+    
+    func setButtonMore(named: String, image: UIImage) {
+        namedButtonMore = named
+        buttonMore.setImage(image, for: .normal)
+        setA11yActions()
     }
 
     func hideButtonMore(_ status: Bool) {
@@ -142,9 +146,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func selectMode(_ status: Bool) {
         if status {
             imageSelect.isHidden = false
+            accessibilityCustomActions = nil
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
+            setA11yActions()
         }
     }
 
