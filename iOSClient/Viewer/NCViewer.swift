@@ -152,6 +152,8 @@ class NCViewer: NSObject {
 
                         if editor == NCGlobal.shared.editorOnlyoffice {
                             customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                        } else {
+                            customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
                         }
 
                         NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
