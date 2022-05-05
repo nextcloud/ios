@@ -733,8 +733,8 @@
 "_go_online_"                       = "Go online to see the document";
 "_intro_1_title_"                   = "Keep your data secure and under your control";
 "_intro_2_title_"                   = "Secure collaboration & file exchange";
-"_intro_3_title_"                   = "Easy-to-use web mail, calendering & contacts";
-"_intro_4_title_"                   = "Screensharing, online meetings & web conferences";
+"_intro_3_title_"                   = "Easy-to-use web mail, calendaring & contacts";
+"_intro_4_title_"                   = "Screen sharing, online meetings & web conferences";
 "_log_in_"                          = "Log in";
 "_sign_up_"                         = "Sign up with provider";
 "_host_your_own_server"             = "Host your own server";
@@ -868,7 +868,7 @@
 // MARK: Accessibility
 
 // Accessibility, floating panel top element
-"_cart_controller_"             = "Cart controller";
+"_cart_controller_"             = "Card controller";
 "_accessibility_add_upload_"    = "Add and upload";
 "_dismiss_menu_"                = "Dismiss the menu";
 "_show_profile_"                = "Show profile";
