@@ -24,7 +24,6 @@
 "_tap_to_cancel_"           = "Tap to cancel";
 "_cancel_request_"          = "Do you want to cancel?";
 "_upload_file_"             = "Upload file";
-"_accessibility_add_upload_" = "Add and upload";
 "_download_file_"           = "Download file";
 "_loading_"                 = "Loading";
 "_loading_with_points_"     = "Loading …";
@@ -206,6 +205,8 @@
 "_dark_mode_"               = "Dark mode";
 "_default_color_"           = "Use the default color";
 "_as_default_color_"        = "Use as default color";
+
+// MARK: User Status
 
 /* User status */
 "_online_"                  = "Online";
@@ -566,6 +567,9 @@
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
 "_password_pdf_error_"          = "Wrong password";
 "_error_download_photobrowser_" = "Error: Unable to download photo";
+
+// MARK: Share
+
 "_share_link_"                  = "Share link";
 "_share_link_button_"           = "Send link to …";
 "_share_link_name_"             = "Link name";
@@ -857,5 +861,13 @@
 "_subtitle_not_found_"      = "Subtitle not found";
 "_disable_"                 = "Disable";
 "_subtitle_not_dowloaded_"  = "There are subtitles not downloaded locally";
+
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
+
+// MARK: Accessibility
+
+// Accessibility, floating panel top element
+"_cart_controller_"           = "Cart controller";
+"_accessibility_add_upload_" = "Add and upload";
+"_dismiss_menu_"              = "Dismiss the menu";
