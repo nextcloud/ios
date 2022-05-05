@@ -876,3 +876,5 @@
 "_on_"                          = "On";
 // a11y: On/Off
 "_off_"                         = "Off";
+"_grid_view_"                   = "Show grid view";
+"_list_view_"                   = "Show list view";

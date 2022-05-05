@@ -44,7 +44,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var metadataFolder: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
-    internal var header: UIView?
+    internal var header: NCSectionHeaderMenu?
 
     internal var layoutForView: NCGlobal.layoutForViewType?
 
@@ -741,6 +741,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
+            header?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
@@ -751,6 +752,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         } else {
             // grid layout
+            header?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
@@ -1267,8 +1269,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if collectionView.collectionViewLayout == gridLayout {
                 header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             } else {
                 header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             }
 
             header.delegate = self
