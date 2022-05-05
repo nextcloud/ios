@@ -23,6 +23,7 @@
 
 import Foundation
 import FloatingPanel
+import UIKit
 
 class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     var position: FloatingPanelPosition = .bottom

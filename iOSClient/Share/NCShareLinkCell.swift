@@ -48,6 +48,8 @@ class NCShareLinkCell: UITableViewCell {
         menuButton.isHidden = isInternalLink
         descriptionLabel.isHidden = !isInternalLink
         copyButton.isHidden = !isInternalLink && tableShare == nil
+        copyButton.accessibilityLabel = NSLocalizedString("_copy_", comment: "")
+        menuButton.accessibilityLabel = NSLocalizedString("_more_", comment: "")
 
         if isInternalLink {
             imageName = "shareInternalLink"
@@ -62,6 +64,7 @@ class NCShareLinkCell: UITableViewCell {
                 }
             } else {
                 menuImageName = "shareAdd"
+                menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
             imageName = "sharebylink"

@@ -243,6 +243,8 @@ class NCShareToggleCell: UITableViewCell {
     typealias CustomToggleIcon = (onIconName: String?, offIconName: String?)
     init(isOn: Bool, customIcons: CustomToggleIcon? = nil) {
         super.init(style: .default, reuseIdentifier: "toggleCell")
+        self.accessibilityValue = isOn ? NSLocalizedString("_on_", comment: "") : NSLocalizedString("_off_", comment: "")
+
         guard let customIcons = customIcons,
               let iconName = isOn ? customIcons.onIconName : customIcons.offIconName else {
             self.accessoryType = isOn ? .checkmark : .none
@@ -286,6 +288,8 @@ class NCShareDateCell: UITableViewCell {
             self.onReload?()
         }
 
+        textField.isAccessibilityElement = false
+        textField.accessibilityElementsHidden = true
         textField.inputAccessoryView = toolbar.wrappedSafeAreaContainer
         textField.inputView = picker
 

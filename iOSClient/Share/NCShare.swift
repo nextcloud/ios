@@ -128,6 +128,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             for: metadata.ownerId,
             displayName: metadata.ownerDisplayName,
             userBaseUrl: appDelegate)
+        sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
+
         let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByImage.addGestureRecognizer(shareAction)
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))

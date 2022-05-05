@@ -868,6 +868,11 @@
 // MARK: Accessibility
 
 // Accessibility, floating panel top element
-"_cart_controller_"           = "Cart controller";
-"_accessibility_add_upload_" = "Add and upload";
-"_dismiss_menu_"              = "Dismiss the menu";
+"_cart_controller_"             = "Cart controller";
+"_accessibility_add_upload_"    = "Add and upload";
+"_dismiss_menu_"                = "Dismiss the menu";
+"_show_profile_"                = "Show profile";
+// a11y: On/Off
+"_on_"                          = "On";
+// a11y: On/Off
+"_off_"                         = "Off";
