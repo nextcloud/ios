@@ -47,6 +47,10 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         guard let tableShare = tableShare else {
             return
         }
+        self.accessibilityCustomActions = [UIAccessibilityCustomAction(
+            name: NSLocalizedString("_show_profile_", comment: ""),
+            target: self,
+            selector: #selector(tapAvatarImage))]
 
         labelTitle.text = tableShare.shareWithDisplayname
         labelTitle.textColor = NCBrandColor.shared.label
@@ -54,6 +58,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         labelQuickStatus.isHidden = false
         imageDownArrow.isHidden = false
         buttonMenu.isHidden = false
+        buttonMenu.accessibilityLabel = NSLocalizedString("_more_", comment: "")
         imageItem.image = NCShareCommon.shared.getImageShareType(shareType: tableShare.shareType)
 
         let status = NCUtility.shared.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
@@ -68,6 +73,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             buttonMenu.isHidden = true
         }
 
+        btnQuickStatus.accessibilityHint = NSLocalizedString("_user_sharee_footer_", comment: "")
         btnQuickStatus.setTitle("", for: .normal)
         btnQuickStatus.contentHorizontalAlignment = .left
 

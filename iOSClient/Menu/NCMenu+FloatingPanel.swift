@@ -23,6 +23,7 @@
 
 import Foundation
 import FloatingPanel
+import UIKit
 
 class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     var position: FloatingPanelPosition = .bottom
@@ -75,5 +76,17 @@ class NCMenuPanelController: FloatingPanelController {
         self.isRemovalInteractionEnabled = true
         self.backdropView.dismissalTapGestureRecognizer.isEnabled = true
         self.surfaceView.layer.cornerRadius = 16
+
+        surfaceView.grabberHandle.accessibilityLabel = NSLocalizedString("_cart_controller_", comment: "")
+
+        let collapseName = NSLocalizedString("_dismiss_menu_", comment: "")
+        let collapseAction = UIAccessibilityCustomAction(name: collapseName, target: self, selector: #selector(accessibilityActionCollapsePanel))
+
+        surfaceView.grabberHandle.accessibilityCustomActions = [collapseAction]
+        surfaceView.grabberHandle.isAccessibilityElement = true
     }
+
+    @objc private func accessibilityActionCollapsePanel() {
+        self.dismiss(animated: true)
+     }
 }

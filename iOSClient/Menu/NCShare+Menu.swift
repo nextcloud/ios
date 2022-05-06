@@ -43,7 +43,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "edit"),
+                icon: NCUtility.shared.loadImage(named: "pencil"),
                 action: { _ in
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
@@ -76,7 +76,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
-                icon: UIImage(),
+                icon: NCUtility.shared.loadImage(named: "eye"),
                 selected: tableShare.permissions == (NCGlobal.shared.permissionReadShare + NCGlobal.shared.permissionShareShare) || tableShare.permissions == NCGlobal.shared.permissionReadShare,
                 on: false,
                 action: { _ in
@@ -90,7 +90,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: isDirectory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
-                icon: UIImage(),
+                icon: NCUtility.shared.loadImage(named: "pencil"),
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
                 action: { _ in
