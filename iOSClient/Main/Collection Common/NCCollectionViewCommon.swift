@@ -1469,6 +1469,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
             } else if metadata.lock == true {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
+                a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
             } else {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
@@ -1640,6 +1641,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
             } else if metadata.lock == true {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
+                a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
             } else {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
