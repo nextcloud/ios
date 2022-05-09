@@ -764,6 +764,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return code == CCUtility.getPasscode()
     }
 
+    func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
+        enableTouchFaceID()
+    }
+
     // MARK: - Privacy Protection
 
     private func showPrivacyProtectionWindow() {
