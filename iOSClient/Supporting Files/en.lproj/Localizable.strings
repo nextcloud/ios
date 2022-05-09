@@ -146,6 +146,7 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+"_testflight_"              = "Join the Nextcloud beta - TestFlight";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";

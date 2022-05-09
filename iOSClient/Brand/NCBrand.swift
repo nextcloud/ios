@@ -56,6 +56,7 @@ import UIKit
     @objc public var webLoginAutenticationProtocol: String = "nc://"                                            // example "abc://"
     @objc public var privacy: String = "https://nextcloud.com/privacy"
     @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
+    @objc public var testFlight: String = "https://testflight.apple.com/join/GjNbfo2a"
 
     // Personalized
     @objc public var webCloseViewProtocolPersonalized: String = ""                                                 // example "abc://change/plan"      Don't touch me !!

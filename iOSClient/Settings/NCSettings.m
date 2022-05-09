@@ -170,6 +170,16 @@
         row.action.formSelector = @selector(sourceCode:);
         [section addFormRow:row];
     }
+
+    // TestFlight
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"testflight" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_testflight_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"testflight"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(testFlight:);
+    [section addFormRow:row];
     
     self.tableView.showsVerticalScrollIndicator = NO;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 35, 0);
@@ -311,6 +321,19 @@
     browserWebVC.isHiddenButtonExit = false;
     browserWebVC.titleBrowser = NSLocalizedString(@"_source_code_", nil);
     
+    [self presentViewController:browserWebVC animated:YES completion:nil];
+}
+
+- (void)testFlight:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+
+    NCBrowserWeb* browserWebVC = [[UIStoryboard storyboardWithName:@"NCBrowserWeb" bundle:nil] instantiateInitialViewController];
+
+    browserWebVC.urlBase = NCBrandOptions.shared.testFlight;
+    browserWebVC.isHiddenButtonExit = false;
+    browserWebVC.titleBrowser = NSLocalizedString(@"_testflight_", nil);
+
     [self presentViewController:browserWebVC animated:YES completion:nil];
 }
 
