@@ -727,30 +727,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             completion()
         })
     }
-    
-    func isPasscodePresented() -> Bool {
-        return window?.rootViewController?.presentedViewController is TOPasscodeViewController
-    }
-    
-    func enableTouchFaceID() {
 
+    func isPasscodePresented() -> Bool {
+        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
+    }
+
+    func enableTouchFaceID() {
         guard !account.isEmpty,
               CCUtility.getEnableTouchFaceID(),
               CCUtility.isPasscodeAtStartEnabled(),
-              let passcodeViewController = window?.rootViewController?.presentedViewController as? TOPasscodeViewController
+              let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
             if success {
                 DispatchQueue.main.async {
                     passcodeViewController.dismiss(animated: true) {
+                        self.hidePrivacyProtectionWindow()
                         self.requestAccount()
                     }
                 }
             }
         }
     }
-    
+
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         DispatchQueue.main.async {
             passcodeViewController.dismiss(animated: true) {
@@ -765,7 +765,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     // MARK: - Privacy Protection
-       
+
     private func showPrivacyProtectionWindow() {
         guard privacyProtectionWindow == nil else {
             privacyProtectionWindow?.isHidden = false
