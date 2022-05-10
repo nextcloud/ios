@@ -19,7 +19,7 @@ class NCMenuAction {
     var selected: Bool = false
     var isOn: Bool = false
     var action: ((_ menuAction: NCMenuAction) -> Void)?
-    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 80 : 60 }
+    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? 3 : self.details != nil ? 80 : 60 }
 
     init(title: String, details: String? = nil, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
@@ -46,7 +46,6 @@ class NCMenuAction {
 
 extension NCMenuAction {
     static let seperatorIdentifier = "NCMenuAction.SEPERATOR"
-    static let seperatorHeight: CGFloat = 1
 
     /// A static seperator, with no actions, text, or icons
     static var seperator: NCMenuAction {

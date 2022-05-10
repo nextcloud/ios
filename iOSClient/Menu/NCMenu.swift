@@ -34,84 +34,20 @@ extension Array where Element == NCMenuAction {
 
 class NCMenu: UITableViewController {
 
-    var actions: [NCMenuAction]
-    var headerActions: [NCMenuAction]?
+    var actions = [NCMenuAction]()
 
-    var actionsHeight: CGFloat {
-        let listHeight = (actions + (headerActions ?? [])).listHeight
-        guard #available(iOS 13, *) else { return listHeight }
-        return listHeight + 30
-    }
-
-    init(actions: [NCMenuAction]) {
-        self.actions = actions
-        super.init(nibName: nil, bundle: nil)
-
-        let splitActions = actions.split(whereSeparator: { $0.title == NCMenuAction.seperatorIdentifier })
-        guard splitActions.count == 2, #available(iOS 13, *) else { return }
-        self.actions = Array(splitActions[1])
-        self.headerActions = Array(splitActions[0])
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu? {
+        let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu
+        menuViewController?.actions = actions
+        return menuViewController
     }
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(UINib(nibName: "NCMenuCell", bundle: nil), forCellReuseIdentifier: "menuActionCell")
         tableView.estimatedRowHeight = 60
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.alwaysBounceVertical = false
-    }
-
-    func setupCell(_ cell: UIView, with action: NCMenuAction) {
-        let actionIconView = cell.viewWithTag(1) as? UIImageView
-        let actionNameLabel = cell.viewWithTag(2) as? UILabel
-        let actionDetailLabel = cell.viewWithTag(3) as? UILabel
-        cell.tintColor = NCBrandColor.shared.customer
-
-        if let details = action.details {
-            actionDetailLabel?.text = details
-            actionNameLabel?.isHidden = false
-        } else { actionDetailLabel?.isHidden = true }
-
-        if action.isOn {
-            actionIconView?.image = action.onIcon
-            actionNameLabel?.text = action.onTitle
-        } else {
-            actionIconView?.image = action.icon
-            actionNameLabel?.text = action.title
-        }
-    }
-
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return headerActions?.listHeight ?? 0
-    }
-
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let headerActions = headerActions else { return nil }
-
-        let headerView = UIStackView()
-        headerView.distribution = .fillProportionally
-        headerView.axis = .vertical
-        headerView.backgroundColor = tableView.backgroundColor
-
-        for action in headerActions {
-            guard let cell = Bundle.main.loadNibNamed("NCMenuCell", owner: self, options: nil)?[0] as? UIView else { continue }
-            setupCell(cell, with: action)
-            cell.backgroundColor = tableView.backgroundColor
-            headerView.addArrangedSubview(cell)
-            let separator = UIView()
-            separator.heightAnchor.constraint(equalToConstant: NCMenuAction.seperatorHeight).isActive = true
-            separator.backgroundColor = NCBrandColor.shared.separator
-            headerView.addArrangedSubview(separator)
-        }
-        return headerView
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -140,10 +76,26 @@ class NCMenu: UITableViewController {
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
+        cell.tintColor = NCBrandColor.shared.customer
+        let actionIconView = cell.viewWithTag(1) as? UIImageView
+        let actionNameLabel = cell.viewWithTag(2) as? UILabel
+        let actionDetailLabel = cell.viewWithTag(3) as? UILabel
+
         if action.action == nil {
             cell.selectionStyle = .none
         }
-        setupCell(cell, with: action)
+        if let details = action.details {
+            actionDetailLabel?.text = details
+            actionNameLabel?.isHidden = false
+        } else { actionDetailLabel?.isHidden = true }
+
+        if action.isOn {
+            actionIconView?.image = action.onIcon
+            actionNameLabel?.text = action.onTitle
+        } else {
+            actionIconView?.image = action.icon
+            actionNameLabel?.text = action.title
+        }
 
         cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
 
@@ -153,18 +105,17 @@ class NCMenu: UITableViewController {
     // MARK: - Tabel View Layout
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        actions[indexPath.row].title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : UITableView.automaticDimension
+        actions[indexPath.row].title == NCMenuAction.seperatorIdentifier ? 3 : UITableView.automaticDimension
     }
 }
-
 extension NCMenu: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor size: CGSize) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(actionsHeight: self.actionsHeight)
+        return NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(actionsHeight: self.actionsHeight)
+        return NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {
