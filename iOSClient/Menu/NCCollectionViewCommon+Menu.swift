@@ -82,12 +82,17 @@ extension NCCollectionViewCommon {
             }
 
             var lockTimeString: String?
-            if let lockTime = metadata.lockTimeOut, lockTime > Date(),
-               let timeInterval = (lockTime.timeIntervalSince1970 - Date().timeIntervalSince1970).format() {
-                lockTimeString = String(format: NSLocalizedString("_time_remaining_", comment: ""), timeInterval)
-            } else if let lockTime = metadata.lockTime {
+            if let lockTime = metadata.lockTimeOut {
+                if lockTime >= Date().addingTimeInterval(60),
+                   let timeInterval = (lockTime.timeIntervalSince1970 - Date().timeIntervalSince1970).format() {
+                    lockTimeString = String(format: NSLocalizedString("_time_remaining_", comment: ""), timeInterval)
+                } else if lockTime > Date() {
+                    lockTimeString = NSLocalizedString("_less_a_minute_", comment: "")
+                } // else: don't show negative time
+            }
+            if let lockTime = metadata.lockTime, lockTimeString == nil {
                 lockTimeString = DateFormatter.localizedString(from: lockTime, dateStyle: .short, timeStyle: .short)
-            } // else: don't show date detail
+            }
 
             actions.append(
                 NCMenuAction(
@@ -102,7 +107,8 @@ extension NCCollectionViewCommon {
 
         //
         // FAVORITE
-        //
+        // FIXME: PROPPATCH doesn't work
+        // https://github.com/nextcloud/files_lock/issues/68
         if !metadata.lock {
             actions.append(
                 NCMenuAction(

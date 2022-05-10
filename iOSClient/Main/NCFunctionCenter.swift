@@ -748,6 +748,8 @@ import SVGKit
         var children: [UIMenuElement] = [offline, openIn, moveCopy, copy, copyPath]
         
         if !metadata.lock {
+            // Workaround: PROPPATCH doesn't work (favorite)
+            // https://github.com/nextcloud/files_lock/issues/68
             children.insert(favorite, at: 0)
             children.append(delete)
             children.insert(rename, at: 3)
