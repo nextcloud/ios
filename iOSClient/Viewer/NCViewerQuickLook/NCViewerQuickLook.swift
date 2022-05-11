@@ -82,14 +82,12 @@ import NCCommunication
     }
 
     override func viewDidDisappear(_ animated: Bool) {
-        // called after `previewController(:didSaveEditedCopyOf:)`
         super.viewDidDisappear(animated)
 
         guard isEditingEnabled, hasChanges, let metadata = metadata else { return }
 
         let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
         var message: String?
-        let userId = (UIApplication.shared.delegate as? AppDelegate)?.userId ?? ""
         if metadata.livePhoto {
             message = NSLocalizedString("_message_disable_overwrite_livephoto_", comment: "")
         } else if metadata.lock {
