@@ -105,7 +105,7 @@ class NCMenu: UITableViewController {
     // MARK: - Tabel View Layout
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        actions[indexPath.row].title == NCMenuAction.seperatorIdentifier ? 3 : UITableView.automaticDimension
+        actions[indexPath.row].title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : UITableView.automaticDimension
     }
 }
 extension NCMenu: FloatingPanelControllerDelegate {
