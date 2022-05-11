@@ -438,7 +438,7 @@ class NCPlayer: NSObject {
             // task
         } progressHandler: { progress in
             hud.progress = Float(progress.fractionCompleted)
-        } completionHandler: { _, _, _, _, _, error, _, _ in
+        } completionHandler: { _, _, _, _, _, error, _ in
             if error == nil {
                 NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
                 let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)

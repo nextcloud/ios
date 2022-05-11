@@ -402,7 +402,7 @@ import XLForm
                 customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
             } // else: use default
 
-            NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { account, templates, errorCode, _ in
+            NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { account, templates, error in
 
                 self.indicator.stopAnimating()
 

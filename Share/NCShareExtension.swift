@@ -342,8 +342,8 @@ extension NCShareExtension {
         hud.progress = 0
         hud.show(in: self.view)
 
-        NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
-            if errorCode != 0 {
+        NCNetworking.shared.upload(metadata: metadata) { } completion: { error in
+            if error.errorCode != 0 {
                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)

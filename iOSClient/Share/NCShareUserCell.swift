@@ -169,12 +169,12 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag) { _, imageAvatar, _, etag, errorCode, _ in
+                etag: etag) { _, imageAvatar, _, etag, error in
 
-                    if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
+                    if error.errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.imageItem.image = imageAvatar
-                    } else if errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
+                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
                         self.imageItem.image = imageAvatar
                     }
                 }
