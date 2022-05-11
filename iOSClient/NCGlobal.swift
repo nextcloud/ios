@@ -99,7 +99,7 @@ class NCGlobal: NSObject {
         case favorites                              = "FavoritesQuickAction"
         case scan                                   = "ScanQuickAction"
         case uploadFile                             = "UploadFileQuickAction"
-        case activities                             = "ActivitiesQuickAction"
+        case notifications                          = "NotificationsQuickAction"
     }
 
     // Service

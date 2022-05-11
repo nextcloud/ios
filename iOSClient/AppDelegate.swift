@@ -328,32 +328,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         let shortcutItmes = UIApplication.shared.shortcutItems
-        if shortcutItmes == nil || shortcutItmes?.isEmpty == true {
-            let uploadFileItem = UIApplicationShortcutItem(
-                type: NCGlobal.QuickAction.uploadFile.rawValue,
-                localizedTitle: NSLocalizedString("_upload_file_", comment: ""),
-                localizedSubtitle: nil,
-                icon: UIApplicationShortcutIcon(templateImageName: "file"))
-            let favoritesItem = UIApplicationShortcutItem(
-                type: NCGlobal.QuickAction.favorites.rawValue,
-                localizedTitle: NSLocalizedString("_favorites_", comment: ""),
-                localizedSubtitle: nil,
-                icon: UIApplicationShortcutIcon(type: .favorite))
-            let activitiesItem = UIApplicationShortcutItem(
-                type: NCGlobal.QuickAction.activities.rawValue,
-                localizedTitle: NSLocalizedString("_activity_", comment: ""),
-                localizedSubtitle: nil,
-                icon: UIApplicationShortcutIcon(templateImageName: "bolt"))
-            UIApplication.shared.shortcutItems = [uploadFileItem, favoritesItem, activitiesItem]
+        guard shortcutItmes == nil || shortcutItmes?.isEmpty == true else { return }
 
-        if #available(iOS 13.0, *) {
-         let scanItem = UIApplicationShortcutItem(
-                type: NCGlobal.QuickAction.scan.rawValue,
-                localizedTitle: NSLocalizedString("_scans_document_", comment: ""),
-                localizedSubtitle: nil,
-                icon: UIApplicationShortcutIcon(systemImageName: "doc.text.viewfinder"))
-            UIApplication.shared.shortcutItems?.insert(scanItem, at: 1)
-        }
+        let uploadFileItem = UIApplicationShortcutItem(
+            type: NCGlobal.QuickAction.uploadFile.rawValue,
+            localizedTitle: NSLocalizedString("_upload_file_", comment: ""),
+            localizedSubtitle: nil,
+            icon: UIApplicationShortcutIcon(templateImageName: "file"))
+        let favoritesItem = UIApplicationShortcutItem(
+            type: NCGlobal.QuickAction.favorites.rawValue,
+            localizedTitle: NSLocalizedString("_favorites_", comment: ""),
+            localizedSubtitle: nil,
+            icon: UIApplicationShortcutIcon(type: .favorite))
+        let activitiesItem = UIApplicationShortcutItem(
+            type: NCGlobal.QuickAction.notifications.rawValue,
+            localizedTitle: NSLocalizedString("_notifications_", comment: ""),
+            localizedSubtitle: nil,
+            icon: UIApplicationShortcutIcon(templateImageName: "bell"))
+        UIApplication.shared.shortcutItems = [uploadFileItem, favoritesItem, activitiesItem]
+
+        guard #available(iOS 13.0, *) else { return }
+        let scanItem = UIApplicationShortcutItem(
+            type: NCGlobal.QuickAction.scan.rawValue,
+            localizedTitle: NSLocalizedString("_scans_document_", comment: ""),
+            localizedSubtitle: nil,
+            icon: UIApplicationShortcutIcon(systemImageName: "doc.text.viewfinder"))
+        UIApplication.shared.shortcutItems?.insert(scanItem, at: 1)
     }
 
     // MARK: - Background Task
@@ -453,7 +453,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         guard let tabBarCtrl = window?.rootViewController as? UITabBarController else { return }
         let currentMain = tabBarCtrl.selectedViewController as? NCMainNavigationController
-        currentMain?.topViewController?.presentedViewController?.dismiss(animated: false, completion: nil)
+        currentMain?.dismiss(animated: false, completion: nil)
+        currentMain?.popToRootViewController(animated: false)
 
         let quickAction = NCGlobal.QuickAction(rawValue: shortcutItem.type)
         switch quickAction {
@@ -465,11 +466,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         case .uploadFile:
             NCDocumentPickerViewController(tabBarController: tabBarCtrl)
-        case .activities:
+        case .notifications:
             tabBarCtrl.selectedIndex = 4
             guard let ncNav = tabBarCtrl.viewControllers?.last as? NCMainNavigationController,
                   let ncMore = ncNav.topViewController as? NCMore else { return }
-            let indexPath = IndexPath(row: 3, section: 1)
+            let indexPath = IndexPath(row: 2, section: 1)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 //delay needed else `tableView` is nil
                 ncMore.tableView.delegate?.tableView?(ncMore.tableView, didSelectRowAt: indexPath)
