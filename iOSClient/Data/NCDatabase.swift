@@ -384,6 +384,13 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
+    @objc public var lock = false
+    @objc public var lockOwner = ""
+    @objc public var lockOwnerEditor = ""
+    @objc public var lockOwnerType = 0
+    @objc public var lockOwnerDisplayName = ""
+    @objc public var lockTime: Date?
+    @objc public var lockTimeOut: Date?
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var quotaUsedBytes: Int64 = 0
@@ -419,6 +426,11 @@ extension tableMetadata {
 
     var isPrintable: Bool {
         classFile == NCCommunicationCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+    }
+
+    /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
+    func canUnlock(as user: String) -> Bool {
+        return !lock || (lockOwner == user && lockOwnerType == 0)
     }
 }
 

@@ -95,12 +95,22 @@ extension NCSelectableNavigationView where Self: UIViewController {
         var selectedMetadatas: [tableMetadata] = []
         var selectedMediaMetadatas: [tableMetadata] = []
         var isAnyOffline = false
+        var isAnyFolder = false
+        var isAnyLocked = false
+        var canUnlock = true
 
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
             selectedMetadatas.append(metadata)
             if [NCCommunicationCommon.typeClassFile.image.rawValue, NCCommunicationCommon.typeClassFile.video.rawValue].contains(metadata.classFile) {
                 selectedMediaMetadatas.append(metadata)
+            }
+            if metadata.directory { isAnyFolder = true }
+            if metadata.lock {
+                isAnyLocked = true
+                if metadata.lockOwner != appDelegate.userId {
+                    canUnlock = false
+                }
             }
 
             guard !isAnyOffline else { continue }
@@ -113,6 +123,10 @@ extension NCSelectableNavigationView where Self: UIViewController {
         }
 
         actions.append(.openInAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
+
+        if !isAnyFolder, canUnlock, NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1 {
+            actions.append(.lockUnlockFiles(shouldLock: !isAnyLocked, metadatas: selectedMetadatas, completion: tapSelect))
+        }
 
         if !selectedMediaMetadatas.isEmpty {
             actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMediaMetadatas, completion: tapSelect))

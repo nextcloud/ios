@@ -38,7 +38,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let topInset: CGFloat
 
-    init(numberOfActions: Int) {
+    init(actionsHeight: CGFloat) {
         // sometimes UIScreen.main.bounds.size.height is not updated correctly
         // this ensures we use the correct height value
         // can't use `layoutFor size` since menu is dieplayed on top of the whole screen not just the VC
@@ -46,7 +46,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
         ? min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         : max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         let bottomInset = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
-        let panelHeight = CGFloat(numberOfActions * 60) + bottomInset
+        let panelHeight = CGFloat(actionsHeight) + bottomInset
 
         topInset = max(48, screenHeight - panelHeight)
     }

@@ -112,7 +112,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 218
+    let databaseSchemaVersion: UInt64               = 219
 
     // Intro selector
     //
@@ -176,6 +176,7 @@ class NCGlobal: NSObject {
     //
     let buttonMoreMore                              = "more"
     let buttonMoreStop                              = "stop"
+    let buttonMoreLock                              = "moreLock"
 
     // Text -  OnlyOffice - Collabora - QuickLook
     //

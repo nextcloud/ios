@@ -1169,6 +1169,23 @@ import Queuer
         }
     }
 
+    // MARK: - Lock Files
+
+    @objc func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
+        NCCommunication.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { errorCode, errorDescription in
+            // 0: lock was successful; 412: lock did not change, no error, refresh
+            guard errorCode == 0 || errorCode == 412 else {
+                NCContentPresenter.shared.messageNotification(metadata.fileName, description: "_files_lock_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
+                return
+            }
+            NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { account, metadata, errorCode, errorDescription in
+                guard errorCode == 0, let metadata = metadata else { return }
+                NCManageDatabase.shared.addMetadata(metadata)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            }
+        }
+    }
+
     // MARK: - WebDav Rename
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?) -> Void) {

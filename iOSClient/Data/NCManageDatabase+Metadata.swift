@@ -64,6 +64,13 @@ extension NCManageDatabase {
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
+        metadata.lock = file.lock
+        metadata.lockOwner = file.lockOwner
+        metadata.lockOwnerEditor = file.lockOwnerEditor
+        metadata.lockOwnerType = file.lockOwnerType
+        metadata.lockOwnerDisplayName = file.lockOwnerDisplayName
+        metadata.lockTime = file.lockTime
+        metadata.lockTimeOut = file.lockTimeOut
         metadata.path = file.path
         metadata.permissions = file.permissions
         metadata.quotaUsedBytes = file.quotaUsedBytes
@@ -319,7 +326,9 @@ extension NCManageDatabase {
 
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note) {
+                        // Workaround: check lock bc no etag changes if lock runs out in directory
+                        // https://github.com/nextcloud/server/issues/8477
+                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note || result.lock != metadata.lock) {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(tableMetadata.init(value: metadata), update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {

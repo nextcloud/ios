@@ -71,22 +71,59 @@ extension NCCollectionViewCommon {
             )
         )
 
+        if metadata.lock {
+            var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
+            var lockIcon = NCUtility.shared.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
+            if metadata.lockOwnerType != 0 {
+                lockOwnerName += " app"
+                if !metadata.lockOwnerEditor.isEmpty, let appIcon = UIImage(named: metadata.lockOwnerEditor) {
+                    lockIcon = appIcon
+                }
+            }
+
+            var lockTimeString: String?
+            if let lockTime = metadata.lockTimeOut {
+                if lockTime >= Date().addingTimeInterval(60),
+                   let timeInterval = (lockTime.timeIntervalSince1970 - Date().timeIntervalSince1970).format() {
+                    lockTimeString = String(format: NSLocalizedString("_time_remaining_", comment: ""), timeInterval)
+                } else if lockTime > Date() {
+                    lockTimeString = NSLocalizedString("_less_a_minute_", comment: "")
+                } // else: don't show negative time
+            }
+            if let lockTime = metadata.lockTime, lockTimeString == nil {
+                lockTimeString = DateFormatter.localizedString(from: lockTime, dateStyle: .short, timeStyle: .short)
+            }
+
+            actions.append(
+                NCMenuAction(
+                    title: String(format: NSLocalizedString("_locked_by_", comment: ""), lockOwnerName),
+                    details: lockTimeString,
+                    icon: lockIcon,
+                    action: nil)
+            )
+        }
+
+        actions.append(.seperator)
+
         //
         // FAVORITE
-        //
-        actions.append(
-            NCMenuAction(
-                title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
-                action: { _ in
-                    NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-                        if errorCode != 0 {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        // FIXME: PROPPATCH doesn't work
+        // https://github.com/nextcloud/files_lock/issues/68
+        if !metadata.lock {
+            actions.append(
+                NCMenuAction(
+                    title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    action: { _ in
+                        NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
+                            if errorCode != 0 {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
                         }
                     }
-                }
+                )
             )
-        )
+        }
 
         //
         // DETAIL
@@ -101,6 +138,20 @@ extension NCCollectionViewCommon {
                     }
                 )
             )
+        }
+        
+        //
+        // LOCK / UNLOCK
+        //
+        let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
+        if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), hasLockCapability {
+            let lockAction = NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata])
+            if metadata.lock {
+                // make unlock first action, after info rows & seperator
+                actions.insert(lockAction, at: 3)
+            } else {
+                actions.append(lockAction)
+            }
         }
 
         //
@@ -183,7 +234,7 @@ extension NCCollectionViewCommon {
         //
         // RENAME
         //
-        if !(isFolderEncrypted && metadata.serverUrl == serverUrlHome) {
+        if !(isFolderEncrypted && metadata.serverUrl == serverUrlHome), !metadata.lock {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -320,5 +371,16 @@ extension NCCollectionViewCommon {
         }
 
         presentMenu(with: actions)
+    }
+}
+
+
+extension TimeInterval {
+    func format() -> String? {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.day, .hour, .minute]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        return formatter.string(from: self)
     }
 }

@@ -28,6 +28,10 @@
 import UIKit
 import FloatingPanel
 
+extension Array where Element == NCMenuAction {
+    var listHeight: CGFloat { reduce(0, { $0 + $1.rowHeight }) }
+}
+
 class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
@@ -42,6 +46,8 @@ class NCMenu: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.estimatedRowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -63,15 +69,25 @@ class NCMenu: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let action = actions[indexPath.row]
+        guard action.title != NCMenuAction.seperatorIdentifier else {
+            let cell = UITableViewCell()
+            cell.backgroundColor = NCBrandColor.shared.separator
+            return cell
+        }
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
         cell.tintColor = NCBrandColor.shared.customer
-        let action = actions[indexPath.row]
         let actionIconView = cell.viewWithTag(1) as? UIImageView
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
+        let actionDetailLabel = cell.viewWithTag(3) as? UILabel
 
         if action.action == nil {
             cell.selectionStyle = .none
         }
+        if let details = action.details {
+            actionDetailLabel?.text = details
+            actionNameLabel?.isHidden = false
+        } else { actionDetailLabel?.isHidden = true }
 
         if action.isOn {
             actionIconView?.image = action.onIcon
@@ -89,17 +105,17 @@ class NCMenu: UITableViewController {
     // MARK: - Tabel View Layout
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        actions[indexPath.row].title == NCMenuAction.seperatorIdentifier ? 3 : UITableView.automaticDimension
     }
 }
 extension NCMenu: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor size: CGSize) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count)
+        return NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(numberOfActions: self.actions.count)
+        return NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight)
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, animatorForDismissingWith velocity: CGVector) -> UIViewPropertyAnimator {

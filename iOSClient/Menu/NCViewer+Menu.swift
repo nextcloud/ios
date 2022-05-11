@@ -40,20 +40,23 @@ extension NCViewer {
 
         //
         // FAVORITE
-        //
-        actions.append(
-            NCMenuAction(
-                title: titleFavorite,
-                icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
-                action: { _ in
-                    NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-                        if errorCode != 0 {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        // Workaround: PROPPATCH doesn't work
+        // https://github.com/nextcloud/files_lock/issues/68
+        if !metadata.lock {
+            actions.append(
+                NCMenuAction(
+                    title: titleFavorite,
+                    icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    action: { _ in
+                        NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
+                            if errorCode != 0 {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
                         }
                     }
-                }
+                )
             )
-        )
+        }
 
         //
         // DETAIL
@@ -146,7 +149,7 @@ extension NCViewer {
         //
         // RENAME
         //
-        if !webView {
+        if !webView, !metadata.lock {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
