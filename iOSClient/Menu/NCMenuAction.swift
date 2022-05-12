@@ -5,6 +5,22 @@
 //  Created by Henrik Storch on 17.02.22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
 //
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 import UIKit
@@ -19,7 +35,7 @@ class NCMenuAction {
     var selected: Bool = false
     var isOn: Bool = false
     var action: ((_ menuAction: NCMenuAction) -> Void)?
-    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? 3 : self.details != nil ? 80 : 60 }
+    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 80 : 60 }
 
     init(title: String, details: String? = nil, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
@@ -45,7 +61,8 @@ class NCMenuAction {
 // MARK: - Actions
 
 extension NCMenuAction {
-    static let seperatorIdentifier = "NCMenuAction.SEPERATOR"
+    static let seperatorIdentifier = "NCMenuAction.SEPARATOR"
+    static let seperatorHeight: CGFloat = 0.5
 
     /// A static seperator, with no actions, text, or icons
     static var seperator: NCMenuAction {
