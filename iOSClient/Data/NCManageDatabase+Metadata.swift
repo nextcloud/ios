@@ -87,6 +87,10 @@ extension NCManageDatabase {
         }
         metadata.size = file.size
         metadata.classFile = file.classFile
+        //FIXME: iOS 12.0,* don't detect UTI "text/markdown"
+        if metadata.contentType == "text/markdown" && metadata.classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue {
+            metadata.classFile = NCCommunicationCommon.typeClassFile.document.rawValue
+        }
         if let date = file.uploadDate {
             metadata.uploadDate = date
         } else {
