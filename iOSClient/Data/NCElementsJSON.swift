@@ -58,8 +58,8 @@ import UIKit
     @objc public let capabilitiesNotification: Array = ["ocs", "data", "capabilities", "notifications", "ocs-endpoints"]
 
     @objc public let capabilitiesFilesUndelete: Array = ["ocs", "data", "capabilities", "files", "undelete"]
-    @objc public let capabilitiesFilesLockVersion: Array = ["ocs", "data", "capabilities", "files", "locking"]
-    @objc public let capabilitiesFilesComments: Array = ["ocs", "data", "capabilities", "files", "comments"]                                            // NC 20
+    @objc public let capabilitiesFilesLockVersion: Array = ["ocs", "data", "capabilities", "files", "locking"] // NC 24
+    @objc public let capabilitiesFilesComments: Array = ["ocs", "data", "capabilities", "files", "comments"] // NC 20
 
     @objc public let capabilitiesHWCEnabled: Array = ["ocs", "data", "capabilities", "handwerkcloud", "enabled"]
 

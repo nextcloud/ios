@@ -884,6 +884,11 @@ class NCUtility: NSObject {
         }
         return nil
     }
+
+    func SYSTEM_VERSION_LESS_THAN(version: String) -> Bool {
+        return UIDevice.current.systemVersion.compare(version,
+         options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending
+    }
 }
 
 // MARK: -
