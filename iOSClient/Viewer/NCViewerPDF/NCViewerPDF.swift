@@ -202,8 +202,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         if UIDevice.current.userInterfaceIdiom == .phone && !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail){
 
             var preferences = EasyTipView.Preferences()
-            preferences.drawing.foregroundColor = NCBrandColor.shared.brandText
-            preferences.drawing.backgroundColor = NCBrandColor.shared.customer
+            preferences.drawing.foregroundColor = .white
+            preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
             preferences.drawing.textAlignment = .left
             preferences.drawing.arrowPosition = .right
             preferences.drawing.cornerRadius = 10
@@ -474,9 +474,16 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     func searchPdfSelection(_ pdfSelection: PDFSelection) {
 
-        pdfSelection.color = .yellow
-        pdfView.currentSelection = pdfSelection
-        pdfView.go(to: pdfSelection)
+        pdfSelection.pages.forEach { page in
+            let highlight = PDFAnnotation(bounds: pdfSelection.bounds(for: page), forType: .highlight, withProperties: nil)
+            highlight.endLineStyle = .square
+            highlight.color = .yellow
+            page.addAnnotation(highlight)
+        }
+        if let page = pdfSelection.pages.first {
+            pdfView.go(to: page)
+        }
+        handlePageChange()
     }
 
     private func selectPage(with label: String) {
