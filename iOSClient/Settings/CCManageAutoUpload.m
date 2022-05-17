@@ -132,20 +132,6 @@
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
-    // Auto Upload Background
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadBackground" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_background_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (activeAccount.autoUploadBackground) row.value = @1;
-    else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-    [section addFormRow:row];
-    
     // Auto Upload Full
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -272,36 +258,6 @@
         
         [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadDeleteAssetLocalIdentifier" state:[[rowDescriptor.value valueData] boolValue]];
     }
-    
-    if ([rowDescriptor.tag isEqualToString:@"autoUploadBackground"]) {
-        
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-                        
-            [[NCAskAuthorization shared]  askAuthorizationLocationManagerWithCompletion: ^(BOOL hasFullPermissions) {
-                
-                if (hasFullPermissions == YES) {
-                    
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                    
-                    [alertController addAction:okAction];
-                    [self presentViewController:alertController animated:YES completion:nil];
-                    
-                    [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
-                    [[NCAutoUpload shared] startSignificantChangeUpdates];
-                        
-                } else {
-                     
-                    [self reloadForm];
-                }
-            }];
-            
-        } else {
-            
-            [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
-            [[NCAutoUpload shared] stopSignificantChangeUpdates];
-        }
-    }
 
     if ([rowDescriptor.tag isEqualToString:@"autoUploadFull"]) {
         
@@ -370,8 +326,6 @@
     
     XLFormRowDescriptor *rowRemovePhotoCameraRoll = [self.form formRowWithTag:@"removePhotoCameraRoll"];
 
-    XLFormRowDescriptor *rowAutoUploadBackground = [self.form formRowWithTag:@"autoUploadBackground"];
-    
     XLFormRowDescriptor *rowAutoUploadFull = [self.form formRowWithTag:@"autoUploadFull"];
     
     XLFormRowDescriptor *rowAutoUploadCreateSubfolder = [self.form formRowWithTag:@"autoUploadCreateSubfolder"];
@@ -398,10 +352,7 @@
     
     if (activeAccount.autoUploadDeleteAssetLocalIdentifier)
            [rowRemovePhotoCameraRoll setValue:@1]; else [rowRemovePhotoCameraRoll setValue:@0];
-    
-    if (activeAccount.autoUploadBackground)
-        [rowAutoUploadBackground setValue:@1]; else [rowAutoUploadBackground setValue:@0];
-    
+
     if (activeAccount.autoUploadFull)
         [rowAutoUploadFull setValue:@1]; else [rowAutoUploadFull setValue:@0];
     
@@ -418,8 +369,6 @@
     
     rowRemovePhotoCameraRoll.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
 
-    rowAutoUploadBackground.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    
     rowAutoUploadFull.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
     rowAutoUploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
@@ -457,18 +406,14 @@
             else sectionName = @"";
             break;
         case 5:
-            if (activeAccount.autoUpload) sectionName = NSLocalizedString(@"_autoupload_description_background_", nil);
-            else sectionName = @"";
-            break;
-        case 6:
             if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_fullphotos_footer_", nil);
             else sectionName = @"";
             break;
-        case 7:
+        case 6:
             if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_create_subfolder_footer_", nil);
             else sectionName = @"";
             break;
-        case 8:
+        case 7:
             if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_filenamemask_footer_", nil);
             else sectionName = @"";
             break;
