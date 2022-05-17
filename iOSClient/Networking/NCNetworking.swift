@@ -577,7 +577,6 @@ import Queuer
         }
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else { return }
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
         let ocIdTemp = metadata.ocId
         var errorDescription = errorDescription
 
@@ -601,7 +600,7 @@ import Queuer
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             // Delete Asset on Photos album
-            if tableAccount.autoUploadDeleteAssetLocalIdentifier && metadata.assetLocalIdentifier != "" && metadata.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload {
+            if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
                 metadata.deleteAssetLocalIdentifier = true
             }
 

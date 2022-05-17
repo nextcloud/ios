@@ -38,7 +38,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var alias = ""
     @objc dynamic var autoUpload: Bool = false
     @objc dynamic var autoUploadCreateSubfolder: Bool = false
-    @objc dynamic var autoUploadDeleteAssetLocalIdentifier: Bool = false
     @objc dynamic var autoUploadDirectory = ""
     @objc dynamic var autoUploadFileName = ""
     @objc dynamic var autoUploadFull: Bool = false

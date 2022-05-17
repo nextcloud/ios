@@ -160,11 +160,9 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
              
-            
-            
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
             if (counterUpload == 0 && !self.appDelegate.isPasscodePresented()) {
-                self.deleteAssetLocalIdentifiers(account: self.appDelegate.account, sessionSelector: NCGlobal.shared.selectorUploadAutoUpload) {
+                self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
                     self.startTimer()
                 }
             } else {
@@ -173,7 +171,7 @@ class NCNetworkingProcessUpload: NSObject {
         }
     }
 
-    private func deleteAssetLocalIdentifiers(account: String, sessionSelector: String, completition: @escaping () -> Void) {
+    private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
 
         if UIApplication.shared.applicationState != .active {
             completition()
@@ -184,7 +182,7 @@ class NCNetworkingProcessUpload: NSObject {
             completition()
             return
         }
-        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
+        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
         if localIdentifiers.isEmpty {
             completition()
             return

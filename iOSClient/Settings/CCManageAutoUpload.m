@@ -118,20 +118,6 @@
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
-    // Delete asset
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removePhotoCameraRoll" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_remove_photo_CameraRoll_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    if (activeAccount.autoUploadDeleteAssetLocalIdentifier) row.value = @1;
-    else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-    [section addFormRow:row];
-    
     // Auto Upload Full
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -253,11 +239,6 @@
         
         [self reloadForm];
     }
-    
-    if ([rowDescriptor.tag isEqualToString:@"removePhotoCameraRoll"]) {
-        
-        [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadDeleteAssetLocalIdentifier" state:[[rowDescriptor.value valueData] boolValue]];
-    }
 
     if ([rowDescriptor.tag isEqualToString:@"autoUploadFull"]) {
         
@@ -323,8 +304,6 @@
     
     XLFormRowDescriptor *rowAutoUploadVideo = [self.form formRowWithTag:@"autoUploadVideo"];
     XLFormRowDescriptor *rowAutoUploadWWAnVideo = [self.form formRowWithTag:@"autoUploadWWAnVideo"];
-    
-    XLFormRowDescriptor *rowRemovePhotoCameraRoll = [self.form formRowWithTag:@"removePhotoCameraRoll"];
 
     XLFormRowDescriptor *rowAutoUploadFull = [self.form formRowWithTag:@"autoUploadFull"];
     
@@ -349,9 +328,6 @@
     
     if (activeAccount.autoUploadWWAnVideo)
         [rowAutoUploadWWAnVideo setValue:@1]; else [rowAutoUploadWWAnVideo setValue:@0];
-    
-    if (activeAccount.autoUploadDeleteAssetLocalIdentifier)
-           [rowRemovePhotoCameraRoll setValue:@1]; else [rowRemovePhotoCameraRoll setValue:@0];
 
     if (activeAccount.autoUploadFull)
         [rowAutoUploadFull setValue:@1]; else [rowAutoUploadFull setValue:@0];
@@ -366,8 +342,6 @@
     
     rowAutoUploadVideo.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     rowAutoUploadWWAnVideo.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    
-    rowRemovePhotoCameraRoll.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
 
     rowAutoUploadFull.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
@@ -402,18 +376,14 @@
             else sectionName = @"";
             break;
         case 4:
-            if (activeAccount.autoUpload) sectionName = NSLocalizedString(@"_remove_photo_CameraRoll_desc_", nil);
-            else sectionName = @"";
-            break;
-        case 5:
             if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_fullphotos_footer_", nil);
             else sectionName = @"";
             break;
-        case 6:
+        case 5:
             if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_create_subfolder_footer_", nil);
             else sectionName = @"";
             break;
-        case 7:
+        case 6:
             if (activeAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_filenamemask_footer_", nil);
             else sectionName = @"";
             break;
