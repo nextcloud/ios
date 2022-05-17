@@ -474,6 +474,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     func searchPdfSelection(_ pdfSelection: PDFSelection) {
 
+        removeAllAnnotations()
+        
         pdfSelection.pages.forEach { page in
             let highlight = PDFAnnotation(bounds: pdfSelection.bounds(for: page), forType: .highlight, withProperties: nil)
             highlight.endLineStyle = .square
@@ -490,20 +492,33 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         guard let pdf = pdfView.document else { return }
 
-         if let pageNr = Int(label) {
-             if pageNr > 0 && pageNr <= pdf.pageCount {
-                 if let page = pdf.page(at: pageNr - 1) {
-                     self.pdfView.go(to: page)
-                 }
-             } else {
-                 let alertController = UIAlertController(title: NSLocalizedString("_invalid_page_", comment: ""),
-                                                         message: NSLocalizedString("_the_entered_page_number_doesn't_exist_", comment: ""),
-                                                         preferredStyle: .alert)
-                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
-                 self.present(alertController, animated: true, completion: nil)
-             }
-         }
-     }
+        if let pageNr = Int(label) {
+            if pageNr > 0 && pageNr <= pdf.pageCount {
+                if let page = pdf.page(at: pageNr - 1) {
+                    self.pdfView.go(to: page)
+                }
+            } else {
+                let alertController = UIAlertController(title: NSLocalizedString("_invalid_page_", comment: ""),
+                                                        message: NSLocalizedString("_the_entered_page_number_doesn't_exist_", comment: ""),
+                                                        preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
+                self.present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+
+    func removeAllAnnotations() {
+        guard let document = pdfDocument else { return }
+
+        for i in 0..<document.pageCount {
+            if let page = document.page(at: i) {
+                let annotations = page.annotations
+                for annotation in annotations {
+                    page.removeAnnotation(annotation)
+                }
+            }
+        }
+    }
 }
 
 extension NCViewerPDF: UIGestureRecognizerDelegate {
