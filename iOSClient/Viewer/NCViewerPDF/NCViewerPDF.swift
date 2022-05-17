@@ -475,7 +475,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     func searchPdfSelection(_ pdfSelection: PDFSelection) {
 
         removeAllAnnotations()
-        
+
         pdfSelection.pages.forEach { page in
             let highlight = PDFAnnotation(bounds: pdfSelection.bounds(for: page), forType: .highlight, withProperties: nil)
             highlight.endLineStyle = .square
@@ -508,6 +508,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     func removeAllAnnotations() {
+        
         guard let document = pdfDocument else { return }
 
         for i in 0..<document.pageCount {
