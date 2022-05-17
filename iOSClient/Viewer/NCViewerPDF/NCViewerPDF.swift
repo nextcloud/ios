@@ -508,7 +508,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     func removeAllAnnotations() {
-        
+
         guard let document = pdfDocument else { return }
 
         for i in 0..<document.pageCount {
