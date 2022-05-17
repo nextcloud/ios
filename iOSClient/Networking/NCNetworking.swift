@@ -448,7 +448,7 @@ import Queuer
         
         let metadata = tableMetadata.init(value: metadata)
 
-        if CCUtility.fileProviderStorageExists(metadata) {
+        if metadata.assetLocalIdentifier.isEmpty {
 
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)

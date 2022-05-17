@@ -169,7 +169,6 @@ class NCAutoUpload: NSObject {
                         metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                         metadataForUpload.session = session
                         metadataForUpload.sessionSelector = selector
-                        metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
                         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                         if assetMediaType == PHAssetMediaType.video {
                             metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
