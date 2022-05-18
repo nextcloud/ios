@@ -413,10 +413,22 @@ import Queuer
     @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
         
         func uploadMetadata(_ metadata: tableMetadata) {
-            
+
+            // DETECT IF CHUNCK
+            let chunckSize = CCUtility.getChunkSize() * 1000000
+            if metadata.size > chunckSize {
+                metadata.chunk = true
+                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+            }
+
+            // DETECT IF E2EE
+            if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                metadata.e2eEncrypted = true
+            }
+
             NCManageDatabase.shared.addMetadata(metadata)
             let metadata = tableMetadata.init(value: metadata)
-            
+
             if metadata.e2eEncrypted {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { errorCode, errorDescription in
@@ -448,7 +460,7 @@ import Queuer
         
         let metadata = tableMetadata.init(value: metadata)
 
-        if CCUtility.fileProviderStorageExists(metadata) {
+        if metadata.assetLocalIdentifier.isEmpty {
 
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
@@ -467,7 +479,7 @@ import Queuer
 
         } else {
 
-            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, notification: true) { extractMetadata, fileNamePath in
+            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata) { extractMetadata, fileNamePath in
 
                 guard let metadata = extractMetadata else {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -577,7 +589,6 @@ import Queuer
         }
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else { return }
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
         let ocIdTemp = metadata.ocId
         var errorDescription = errorDescription
 
@@ -601,7 +612,7 @@ import Queuer
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             // Delete Asset on Photos album
-            if tableAccount.autoUploadDeleteAssetLocalIdentifier && metadata.assetLocalIdentifier != "" && metadata.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload {
+            if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
                 metadata.deleteAssetLocalIdentifier = true
             }
 

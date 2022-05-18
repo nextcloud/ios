@@ -32,20 +32,6 @@ class NCUtilityFileSystem: NSObject {
 
     let fileManager = FileManager.default
 
-    @objc func getFileSize(asset: PHAsset) -> Int64 {
-
-        let resources = PHAssetResource.assetResources(for: asset)
-
-        if let resource = resources.first {
-            if resource.responds(to: #selector(NSDictionary.fileSize)) {
-                let unsignedInt64 = resource.value(forKey: "fileSize") as! CLong
-                return Int64(bitPattern: UInt64(unsignedInt64))
-            }
-        }
-
-        return 0
-    }
-
     @objc func getFileSize(filePath: String) -> Int64 {
 
         do {

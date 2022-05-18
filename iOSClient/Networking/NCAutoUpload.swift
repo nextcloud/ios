@@ -25,75 +25,14 @@ import UIKit
 import CoreLocation
 import NCCommunication
 
-class NCAutoUpload: NSObject, CLLocationManagerDelegate {
+class NCAutoUpload: NSObject {
     @objc static let shared: NCAutoUpload = {
         let instance = NCAutoUpload()
         return instance
     }()
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    public var locationManager: CLLocationManager?
     private var endForAssetToUpload: Bool = false
-
-    // MARK: -
-
-    @objc func startSignificantChangeUpdates() {
-
-        if locationManager == nil {
-
-            locationManager = CLLocationManager()
-            locationManager?.delegate = self
-            locationManager?.distanceFilter = 10
-        }
-
-        locationManager?.requestAlwaysAuthorization()
-        locationManager?.startMonitoringSignificantLocationChanges()
-    }
-
-    @objc func stopSignificantChangeUpdates() {
-
-        locationManager?.stopMonitoringSignificantLocationChanges()
-    }
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-
-        let location = locations.last
-        guard let latitude = location?.coordinate.latitude else { return }
-        guard let longitude = location?.coordinate.longitude else { return }
-
-        NCCommunicationCommon.shared.writeLog("Location manager: latitude \(latitude) longitude \(longitude)")
-
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            if activeAccount.autoUpload && activeAccount.autoUploadBackground && UIApplication.shared.applicationState == UIApplication.State.background {
-                NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: nil) { hasPermission in
-                    if hasPermission {
-                        self.uploadAssetsNewAndFull(viewController: nil, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Change location") { items in
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
-                            if items > 0 {
-                                self.appDelegate.networkingProcessUpload?.startProcess()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedAlways {
-            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
-            self.stopSignificantChangeUpdates()
-        }
-    }
-
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        NCAskAuthorization.shared.askAuthorizationLocationManager { hasFullPermissions in
-            if !hasFullPermissions {
-                NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
-                self.stopSignificantChangeUpdates()
-            }
-        }
-    }
 
     // MARK: -
 
@@ -108,19 +47,9 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                             }
                             completion(items)
                         }
-                        if activeAccount.autoUploadBackground {
-                            NCAskAuthorization.shared.askAuthorizationLocationManager { hasFullPermissions in
-                                if hasFullPermissions {
-                                    self.startSignificantChangeUpdates()
-                                } else {
-                                    NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadBackground", state: false)
-                                    self.stopSignificantChangeUpdates()
-                                }
-                            }
-                        }
+
                     } else {
                         NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
-                        self.stopSignificantChangeUpdates()
                         completion(0)
                     }
                 }
@@ -128,7 +57,6 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                 completion(0)
             }
         } else {
-            stopSignificantChangeUpdates()
             completion(0)
         }
     }
@@ -241,7 +169,6 @@ class NCAutoUpload: NSObject, CLLocationManagerDelegate {
                         metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                         metadataForUpload.session = session
                         metadataForUpload.sessionSelector = selector
-                        metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
                         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                         if assetMediaType == PHAssetMediaType.video {
                             metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue

@@ -107,33 +107,4 @@ class NCAskAuthorization: NSObject {
             break
         }
     }
-
-    @objc func askAuthorizationLocationManager(completion: @escaping (_ hasFullPermissions: Bool) -> Void) {
-
-        switch CLLocationManager.authorizationStatus() {
-        case CLAuthorizationStatus.authorizedAlways:
-            completion(true)
-            break
-        /*
-        case CLAuthorizationStatus.authorizedWhenInUse, CLAuthorizationStatus.denied, CLAuthorizationStatus.restricted:
-            DispatchQueue.main.async {
-                NCAutoUpload.shared.startSignificantChangeUpdates()
-            }
-            completion(false)
-            break
-        case CLAuthorizationStatus.notDetermined:
-            DispatchQueue.main.async {
-                NCAutoUpload.shared.startSignificantChangeUpdates()
-            }
-            completion(false)
-            break
-        */
-        default:
-            DispatchQueue.main.async {
-                NCAutoUpload.shared.startSignificantChangeUpdates()
-            }
-            completion(false)
-            break
-        }
-    }
 }

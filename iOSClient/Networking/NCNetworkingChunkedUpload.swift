@@ -149,6 +149,7 @@ extension NCNetworking {
                         if errorCode == 0 {
 
                             let serverUrl = metadata.serverUrl
+                            let assetLocalIdentifier = metadata.assetLocalIdentifier
 
                             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
@@ -158,6 +159,11 @@ extension NCNetworking {
 
                                 if errorCode == 0, let metadata = metadata {
 
+                                    metadata.assetLocalIdentifier = assetLocalIdentifier
+                                    // Delete Asset on Photos album
+                                    if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
+                                        metadata.deleteAssetLocalIdentifier = true
+                                    }
                                     NCManageDatabase.shared.addMetadata(metadata)
                                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
 
