@@ -416,7 +416,7 @@ import Queuer
 
             // DETECT IF CHUNCK
             let chunckSize = CCUtility.getChunkSize() * 1000000
-            if metadata.size > chunckSize {
+            if chunckSize > 0 && metadata.size > chunckSize {
                 metadata.chunk = true
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
             }
