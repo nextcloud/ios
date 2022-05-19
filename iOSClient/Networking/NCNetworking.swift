@@ -416,7 +416,7 @@ import Queuer
 
             // DETECT IF CHUNCK
             let chunckSize = CCUtility.getChunkSize() * 1000000
-            if metadata.size > chunckSize {
+            if chunckSize > 0 && metadata.size > chunckSize {
                 metadata.chunk = true
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
             }
@@ -428,6 +428,8 @@ import Queuer
 
             NCManageDatabase.shared.addMetadata(metadata)
             let metadata = tableMetadata.init(value: metadata)
+
+            NCCommunicationCommon.shared.writeLog("Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.e2eEncrypted)]")
 
             if metadata.e2eEncrypted {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION
