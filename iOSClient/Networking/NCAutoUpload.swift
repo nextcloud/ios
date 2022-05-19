@@ -177,7 +177,7 @@ class NCAutoUpload: NSObject {
                         }
 
                         if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                            NCCommunicationCommon.shared.writeLog("Automatic upload added \(metadataForUpload.fileNameView) (\(metadataForUpload.size) bytes) with Identifier \(metadataForUpload.assetLocalIdentifier)")
+                            NCCommunicationCommon.shared.writeLog("Automatic upload added \(metadataForUpload.fileNameView) with Identifier \(metadataForUpload.assetLocalIdentifier)")
                             self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload], verifyAlreadyExists: true)
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         } else if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
@@ -203,7 +203,7 @@ class NCAutoUpload: NSObject {
                                     metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
 
                                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                                        NCCommunicationCommon.shared.writeLog("Automatic upload added Live Photo \(metadataForUpload.fileNameView) (\(metadataForUpload.size) bytes) with Identifier \(metadataForUpload.assetLocalIdentifier)")
+                                        NCCommunicationCommon.shared.writeLog("Automatic upload added Live Photo \(metadataForUpload.fileNameView) with Identifier \(metadataForUpload.assetLocalIdentifier)")
                                         self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload], verifyAlreadyExists: true)
 
                                     } else if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
