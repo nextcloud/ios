@@ -30,8 +30,9 @@ import NCCommunication
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
 
-    @IBOutlet fileprivate weak var collectionView: UICollectionView!
-    @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
+    @IBOutlet private var collectionView: UICollectionView!
+    @IBOutlet private var buttonCancel: UIBarButtonItem!
+    @IBOutlet private var bottomContraint: NSLayoutConstraint?
 
     private var selectCommandViewSelect: NCSelectCommandView?
 
@@ -79,7 +80,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
-    private let footerHeight: CGFloat = 100
+    private let footerHeight: CGFloat = 50
 
     private var shares: [tableShare]?
 
@@ -116,6 +117,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 
+        bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
+
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerHeight, delegate: self)
 
@@ -134,6 +137,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 80).isActive = true
+
+            bottomContraint?.constant = 80
         }
 
         if typeOfCommandView == .copyMove {
@@ -149,6 +154,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 150).isActive = true
+
+            bottomContraint?.constant = 150
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
