@@ -40,20 +40,23 @@ extension NCViewer {
 
         //
         // FAVORITE
-        //
-        actions.append(
-            NCMenuAction(
-                title: titleFavorite,
-                icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
-                action: { _ in
-                    NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-                        if errorCode != 0 {
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        // Workaround: PROPPATCH doesn't work
+        // https://github.com/nextcloud/files_lock/issues/68
+        if !metadata.lock {
+            actions.append(
+                NCMenuAction(
+                    title: titleFavorite,
+                    icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    action: { _ in
+                        NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
+                            if errorCode != 0 {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
                         }
                     }
-                }
+                )
             )
-        )
+        }
 
         //
         // DETAIL
@@ -102,7 +105,7 @@ extension NCViewer {
         //
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
-        #if MFFFLIB
+#if MFFFLIB
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
             
             actions.append(
@@ -117,7 +120,7 @@ extension NCViewer {
                 )
             )
         }
-        #endif
+#endif
         
         //
         // SAVE IMAGE / VIDEO
@@ -146,7 +149,7 @@ extension NCViewer {
         //
         // RENAME
         //
-        if !webView {
+        if !webView, !metadata.lock {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -222,31 +225,6 @@ extension NCViewer {
                     icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.gray, size: 50),
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuSearchTextPDF)
-                    }
-                )
-            )
-
-            var title = ""
-            var icon = UIImage()
-
-            if CCUtility.getPDFDisplayDirection() == .horizontal {
-                title = NSLocalizedString("_pdf_vertical_", comment: "")
-                icon = UIImage(named: "pdf-vertical")!.image(color: NCBrandColor.shared.gray, size: 50)
-            } else {
-                title = NSLocalizedString("_pdf_horizontal_", comment: "")
-                icon = UIImage(named: "pdf-horizontal")!.image(color: NCBrandColor.shared.gray, size: 50)
-            }
-
-            actions.append(
-                NCMenuAction(
-                    title: title,
-                    icon: icon,
-                    action: { _ in
-                        if CCUtility.getPDFDisplayDirection() == .horizontal {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuPDFDisplayDirection, userInfo: ["direction": PDFDisplayDirection.vertical])
-                        } else {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuPDFDisplayDirection, userInfo: ["direction": PDFDisplayDirection.horizontal])
-                        }
                     }
                 )
             )

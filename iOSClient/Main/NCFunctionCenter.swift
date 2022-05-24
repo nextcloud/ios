@@ -77,11 +77,8 @@ import SVGKit
                 editingMode = true
             }
 
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: editingMode, metadata: metadata)
-            let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-            navigationController.modalPresentationStyle = .overFullScreen
-
-            self.appDelegate.window?.rootViewController?.present(navigationController, animated: true)
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: editingMode, metadata: metadata)
+            self.appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
 
         case NCGlobal.shared.selectorLoadFileView:
             guard UIApplication.shared.applicationState == UIApplication.State.active else { break }
@@ -309,27 +306,18 @@ import SVGKit
     func saveAlbum(metadata: tableMetadata) {
 
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let status = PHPhotoLibrary.authorizationStatus()
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && status == PHAuthorizationStatus.authorized {
-
-            if let image = UIImage(contentsOfFile: fileNamePath) {
-                UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.mainTabBar?.window?.rootViewController) { hasPermission in
+            guard hasPermission else {
+                return NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
+            }
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let image = UIImage(contentsOfFile: fileNamePath) {
+                UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
+                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
             } else {
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
             }
-
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && status == PHAuthorizationStatus.authorized {
-
-            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
-                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-            } else {
-                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
-            }
-
-        } else if status != PHAuthorizationStatus.authorized {
-
-            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
         }
     }
 
@@ -547,19 +535,19 @@ import SVGKit
         }
     }
 
-    func openSelectView(items: [Any]) {
+    func openSelectView(items: [tableMetadata]) {
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let topViewController = navigationController.topViewController as! NCSelect
         var listViewController = [NCSelect]()
 
-        var copyItems: [Any] = []
+        var copyItems: [tableMetadata] = []
         for item in items {
             copyItems.append(item)
         }
 
         let homeUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
-        var serverUrl = (copyItems[0] as! Nextcloud.tableMetadata).serverUrl
+        var serverUrl = copyItems[0].serverUrl
 
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
         while true {
@@ -628,7 +616,8 @@ import SVGKit
             }
         }
         let titleOffline = isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: "")
-
+        let titleLock = metadata.lock ? NSLocalizedString("_unlock_file_", comment: "") :  NSLocalizedString("_lock_file_", comment: "")
+        let iconLock = metadata.lock ? "lock.open" : "lock"
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
             self.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
@@ -649,7 +638,10 @@ import SVGKit
                 viewController.reloadDataSource()
             }
         }
-
+        
+        let lockUnlock = UIAction(title: titleLock, image: UIImage(systemName: iconLock)) { _ in
+            NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !metadata.lock)
+        }
         let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { _ in
             if metadataMOV != nil {
                 self.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
@@ -745,15 +737,29 @@ import SVGKit
 
         // DIR
 
-        if metadata.directory {
-
+        guard !metadata.directory else {
             let submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath, delete])
+            guard appDelegate.disableSharesView == false else { return submenu }
             return UIMenu(title: "", children: [detail, submenu])
         }
 
         // FILE
 
-        var children: [UIMenuElement] = [favorite, offline, openIn, rename, moveCopy, copy, copyPath, delete]
+        var children: [UIMenuElement] = [offline, openIn, moveCopy, copy, copyPath]
+        
+        if !metadata.lock {
+            // Workaround: PROPPATCH doesn't work (favorite)
+            // https://github.com/nextcloud/files_lock/issues/68
+            children.insert(favorite, at: 0)
+            children.append(delete)
+            children.insert(rename, at: 3)
+        } else if enableDeleteLocal {
+            children.append(deleteConfirmLocal)
+        }
+
+        if NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1, metadata.canUnlock(as: appDelegate.userId) {
+            children.insert(lockUnlock, at: metadata.lock ? 0 : 1)
+        }
 
         if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
             children.insert(save, at: 2)
@@ -768,22 +774,23 @@ import SVGKit
         }
 
         if enableViewInFolder {
-            children.insert(viewInFolder, at: children.count-1)
+            children.insert(viewInFolder, at: children.count - 1)
         }
 
         if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
-            children.insert(modify, at: children.count-1)
+            children.insert(modify, at: children.count - 1)
         }
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
             let viewController: NCCollectionViewCommon = viewController as! NCCollectionViewCommon
             let layoutKey = viewController.layoutKey
             if layoutKey == NCGlobal.shared.layoutViewFiles {
-                children.insert(saveBackground, at: children.count-1)
+                children.insert(saveBackground, at: children.count - 1)
             }
         }
 
         let submenu = UIMenu(title: "", options: .displayInline, children: children)
+        guard appDelegate.disableSharesView == false else { return submenu }
         return UIMenu(title: "", children: [detail, submenu])
     }
 }

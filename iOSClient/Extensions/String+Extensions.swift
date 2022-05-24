@@ -26,6 +26,11 @@ import UIKit
 import CommonCrypto
 
 extension String {
+
+    var alphanumeric: String {
+        return self.components(separatedBy: CharacterSet.alphanumerics.inverted).joined().lowercased()
+    }
+
     public var uppercaseInitials: String? {
         let initials = self.components(separatedBy: .whitespaces)
             .reduce("", {
@@ -49,7 +54,7 @@ extension String {
         //https://stackoverflow.com/a/32166735/9506784
 
         let length = Int(CC_MD5_DIGEST_LENGTH)
-        let messageData = self.data(using: .utf8)!
+        let messageData = self.data(using: .utf8) ?? Data()
         var digestData = Data(count: length)
 
         _ = digestData.withUnsafeMutableBytes { digestBytes -> UInt8 in

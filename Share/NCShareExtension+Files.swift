@@ -47,22 +47,15 @@ extension NCShareExtension {
         collectionView.reloadData()
     }
 
-    func createFolder(with fileName: String) {
+    @objc func didCreateFolder(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { errorCode, errorDescription in
-
-            DispatchQueue.main.async {
-                if errorCode == 0 {
-
-                    self.serverUrl += "/" + fileName
-                    self.reloadDatasource(withLoadFolder: true)
-                    self.setNavigationBar(navigationTitle: fileName)
-
-                } else {
-                    self.showAlert(title: "_error_createsubfolders_upload_", description: errorDescription)
-                }
-            }
-        }
+        self.serverUrl += "/" + metadata.fileName
+        self.reloadDatasource(withLoadFolder: true)
+        self.setNavigationBar(navigationTitle: metadata.fileName)
     }
 
     func loadFolder() {

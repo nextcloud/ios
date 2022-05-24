@@ -64,6 +64,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var homeImage: UIImageView!
     @IBOutlet weak var homeServer: UILabel!
 
+    @IBOutlet weak var imageLockFile: UIImageView!
+    @IBOutlet weak var statusLockFile: UILabel!
+
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
     private var account: String = ""
@@ -139,6 +142,11 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusComments.layer.borderColor = UIColor.gray.cgColor
         statusComments.layer.masksToBounds = true
 
+        statusLockFile.layer.cornerRadius = 12.5
+        statusLockFile.layer.borderWidth = 0.5
+        statusLockFile.layer.borderColor = UIColor.gray.cgColor
+        statusLockFile.layer.masksToBounds = true
+
         imageFileSharing.image = UIImage(named: "share")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageExternalSite.image = NCUtility.shared.loadImage(named: "network", color: NCBrandColor.shared.gray)
         imageEndToEndEncryption.image = NCUtility.shared.loadImage(named: "lock", color: NCBrandColor.shared.gray)
@@ -150,6 +158,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imageOnlyOffice.image = UIImage(named: "onlyoffice")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageUserStatus.image = UIImage(named: "userStatusAway")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageComments.image = UIImage(named: "comments")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageLockFile.image = UIImage(named: "lock")!.image(color: NCBrandColor.shared.gray, size: 50)
 
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
         self.account = activeAccount.account
@@ -313,6 +322,13 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             statusComments.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusComments.text = NSLocalizedString("_not_available_", comment: "")
+        }
+
+        let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
+        if hasLockCapability {
+            statusLockFile.text = "✓ " + NSLocalizedString("_available_", comment: "")
+        } else {
+            statusLockFile.text = NSLocalizedString("_not_available_", comment: "")
         }
 
         print("end.")

@@ -415,7 +415,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                 metadataForUpload.session = self.session
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
                 if livePhoto {

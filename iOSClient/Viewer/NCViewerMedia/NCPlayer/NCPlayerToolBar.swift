@@ -30,8 +30,10 @@ import MediaPlayer
 
 class NCPlayerToolBar: UIView {
 
-    @IBOutlet weak var playerTopToolBarView: UIView!
+    @IBOutlet weak var playerTopToolBarView: UIStackView!
+    @IBOutlet weak var playerToolBarView: UIView!
     @IBOutlet weak var pipButton: UIButton!
+    @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
@@ -39,18 +41,31 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
-   
+
     enum sliderEventType {
         case began
         case ended
         case moved
     }
 
-    private var ncplayer: NCPlayer?
+    var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
+
+    private var timerAutoHideSeconds: Double {
+        get {
+            if NCUtility.shared.isSimulator() { // for test
+                return 15
+            } else {
+                return 3.5
+            }
+        }
+    }
+
+
+// NCUtility.shared.isSimulatorOrTestFlight()
 
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
@@ -60,33 +75,31 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        // for disable gesture of UIPageViewController
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: nil)
-        addGestureRecognizer(panRecognizer)
-        let singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
-        addGestureRecognizer(singleTapGestureRecognizer)
-
-        self.layer.cornerRadius = 15
-        self.layer.masksToBounds = true
-
         let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         blurEffectView.frame = self.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        self.insertSubview(blurEffectView, at: 0)
-
+        playerToolBarView.insertSubview(blurEffectView, at: 0)
         playerTopToolBarView.layer.cornerRadius = 10
         playerTopToolBarView.layer.masksToBounds = true
+        playerTopToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapTopToolBarWith(gestureRecognizer:))))
 
         let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
         blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
+        playerToolBarView.layer.cornerRadius = 10
+        playerToolBarView.layer.masksToBounds = true
+        playerToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToolBarWith(gestureRecognizer:))))
 
         pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .lightGray), for: .normal)
         pipButton.isEnabled = false
 
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
         muteButton.isEnabled = false
+
+        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
+        subtitleButton.isEnabled = true
+        subtitleButton.isHidden = true
 
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
@@ -100,9 +113,17 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = NCUtility.shared.stringFromTime(.zero)
         labelLeftTime.textColor = .lightGray
 
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
-        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray), for: .normal)
+
+        if #available(iOS 13.0, *) {
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+        } else {
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, size: 30), for: .normal)
+        }
         playButton.isEnabled = false
+
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
 
         NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
@@ -121,12 +142,12 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: -
-    
+
     func setMetadata(_ metadata: tableMetadata) {
-        
+
         self.metadata = metadata
     }
-    
+
     func setBarPlayer(ncplayer: NCPlayer) {
 
         self.ncplayer = ncplayer
@@ -143,7 +164,7 @@ class NCPlayerToolBar: UIView {
     }
 
     public func updateToolBar() {
-        
+
         guard let ncplayer = self.ncplayer else { return }
 
         // MUTE
@@ -209,7 +230,7 @@ class NCPlayerToolBar: UIView {
     // MARK: Handle Notifications
 
     @objc func handleRouteChange(notification: Notification) {
-        
+
         guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
 
         switch reason {
@@ -265,25 +286,23 @@ class NCPlayerToolBar: UIView {
         guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto else { return }
         if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
 
-        #if MFFFLIB
+#if MFFFLIB
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
             self.hide()
             return
         }
-        #endif
-        
+#endif
+
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
             startTimerAutoHide()
         }
         if !self.isHidden { return }
-        
+
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
-            self.playerTopToolBarView.alpha = 1
         }, completion: { (_: Bool) in
             self.isHidden = false
-            self.playerTopToolBarView.isHidden = false
         })
 
         updateToolBar()
@@ -298,10 +317,8 @@ class NCPlayerToolBar: UIView {
 
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
-            self.playerTopToolBarView.alpha = 0
         }, completion: { (_: Bool) in
             self.isHidden = true
-            self.playerTopToolBarView.isHidden = true
         })
     }
 
@@ -315,7 +332,7 @@ class NCPlayerToolBar: UIView {
     private func startTimerAutoHide() {
 
         timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: 3.5, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
+        timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
     }
 
     private func reStartTimerAutoHide() {
@@ -369,7 +386,7 @@ class NCPlayerToolBar: UIView {
 
         timerAutoHide?.invalidate()
     }
-    
+
     // MARK: - Event / Gesture
 
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
@@ -403,19 +420,11 @@ class NCPlayerToolBar: UIView {
 
     // MARK: - Action
 
-    @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-        // nothing
-    }
+    @objc func tapTopToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
 
-    @IBAction func buttonPlayerToolBarTouchInside(_ sender: UIButton) {
-        // nothing
-    }
+    @objc func tapToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
 
-    @IBAction func buttonPlayerTopToolBarTouchInside(_ sender: UIButton) {
-        // nothing
-    }
-
-    @IBAction func playerPause(_ sender: Any) {
+    @IBAction func tapPlayerPause(_ sender: Any) {
 
         if ncplayer?.player?.timeControlStatus == .playing {
             ncplayer?.playerPause()
@@ -429,6 +438,7 @@ class NCPlayerToolBar: UIView {
             if let reason = ncplayer?.player?.reasonForWaitingToPlay {
                 switch reason {
                 case .evaluatingBufferingRate:
+                    self.ncplayer?.player?.playImmediately(atRate: 1)
                     print("reasonForWaitingToPlay.evaluatingBufferingRate")
                 case .toMinimizeStalls:
                     print("reasonForWaitingToPlay.toMinimizeStalls")
@@ -441,7 +451,7 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    @IBAction func setMute(_ sender: Any) {
+    @IBAction func tapMute(_ sender: Any) {
 
         let mute = CCUtility.getAudioMute()
 
@@ -451,7 +461,7 @@ class NCPlayerToolBar: UIView {
         reStartTimerAutoHide()
     }
 
-    @IBAction func setPip(_ sender: Any) {
+    @IBAction func tapPip(_ sender: Any) {
 
         guard let videoLayer = ncplayer?.videoLayer else { return }
 
@@ -472,32 +482,36 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    @IBAction func forwardButtonSec(_ sender: Any) {
+    @IBAction func tapForward(_ sender: Any) {
 
         skip(seconds: 10)
 
         /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            skip(seconds: 10)
-        } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            forward()
-        }
-        */
+         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+         skip(seconds: 10)
+         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+         forward()
+         }
+         */
     }
 
-    @IBAction func backButtonSec(_ sender: Any) {
+    @IBAction func tapBack(_ sender: Any) {
 
         skip(seconds: -10)
 
         /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            skip(seconds: -10)
-        } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-            backward()
-        }
-        */
+         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+         skip(seconds: -10)
+         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+         backward()
+         }
+         */
     }
-    
+
+    @IBAction func tapSubtitle(_ sender: Any) {
+        self.ncplayer?.showAlertSubtitles()
+    }
+
     func forward() {
 
         var index: Int = 0

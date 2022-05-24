@@ -73,6 +73,8 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     override func awakeFromNib() {
         super.awakeFromNib()
 
+        isAccessibilityElement = true
+
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
@@ -120,6 +122,13 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image
+        self.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString("_cancel_", comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore))
+        ]
+
     }
 }
 

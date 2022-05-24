@@ -37,9 +37,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var address = ""
     @objc dynamic var alias = ""
     @objc dynamic var autoUpload: Bool = false
-    @objc dynamic var autoUploadBackground: Bool = false
     @objc dynamic var autoUploadCreateSubfolder: Bool = false
-    @objc dynamic var autoUploadDeleteAssetLocalIdentifier: Bool = false
     @objc dynamic var autoUploadDirectory = ""
     @objc dynamic var autoUploadFileName = ""
     @objc dynamic var autoUploadFull: Bool = false
@@ -384,6 +382,13 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
+    @objc public var lock = false
+    @objc public var lockOwner = ""
+    @objc public var lockOwnerEditor = ""
+    @objc public var lockOwnerType = 0
+    @objc public var lockOwnerDisplayName = ""
+    @objc public var lockTime: Date?
+    @objc public var lockTimeOut: Date?
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var quotaUsedBytes: Int64 = 0
@@ -419,6 +424,11 @@ extension tableMetadata {
 
     var isPrintable: Bool {
         classFile == NCCommunicationCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+    }
+
+    /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
+    func canUnlock(as user: String) -> Bool {
+        return !lock || (lockOwner == user && lockOwnerType == 0)
     }
 }
 
@@ -493,6 +503,11 @@ class tableTag: Object {
     }
 }
 
+class tableTip: Object {
+
+    @Persisted(primaryKey: true) var tipName = ""
+}
+
 class tableTrash: Object {
 
     @objc dynamic var account = ""
@@ -539,7 +554,6 @@ class tableVideo: Object {
     @objc dynamic var codecNameAudio: String?
     @objc dynamic var codecAudioChannelLayout: String?
     @objc dynamic var codecAudioLanguage: String?
-    @objc dynamic var codecSubtitleLanguage: String?
     @objc dynamic var codecMaxCompatibility: Bool = false
     @objc dynamic var codecQuality: String?
 

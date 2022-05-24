@@ -30,8 +30,9 @@ import NCCommunication
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
 
-    @IBOutlet fileprivate weak var collectionView: UICollectionView!
-    @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
+    @IBOutlet private var collectionView: UICollectionView!
+    @IBOutlet private var buttonCancel: UIBarButtonItem!
+    @IBOutlet private var bottomContraint: NSLayoutConstraint?
 
     private var selectCommandViewSelect: NCSelectCommandView?
 
@@ -49,7 +50,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @objc var includeImages = false
     @objc var enableSelectFile = false
     @objc var type = ""
-    @objc var items: [Any] = []
+    @objc var items: [tableMetadata] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -79,7 +80,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
-    private let footerHeight: CGFloat = 100
+    private let footerHeight: CGFloat = 50
 
     private var shares: [tableShare]?
 
@@ -116,6 +117,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 
+        bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
+
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerHeight, delegate: self)
 
@@ -134,6 +137,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 80).isActive = true
+
+            bottomContraint?.constant = 80
         }
 
         if typeOfCommandView == .copyMove {
@@ -141,11 +146,16 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             self.view.addSubview(selectCommandViewSelect!)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
-
+            if items.contains(where: { $0.lock }) {
+                selectCommandViewSelect?.moveButton?.isEnabled = false
+                selectCommandViewSelect?.moveButton?.titleLabel?.isEnabled = false
+            }
             selectCommandViewSelect?.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
             selectCommandViewSelect?.heightAnchor.constraint(equalToConstant: 150).isActive = true
+
+            bottomContraint?.constant = 150
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
@@ -255,26 +265,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-
-        let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: "", preferredStyle: .alert)
-
-        alertController.addTextField { textField in
-            textField.autocapitalizationType = UITextAutocapitalizationType.words
-        }
-
-        let actionSave = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default) { (_: UIAlertAction) in
-            if let fileName = alertController.textFields?.first?.text {
-                self.createFolder(with: fileName)
-            }
-        }
-
-        let actionCancel = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
-            print("You've pressed cancel button")
-        }
-
-        alertController.addAction(actionSave)
-        alertController.addAction(actionCancel)
-
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount)
         self.present(alertController, animated: true, completion: nil)
     }
 
@@ -707,16 +698,6 @@ extension NCSelect {
 
         DispatchQueue.main.async {
             self.collectionView.reloadData()
-        }
-    }
-
-    func createFolder(with fileName: String) {
-
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase) { errorCode, errorDescription in
-
-            if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            }
         }
     }
 

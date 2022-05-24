@@ -54,11 +54,11 @@
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
-    // Format Compatibility + Live Photo
+    // Format Compatibility + Live Photo + Delete asset
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
-    section.footerTitle = [NSString stringWithFormat:@"%@\n%@", NSLocalizedString(@"_format_compatibility_footer_", nil), NSLocalizedString(@"_upload_mov_livephoto_footer_", nil)];
+    section.footerTitle = [NSString stringWithFormat:@"%@\n%@\n%@", NSLocalizedString(@"_format_compatibility_footer_", nil), NSLocalizedString(@"_upload_mov_livephoto_footer_", nil), NSLocalizedString(@"_remove_photo_CameraRoll_desc_", nil)];
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"formatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_format_compatibility_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
@@ -72,6 +72,14 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
     if ([CCUtility getLivePhoto]) row.value = @"1";
     else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [section addFormRow:row];
+
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removePhotoCameraRoll" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_remove_photo_CameraRoll_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+    if ([CCUtility getRemovePhotoCameraRoll]) row.value = @"1";
+    else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
@@ -173,12 +181,8 @@
         row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                     
             [self deselectFormRow:sender];
-            
-            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] editingMode:false metadata:nil];
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewerQuickLook];
-            navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-            
-            [self presentViewController:navigationController animated:YES completion:nil];
+            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] isEditingEnabled:false metadata:nil];
+            [self presentViewController:viewerQuickLook animated:YES completion:nil];
         };
         [section addFormRow:row];
         
@@ -355,6 +359,11 @@
         
         [CCUtility setLivePhoto:[[rowDescriptor.value valueData] boolValue]];
     }
+
+    if ([rowDescriptor.tag isEqualToString:@"removePhotoCameraRoll"]) {
+
+        [CCUtility setRemovePhotoCameraRoll:[[rowDescriptor.value valueData] boolValue]];
+    }
     
     if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {
         
@@ -419,9 +428,11 @@
     
     [CCUtility removeGroupDirectoryProviderStorage];
     [CCUtility removeGroupLibraryDirectory];
-    
+
     [CCUtility removeDocumentsDirectory];
     [CCUtility removeTemporaryDirectory];
+
+    [[NCKTVHTTPCache shared] deleteAllCache];
     
     [CCUtility createDirectoryStandard];
 

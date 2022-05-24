@@ -47,7 +47,7 @@ import UIKit
 
     @objc public var brand: String = "Nextcloud"
     // @objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
-    @objc public var textCopyrightNextcloudiOS: String = "Nextcloud Liquid for iOS %@ © 2021"
+    @objc public var textCopyrightNextcloudiOS: String = "Nextcloud Liquid for iOS %@ © 2022"
     @objc public var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     @objc public var loginBaseUrl: String = "https://cloud.nextcloud.com"
     @objc public var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
@@ -137,6 +137,7 @@ class NCBrandColor: NSObject {
 
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
+        static var buttonMoreLock = UIImage()
         static var buttonRestore = UIImage()
     }
 
@@ -211,6 +212,16 @@ class NCBrandColor: NSObject {
                 return .label
             } else {
                 return .black
+            }
+        }
+    }
+
+    @objc public var secondaryLabel: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .secondaryLabel
+            } else {
+                return UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 0.6)
             }
         }
     }
@@ -345,6 +356,7 @@ class NCBrandColor: NSObject {
 
         cacheImages.buttonMore = UIImage(named: "more")!.image(color: gray, size: 50)
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
+        cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: gray, size: 50)
         cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
     }
 

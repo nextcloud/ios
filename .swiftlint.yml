@@ -10,9 +10,13 @@ empty_count:
   severity: warning
 
 line_length:
-  # warning: 120
+  # warning: 120, error: 200
   warning: 250
   error: 250
+
+function_body_length:
+  # warning: 40
+  warning: 60
 
 type_body_length:
   # error: 350
@@ -48,7 +52,8 @@ excluded:
   - iOSClient/Data/NCManageDatabase+Account.swift
   - iOSClient/Data/NCManageDatabase+Activity.swift
   - iOSClient/Data/NCManageDatabase.swift
-  - iOSClient/Data/NCManageDatabse+Metadata.swift
+  - iOSClient/Data/NCManageDatabase+Metadata.swift
+  - iOSClient/Data/NCManageDatabase+Video.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
   - iOSClient/EmptyView/NCEmptyDataSet.swift
   - iOSClient/Extensions/UIColor+Extensions.swift
@@ -105,16 +110,8 @@ excluded:
   - iOSClient/Select/NCSelect.swift
   - iOSClient/Settings/NCEndToEndInitialize.swift
   - iOSClient/Settings/NCManageAutoUploadFileName.swift
-  - iOSClient/Share/NCShare.swift
-  - iOSClient/Share/NCShareCommentsCell.swift
   - iOSClient/Share/NCShareCommon.swift
-  - iOSClient/Share/NCShareLinkCell.swift
-  - iOSClient/Share/NCShareLinkMenuView.swift
   - iOSClient/Share/NCShareNetworking.swift
-  - iOSClient/Share/NCSharePaging.swift
-  - iOSClient/Share/NCShareQuickStatusMenu.swift
-  - iOSClient/Share/NCShareUserCell.swift
-  - iOSClient/Share/NCShareUserMenuView.swift
   - iOSClient/Shares/NCShares.swift
   - iOSClient/Transfers/NCTransferCell.swift
   - iOSClient/Transfers/NCTransfers.swift
@@ -130,13 +127,11 @@ excluded:
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
   - iOSClient/Viewer/NCViewerMedia/NCViewerMedia.swift
-  - iOSClient/Viewer/NCViewerMedia/NCViewerMediaDetailView.swift
   - iOSClient/Viewer/NCViewerMedia/NCViewerMediaPage.swift
   - iOSClient/Viewer/NCViewerNextcloudText/NCViewerNextcloudText.swift
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDF.swift
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
   - iOSClient/Viewer/NCViewerProviderContextMenu.swift
-  - iOSClient/Viewer/NCViewerQuickLook/NCViewerQuickLook.swift
   - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
 
 

@@ -305,6 +305,19 @@ class NCUtility: NSObject {
         return true
     }
 
+    @objc func getCustomUserAgentNCText() -> String {
+        let userAgent: String = CCUtility.getUserAgent()
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            // NOTE: Hardcoded (May 2022)
+            // Tested for iPhone SE (1st), iOS 12; iPhone Pro Max, iOS 15.4
+            // 605.1.15 = WebKit build version
+            // 15E148 = frozen iOS build number according to: https://chromestatus.com/feature/4558585463832576
+            return userAgent + " " + "AppleWebKit/605.1.15 Mobile/15E148"
+        } else {
+            return userAgent
+        }
+    }
+
     @objc func getCustomUserAgentOnlyOffice() -> String {
 
         let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
@@ -353,7 +366,7 @@ class NCUtility: NSObject {
         var messageUserDefined: String = ""
 
         if userStatus?.lowercased() == "online" {
-            onlineStatus = UIImage(named: "userStatusOnline")!.image(color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0), size: 50)
+            onlineStatus = UIImage(named: "circle_fill")!.image(color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0), size: 50)
             messageUserDefined = NSLocalizedString("_online_", comment: "")
         }
         if userStatus?.lowercased() == "away" {
@@ -474,25 +487,27 @@ class NCUtility: NSObject {
         return ""
     }
 
-    func loadImage(named: String, color: UIColor = NCBrandColor.shared.gray, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
+    func loadImage(named imageName: String, color: UIColor = NCBrandColor.shared.gray, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
 
         var image: UIImage?
 
         if #available(iOS 13.0, *) {
+            // see https://stackoverflow.com/questions/71764255
+            let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
             if let symbolConfiguration = symbolConfiguration {
-                image = UIImage(systemName: named, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
+                image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
             } else {
-                image = UIImage(systemName: named)?.imageColor(color)
+                image = UIImage(systemName: sfSymbolName)?.imageColor(color)
             }
             if image == nil {
-                image = UIImage(named: named)?.image(color: color, size: size)
+                image = UIImage(named: imageName)?.image(color: color, size: size)
             }
         } else {
-            image = UIImage(named: named)?.image(color: color, size: size)
+            image = UIImage(named: imageName)?.image(color: color, size: size)
         }
 
-        if image != nil {
-            return image!
+        if let image = image {
+            return image
         }
 
         return  UIImage(named: "file")!.image(color: color, size: size)
@@ -798,6 +813,81 @@ class NCUtility: NSObject {
                 navigationController?.navigationBar.tintColor = tintColor
             }
         }
+    }
+
+    func getEncondingDataType(data: Data) -> String.Encoding? {
+        if let _ = String(data: data, encoding: .utf8) {
+            return .utf8
+        }
+        if let _ = String(data: data, encoding: .ascii) {
+            return .ascii
+        }
+        if let _ = String(data: data, encoding: .isoLatin1) {
+            return .isoLatin1
+        }
+        if let _ = String(data: data, encoding: .isoLatin2) {
+            return .isoLatin2
+        }
+        if let _ = String(data: data, encoding: .windowsCP1250) {
+            return .windowsCP1250
+        }
+        if let _ = String(data: data, encoding: .windowsCP1251) {
+            return .windowsCP1251
+        }
+        if let _ = String(data: data, encoding: .windowsCP1252) {
+            return .windowsCP1252
+        }
+        if let _ = String(data: data, encoding: .windowsCP1253) {
+            return .windowsCP1253
+        }
+        if let _ = String(data: data, encoding: .windowsCP1254) {
+            return .windowsCP1254
+        }
+        if let _ = String(data: data, encoding: .macOSRoman) {
+            return .macOSRoman
+        }
+        if let _ = String(data: data, encoding: .japaneseEUC) {
+            return .japaneseEUC
+        }
+        if let _ = String(data: data, encoding: .nextstep) {
+            return .nextstep
+        }
+        if let _ = String(data: data, encoding: .nonLossyASCII) {
+            return .nonLossyASCII
+        }
+        if let _ = String(data: data, encoding: .shiftJIS) {
+            return .shiftJIS
+        }
+        if let _ = String(data: data, encoding: .symbol) {
+            return .symbol
+        }
+        if let _ = String(data: data, encoding: .unicode) {
+            return .unicode
+        }
+        if let _ = String(data: data, encoding: .utf16) {
+            return .utf16
+        }
+        if let _ = String(data: data, encoding: .utf16BigEndian) {
+            return .utf16BigEndian
+        }
+        if let _ = String(data: data, encoding: .utf16LittleEndian) {
+            return .utf16LittleEndian
+        }
+        if let _ = String(data: data, encoding: .utf32) {
+            return .utf32
+        }
+        if let _ = String(data: data, encoding: .utf32BigEndian) {
+            return .utf32BigEndian
+        }
+        if let _ = String(data: data, encoding: .utf32LittleEndian) {
+            return .utf32LittleEndian
+        }
+        return nil
+    }
+
+    func SYSTEM_VERSION_LESS_THAN(version: String) -> Bool {
+        return UIDevice.current.systemVersion.compare(version,
+         options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending
     }
 }
 

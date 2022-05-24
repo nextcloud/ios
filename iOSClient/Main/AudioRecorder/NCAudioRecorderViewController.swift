@@ -93,7 +93,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
         if recording.state == .record {
 
-            startDate = Date()
             recording.stop()
             voiceRecordHUD.update(0.0)
 
@@ -105,6 +104,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
             do {
                 try recording.record()
+                startDate = Date()
                 startStopLabel.text = NSLocalizedString("_voice_memo_stop_", comment: "")
             } catch {
                 print(error)
@@ -188,8 +188,8 @@ open class NCAudioRecorder: NSObject {
 
     // MARK: - Initializers
 
-    public init(to: String) {
-        url = URL(fileURLWithPath: NCAudioRecorder.directory).appendingPathComponent(to)
+    public init(to fileName: String) {
+        url = URL(fileURLWithPath: NCAudioRecorder.directory).appendingPathComponent(fileName)
         super.init()
 
         do {
@@ -278,7 +278,6 @@ open class NCAudioRecorder: NSObject {
     }
 
     fileprivate func stopMetering() {
-
         link?.invalidate()
         link = nil
     }

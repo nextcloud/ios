@@ -188,12 +188,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
-        
-        // Privacy
-        hidePrivacyProtectionWindow()
-        
-        NCSettingsBundleHelper.setVersionAndBuildNumber()
-        
+
+        if !NCAskAuthorization.shared.isRequesting {
+            // Privacy
+            hidePrivacyProtectionWindow()
+        }
+
         NCSettingsBundleHelper.setVersionAndBuildNumber()
 
         if account == "" { return }
@@ -245,9 +245,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if account == "" { return }
 
-        // Privacy
-        showPrivacyProtectionWindow()
-                
+        if CCUtility.getPrivacyScreenEnabled() {
+            // Privacy
+            showPrivacyProtectionWindow()
+        }
+
         // Clear operation queue
         NCOperationQueue.shared.cancelAllQueue()
         // Clear download
@@ -266,20 +268,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidEnterBackground(_ application: UIApplication) {
 
         if account == "" { return }
-        
+
         // STOP TIMER UPLOAD PROCESS
         if NCUtility.shared.isSimulator() {
             networkingProcessUpload?.stopTimer()
         }
-                
+
         if #available(iOS 13.0, *) {
             scheduleAppRefresh()
             scheduleBackgroundProcessing()
         }
-        
+
         // Passcode
         presentPasscode { }
-        
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidEnterBackground)
     }
 
@@ -297,7 +299,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if account == "" { return }
 
         NCCommunicationCommon.shared.writeLog("initialize Main")
-                
+
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
 
@@ -362,7 +364,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
-                NCCommunicationCommon.shared.writeLog("Completition handler refresh task with %lu uploads [Auto upload]")
+                NCCommunicationCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
                 task.setTaskCompleted(success: true)
             }
         }
@@ -606,6 +608,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if serverVersionMajor > 0 {
             NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
         }
+        NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
     }
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {
@@ -654,17 +657,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Account Request
 
     func accountRequestChangeAccount(account: String) {
-
         changeAccount(account)
     }
     
     func requestAccount() {
-              
+
         if isPasscodePresented() { return }
         if !CCUtility.getAccountRequest() { return }
-        
+
         let accounts = NCManageDatabase.shared.getAllAccount()
-        
+
         if accounts.count > 1 {
             
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
@@ -691,30 +693,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     // MARK: - Passcode
-    
-    func presentPasscode(completion: @escaping ()->()) {
+
+    func presentPasscode(completion: @escaping () -> ()) {
 
         let laContext = LAContext()
         var error: NSError?
 
-        defer {
-            self.requestAccount()
-        }
+        defer { self.requestAccount() }
 
-        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled() else { return }
-        
-        // If activated hide the privacy protection
-        hidePrivacyProtectionWindow()
-
-        // Dismiss present window?.rootViewController? [ONLY PASSCODE]
         let presentedViewController = window?.rootViewController?.presentedViewController
-        if presentedViewController is NCLoginNavigationController {
-            return
-        } else {
-            presentedViewController?.dismiss(animated: false)
-        }
+        guard !account.isEmpty, CCUtility.isPasscodeAtStartEnabled(), !(presentedViewController is NCLoginNavigationController) else { return }
 
-        let passcodeViewController = TOPasscodeViewController.init(passcodeType: .sixDigits, allowCancel: false)
+        // Make sure we have a privacy window (in case it's not enabled)
+        showPrivacyProtectionWindow()
+
+        let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: false)
         passcodeViewController.delegate = self
         passcodeViewController.keypadButtonShowLettering = false
         if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
@@ -728,38 +721,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 passcodeViewController.automaticallyPromptForBiometricValidation = false
             }
         }
-        
-        window?.rootViewController?.present(passcodeViewController, animated: true, completion: {
+
+        // show passcode on top of privacy window
+        privacyProtectionWindow?.rootViewController?.present(passcodeViewController, animated: true, completion: {
             completion()
         })
     }
-    
-    func isPasscodePresented() -> Bool {
-        return window?.rootViewController?.presentedViewController is TOPasscodeViewController
-    }
-    
-    func enableTouchFaceID() {
 
+    func isPasscodePresented() -> Bool {
+        return privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController
+    }
+
+    func enableTouchFaceID() {
         guard !account.isEmpty,
               CCUtility.getEnableTouchFaceID(),
               CCUtility.isPasscodeAtStartEnabled(),
-              let passcodeViewController = window?.rootViewController?.presentedViewController as? TOPasscodeViewController
+              let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
         LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
             if success {
                 DispatchQueue.main.async {
                     passcodeViewController.dismiss(animated: true) {
+                        self.hidePrivacyProtectionWindow()
                         self.requestAccount()
                     }
                 }
             }
         }
     }
-    
+
     func didInputCorrectPasscode(in passcodeViewController: TOPasscodeViewController) {
         DispatchQueue.main.async {
             passcodeViewController.dismiss(animated: true) {
+                self.hidePrivacyProtectionWindow()
                 self.requestAccount()
             }
         }
@@ -769,27 +764,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return code == CCUtility.getPasscode()
     }
 
+    func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
+        enableTouchFaceID()
+    }
+
     // MARK: - Privacy Protection
-       
+
     private func showPrivacyProtectionWindow() {
-        
-        guard CCUtility.getPrivacyScreenEnabled() else { return }
-        
+        guard privacyProtectionWindow == nil else {
+            privacyProtectionWindow?.isHidden = false
+            return
+        }
+
         privacyProtectionWindow = UIWindow(frame: UIScreen.main.bounds)
-          
+
         let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
         let initialViewController = storyboard.instantiateInitialViewController()
 
         self.privacyProtectionWindow?.rootViewController = initialViewController
-        
+
         privacyProtectionWindow?.windowLevel = .alert + 1
         privacyProtectionWindow?.makeKeyAndVisible()
     }
 
-    private func hidePrivacyProtectionWindow() {
-        
-        privacyProtectionWindow?.isHidden = true
-        privacyProtectionWindow = nil
+    func hidePrivacyProtectionWindow() {
+        guard !(privacyProtectionWindow?.rootViewController?.presentedViewController is TOPasscodeViewController) else { return }
+        UIWindow.animate(withDuration: 0.25) {
+            self.privacyProtectionWindow?.alpha = 0
+        } completion: { _ in
+            self.privacyProtectionWindow?.isHidden = true
+            self.privacyProtectionWindow = nil
+        }
     }
     
     // MARK: - Open URL
@@ -873,13 +878,13 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
 
-        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
-        viewController.setup(serverUrl: appDelegate.activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
-        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+        guard
+            let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                let viewController = navigationController.topViewController as? NCCreateFormUploadVoiceNote
+        else { return }
+        navigationController.modalPresentationStyle = .formSheet
+        viewController.setup(serverUrl: activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
+        window?.rootViewController?.present(navigationController, animated: true)
     }
 
     func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {

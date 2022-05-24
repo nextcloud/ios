@@ -36,12 +36,12 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
-    @IBOutlet weak var playerToolBar: NCPlayerToolBar!
 
     private var _autoPlay: Bool = false
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var viewerMediaPage: NCViewerMediaPage?
+    weak var viewerMediaPage: NCViewerMediaPage?
+    var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
@@ -92,23 +92,33 @@ class NCViewerMedia: UIViewController {
             statusViewImage.image = nil
             statusLabel.text = ""
         }
+        
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
-        playerToolBar.viewerMediaPage = viewerMediaPage
+            playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
+            if let playerToolBar = playerToolBar {
+                view.addSubview(playerToolBar)
+                playerToolBar.translatesAutoresizingMaskIntoConstraints = false
+                playerToolBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+                playerToolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+                playerToolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
+                playerToolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
+                playerToolBar.viewerMediaPage = viewerMediaPage
+            }
 
+            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
+            if let url = urlVideo.url {
+                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
+            }
+        }
+        
         detailViewTopConstraint.constant = 0
         detailView.hide()
 
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        loadImage(metadata: metadata) { _, image in
-            self.image = image
-            // do not update if is present the videoLayer
-            let numSublayers = self.imageVideoContainer.layer.sublayers?.count
-            if numSublayers == nil {
-                self.imageVideoContainer.image = image
-            }
-        }
+        reloadImage()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -119,6 +129,10 @@ class NCViewerMedia: UIViewController {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
             viewerMediaPage.currentScreenMode = viewerMediaPage.saveScreenModeImage
+            if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
+                viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
+                reloadImage()
+            }
         }
 
         if viewerMediaPage?.currentScreenMode == .full {
@@ -148,24 +162,10 @@ class NCViewerMedia: UIViewController {
 
         if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
 
-            NCKTVHTTPCache.shared.restartProxy(user: appDelegate.user, password: appDelegate.password)
-
-            if ncplayer == nil, let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
-                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
-            } else {
-                self.ncplayer?.activateObserver(playerToolBar: self.playerToolBar)
-                if detailView.isShow() == false && ncplayer?.isPlay() == false {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
-                }
-            }
-
             if let ncplayer = self.ncplayer {
+                ncplayer.openAVPlayer()
                 self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
-            
-            #if MFFFLIB
-            MFFF.shared.setDelegate = self.ncplayer
-            #endif
             
         } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
 
@@ -195,6 +195,20 @@ class NCViewerMedia: UIViewController {
     }
 
     // MARK: - Image
+
+    func reloadImage() {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+            self.metadata = metadata
+            loadImage(metadata: metadata) { _, image in
+                self.image = image
+                // do not update if is present the videoLayer
+                let numSublayers = self.imageVideoContainer.layer.sublayers?.count
+                if numSublayers == nil {
+                    self.imageVideoContainer.image = image
+                }
+            }
+        }
+    }
 
     func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?) -> Void) {
 
@@ -439,8 +453,13 @@ extension NCViewerMedia {
                 self.detailViewHeighConstraint.constant = 170
             }
             self.view.layoutIfNeeded()
-            
-            self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+            self.detailView.show(
+                metadata: self.metadata,
+                image: self.image,
+                textColor: self.viewerMediaPage?.textColor,
+                mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                ncplayer: self.ncplayer,
+                delegate: self)
                 
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
@@ -460,7 +479,7 @@ extension NCViewerMedia {
             }
 
             self.scrollView.pinchGestureRecognizer?.isEnabled = false
-            self.playerToolBar.hide()
+            self.playerToolBar?.hide()
         }
     }
 
@@ -487,7 +506,13 @@ extension NCViewerMedia {
 
         if self.detailView.isShow() {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
-                self.detailView.show(metadata:self.metadata, image: self.image, textColor: self.viewerMediaPage?.textColor, latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel, ncplayer: self.ncplayer ,delegate: self)
+                self.detailView.show(
+                    metadata: self.metadata,
+                    image: self.image,
+                    textColor: self.viewerMediaPage?.textColor,
+                    mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                    ncplayer: self.ncplayer,
+                    delegate: self)
             }
         }
     }

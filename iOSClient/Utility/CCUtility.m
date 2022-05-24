@@ -715,23 +715,6 @@
     [UICKeyChainStore setString:daysString forKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (PDFDisplayDirection)getPDFDisplayDirection
-{
-    NSString *direction = [UICKeyChainStore stringForKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (direction == nil) {
-        return kPDFDisplayDirectionVertical;
-    } else {
-        return [direction integerValue];
-    }
-}
-
-+ (void)setPDFDisplayDirection:(PDFDisplayDirection)direction
-{
-    NSString *directionString = [@(direction) stringValue];
-    [UICKeyChainStore setString:directionString forKey:@"PDFDisplayDirection" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getPrivacyScreenEnabled
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
@@ -749,6 +732,17 @@
 {
     NSString *sSet = (set) ? @"true" : @"false";
     [UICKeyChainStore setString:sSet forKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (BOOL)getRemovePhotoCameraRoll
+{
+    return [[UICKeyChainStore stringForKey:@"removePhotoCameraRoll" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setRemovePhotoCameraRoll:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"removePhotoCameraRoll" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1350,7 +1344,7 @@
     return path;
 }
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload notification:(BOOL)notification completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
 {
     if (metadataForUpload == nil) {
         return completion(nil, nil);
@@ -1360,10 +1354,6 @@
     
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
-        if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(NCGlobal.shared.errorInternalError), @"errorDescription": @"_err_file_not_found_"}];
-        }
-        
         return completion(nil, nil);
     }
     
@@ -1385,21 +1375,24 @@
                 NSLog(@"cacheAsset: %f", progress);
                 
                 if (error) {
-                    if (notification) {
-                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
-                    }
-                    
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
                     return completion(nil, nil);
                 }
             };
             
+            NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
+            
+            //raw image will always ignore any edits made to the photo if compatibility is false
+            if ([extensionAsset isEqualToString:@"DNG"]) {
+                options.version = PHImageRequestOptionsVersionOriginal;
+            }
+            
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
                 NSError *error = nil;
-                NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
                 NSString *fileName = metadata.fileNameView;
 
-                if ([extensionAsset isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
+                if (([extensionAsset isEqualToString:@"HEIC"] || [extensionAsset isEqualToString:@"DNG"]) && [CCUtility getFormatCompatibility]) {
                     
                     CIImage *ciImage = [CIImage imageWithData:imageData];
                     CIContext *context = [CIContext context];
@@ -1444,10 +1437,7 @@
                 NSLog(@"cacheAsset: %f", progress);
                 
                 if (error) {
-                    if (notification) {
-                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
-                    }
-                    
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
                     completion(nil, nil);
                 }
             };
@@ -1468,19 +1458,12 @@
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         if (error) {
-                            
-                            if (notification) {
-                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
-                            }
-                            
+                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
                             completion(nil, nil);
-                            
                         } else {
-                            
                             metadata.creationDate = creationDate;
                             metadata.date = modificationDate;
                             metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
-                            
                             completion(metadata, fileNamePath);
                         }
                     });
@@ -1728,6 +1711,7 @@
             stringLatitude = [NSString stringWithFormat:@"+%.4f", latitude];
         } else {
             stringLatitude = [NSString stringWithFormat:@"-%.4f", latitude];
+            latitude *= -1;
         }
         
         // conversion 4 decimal +E -W
@@ -1737,10 +1721,10 @@
             stringLongitude = [NSString stringWithFormat:@"+%.4f", longitude];
         } else {
             stringLongitude = [NSString stringWithFormat:@"-%.4f", longitude];
+            longitude *= -1;
         }
         
         if (latitude == 0 || longitude == 0) {
-            
             stringLatitude = @"0";
             stringLongitude = @"0";
         }

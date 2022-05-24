@@ -22,8 +22,8 @@
 
 "_cancel_"                  = "Cancel";
 "_tap_to_cancel_"           = "Tap to cancel";
+"_cancel_request_"          = "Do you want to cancel?";
 "_upload_file_"             = "Upload file";
-"_accessibility_add_upload_" = "Add and upload";
 "_download_file_"           = "Download file";
 "_loading_"                 = "Loading";
 "_loading_with_points_"     = "Loading …";
@@ -62,6 +62,7 @@
 "_beta_version_"            = "Beta version";
 "_function_in_testing_"     = "Function in testing, please send information about any problems you run into.";
 "_done_"                    = "Done";
+"_clear_"                   = "Clear";
 "_passcode_too_short_"      = "Passcode too short, at least 4 characters required";
 "_selected_"                = "Selected";
 "_scan_fingerprint_"        = "Scan fingerprint to authenticate";
@@ -81,6 +82,7 @@
 "_remove_"                  = "Remove";
 "_file_not_found_"          = "File not found";
 "_continue_"                = "Continue";
+"_continue_editing_"        = "Continue editing";
 "_continue_request_"        = "Do you want to continue?";
 "_auto_upload_folder_"      = "Auto upload";
 "_gallery_"                 = "Gallery";
@@ -92,7 +94,7 @@
 "_initialization_"          = "Initialization";
 "_experimental_"            = "Experimental";
 "_select_dir_media_tab_"    = "Select as folder \"Media\"";
-"_error_creation_file_"     = "Ops! Could not create the file";
+"_error_creation_file_"     = "Oops! Could not create the file";
 "_save_path_"               = "Save path";
 "_save_settings_"           = "Save settings";
 "_mode_filename_"           = "Filename mode";
@@ -144,6 +146,15 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+
+/* MARK: Files lock */
+
+"_lock_file_"                       = "Lock file";
+"_unlock_file_"                     = "Unlock file";
+"_lock_selected_files_"             = "Lock files";
+"_unlock_selected_files_"           = "Unlock files";
+"_locked_by_"                       = "Locked by %@";
+"_file_locked_no_override_"         = "This file is locked. It cannot be overridden.";
 
 /* Remove a file from a list, don't delete it entirely */
 "_remove_file_"             = "Remove file";
@@ -204,6 +215,8 @@
 "_default_color_"           = "Use the default color";
 "_as_default_color_"        = "Use as default color";
 
+// MARK: User Status
+
 /* User status */
 "_online_"                  = "Online";
 
@@ -254,6 +267,7 @@
 "_file_already_exists_"     = "Unable to complete the operation, a file with the same name exists";
 "_read_file_error_"         = "Could not read the file";
 "_write_file_error_"        = "Could not write the file";
+"_files_lock_error_"        = "There was an error changing the lock of this file";
 "_more_"                        = "More";
 "_notifications_"               = "Notifications";
 "_logout_"                      = "Log out";
@@ -336,10 +350,12 @@
 "_user_editprofile_"            = "Edit profile";
 "_select_offline_warning_"      = "Making multiple files and folders available offline may take a while and use a lot of memory while doing so.";
 "_advanced_"                    = "Advanced";
+"_permissions_"                 = "Permissions";
 "_disable_files_app_"           = "Disable Files App integration";
 "_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application";
 "_trial_"                       = "Trial";
 "_trial_expired_day_"           = "Days remaining";
+"_time_remaining_"              = "%@ remaining";
 "_disableLocalCacheAfterUpload_footer_" = "After uploading the file, do not keep it in the local cache";
 "_disableLocalCacheAfterUpload_"        = "Disable local cache";
 "_autoupload_"                      = "Auto upload photos/videos";
@@ -426,7 +442,7 @@
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
-"_remove_photo_CameraRoll_desc_"            = "After successful automatic uploads, a confirmation message will be displayed to delete the uploaded photos or videos from the camera roll. The deleted photos or videos will still be available in the iOS Photos Trash for 30 days.";
+"_remove_photo_CameraRoll_desc_"            = "\"Remove from camera roll\" after uploads, a confirmation message will be displayed to delete the uploaded photos or videos from the camera roll. The deleted photos or videos will still be available in the iOS Photos Trash for 30 days.";
 "_never_"                       = "never";
 "_less_a_minute_"               = "less than a minute ago";
 "_a_minute_ago_"                = "a minute ago";
@@ -562,9 +578,12 @@
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
 "_password_pdf_error_"          = "Wrong password";
 "_error_download_photobrowser_" = "Error: Unable to download photo";
+
+// MARK: Share
+
 "_share_link_"                  = "Share link";
 "_share_link_button_"           = "Send link to …";
-"_Link_name_"                   = "Link name";
+"_share_link_name_"             = "Link name";
 "_password_"                    = "Password";
 "_share_password_"              = "Password protected link";
 "_share_expirationdate_"        = "Set expiration date for link";
@@ -609,6 +628,9 @@
 "_share_unshare_"               = "Unshare";
 "_share_internal_link_"         = "Internal link";
 "_share_internal_link_des_"     = "Only works for users with access to this folder";
+"_share_reshare_disabled_"      = "You are not allowed to reshare this file/folder";
+"_share_reshare_restricted_"    = "Note: You only have limited permission to reshare this file/folder";
+
 "_no_transfer_"                     = "No transfers yet";
 "_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
 "_no_activity_"                     = "No activity yet";
@@ -722,8 +744,8 @@
 "_go_online_"                       = "Go online to see the document";
 "_intro_1_title_"                   = "Keep your data secure and under your control";
 "_intro_2_title_"                   = "Secure collaboration & file exchange";
-"_intro_3_title_"                   = "Easy-to-use web mail, calendering & contacts";
-"_intro_4_title_"                   = "Screensharing, online meetings & web conferences";
+"_intro_3_title_"                   = "Easy-to-use web mail, calendaring & contacts";
+"_intro_4_title_"                   = "Screen sharing, online meetings & web conferences";
 "_log_in_"                          = "Log in";
 "_sign_up_"                         = "Sign up with provider";
 "_host_your_own_server"             = "Host your own server";
@@ -803,7 +825,8 @@
 "_overwrite_original_"      = "Overwrite original";
 "_save_as_copy_"            = "Save as copy";
 "_discard_changes_"         = "Close and discard changes";
-"_message_disable_overwrite_livephoto_" = "This image it's a Live Photo, the overwrite will not possible";
+"_message_disable_overwrite_livephoto_" = "This image is a Live Photo, overwrite will not be possible";
+"_discard_changes_info_"    = "Your changes will be discarded.";
 "_delete_files_desc_"       = "Delete files to free up space";
 "_delete_old_files_"        = "Delete all files older than";
 "_never_"                   = "Never";
@@ -830,7 +853,9 @@
 "_certificates_"            = "Certificates";
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
+"_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
 // Video
+"_select_trace_"            = "Select the trace";
 "_video_processing_"        = "Video processing";
 "_video_being_processed_"   = "Video being processed …";
 "_downloading_"             = "Downloading";
@@ -841,4 +866,26 @@
 "_stay_app_foreground_"     = "Keep the app in the foreground …";
 "_conversion_available_"    = "The conversion is always available on menu";
 "_video_format_not_recognized_"     = "This video needs to be processed to be played, do you want to do it now?";
+"_video_must_download_"             = "This video needs to be downloaded and processed to be played, do you want to do it now?";
 "_conversion_max_compatibility_"    = "Max compatibility, the conversion can take much longer";
+"_video_tap_for_close_"     = "A slight pressure to close the processing";
+"_subtitle_not_found_"      = "Subtitle not found";
+"_disable_"                 = "Disable";
+"_subtitle_not_dowloaded_"  = "There are subtitles not downloaded locally";
+
+// Tip
+"_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
+
+// MARK: Accessibility
+
+// Accessibility, floating panel top element
+"_cart_controller_"             = "Card controller";
+"_accessibility_add_upload_"    = "Add and upload";
+"_dismiss_menu_"                = "Dismiss the menu";
+"_show_profile_"                = "Show profile";
+// a11y: On/Off
+"_on_"                          = "On";
+// a11y: On/Off
+"_off_"                         = "Off";
+"_grid_view_"                   = "Show grid view";
+"_list_view_"                   = "Show list view";

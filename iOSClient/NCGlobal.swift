@@ -112,7 +112,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 216
+    let databaseSchemaVersion: UInt64               = 222
 
     // Intro selector
     //
@@ -176,6 +176,7 @@ class NCGlobal: NSObject {
     //
     let buttonMoreMore                              = "more"
     let buttonMoreStop                              = "stop"
+    let buttonMoreLock                              = "moreLock"
 
     // Text -  OnlyOffice - Collabora - QuickLook
     //
@@ -344,14 +345,11 @@ class NCGlobal: NSObject {
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
-    let notificationCenterMenuPDFDisplayDirection               = "menuPDFDisplayDirection"         // userInfo: direction
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
 
     let notificationCenterChangedLocation                       = "changedLocation"
     let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
-
-    let notificationCenterShareChangePermissions                = "shareChangePermissions"          // userInfo: idShare, permissions, hideDownload
 
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 
@@ -362,4 +360,8 @@ class NCGlobal: NSObject {
     let notificationCenterReloadMediaPage                       = "reloadMediaPage"
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
+
+    // Tip
+    //
+    let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
 }

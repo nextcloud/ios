@@ -5,12 +5,29 @@
 //  Created by Henrik Storch on 17.02.22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
 //
+//  Author Henrik Storch <henrik.storch@nextcloud.com>
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 import UIKit
 
 class NCMenuAction {
     let title: String
+    let details: String?
     let icon: UIImage
     let selectable: Bool
     var onTitle: String?
@@ -18,16 +35,19 @@ class NCMenuAction {
     var selected: Bool = false
     var isOn: Bool = false
     var action: ((_ menuAction: NCMenuAction) -> Void)?
+    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 80 : 60 }
 
-    init(title: String, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, details: String? = nil, icon: UIImage, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
+        self.details = details
         self.icon = icon
         self.action = action
         self.selectable = false
     }
 
-    init(title: String, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
+        self.details = details
         self.icon = icon
         self.onTitle = onTitle ?? title
         self.onIcon = onIcon ?? icon
@@ -41,6 +61,13 @@ class NCMenuAction {
 // MARK: - Actions
 
 extension NCMenuAction {
+    static let seperatorIdentifier = "NCMenuAction.SEPARATOR"
+    static let seperatorHeight: CGFloat = 0.5
+
+    /// A static seperator, with no actions, text, or icons
+    static var seperator: NCMenuAction {
+        return NCMenuAction(title: seperatorIdentifier, icon: UIImage(), action: nil)
+    }
 
     /// Select all items
     static func selectAllAction(action: @escaping () -> Void) -> NCMenuAction {
@@ -86,6 +113,7 @@ extension NCMenuAction {
             }
         } // else: no metadata selected
 
+        let canDeleteServer = selectedMetadatas.allSatisfy { !$0.lock }
         var fileList = ""
         for (ix, metadata) in selectedMetadatas.enumerated() {
             guard ix < 3 else { fileList += "\n - ..."; break }
@@ -100,10 +128,12 @@ extension NCMenuAction {
                     title: titleDelete,
                     message: NSLocalizedString("_want_delete_", comment: "") + fileList,
                     preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                    selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
-                    completion?()
-                })
+                if canDeleteServer {
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+                        selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
+                        completion?()
+                    })
+                }
 
                 // NCMedia removes image from collection view if removed from cache
                 if !(viewController is NCMedia) {
@@ -209,6 +239,27 @@ extension NCMenuAction {
             icon: NCUtility.shared.loadImage(named: "printer"),
             action: { _ in
                 NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
+            }
+        )
+    }
+
+    /// Lock or unlock a file using *files_lock*
+    static func lockUnlockFiles(shouldLock: Bool, metadatas: [tableMetadata], completion: (() -> Void)? = nil) -> NCMenuAction {
+        let titleKey: String
+        if metadatas.count == 1 {
+            titleKey = shouldLock ? "_lock_file_" : "_unlock_file_"
+        } else {
+            titleKey = shouldLock ? "_lock_selected_files_" : "_unlock_selected_files_"
+        }
+        let imageName = !shouldLock ? "lock_open" : "lock"
+        return NCMenuAction(
+            title: NSLocalizedString(titleKey, comment: ""),
+            icon: NCUtility.shared.loadImage(named: imageName),
+            action: { _ in
+                for metadata in metadatas where metadata.lock != shouldLock {
+                    NCNetworking.shared.lockUnlockFile(metadata, shoulLock: shouldLock)
+                }
+                completion?()
             }
         )
     }

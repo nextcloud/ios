@@ -152,6 +152,8 @@ class NCViewer: NSObject {
 
                         if editor == NCGlobal.shared.editorOnlyoffice {
                             customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                        } else {
+                            customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
                         }
 
                         NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
@@ -208,11 +210,8 @@ class NCViewer: NSObject {
 
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
-        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), editingMode: false, metadata: metadata)
-        let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-        navigationController.modalPresentationStyle = .overFullScreen
-
-        viewController.present(navigationController, animated: true)
+        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
+        viewController.present(viewerQuickLook, animated: true)
     }
 }
 

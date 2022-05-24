@@ -80,6 +80,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
+        // use entire cell as accessibility element
+        accessibilityHint = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
+        isAccessibilityElement = true
+
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
@@ -103,6 +109,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
+        accessibilityHint = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
@@ -121,9 +130,25 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
 
+    fileprivate func setA11yActions() {
+        let moreName = namedButtonMore == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
+        self.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString("_share_", comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideShare)),
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString(moreName, comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore))
+        ]
+    }
+    
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image
+
+        setA11yActions()
     }
 
     func hideButtonMore(_ status: Bool) {
@@ -140,10 +165,12 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         if status {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
+            accessibilityCustomActions = nil
         } else {
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
             backgroundView = nil
+            setA11yActions()
         }
     }
 

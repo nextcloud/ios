@@ -23,6 +23,7 @@
 
 import Foundation
 import FloatingPanel
+import UIKit
 
 class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     var position: FloatingPanelPosition = .bottom
@@ -37,7 +38,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let topInset: CGFloat
 
-    init(numberOfActions: Int) {
+    init(actionsHeight: CGFloat) {
         // sometimes UIScreen.main.bounds.size.height is not updated correctly
         // this ensures we use the correct height value
         // can't use `layoutFor size` since menu is dieplayed on top of the whole screen not just the VC
@@ -45,7 +46,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
         ? min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         : max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
         let bottomInset = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
-        let panelHeight = CGFloat(numberOfActions * 60) + bottomInset
+        let panelHeight = CGFloat(actionsHeight) + bottomInset
 
         topInset = max(48, screenHeight - panelHeight)
     }
@@ -75,5 +76,17 @@ class NCMenuPanelController: FloatingPanelController {
         self.isRemovalInteractionEnabled = true
         self.backdropView.dismissalTapGestureRecognizer.isEnabled = true
         self.surfaceView.layer.cornerRadius = 16
+
+        surfaceView.grabberHandle.accessibilityLabel = NSLocalizedString("_cart_controller_", comment: "")
+
+        let collapseName = NSLocalizedString("_dismiss_menu_", comment: "")
+        let collapseAction = UIAccessibilityCustomAction(name: collapseName, target: self, selector: #selector(accessibilityActionCollapsePanel))
+
+        surfaceView.grabberHandle.accessibilityCustomActions = [collapseAction]
+        surfaceView.grabberHandle.isAccessibilityElement = true
     }
+
+    @objc private func accessibilityActionCollapsePanel() {
+        self.dismiss(animated: true)
+     }
 }

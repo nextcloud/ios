@@ -72,9 +72,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
         if editor == NCGlobal.shared.editorOnlyoffice {
             webView.customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
-        } else {
-            webView.customUserAgent = CCUtility.getUserAgent()
-        }
+        } else if editor == NCGlobal.shared.editorText {
+            webView.customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
+        } // else: use default
 
         webView.load(request)
     }

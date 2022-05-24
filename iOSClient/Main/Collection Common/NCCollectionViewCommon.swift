@@ -44,7 +44,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var metadataFolder: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
-    internal var header: UIView?
+    internal var header: NCSectionHeaderMenu?
 
     internal var layoutForView: NCGlobal.layoutForViewType?
 
@@ -615,7 +615,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         button.action(for: .touchUpInside) { _ in
             
             let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-            if accounts.count > 0 {
+            if accounts.count > 0 && !NCBrandOptions.shared.disable_multiaccount && !NCBrandOptions.shared.disable_manage_account {
                 
                 if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
                     
@@ -741,6 +741,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
+            header?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
@@ -751,6 +752,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         } else {
             // grid layout
+            header?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
@@ -789,7 +791,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
-        if namedButtonMore == NCGlobal.shared.buttonMoreMore {
+        if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
             toggleMenu(metadata: metadata, imageIcon: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
@@ -1267,8 +1269,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if collectionView.collectionViewLayout == gridLayout {
                 header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             } else {
                 header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             }
 
             header.delegate = self
@@ -1388,12 +1392,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 progress = progressType.progress
                 totalBytes = progressType.totalBytes
             }
+
             if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
                 cell.progressView.isHidden = false
                 cell.progressView.progress = progress
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = 0.0
+            }
+
+            var a11yValues: [String] = []
+            if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
+                a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
             }
 
             if metadata.directory {
@@ -1428,6 +1438,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 // image local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
+                    a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.local
@@ -1437,6 +1448,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // image Favorite
             if metadata.favorite {
                 cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
+                a11yValues.append(NSLocalizedString("_favorite_", comment: ""))
             }
 
             // Share image
@@ -1455,6 +1467,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
+            } else if metadata.lock == true {
+                cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
+                a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
             } else {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
@@ -1490,9 +1505,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 break
             }
 
+            cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
+
             // Live Photo
             if metadata.livePhoto {
                 cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
+                a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
             }
 
             // E2EE
@@ -1514,12 +1532,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.selectMode(true)
                 if selectOcId.contains(metadata.ocId) {
                     cell.selected(true)
+                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
                 } else {
                     cell.selected(false)
                 }
             } else {
                 cell.selectMode(false)
             }
+            cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
             // Disable Share Button
             if appDelegate.disableSharesView {
@@ -1559,9 +1579,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
                 cell.progressView.isHidden = false
                 cell.progressView.progress = progress
+                cell.accessibilityLabel = metadata.fileNameView + ", \(Int(progress * 100))%"
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = 0.0
+                cell.accessibilityLabel = metadata.fileNameView
+            }
+
+            var a11yValues: [String] = []
+            if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
+                a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
             }
 
             if metadata.directory {
@@ -1597,6 +1624,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 // image Local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
+                    a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                 } else if CCUtility.fileProviderStorageExists(metadata) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.local
                 }
@@ -1605,11 +1633,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // image Favorite
             if metadata.favorite {
                 cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
+                a11yValues.append(NSLocalizedString("_favorite_", comment: ""))
             }
 
             // Transfer
             if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
+            } else if metadata.lock == true {
+                cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
+                a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
             } else {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
             }
@@ -1617,6 +1649,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // Live Photo
             if metadata.livePhoto {
                 cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
+                a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
             }
 
             // Edit mode
@@ -1624,12 +1657,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.selectMode(true)
                 if selectOcId.contains(metadata.ocId) {
                     cell.selected(true)
+                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
                 } else {
                     cell.selected(false)
                 }
             } else {
                 cell.selectMode(false)
             }
+            cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
             return cell
         }
