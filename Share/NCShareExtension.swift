@@ -303,8 +303,7 @@ extension NCShareExtension {
                 fileName: fileName, fileNameView: fileName,
                 ocId: ocId,
                 serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "",
-                contentType: "",
-                livePhoto: false)
+                contentType: "")
             metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)

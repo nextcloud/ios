@@ -147,8 +147,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             serverUrl: metadata.serverUrl,
             urlBase: metadata.urlBase,
             url: url.path,
-            contentType: "",
-            livePhoto: false)
+            contentType: "")
 
         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
         metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

@@ -27,6 +27,7 @@ import Foundation
     var user: String { get }
     var urlBase: String { get }
     var account: String { get }
+    var userId: String { get }
 }
 
 public extension NCUserBaseUrl {

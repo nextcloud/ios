@@ -936,11 +936,16 @@ import Queuer
         }
 
         NCCommunication.shared.unifiedSearch(term: literal) { provider in
-            ["files", "fulltextsearch"].contains(provider.id)
+            ["contacts", "files", "fulltextsearch", "talk-conversations",].contains(provider.id)
         } update: { partialResult, provider, errorCode, errorDescription in
             guard let partialResult = partialResult else { return }
             
             switch provider.id {
+            case "contacts", "talk-conversations":
+                partialResult.entries.forEach({ entry in
+                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: "", urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name, subline: entry.subline)
+                    print("")
+                })
             case "files":
                 partialResult.entries.forEach({ entry in
                     if let fileId = entry.fileId,

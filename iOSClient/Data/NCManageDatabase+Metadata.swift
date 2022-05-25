@@ -60,6 +60,7 @@ extension NCManageDatabase {
         metadata.iconName = file.iconName
         metadata.livePhoto = file.livePhoto
         metadata.mountType = file.mountType
+        metadata.name = file.name
         metadata.note = file.note
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
@@ -163,30 +164,38 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadatas)
     }
 
-    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
+    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = "Files", subline: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
-        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+        if isUrl {
+            metadata.contentType = "text/uri-list"
+            metadata.iconName = NCCommunicationCommon.typeIconFile.url.rawValue
+            metadata.classFile = NCCommunicationCommon.typeClassFile.url.rawValue
+        } else {
+            let (mimeType, classFile, iconName, _, _, _) = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+            metadata.contentType = mimeType
+            metadata.iconName = iconName
+            metadata.classFile = classFile
+        }
         
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
         metadata.account = account
         metadata.chunk = false
-        metadata.contentType = resultInternalType.mimeType
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
-        metadata.iconName = resultInternalType.iconName
         metadata.etag = ocId
         metadata.ext = (fileName as NSString).pathExtension.lowercased()
         metadata.fileName = fileName
         metadata.fileNameView = fileName
         metadata.fileNameWithoutExt = (fileName as NSString).deletingPathExtension
-        metadata.livePhoto = livePhoto
+        metadata.livePhoto = isLivePhoto
+        metadata.name = name
         metadata.ocId = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.classFile = resultInternalType.classFile
+        metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
         metadata.urlBase = urlBase
