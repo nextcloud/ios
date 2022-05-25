@@ -943,8 +943,12 @@ import Queuer
             switch provider.id {
             case "contacts", "talk-conversations":
                 partialResult.entries.forEach({ entry in
-                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: "", urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name, subline: entry.subline)
-                    print("")
+                    var iconName = entry.thumbnailURL
+                    if iconName.isEmpty {
+                        iconName = entry.icon
+                    }
+                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name, subline: entry.subline, iconName: iconName)
+                    searchFiles.insert(metadata)
                 })
             case "files":
                 partialResult.entries.forEach({ entry in

@@ -164,12 +164,16 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadatas)
     }
 
-    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = "Files", subline: String? = nil) -> tableMetadata {
+    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = "Files", subline: String? = nil, iconName: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
         if isUrl {
             metadata.contentType = "text/uri-list"
-            metadata.iconName = NCCommunicationCommon.typeIconFile.url.rawValue
+            if let iconName = iconName {
+                metadata.iconName = iconName
+            } else {
+                metadata.iconName = NCCommunicationCommon.typeIconFile.url.rawValue
+            }
             metadata.classFile = NCCommunicationCommon.typeClassFile.url.rawValue
         } else {
             let (mimeType, classFile, iconName, _, _, _) = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
