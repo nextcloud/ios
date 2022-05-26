@@ -139,6 +139,11 @@ class NCBrandColor: NSObject {
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
         static var buttonRestore = UIImage()
+
+        static var iconContacts = UIImage()
+        static var iconConversation = UIImage()
+        static var iconCalendar = UIImage()
+        static var iconDeck = UIImage()
     }
 
     // Color
@@ -358,6 +363,11 @@ class NCBrandColor: NSObject {
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
         cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: gray, size: 50)
         cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
+
+        cacheImages.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconConversation = UIImage(named: "icon-conversation")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
     }
 
     #if !EXTENSION

@@ -1307,10 +1307,26 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            if metadata.name == "files" {
+                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                    (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                } else {
+                    NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
+                }
             } else {
-                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
+                // Unified search
+                switch metadata.iconName {
+                case let str where str.contains("contacts"):
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconContacts
+                case let str where str.contains("conversation"):
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconConversation
+                case let str where str.contains("calendar"):
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconCalendar
+                case let str where str.contains("deck"):
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconDeck
+                default:
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.file
+                }
             }
         }
 
