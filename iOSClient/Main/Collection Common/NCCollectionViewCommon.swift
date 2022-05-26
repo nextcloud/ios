@@ -1332,7 +1332,40 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 default:
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.file
                 }
-                print(metadata.iconUrl)
+
+                //var urlString: String = ""
+                if !metadata.iconUrl.isEmpty {
+                    if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata), let cell = cell as? NCCellProtocol {
+                        let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
+                        NCOperationQueue.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
+                    }
+
+                    /*
+                    if metadata.iconUrl.starts(with: "/apps") {
+                        //urlString = metadata.urlBase + metadata.iconUrl
+                    } else if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
+                        let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
+                        var found:Bool = false
+                        var ownerId: String = ""
+                        for item in splitIconUrl {
+                            if found {
+                                ownerId = item
+                                break
+                            }
+                            if item == "avatar" { found = true}
+                        }
+                        let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
+                        if let cell = cell as? NCCellProtocol {
+                            NCOperationQueue.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
+                        }
+                    }
+//                    NCCommunication.shared.downloadContent(serverUrl: urlString) { _, data, errorCode, _ in
+//                        if errorCode == 0, let data = data, let image = UIImage(data: data) {
+//                            (cell as! NCCellProtocol).filePreviewImageView?.image = image
+//                        }
+//                    }
+                     */
+                }
             }
         }
 
@@ -1342,7 +1375,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
            appDelegate.account == metadata.account,
            let cell = cell as? NCCellProtocol {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView)
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
         }
     }
 
@@ -1562,6 +1595,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
                 cell.hideButtonShare(true)
                 cell.hideButtonMore(true)
+                if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
+                    cell.fileUser = ownerId
+                }
             }
 
             // Disable Share Button
@@ -1701,6 +1737,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // URL
             if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
                 cell.hideButtonMore(true)
+                if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
+                    cell.fileUser = ownerId
+                }
             }
 
             // Edit mode

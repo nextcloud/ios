@@ -160,17 +160,18 @@ import NCCommunication
 
     // Download Avatar
 
-    func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?) {
+    func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
 
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+            cellImageView?.image = image
             cell.fileAvatarImageView?.image = image
             return
         }
 
         if let account = NCManageDatabase.shared.getActiveAccount() {
-            cell.fileAvatarImageView?.image = NCUtility.shared.loadUserImage(
+            cellImageView?.image = NCUtility.shared.loadUserImage(
                 for: user,
                    displayName: dispalyName,
                    userBaseUrl: account)
@@ -181,7 +182,7 @@ import NCCommunication
                 return
             }
         }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view, cellImageView: cellImageView))
     }
 
     func cancelDownloadAvatar(user: String) {
@@ -467,14 +468,16 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     var fileNameLocalPath: String
     var cell: NCCellProtocol!
     var view: UIView?
+    var cellImageView: UIImageView?
 
-    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?) {
+    init(user: String, fileName: String, fileNameLocalPath: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
         self.user = user
         self.fileName = fileName
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
         self.view = view
         self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+        self.cellImageView = cellImageView
     }
 
     override func start() {
@@ -490,7 +493,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
 
                     DispatchQueue.main.async {
                         if self.user == self.cell.fileUser {
-                            if let avatarImageView = self.cell?.fileAvatarImageView {
+                            if let avatarImageView = self.cellImageView {
                                 UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
                                     avatarImageView.image = imageAvatar
                                 } completion: { _ in
