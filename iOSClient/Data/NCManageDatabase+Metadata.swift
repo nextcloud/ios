@@ -164,7 +164,7 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadatas)
     }
 
-    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = "Files", subline: String? = nil, iconName: String? = nil) -> tableMetadata {
+    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = "files", subline: String? = nil, iconName: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
         if isUrl {

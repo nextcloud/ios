@@ -93,6 +93,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.obscuresBackgroundDuringPresentation = false
             searchController?.delegate = self
             searchController?.searchBar.delegate = self
+            searchController?.searchBar.autocapitalizationType = .none
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
         }
@@ -1371,15 +1372,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
             if isSearching {
-                cell.labelTitle.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
-                cell.labelTitle.lineBreakMode = .byTruncatingHead
+                if metadata.name == "files" {
+                    cell.labelTitle.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
+                    cell.labelTitle.lineBreakMode = .byTruncatingHead
+                    cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                } else {
+                    cell.labelTitle.text = metadata.fileName
+                    cell.labelTitle.lineBreakMode = .byTruncatingTail
+                    cell.labelInfo.text = metadata.subline
+                }
             } else {
                 cell.labelTitle.text = metadata.fileNameView
                 cell.labelTitle.lineBreakMode = .byTruncatingMiddle
-
+                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
             }
+
             cell.labelTitle.textColor = NCBrandColor.shared.label
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
             cell.labelInfo.textColor = NCBrandColor.shared.systemGray
 
             cell.imageSelect.image = nil
