@@ -1234,8 +1234,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
-        if isEditMode { return nil }
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
+        if isEditMode || metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue { return nil }
+
         let identifier = indexPath as NSCopying
         var image: UIImage?
         let cell = collectionView.cellForItem(at: indexPath)
@@ -1319,14 +1320,19 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 case let str where str.contains("contacts"):
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconContacts
                 case let str where str.contains("conversation"):
-                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconConversation
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconTalk
                 case let str where str.contains("calendar"):
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconCalendar
                 case let str where str.contains("deck"):
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconDeck
+                case let str where str.contains("mail"):
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconMail
+                case let str where str.contains("talk"):
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconTalk
                 default:
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.file
                 }
+                print(metadata.iconUrl)
             }
         }
 
@@ -1415,6 +1421,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             cell.imageItem.image = nil
             cell.imageItem.backgroundColor = nil
+
+            cell.hideButtonShare(false)
+            cell.hideButtonMore(false)
 
             // Progress
             var progress: Float = 0.0
@@ -1547,8 +1556,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // E2EE
             if metadata.e2eEncrypted || isEncryptedFolder {
                 cell.hideButtonShare(true)
-            } else {
-                cell.hideButtonShare(false)
+            }
+
+            // URL
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+                cell.hideButtonShare(true)
+                cell.hideButtonMore(true)
+            }
+
+            // Disable Share Button
+            if appDelegate.disableSharesView {
+                cell.hideButtonShare(true)
             }
 
             // Remove last separator
@@ -1571,11 +1589,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.selectMode(false)
             }
             cell.accessibilityValue = a11yValues.joined(separator: ", ")
-
-            // Disable Share Button
-            if appDelegate.disableSharesView {
-                cell.hideButtonShare(true)
-            }
 
             return cell
         }
@@ -1600,6 +1613,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             cell.imageItem.image = nil
             cell.imageItem.backgroundColor = nil
+
+            cell.hideButtonMore(false)
 
             // Progress
             var progress: Float = 0.0
@@ -1681,6 +1696,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.livePhoto {
                 cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
                 a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
+            }
+
+            // URL
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+                cell.hideButtonMore(true)
             }
 
             // Edit mode

@@ -936,18 +936,14 @@ import Queuer
         }
 
         NCCommunication.shared.unifiedSearch(term: literal) { provider in
-            ["contacts", "files", "fulltextsearch", "talk-conversations",].contains(provider.id)
+            ["calendar", "circles", "collectives-page-content", "collectives", "collectives-pages", "comments", "contacts", "deck", "deck-comment", "discourse-search-post", "discourse-search-topic", "files", "fulltextsearch", "github-search-issues", "github-search-repos", "mail", "notes", "settings", "settings_apps", "talk-conversations", "talk-message", "talk-message-current", "tasks", "zammad-search"].contains(provider.id)
         } update: { partialResult, provider, errorCode, errorDescription in
             guard let partialResult = partialResult else { return }
             
             switch provider.id {
-            case "contacts", "talk-conversations":
+            case "calendar", "circles", "collectives-page-content", "collectives", "collectives-pages", "comments", "contacts", "deck", "deck-comment", "discourse-search-post", "discourse-search-topic", "github-search-issues", "github-search-repos", "mail", "notes", "settings", "settings_apps", "talk-conversations", "talk-message", "talk-message-current", "tasks", "zammad-search":
                 partialResult.entries.forEach({ entry in
-                    var iconName = entry.thumbnailURL
-                    if iconName.isEmpty {
-                        iconName = entry.icon
-                    }
-                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name.lowercased(), subline: entry.subline, iconName: iconName)
+                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
                     searchFiles.insert(metadata)
                 })
             case "files":
@@ -980,7 +976,9 @@ import Queuer
                         }
                     }
                 })
-            default: return     // unknown provider results
+            default:
+                print("unknown provider results " + provider.id)
+                return
             }
             update(searchFiles)
         } completion: { results, errorCode, errorDescription in
