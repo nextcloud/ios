@@ -171,6 +171,9 @@
 + (BOOL)getAutomaticDownloadImage;
 + (void)setAutomaticDownloadImage:(BOOL)set;
 
++ (BOOL)getAutoplayVideo;
++ (void)setAutoplayVideo:(BOOL)set;
+
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 

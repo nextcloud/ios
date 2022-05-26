@@ -58,7 +58,7 @@ class NCPlayer: NSObject {
     init(url: URL, autoPlay: Bool, isProxy: Bool, imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
 
         self.url = url
-        self.autoPlay = autoPlay
+        self.autoPlay = CCUtility.getAutoplayVideo()
         self.isProxy = isProxy
         self.isStartPlayer = false
         self.isStartObserver = false

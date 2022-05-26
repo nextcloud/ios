@@ -166,6 +166,8 @@
 "_delete_video_"            = "Delete video";
 "_automatic_Download_Image_" = "Use images in full resolution";
 "_automatic_Download_Image_footer_" = "When viewing images always download, if not available locally, the images in full resolution";
+"_autoplay_Videos_"         = "Autoplay videos";
+"_autoplay_Videos_footer_"  = "When viewing videos automatically start playing content";
 "_size_"                    = "Size";
 "_dimension_"               = "Dimension";
 "_duration_"                = "Duration";

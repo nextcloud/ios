@@ -670,6 +670,17 @@
     [UICKeyChainStore setString:sSet forKey:@"automaticDownloadImage" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)getAutoplayVideo
+{
+    return [[UICKeyChainStore stringForKey:@"autoplayVideo" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setAutoplayVideo:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"autoplayVideo" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 + (BOOL)getAccountRequest
 {
     return [[UICKeyChainStore stringForKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
