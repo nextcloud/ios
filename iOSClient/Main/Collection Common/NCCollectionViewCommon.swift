@@ -364,8 +364,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
                 reloadDataSourceNetwork(forced: true)
             } else {
-                if let row = dataSource.deleteMetadata(ocId: ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
+                if let indexPath = dataSource.deleteMetadata(ocId: ocId) {
                     collectionView?.performBatchUpdates({
                         collectionView?.deleteItems(at: [indexPath])
                     }, completion: { _ in
@@ -381,8 +380,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let serverUrlFrom = userInfo["serverUrlFrom"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             // DEL
             if serverUrlFrom == serverUrl && metadata.account == appDelegate.account {
-                if let row = dataSource.deleteMetadata(ocId: ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
+                if let indexPath = dataSource.deleteMetadata(ocId: ocId) {
                     collectionView?.performBatchUpdates({
                         collectionView?.deleteItems(at: [indexPath])
                     }, completion: { _ in
@@ -391,8 +389,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 // ADD
             } else if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                if let row = dataSource.addMetadata(metadata) {
-                    let indexPath = IndexPath(row: row, section: 0)
+                if let indexPath = dataSource.addMetadata(metadata) {
                     collectionView?.performBatchUpdates({
                         collectionView?.insertItems(at: [indexPath])
                     }, completion: { _ in
@@ -431,7 +428,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func favoriteFile(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if dataSource.getIndexMetadata(ocId: metadata.ocId) != nil {
+            if dataSource.getIndexPathMetadata(ocId: metadata.ocId) != nil {
                 reloadDataSource()
             }
         }
@@ -440,8 +437,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadStartFile(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                let indexPath = IndexPath(row: row, section: 0)
+            if let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId) {
                 if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                     collectionView?.reloadItems(at: [indexPath])
                 }
@@ -455,9 +451,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String,
               let _ = userInfo["errorCode"] as? Int,
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-              let row = dataSource.reloadMetadata(ocId: metadata.ocId)
+              let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId)
         else { return }
-        let indexPath = IndexPath(row: row, section: 0)
         if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
             collectionView?.reloadItems(at: [indexPath])
         }
@@ -466,8 +461,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadCancelFile(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                let indexPath = IndexPath(row: row, section: 0)
+            if let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId) {
                 if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                     collectionView?.reloadItems(at: [indexPath])
                 }
@@ -500,8 +494,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let account = userInfo["account"] as? String {
 
             if serverUrl == self.serverUrl && account == appDelegate.account {
-                if let row = dataSource.deleteMetadata(ocId: ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
+                if let indexPath = dataSource.deleteMetadata(ocId: ocId) {
                     collectionView?.performBatchUpdates({
                         if indexPath.section < (collectionView?.numberOfSections ?? 0) && indexPath.row < (collectionView?.numberOfItems(inSection: indexPath.section) ?? 0) {
                             collectionView?.deleteItems(at: [indexPath])
@@ -522,8 +515,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
 
-            if let index = dataSource.getIndexMetadata(ocId: ocId) {
-                if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
+            if let indexPath = dataSource.getIndexPathMetadata(ocId: ocId) {
+                if let cell = collectionView?.cellForItem(at: indexPath) {
                     if cell is NCListCell {
                         let cell = cell as! NCListCell
                         if progressNumber.floatValue == 1 {
@@ -1384,11 +1377,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return dataSource.numberOfSections()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberItems = dataSource.numberOfItems()
+        let numberItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
         return numberItems
     }

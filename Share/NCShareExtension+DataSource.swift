@@ -47,11 +47,11 @@ extension NCShareExtension: UICollectionViewDelegate {
 extension NCShareExtension: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return dataSource.numberOfSections()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItems = dataSource.numberOfItems()
+        let numberOfItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberOfItems, section: section)
         return numberOfItems
     }
