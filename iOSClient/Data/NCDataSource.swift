@@ -286,7 +286,7 @@ class NCDataSource: NSObject {
     }
 
     internal func getSectionField(metadata: tableMetadata) -> String {
-        
+
         switch self.groupByField {
         case "name":
             return metadata.name
