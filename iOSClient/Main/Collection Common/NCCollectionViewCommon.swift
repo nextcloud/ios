@@ -1593,6 +1593,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             // URL
             if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+                cell.imageLocal.image = nil
                 cell.hideButtonShare(true)
                 cell.hideButtonMore(true)
                 if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
@@ -1736,6 +1737,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             // URL
             if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+                cell.imageLocal.image = nil
                 cell.hideButtonMore(true)
                 if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
                     cell.fileUser = ownerId
