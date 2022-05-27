@@ -161,6 +161,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonShared.isHidden = status
     }
 
+    func hideSeparator(_ status: Bool) {
+        separator.isHidden = status
+    }
+
     func selectMode(_ status: Bool) {
         if status {
             imageItemLeftConstraint.constant = 45

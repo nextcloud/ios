@@ -1606,8 +1606,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.hideButtonShare(true)
             }
 
-            // Remove last separator
-            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
+            // Separator
+            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearching {
                 cell.separator.isHidden = true
             } else {
                 cell.separator.isHidden = false
