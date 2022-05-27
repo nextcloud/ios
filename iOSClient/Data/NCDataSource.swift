@@ -28,6 +28,7 @@ class NCDataSource: NSObject {
     public var metadatas: [tableMetadata] = []
     public var metadataShare: [String: tableShare] = [:]
     public var metadataOffLine: [String] = []
+    public var sections: [String] = []
 
     private var ascending: Bool = true
     private var sort: String = ""
@@ -60,30 +61,33 @@ class NCDataSource: NSObject {
         var metadataFavoriteFile: [tableMetadata] = []
         var metadataDirectory: [tableMetadata] = []
         var metadataFile: [tableMetadata] = []
+        var sections: [String] = []
 
         /*
         Metadata order
         */
 
         if sort != "none" && sort != "" {
-            metadatasSourceSorted = metadatasSource.sorted { (obj1: tableMetadata, obj2: tableMetadata) -> Bool in
-                if sort == "date" {
+            metadatasSourceSorted = metadatasSource.sorted {
+
+                switch sort {
+                case "date":
                     if ascending {
-                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
+                        return ($0.name, ($0.date as Date)) < ($1.name, ($1.date as Date))
                     } else {
-                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
+                        return ($0.name, ($0.date as Date)) > ($1.name, ($1.date as Date))
                     }
-                } else if sort == "size" {
+                case "size":
                     if ascending {
-                        return obj1.size < obj2.size
+                        return ($0.name, $0.size) < ($1.name, $1.size)
                     } else {
-                        return obj1.size > obj2.size
+                        return ($0.name, $0.size) > ($1.name, $1.size)
                     }
-                } else {
+                default:
                     if ascending {
-                        return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedAscending
+                        return ($0.name, $0.fileNameView.lowercased()) < ($1.name, $1.fileNameView.lowercased())
                     } else {
-                        return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedDescending
+                        return ($0.name, $0.fileNameView.lowercased()) > ($1.name, $1.fileNameView.lowercased())
                     }
                 }
             }
@@ -136,6 +140,9 @@ class NCDataSource: NSObject {
             } else {
                 metadataFile.append(metadata)
             }
+
+            // sections
+            sections.append(metadata.name)
         }
 
         metadatas.removeAll()
@@ -143,6 +150,7 @@ class NCDataSource: NSObject {
         metadatas += metadataFavoriteFile
         metadatas += metadataDirectory
         metadatas += metadataFile
+        self.sections = Array(Set(sections))
     }
 
     // MARK: -
