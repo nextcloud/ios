@@ -154,7 +154,12 @@ class NCDataSource: NSObject {
         metadatas += metadataFavoriteFile
         metadatas += metadataDirectory
         metadatas += metadataFile
-        self.sections = Array(Set(sections))
+
+        for section in sections {
+            if !self.sections.contains(section) {
+                self.sections.append(section)
+            }
+        }
     }
 
     // MARK: -

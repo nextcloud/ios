@@ -925,10 +925,12 @@ import Queuer
     }
 
     /// Unified Search (NC>=20)
-    @objc func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, update: @escaping (Set<tableMetadata>?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
-        var searchFiles = Set<tableMetadata>()
+    @objc func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, update: @escaping ([tableMetadata]?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+
+        var searchFiles: [tableMetadata] = []
         var errCode = 0
         var errDescr = ""
+        let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: .concurrent)
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
@@ -946,11 +948,15 @@ import Queuer
             case "files":
                 partialResult.entries.forEach({ entry in
                     if let fileId = entry.fileId,
-                       let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
-                        searchFiles.insert(result)
+                       let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                        concurrentQueue.async(flags: .barrier) {
+                            searchFiles.append(newMetadata)
+                        }
                     } else if let filePath = entry.filePath {
                         self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { newMetadata in
-                            searchFiles.insert(newMetadata)
+                            concurrentQueue.async(flags: .barrier) {
+                                searchFiles.append(newMetadata)
+                            }
                         }
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
@@ -961,22 +967,28 @@ import Queuer
                 partialResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let tableFile = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
+                    if let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
                               format: "account == %@ && path == %@ && fileName == %@",
                               urlBase.userAccount,
                               "/remote.php/dav/files/" + urlBase.user + dir,
                               filename)) {
-                        searchFiles.insert(tableFile)
+                        concurrentQueue.async(flags: .barrier) {
+                            searchFiles.append(newMetadata)
+                        }
                     } else {
                         self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { newMetadata in
-                            searchFiles.insert(newMetadata)
+                            concurrentQueue.async(flags: .barrier) {
+                                searchFiles.append(newMetadata)
+                            }
                         }
                     }
                 })
             default:
                 partialResult.entries.forEach({ entry in
-                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
-                    searchFiles.insert(metadata)
+                    concurrentQueue.async(flags: .barrier) {
+                        let newMetadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                        searchFiles.append(newMetadata)
+                    }
                 })
             }
             update(searchFiles)
@@ -1519,7 +1531,6 @@ import Queuer
     }
     */
 }
-
 
 extension Array where Element == URLQueryItem {
     subscript(name: String) -> URLQueryItem? {

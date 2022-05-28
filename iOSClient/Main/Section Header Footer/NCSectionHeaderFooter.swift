@@ -155,6 +155,18 @@ extension NCSectionHeaderMenuDelegate {
     func tapRichWorkspace(sender: Any) {}
 }
 
+class NCSectionHeader: UICollectionReusableView {
+
+    @IBOutlet weak var labelSection: UILabel!
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        self.backgroundColor = UIColor.clear
+        //labelSection.textColor = NCBrandColor.shared.gray
+    }
+}
+
 class NCSectionFooter: UICollectionReusableView {
 
     @IBOutlet weak var labelSection: UILabel!
@@ -190,5 +202,10 @@ class NCSectionFooter: UICollectionReusableView {
         } else {
             labelSection.text = foldersText + ", " + filesText
         }
+    }
+
+    func setTitleLabel(text: String) {
+
+        labelSection.text = text
     }
 }

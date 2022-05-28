@@ -415,6 +415,7 @@
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */; };
+		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -947,6 +948,7 @@
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
 		F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewer.swift; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1384,8 +1386,9 @@
 			isa = PBXGroup;
 			children = (
 				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
-				F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */,
+				F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */,
 				F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */,
+				F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */,
 			);
 			path = "Section Header Footer";
 			sourceTree = "<group>";
@@ -2343,6 +2346,7 @@
 				F73D11FA253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard in Resources */,
 				F7EDE51B262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib in Resources */,
 				F73B422B2476764F00A30FD3 /* NCNotification.storyboard in Resources */,
+				F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */,
 				F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
