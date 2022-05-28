@@ -29,9 +29,9 @@ extension NCShareExtension {
 
         layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
 
-        let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
         self.dataSource = NCDataSource(
-            metadatasSource: metadatasSource,
+            metadatas: metadatas,
             sort: layoutForView?.sort,
             ascending: layoutForView?.ascending,
             directoryOnTop: layoutForView?.directoryOnTop,

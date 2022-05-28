@@ -66,7 +66,7 @@ class NCOffline: NCCollectionViewCommon {
         }
 
         self.dataSource = NCDataSource(
-            metadatasSource: self.metadatasSource,
+            metadatas: self.metadatasSource,
             sort: self.layoutForView?.sort,
             ascending: self.layoutForView?.ascending,
             directoryOnTop: self.layoutForView?.directoryOnTop,

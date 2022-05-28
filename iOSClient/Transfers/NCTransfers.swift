@@ -270,7 +270,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.reloadDataSource()
 
         metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-        self.dataSource = NCDataSource(metadatasSource: metadatasSource)
+        self.dataSource = NCDataSource(metadatas: metadatasSource)
 
         refreshControl.endRefreshing()
         collectionView.reloadData()

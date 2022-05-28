@@ -959,9 +959,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch, update: { metadatas in
                 DispatchQueue.main.async {
                     // update
+                    /*
+                    var indexPaths: [IndexPath] = []
                     guard let metadatas = metadatas else { return }
-                    //self.metadatasSource = Array(metadatas)
-                    //self.reloadDataSource()
+                    for metadata in metadatas {
+                        if let indexPath = self.dataSource.addMetadata(metadata, withCreateMetadatas: false) {
+                            indexPaths.append(indexPath)
+                        }
+                    }
+                    self.metadatasSource = self.dataSource.createMetadatas()
+                    self.collectionView?.performBatchUpdates({
+                        self.collectionView?.insertItems(at: indexPaths)
+                    }, completion: { _ in
+                        self.collectionView?.reloadData()
+                    })
+                    */
                 }
             }, completion: completionHandler)
         } else {

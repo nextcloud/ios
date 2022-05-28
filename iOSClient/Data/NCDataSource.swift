@@ -41,9 +41,10 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatasSource: [tableMetadata], sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name") {
+    init(metadatas: [tableMetadata], sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name") {
         super.init()
 
+        self.metadatas = metadatas
         self.sort = sort ?? "none"
         self.ascending = ascending ?? false
         self.directoryOnTop = directoryOnTop ?? true
@@ -51,26 +52,26 @@ class NCDataSource: NSObject {
         self.filterLivePhoto = filterLivePhoto ?? true
         self.groupByField = groupByField
 
-        createMetadatas(metadatasSource: metadatasSource)
+        createMetadatas()
     }
 
     // MARK: -
 
-    private func createMetadatas(metadatasSource: [tableMetadata]) {
+    @discardableResult
+    func createMetadatas() -> [tableMetadata] {
 
         var metadatasSourceSorted: [tableMetadata] = []
         var metadataFavoriteDirectory: [tableMetadata] = []
         var metadataFavoriteFile: [tableMetadata] = []
         var metadataDirectory: [tableMetadata] = []
         var metadataFile: [tableMetadata] = []
-        var sections: [String] = []
 
         /*
         Metadata order
         */
 
         if sort != "none" && sort != "" {
-            metadatasSourceSorted = metadatasSource.sorted {
+            metadatasSourceSorted = self.metadatas.sorted {
 
                 switch sort {
                 case "date":
@@ -94,7 +95,7 @@ class NCDataSource: NSObject {
                 }
             }
         } else {
-            metadatasSourceSorted = metadatasSource.sorted {
+            metadatasSourceSorted = self.metadatas.sorted {
                 (getSectionField(metadata:$0)) < (getSectionField(metadata:$1))
             }
         }
@@ -146,20 +147,22 @@ class NCDataSource: NSObject {
             }
 
             // sections
-            sections.append(getSectionField(metadata:metadata))
-        }
-
-        metadatas.removeAll()
-        metadatas += metadataFavoriteDirectory
-        metadatas += metadataFavoriteFile
-        metadatas += metadataDirectory
-        metadatas += metadataFile
-
-        for section in sections {
+            let section = getSectionField(metadata:metadata)
             if !self.sections.contains(section) {
                 self.sections.append(section)
             }
         }
+
+        self.metadatas.removeAll()
+
+        // Struct view : favorite dir -> favorite file -> directory -> files
+        // TODO: for sections, this is for 1 sections
+        self.metadatas += metadataFavoriteDirectory
+        self.metadatas += metadataFavoriteFile
+        self.metadatas += metadataDirectory
+        self.metadatas += metadataFile
+
+        return self.metadatas
     }
 
     // MARK: -
@@ -170,7 +173,7 @@ class NCDataSource: NSObject {
         var files: Int = 0
         var size: Int64 = 0
 
-        for metadata in metadatas {
+        for metadata in self.metadatas {
             if metadata.directory {
                 directories += 1
             } else {
@@ -185,7 +188,7 @@ class NCDataSource: NSObject {
     func deleteMetadata(ocId: String) -> IndexPath? {
 
         if let indexPath = self.getIndexPathMetadata(ocId: ocId) {
-            metadatas.remove(at: indexPath.row)
+            self.metadatas.remove(at: indexPath.row)
             return indexPath
         }
 
@@ -204,7 +207,7 @@ class NCDataSource: NSObject {
         }
 
         guard let indexPath = indexPath, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
-        metadatas[indexPath.row] = metadata
+        self.metadatas[indexPath.row] = metadata
 
         if CCUtility.fileProviderStorageExists(metadata) {
             let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -233,7 +236,7 @@ class NCDataSource: NSObject {
 
         // Append & rebuild
         metadatas.append(metadata)
-        createMetadatas(metadatasSource: metadatas)
+        createMetadatas()
 
         return getIndexPathMetadata(ocId: metadata.ocId)
     }
@@ -264,7 +267,7 @@ class NCDataSource: NSObject {
     
     func numberOfItemsInSection(_ section: Int) -> Int {
 
-        if self.sections.count == 0 || metadatas.count == 0 { return 0 }
+        if self.sections.count == 0 || self.metadatas.count == 0 { return 0 }
         let sectionName = self.sections[section]
         let metadatas = self.metadatas.filter({ getSectionField(metadata: $0) == sectionName})
 
