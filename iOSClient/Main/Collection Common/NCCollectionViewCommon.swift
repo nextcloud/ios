@@ -26,7 +26,7 @@ import Realm
 import NCCommunication
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
-    var selectableDataSource: [RealmSwiftObject] { dataSource.metadatas }
+    var selectableDataSource: [RealmSwiftObject] { dataSource.metadatasSource }
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -1197,7 +1197,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatas.count)"
+            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatasSource.count)"
             return
         }
 
@@ -1216,7 +1216,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                 var metadatas: [tableMetadata] = []
-                for metadata in dataSource.metadatas {
+                for metadata in dataSource.metadatasSource {
                     if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                         metadatas.append(metadata)
                     }
@@ -1298,7 +1298,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                header.setStatusButton(count: dataSource.metadatas.count)
+                header.setStatusButton(count: dataSource.metadatasSource.count)
                 header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
                 header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
                 header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)

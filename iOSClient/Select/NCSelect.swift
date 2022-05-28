@@ -374,7 +374,7 @@ extension NCSelect: UICollectionViewDataSource {
             }
 
             header.delegate = self
-            header.setStatusButton(count: dataSource.metadatas.count)
+            header.setStatusButton(count: dataSource.metadatasSource.count)
             header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
             header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
@@ -687,7 +687,7 @@ extension NCSelect {
         }
 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatas: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
 
         if withLoadFolder {
             loadFolder()

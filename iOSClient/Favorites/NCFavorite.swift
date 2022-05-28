@@ -53,7 +53,7 @@ class NCFavorite: NCCollectionViewCommon {
         }
 
         self.dataSource = NCDataSource(
-            metadatas: self.metadatasSource,
+            metadatasSource: self.metadatasSource,
             sort: self.layoutForView?.sort,
             ascending: self.layoutForView?.ascending,
             directoryOnTop: self.layoutForView?.directoryOnTop,
