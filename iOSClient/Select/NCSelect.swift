@@ -385,7 +385,7 @@ extension NCSelect: UICollectionViewDataSource {
 
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
 
-            let info = dataSource.getFilesInformation()
+            let info = dataSource.getFooterInformation()
             footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
 
             return footer
@@ -439,16 +439,13 @@ extension NCSelect: UICollectionViewDataSource {
             }
         }
 
-        var tableShare: tableShare?
         var isShare = false
         var isMounted = false
 
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        if dataSource.metadataShare[metadata.ocId] != nil {
-            tableShare = dataSource.metadataShare[metadata.ocId]
-        }
+        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
 
         // LAYOUT LIST
 
@@ -509,7 +506,7 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
                 // image local
-                if dataSource.metadataOffLine.contains(metadata.ocId) {
+                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.local
@@ -606,7 +603,7 @@ extension NCSelect: UICollectionViewDataSource {
             } else {
 
                 // image Local
-                if dataSource.metadataOffLine.contains(metadata.ocId) {
+                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.local

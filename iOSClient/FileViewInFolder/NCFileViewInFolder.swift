@@ -98,7 +98,8 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                 // Blink file
                 if self.fileName != nil {
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, self.fileName!)) {
-                        if let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId) {
+                        let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+                        if let indexPath = indexPath {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 UIView.animate(withDuration: 0.3) {
                                     self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)

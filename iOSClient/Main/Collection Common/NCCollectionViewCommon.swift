@@ -430,9 +430,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func favoriteFile(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if dataSource.getIndexPathMetadata(ocId: metadata.ocId) != nil {
-                reloadDataSource()
-            }
+            let (_, _) = dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+            reloadDataSource()
         }
     }
 
@@ -516,8 +515,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary?, let progressNumber = userInfo["progress"] as? NSNumber, let totalBytes = userInfo["totalBytes"] as? Int64, let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64, let ocId = userInfo["ocId"] as? String {
 
             let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+            let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId)
 
-            if let indexPath = dataSource.getIndexPathMetadata(ocId: ocId) {
+            if let indexPath = indexPath {
                 if let cell = collectionView?.cellForItem(at: indexPath) {
                     if cell is NCListCell {
                         let cell = cell as! NCListCell
@@ -1309,7 +1309,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
 
-                header.labelSection.text = self.dataSource.sections[indexPath.section].firstUppercased
+                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
 
                 return header
@@ -1320,7 +1320,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
 
             if dataSource.numberOfSections() == 1 {
-                let info = dataSource.getFilesInformation()
+                let info = dataSource.getFooterInformation()
                 footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size )
             } else {
                 footer.setTitleLabel(text: "")
@@ -1430,7 +1430,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        var tableShare: tableShare?
         var isShare = false
         var isMounted = false
 
@@ -1439,9 +1438,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
         }
 
-        if dataSource.metadataShare[metadata.ocId] != nil {
-            tableShare = dataSource.metadataShare[metadata.ocId]
-        }
+        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
 
         //
         // LAYOUT LIST
@@ -1537,7 +1534,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
 
                 // image local
-                if dataSource.metadataOffLine.contains(metadata.ocId) {
+                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
                     a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata) {
@@ -1732,7 +1729,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
 
                 // image Local
-                if dataSource.metadataOffLine.contains(metadata.ocId) {
+                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                     a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                 } else if CCUtility.fileProviderStorageExists(metadata) {
