@@ -110,9 +110,17 @@ class NCDataSource: NSObject {
                 return nil
             }
         } else {
+            // NEW section
             createSections()
             let sectionValue = getSectionValue(metadata: metadata)
             createMetadataForSection(sectionValue: sectionValue)
+            // get IndexPath of new section
+            if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue }) {
+                let metadataForSection = metadatasForSection[sectionIndex]
+                if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
+                    return IndexPath(row: rowIndex, section: sectionIndex)
+                }
+            }
         }
 
         return nil
@@ -121,18 +129,35 @@ class NCDataSource: NSObject {
     func deleteMetadata(ocId: String) -> IndexPath? {
 
         var indexPathReturn: IndexPath?
+        var removeMetadataForSection = false
+        var sectionValue = ""
 
         // DELETE metadataForSection (IMPORTANT FIRST)
         let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocId)
         if let indexPath = indexPath, let metadataForSection = metadataForSection {
             metadataForSection.metadatas.remove(at: indexPath.row)
-            metadataForSection.createMetadatasForSection()
+            if metadataForSection.metadatas.count == 0 {
+                sectionValue = metadataForSection.sectionValue
+                removeMetadataForSection = true
+            } else {
+                metadataForSection.createMetadatasForSection()
+            }
             indexPathReturn = indexPath
         }
 
         // DELETE metadatasSource (IMPORTANT LAST)
         if let rowIndex = self.metadatasSource.firstIndex(where: {$0.ocId == ocId}) {
             self.metadatasSource.remove(at: rowIndex)
+        }
+
+        // REMOVE sectionsValue / metadatasForSection
+        if removeMetadataForSection {
+            if let index = self.sectionsValue.firstIndex(where: {$0 == sectionValue }) {
+                self.sectionsValue.remove(at: index)
+            }
+            if let index = self.metadatasForSection.firstIndex(where: {$0.sectionValue == sectionValue }) {
+                self.metadatasForSection.remove(at: index)
+            }
         }
 
         return indexPathReturn
