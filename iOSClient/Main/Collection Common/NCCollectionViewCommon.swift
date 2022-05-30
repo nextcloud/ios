@@ -360,55 +360,64 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let fileNameView = userInfo["fileNameView"] as? String, let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool {
-            if onlyLocalCache {
-                reloadDataSource()
-            } else if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
-                reloadDataSourceNetwork(forced: true)
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let fileNameView = userInfo["fileNameView"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String,
+              (serverUrl == serverUrl && account == appDelegate.account),
+              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
+        else {
+            return
+        }
+        if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
+            reloadDataSourceNetwork(forced: true)
+        } else if onlyLocalCache {
+            if let indexPath = dataSource.reloadMetadata(ocId: ocId), (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.reloadItems(at: [indexPath])
             } else {
-                if let indexPath = dataSource.deleteMetadata(ocId: ocId) {
-                    collectionView?.performBatchUpdates({
-                        collectionView?.deleteItems(at: [indexPath])
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                }
+                reloadDataSource()
+            }
+        } else {
+            if let indexPath = dataSource.deleteMetadata(ocId: ocId), (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.performBatchUpdates({
+                    collectionView?.deleteItems(at: [indexPath])
+                }, completion: { _ in
+                    self.collectionView?.reloadData()
+                })
+            } else {
+                reloadDataSource()
             }
         }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let serverUrlFrom = userInfo["serverUrlFrom"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            // DEL
-            if serverUrlFrom == serverUrl && metadata.account == appDelegate.account {
-                if let indexPath = dataSource.deleteMetadata(ocId: ocId) {
-                    collectionView?.performBatchUpdates({
-                        collectionView?.deleteItems(at: [indexPath])
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                }
-                // ADD
-            } else if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                if let indexPath = dataSource.addMetadata(metadata) {
-                    collectionView?.performBatchUpdates({
-                        collectionView?.insertItems(at: [indexPath])
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrlFrom = userInfo["serverUrlFrom"] as? String,
+              serverUrlFrom == self.serverUrl,
+              let indexPath = dataSource.deleteMetadata(ocId: ocId),
+              (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section))
+        else {
+            return
         }
+        collectionView?.performBatchUpdates({
+            collectionView?.deleteItems(at: [indexPath])
+        }, completion: { _ in
+            self.collectionView?.reloadData()
+        })
     }
 
     @objc func copyFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let serverUrlTo = userInfo["serverUrlTo"] as? String {
-            if serverUrlTo == self.serverUrl {
-                reloadDataSource()
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrlTo = userInfo["serverUrlTo"] as? String,
+              serverUrlTo == self.serverUrl
+        else {
+            return
         }
+        reloadDataSource()
     }
 
     @objc func renameFile(_ notification: NSNotification) {
@@ -418,10 +427,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func createFolder(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                pushMetadata(metadata)
-            }
+        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account ) {
+            pushMetadata(metadata)
         } else {
             reloadDataSourceNetwork()
         }
@@ -429,21 +436,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func favoriteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            let (_, _) = dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else {
             reloadDataSource()
+            return
         }
+        dataSource.reloadMetadata(ocId: metadata.ocId)
+        collectionView?.reloadData()
     }
 
     @objc func downloadStartFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                    collectionView?.reloadItems(at: [indexPath])
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId),
+              (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section))
+        else {
+            reloadDataSource()
+            return
         }
+        collectionView?.reloadItems(at: [indexPath])
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -452,62 +467,77 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String,
               let _ = userInfo["errorCode"] as? Int,
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-              let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId)
-        else { return }
-        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-            collectionView?.reloadItems(at: [indexPath])
+              let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId),
+              (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section))
+        else {
+            reloadDataSource()
+            return
         }
+        collectionView?.reloadItems(at: [indexPath])
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                    collectionView?.reloadItems(at: [indexPath])
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId),
+              (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section))
+        else {
+            reloadDataSource()
+            return
         }
+        collectionView?.reloadItems(at: [indexPath])
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                dataSource.addMetadata(metadata)
-                self.collectionView?.reloadData()
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account),
+              let indexPath = dataSource.addMetadata(metadata)
+        else {
+            return
         }
+        collectionView?.performBatchUpdates({
+            collectionView?.insertItems(at: [indexPath])
+        }, completion: { _ in
+            self.collectionView?.reloadData()
+        })
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
-                collectionView?.reloadData()
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account),
+              let indexPath = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
+        else {
+            return
         }
+        collectionView?.reloadItems(at: [indexPath])
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let account = userInfo["account"] as? String {
-
-            if serverUrl == self.serverUrl && account == appDelegate.account {
-                if let indexPath = dataSource.deleteMetadata(ocId: ocId) {
-                    collectionView?.performBatchUpdates({
-                        if indexPath.section < (collectionView?.numberOfSections ?? 0) && indexPath.row < (collectionView?.numberOfItems(inSection: indexPath.section) ?? 0) {
-                            collectionView?.deleteItems(at: [indexPath])
-                        }
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                } else {
-                    self.reloadDataSource()
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String,
+              (serverUrl == self.serverUrl && account == appDelegate.account),
+              let indexPath = dataSource.deleteMetadata(ocId: ocId),
+              (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section))
+        else {
+            return
         }
+        collectionView?.performBatchUpdates({
+            collectionView?.deleteItems(at: [indexPath])
+        }, completion: { _ in
+            self.collectionView?.reloadData()
+        })
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {

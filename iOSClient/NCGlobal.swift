@@ -338,10 +338,10 @@ class NCGlobal: NSObject {
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, classFile, onlyLocalCache
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, serverUrl, account, classFile, onlyLocalCache
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, errorCode, errorDescription
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, serverUrlTo
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlFrom
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, serverUrlFrom
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
