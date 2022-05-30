@@ -29,14 +29,13 @@ import NCCommunication
 
 class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCTrashSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
-    var selectableDataSource: [RealmSwiftObject] { datasource }
-
     @IBOutlet weak var collectionView: UICollectionView!
 
     var trashPath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkFileId: String?
     var emptyDataSet: NCEmptyDataSet?
+    var selectableDataSource: [RealmSwiftObject] { datasource }
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 

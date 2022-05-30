@@ -26,7 +26,6 @@ import Realm
 import NCCommunication
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
-    var selectableDataSource: [RealmSwiftObject] { dataSource.metadatasSource }
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -47,6 +46,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var headerMenu: NCSectionHeaderMenu?
 
     internal var layoutForView: NCGlobal.layoutForViewType?
+    internal var selectableDataSource: [RealmSwiftObject] { dataSource.metadatasSource }
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
