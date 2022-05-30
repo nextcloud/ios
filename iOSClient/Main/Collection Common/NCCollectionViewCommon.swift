@@ -988,25 +988,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
+            self.refreshControl.beginRefreshing()
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch, update: { metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
                 DispatchQueue.main.async {
-                    // update
-                    /*
-                    var indexPaths: [IndexPath] = []
-                    guard let metadatas = metadatas else { return }
-                    for metadata in metadatas {
-                        if let indexPath = self.dataSource.addMetadata(metadata, withCreateMetadatas: false) {
-                            indexPaths.append(indexPath)
-                        }
+                    if self.searchController?.isActive == true {
+                        self.metadatasSource = metadatas
+                        self.dataSource = NCDataSource(
+                            metadatasSource: self.metadatasSource,
+                            sort: self.layoutForView?.sort,
+                            ascending: self.layoutForView?.ascending,
+                            directoryOnTop: self.layoutForView?.directoryOnTop,
+                            favoriteOnTop: true,
+                            filterLivePhoto: true)
+                        self.collectionView.reloadData()
                     }
-                    self.metadatasSource = self.dataSource.createMetadatas()
-                    self.collectionView?.performBatchUpdates({
-                        self.collectionView?.insertItems(at: indexPaths)
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                    */
                 }
             }, completion: completionHandler)
         } else {

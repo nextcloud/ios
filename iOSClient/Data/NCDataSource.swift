@@ -28,14 +28,14 @@ class NCDataSource: NSObject {
     public var metadatasSource: [tableMetadata] = []
     public var metadatasForSection: [NCMetadatasForSection] = []
 
+    private var sectionsValue: [String] = []
+
     private var ascending: Bool = true
     private var sort: String = ""
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
     private var filterLivePhoto: Bool = true
     private var groupByField: String = ""
-
-    private var sectionsValue: [String] = []
 
     override init() {
         super.init()
@@ -52,10 +52,8 @@ class NCDataSource: NSObject {
         self.filterLivePhoto = filterLivePhoto ?? true
         self.groupByField = groupByField
 
-        // Create sections && sorted
         createSections()
 
-        // Create metadataForSection
         for sectionValue in self.sectionsValue {
             createMetadataForSection(sectionValue: sectionValue)
         }
