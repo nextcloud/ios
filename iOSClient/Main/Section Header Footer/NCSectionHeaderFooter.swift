@@ -35,6 +35,9 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewSection: UIView!
+    @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var labelSection: UILabel!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
 
@@ -73,6 +76,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
             textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
         }
         textViewColor = NCBrandColor.shared.label
+
+        self.labelSection.text = ""
     }
 
     override func layoutSublayers(of layer: CALayer) {
@@ -163,7 +168,7 @@ class NCSectionHeader: UICollectionReusableView {
         super.awakeFromNib()
 
         self.backgroundColor = UIColor.clear
-        //labelSection.textColor = NCBrandColor.shared.gray
+        self.labelSection.text = ""
     }
 }
 
