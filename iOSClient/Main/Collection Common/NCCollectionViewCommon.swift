@@ -984,6 +984,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         isReloadDataSourceNetworkInProgress = true
+        self.metadatasSource.removeAll()
+        self.dataSource.clearDataSource()
         collectionView?.reloadData()
         
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)

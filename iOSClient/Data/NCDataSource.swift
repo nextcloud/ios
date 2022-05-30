@@ -61,6 +61,13 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
+    func clearDataSource() {
+
+        self.metadatasSource.removeAll()
+        self.metadatasForSection.removeAll()
+        self.sectionsValue.removeAll()
+    }
+
     func createSections() {
 
         self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
