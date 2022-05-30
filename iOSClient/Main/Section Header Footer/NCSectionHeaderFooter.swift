@@ -77,7 +77,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
         textViewColor = NCBrandColor.shared.label
 
-        self.labelSection.text = ""
+        labelSection.text = ""
+        viewSectionHeightConstraint.constant = 0
     }
 
     override func layoutSublayers(of layer: CALayer) {
