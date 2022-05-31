@@ -60,13 +60,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
         buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
 
-        buttonUpload.backgroundColor = .red
-        buttonUpload.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        buttonUpload.backgroundColor = .clear
+        buttonUpload.setTitleColor(.systemBlue, for: .normal)
         buttonUpload.setTitle(NSLocalizedString("_upload_", comment: ""), for: .normal)
-        buttonUpload.layer.borderColor = UIColor.yellow.cgColor
+        buttonUpload.layer.borderColor = UIColor.systemBlue.cgColor
         buttonUpload.layer.borderWidth = 0.5
-        buttonUpload.layer.cornerRadius = 5
-        buttonUpload.setImage( UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
+        buttonUpload.layer.cornerRadius = 10
+        buttonUpload.setImage( UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
 
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
