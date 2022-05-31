@@ -31,13 +31,14 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspace: UIView!
-    @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSection: UIView!
-    @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var labelSection: UILabel!
+
+    @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
 
@@ -126,6 +127,19 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         if richWorkspaceText != self.richWorkspaceText {
             textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
             self.richWorkspaceText = richWorkspaceText
+        }
+    }
+
+    func setRichWorkspaceHeight(_ size: CGFloat) {
+        viewRichWorkspaceHeightConstraint.constant = size
+    }
+
+    func setSectionHeight(_ size:CGFloat) {
+        viewSectionHeightConstraint.constant = size
+        if size == 0 {
+            viewSection.isHidden = true
+        } else {
+            viewSection.isHidden = false
         }
     }
 
