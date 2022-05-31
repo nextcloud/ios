@@ -54,7 +54,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
 
-    let headerCommand: CGFloat = 50
+    let headerCommands: CGFloat = 50 + 40 + 10 // (50 Layout + 40 Button + 10 space)
     let headerSection: CGFloat = 50
 
     private let footerHeight: CGFloat = 0
@@ -122,7 +122,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerCommand, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerCommands, delegate: self)
 
         // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -677,21 +677,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return userAlias
     }
 
-    func getHeaderHeight(section:Int) -> (heightHeaderCommand: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
+    func getHeaderHeight(section:Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
 
         var headerRichWorkspace: CGFloat = 0
 
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
             if trimmed.count > 0 && !isSearching {
-                headerRichWorkspace = UIScreen.main.bounds.size.height / 4
+                headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
         }
 
         if section == 0 && dataSource.numberOfSections() > 1 {
-            return (headerCommand, headerRichWorkspace, headerSection)
+            return (headerCommands, headerRichWorkspace, headerSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (headerCommand, headerRichWorkspace, 0)
+            return (headerCommands, headerRichWorkspace, 0)
         } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, headerSection)
         } else {
@@ -1852,9 +1852,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
 
-        let (heightHeaderCommand, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+        let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
 
-        return CGSize(width: collectionView.frame.width, height: heightHeaderCommand + heightHeaderRichWorkspace + heightHeaderSection)
+        return CGSize(width: collectionView.frame.width, height: heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {

@@ -29,6 +29,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
+    @IBOutlet weak var buttonUpload: UIButton!
+
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var textViewRichWorkspace: UITextView!
@@ -57,6 +59,14 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
         buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
+
+        buttonUpload.backgroundColor = .red
+        buttonUpload.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        buttonUpload.setTitle(NSLocalizedString("_upload_", comment: ""), for: .normal)
+        buttonUpload.layer.borderColor = UIColor.yellow.cgColor
+        buttonUpload.layer.borderWidth = 0.5
+        buttonUpload.layer.cornerRadius = 5
+        buttonUpload.setImage( UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.brandElement, size: 25), for: .normal)
 
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
@@ -153,6 +163,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     @IBAction func touchUpInsideOrder(_ sender: Any) {
         delegate?.tapOrderHeader(sender: sender)
+    }
+
+    @IBAction func touchUpInsideButtonUpload(_ sender: Any) {
+       
     }
 
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
