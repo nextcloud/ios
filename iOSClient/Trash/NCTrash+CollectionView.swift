@@ -61,10 +61,10 @@ extension NCTrash: UICollectionViewDataSource {
             else { return UICollectionReusableView() }
 
             if collectionView.collectionViewLayout == gridLayout {
-                trashHeader.buttonSwitch.setImage(UIImage(named: "switchList")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
+                trashHeader.buttonSwitch.setImage(UIImage(named: "switchList")?.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
                 trashHeader.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             } else {
-                trashHeader.buttonSwitch.setImage(UIImage(named: "switchGrid")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
+                trashHeader.buttonSwitch.setImage(UIImage(named: "switchGrid")?.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
                 trashHeader.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             }
 

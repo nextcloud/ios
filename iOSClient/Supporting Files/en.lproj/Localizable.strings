@@ -854,6 +854,7 @@
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
 "_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
+"_scan_"                    = "Scan";
 // Video
 "_select_trace_"            = "Select the trace";
 "_video_processing_"        = "Video processing";

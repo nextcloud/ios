@@ -18,7 +18,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QBu-GJ-Y52" userLabel="View Menu">
                     <rect key="frame" x="0.0" y="0.0" width="551" height="111"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LD-cd-zhc" userLabel="buttonSwitch">
+                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1LD-cd-zhc">
                             <rect key="frame" x="12" y="10" width="25" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="25" id="D76-X9-Tw9"/>
@@ -29,7 +29,7 @@
                                 <action selector="touchUpInsideSwitch:" destination="tys-A2-nDX" eventType="touchUpInside" id="iT8-1j-fib"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-yl-t5k" userLabel="buttonOrder">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-yl-t5k">
                             <rect key="frame" x="55" y="8.5" width="230" height="28"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="230" id="jvv-Ug-l3I"/>
@@ -42,7 +42,7 @@
                                 <action selector="touchUpInsideOrder:" destination="tys-A2-nDX" eventType="touchUpInside" id="oiL-3O-hMQ"/>
                             </connections>
                         </button>
-                        <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0O-wK-14O" userLabel="buttonSwitch">
+                        <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0O-wK-14O">
                             <rect key="frame" x="514" y="10" width="25" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="25" id="aEr-j8-JDO"/>
@@ -61,27 +61,70 @@
                                 <constraint firstAttribute="height" constant="1" id="VuP-sT-hUI"/>
                             </constraints>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hie-dN-B9L">
-                            <rect key="frame" x="10" y="61" width="104.5" height="40"/>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4m9-yf-RbB">
+                            <rect key="frame" x="0.0" y="50" width="551" height="61"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hie-dN-B9L">
+                                    <rect key="frame" x="10" y="11" width="96" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="X1Q-Rt-PQI"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
+                                    <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                    <state key="normal" title="Button 1" image="tv" catalog="system"/>
+                                    <connections>
+                                        <action selector="touchUpInsideButtonUpload:" destination="tys-A2-nDX" eventType="touchUpInside" id="PRS-wE-LRC"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cjh-je-E6h">
+                                    <rect key="frame" x="116" y="11" width="98" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="Zjv-nS-ufy"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
+                                    <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                    <state key="normal" title="Button 2" image="tv" catalog="system"/>
+                                    <connections>
+                                        <action selector="touchUpInsideButtonCreateFolder:" destination="tys-A2-nDX" eventType="touchUpInside" id="v9i-Kt-hbI"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zta-tv-COt">
+                                    <rect key="frame" x="224" y="11" width="98" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="Dm7-86-DVq"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
+                                    <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                    <state key="normal" title="Button 2" image="tv" catalog="system"/>
+                                    <connections>
+                                        <action selector="touchUpInsideButtonScanDocument:" destination="tys-A2-nDX" eventType="touchUpInside" id="chM-32-kSs"/>
+                                    </connections>
+                                </button>
+                            </subviews>
                             <constraints>
-                                <constraint firstAttribute="height" constant="40" id="X1Q-Rt-PQI"/>
+                                <constraint firstItem="cjh-je-E6h" firstAttribute="leading" secondItem="Hie-dN-B9L" secondAttribute="trailing" constant="10" id="5aP-yP-Qrg"/>
+                                <constraint firstItem="Zta-tv-COt" firstAttribute="leading" secondItem="cjh-je-E6h" secondAttribute="trailing" constant="10" id="6hB-av-smB"/>
+                                <constraint firstItem="Zta-tv-COt" firstAttribute="centerY" secondItem="cjh-je-E6h" secondAttribute="centerY" id="Fcu-ai-2K5"/>
+                                <constraint firstItem="Hie-dN-B9L" firstAttribute="leading" secondItem="4m9-yf-RbB" secondAttribute="leading" constant="10" id="GNB-In-2UC"/>
+                                <constraint firstItem="cjh-je-E6h" firstAttribute="centerY" secondItem="Hie-dN-B9L" secondAttribute="centerY" id="Wan-Qr-mdA"/>
+                                <constraint firstAttribute="bottom" secondItem="Hie-dN-B9L" secondAttribute="bottom" constant="10" id="kl1-Im-JkD"/>
                             </constraints>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" image="tv" catalog="system" title="Button 1"/>
-                            <connections>
-                                <action selector="touchUpInsideButtonUpload:" destination="tys-A2-nDX" eventType="touchUpInside" id="PRS-wE-LRC"/>
-                            </connections>
-                        </button>
+                        </view>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="Hie-dN-B9L" firstAttribute="leading" secondItem="QBu-GJ-Y52" secondAttribute="leading" constant="10" id="1BO-pk-3cu"/>
                         <constraint firstItem="1LD-cd-zhc" firstAttribute="leading" secondItem="QBu-GJ-Y52" secondAttribute="leading" constant="12" id="3bI-Ld-Ddl"/>
                         <constraint firstAttribute="trailing" secondItem="LZu-Te-clJ" secondAttribute="trailing" id="4Ue-ug-B6K"/>
                         <constraint firstItem="1LD-cd-zhc" firstAttribute="top" secondItem="QBu-GJ-Y52" secondAttribute="top" constant="10" id="6P3-o3-2qv"/>
                         <constraint firstAttribute="bottom" secondItem="LZu-Te-clJ" secondAttribute="bottom" id="DDK-aB-wEh"/>
-                        <constraint firstAttribute="bottom" secondItem="Hie-dN-B9L" secondAttribute="bottom" constant="10" id="QAZ-i4-RLP"/>
+                        <constraint firstItem="4m9-yf-RbB" firstAttribute="leading" secondItem="QBu-GJ-Y52" secondAttribute="leading" id="F59-vX-9qO"/>
+                        <constraint firstAttribute="bottom" secondItem="4m9-yf-RbB" secondAttribute="bottom" id="Mk0-OY-HUe"/>
+                        <constraint firstItem="4m9-yf-RbB" firstAttribute="top" secondItem="QBu-GJ-Y52" secondAttribute="top" constant="50" id="aRU-Ec-O4g"/>
                         <constraint firstItem="D0O-wK-14O" firstAttribute="centerY" secondItem="1LD-cd-zhc" secondAttribute="centerY" id="bgO-UA-bhj"/>
                         <constraint firstItem="LZu-Te-clJ" firstAttribute="leading" secondItem="QBu-GJ-Y52" secondAttribute="leading" id="c4q-XY-3mD"/>
+                        <constraint firstAttribute="trailing" secondItem="4m9-yf-RbB" secondAttribute="trailing" id="oRr-JT-w9v"/>
                         <constraint firstAttribute="trailing" secondItem="D0O-wK-14O" secondAttribute="trailing" constant="12" id="qZw-Ob-In1"/>
                         <constraint firstItem="0bo-yl-t5k" firstAttribute="leading" secondItem="1LD-cd-zhc" secondAttribute="trailing" constant="18" id="tBF-23-TJ4"/>
                         <constraint firstItem="0bo-yl-t5k" firstAttribute="centerY" secondItem="1LD-cd-zhc" secondAttribute="centerY" id="wdV-T7-dwy"/>
@@ -138,15 +181,18 @@
                 <constraint firstItem="NC1-5C-E5z" firstAttribute="bottom" secondItem="f9U-NY-4OS" secondAttribute="top" id="pmY-5s-Pv2"/>
             </constraints>
             <connections>
+                <outlet property="buttonCreateFolder" destination="cjh-je-E6h" id="RUW-w2-cfw"/>
                 <outlet property="buttonMore" destination="D0O-wK-14O" id="eEx-3R-zCS"/>
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
                 <outlet property="buttonOrderWidthConstraint" destination="jvv-Ug-l3I" id="E6N-z6-2VC"/>
+                <outlet property="buttonScanDocument" destination="Zta-tv-COt" id="D7n-8P-5l4"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
                 <outlet property="buttonUpload" destination="Hie-dN-B9L" id="AfM-W6-RDX"/>
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
                 <outlet property="separator" destination="LZu-Te-clJ" id="EwO-za-LxT"/>
                 <outlet property="separatorHeightConstraint" destination="VuP-sT-hUI" id="5wS-ww-yKo"/>
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
+                <outlet property="viewButton" destination="4m9-yf-RbB" id="TWT-zu-Ij8"/>
                 <outlet property="viewRichWorkspace" destination="NC1-5C-E5z" id="NyN-tr-sJl"/>
                 <outlet property="viewRichWorkspaceHeightConstraint" destination="eT3-4m-mJ6" id="agb-tE-jhw"/>
                 <outlet property="viewSection" destination="f9U-NY-4OS" id="idM-C9-2nP"/>

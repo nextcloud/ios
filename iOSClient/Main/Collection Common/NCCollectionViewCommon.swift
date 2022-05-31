@@ -1803,10 +1803,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 self.headerMenu = header
 
                 if collectionView.collectionViewLayout == gridLayout {
-                    header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                    header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
                     header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
                 } else {
-                    header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.gray, size: 50), for: .normal)
+                    header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
                     header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
                 }
 
