@@ -68,7 +68,7 @@ class NCDataSource: NSObject {
         self.sectionsValue.removeAll()
     }
 
-    func createSections() {
+    internal func createSections() {
 
         self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
         self.sectionsValue = Array(Set(self.sectionsValue))
@@ -81,7 +81,7 @@ class NCDataSource: NSObject {
         }
     }
 
-    func createMetadataForSection(sectionValue: String) {
+    internal func createMetadataForSection(sectionValue: String) {
 
         let metadatas = metadatasSource.filter({ getSectionValue(metadata: $0) == sectionValue})
         let metadataForSection = NCMetadatasForSection.init(sectionValue: sectionValue, metadatas: metadatas, sort: self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: self.favoriteOnTop, filterLivePhoto: self.filterLivePhoto)

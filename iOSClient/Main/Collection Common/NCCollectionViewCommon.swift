@@ -692,7 +692,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return (headerCommand, headerRichWorkspace, headerSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
             return (headerCommand, headerRichWorkspace, 0)
-        } else if section > 1 && dataSource.numberOfSections() > 1 {
+        } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, headerSection)
         } else {
             return (0, 0, 0)
