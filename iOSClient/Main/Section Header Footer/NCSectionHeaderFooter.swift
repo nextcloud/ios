@@ -72,7 +72,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonUpload.backgroundColor = .clear
         buttonUpload.setTitleColor(.systemBlue, for: .normal)
         buttonUpload.setTitle(NSLocalizedString("_upload_", comment: ""), for: .normal)
-        buttonUpload.layer.borderColor = UIColor.lightGray.cgColor
+        buttonUpload.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         buttonUpload.layer.borderWidth = 0.3
         buttonUpload.layer.cornerRadius = 3
         buttonUpload.setImage(imageUpload, for: .normal)
@@ -81,7 +81,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonCreateFolder.backgroundColor = .clear
         buttonCreateFolder.setTitleColor(.systemBlue, for: .normal)
         buttonCreateFolder.setTitle(NSLocalizedString("_folder_", comment: ""), for: .normal)
-        buttonCreateFolder.layer.borderColor = UIColor.lightGray.cgColor
+        buttonCreateFolder.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         buttonCreateFolder.layer.borderWidth = 0.3
         buttonCreateFolder.layer.cornerRadius = 3
         buttonCreateFolder.setImage(imageFolder, for: .normal)
@@ -90,7 +90,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonScanDocument.backgroundColor = .clear
         buttonScanDocument.setTitleColor(.systemBlue, for: .normal)
         buttonScanDocument.setTitle(NSLocalizedString("_scan_", comment: ""), for: .normal)
-        buttonScanDocument.layer.borderColor = UIColor.lightGray.cgColor
+        buttonScanDocument.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         buttonScanDocument.layer.borderWidth = 0.3
         buttonScanDocument.layer.cornerRadius = 3
         buttonScanDocument.setImage(imageScan, for: .normal)

@@ -19,11 +19,11 @@
                     <rect key="frame" x="0.0" y="0.0" width="551" height="50"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hie-dN-B9L">
-                            <rect key="frame" x="10" y="5" width="96" height="40"/>
+                            <rect key="frame" x="10" y="5" width="99" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="X1Q-Rt-PQI"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="Button 1" image="buttonCreateFolder"/>
@@ -32,11 +32,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cjh-je-E6h">
-                            <rect key="frame" x="116" y="5" width="98" height="40"/>
+                            <rect key="frame" x="119" y="5" width="101" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="Zjv-nS-ufy"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="Button 2" image="buttonCreateFolder"/>
@@ -45,11 +45,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zta-tv-COt">
-                            <rect key="frame" x="224" y="5" width="98" height="40"/>
+                            <rect key="frame" x="230" y="5" width="101" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="Dm7-86-DVq"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="Button 2" image="buttonCreateFolder"/>
@@ -93,7 +93,7 @@
                             </connections>
                         </button>
                         <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D0O-wK-14O">
-                            <rect key="frame" x="506" y="7.5" width="25" height="25"/>
+                            <rect key="frame" x="516" y="7.5" width="25" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="25" id="aEr-j8-JDO"/>
                                 <constraint firstAttribute="height" constant="25" id="bvx-Uh-NWD"/>
@@ -109,7 +109,7 @@
                         <constraint firstItem="0bo-yl-t5k" firstAttribute="centerY" secondItem="1LD-cd-zhc" secondAttribute="centerY" id="URP-Ct-vPP"/>
                         <constraint firstItem="D0O-wK-14O" firstAttribute="centerY" secondItem="1LD-cd-zhc" secondAttribute="centerY" id="UUF-sF-n6M"/>
                         <constraint firstItem="0bo-yl-t5k" firstAttribute="leading" secondItem="1LD-cd-zhc" secondAttribute="trailing" constant="10" id="VBJ-H7-cJ3"/>
-                        <constraint firstAttribute="trailing" secondItem="D0O-wK-14O" secondAttribute="trailing" constant="20" id="WZh-iW-MXC"/>
+                        <constraint firstAttribute="trailing" secondItem="D0O-wK-14O" secondAttribute="trailing" constant="10" id="WZh-iW-MXC"/>
                         <constraint firstItem="1LD-cd-zhc" firstAttribute="leading" secondItem="s4I-Jo-yCE" secondAttribute="leading" constant="10" id="dGi-5z-MEh"/>
                         <constraint firstAttribute="height" constant="40" id="vvG-dH-6c1"/>
                     </constraints>
