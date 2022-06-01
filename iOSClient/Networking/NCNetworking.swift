@@ -89,6 +89,11 @@ import Queuer
     }()
     #endif
 
+    // REQUESTS
+
+    var requestsUnifiedSearch: [DataRequest] = []
+
+
     // MARK: - init
 
     override init() {
@@ -925,7 +930,8 @@ import Queuer
     }
 
     /// Unified Search (NC>=20)
-    @objc func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, update: @escaping ([tableMetadata]?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    ///
+    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, update: @escaping ([tableMetadata]?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
         var searchFiles: [tableMetadata] = []
         var errCode = 0
@@ -937,10 +943,14 @@ import Queuer
             completion(Array(searchFiles), errCode, errDescr)
         }
 
-        NCCommunication.shared.unifiedSearch(term: literal) { provider in
+        NCCommunication.shared.unifiedSearch(term: literal, timeout: 60) { provider in
             // example filter
             // ["calendar", "files", "fulltextsearch"].contains(provider.id)
             return true
+        } request: { request in
+            if let request = request {
+                self.requestsUnifiedSearch.append(request)
+            }
         } update: { partialResult, provider, errorCode, errorDescription in
             guard let partialResult = partialResult else { return }
             
@@ -993,10 +1003,18 @@ import Queuer
             }
             update(searchFiles)
         } completion: { results, errorCode, errorDescription in
+            self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()
             errCode = errorCode
             errDescr = errorDescription
         }
+    }
+
+    func cancelUnifiedSearchFiles() {
+        for request in requestsUnifiedSearch {
+            request.cancel()
+        }
+        requestsUnifiedSearch.removeAll()
     }
 
     func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup, completion: @escaping (tableMetadata) -> Void) {

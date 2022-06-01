@@ -218,6 +218,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
         pushed = false
+
+        // REQUEST
+        NCNetworking.shared.cancelUnifiedSearchFiles()
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -764,6 +767,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 
+        NCNetworking.shared.cancelUnifiedSearchFiles()
         isSearching = false
         literalSearch = ""
         reloadDataSource()
