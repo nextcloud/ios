@@ -33,17 +33,21 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonCreateFolder: UIButton!
     @IBOutlet weak var buttonScanDocument: UIButton!
 
-    @IBOutlet weak var viewButton: UIView!
-    @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewButtonsOne: UIView!
+    @IBOutlet weak var viewButtonsTwo: UIView!
+    @IBOutlet weak var viewSeparator: UIView!
     @IBOutlet weak var viewRichWorkspace: UIView!
-    @IBOutlet weak var textViewRichWorkspace: UITextView!
-    @IBOutlet weak var separator: UIView!
-    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSection: UIView!
-    @IBOutlet weak var labelSection: UILabel!
 
+    @IBOutlet weak var viewButtonsOneHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewButtonsTwoHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
+
+    @IBOutlet weak var textViewRichWorkspace: UITextView!
+    @IBOutlet weak var labelSection: UILabel!
+
 
     weak var delegate: NCSectionHeaderMenuDelegate?
 
@@ -72,7 +76,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonUpload.layer.cornerRadius = 3
         buttonUpload.setImage(imageUpload, for: .normal)
 
-        let imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.systemGray2, size: 25)
+        let imageFolder = UIImage(named: "buttonCreateFolder")!.image(color: NCBrandColor.shared.systemGray2, size: 25)
         buttonCreateFolder.backgroundColor = .clear
         buttonCreateFolder.setTitleColor(.systemBlue, for: .normal)
         buttonCreateFolder.setTitle(NSLocalizedString("_folder_", comment: ""), for: .normal)
@@ -105,8 +109,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
 
-        separator.backgroundColor = NCBrandColor.shared.separator
-        separatorHeightConstraint.constant = 0.5
+        viewSeparator.backgroundColor = NCBrandColor.shared.separator
+        viewSeparatorHeightConstraint.constant = 0.5
 
         markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
@@ -129,6 +133,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         setGradientColor()
     }
 
+    //MARK: -
+
     func setGradientColor() {
         if traitCollection.userInterfaceStyle == .dark {
             gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
@@ -137,17 +143,25 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    func setTitleSorted(datasourceTitleButton: String) {
+    func setSortedTitle(_ title: String) {
 
-        let title = NSLocalizedString(datasourceTitleButton, comment: "")
-        let size = title.size(withAttributes: [.font: buttonOrder.titleLabel?.font as Any])
+        let title = NSLocalizedString(title, comment: "")
+        //let size = title.size(withAttributes: [.font: buttonOrder.titleLabel?.font as Any])
 
         buttonOrder.setTitle(title, for: .normal)
-        buttonOrderWidthConstraint.constant = size.width + 5
     }
 
-    func setStatusButton(count: Int) {
+    func setRichWorkspaceText(_ text: String?) {
+        guard let text = text else { return }
+        if text != self.richWorkspaceText {
+            textViewRichWorkspace.attributedText = markdownParser.parse(text)
+            self.richWorkspaceText = text
+        }
+    }
 
+    //MARK: -
+
+    func setStatusButtonOne(count: Int) {
         if count == 0 {
             buttonSwitch.isEnabled = false
             buttonOrder.isEnabled = false
@@ -159,16 +173,31 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    func setRichWorkspaceText(richWorkspaceText: String?) {
-        guard let richWorkspaceText = richWorkspaceText else { return }
-        if richWorkspaceText != self.richWorkspaceText {
-            textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
-            self.richWorkspaceText = richWorkspaceText
+    func setButtonsOneHeight(_ size:CGFloat) {
+        viewButtonsOneHeightConstraint.constant = size
+        if size == 0 {
+            viewButtonsOne.isHidden = true
+        } else {
+            viewButtonsOne.isHidden = false
+        }
+    }
+
+    func setButtonsTwoHeight(_ size:CGFloat) {
+        viewButtonsTwoHeightConstraint.constant = size
+        if size == 0 {
+            viewButtonsTwo.isHidden = true
+        } else {
+            viewButtonsTwo.isHidden = false
         }
     }
 
     func setRichWorkspaceHeight(_ size: CGFloat) {
         viewRichWorkspaceHeightConstraint.constant = size
+        if size == 0 {
+            viewRichWorkspace.isHidden = true
+        } else {
+            viewRichWorkspace.isHidden = false
+        }
     }
 
     func setSectionHeight(_ size:CGFloat) {
@@ -178,13 +207,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         } else {
             viewSection.isHidden = false
         }
-    }
-
-    func SetHideButtonsPlus(_ isHidden: Bool) {
-        viewButton.isHidden = isHidden
-        buttonUpload.isHidden = isHidden
-        buttonCreateFolder.isHidden = isHidden
-        buttonScanDocument.isHidden = isHidden
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {

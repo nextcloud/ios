@@ -374,10 +374,10 @@ extension NCSelect: UICollectionViewDataSource {
             }
 
             header.delegate = self
-            header.setStatusButton(count: dataSource.metadatasSource.count)
-            header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
+            header.setStatusButtonOne(count: dataSource.metadatasSource.count)
+            header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
-            header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
+            header.setRichWorkspaceText(richWorkspaceText)
 
             return header
 

@@ -936,14 +936,14 @@ import Queuer
         var searchFiles: [tableMetadata] = []
         var errCode = 0
         var errDescr = ""
-        let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: .concurrent)
+        let concurrentQueue = DispatchQueue(label: "com.nextcloud.requestUnifiedSearch.concurrentQueue", attributes: .concurrent)
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
             completion(Array(searchFiles), errCode, errDescr)
         }
 
-        NCCommunication.shared.unifiedSearch(term: literal, timeout: 60) { provider in
+        NCCommunication.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90) { provider in
             // example filter
             // ["calendar", "files", "fulltextsearch"].contains(provider.id)
             return true
