@@ -810,7 +810,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
     }
-    
+
+    func tapButtonCreateFolder(sender: Any) {
+        guard !appDelegate.activeServerUrl.isEmpty else { return }
+        let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
+        appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+    }
+
+    func tapButtonScanDocument(sender: Any) {
+        if #available(iOS 13.0, *) {
+            if let viewController = appDelegate.window?.rootViewController {
+                NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
+            }
+        }
+    }
+
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
 
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, sender: sender)

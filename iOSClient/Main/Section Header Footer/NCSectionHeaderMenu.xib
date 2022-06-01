@@ -115,7 +115,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LZu-Te-clJ">
-                    <rect key="frame" x="0.0" y="90" width="551" height="1"/>
+                    <rect key="frame" x="0.0" y="89" width="551" height="1"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -171,7 +171,7 @@
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="trailing" secondItem="NC1-5C-E5z" secondAttribute="trailing" id="UH6-8N-JUD"/>
                 <constraint firstItem="4m9-yf-RbB" firstAttribute="leading" secondItem="pm7-uW-mZE" secondAttribute="leading" id="VkE-Yd-ZEU"/>
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="trailing" secondItem="4m9-yf-RbB" secondAttribute="trailing" id="cQo-N7-86S"/>
-                <constraint firstItem="LZu-Te-clJ" firstAttribute="top" secondItem="s4I-Jo-yCE" secondAttribute="bottom" id="ede-24-v8F"/>
+                <constraint firstItem="LZu-Te-clJ" firstAttribute="top" secondItem="s4I-Jo-yCE" secondAttribute="bottom" constant="-1" id="ede-24-v8F"/>
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="bottom" secondItem="f9U-NY-4OS" secondAttribute="bottom" id="eyu-CE-rTX"/>
                 <constraint firstItem="pm7-uW-mZE" firstAttribute="trailing" secondItem="s4I-Jo-yCE" secondAttribute="trailing" id="oCg-UW-8TQ"/>
                 <constraint firstItem="4m9-yf-RbB" firstAttribute="top" secondItem="pm7-uW-mZE" secondAttribute="top" id="oKs-0n-Lan"/>

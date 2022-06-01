@@ -110,7 +110,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
 
-        viewSeparator.backgroundColor = NCBrandColor.shared.separator
+        viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
         viewSeparatorHeightConstraint.constant = 0.5
 
         markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
