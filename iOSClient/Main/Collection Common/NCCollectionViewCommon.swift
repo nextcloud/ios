@@ -54,10 +54,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
 
-    let heightButtonsOne: CGFloat = 60
-    let heightButtonsTwo: CGFloat = 40
-    let heightSection: CGFloat = 50
-
+    private let heightButtonsOne: CGFloat = 60
+    private let heightButtonsTwo: CGFloat = 40
+    private let heightSection: CGFloat = 50
     private let footerHeight: CGFloat = 0
     private let footerEndHeight: CGFloat = 100
 

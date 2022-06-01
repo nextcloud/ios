@@ -63,6 +63,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var metadataFolder = tableMetadata()
 
     private var isEditMode = false
+    private var isSearching = false
     private var networkInProgress = false
     private var selectOcId: [String] = []
     private var overwrite = true
@@ -71,6 +72,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     internal var richWorkspaceText: String?
 
     private var layoutForView: NCGlobal.layoutForViewType?
+    internal var headerMenu: NCSectionHeaderMenu?
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -78,9 +80,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
 
-    private let headerHeight: CGFloat = 50
-    private var headerRichWorkspaceHeight: CGFloat = 0
-    private let footerHeight: CGFloat = 50
+    private let heightButtonsOne: CGFloat = 0
+    private let heightButtonsTwo: CGFloat = 40
+    private let heightSection: CGFloat = 50
+    private let footerHeight: CGFloat = 0
+    private let footerEndHeight: CGFloat = 100
 
     private var shares: [tableShare]?
 
@@ -120,7 +124,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerHeight, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsOne + heightButtonsTwo, delegate: self)
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -279,6 +283,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
+            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
@@ -288,6 +293,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             layoutForView?.layout = NCGlobal.shared.layoutList
         } else {
             // grid layout
+            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
@@ -360,38 +366,6 @@ extension NCSelect: UICollectionViewDelegate {
 }
 
 extension NCSelect: UICollectionViewDataSource {
-
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
-        if kind == UICollectionView.elementKindSectionHeader {
-
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
-
-            if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(UIImage(named: "switchList")?.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
-            } else {
-                header.buttonSwitch.setImage(UIImage(named: "switchGrid")?.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
-            }
-
-            header.delegate = self
-            header.setStatusButtonOne(count: dataSource.metadatasSource.count)
-            header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
-            header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
-            header.setRichWorkspaceText(richWorkspaceText)
-
-            return header
-
-        } else {
-
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-
-            let info = dataSource.getFooterInformation()
-            footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
-
-            return footer
-        }
-
-    }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
@@ -629,26 +603,105 @@ extension NCSelect: UICollectionViewDataSource {
 
         return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
     }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+
+        if kind == UICollectionView.elementKindSectionHeader {
+
+            if indexPath.section == 0 {
+
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
+                let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+
+                self.headerMenu = header
+
+                if collectionView.collectionViewLayout == gridLayout {
+                    header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
+                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
+                } else {
+                    header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
+                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
+                }
+
+                header.delegate = self
+                header.setStatusButtonOne(count: dataSource.metadatasSource.count)
+                header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+                header.setRichWorkspaceText(richWorkspaceText)
+                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
+                header.labelSection.textColor = NCBrandColor.shared.brandElement
+
+                header.setButtonsOneHeight(heightButtonsOne)
+                header.setButtonsTwoHeight(heightButtonsTwo)
+                header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
+                header.setSectionHeight(heightHeaderSection)
+
+                return header
+
+            } else {
+
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
+
+                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
+                header.labelSection.textColor = NCBrandColor.shared.brandElement
+
+                return header
+            }
+
+        } else {
+
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+
+            if dataSource.numberOfSections() == 1 {
+                let info = dataSource.getFooterInformation()
+                footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size )
+            } else {
+                footer.setTitleLabel(text: "")
+            }
+
+            return footer
+        }
+
+    }
 }
 
 extension NCSelect: UICollectionViewDelegateFlowLayout {
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func getHeaderHeight(section:Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
 
-        headerRichWorkspaceHeight = 0
+        var headerRichWorkspace: CGFloat = 0
 
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if trimmed.count > 0 {
-                headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
+            if trimmed.count > 0 && !isSearching {
+                headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
         }
 
-        return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
+        if section == 0 && dataSource.numberOfSections() > 1 {
+            return (heightButtonsOne + heightButtonsTwo, headerRichWorkspace, heightSection)
+        } else if section == 0 && dataSource.numberOfSections() == 1 {
+            return (heightButtonsOne + heightButtonsTwo, headerRichWorkspace, 0)
+        } else if section > 0 && dataSource.numberOfSections() > 1 {
+            return (0, 0, heightSection)
+        } else {
+            return (0, 0, 0)
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+
+        let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+
+        return CGSize(width: collectionView.frame.width, height: heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: footerHeight)
+
+        if dataSource.numberOfSections() == 1 {
+            return CGSize(width: collectionView.frame.width, height: footerEndHeight)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: footerHeight)
+        }
     }
 }
 
