@@ -71,7 +71,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         let imageUpload = UIImage(named: "buttonAddImage")!.image(color: NCBrandColor.shared.systemGray1, size: 25)
         buttonUpload.backgroundColor = .clear
         buttonUpload.setTitleColor(.systemBlue, for: .normal)
-        buttonUpload.setTitle(NSLocalizedString("_upload_", comment: ""), for: .normal)
+        buttonUpload.setTitle(NSLocalizedString("_upload_", comment: "").firstUppercased, for: .normal)
         buttonUpload.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         buttonUpload.layer.borderWidth = 0.3
         buttonUpload.layer.cornerRadius = 3
@@ -80,7 +80,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         let imageFolder = UIImage(named: "buttonAddFolder")!.image(color: NCBrandColor.shared.systemGray1, size: 25)
         buttonCreateFolder.backgroundColor = .clear
         buttonCreateFolder.setTitleColor(.systemBlue, for: .normal)
-        buttonCreateFolder.setTitle(NSLocalizedString("_folder_", comment: ""), for: .normal)
+        buttonCreateFolder.setTitle(NSLocalizedString("_folder_", comment: "").firstUppercased, for: .normal)
         buttonCreateFolder.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         buttonCreateFolder.layer.borderWidth = 0.3
         buttonCreateFolder.layer.cornerRadius = 3
@@ -89,7 +89,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         let imageScan = NCUtility.shared.loadImage(named: "buttonAddScan").image(color: NCBrandColor.shared.systemGray1, size: 25)
         buttonScanDocument.backgroundColor = .clear
         buttonScanDocument.setTitleColor(.systemBlue, for: .normal)
-        buttonScanDocument.setTitle(NSLocalizedString("_scan_", comment: ""), for: .normal)
+        buttonScanDocument.setTitle(NSLocalizedString("_scan_", comment: "").firstUppercased, for: .normal)
         buttonScanDocument.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         buttonScanDocument.layer.borderWidth = 0.3
         buttonScanDocument.layer.cornerRadius = 3
