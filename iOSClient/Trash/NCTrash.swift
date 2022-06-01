@@ -137,7 +137,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     // MARK: TAP EVENT
 
-    func tapButtonSwitch(sender: Any) {
+    func tapButtonSwitch(_ sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -162,7 +162,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         }
     }
 
-    func tapButtonOrder(sender: Any) {
+    func tapButtonOrder(_ sender: Any) {
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: NCGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }

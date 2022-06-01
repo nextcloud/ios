@@ -52,7 +52,7 @@
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Button 2" image="buttonCreateFolder"/>
+                            <state key="normal" title="Button 3" image="buttonCreateFolder"/>
                             <connections>
                                 <action selector="touchUpInsideButtonScanDocument:" destination="tys-A2-nDX" eventType="touchUpInside" id="chM-32-kSs"/>
                             </connections>

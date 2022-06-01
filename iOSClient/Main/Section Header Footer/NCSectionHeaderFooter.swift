@@ -222,54 +222,54 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapButtonMore(sender: sender)
-    }
-
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
-        delegate?.tapButtonSwitch(sender: sender)
+        delegate?.tapButtonSwitch(sender)
     }
 
     @IBAction func touchUpInsideOrder(_ sender: Any) {
-        delegate?.tapButtonOrder(sender: sender)
+        delegate?.tapButtonOrder(sender)
+    }
+
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+        delegate?.tapButtonMore(sender)
     }
 
     @IBAction func touchUpInsideButtonUpload(_ sender: Any) {
-       delegate?.tapButtonUpload(sender: sender)
+       delegate?.tapButtonUpload(sender)
     }
 
     @IBAction func touchUpInsideButtonCreateFolder(_ sender: Any) {
-        delegate?.tapButtonCreateFolder(sender: sender)
+        delegate?.tapButtonCreateFolder(sender)
     }
 
     @IBAction func touchUpInsideButtonScanDocument(_ sender: Any) {
-
+        delegate?.tapButtonScanDocument(sender)
     }
 
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
-        delegate?.tapRichWorkspace(sender: sender)
+        delegate?.tapRichWorkspace(sender)
     }
 }
 
 protocol NCSectionHeaderMenuDelegate: AnyObject {
-    func tapButtonSwitch(sender: Any)
-    func tapButtonOrder(sender: Any)
-    func tapButtonMore(sender: Any)
-    func tapButtonUpload(sender: Any)
-    func tapButtonCreateFolder(sender: Any)
-    func tapButtonScanDocument(sender: Any)
-    func tapRichWorkspace(sender: Any)
+    func tapButtonSwitch(_ sender: Any)
+    func tapButtonOrder(_ sender: Any)
+    func tapButtonMore(_ sender: Any)
+    func tapButtonUpload(_ sender: Any)
+    func tapButtonCreateFolder(_ sender: Any)
+    func tapButtonScanDocument(_ sender: Any)
+    func tapRichWorkspace(_ sender: Any)
 }
 
 // optional func
 extension NCSectionHeaderMenuDelegate {
-    func tapButtonSwitch(sender: Any) {}
-    func tapButtonOrder(sender: Any) {}
-    func tapButtonMore(sender: Any) {}
-    func tapButtonUpload(sender: Any) {}
-    func tapButtonCreateFolder(sender: Any) {}
-    func tapButtonScanDocument(sender: Any) {}
-    func tapRichWorkspace(sender: Any) {}
+    func tapButtonSwitch(_ sender: Any) {}
+    func tapButtonOrder(_ sender: Any) {}
+    func tapButtonMore(_ sender: Any) {}
+    func tapButtonUpload(_ sender: Any) {}
+    func tapButtonCreateFolder(_ sender: Any) {}
+    func tapButtonScanDocument(_ sender: Any) {}
+    func tapRichWorkspace(_ sender: Any) {}
 }
 
 class NCSectionHeader: UICollectionReusableView {

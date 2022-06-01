@@ -279,7 +279,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     // MARK: TAP EVENT
 
-    func tapButtonSwitch(sender: Any) {
+    func tapButtonSwitch(_ sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -304,7 +304,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
 
-    func tapButtonOrder(sender: Any) {
+    func tapButtonOrder(_ sender: Any) {
 
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: keyLayout, sortButton: sender as? UIButton, serverUrl: serverUrl)

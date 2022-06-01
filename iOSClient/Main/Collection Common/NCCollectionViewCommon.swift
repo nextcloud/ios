@@ -770,7 +770,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 
-    func tapButtonSwitch(sender: Any) {
+    func tapButtonSwitch(_ sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -797,13 +797,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func tapButtonOrder(sender: Any) {
+    func tapButtonOrder(_ sender: Any) {
 
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
 
-    func tapButtonUpload(sender: Any) {
+    func tapButtonUpload(_ sender: Any) {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: self) { hasPermission in
             if hasPermission {
                 NCPhotosPickerViewController.init(viewController: self, maxSelectedAssets: 0, singleSelectedMode: false)
@@ -811,13 +811,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func tapButtonCreateFolder(sender: Any) {
+    func tapButtonCreateFolder(_ sender: Any) {
         guard !appDelegate.activeServerUrl.isEmpty else { return }
         let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
         appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
     }
 
-    func tapButtonScanDocument(sender: Any) {
+    func tapButtonScanDocument(_ sender: Any) {
         if #available(iOS 13.0, *) {
             if let viewController = appDelegate.window?.rootViewController {
                 NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
@@ -851,7 +851,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func tapRichWorkspace(sender: Any) {
+    func tapRichWorkspace(_ sender: Any) {
 
         if let navigationController = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateInitialViewController() as? UINavigationController {
             if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
