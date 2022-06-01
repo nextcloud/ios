@@ -67,7 +67,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
         buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
 
-        let imageUpload = UIImage(named: "file_photo")!.image(color: NCBrandColor.shared.systemGray2, size: 25)
+        let imageUpload = UIImage(named: "buttonAddImage")!.image(color: NCBrandColor.shared.systemGray3, size: 25)
         buttonUpload.backgroundColor = .clear
         buttonUpload.setTitleColor(.systemBlue, for: .normal)
         buttonUpload.setTitle(NSLocalizedString("_upload_", comment: ""), for: .normal)
@@ -76,7 +76,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonUpload.layer.cornerRadius = 3
         buttonUpload.setImage(imageUpload, for: .normal)
 
-        let imageFolder = UIImage(named: "buttonCreateFolder")!.image(color: NCBrandColor.shared.systemGray2, size: 25)
+        let imageFolder = UIImage(named: "buttonAddFolder")!.image(color: NCBrandColor.shared.systemGray2, size: 25)
         buttonCreateFolder.backgroundColor = .clear
         buttonCreateFolder.setTitleColor(.systemBlue, for: .normal)
         buttonCreateFolder.setTitle(NSLocalizedString("_folder_", comment: ""), for: .normal)
@@ -85,7 +85,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonCreateFolder.layer.cornerRadius = 3
         buttonCreateFolder.setImage(imageFolder, for: .normal)
 
-        let imageScan = NCUtility.shared.loadImage(named: "doc.text.viewfinder").image(color: NCBrandColor.shared.systemGray2, size: 25)
+        let imageScan = NCUtility.shared.loadImage(named: "buttonAddScan").image(color: NCBrandColor.shared.systemGray2, size: 25)
         buttonScanDocument.backgroundColor = .clear
         buttonScanDocument.setTitleColor(.systemBlue, for: .normal)
         buttonScanDocument.setTitle(NSLocalizedString("_scan_", comment: ""), for: .normal)
@@ -245,6 +245,7 @@ protocol NCSectionHeaderMenuDelegate: AnyObject {
     func tapRichWorkspace(sender: Any)
     func tapButtonUpload(sender: Any)
     func tapButtonCreateFolder(sender: Any)
+    func tapButtonScanDocument(sender: Any)
 }
 
 // optional func
@@ -255,6 +256,7 @@ extension NCSectionHeaderMenuDelegate {
     func tapRichWorkspace(sender: Any) {}
     func tapButtonUpload(sender: Any) {}
     func tapButtonCreateFolder(sender: Any) {}
+    func tapButtonScanDocument(sender: Any) {}
 }
 
 class NCSectionHeader: UICollectionReusableView {
