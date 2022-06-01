@@ -54,13 +54,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
 
-    private let heightButtonsOne: CGFloat = 60
-    private let heightButtonsTwo: CGFloat = 40
-    private let heightSection: CGFloat = 50
-    private let footerHeight: CGFloat = 0
-    private let footerEndHeight: CGFloat = 100
+    internal let heightButtonsOne: CGFloat = 60
+    internal let heightButtonsTwo: CGFloat = 40
+    internal let heightSection: CGFloat = 50
+    internal let footerHeight: CGFloat = 0
+    internal let footerEndHeight: CGFloat = 100
 
-    private var timerInputSearch: Timer?
+    internal var timerInputSearch: Timer?
     internal var literalSearch: String?
     internal var isSearching: Bool = false
 
@@ -770,7 +770,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 
-    func tapSwitchHeader(sender: Any) {
+    func tapButtonSwitch(sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -797,14 +797,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func tapOrderHeader(sender: Any) {
+    func tapButtonOrder(sender: Any) {
 
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
 
-    func tapMoreHeader(sender: Any) { }
-
+    func tapButtonUpload(sender: Any) {
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: self) { hasPermission in
+            if hasPermission {
+                NCPhotosPickerViewController.init(viewController: self, maxSelectedAssets: 0, singleSelectedMode: false)
+            }
+        }
+    }
+    
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
 
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, sender: sender)
@@ -1785,10 +1791,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 self.headerMenu = header
 
                 if collectionView.collectionViewLayout == gridLayout {
-                    header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
+                    header.setImageSwitchList()
                     header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
                 } else {
-                    header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
+                    header.setImageSwitchGrid()
                     header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
                 }
 

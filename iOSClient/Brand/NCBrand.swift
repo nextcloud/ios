@@ -262,6 +262,16 @@ class NCBrandColor: NSObject {
         }
     }
 
+    @objc public var systemGray1: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return UIColor(red: 0.60, green: 0.60, blue: 0.7, alpha: 1.0)
+            } else {
+                return UIColor(red: 0.60, green: 0.60, blue: 0.7, alpha: 1.0)
+            }
+        }
+    }
+
     @objc public var systemGray2: UIColor {
         get {
             if #available(iOS 13, *) {

@@ -53,37 +53,6 @@ extension NCTrash: UICollectionViewDelegate {
 // MARK: UICollectionViewDataSource
 extension NCTrash: UICollectionViewDataSource {
 
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
-        if kind == UICollectionView.elementKindSectionHeader {
-
-            guard let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCTrashSectionHeaderMenu
-            else { return UICollectionReusableView() }
-
-            if collectionView.collectionViewLayout == gridLayout {
-                trashHeader.buttonSwitch.setImage(UIImage(named: "switchList")?.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
-                trashHeader.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-            } else {
-                trashHeader.buttonSwitch.setImage(UIImage(named: "switchGrid")?.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
-                trashHeader.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-            }
-
-            trashHeader.delegate = self
-            trashHeader.backgroundColor = NCBrandColor.shared.systemBackground
-            trashHeader.separator.backgroundColor = NCBrandColor.shared.separator
-            trashHeader.setStatusButton(datasource: datasource)
-            trashHeader.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
-
-            return trashHeader
-
-        } else {
-            guard let trashFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCTrashSectionFooter
-            else { return UICollectionReusableView() }
-            trashFooter.setTitleLabelFooter(datasource: datasource)
-            return trashFooter
-        }
-    }
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         emptyDataSet?.numberOfItemsInSection(datasource.count, section: section)
         return datasource.count
@@ -130,16 +99,93 @@ extension NCTrash: UICollectionViewDataSource {
 
         return cell
     }
+
+    func setTextFooter(datasource: [tableTrash]) -> String {
+
+        var folders: Int = 0, foldersText = ""
+        var files: Int = 0, filesText = ""
+        var size: Int64 = 0
+        var text = ""
+
+        for record: tableTrash in datasource {
+            if record.directory {
+                folders += 1
+            } else {
+                files += 1
+                size += record.size
+            }
+        }
+
+        if folders > 1 {
+            foldersText = "\(folders) " + NSLocalizedString("_folders_", comment: "")
+        } else if folders == 1 {
+            foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
+        }
+
+        if files > 1 {
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
+        } else if files == 1 {
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
+        }
+
+        if foldersText.isEmpty {
+            text = filesText
+        } else if filesText.isEmpty {
+            text = foldersText
+        } else {
+            text = foldersText + ", " + filesText
+        }
+
+        return text
+    }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+
+        if kind == UICollectionView.elementKindSectionHeader {
+
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu
+            else { return UICollectionReusableView() }
+
+            if collectionView.collectionViewLayout == gridLayout {
+                header.setImageSwitchList()
+                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
+            } else {
+                header.setImageSwitchGrid()
+                header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
+            }
+
+            header.delegate = self
+            header.setStatusButtonOne(count: datasource.count)
+            header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+
+            header.buttonMoreIsHidden(false)
+            header.setButtonsOneHeight(0)
+            header.setButtonsTwoHeight(heightButtonsTwo)
+            header.setRichWorkspaceHeight(0)
+            header.setSectionHeight(0)
+
+            return header
+
+        } else {
+
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
+            else { return UICollectionReusableView() }
+
+            footer.setTitleLabel(text: setTextFooter(datasource: datasource))
+
+            return footer
+        }
+    }
 }
 
 // MARK: UICollectionViewDelegateFlowLayout
 extension NCTrash: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: highHeader)
+        return CGSize(width: collectionView.frame.width, height: heightButtonsTwo)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: highHeader)
+        return CGSize(width: collectionView.frame.width, height: footerEndHeight)
     }
 }

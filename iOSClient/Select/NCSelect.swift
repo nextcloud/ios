@@ -279,7 +279,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     // MARK: TAP EVENT
 
-    func tapSwitchHeader(sender: Any) {
+    func tapButtonSwitch(sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -304,7 +304,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
 
-    func tapOrderHeader(sender: Any) {
+    func tapButtonOrder(sender: Any) {
 
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: keyLayout, sortButton: sender as? UIButton, serverUrl: serverUrl)
@@ -616,10 +616,10 @@ extension NCSelect: UICollectionViewDataSource {
                 self.headerMenu = header
 
                 if collectionView.collectionViewLayout == gridLayout {
-                    header.buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
+                    header.setImageSwitchList()
                     header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
                 } else {
-                    header.buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray2, size: 50), for: .normal)
+                    header.setImageSwitchGrid()
                     header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
                 }
 
@@ -660,7 +660,6 @@ extension NCSelect: UICollectionViewDataSource {
 
             return footer
         }
-
     }
 }
 

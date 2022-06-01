@@ -26,9 +26,10 @@ import MarkdownKit
 
 class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate {
 
-    @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
+    @IBOutlet weak var buttonMore: UIButton!
+
     @IBOutlet weak var buttonUpload: UIButton!
     @IBOutlet weak var buttonCreateFolder: UIButton!
     @IBOutlet weak var buttonScanDocument: UIButton!
@@ -61,13 +62,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         backgroundColor = .clear
 
-        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
+        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray1, size: 25), for: .normal)
 
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
-        buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.systemGray2, size: 25), for: .normal)
+        buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.systemGray1, size: 25), for: .normal)
 
-        let imageUpload = UIImage(named: "buttonAddImage")!.image(color: NCBrandColor.shared.systemGray3, size: 25)
+        let imageUpload = UIImage(named: "buttonAddImage")!.image(color: NCBrandColor.shared.systemGray1, size: 25)
         buttonUpload.backgroundColor = .clear
         buttonUpload.setTitleColor(.systemBlue, for: .normal)
         buttonUpload.setTitle(NSLocalizedString("_upload_", comment: ""), for: .normal)
@@ -76,7 +77,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonUpload.layer.cornerRadius = 3
         buttonUpload.setImage(imageUpload, for: .normal)
 
-        let imageFolder = UIImage(named: "buttonAddFolder")!.image(color: NCBrandColor.shared.systemGray2, size: 25)
+        let imageFolder = UIImage(named: "buttonAddFolder")!.image(color: NCBrandColor.shared.systemGray1, size: 25)
         buttonCreateFolder.backgroundColor = .clear
         buttonCreateFolder.setTitleColor(.systemBlue, for: .normal)
         buttonCreateFolder.setTitle(NSLocalizedString("_folder_", comment: ""), for: .normal)
@@ -85,7 +86,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonCreateFolder.layer.cornerRadius = 3
         buttonCreateFolder.setImage(imageFolder, for: .normal)
 
-        let imageScan = NCUtility.shared.loadImage(named: "buttonAddScan").image(color: NCBrandColor.shared.systemGray2, size: 25)
+        let imageScan = NCUtility.shared.loadImage(named: "buttonAddScan").image(color: NCBrandColor.shared.systemGray1, size: 25)
         buttonScanDocument.backgroundColor = .clear
         buttonScanDocument.setTitleColor(.systemBlue, for: .normal)
         buttonScanDocument.setTitle(NSLocalizedString("_scan_", comment: ""), for: .normal)
@@ -173,6 +174,18 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
+    func buttonMoreIsHidden(_ isHidden: Bool) {
+        buttonMore.isHidden = isHidden
+    }
+
+    func setImageSwitchList() {
+        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
+    }
+
+    func setImageSwitchGrid() {
+        buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
+    }
+
     func setButtonsOneHeight(_ size:CGFloat) {
         viewButtonsOneHeightConstraint.constant = size
         if size == 0 {
@@ -210,15 +223,15 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreHeader(sender: sender)
+        delegate?.tapButtonMore(sender: sender)
     }
 
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
-        delegate?.tapSwitchHeader(sender: sender)
+        delegate?.tapButtonSwitch(sender: sender)
     }
 
     @IBAction func touchUpInsideOrder(_ sender: Any) {
-        delegate?.tapOrderHeader(sender: sender)
+        delegate?.tapButtonOrder(sender: sender)
     }
 
     @IBAction func touchUpInsideButtonUpload(_ sender: Any) {
@@ -239,24 +252,24 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 }
 
 protocol NCSectionHeaderMenuDelegate: AnyObject {
-    func tapSwitchHeader(sender: Any)
-    func tapMoreHeader(sender: Any)
-    func tapOrderHeader(sender: Any)
-    func tapRichWorkspace(sender: Any)
+    func tapButtonSwitch(sender: Any)
+    func tapButtonOrder(sender: Any)
+    func tapButtonMore(sender: Any)
     func tapButtonUpload(sender: Any)
     func tapButtonCreateFolder(sender: Any)
     func tapButtonScanDocument(sender: Any)
+    func tapRichWorkspace(sender: Any)
 }
 
 // optional func
 extension NCSectionHeaderMenuDelegate {
-    func tapSwitchHeader(sender: Any) {}
-    func tapMoreHeader(sender: Any) {}
-    func tapOrderHeader(sender: Any) {}
-    func tapRichWorkspace(sender: Any) {}
+    func tapButtonSwitch(sender: Any) {}
+    func tapButtonOrder(sender: Any) {}
+    func tapButtonMore(sender: Any) {}
     func tapButtonUpload(sender: Any) {}
     func tapButtonCreateFolder(sender: Any) {}
     func tapButtonScanDocument(sender: Any) {}
+    func tapRichWorkspace(sender: Any) {}
 }
 
 class NCSectionHeader: UICollectionReusableView {

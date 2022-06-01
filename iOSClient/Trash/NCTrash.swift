@@ -27,7 +27,7 @@ import Realm
 import UIKit
 import NCCommunication
 
-class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCTrashSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
+class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -46,7 +46,10 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var layoutForView: NCGlobal.layoutForViewType?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
-    let highHeader: CGFloat = 50
+
+    internal let heightButtonsTwo: CGFloat = 40
+    internal let footerEndHeight: CGFloat = 100
+
     private let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
@@ -61,8 +64,8 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
         // Header - Footer
-        collectionView.register(UINib(nibName: "NCTrashSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
-        collectionView.register(UINib(nibName: "NCTrashSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
+        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
@@ -76,7 +79,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: highHeader, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsTwo, delegate: self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
@@ -134,7 +137,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     // MARK: TAP EVENT
 
-    func tapSwitchHeaderMenu(sender: Any) {
+    func tapButtonSwitch(sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -159,12 +162,12 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         }
     }
 
-    func tapOrderHeaderMenu(sender: Any) {
+    func tapButtonOrder(sender: Any) {
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: NCGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }
 
-    func tapMoreHeaderMenu(sender: Any) {
+    func tapButtonMore(sender: Any) {
         toggleMenuMoreHeader()
     }
 
