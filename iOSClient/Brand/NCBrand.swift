@@ -145,6 +145,8 @@ class NCBrandColor: NSObject {
         static var iconCalendar = UIImage()
         static var iconDeck = UIImage()
         static var iconMail = UIImage()
+        static var iconConfirm = UIImage()
+        static var iconPages = UIImage()
     }
 
     // Color
@@ -380,6 +382,8 @@ class NCBrandColor: NSObject {
         cacheImages.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
         cacheImages.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
         cacheImages.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
     }
 
     #if !EXTENSION

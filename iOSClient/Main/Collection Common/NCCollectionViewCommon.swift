@@ -1361,6 +1361,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconMail
                 case let str where str.contains("talk"):
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconTalk
+                case let str where str.contains("confirm"):
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.iconConfirm
                 default:
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.file
                 }
