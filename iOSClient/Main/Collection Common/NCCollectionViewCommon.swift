@@ -54,8 +54,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
 
-    internal let heightButtonsOne: CGFloat = 60
-    internal let heightButtonsTwo: CGFloat = 40
+    internal let heightButtonsCommand: CGFloat = 60
+    internal let heightButtonsView: CGFloat = 40
     internal let heightSection: CGFloat = 50
     internal let footerHeight: CGFloat = 0
     internal let footerEndHeight: CGFloat = 100
@@ -122,7 +122,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsOne + heightButtonsTwo, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsCommand + heightButtonsView, delegate: self)
 
         // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -1823,8 +1823,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
 
-                header.setButtonsOneHeight(heightButtonsOne)
-                header.setButtonsTwoHeight(heightButtonsTwo, imageButton1: UIImage(named: "buttonAddImage"), imageButton2: UIImage(named: "buttonAddFolder"), imageButton3: UIImage(named: "buttonAddScan"))
+                header.setButtonsView(heigt: heightButtonsView)
+                header.setButtonsCommand(heigt: heightButtonsCommand, imageButton1: UIImage(named: "buttonAddImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "buttonAddFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "buttonAddScan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setSectionHeight(heightHeaderSection)
 
@@ -1870,9 +1870,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         }
 
         if section == 0 && dataSource.numberOfSections() > 1 {
-            return (heightButtonsOne + heightButtonsTwo, headerRichWorkspace, heightSection)
+            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (heightButtonsOne + heightButtonsTwo, headerRichWorkspace, 0)
+            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, 0)
         } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, heightSection)
         } else {

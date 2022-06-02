@@ -34,14 +34,14 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var button2: UIButton!
     @IBOutlet weak var button3: UIButton!
 
-    @IBOutlet weak var viewButtonsOne: UIView!
-    @IBOutlet weak var viewButtonsTwo: UIView!
+    @IBOutlet weak var viewButtonsCommand: UIView!
+    @IBOutlet weak var viewButtonsView: UIView!
     @IBOutlet weak var viewSeparator: UIView!
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var viewSection: UIView!
 
-    @IBOutlet weak var viewButtonsOneHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewButtonsTwoHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewButtonsCommandHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewButtonsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
@@ -72,7 +72,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button1.isHidden = true
         button1.backgroundColor = .clear
         button1.setTitleColor(.systemBlue, for: .normal)
-        button1.setTitle(NSLocalizedString("_upload_", comment: "").firstUppercased, for: .normal)
         button1.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         button1.layer.borderWidth = 0.3
         button1.layer.cornerRadius = 3
@@ -81,7 +80,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button2.isHidden = true
         button2.backgroundColor = .clear
         button2.setTitleColor(.systemBlue, for: .normal)
-        button2.setTitle(NSLocalizedString("_folder_", comment: "").firstUppercased, for: .normal)
         button2.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         button2.layer.borderWidth = 0.3
         button2.layer.cornerRadius = 3
@@ -90,7 +88,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button3.isHidden = true
         button3.backgroundColor = .clear
         button3.setTitleColor(.systemBlue, for: .normal)
-        button3.setTitle(NSLocalizedString("_scan_", comment: "").firstUppercased, for: .normal)
+        //button3.setTitle(NSLocalizedString("_scan_", comment: "").firstUppercased, for: .normal)
         button3.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         button3.layer.borderWidth = 0.3
         button3.layer.cornerRadius = 3
@@ -183,36 +181,39 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
     }
 
-    func setButtonsOneHeight(_ size:CGFloat) {
-        viewButtonsOneHeightConstraint.constant = size
-        if size == 0 {
-            viewButtonsOne.isHidden = true
+    func setButtonsView(heigt :CGFloat) {
+        viewButtonsCommandHeightConstraint.constant = heigt
+        if heigt == 0 {
+            viewButtonsCommand.isHidden = true
         } else {
-            viewButtonsOne.isHidden = false
+            viewButtonsCommand.isHidden = false
         }
     }
 
-    func setButtonsTwoHeight(_ size:CGFloat, imageButton1: UIImage? = nil, imageButton2: UIImage? = nil, imageButton3: UIImage? = nil) {
-        viewButtonsTwoHeightConstraint.constant = size
-        if size == 0 {
-            viewButtonsTwo.isHidden = true
+    func setButtonsCommand(heigt :CGFloat, imageButton1: UIImage? = nil, titleButton1: String? = nil, imageButton2: UIImage? = nil, titleButton2: String? = nil, imageButton3: UIImage? = nil, titleButton3: String? = nil) {
+        viewButtonsViewHeightConstraint.constant = heigt
+        if heigt == 0 {
+            viewButtonsView.isHidden = true
         } else {
-            viewButtonsTwo.isHidden = false
+            viewButtonsView.isHidden = false
         }
-        if var image = imageButton1 {
+        if var image = imageButton1, let title = titleButton1 {
             image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
             button1.setImage(image, for: .normal)
             button1.isHidden = false
+            button1.setTitle(title.firstUppercased, for: .normal)
         }
-        if var image = imageButton2 {
+        if var image = imageButton2, let title = titleButton2 {
             image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
             button2.setImage(image, for: .normal)
             button2.isHidden = false
+            button2.setTitle(title.firstUppercased, for: .normal)
         }
-        if var image = imageButton3 {
+        if var image = imageButton3, let title = titleButton3 {
             image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
             button3.setImage(image, for: .normal)
             button3.isHidden = false
+            button3.setTitle(title.firstUppercased, for: .normal)
         }
     }
 

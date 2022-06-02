@@ -80,8 +80,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
 
-    private let heightButtonsOne: CGFloat = 0
-    private let heightButtonsTwo: CGFloat = 40
+    private let heightButtonsCommand: CGFloat = 0
+    private let heightButtonsView: CGFloat = 40
     private let heightSection: CGFloat = 50
     private let footerHeight: CGFloat = 0
     private let footerEndHeight: CGFloat = 100
@@ -124,7 +124,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsOne + heightButtonsTwo, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsCommand + heightButtonsView, delegate: self)
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -630,8 +630,8 @@ extension NCSelect: UICollectionViewDataSource {
                 header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
 
-                header.setButtonsOneHeight(heightButtonsOne)
-                header.setButtonsTwoHeight(heightButtonsTwo)
+                header.setButtonsCommand(heigt: heightButtonsCommand)
+                header.setButtonsView(heigt: heightButtonsView)
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setSectionHeight(heightHeaderSection)
 
@@ -677,9 +677,9 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
         }
 
         if section == 0 && dataSource.numberOfSections() > 1 {
-            return (heightButtonsOne + heightButtonsTwo, headerRichWorkspace, heightSection)
+            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (heightButtonsOne + heightButtonsTwo, headerRichWorkspace, 0)
+            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, 0)
         } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, heightSection)
         } else {

@@ -186,10 +186,10 @@
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
-                <outlet property="viewButtonsOne" destination="4m9-yf-RbB" id="ym1-m0-plm"/>
-                <outlet property="viewButtonsOneHeightConstraint" destination="aJx-Rv-Dc0" id="rk9-2d-ia8"/>
-                <outlet property="viewButtonsTwo" destination="s4I-Jo-yCE" id="15J-J1-EAl"/>
-                <outlet property="viewButtonsTwoHeightConstraint" destination="vvG-dH-6c1" id="ELG-Xi-vlb"/>
+                <outlet property="viewButtonsCommand" destination="4m9-yf-RbB" id="d1a-Pc-ujo"/>
+                <outlet property="viewButtonsCommandHeightConstraint" destination="aJx-Rv-Dc0" id="58a-bd-5ri"/>
+                <outlet property="viewButtonsView" destination="s4I-Jo-yCE" id="FOI-ZK-1oj"/>
+                <outlet property="viewButtonsViewHeightConstraint" destination="vvG-dH-6c1" id="SEQ-Tn-EE0"/>
                 <outlet property="viewRichWorkspace" destination="NC1-5C-E5z" id="NyN-tr-sJl"/>
                 <outlet property="viewRichWorkspaceHeightConstraint" destination="eT3-4m-mJ6" id="agb-tE-jhw"/>
                 <outlet property="viewSection" destination="f9U-NY-4OS" id="idM-C9-2nP"/>

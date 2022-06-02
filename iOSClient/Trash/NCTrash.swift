@@ -47,7 +47,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
 
-    internal let heightButtonsTwo: CGFloat = 40
+    internal let heightButtonsView: CGFloat = 40
     internal let footerEndHeight: CGFloat = 100
 
     private let refreshControl = UIRefreshControl()
@@ -79,7 +79,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsTwo, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsView, delegate: self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)

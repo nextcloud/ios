@@ -159,8 +159,8 @@ extension NCTrash: UICollectionViewDataSource {
             header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
 
             header.buttonMoreIsHidden(false)
-            header.setButtonsOneHeight(0)
-            header.setButtonsTwoHeight(heightButtonsTwo)
+            header.setButtonsCommand(heigt: 0)
+            header.setButtonsView(heigt: heightButtonsView)
             header.setRichWorkspaceHeight(0)
             header.setSectionHeight(0)
 
@@ -182,7 +182,7 @@ extension NCTrash: UICollectionViewDataSource {
 extension NCTrash: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: heightButtonsTwo)
+        return CGSize(width: collectionView.frame.width, height: heightButtonsView)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
