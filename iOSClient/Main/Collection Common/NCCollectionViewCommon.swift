@@ -60,7 +60,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal let footerHeight: CGFloat = 0
     internal let footerEndHeight: CGFloat = 100
 
-    internal var timerInputSearch: Timer?
     internal var literalSearch: String?
     internal var isSearching: Bool = false
 
@@ -730,24 +729,34 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func updateSearchResults(for searchController: UISearchController) {
 
-        timerInputSearch?.invalidate()
-        timerInputSearch = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(reloadDataSourceNetwork), userInfo: nil, repeats: false)
-        literalSearch = searchController.searchBar.text
-        collectionView?.reloadData()
+        self.literalSearch = searchController.searchBar.text
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
 
-        isSearching = true
-        metadatasSource.removeAll()
-        reloadDataSource()
+        self.isSearching = true
+
+        self.metadatasSource.removeAll()
+        self.dataSource.clearDataSource()
+
+        self.collectionView.reloadData()
+
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+
+        if self.isSearching && self.literalSearch?.count ?? 0 >= 2 {
+            reloadDataSourceNetwork()
+        }
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 
         NCNetworking.shared.cancelUnifiedSearchFiles()
-        isSearching = false
-        literalSearch = ""
+        
+        self.isSearching = false
+        self.literalSearch = ""
+
         reloadDataSource()
     }
 
