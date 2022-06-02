@@ -157,18 +157,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     //MARK: -
 
-    func setStatusButtonOne(count: Int) {
-        if count == 0 {
-            buttonSwitch.isEnabled = false
-            buttonOrder.isEnabled = false
-            buttonMore.isEnabled = false
-        } else {
-            buttonSwitch.isEnabled = true
-            buttonOrder.isEnabled = true
-            buttonMore.isEnabled = true
-        }
-    }
-
     func buttonMoreIsHidden(_ isHidden: Bool) {
         buttonMore.isHidden = isHidden
     }
@@ -188,6 +176,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         } else {
             viewButtonsCommand.isHidden = false
         }
+    }
+
+    func setStatusButtonsView(enable: Bool) {
+        buttonSwitch.isEnabled = enable
+        buttonOrder.isEnabled = enable
+        buttonMore.isEnabled = enable
     }
 
     func setButtonsCommand(heigt :CGFloat, imageButton1: UIImage? = nil, titleButton1: String? = nil, imageButton2: UIImage? = nil, titleButton2: String? = nil, imageButton3: UIImage? = nil, titleButton3: String? = nil) {
