@@ -624,7 +624,7 @@ extension NCSelect: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                header.setStatusButtonsView(enable: dataSource.metadatasSource.count > 0)
+                header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
                 header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
                 header.setRichWorkspaceText(richWorkspaceText)
                 header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased

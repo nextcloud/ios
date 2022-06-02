@@ -155,7 +155,7 @@ extension NCTrash: UICollectionViewDataSource {
             }
 
             header.delegate = self
-            header.setStatusButtonsView(enable: datasource.count > 0)
+            header.setStatusButtonsView(enable: !datasource.isEmpty)
             header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
 
             header.buttonMoreIsHidden(false)
