@@ -30,9 +30,9 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
 
-    @IBOutlet weak var buttonUpload: UIButton!
-    @IBOutlet weak var buttonCreateFolder: UIButton!
-    @IBOutlet weak var buttonScanDocument: UIButton!
+    @IBOutlet weak var button1: UIButton!
+    @IBOutlet weak var button2: UIButton!
+    @IBOutlet weak var button3: UIButton!
 
     @IBOutlet weak var viewButtonsOne: UIView!
     @IBOutlet weak var viewButtonsTwo: UIView!
@@ -68,37 +68,32 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
         buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.systemGray1, size: 25), for: .normal)
 
-        let imageUpload = UIImage(named: "buttonAddImage")!.image(color: NCBrandColor.shared.systemGray1, size: 25)
-        buttonUpload.backgroundColor = .clear
-        buttonUpload.setTitleColor(.systemBlue, for: .normal)
-        buttonUpload.setTitle(NSLocalizedString("_upload_", comment: "").firstUppercased, for: .normal)
-        buttonUpload.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
-        buttonUpload.layer.borderWidth = 0.3
-        buttonUpload.layer.cornerRadius = 3
-        buttonUpload.setImage(imageUpload, for: .normal)
+        button1.setImage(nil, for: .normal)
+        button1.isHidden = true
+        button1.backgroundColor = .clear
+        button1.setTitleColor(.systemBlue, for: .normal)
+        button1.setTitle(NSLocalizedString("_upload_", comment: "").firstUppercased, for: .normal)
+        button1.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
+        button1.layer.borderWidth = 0.3
+        button1.layer.cornerRadius = 3
 
-        let imageFolder = UIImage(named: "buttonAddFolder")!.image(color: NCBrandColor.shared.systemGray1, size: 25)
-        buttonCreateFolder.backgroundColor = .clear
-        buttonCreateFolder.setTitleColor(.systemBlue, for: .normal)
-        buttonCreateFolder.setTitle(NSLocalizedString("_folder_", comment: "").firstUppercased, for: .normal)
-        buttonCreateFolder.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
-        buttonCreateFolder.layer.borderWidth = 0.3
-        buttonCreateFolder.layer.cornerRadius = 3
-        buttonCreateFolder.setImage(imageFolder, for: .normal)
+        button2.setImage(nil, for: .normal)
+        button2.isHidden = true
+        button2.backgroundColor = .clear
+        button2.setTitleColor(.systemBlue, for: .normal)
+        button2.setTitle(NSLocalizedString("_folder_", comment: "").firstUppercased, for: .normal)
+        button2.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
+        button2.layer.borderWidth = 0.3
+        button2.layer.cornerRadius = 3
 
-        let imageScan = NCUtility.shared.loadImage(named: "buttonAddScan").image(color: NCBrandColor.shared.systemGray1, size: 25)
-        buttonScanDocument.backgroundColor = .clear
-        buttonScanDocument.setTitleColor(.systemBlue, for: .normal)
-        buttonScanDocument.setTitle(NSLocalizedString("_scan_", comment: "").firstUppercased, for: .normal)
-        buttonScanDocument.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
-        buttonScanDocument.layer.borderWidth = 0.3
-        buttonScanDocument.layer.cornerRadius = 3
-        buttonScanDocument.setImage(imageScan, for: .normal)
-        if #available(iOS 13.0, *) {
-            buttonScanDocument.isHidden = false
-        } else {
-            buttonScanDocument.isHidden = true
-        }
+        button3.setImage(nil, for: .normal)
+        button3.isHidden = true
+        button3.backgroundColor = .clear
+        button3.setTitleColor(.systemBlue, for: .normal)
+        button3.setTitle(NSLocalizedString("_scan_", comment: "").firstUppercased, for: .normal)
+        button3.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
+        button3.layer.borderWidth = 0.3
+        button3.layer.cornerRadius = 3
 
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
@@ -195,12 +190,27 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    func setButtonsTwoHeight(_ size:CGFloat) {
+    func setButtonsTwoHeight(_ size:CGFloat, imageButton1: UIImage? = nil, imageButton2: UIImage? = nil, imageButton3: UIImage? = nil) {
         viewButtonsTwoHeightConstraint.constant = size
         if size == 0 {
             viewButtonsTwo.isHidden = true
         } else {
             viewButtonsTwo.isHidden = false
+        }
+        if var image = imageButton1 {
+            image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+            button1.setImage(image, for: .normal)
+            button1.isHidden = false
+        }
+        if var image = imageButton2 {
+            image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+            button2.setImage(image, for: .normal)
+            button2.isHidden = false
+        }
+        if var image = imageButton3 {
+            image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+            button3.setImage(image, for: .normal)
+            button3.isHidden = false
         }
     }
 
@@ -234,16 +244,16 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         delegate?.tapButtonMore(sender)
     }
 
-    @IBAction func touchUpInsideButtonUpload(_ sender: Any) {
-       delegate?.tapButtonUpload(sender)
+    @IBAction func touchUpInsideButton1(_ sender: Any) {
+       delegate?.tapButton1(sender)
     }
 
-    @IBAction func touchUpInsideButtonCreateFolder(_ sender: Any) {
-        delegate?.tapButtonCreateFolder(sender)
+    @IBAction func touchUpInsideButton2(_ sender: Any) {
+        delegate?.tapButton2(sender)
     }
 
-    @IBAction func touchUpInsideButtonScanDocument(_ sender: Any) {
-        delegate?.tapButtonScanDocument(sender)
+    @IBAction func touchUpInsideButton3(_ sender: Any) {
+        delegate?.tapButton3(sender)
     }
 
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
@@ -255,9 +265,9 @@ protocol NCSectionHeaderMenuDelegate: AnyObject {
     func tapButtonSwitch(_ sender: Any)
     func tapButtonOrder(_ sender: Any)
     func tapButtonMore(_ sender: Any)
-    func tapButtonUpload(_ sender: Any)
-    func tapButtonCreateFolder(_ sender: Any)
-    func tapButtonScanDocument(_ sender: Any)
+    func tapButton1(_ sender: Any)
+    func tapButton2(_ sender: Any)
+    func tapButton3(_ sender: Any)
     func tapRichWorkspace(_ sender: Any)
 }
 
@@ -266,9 +276,9 @@ extension NCSectionHeaderMenuDelegate {
     func tapButtonSwitch(_ sender: Any) {}
     func tapButtonOrder(_ sender: Any) {}
     func tapButtonMore(_ sender: Any) {}
-    func tapButtonUpload(_ sender: Any) {}
-    func tapButtonCreateFolder(_ sender: Any) {}
-    func tapButtonScanDocument(_ sender: Any) {}
+    func tapButton1(_ sender: Any) {}
+    func tapButton2(_ sender: Any) {}
+    func tapButton3(_ sender: Any) {}
     func tapRichWorkspace(_ sender: Any) {}
 }
 

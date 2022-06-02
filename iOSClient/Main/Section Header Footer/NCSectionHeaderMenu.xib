@@ -28,7 +28,7 @@
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="Button 1" image="buttonCreateFolder"/>
                             <connections>
-                                <action selector="touchUpInsideButtonUpload:" destination="tys-A2-nDX" eventType="touchUpInside" id="PRS-wE-LRC"/>
+                                <action selector="touchUpInsideButton1:" destination="tys-A2-nDX" eventType="touchUpInside" id="n7r-8n-gT3"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cjh-je-E6h">
@@ -41,7 +41,7 @@
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="Button 2" image="buttonCreateFolder"/>
                             <connections>
-                                <action selector="touchUpInsideButtonCreateFolder:" destination="tys-A2-nDX" eventType="touchUpInside" id="v9i-Kt-hbI"/>
+                                <action selector="touchUpInsideButton2:" destination="tys-A2-nDX" eventType="touchUpInside" id="hek-Xq-Lh2"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zta-tv-COt">
@@ -54,7 +54,7 @@
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="Button 3" image="buttonCreateFolder"/>
                             <connections>
-                                <action selector="touchUpInsideButtonScanDocument:" destination="tys-A2-nDX" eventType="touchUpInside" id="chM-32-kSs"/>
+                                <action selector="touchUpInsideButton3:" destination="tys-A2-nDX" eventType="touchUpInside" id="Krk-cP-Iq5"/>
                             </connections>
                         </button>
                     </subviews>
@@ -178,12 +178,12 @@
                 <constraint firstItem="NC1-5C-E5z" firstAttribute="bottom" secondItem="f9U-NY-4OS" secondAttribute="top" id="pmY-5s-Pv2"/>
             </constraints>
             <connections>
-                <outlet property="buttonCreateFolder" destination="cjh-je-E6h" id="RUW-w2-cfw"/>
+                <outlet property="button1" destination="Hie-dN-B9L" id="kzL-vK-FCu"/>
+                <outlet property="button2" destination="cjh-je-E6h" id="jUf-rf-F2d"/>
+                <outlet property="button3" destination="Zta-tv-COt" id="jk9-MY-ylh"/>
                 <outlet property="buttonMore" destination="D0O-wK-14O" id="eEx-3R-zCS"/>
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
-                <outlet property="buttonScanDocument" destination="Zta-tv-COt" id="D7n-8P-5l4"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
-                <outlet property="buttonUpload" destination="Hie-dN-B9L" id="AfM-W6-RDX"/>
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
                 <outlet property="viewButtonsOne" destination="4m9-yf-RbB" id="ym1-m0-plm"/>
