@@ -105,7 +105,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
 
-        viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
         viewSeparatorHeightConstraint.constant = 0.5
 
         markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
@@ -119,6 +118,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         viewSectionHeightConstraint.constant = 0
     }
 
+//    33
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
         gradient.frame = viewRichWorkspace.bounds
@@ -134,8 +134,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     func setGradientColor() {
         if traitCollection.userInterfaceStyle == .dark {
             gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            viewSeparator.backgroundColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.0)
         } else {
             gradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
         }
     }
 
