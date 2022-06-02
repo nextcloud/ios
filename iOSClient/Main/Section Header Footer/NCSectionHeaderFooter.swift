@@ -157,35 +157,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     //MARK: -
 
-    func buttonMoreIsHidden(_ isHidden: Bool) {
-        buttonMore.isHidden = isHidden
-    }
-
-    func setImageSwitchList() {
-        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
-    }
-
-    func setImageSwitchGrid() {
-        buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
-    }
-
-    func setButtonsView(heigt :CGFloat) {
-        viewButtonsCommandHeightConstraint.constant = heigt
-        if heigt == 0 {
-            viewButtonsCommand.isHidden = true
-        } else {
-            viewButtonsCommand.isHidden = false
-        }
-    }
-
-    func setStatusButtonsView(enable: Bool) {
-        buttonSwitch.isEnabled = enable
-        buttonOrder.isEnabled = enable
-        buttonMore.isEnabled = enable
-    }
+    // Command
 
     func setButtonsCommand(heigt :CGFloat, imageButton1: UIImage? = nil, titleButton1: String? = nil, imageButton2: UIImage? = nil, titleButton2: String? = nil, imageButton3: UIImage? = nil, titleButton3: String? = nil) {
-        viewButtonsViewHeightConstraint.constant = heigt
+        viewButtonsCommandHeightConstraint.constant = heigt
         if heigt == 0 {
             viewButtonsView.isHidden = true
         } else {
@@ -211,6 +186,37 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
+    // View
+
+    func buttonMoreIsHidden(_ isHidden: Bool) {
+        buttonMore.isHidden = isHidden
+    }
+
+    func setImageSwitchList() {
+        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
+    }
+
+    func setImageSwitchGrid() {
+        buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
+    }
+
+    func setStatusButtonsView(enable: Bool) {
+        buttonSwitch.isEnabled = enable
+        buttonOrder.isEnabled = enable
+        buttonMore.isEnabled = enable
+    }
+
+    func setButtonsView(heigt :CGFloat) {
+        viewButtonsViewHeightConstraint.constant = heigt
+        if heigt == 0 {
+            viewButtonsView.isHidden = true
+        } else {
+            viewButtonsView.isHidden = false
+        }
+    }
+
+    // RichWorkspace
+
     func setRichWorkspaceHeight(_ size: CGFloat) {
         viewRichWorkspaceHeightConstraint.constant = size
         if size == 0 {
@@ -220,6 +226,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
+    // Section
+
     func setSectionHeight(_ size:CGFloat) {
         viewSectionHeightConstraint.constant = size
         if size == 0 {
@@ -228,6 +236,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
             viewSection.isHidden = false
         }
     }
+
+    // MARK: -
 
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
         delegate?.tapButtonSwitch(sender)
