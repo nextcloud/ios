@@ -149,7 +149,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
 
-                    if oldSchemaVersion < 222 && NCUtility.shared.SYSTEM_VERSION_LESS_THAN(version: "13") {
+                    if oldSchemaVersion < 226 {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
                     }

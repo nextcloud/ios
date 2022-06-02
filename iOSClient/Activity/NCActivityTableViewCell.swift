@@ -130,7 +130,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             return
         }
 
-        if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
+        if activityPreview.view == NCGlobal.shared.appName && activityPreview.mimeType != "dir" {
 
             guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return

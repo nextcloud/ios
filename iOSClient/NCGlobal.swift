@@ -100,6 +100,9 @@ class NCGlobal: NSObject {
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
 
+    // Name
+    @objc let appName                               = "files"
+    
     // Nextcloud version
     //
     let nextcloudVersion12: Int                     =  12
@@ -112,7 +115,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 225
+    let databaseSchemaVersion: UInt64               = 226
 
     // Intro selector
     //

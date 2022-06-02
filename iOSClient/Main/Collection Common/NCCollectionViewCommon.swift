@@ -1340,7 +1340,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if metadata.name == "files" {
+            if metadata.name == NCGlobal.shared.appName {
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 } else {
@@ -1460,7 +1460,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
             if isSearching {
-                if metadata.name == "files" {
+                if metadata.name == NCGlobal.shared.appName {
                     cell.labelTitle.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
                     cell.labelTitle.lineBreakMode = .byTruncatingHead
                     cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
