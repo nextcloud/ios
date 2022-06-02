@@ -47,6 +47,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
 
+    internal let heightButtonsCommand: CGFloat = 60
     internal let heightButtonsView: CGFloat = 40
     internal let footerEndHeight: CGFloat = 100
 
@@ -204,9 +205,24 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         } // else: undefined sender
     }
 
+    func tapButton1(_ sender: Any) {
+        datasource.forEach({ self.restoreItem(with: $0.fileId) })
+    }
+
+    func tapButton2(_ sender: Any) {
+        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
+            self.emptyTrash()
+        }))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+        self.present(alert, animated: true, completion: nil)
+    }
+
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) { }
+
+    // MARK: - DataSource
 
     @objc func reloadDataSource() {
 
