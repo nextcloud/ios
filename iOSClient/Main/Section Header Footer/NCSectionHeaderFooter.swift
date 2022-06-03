@@ -159,6 +159,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     // Command
 
+    func setStatusButtonsCommand(enable: Bool) {
+        button1.isEnabled = enable
+        button2.isEnabled = enable
+        button3.isEnabled = enable
+    }
+
     func setButtonsCommand(heigt :CGFloat, imageButton1: UIImage? = nil, titleButton1: String? = nil, imageButton2: UIImage? = nil, titleButton2: String? = nil, imageButton3: UIImage? = nil, titleButton3: String? = nil) {
         viewButtonsCommandHeightConstraint.constant = heigt
         if heigt == 0 {
@@ -188,6 +194,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     // View
 
+    func setStatusButtonsView(enable: Bool) {
+        buttonSwitch.isEnabled = enable
+        buttonOrder.isEnabled = enable
+        buttonMore.isEnabled = enable
+    }
+
     func buttonMoreIsHidden(_ isHidden: Bool) {
         buttonMore.isHidden = isHidden
     }
@@ -198,12 +210,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     func setImageSwitchGrid() {
         buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
-    }
-
-    func setStatusButtonsView(enable: Bool) {
-        buttonSwitch.isEnabled = enable
-        buttonOrder.isEnabled = enable
-        buttonMore.isEnabled = enable
     }
 
     func setButtonsView(heigt :CGFloat) {

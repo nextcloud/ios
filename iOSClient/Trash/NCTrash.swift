@@ -47,10 +47,6 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
 
-    internal let heightButtonsCommand: CGFloat = 60
-    internal let heightButtonsView: CGFloat = 40
-    internal let footerEndHeight: CGFloat = 100
-
     private let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
@@ -80,7 +76,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsView, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView + NCGlobal.shared.heightButtonsCommand, delegate: self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
@@ -202,7 +198,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
             collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        } // else: undefined sender
+        }
     }
 
     func tapButton1(_ sender: Any) {

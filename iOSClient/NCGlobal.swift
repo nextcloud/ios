@@ -181,6 +181,14 @@ class NCGlobal: NSObject {
     let buttonMoreStop                              = "stop"
     let buttonMoreLock                              = "moreLock"
 
+    //
+    let heightButtonsCommand: CGFloat               = 60
+    let heightButtonsView: CGFloat                  = 40
+    let heightSection: CGFloat                      = 50
+    //let footerHeight: CGFloat                     = 0
+    let endHeightFooter: CGFloat                    = 100
+
+
     // Text -  OnlyOffice - Collabora - QuickLook
     //
     let editorText                                  = "text"

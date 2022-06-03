@@ -54,12 +54,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
 
-    internal let heightButtonsCommand: CGFloat = 60
-    internal let heightButtonsView: CGFloat = 40
-    internal let heightSection: CGFloat = 50
-    internal let footerHeight: CGFloat = 0
-    internal let footerEndHeight: CGFloat = 100
-
     internal var literalSearch: String?
     internal var isSearching: Bool = false
 
@@ -121,7 +115,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsCommand + heightButtonsView, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, delegate: self)
 
         // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -1832,8 +1826,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
 
-                header.setButtonsView(heigt: heightButtonsView)
-                header.setButtonsCommand(heigt: heightButtonsCommand, imageButton1: UIImage(named: "buttonAddImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "buttonAddFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "buttonAddScan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
+                header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
+                header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "buttonAddImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "buttonAddFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "buttonAddScan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setSectionHeight(heightHeaderSection)
 
@@ -1879,11 +1873,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         }
 
         if section == 0 && dataSource.numberOfSections() > 1 {
-            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, heightSection)
+            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, 0)
+            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
         } else if section > 0 && dataSource.numberOfSections() > 1 {
-            return (0, 0, heightSection)
+            return (0, 0, NCGlobal.shared.heightSection)
         } else {
             return (0, 0, 0)
         }
@@ -1899,9 +1893,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
 
         if dataSource.numberOfSections() == 1 {
-            return CGSize(width: collectionView.frame.width, height: footerEndHeight)
+            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
-            return CGSize(width: collectionView.frame.width, height: footerHeight)
+            return CGSize(width: collectionView.frame.width, height: 0)
         }
     }
 }

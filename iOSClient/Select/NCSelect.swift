@@ -80,12 +80,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
 
-    private let heightButtonsCommand: CGFloat = 0
-    private let heightButtonsView: CGFloat = 40
-    private let heightSection: CGFloat = 50
-    private let footerHeight: CGFloat = 0
-    private let footerEndHeight: CGFloat = 100
-
     private var shares: [tableShare]?
 
     private var backgroundImageView = UIImageView()
@@ -124,7 +118,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: heightButtonsCommand + heightButtonsView, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, delegate: self)
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -630,8 +624,8 @@ extension NCSelect: UICollectionViewDataSource {
                 header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
 
-                header.setButtonsCommand(heigt: heightButtonsCommand)
-                header.setButtonsView(heigt: heightButtonsView)
+                header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand)
+                header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setSectionHeight(heightHeaderSection)
 
@@ -677,11 +671,11 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
         }
 
         if section == 0 && dataSource.numberOfSections() > 1 {
-            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, heightSection)
+            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (heightButtonsCommand + heightButtonsView, headerRichWorkspace, 0)
+            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
         } else if section > 0 && dataSource.numberOfSections() > 1 {
-            return (0, 0, heightSection)
+            return (0, 0, NCGlobal.shared.heightSection)
         } else {
             return (0, 0, 0)
         }
@@ -697,9 +691,9 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
 
         if dataSource.numberOfSections() == 1 {
-            return CGSize(width: collectionView.frame.width, height: footerEndHeight)
+            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
-            return CGSize(width: collectionView.frame.width, height: footerHeight)
+            return CGSize(width: collectionView.frame.width, height: 0)
         }
     }
 }
