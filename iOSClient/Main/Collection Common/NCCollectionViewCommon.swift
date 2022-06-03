@@ -65,6 +65,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
     internal var enableSearchBar: Bool = false
+    internal var headerMenuButtonsCommand: Bool = true
+    internal var headerMenuButtonsView: Bool = true
     internal var emptyImage: UIImage?
     internal var emptyTitle: String = ""
     internal var emptyDescription: String = ""
@@ -115,7 +117,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: getHeaderHeight(), delegate: self)
 
         // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -1820,16 +1822,25 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
-                header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+                if headerMenuButtonsCommand {
+                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "buttonAddImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "buttonAddFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "buttonAddScan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
+                } else {
+                    header.setButtonsCommand(heigt: 0)
+                }
+                if headerMenuButtonsView {
+                    header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
+                    header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
+                    header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+                } else {
+                    header.setButtonsView(heigt: 0)
+                }
+
+                header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
+
+                header.setSectionHeight(heightHeaderSection)
                 header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
-
-                header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
-                header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "buttonAddImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "buttonAddFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "buttonAddScan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
-                header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
-                header.setSectionHeight(heightHeaderSection)
 
                 return header
 
@@ -1861,6 +1872,20 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
+    func getHeaderHeight() -> CGFloat {
+
+        var size: CGFloat = 0
+
+        if headerMenuButtonsCommand {
+            size += NCGlobal.shared.heightButtonsCommand
+        }
+        if headerMenuButtonsView {
+            size += NCGlobal.shared.heightButtonsView
+        }
+
+        return size
+    }
+
     func getHeaderHeight(section:Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
 
         var headerRichWorkspace: CGFloat = 0
@@ -1873,9 +1898,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         }
 
         if section == 0 && dataSource.numberOfSections() > 1 {
-            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
+            return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
+            return (getHeaderHeight(), headerRichWorkspace, 0)
         } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, NCGlobal.shared.heightSection)
         } else {

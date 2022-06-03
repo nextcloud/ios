@@ -118,7 +118,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView, delegate: self)
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -624,7 +624,7 @@ extension NCSelect: UICollectionViewDataSource {
                 header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
 
-                header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand)
+                header.setButtonsCommand(heigt: 0)
                 header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setSectionHeight(heightHeaderSection)
@@ -671,9 +671,9 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
         }
 
         if section == 0 && dataSource.numberOfSections() > 1 {
-            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
+            return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (NCGlobal.shared.heightButtonsCommand + NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
+            return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
         } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, NCGlobal.shared.heightSection)
         } else {

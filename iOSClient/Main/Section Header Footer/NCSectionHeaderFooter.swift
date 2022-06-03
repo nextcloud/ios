@@ -49,7 +49,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var labelSection: UILabel!
 
-
     weak var delegate: NCSectionHeaderMenuDelegate?
 
     private var markdownParser = MarkdownParser()
@@ -88,7 +87,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button3.isHidden = true
         button3.backgroundColor = .clear
         button3.setTitleColor(.systemBlue, for: .normal)
-        //button3.setTitle(NSLocalizedString("_scan_", comment: "").firstUppercased, for: .normal)
         button3.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
         button3.layer.borderWidth = 0.3
         button3.layer.cornerRadius = 3
@@ -116,7 +114,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         viewSectionHeightConstraint.constant = 0
     }
 
-//    33
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
         gradient.frame = viewRichWorkspace.bounds
@@ -127,37 +124,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         setGradientColor()
     }
 
-    //MARK: -
-
-    func setGradientColor() {
-        if traitCollection.userInterfaceStyle == .dark {
-            gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-            viewSeparator.backgroundColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.0)
-        } else {
-            gradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
-            viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
-        }
-    }
-
-    func setSortedTitle(_ title: String) {
-
-        let title = NSLocalizedString(title, comment: "")
-        //let size = title.size(withAttributes: [.font: buttonOrder.titleLabel?.font as Any])
-
-        buttonOrder.setTitle(title, for: .normal)
-    }
-
-    func setRichWorkspaceText(_ text: String?) {
-        guard let text = text else { return }
-        if text != self.richWorkspaceText {
-            textViewRichWorkspace.attributedText = markdownParser.parse(text)
-            self.richWorkspaceText = text
-        }
-    }
-
-    //MARK: -
-
-    // Command
+    //MARK: - Command
 
     func setStatusButtonsCommand(enable: Bool) {
         button1.isEnabled = enable
@@ -192,7 +159,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    // View
+    //MARK: - View
 
     func setStatusButtonsView(enable: Bool) {
         buttonSwitch.isEnabled = enable
@@ -221,7 +188,15 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    // RichWorkspace
+    func setSortedTitle(_ title: String) {
+
+        let title = NSLocalizedString(title, comment: "")
+        //let size = title.size(withAttributes: [.font: buttonOrder.titleLabel?.font as Any])
+
+        buttonOrder.setTitle(title, for: .normal)
+    }
+
+    //MARK: - RichWorkspace
 
     func setRichWorkspaceHeight(_ size: CGFloat) {
         viewRichWorkspaceHeightConstraint.constant = size
@@ -232,7 +207,25 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    // Section
+    func setGradientColor() {
+        if traitCollection.userInterfaceStyle == .dark {
+            gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            viewSeparator.backgroundColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.0)
+        } else {
+            gradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
+        }
+    }
+
+    func setRichWorkspaceText(_ text: String?) {
+        guard let text = text else { return }
+        if text != self.richWorkspaceText {
+            textViewRichWorkspace.attributedText = markdownParser.parse(text)
+            self.richWorkspaceText = text
+        }
+    }
+
+    //MARK: - Section
 
     func setSectionHeight(_ size:CGFloat) {
         viewSectionHeightConstraint.constant = size
@@ -243,7 +236,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    // MARK: -
+    // MARK: - Action
 
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
         delegate?.tapButtonSwitch(sender)
