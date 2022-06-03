@@ -202,9 +202,11 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     func tapButton1(_ sender: Any) {
 
         if isEditMode {
+            if selectOcId.isEmpty { return }
             self.selectOcId.forEach(self.restoreItem)
             self.tapSelect()
         } else {
+            if datasource.isEmpty { return }
             datasource.forEach({ self.restoreItem(with: $0.fileId) })
         }
     }
@@ -212,6 +214,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     func tapButton2(_ sender: Any) {
 
         if isEditMode {
+            if selectOcId.isEmpty { return }
             let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
                 self.selectOcId.forEach(self.deleteItem)
@@ -220,6 +223,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
             self.present(alert, animated: true, completion: nil)
         } else {
+            if datasource.isEmpty { return }
             let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
                 self.emptyTrash()
