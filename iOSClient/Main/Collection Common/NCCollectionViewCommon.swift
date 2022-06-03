@@ -182,7 +182,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        reloadDataSourceNetwork()
+        if !isSearching {
+            reloadDataSourceNetwork()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
