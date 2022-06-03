@@ -36,6 +36,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
+        headerMenuButtonsCommand = false
+        headerMenuButtonsView = false
         emptyImage = UIImage(named: "arrow.left.arrow.right")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
@@ -156,10 +158,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // nothing
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 0)
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

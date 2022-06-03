@@ -34,15 +34,11 @@ class NCRecent: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
+        headerMenuButtonsCommand = false
+        headerMenuButtonsView = false
         emptyImage = UIImage(named: "recent")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
-    }
-
-    // MARK: - Collection View
-
-    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 0)
     }
 
     // MARK: - DataSource + NC Endpoint
