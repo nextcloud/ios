@@ -95,13 +95,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         viewRichWorkspace.layer.addSublayer(gradient)
-        setGradientColor()
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))
         tap.delegate = self
         viewRichWorkspace?.addGestureRecognizer(tap)
 
         viewSeparatorHeightConstraint.constant = 0.5
+        viewSeparator.backgroundColor = NCBrandColor.shared.separator
 
         markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
@@ -121,7 +121,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        setGradientColor()
+        setInterfaceColor()
     }
 
     //MARK: - Command
@@ -207,13 +207,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    func setGradientColor() {
+    func setInterfaceColor() {
         if traitCollection.userInterfaceStyle == .dark {
             gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-            viewSeparator.backgroundColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.0)
+            //viewSeparator.backgroundColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.0)
         } else {
             gradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
-            viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
+            //viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
         }
     }
 

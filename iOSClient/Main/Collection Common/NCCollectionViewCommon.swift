@@ -67,6 +67,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var enableSearchBar: Bool = false
     internal var headerMenuButtonsCommand: Bool = true
     internal var headerMenuButtonsView: Bool = true
+    internal var headerRichWorkspaceDisable:Bool = false
     internal var emptyImage: UIImage?
     internal var emptyTitle: String = ""
     internal var emptyDescription: String = ""
@@ -1893,7 +1894,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var headerRichWorkspace: CGFloat = 0
 
-        if let richWorkspaceText = richWorkspaceText {
+        if let richWorkspaceText = richWorkspaceText, !headerRichWorkspaceDisable {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
             if trimmed.count > 0 && !isSearching {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6

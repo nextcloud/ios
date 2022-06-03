@@ -36,6 +36,7 @@ class NCRecent: NCCollectionViewCommon {
         enableSearchBar = false
         headerMenuButtonsCommand = false
         headerMenuButtonsView = false
+        headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "recent")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
