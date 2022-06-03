@@ -1469,9 +1469,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileUser = metadata.ownerId
             if isSearching {
                 if metadata.name == NCGlobal.shared.appName {
-                    cell.labelTitle.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
+                    cell.labelTitle.text = metadata.fileName
                     cell.labelTitle.lineBreakMode = .byTruncatingHead
-                    cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                    cell.labelInfo.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
                 } else {
                     cell.labelTitle.text = metadata.fileName
                     cell.labelTitle.lineBreakMode = .byTruncatingTail
