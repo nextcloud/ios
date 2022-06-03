@@ -65,7 +65,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCell {
         ]
 
         imageRestore.image = NCBrandColor.cacheImages.buttonRestore
-        imageMore.image = NCUtility.shared.loadImage(named: "trash")
+        imageMore.image = NCBrandColor.cacheImages.buttonTrash
 
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true

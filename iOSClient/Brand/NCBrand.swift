@@ -139,6 +139,7 @@ class NCBrandColor: NSObject {
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
         static var buttonRestore = UIImage()
+        static var buttonTrash = UIImage()
 
         static var iconContacts = UIImage()
         static var iconTalk = UIImage()
@@ -376,6 +377,7 @@ class NCBrandColor: NSObject {
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
         cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: gray, size: 50)
         cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
+        cacheImages.buttonTrash = UIImage(named: "trash")!.image(color: gray, size: 50)
 
         cacheImages.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
         cacheImages.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)

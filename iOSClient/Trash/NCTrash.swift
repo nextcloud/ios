@@ -164,9 +164,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         sortMenu.toggleMenu(viewController: self, key: NCGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }
 
-    func tapButtonMore(_ sender: Any) {
-        toggleMenuMoreHeader()
-    }
+    func tapButtonMore(_ sender: Any) { }
 
     func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
 
@@ -202,16 +200,33 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     }
 
     func tapButton1(_ sender: Any) {
-        datasource.forEach({ self.restoreItem(with: $0.fileId) })
+
+        if isEditMode {
+            self.selectOcId.forEach(self.restoreItem)
+            self.tapSelect()
+        } else {
+            datasource.forEach({ self.restoreItem(with: $0.fileId) })
+        }
     }
 
     func tapButton2(_ sender: Any) {
-        let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
-            self.emptyTrash()
-        }))
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
-        self.present(alert, animated: true, completion: nil)
+
+        if isEditMode {
+            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
+                self.selectOcId.forEach(self.deleteItem)
+                self.tapSelect()
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
+                self.emptyTrash()
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }

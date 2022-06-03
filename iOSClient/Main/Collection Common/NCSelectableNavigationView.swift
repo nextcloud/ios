@@ -34,6 +34,7 @@ extension RealmSwiftObject {
 }
 
 protocol NCSelectableNavigationView: AnyObject {
+
     var appDelegate: AppDelegate { get }
     var selectableDataSource: [RealmSwiftObject] { get }
     var collectionView: UICollectionView! { get set }
@@ -52,7 +53,10 @@ protocol NCSelectableNavigationView: AnyObject {
 }
 
 extension NCSelectableNavigationView {
-    func setNavigationItem() { setNavigationHeader() }
+
+    func setNavigationItem() {
+        setNavigationHeader()
+    }
 
     func setNavigationHeader() {
         if isEditMode {
