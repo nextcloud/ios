@@ -1535,6 +1535,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderExternal
                 } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderAutomaticUpload
+                    cell.labelTitle.text = (cell.labelTitle.text ?? "") + " - " + NSLocalizedString("_auto_upload_folder_", comment: "")
                 } else {
                     cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
