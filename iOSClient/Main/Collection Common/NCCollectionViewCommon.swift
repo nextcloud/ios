@@ -1015,6 +1015,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.reloadDataSource()
             }
         }
+        var providers: [NCCSearchProvider]?
 
         isReloadDataSourceNetworkInProgress = true
         self.metadatasSource.removeAll()
@@ -1024,7 +1025,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             self.refreshControl.beginRefreshing()
-            NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch, update: { metadatas in
+            NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
+                providers = allProviders
+            } update: { metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
                 DispatchQueue.main.async {
                     if self.searchController?.isActive == true {
@@ -1035,11 +1038,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             ascending: self.layoutForView?.ascending,
                             directoryOnTop: self.layoutForView?.directoryOnTop,
                             favoriteOnTop: true,
-                            filterLivePhoto: true)
+                            filterLivePhoto: true,
+                            providers: providers)
                         self.collectionView.reloadData()
                     }
                 }
-            }, completion: completionHandler)
+            } completion: { metadatas, errorCode, errorDescription in
+                completionHandler(metadatas, errorCode, errorDescription)
+            }
         } else {
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, completion: completionHandler)
         }

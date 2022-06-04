@@ -931,7 +931,7 @@ import Queuer
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, update: @escaping ([tableMetadata]?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping ([tableMetadata]?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
         var searchFiles: [tableMetadata] = []
         var errCode = 0
@@ -951,6 +951,8 @@ import Queuer
             if let request = request {
                 self.requestsUnifiedSearch.append(request)
             }
+        } providers: { allProviders in
+            providers(allProviders)
         } update: { partialResult, provider, errorCode, errorDescription in
             guard let partialResult = partialResult else { return }
             

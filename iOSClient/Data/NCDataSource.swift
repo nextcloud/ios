@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NCCommunication
 
 class NCDataSource: NSObject {
 
@@ -29,6 +30,7 @@ class NCDataSource: NSObject {
     public var metadatasForSection: [NCMetadatasForSection] = []
 
     private var sectionsValue: [String] = []
+    private var providers: [NCCSearchProvider]?
 
     private var ascending: Bool = true
     private var sort: String = ""
@@ -41,7 +43,7 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatasSource: [tableMetadata], sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name") {
+    init(metadatasSource: [tableMetadata], sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NCCSearchProvider]? = nil) {
         super.init()
 
         self.metadatasSource = metadatasSource
@@ -51,6 +53,7 @@ class NCDataSource: NSObject {
         self.favoriteOnTop = favoriteOnTop ?? true
         self.filterLivePhoto = filterLivePhoto ?? true
         self.groupByField = groupByField
+        self.providers = providers
 
         createSections()
 

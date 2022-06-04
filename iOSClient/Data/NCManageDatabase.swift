@@ -149,9 +149,10 @@ class NCManageDatabase: NSObject {
                         }
                     }
 
-                    if oldSchemaVersion < 226 {
+                    if oldSchemaVersion < 227 {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableTrash.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
