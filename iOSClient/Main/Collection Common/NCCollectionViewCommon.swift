@@ -1826,7 +1826,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                if headerMenuButtonsCommand {
+                if headerMenuButtonsCommand && !isSearching {
                     header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "buttonAddImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "buttonAddFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "buttonAddScan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
@@ -1880,7 +1880,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var size: CGFloat = 0
 
-        if headerMenuButtonsCommand {
+        if headerMenuButtonsCommand && !isSearching {
             size += NCGlobal.shared.heightButtonsCommand
         }
         if headerMenuButtonsView {
@@ -1921,7 +1921,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
 
-        if dataSource.numberOfSections() == 1 {
+        let sections = dataSource.numberOfSections()
+
+        if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
             return CGSize(width: collectionView.frame.width, height: 0)

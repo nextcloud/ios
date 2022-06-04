@@ -136,26 +136,29 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         viewButtonsCommandHeightConstraint.constant = heigt
         if heigt == 0 {
             viewButtonsView.isHidden = true
+            button1.isHidden = true
+            button2.isHidden = true
+            button3.isHidden = true
         } else {
             viewButtonsView.isHidden = false
-        }
-        if var image = imageButton1, let title = titleButton1 {
-            image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
-            button1.setImage(image, for: .normal)
-            button1.isHidden = false
-            button1.setTitle(title.firstUppercased, for: .normal)
-        }
-        if var image = imageButton2, let title = titleButton2 {
-            image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
-            button2.setImage(image, for: .normal)
-            button2.isHidden = false
-            button2.setTitle(title.firstUppercased, for: .normal)
-        }
-        if var image = imageButton3, let title = titleButton3 {
-            image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
-            button3.setImage(image, for: .normal)
-            button3.isHidden = false
-            button3.setTitle(title.firstUppercased, for: .normal)
+            if var image = imageButton1, let title = titleButton1 {
+                image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+                button1.setImage(image, for: .normal)
+                button1.isHidden = false
+                button1.setTitle(title.firstUppercased, for: .normal)
+            }
+            if var image = imageButton2, let title = titleButton2 {
+                image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+                button2.setImage(image, for: .normal)
+                button2.isHidden = false
+                button2.setTitle(title.firstUppercased, for: .normal)
+            }
+            if var image = imageButton3, let title = titleButton3 {
+                image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+                button3.setImage(image, for: .normal)
+                button3.isHidden = false
+                button3.setTitle(title.firstUppercased, for: .normal)
+            }
         }
     }
 
