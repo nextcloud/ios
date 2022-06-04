@@ -75,9 +75,9 @@ class NCDataSource: NSObject {
 
         self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
         self.sectionsValue = Array(Set(self.sectionsValue))
-        if let providers = self.providers {
+//        if let providers = self.providers {
 
-        } else {
+//        } else {
             self.sectionsValue = self.sectionsValue.sorted {
                 if self.ascending {
                     return $0 < $1
@@ -85,7 +85,7 @@ class NCDataSource: NSObject {
                     return $0 > $1
                 }
             }
-        }
+//        }
     }
 
     internal func createMetadataForSection(sectionValue: String) {
