@@ -1232,6 +1232,14 @@ class NCManageDatabase: NSObject {
         }
     }
 
+    @objc func getTableLocalFile(account: String) -> [tableLocalFile] {
+
+        let realm = try! Realm()
+
+        let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
+        return Array(results.map { tableLocalFile.init(value: $0) })
+    }
+
     @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
 
         let realm = try! Realm()

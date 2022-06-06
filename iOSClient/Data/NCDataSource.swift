@@ -32,6 +32,7 @@ class NCDataSource: NSObject {
     private var sectionsValue: [String] = []
     private var providers: [NCCSearchProvider]?
     private var shares: [tableShare] = []
+    private var localFiles: [tableLocalFile] = []
 
     private var ascending: Bool = true
     private var sort: String = ""
@@ -49,6 +50,7 @@ class NCDataSource: NSObject {
 
         self.metadatasSource = metadatasSource
         self.shares = NCManageDatabase.shared.getTableShares(account: account)
+        self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
         self.sort = sort ?? "none"
         self.ascending = ascending ?? false
         self.directoryOnTop = directoryOnTop ?? true
@@ -113,6 +115,7 @@ class NCDataSource: NSObject {
         let metadataForSection = NCMetadatasForSection.init(sectionValue: sectionValue,
                                                             metadatas: metadatas,
                                                             shares: self.shares,
+                                                            localFiles: self.localFiles,
                                                             sort: self.sort,
                                                             ascending: self.ascending,
                                                             directoryOnTop: self.directoryOnTop,
@@ -308,6 +311,7 @@ class NCMetadatasForSection: NSObject {
     var sectionValue: String
     var metadatas: [tableMetadata]
     var shares: [tableShare]
+    var localFiles: [tableLocalFile]
 
     private var sort : String
     private var ascending: Bool
@@ -328,11 +332,12 @@ class NCMetadatasForSection: NSObject {
     public var metadataOffLine: [String] = []
 
 
-    init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], localFiles: [tableLocalFile], sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
 
         self.sectionValue = sectionValue
         self.metadatas = metadatas
         self.shares = shares
+        self.localFiles = localFiles
         self.sort = sort
         self.ascending = ascending
         self.directoryOnTop = directoryOnTop
@@ -411,11 +416,11 @@ class NCMetadatasForSection: NSObject {
 
             // is Local / offline
             if !metadata.directory, CCUtility.fileProviderStorageExists(metadata) {
-                let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                if tableLocalFile == nil {
+                let localFile = self.localFiles.filter({ $0.ocId == metadata.ocId }).first
+                if localFile == nil {
                     NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 }
-                if tableLocalFile?.offline ?? false {
+                if localFile?.offline ?? false {
                     metadataOffLine.append(metadata.ocId)
                 }
             }
