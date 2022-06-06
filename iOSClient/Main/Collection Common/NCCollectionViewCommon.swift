@@ -1473,6 +1473,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
+            cell.labelTitle.textColor = NCBrandColor.shared.label
+            cell.labelInfo.textColor = NCBrandColor.shared.systemGray
+
             if isSearching {
                 if metadata.name == NCGlobal.shared.appName {
                     cell.labelTitle.text = metadata.fileName
@@ -1483,14 +1486,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.labelTitle.lineBreakMode = .byTruncatingTail
                     cell.labelInfo.text = metadata.subline
                 }
+                if let literalSearch = self.literalSearch {
+                    let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
+                    let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
+                    attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)], range: longestWordRange)
+                    cell.labelTitle.attributedText = attributedString
+                }
             } else {
                 cell.labelTitle.text = metadata.fileNameView
                 cell.labelTitle.lineBreakMode = .byTruncatingMiddle
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
             }
-
-            cell.labelTitle.textColor = NCBrandColor.shared.label
-            cell.labelInfo.textColor = NCBrandColor.shared.systemGray
 
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
@@ -1690,6 +1696,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileUser = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
+
+            if isSearching, let literalSearch = self.literalSearch {
+                let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
+                let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
+                attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)], range: longestWordRange)
+                cell.labelTitle.attributedText = attributedString
+            }
 
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
