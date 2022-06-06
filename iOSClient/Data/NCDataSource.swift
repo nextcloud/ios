@@ -75,6 +75,14 @@ class NCDataSource: NSObject {
 
         self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
         self.sectionsValue = Array(Set(self.sectionsValue))
+        self.sectionsValue = self.sectionsValue.sorted {
+            if self.ascending {
+                return $0 < $1
+            } else {
+                return $0 > $1
+            }
+        }
+        /* TEST
         if let providers = self.providers {
             var sectionsDictionary: [String:Int] = [:]
             for section in self.sectionsValue {
@@ -85,8 +93,6 @@ class NCDataSource: NSObject {
             self.sectionsValue.removeAll()
             let sectionsDictionarySorted = sectionsDictionary.sorted(by: { $0.value > $1.value } )
             for section in sectionsDictionarySorted { self.sectionsValue.append(section.key) }
-            print(sectionsDictionarySorted)
-            print(self.sectionsValue)
         } else {
             self.sectionsValue = self.sectionsValue.sorted {
                 if self.ascending {
@@ -96,6 +102,7 @@ class NCDataSource: NSObject {
                 }
             }
         }
+        */
     }
 
     internal func createMetadataForSection(sectionValue: String) {

@@ -1907,7 +1907,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if section == 0 && dataSource.numberOfSections() > 1 {
+        if section == 0 && dataSource.numberOfSections() > 1 || isSearching {
             return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
             return (getHeaderHeight(), headerRichWorkspace, 0)
