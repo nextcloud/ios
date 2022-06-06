@@ -730,7 +730,13 @@ extension NCSelect {
         }
 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource(metadatasSource: metadatasSource,
+                                       account: activeAccount.account,
+                                       sort: layoutForView?.sort,
+                                       ascending: layoutForView?.ascending,
+                                       directoryOnTop: layoutForView?.directoryOnTop,
+                                       favoriteOnTop: true,
+                                       filterLivePhoto: true)
 
         if withLoadFolder {
             loadFolder()

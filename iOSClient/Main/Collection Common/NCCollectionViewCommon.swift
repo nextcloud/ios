@@ -1032,14 +1032,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 DispatchQueue.main.async {
                     if self.searchController?.isActive == true {
                         self.metadatasSource = metadatas
-                        self.dataSource = NCDataSource(
-                            metadatasSource: self.metadatasSource,
-                            sort: self.layoutForView?.sort,
-                            ascending: self.layoutForView?.ascending,
-                            directoryOnTop: self.layoutForView?.directoryOnTop,
-                            favoriteOnTop: true,
-                            filterLivePhoto: true,
-                            providers: providers)
+                        self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+                                                       account: self.appDelegate.account,
+                                                       sort: self.layoutForView?.sort,
+                                                       ascending: self.layoutForView?.ascending,
+                                                       directoryOnTop: self.layoutForView?.directoryOnTop,
+                                                       favoriteOnTop: true,
+                                                       filterLivePhoto: true,
+                                                       providers: providers)
                         self.collectionView.reloadData()
                     }
                 }
