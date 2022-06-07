@@ -1475,6 +1475,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileUser = metadata.ownerId
             cell.labelTitle.textColor = NCBrandColor.shared.label
             cell.labelInfo.textColor = NCBrandColor.shared.systemGray
+            cell.titleInfoTrailingDefault()
 
             if isSearching {
                 cell.labelTitle.text = metadata.fileName
@@ -1483,6 +1484,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.labelInfo.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
                 } else {
                     cell.labelInfo.text = metadata.subline
+                    cell.titleInfoTrailingFull()
                 }
                 if let literalSearch = self.literalSearch {
                     let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)

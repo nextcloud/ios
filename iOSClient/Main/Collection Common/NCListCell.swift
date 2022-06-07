@@ -26,7 +26,6 @@ import UIKit
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
@@ -39,7 +38,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var separator: UIView!
+
+    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var infoTrailingConstraint: NSLayoutConstraint!
 
     private var objectId = ""
     private var user = ""
@@ -142,6 +145,16 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 target: self,
                 selector: #selector(touchUpInsideMore))
         ]
+    }
+
+    func titleInfoTrailingFull() {
+        titleTrailingConstraint.constant = 10
+        infoTrailingConstraint.constant = 10
+    }
+
+    func titleInfoTrailingDefault() {
+        titleTrailingConstraint.constant = 90
+        infoTrailingConstraint.constant = 90
     }
     
     func setButtonMore(named: String, image: UIImage) {
