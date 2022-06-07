@@ -296,6 +296,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             })
             layoutForView?.layout = NCGlobal.shared.layoutGrid
         }
+        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {
