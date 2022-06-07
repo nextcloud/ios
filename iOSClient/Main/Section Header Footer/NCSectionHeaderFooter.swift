@@ -324,6 +324,7 @@ class NCSectionFooter: UICollectionReusableView {
 
         self.backgroundColor = UIColor.clear
         labelSection.textColor = NCBrandColor.shared.gray
+        labelSection.text = ""
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5

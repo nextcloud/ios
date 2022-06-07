@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s2m-yO-4x0" userLabel="separator">
-                    <rect key="frame" x="10" y="0.0" width="365" height="1"/>
+                    <rect key="frame" x="10" y="5" width="365" height="1"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -34,7 +34,7 @@
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" constant="-10" id="ai4-Qy-YWi"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" id="avP-sX-JB5"/>
-                <constraint firstItem="s2m-yO-4x0" firstAttribute="top" secondItem="EFn-SN-cxu" secondAttribute="top" id="b9q-Zv-YmO"/>
+                <constraint firstItem="s2m-yO-4x0" firstAttribute="top" secondItem="EFn-SN-cxu" secondAttribute="top" constant="5" id="b9q-Zv-YmO"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="s2m-yO-4x0" secondAttribute="trailing" id="dWj-wQ-cfb"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
             </constraints>

@@ -1477,13 +1477,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.labelInfo.textColor = NCBrandColor.shared.systemGray
 
             if isSearching {
+                cell.labelTitle.text = metadata.fileName
+                cell.labelTitle.lineBreakMode = .byTruncatingTail
                 if metadata.name == NCGlobal.shared.appName {
-                    cell.labelTitle.text = metadata.fileName
-                    cell.labelTitle.lineBreakMode = .byTruncatingHead
                     cell.labelInfo.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
                 } else {
-                    cell.labelTitle.text = metadata.fileName
-                    cell.labelTitle.lineBreakMode = .byTruncatingTail
                     cell.labelInfo.text = metadata.subline
                 }
                 if let literalSearch = self.literalSearch {
@@ -1880,14 +1878,24 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
 
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            let sections = dataSource.numberOfSections()
+            let section = indexPath.section
 
-            if dataSource.numberOfSections() == 1 {
-                let info = dataSource.getFooterInformation()
-                footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
-                footer.separatorIsHidden(true)
+            if isSearching {
+                if sections > 1 && section != sections - 1 {
+                    footer.separatorIsHidden(false)
+                } else {
+                    footer.separatorIsHidden(true)
+                }
             } else {
-                footer.setTitleLabel(text: "")
-                footer.separatorIsHidden(false)
+                if sections == 1 {
+                    let info = dataSource.getFooterInformation()
+                    footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
+                    footer.separatorIsHidden(true)
+                } else {
+                    footer.setTitleLabel(text: "")
+                    footer.separatorIsHidden(false)
+                }
             }
 
             return footer
