@@ -48,8 +48,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var labelSection: UILabel!
-    @IBOutlet weak var separatorSection: UIView!
-    @IBOutlet weak var separatorSectionHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
 
@@ -114,8 +112,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
-        separatorSection.backgroundColor = NCBrandColor.shared.separator
-        separatorSectionHeightConstraint.constant = 0.5
     }
 
     override func layoutSublayers(of layer: CALayer) {
@@ -125,18 +121,21 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+
         setInterfaceColor()
     }
 
     //MARK: - Command
 
     func setStatusButtonsCommand(enable: Bool) {
+
         button1.isEnabled = enable
         button2.isEnabled = enable
         button3.isEnabled = enable
     }
 
     func setButtonsCommand(heigt :CGFloat, imageButton1: UIImage? = nil, titleButton1: String? = nil, imageButton2: UIImage? = nil, titleButton2: String? = nil, imageButton3: UIImage? = nil, titleButton3: String? = nil) {
+
         viewButtonsCommandHeightConstraint.constant = heigt
         if heigt == 0 {
             viewButtonsView.isHidden = true
@@ -169,24 +168,29 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     //MARK: - View
 
     func setStatusButtonsView(enable: Bool) {
+
         buttonSwitch.isEnabled = enable
         buttonOrder.isEnabled = enable
         buttonMore.isEnabled = enable
     }
 
     func buttonMoreIsHidden(_ isHidden: Bool) {
+
         buttonMore.isHidden = isHidden
     }
 
     func setImageSwitchList() {
+
         buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
     }
 
     func setImageSwitchGrid() {
+
         buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
     }
 
     func setButtonsView(heigt :CGFloat) {
+
         viewButtonsViewHeightConstraint.constant = heigt
         if heigt == 0 {
             viewButtonsView.isHidden = true
@@ -206,6 +210,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     //MARK: - RichWorkspace
 
     func setRichWorkspaceHeight(_ size: CGFloat) {
+
         viewRichWorkspaceHeightConstraint.constant = size
         if size == 0 {
             viewRichWorkspace.isHidden = true
@@ -215,17 +220,17 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     }
 
     func setInterfaceColor() {
+
         if traitCollection.userInterfaceStyle == .dark {
             gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-            //viewSeparator.backgroundColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.0)
         } else {
             gradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
-            //viewSeparator.backgroundColor = UIColor(red: 0.79, green: 0.79, blue: 0.79, alpha: 1.0)
         }
     }
 
     func setRichWorkspaceText(_ text: String?) {
         guard let text = text else { return }
+
         if text != self.richWorkspaceText {
             textViewRichWorkspace.attributedText = markdownParser.parse(text)
             self.richWorkspaceText = text
@@ -235,6 +240,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     //MARK: - Section
 
     func setSectionHeight(_ size:CGFloat) {
+
         viewSectionHeightConstraint.constant = size
         if size == 0 {
             viewSection.isHidden = true
@@ -298,6 +304,18 @@ extension NCSectionHeaderMenuDelegate {
 class NCSectionHeader: UICollectionReusableView {
 
     @IBOutlet weak var labelSection: UILabel!
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        self.backgroundColor = UIColor.clear
+        self.labelSection.text = ""
+    }
+}
+
+class NCSectionFooter: UICollectionReusableView {
+
+    @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
@@ -305,22 +323,10 @@ class NCSectionHeader: UICollectionReusableView {
         super.awakeFromNib()
 
         self.backgroundColor = UIColor.clear
-        self.labelSection.text = ""
+        labelSection.textColor = NCBrandColor.shared.gray
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
-    }
-}
-
-class NCSectionFooter: UICollectionReusableView {
-
-    @IBOutlet weak var labelSection: UILabel!
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-        self.backgroundColor = UIColor.clear
-        labelSection.textColor = NCBrandColor.shared.gray
     }
 
     func setTitleLabel(directories: Int, files: Int, size: Int64) {
@@ -352,5 +358,10 @@ class NCSectionFooter: UICollectionReusableView {
     func setTitleLabel(text: String) {
 
         labelSection.text = text
+    }
+
+    func separatorIsHidden(_ isHidden: Bool) {
+
+        separator.isHidden = isHidden
     }
 }

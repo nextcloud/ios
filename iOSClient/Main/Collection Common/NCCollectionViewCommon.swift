@@ -1883,9 +1883,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if dataSource.numberOfSections() == 1 {
                 let info = dataSource.getFooterInformation()
-                footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size )
+                footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
+                footer.separatorIsHidden(true)
             } else {
                 footer.setTitleLabel(text: "")
+                footer.separatorIsHidden(false)
             }
 
             return footer
@@ -1920,7 +1922,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if section == 0 && dataSource.numberOfSections() > 1 || isSearching {
+        if section == 0 && dataSource.numberOfSections() > 1 {
             return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
             return (getHeaderHeight(), headerRichWorkspace, 0)
@@ -1945,7 +1947,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
-            return CGSize(width: collectionView.frame.width, height: 0)
+            return CGSize(width: collectionView.frame.width, height: heightFooter)
         }
     }
 }

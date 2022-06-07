@@ -11,37 +11,24 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="sectionHeader" id="Vin-9E-7nW" customClass="NCSectionHeader" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn">
-                    <rect key="frame" x="10" y="16" width="355" height="18"/>
+                    <rect key="frame" x="10" y="1" width="355" height="18"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="B46-BA-IKR" userLabel="separator">
-                    <rect key="frame" x="50" y="49" width="325" height="1"/>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="Tef-Rk-FCb"/>
-                    </constraints>
-                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="EFn-SN-cxu"/>
             <constraints>
-                <constraint firstItem="EFn-SN-cxu" firstAttribute="bottom" secondItem="B46-BA-IKR" secondAttribute="bottom" id="EkR-MJ-zaA"/>
-                <constraint firstItem="EFn-SN-cxu" firstAttribute="leading" secondItem="B46-BA-IKR" secondAttribute="leading" constant="-50" id="PBx-z1-ALr"/>
+                <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="EFn-SN-cxu" secondAttribute="centerY" id="FhE-3o-krQ"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
-                <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" id="avP-sX-JB5"/>
-                <constraint firstItem="B46-BA-IKR" firstAttribute="trailing" secondItem="EFn-SN-cxu" secondAttribute="trailing" id="dsu-fv-NmK"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
             </constraints>
             <connections>
                 <outlet property="labelSection" destination="gzy-cT-Gjn" id="gfz-ks-qSP"/>
-                <outlet property="separator" destination="B46-BA-IKR" id="ZeR-MO-lBU"/>
-                <outlet property="separatorHeightConstraint" destination="Tef-Rk-FCb" id="Png-Ox-9YB"/>
             </connections>
             <point key="canvasLocation" x="138" y="154"/>
         </collectionReusableView>

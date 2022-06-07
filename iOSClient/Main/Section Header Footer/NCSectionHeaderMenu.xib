@@ -123,7 +123,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-5C-E5z" userLabel="View RichWorkspace">
-                    <rect key="frame" x="0.0" y="111" width="551" height="50"/>
+                    <rect key="frame" x="0.0" y="141" width="551" height="50"/>
                     <subviews>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pYo-pF-MGv">
                             <rect key="frame" x="5" y="0.0" width="541" height="50"/>
@@ -142,30 +142,19 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f9U-NY-4OS">
-                    <rect key="frame" x="0.0" y="161" width="551" height="50"/>
+                    <rect key="frame" x="0.0" y="191" width="551" height="20"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mB5-5n-AL9">
-                            <rect key="frame" x="10" y="16" width="531" height="18"/>
+                            <rect key="frame" x="10" y="1" width="531" height="18"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="quO-U8-m9B">
-                            <rect key="frame" x="50" y="50" width="501" height="1"/>
-                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="1" id="dSE-nA-ELX"/>
-                            </constraints>
-                        </view>
                     </subviews>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="mB5-5n-AL9" secondAttribute="trailing" constant="10" id="Cct-8N-ghQ"/>
-                        <constraint firstAttribute="trailing" secondItem="quO-U8-m9B" secondAttribute="trailing" id="L8y-G9-wWa"/>
-                        <constraint firstItem="mB5-5n-AL9" firstAttribute="centerY" secondItem="f9U-NY-4OS" secondAttribute="centerY" id="Uom-oG-Fd7"/>
-                        <constraint firstItem="quO-U8-m9B" firstAttribute="top" secondItem="f9U-NY-4OS" secondAttribute="bottom" id="Y2Z-4C-qQt"/>
-                        <constraint firstAttribute="height" constant="50" id="ZcL-Wd-xhN"/>
-                        <constraint firstItem="quO-U8-m9B" firstAttribute="leading" secondItem="f9U-NY-4OS" secondAttribute="leading" constant="50" id="jd8-j4-wwL"/>
+                        <constraint firstAttribute="height" constant="20" id="ZcL-Wd-xhN"/>
+                        <constraint firstItem="mB5-5n-AL9" firstAttribute="centerY" secondItem="f9U-NY-4OS" secondAttribute="centerY" id="ca2-J7-HaE"/>
                         <constraint firstItem="mB5-5n-AL9" firstAttribute="leading" secondItem="f9U-NY-4OS" secondAttribute="leading" constant="10" id="xQp-zk-G00"/>
                     </constraints>
                 </view>
@@ -196,8 +185,6 @@
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
-                <outlet property="separatorSection" destination="quO-U8-m9B" id="xoD-zk-vFV"/>
-                <outlet property="separatorSectionHeightConstraint" destination="dSE-nA-ELX" id="TRp-JD-C7F"/>
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
                 <outlet property="viewButtonsCommand" destination="4m9-yf-RbB" id="d1a-Pc-ujo"/>
                 <outlet property="viewButtonsCommandHeightConstraint" destination="aJx-Rv-Dc0" id="58a-bd-5ri"/>
