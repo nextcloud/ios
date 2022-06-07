@@ -1872,7 +1872,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setRichWorkspaceText(richWorkspaceText)
 
                 header.setSectionHeight(heightHeaderSection)
-                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
+                header.labelSection.text = NSLocalizedString(self.dataSource.getSectionValue(indexPath: indexPath), comment: "").lowercased().firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.label
 
                 return header
@@ -1881,7 +1881,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
 
-                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath).firstUppercased
+                header.labelSection.text = NSLocalizedString(self.dataSource.getSectionValue(indexPath: indexPath), comment: "").lowercased().firstUppercased
                 header.labelSection.textColor = NCBrandColor.shared.label
 
                 return header
