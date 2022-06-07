@@ -1947,7 +1947,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
-            return CGSize(width: collectionView.frame.width, height: heightFooter)
+            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightFooter)
         }
     }
 }
