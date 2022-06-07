@@ -61,7 +61,8 @@ class NCFavorite: NCCollectionViewCommon {
                                        ascending: self.layoutForView?.ascending,
                                        directoryOnTop: self.layoutForView?.directoryOnTop,
                                        favoriteOnTop: true,
-                                       filterLivePhoto: true)
+                                       filterLivePhoto: true,
+                                       groupByField: self.groupByField)
 
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()

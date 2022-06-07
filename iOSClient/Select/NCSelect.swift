@@ -709,8 +709,14 @@ extension NCSelect {
     @objc func loadDatasource(withLoadFolder: Bool) {
 
         var predicate: NSPredicate?
-
+        var groupByField = "name"
+        
         layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
+
+        // set GroupField for Grid
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+            groupByField = "classFile"
+        }
 
         if includeDirectoryE2EEncryption {
 
@@ -729,6 +735,7 @@ extension NCSelect {
             }
         }
 
+
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
         self.dataSource = NCDataSource(metadatasSource: metadatasSource,
                                        account: activeAccount.account,
@@ -736,7 +743,8 @@ extension NCSelect {
                                        ascending: layoutForView?.ascending,
                                        directoryOnTop: layoutForView?.directoryOnTop,
                                        favoriteOnTop: true,
-                                       filterLivePhoto: true)
+                                       filterLivePhoto: true,
+                                       groupByField: groupByField)
 
         if withLoadFolder {
             loadFolder()

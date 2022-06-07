@@ -300,6 +300,8 @@ class NCDataSource: NSObject {
         switch self.groupByField {
         case "name":
             return metadata.name
+        case "classFile":
+            return metadata.classFile
         default:
             return metadata.name
         }

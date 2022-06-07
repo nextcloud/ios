@@ -53,7 +53,8 @@ class NCRecent: NCCollectionViewCommon {
             self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
                                            account: self.appDelegate.account,
                                            directoryOnTop: false,
-                                           favoriteOnTop: false)
+                                           favoriteOnTop: false,
+                                           groupByField: self.groupByField)
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()

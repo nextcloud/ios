@@ -51,6 +51,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
 
+    internal var groupByField = "name"
+
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
 
@@ -995,6 +997,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // get layout for view
         layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+
+        // set GroupField for Grid
+        if !self.isSearching && layoutForView?.layout == NCGlobal.shared.layoutGrid {
+            groupByField = "classFile"
+        } else {
+            groupByField = "name"
+        }
     }
 
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
