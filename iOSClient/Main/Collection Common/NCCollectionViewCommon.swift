@@ -52,6 +52,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var autoUploadDirectory = ""
 
     internal var groupByField = "name"
+    internal var providers: [NCCSearchProvider]?
 
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
@@ -737,6 +738,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.isSearching = true
 
+        self.providers?.removeAll()
         self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
 
@@ -757,6 +759,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         self.isSearching = false
         self.literalSearch = ""
+        self.providers?.removeAll()
 
         reloadDataSource()
     }
@@ -1025,7 +1028,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.reloadDataSource()
             }
         }
-        var providers: [NCCSearchProvider]?
 
         isReloadDataSourceNetworkInProgress = true
         self.metadatasSource.removeAll()
@@ -1036,7 +1038,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             self.refreshControl.beginRefreshing()
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
-                providers = allProviders
+                self.providers = allProviders
             } update: { metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
                 DispatchQueue.main.async {
@@ -1049,7 +1051,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                        directoryOnTop: self.layoutForView?.directoryOnTop,
                                                        favoriteOnTop: true,
                                                        filterLivePhoto: true,
-                                                       providers: providers)
+                                                       providers: self.providers)
                         self.collectionView.reloadData()
                     }
                 }
