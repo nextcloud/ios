@@ -1901,7 +1901,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     footer.separatorIsHidden(false)
                 }
             } else {
-                if sections == 1 {
+                if sections == 1 || section == sections - 1 {
                     let info = dataSource.getFooterInformation()
                     footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
                 } else {
