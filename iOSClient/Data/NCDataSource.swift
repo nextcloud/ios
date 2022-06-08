@@ -79,7 +79,7 @@ class NCDataSource: NSObject {
 
         self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
         self.sectionsValue = Array(Set(self.sectionsValue))
-        if let providers = self.providers {
+        if let providers = self.providers , !providers.isEmpty {
             var sectionsDictionary: [String:Int] = [:]
             for section in self.sectionsValue {
                 if let provider = providers.filter({ $0.name.lowercased() == section.lowercased()}).first {

@@ -184,7 +184,7 @@ class NCGlobal: NSObject {
     // Standard height sections header/footer
     let heightButtonsCommand: CGFloat               = 50
     let heightButtonsView: CGFloat                  = 50
-    let heightSection: CGFloat                      = 20
+    let heightSection: CGFloat                      = 30
     let heightFooter: CGFloat                       = 1
     let endHeightFooter: CGFloat                    = 85
 
