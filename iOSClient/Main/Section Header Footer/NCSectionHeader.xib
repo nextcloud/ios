@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn">
-                    <rect key="frame" x="10" y="1" width="355" height="18"/>
+                    <rect key="frame" x="10" y="2" width="355" height="18"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -23,9 +23,9 @@
             </subviews>
             <viewLayoutGuide key="safeArea" id="EFn-SN-cxu"/>
             <constraints>
-                <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="EFn-SN-cxu" secondAttribute="centerY" id="FhE-3o-krQ"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
+                <constraint firstItem="EFn-SN-cxu" firstAttribute="bottom" secondItem="gzy-cT-Gjn" secondAttribute="bottom" id="sqa-zO-ySm"/>
             </constraints>
             <connections>
                 <outlet property="labelSection" destination="gzy-cT-Gjn" id="gfz-ks-qSP"/>

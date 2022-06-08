@@ -145,7 +145,7 @@
                     <rect key="frame" x="0.0" y="191" width="551" height="20"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mB5-5n-AL9">
-                            <rect key="frame" x="10" y="1" width="531" height="18"/>
+                            <rect key="frame" x="10" y="2" width="531" height="18"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -154,8 +154,8 @@
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="mB5-5n-AL9" secondAttribute="trailing" constant="10" id="Cct-8N-ghQ"/>
                         <constraint firstAttribute="height" constant="20" id="ZcL-Wd-xhN"/>
-                        <constraint firstItem="mB5-5n-AL9" firstAttribute="centerY" secondItem="f9U-NY-4OS" secondAttribute="centerY" id="ca2-J7-HaE"/>
                         <constraint firstItem="mB5-5n-AL9" firstAttribute="leading" secondItem="f9U-NY-4OS" secondAttribute="leading" constant="10" id="xQp-zk-G00"/>
+                        <constraint firstAttribute="bottom" secondItem="mB5-5n-AL9" secondAttribute="bottom" id="ySZ-Z1-BQ1"/>
                     </constraints>
                 </view>
             </subviews>

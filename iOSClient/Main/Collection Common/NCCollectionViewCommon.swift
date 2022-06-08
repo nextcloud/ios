@@ -1893,19 +1893,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
 
+            footer.setTitleLabel(text: "")
+            footer.separatorIsHidden(true)
+
             if isSearching {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
-                } else {
-                    footer.separatorIsHidden(true)
                 }
             } else {
                 if sections == 1 {
                     let info = dataSource.getFooterInformation()
                     footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
-                    footer.separatorIsHidden(true)
                 } else {
-                    footer.setTitleLabel(text: "")
                     footer.separatorIsHidden(false)
                 }
             }
@@ -1956,8 +1955,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
 
         let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+        let heightHeader = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
 
-        return CGSize(width: collectionView.frame.width, height: heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection)
+        return CGSize(width: collectionView.frame.width, height: heightHeader)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
