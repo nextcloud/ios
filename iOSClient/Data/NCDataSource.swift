@@ -87,7 +87,7 @@ class NCDataSource: NSObject {
                 }
             }
             self.sectionsValue.removeAll()
-            let sectionsDictionarySorted = sectionsDictionary.sorted(by: { $0.value > $1.value } )
+            let sectionsDictionarySorted = sectionsDictionary.sorted(by: { $0.value < $1.value } )
             for section in sectionsDictionarySorted {
                 if section.key == NCGlobal.shared.appName {
                     self.sectionsValue.insert(section.key, at: 0)
