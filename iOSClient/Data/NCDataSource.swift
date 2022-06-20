@@ -268,6 +268,7 @@ class NCDataSource: NSObject {
     }
 
     func isSameNumbersOfSections(numberOfSections: Int) -> Bool {
+        if self.metadatasForSection.count == 0 { return false }
         return numberOfSections == self.numberOfSections()
     }
 
