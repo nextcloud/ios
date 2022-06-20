@@ -127,7 +127,9 @@ class NCDataSource: NSObject {
     // MARK: -
 
     @discardableResult
-    func addMetadata(_ metadata: tableMetadata) -> IndexPath? {
+    func addMetadata(_ metadata: tableMetadata) -> (indexPath: IndexPath?, sameSections: Bool) {
+
+        let numberOfSections = self.numberOfSections()
 
         // ADD metadatasSource
         if let rowIndex = self.metadatasSource.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
@@ -141,14 +143,14 @@ class NCDataSource: NSObject {
             let metadataForSection = metadatasForSection[sectionIndex]
             if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
                 metadataForSection.metadatas[rowIndex] = metadata
-                return IndexPath(row: rowIndex, section: sectionIndex)
+                return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
             } else {
                 metadataForSection.metadatas.append(metadata)
                 metadataForSection.createMetadatasForSection()
                 if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
-                    return IndexPath(row: rowIndex, section: sectionIndex)
+                    return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
                 }
-                return nil
+                return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
             }
         } else {
             // NEW section
@@ -159,16 +161,17 @@ class NCDataSource: NSObject {
             if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue }) {
                 let metadataForSection = metadatasForSection[sectionIndex]
                 if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
-                    return IndexPath(row: rowIndex, section: sectionIndex)
+                    return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
                 }
             }
         }
 
-        return nil
+        return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
     }
 
-    func deleteMetadata(ocId: String) -> IndexPath? {
+    func deleteMetadata(ocId: String) -> (indexPath: IndexPath?, sameSections: Bool) {
 
+        let numberOfSections = self.numberOfSections()
         var indexPathReturn: IndexPath?
         var removeMetadataForSection = false
         var sectionValue = ""
@@ -201,17 +204,18 @@ class NCDataSource: NSObject {
             }
         }
 
-        return indexPathReturn
+        return (indexPathReturn, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
     }
 
     @discardableResult
-    func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> IndexPath? {
+    func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> (indexPath: IndexPath?, sameSections: Bool) {
 
+        let numberOfSections = self.numberOfSections()
         var ocIdSearch = ocId
         var indexPath: IndexPath?
         var metadataForSection: NCMetadatasForSection?
 
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections)) }
 
         if let ocIdTemp = ocIdTemp {
             ocIdSearch = ocIdTemp
@@ -229,7 +233,7 @@ class NCDataSource: NSObject {
             self.metadatasSource[rowIndex] = metadata
         }
 
-        return indexPath
+        return (indexPath, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
     }
 
     // MARK: -
@@ -250,6 +254,10 @@ class NCDataSource: NSObject {
         }
 
         return (nil, nil)
+    }
+
+    func isSameNumbersOfSections(numberOfSections: Int) -> Bool {
+        return numberOfSections == self.numberOfSections()
     }
 
     func numberOfSections() -> Int {
