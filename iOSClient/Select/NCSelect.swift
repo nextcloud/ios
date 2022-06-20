@@ -619,16 +619,18 @@ extension NCSelect: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
-                header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
-                header.setRichWorkspaceText(richWorkspaceText)
-                header.labelSection.text = NSLocalizedString(self.dataSource.getSectionValue(indexPath: indexPath), comment: "").lowercased().firstUppercased
-                header.labelSection.textColor = NCBrandColor.shared.brandElement
 
                 header.setButtonsCommand(heigt: 0)
                 header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
+                header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
+                header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
+                header.setRichWorkspaceText(richWorkspaceText)
+
                 header.setSectionHeight(heightHeaderSection)
+                header.labelSection.text = NSLocalizedString(self.dataSource.getSectionValue(indexPath: indexPath), comment: "").lowercased().firstUppercased
+                header.labelSection.textColor = NCBrandColor.shared.label
 
                 return header
 
@@ -679,7 +681,11 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
         if section == 0 && dataSource.numberOfSections() > 1 {
             return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
+            if collectionView.collectionViewLayout == gridLayout {
+                return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
+            } else {
+                return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
+            }
         } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, NCGlobal.shared.heightSection)
         } else {

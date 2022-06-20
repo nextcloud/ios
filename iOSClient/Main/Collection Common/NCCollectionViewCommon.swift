@@ -1931,7 +1931,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         if section == 0 && dataSource.numberOfSections() > 1 {
             return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
         } else if section == 0 && dataSource.numberOfSections() == 1 {
-            return (getHeaderHeight(), headerRichWorkspace, 0)
+            if collectionView.collectionViewLayout == gridLayout {
+                return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
+            } else {
+                return (getHeaderHeight(), headerRichWorkspace, 0)
+            }
         } else if section > 0 && dataSource.numberOfSections() > 1 {
             return (0, 0, NCGlobal.shared.heightSection)
         } else {
