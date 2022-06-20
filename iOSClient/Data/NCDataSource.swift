@@ -77,8 +77,21 @@ class NCDataSource: NSObject {
 
     internal func createSections() {
 
-        self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
-        self.sectionsValue = Array(Set(self.sectionsValue))
+        for metadata in metadatasSource {
+            // skipped livePhoto
+            if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
+                continue
+            }
+            let section = self.getSectionValue(metadata: metadata)
+            if !self.sectionsValue.contains(section) {
+                self.sectionsValue.append(section)
+            }
+        }
+
+        // OLD
+        //self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
+        //self.sectionsValue = Array(Set(self.sectionsValue))
+
         if let providers = self.providers , !providers.isEmpty {
             var sectionsDictionary: [String:Int] = [:]
             for section in self.sectionsValue {
@@ -99,6 +112,8 @@ class NCDataSource: NSObject {
             self.sectionsValue = self.sectionsValue.sorted {
                 if directoryOnTop && $0.lowercased() == "directory" {
                     return true
+                } else if directoryOnTop && $1.lowercased() == "directory" {
+                    return false
                 }
                 if self.ascending {
                     return $0 < $1
@@ -415,7 +430,7 @@ class NCMetadatasForSection: NSObject {
             }
 
             // skipped livePhoto
-            if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
+            if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
                 continue
             }
 
