@@ -645,12 +645,17 @@ extension NCSelect: UICollectionViewDataSource {
         } else {
 
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            let sections = dataSource.numberOfSections()
+            let section = indexPath.section
 
-            if dataSource.numberOfSections() == 1 {
+            footer.setTitleLabel(text: "")
+            footer.separatorIsHidden(true)
+
+            if sections == 1 || section == sections - 1 {
                 let info = dataSource.getFooterInformation()
-                footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size )
+                footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
             } else {
-                footer.setTitleLabel(text: "")
+                footer.separatorIsHidden(false)
             }
 
             return footer
@@ -685,16 +690,19 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
 
         let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+        let heightHeader = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
 
-        return CGSize(width: collectionView.frame.width, height: heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection)
+        return CGSize(width: collectionView.frame.width, height: heightHeader)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
 
-        if dataSource.numberOfSections() == 1 {
+        let sections = dataSource.numberOfSections()
+
+        if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
-            return CGSize(width: collectionView.frame.width, height: 0)
+            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightFooter)
         }
     }
 }
