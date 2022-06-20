@@ -178,6 +178,7 @@ extension NCTrash: UICollectionViewDataSource {
             else { return UICollectionReusableView() }
 
             footer.setTitleLabel(text: setTextFooter(datasource: datasource))
+            footer.separatorIsHidden(true)
 
             return footer
         }
