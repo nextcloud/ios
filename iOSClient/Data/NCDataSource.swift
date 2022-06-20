@@ -77,7 +77,6 @@ class NCDataSource: NSObject {
 
     internal func createSections() {
 
-        // Get sections value
         for metadata in metadatasSource {
             // skipped livePhoto
             if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
