@@ -97,6 +97,9 @@ class NCDataSource: NSObject {
             }
         } else {
             self.sectionsValue = self.sectionsValue.sorted {
+                if directoryOnTop && $0.lowercased() == "directory" {
+                    return true
+                }
                 if self.ascending {
                     return $0 < $1
                 } else {
