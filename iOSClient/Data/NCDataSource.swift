@@ -77,6 +77,7 @@ class NCDataSource: NSObject {
 
     internal func createSections() {
 
+        // Get sections value
         for metadata in metadatasSource {
             // skipped livePhoto
             if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
@@ -87,10 +88,6 @@ class NCDataSource: NSObject {
                 self.sectionsValue.append(section)
             }
         }
-
-        // OLD
-        //self.sectionsValue = metadatasSource.map { getSectionValue(metadata: $0) }
-        //self.sectionsValue = Array(Set(self.sectionsValue))
 
         if let providers = self.providers , !providers.isEmpty {
             var sectionsDictionary: [String:Int] = [:]
