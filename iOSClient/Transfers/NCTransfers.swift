@@ -48,15 +48,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        collectionView?.collectionViewLayout = listLayout
+        NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
-        serverUrl = appDelegate.activeServerUrl
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        collectionView?.collectionViewLayout = listLayout
     }
 
     override func setNavigationItem() {
@@ -65,12 +58,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     // MARK: - NotificationCenter
-
-    override func applicationWillEnterForeground(_ notification: NSNotification) {
-
-        collectionView?.collectionViewLayout = listLayout
-        reloadDataSource()
-    }
 
     override func downloadStartFile(_ notification: NSNotification) {
 
