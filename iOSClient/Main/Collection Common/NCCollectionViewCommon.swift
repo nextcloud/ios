@@ -608,23 +608,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                     }
                 }
-            } else if cell is NCTransferCell {
-                let cell = cell as! NCTransferCell
-                if progressNumber.floatValue == 1 {
-                    cell.progressView?.isHidden = true
-                    cell.progressView?.progress = .zero
-                    cell.buttonMore.isHidden = true
-                    cell.labelInfo.text = ""
-                } else if progressNumber.floatValue > 0 {
-                    cell.progressView?.isHidden = false
-                    cell.progressView?.progress = progressNumber.floatValue
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-                    if status == NCGlobal.shared.metadataStatusInDownload {
-                        cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
-                    } else if status == NCGlobal.shared.metadataStatusInUpload {
-                        cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
-                    }
-                }
             } else if cell is NCGridCell {
                 let cell = cell as! NCGridCell
                 if progressNumber.floatValue == 1 {

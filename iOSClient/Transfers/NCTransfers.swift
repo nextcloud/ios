@@ -66,6 +66,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
+    override func applicationWillEnterForeground(_ notification: NSNotification) {
+
+        collectionView?.collectionViewLayout = listLayout
+        reloadDataSource()
+    }
+
     override func downloadStartFile(_ notification: NSNotification) {
 
         reloadDataSource()
@@ -94,6 +100,39 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func uploadCancelFile(_ notification: NSNotification) {
 
         reloadDataSource()
+    }
+
+    override func triggerProgressTask(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let progressNumber = userInfo["progress"] as? NSNumber,
+              let totalBytes = userInfo["totalBytes"] as? Int64,
+              let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
+              let ocId = userInfo["ocId"] as? String,
+              let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadatasForSection?)
+        else {
+            return
+        }
+        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+
+        if let cell = collectionView?.cellForItem(at: indexPath) {
+            let cell = cell as! NCTransferCell
+            if progressNumber.floatValue == 1 {
+                cell.progressView?.isHidden = true
+                cell.progressView?.progress = .zero
+                cell.buttonMore.isHidden = true
+                cell.labelInfo.text = ""
+            } else if progressNumber.floatValue > 0 {
+                cell.progressView?.isHidden = false
+                cell.progressView?.progress = progressNumber.floatValue
+                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
+                if status == NCGlobal.shared.metadataStatusInDownload {
+                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                } else if status == NCGlobal.shared.metadataStatusInUpload {
+                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                }
+            }
+        }
     }
 
     // MARK: TAP EVENT
