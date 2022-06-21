@@ -169,6 +169,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
+
         if serverUrl == "" {
             appDelegate.activeServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
         } else {
@@ -217,6 +219,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
 
         pushed = false
 
@@ -337,6 +341,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.reloadData()
     }
 
+    @objc func applicationWillEnterForeground(_ notification: NSNotification) {
+
+    }
+
     @objc func reloadDataSource(_ notification: NSNotification) {
 
         reloadDataSource()
@@ -369,19 +377,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let fileNameView = userInfo["fileNameView"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String,
-              (serverUrl == serverUrl && account == appDelegate.account),
-              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
+              (serverUrl == serverUrl && account == appDelegate.account)
         else {
             return
         }
         if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
             reloadDataSourceNetwork(forced: true)
-        } else if onlyLocalCache {
-            let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
-            self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
         } else {
             let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-            self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+            if let indexPath = indexPath {
+                if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                    collectionView?.deleteItems(at: [indexPath])
+                } else {
+                    self.collectionView?.reloadData()
+                }
+            } else {
+                reloadDataSource()
+            }
         }
     }
 
@@ -395,7 +407,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-        self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+        if let indexPath = indexPath {
+            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.deleteItems(at: [indexPath])
+            } else {
+                self.collectionView?.reloadData()
+            }
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func copyFile(_ notification: NSNotification) {
@@ -444,7 +464,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
-        self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+        if let indexPath = indexPath {
+            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.reloadItems(at: [indexPath])
+            } else {
+                self.collectionView?.reloadData()
+            }
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -456,7 +484,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
-        self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+        if let indexPath = indexPath {
+            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.reloadItems(at: [indexPath])
+            } else {
+                self.collectionView?.reloadData()
+            }
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
@@ -468,7 +504,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
-        self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+        if let indexPath = indexPath {
+            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.reloadItems(at: [indexPath])
+            } else {
+                self.collectionView?.reloadData()
+            }
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
@@ -480,8 +524,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else {
             return
         }
-        let (indexPath, sameSections) = dataSource.addMetadata(metadata)
-        self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+        dataSource.addMetadata(metadata)
+        self.collectionView?.reloadData()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -495,7 +539,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
-        self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+        if let indexPath = indexPath {
+            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.reloadItems(at: [indexPath])
+            } else {
+                self.collectionView?.reloadData()
+            }
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
@@ -509,7 +561,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-        self.reloadCollectionView(indexPath: indexPath, sameSections: sameSections)
+        if let indexPath = indexPath {
+            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
+                collectionView?.deleteItems(at: [indexPath])
+            } else {
+                self.collectionView?.reloadData()
+            }
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
@@ -951,23 +1011,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     // MARK: - DataSource + NC Endpoint
-
-    internal func reloadCollectionView(indexPath: IndexPath?, sameSections: Bool) {
-
-        if let indexPath = indexPath {
-            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                collectionView?.performBatchUpdates({
-                    collectionView?.insertItems(at: [indexPath])
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            } else {
-                self.collectionView?.reloadData()
-            }
-        } else {
-            reloadDataSource()
-        }
-    }
 
     @objc func reloadDataSource() {
 

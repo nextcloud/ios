@@ -66,6 +66,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
+    override func applicationWillEnterForeground(_ notification: NSNotification) {
+
+        layoutKey = NCGlobal.shared.layoutViewTransfers
+        //collectionView?.collectionViewLayout = listLayout
+        //collectionView?.reloadData()
+    }
+
     override func downloadStartFile(_ notification: NSNotification) {
 
         reloadDataSource()
