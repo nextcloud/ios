@@ -65,7 +65,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         }
         set { }
     }
-    
+
     func setupCellUI(userId: String) {
         guard let tableShare = tableShare else {
             return
@@ -185,7 +185,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         }
         set { }
     }
-    
+
     func setupCell(sharee: NCCommunicationSharee, baseUrl: NCUserBaseUrl) {
         imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)

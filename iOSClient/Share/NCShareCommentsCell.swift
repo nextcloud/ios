@@ -67,7 +67,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         }
         set { }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
 

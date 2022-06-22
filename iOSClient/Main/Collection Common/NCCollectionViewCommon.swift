@@ -598,6 +598,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if progressNumber.floatValue == 1 {
                     cell.progress?.isHidden = true
                     cell.progress?.progress = .zero
+                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         cell.writeInfoDateSize(date: metadata.date, totalBytes: metadata.size)
                     } else {
@@ -606,6 +607,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 } else {
                     cell.progress?.isHidden = false
                     cell.progress?.progress = progressNumber.floatValue
+                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                     if status == NCGlobal.shared.metadataStatusInDownload {
                         cell.info = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusInUpload {
@@ -613,41 +615,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
             }
-            /*
-            if cell is NCListCell {
-                let cell = cell as! NCListCell
-                if progressNumber.floatValue == 1 {
-                    cell.progressView?.isHidden = true
-                    cell.progressView?.progress = .zero
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
-                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-                    } else {
-                        cell.labelInfo.text = ""
-                    }
-                } else if progressNumber.floatValue > 0 {
-                    cell.progressView?.isHidden = false
-                    cell.progressView?.progress = progressNumber.floatValue
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-                    if status == NCGlobal.shared.metadataStatusInDownload {
-                        cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
-                    } else if status == NCGlobal.shared.metadataStatusInUpload {
-                        cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
-                    }
-                }
-            } else if cell is NCGridCell {
-                let cell = cell as! NCGridCell
-                if progressNumber.floatValue == 1 {
-                    cell.progressView.isHidden = true
-                    cell.progressView.progress = .zero
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
-                } else if progressNumber.floatValue > 0 {
-                    cell.progressView.isHidden = false
-                    cell.progressView.progress = progressNumber.floatValue
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-                }
-            }
-            */
         }
     }
 
