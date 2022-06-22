@@ -25,9 +25,9 @@ import UIKit
 
 protocol NCCellProtocol {
     var fileAvatarImageView: UIImageView? { get }
-    var fileObjectId: String? { get }
+    var fileObjectId: String? { get set }
     var filePreviewImageView: UIImageView? { get }
-    var fileUser: String? { get }
+    var fileUser: String? { get set }
     var title: String? { get set }
     var info: String? { get set }
     var progress: UIProgressView? { get set }

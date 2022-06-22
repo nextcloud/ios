@@ -337,6 +337,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         get {
             return nil
         }
+        set {}
     }
     var fileUser: String? {
         get {

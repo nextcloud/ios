@@ -61,6 +61,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         get {
             return nil
         }
+        set {}
     }
     var filePreviewImageView: UIImageView? {
         get {
@@ -79,19 +80,19 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         get {
             return nil
         }
-        set { }
+        set {}
     }
     var info: String? {
         get {
             return nil
         }
-        set { }
+        set {}
     }
     var progress: UIProgressView? {
         get {
             return nil
         }
-        set { }
+        set {}
     }
 
     override func awakeFromNib() {

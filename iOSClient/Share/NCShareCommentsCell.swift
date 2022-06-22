@@ -44,10 +44,16 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         return imageItem
     }
     var fileObjectId: String? {
-        return nil
+        get {
+            return nil
+        }
+        set {}
     }
     var fileUser: String? {
-        return tableComments?.actorId
+        get {
+            return tableComments?.actorId
+        }
+        set {}
     }
     var title: String? {
         get {

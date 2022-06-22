@@ -1472,6 +1472,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
+        var cell: UICollectionViewCell?
         var isShare = false
         var isMounted = false
 
@@ -1482,15 +1483,52 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
 
+
+        //
+        // LAYOUT LIST
+        //
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell
+            if cell is NCListCell {
+                (cell as? NCListCell)?.delegate = self
+            }
+        }
+
+        //
+        // LAYOUT GRID
+        //
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell
+            if cell is NCGridCell {
+                (cell as? NCGridCell)?.delegate = self
+            }
+        }
+
+        //
+        if var cell = cell as? NCCellProtocol {
+            cell.fileObjectId = metadata.ocId
+            cell.fileUser = metadata.ownerId
+        }
+
+
+
+        return cell!
+
+
+
+
+/*
+
+
         //
         // LAYOUT LIST
         //
         if layoutForView?.layout == NCGlobal.shared.layoutList {
 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-            cell.delegate = self
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+//            cell.delegate = self
 
-            cell.fileObjectId = metadata.ocId
+//            cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
             cell.labelTitle.textColor = NCBrandColor.shared.label
             cell.labelInfo.textColor = NCBrandColor.shared.systemGray
@@ -1844,6 +1882,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
+ */
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {

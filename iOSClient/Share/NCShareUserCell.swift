@@ -39,10 +39,20 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     weak var delegate: NCShareUserCellDelegate?
 
     var fileAvatarImageView: UIImageView? { return imageItem }
-    var fileObjectId: String? { return nil }
     var filePreviewImageView: UIImageView? { return nil }
-    var fileUser: String? { return tableShare?.shareWith }
+    var fileUser: String? {
+        get {
+            return tableShare?.shareWith
+        }
+        set {}
+    }
 
+    var fileObjectId: String? {
+        get {
+            return nil
+        }
+        set {}
+    }
     var title: String? {
         get {
             return labelTitle.text
@@ -157,8 +167,14 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     private var user: String = ""
 
     var fileAvatarImageView: UIImageView? { return imageItem }
-    var fileObjectId: String? { return nil }
     var filePreviewImageView: UIImageView? { return nil }
+
+    var fileObjectId: String? {
+        get {
+            return nil
+        }
+        set {}
+    }
     var fileUser: String? {
         get {
             return user
