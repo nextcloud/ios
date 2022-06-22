@@ -594,7 +594,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
 
         if let cell = collectionView?.cellForItem(at: indexPath) {
-            if var cell = cell as? NCCellProtocol {
+            if let cell = cell as? NCCellProtocol {
                 if progressNumber.floatValue == 1 {
                     cell.progress?.isHidden = true
                     cell.progress?.progress = .zero
