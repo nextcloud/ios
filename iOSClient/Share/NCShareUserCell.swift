@@ -160,8 +160,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
     func setButtonMore(named: String, image: UIImage) {}
-    func titleInfoTrailingDefault() {}
-    func titleInfoTrailingFull() {}
+    func hideButtonShare(_ status: Bool) {}
+    func hideButtonMore(_ status: Bool) {}
 }
 
 protocol NCShareUserCellDelegate: AnyObject {
@@ -275,4 +275,6 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
     func setButtonMore(named: String, image: UIImage) {}
+    func hideButtonShare(_ status: Bool) {}
+    func hideButtonMore(_ status: Bool) {}
 }

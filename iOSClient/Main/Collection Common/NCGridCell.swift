@@ -171,6 +171,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
+    func hideButtonShare(_ status: Bool) {}
+
     func selectMode(_ status: Bool) {
         if status {
             imageSelect.isHidden = false

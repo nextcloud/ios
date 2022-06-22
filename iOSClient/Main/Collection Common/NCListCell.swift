@@ -132,6 +132,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
+
+        labelTitle.text = ""
+        labelInfo.text = ""
     }
 
     override func prepareForReuse() {

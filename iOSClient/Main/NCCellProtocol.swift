@@ -40,4 +40,6 @@ protocol NCCellProtocol {
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64)
     func setButtonMore(named: String, image: UIImage)
+    func hideButtonShare(_ status: Bool)
+    func hideButtonMore(_ status: Bool)
 }

@@ -121,6 +121,9 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
+
+        labelTitle.text = ""
+        labelInfo.text = ""
     }
 
     override func prepareForReuse() {
@@ -158,6 +161,9 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {
         labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + CCUtility.transformedSize(totalBytes)
     }
+
+    func hideButtonShare(_ status: Bool) {}
+    func hideButtonMore(_ status: Bool) {}
 }
 
 protocol NCTransferCellDelegate: AnyObject {
