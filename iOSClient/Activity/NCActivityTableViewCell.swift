@@ -117,13 +117,6 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         guard let fileUser = fileUser else { return }
         viewController?.showProfileMenu(userId: fileUser)
     }
-
-    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
-    func setButtonMore(named: String, image: UIImage) {}
-    func hideButtonShare(_ status: Bool) {}
-    func hideButtonMore(_ status: Bool) {}
-    func selectMode(_ status: Bool) {}
-    func selected(_ status: Bool) {}
 }
 
 // MARK: - Collection View

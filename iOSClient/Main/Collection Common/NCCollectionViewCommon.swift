@@ -1707,6 +1707,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
 
             //cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
+            //cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
         }
 
@@ -1730,7 +1731,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
 
 
-            cell.accessibilityValue = a11yValues.joined(separator: ", ")
+            
 
             return cell
         }

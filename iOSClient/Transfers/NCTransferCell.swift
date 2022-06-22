@@ -161,11 +161,6 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {
         labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + CCUtility.transformedSize(totalBytes)
     }
-
-    func hideButtonShare(_ status: Bool) {}
-    func hideButtonMore(_ status: Bool) {}
-    func selectMode(_ status: Bool) {}
-    func selected(_ status: Bool) {}
 }
 
 protocol NCTransferCellDelegate: AnyObject {

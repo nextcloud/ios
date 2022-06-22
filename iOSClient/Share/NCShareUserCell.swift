@@ -157,13 +157,6 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBAction func quickStatusClicked(_ sender: Any) {
         delegate?.quickStatus(with: tableShare, sender: sender)
     }
-
-    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
-    func setButtonMore(named: String, image: UIImage) {}
-    func hideButtonShare(_ status: Bool) {}
-    func hideButtonMore(_ status: Bool) {}
-    func selectMode(_ status: Bool) {}
-    func selected(_ status: Bool) {}
 }
 
 protocol NCShareUserCellDelegate: AnyObject {
@@ -185,11 +178,11 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     private var user: String = ""
 
     var filePreviewImageView: UIImageView? {
-        get { return imageItem }
+        get { return nil }
         set {}
     }
     var fileAvatarImageView: UIImageView? {
-        get { return nil }
+        get { return imageItem }
     }
     var fileObjectId: String? {
         get { return nil }
@@ -274,11 +267,4 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 }
         }
     }
-
-    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
-    func setButtonMore(named: String, image: UIImage) {}
-    func hideButtonShare(_ status: Bool) {}
-    func hideButtonMore(_ status: Bool) {}
-    func selectMode(_ status: Bool) {}
-    func selected(_ status: Bool) {}
 }
