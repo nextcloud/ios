@@ -53,42 +53,56 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var viewController: UIViewController?
 
     var fileAvatarImageView: UIImageView? {
-        get {
-            return avatar
-        }
+        get { return avatar }
     }
     var fileObjectId: String? {
-        get {
-            return nil
-        }
+        get { return nil }
         set {}
     }
     var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
+        get { return nil }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
-    var title: UILabel? {
+    var fileTitleLabel: UILabel? {
         get { return nil }
         set {}
     }
-    var info: UILabel? {
+    var fileInfoLabel: UILabel? {
         get { return nil }
         set {}
     }
-    var progress: UIProgressView? {
+    var fileProgressView: UIProgressView? {
         get { return nil }
         set {}
     }
-
+    var fileSelectImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileStatusImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileLocalImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileSharedImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileMoreImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
 

@@ -76,31 +76,43 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             user = newValue ?? ""
         }
     }
-    var title: UILabel? {
-        get {
-            return labelTitle
-        }
-        set {
-            labelTitle = newValue
-        }
+    var fileTitleLabel: UILabel? {
+        get { return labelTitle }
+        set { labelTitle = newValue }
     }
-    var info: UILabel? {
-        get {
-            return labelInfo
-        }
-        set {
-            labelInfo = newValue
-        }
+    var fileInfoLabel: UILabel? {
+        get { return labelInfo }
+        set { labelInfo = newValue }
     }
-    var progress: UIProgressView? {
-        get {
-            return progressView
-        }
-        set {
-            progressView = newValue
-        }
+    var fileProgressView: UIProgressView? {
+        get { return progressView }
+        set { progressView = newValue }
     }
-
+    var fileSelectImage: UIImageView? {
+        get { return imageSelect }
+        set { imageSelect = newValue }
+    }
+    var fileStatusImage: UIImageView? {
+        get { return imageStatus }
+        set { imageStatus = newValue }
+    }
+    var fileLocalImage: UIImageView? {
+        get { return imageLocal }
+        set { imageLocal = newValue }
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return imageFavorite }
+        set { imageFavorite = newValue }
+    }
+    var fileSharedImage: UIImageView? {
+        get { return imageShared }
+        set { imageShared = newValue }
+    }
+    var fileMoreImage: UIImageView? {
+        get { return imageMore }
+        set { imageMore = newValue }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
 

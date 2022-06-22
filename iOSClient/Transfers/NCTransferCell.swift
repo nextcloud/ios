@@ -44,54 +44,54 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
-        get {
-            return nil
-        }
+        get { return nil }
     }
     var fileObjectId: String? {
-        get {
-            return objectId
-        }
-        set {
-            objectId = newValue ?? ""
-        }
+        get { return objectId }
+        set { objectId = newValue ?? "" }
     }
     var filePreviewImageView: UIImageView? {
-        get {
-            return imageItem
-        }
+        get { return imageItem }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
-    var title: UILabel? {
-        get {
-            return labelTitle
-        }
-        set {
-            labelTitle = newValue
-        }
+    var fileTitleLabel: UILabel? {
+        get { return labelTitle }
+        set { labelTitle = newValue }
     }
-    var info: UILabel? {
-        get {
-            return labelInfo
-        }
-        set {
-            labelInfo = newValue
-        }
+    var fileInfoLabel: UILabel? {
+        get { return labelInfo }
+        set { labelInfo = newValue }
     }
-    var progress: UIProgressView? {
-        get {
-            return progressView
-        }
-        set {
-            progressView = newValue
-        }
+    var fileProgressView: UIProgressView? {
+        get { return progressView }
+        set { progressView = newValue }
+    }
+    var fileSelectImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileStatusImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileLocalImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileSharedImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileMoreImage: UIImageView? {
+        get { return imageMore }
+        set { imageMore = newValue }
     }
     
     override func awakeFromNib() {

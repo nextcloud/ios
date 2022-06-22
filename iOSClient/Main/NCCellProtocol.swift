@@ -28,9 +28,15 @@ protocol NCCellProtocol {
     var fileObjectId: String? { get set }
     var filePreviewImageView: UIImageView? { get }
     var fileUser: String? { get set }
-    var title: UILabel? { get set }
-    var info: UILabel? { get set }
-    var progress: UIProgressView? { get set }
+    var fileTitleLabel: UILabel? { get set }
+    var fileInfoLabel: UILabel? { get set }
+    var fileProgressView: UIProgressView? { get set }
+    var fileSelectImage: UIImageView? { get set }
+    var fileStatusImage: UIImageView? { get set }
+    var fileLocalImage: UIImageView? { get set }
+    var fileFavoriteImage: UIImageView? { get set }
+    var fileSharedImage: UIImageView? { get set }
+    var fileMoreImage: UIImageView? { get set }
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64)
     func setButtonMore(named: String, image: UIImage)

@@ -51,17 +51,41 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         get { return nil }
         set {}
     }
-    var title: UILabel? {
+    var fileTitleLabel: UILabel? {
         get { return nil }
         set {}
     }
-    var info: UILabel? {
+    var fileInfoLabel: UILabel? {
         get { return nil }
         set { }
     }
-    var progress: UIProgressView? {
+    var fileProgressView: UIProgressView? {
         get { return nil }
         set { }
+    }
+    var fileSelectImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileStatusImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileLocalImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileSharedImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileMoreImage: UIImageView? {
+        get { return nil }
+        set {}
     }
 
     func setupCellUI(userId: String) {
@@ -171,19 +195,43 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-    var title: UILabel? {
+    var fileTitleLabel: UILabel? {
         get { return nil }
         set {}
     }
-    var info: UILabel? {
+    var fileInfoLabel: UILabel? {
         get { return nil }
         set { }
     }
-    var progress: UIProgressView? {
+    var fileProgressView: UIProgressView? {
         get { return nil }
         set { }
     }
-
+    var fileSelectImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileStatusImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileLocalImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileSharedImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileMoreImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    
     func setupCell(sharee: NCCommunicationSharee, baseUrl: NCUserBaseUrl) {
         imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)

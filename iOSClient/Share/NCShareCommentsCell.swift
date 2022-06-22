@@ -53,19 +53,43 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         }
         set {}
     }
-    var title: UILabel? {
+    var fileTitleLabel: UILabel? {
         get { return nil }
         set {}
     }
-    var info: UILabel? {
+    var fileInfoLabel: UILabel? {
         get { return nil }
         set {}
     }
-    var progress: UIProgressView? {
+    var fileProgressView: UIProgressView? {
         get { return nil }
         set {}
     }
-
+    var fileSelectImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileStatusImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileLocalImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileSharedImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileMoreImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
 

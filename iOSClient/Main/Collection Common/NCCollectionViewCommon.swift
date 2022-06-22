@@ -596,22 +596,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let cell = collectionView?.cellForItem(at: indexPath) {
             if let cell = cell as? NCCellProtocol {
                 if progressNumber.floatValue == 1 {
-                    cell.progress?.isHidden = true
-                    cell.progress?.progress = .zero
+                    cell.fileProgressView?.isHidden = true
+                    cell.fileProgressView?.progress = .zero
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         cell.writeInfoDateSize(date: metadata.date, totalBytes: metadata.size)
                     } else {
-                        cell.info?.text = ""
+                        cell.fileInfoLabel?.text = ""
                     }
                 } else {
-                    cell.progress?.isHidden = false
-                    cell.progress?.progress = progressNumber.floatValue
+                    cell.fileProgressView?.isHidden = false
+                    cell.fileProgressView?.progress = progressNumber.floatValue
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                     if status == NCGlobal.shared.metadataStatusInDownload {
-                        cell.info?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                        cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusInUpload {
-                        cell.info?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                        cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                     }
                 }
             }
@@ -1504,18 +1504,27 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 (cell as? NCGridCell)?.delegate = self
             }
 
+            cell.fileSelectImage?.image = nil
+            cell.fileStatusImage?.image = nil
+            cell.fileLocalImage?.image = nil
+            cell.fileFavoriteImage?.image = nil
+            cell.fileSharedImage?.image = nil
+            cell.fileMoreImage?.image = nil
+
+            cell.imageItem.image = nil
+            cell.imageItem.backgroundColor = nil
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
-            cell.title?.textColor = NCBrandColor.shared.label
-            cell.info?.textColor = NCBrandColor.shared.systemGray
+            cell.fileTitleLabel?.textColor = NCBrandColor.shared.label
+            cell.fileInfoLabel?.textColor = NCBrandColor.shared.systemGray
 
             if isSearching {
-                cell.title?.text = metadata.fileName
-                cell.title?.lineBreakMode = .byTruncatingTail
+                cell.fileTitleLabel?.text = metadata.fileName
+                cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
                 if metadata.name == NCGlobal.shared.appName {
-                    cell.info?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
+                    cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
                 } else {
-                    cell.info?.text = metadata.subline
+                    cell.fileInfoLabel?.text = metadata.subline
                     if cell is NCListCell {
                         (cell as? NCListCell)?.titleInfoTrailingFull()
                     }
@@ -1524,13 +1533,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
                     let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
                     attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)], range: longestWordRange)
-                    cell.title?.attributedText = attributedString
+                    cell.fileTitleLabel?.attributedText = attributedString
                 }
             } else {
-                cell.title?.text = metadata.fileNameView
-                cell.title?.lineBreakMode = .byTruncatingMiddle
-                cell.info?.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                cell.fileTitleLabel?.text = metadata.fileNameView
+                cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
+                cell.fileInfoLabel?.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
             }
+
+
 
         }
 
