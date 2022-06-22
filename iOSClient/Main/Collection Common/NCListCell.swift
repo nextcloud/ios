@@ -76,20 +76,20 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             user = newValue ?? ""
         }
     }
-    var title: String? {
+    var title: UILabel? {
         get {
-            return labelTitle.text
+            return labelTitle
         }
         set {
-            labelTitle.text = newValue ?? ""
+            labelTitle = newValue
         }
     }
-    var info: String? {
+    var info: UILabel? {
         get {
-            return labelInfo.text
+            return labelInfo
         }
         set {
-            labelInfo.text = newValue ?? ""
+            labelInfo = newValue
         }
     }
     var progress: UIProgressView? {

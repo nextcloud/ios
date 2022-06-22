@@ -602,16 +602,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         cell.writeInfoDateSize(date: metadata.date, totalBytes: metadata.size)
                     } else {
-                        cell.info = ""
+                        cell.info?.text = ""
                     }
                 } else {
                     cell.progress?.isHidden = false
                     cell.progress?.progress = progressNumber.floatValue
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                     if status == NCGlobal.shared.metadataStatusInDownload {
-                        cell.info = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                        cell.info?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusInUpload {
-                        cell.info = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                        cell.info?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                     }
                 }
             }

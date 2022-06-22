@@ -76,22 +76,16 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-    var title: String? {
-        get {
-            return nil
-        }
+    var title: UILabel? {
+        get { return nil }
         set {}
     }
-    var info: String? {
-        get {
-            return nil
-        }
+    var info: UILabel? {
+        get { return nil }
         set {}
     }
     var progress: UIProgressView? {
-        get {
-            return nil
-        }
+        get { return nil }
         set {}
     }
 

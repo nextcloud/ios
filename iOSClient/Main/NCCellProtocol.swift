@@ -28,8 +28,8 @@ protocol NCCellProtocol {
     var fileObjectId: String? { get set }
     var filePreviewImageView: UIImageView? { get }
     var fileUser: String? { get set }
-    var title: String? { get set }
-    var info: String? { get set }
+    var title: UILabel? { get set }
+    var info: UILabel? { get set }
     var progress: UIProgressView? { get set }
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64)

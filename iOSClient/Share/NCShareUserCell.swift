@@ -48,31 +48,19 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     }
 
     var fileObjectId: String? {
-        get {
-            return nil
-        }
+        get { return nil }
         set {}
     }
-    var title: String? {
-        get {
-            return labelTitle.text
-        }
-        set {
-            labelTitle.text = newValue ?? ""
-        }
+    var title: UILabel? {
+        get { return nil }
+        set {}
     }
-    var info: String? {
-        get {
-            return status.text
-        }
-        set {
-            status.text = newValue ?? ""
-        }
+    var info: UILabel? {
+        get { return nil }
+        set { }
     }
     var progress: UIProgressView? {
-        get {
-            return nil
-        }
+        get { return nil }
         set { }
     }
 
@@ -170,9 +158,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     var filePreviewImageView: UIImageView? { return nil }
 
     var fileObjectId: String? {
-        get {
-            return nil
-        }
+        get { return nil }
         set {}
     }
     var fileUser: String? {
@@ -183,22 +169,16 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-    var title: String? {
-        get {
-            return nil
-        }
-        set { }
+    var title: UILabel? {
+        get { return nil }
+        set {}
     }
-    var info: String? {
-        get {
-            return nil
-        }
+    var info: UILabel? {
+        get { return nil }
         set { }
     }
     var progress: UIProgressView? {
-        get {
-            return nil
-        }
+        get { return nil }
         set { }
     }
 

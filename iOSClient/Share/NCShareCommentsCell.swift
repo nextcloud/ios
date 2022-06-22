@@ -44,9 +44,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         return imageItem
     }
     var fileObjectId: String? {
-        get {
-            return nil
-        }
+        get { return nil }
         set {}
     }
     var fileUser: String? {
@@ -55,23 +53,17 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         }
         set {}
     }
-    var title: String? {
-        get {
-            return nil
-        }
-        set { }
+    var title: UILabel? {
+        get { return nil }
+        set {}
     }
-    var info: String? {
-        get {
-            return nil
-        }
-        set { }
+    var info: UILabel? {
+        get { return nil }
+        set {}
     }
     var progress: UIProgressView? {
-        get {
-            return nil
-        }
-        set { }
+        get { return nil }
+        set {}
     }
 
     override func awakeFromNib() {

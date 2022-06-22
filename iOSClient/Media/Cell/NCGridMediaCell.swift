@@ -61,23 +61,17 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-    var title: String? {
-        get {
-            return nil
-        }
-        set { }
+    var title: UILabel? {
+        get { return nil }
+        set {}
     }
-    var info: String? {
-        get {
-            return nil
-        }
-        set { }
+    var info: UILabel? {
+        get { return nil }
+        set {}
     }
     var progress: UIProgressView? {
-        get {
-            nil
-        }
-        set { }
+        get { return nil }
+        set {}
     }
     
     override func awakeFromNib() {
