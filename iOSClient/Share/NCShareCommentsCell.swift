@@ -88,7 +88,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         get { return nil }
         set {}
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -109,6 +109,8 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     func setButtonMore(named: String, image: UIImage) {}
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
+    func selectMode(_ status: Bool) {}
+    func selected(_ status: Bool) {}
 }
 
 protocol NCShareCommentsCellDelegate: AnyObject {

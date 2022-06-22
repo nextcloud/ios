@@ -164,6 +164,8 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
 
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
+    func selectMode(_ status: Bool) {}
+    func selected(_ status: Bool) {}
 }
 
 protocol NCTransferCellDelegate: AnyObject {

@@ -42,4 +42,6 @@ protocol NCCellProtocol {
     func setButtonMore(named: String, image: UIImage)
     func hideButtonShare(_ status: Bool)
     func hideButtonMore(_ status: Bool)
+    func selectMode(_ status: Bool)
+    func selected(_ status: Bool)
 }

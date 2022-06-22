@@ -162,6 +162,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     func setButtonMore(named: String, image: UIImage) {}
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
+    func selectMode(_ status: Bool) {}
+    func selected(_ status: Bool) {}
 }
 
 protocol NCShareUserCellDelegate: AnyObject {
@@ -277,4 +279,6 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     func setButtonMore(named: String, image: UIImage) {}
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
+    func selectMode(_ status: Bool) {}
+    func selected(_ status: Bool) {}
 }

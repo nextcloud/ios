@@ -1686,6 +1686,26 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.hideButtonShare(true)
             }
 
+            // Separator
+            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearching {
+                if cell is NCListCell { (cell as? NCListCell)?.separator.isHidden = true }
+            } else {
+                if cell is NCListCell { (cell as? NCListCell)?.separator.isHidden = false }
+            }
+
+            // Edit mode
+            if isEditMode {
+                cell.selectMode(true)
+                if selectOcId.contains(metadata.ocId) {
+                    cell.selected(true)
+                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
+                } else {
+                    cell.selected(false)
+                }
+            } else {
+                cell.selectMode(false)
+            }
+
             //cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
 
         }
@@ -1707,25 +1727,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
 
 
-            // Separator
-            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearching {
-                cell.separator.isHidden = true
-            } else {
-                cell.separator.isHidden = false
-            }
 
-            // Edit mode
-            if isEditMode {
-                cell.selectMode(true)
-                if selectOcId.contains(metadata.ocId) {
-                    cell.selected(true)
-                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
-                } else {
-                    cell.selected(false)
-                }
-            } else {
-                cell.selectMode(false)
-            }
+
+
             cell.accessibilityValue = a11yValues.joined(separator: ", ")
 
             return cell
