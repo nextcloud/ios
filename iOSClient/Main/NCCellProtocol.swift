@@ -32,6 +32,8 @@ protocol NCCellProtocol {
     var info: UILabel? { get set }
     var progress: UIProgressView? { get set }
 
+    func titleInfoTrailingDefault()
+    func titleInfoTrailingFull()
     func writeInfoDateSize(date: NSDate, totalBytes: Int64)
     func setButtonMore(named: String, image: UIImage)
 }

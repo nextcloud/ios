@@ -1483,10 +1483,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
 
-
-        //
         // LAYOUT LIST
-        //
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell
             if cell is NCListCell {
@@ -1494,9 +1491,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        //
         // LAYOUT GRID
-        //
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell
             if cell is NCGridCell {
@@ -1504,10 +1499,35 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        //
         if var cell = cell as? NCCellProtocol {
+
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
+            cell.title?.textColor = NCBrandColor.shared.label
+            cell.info?.textColor = NCBrandColor.shared.systemGray
+            cell.titleInfoTrailingDefault()
+
+            if isSearching {
+                cell.title?.text = metadata.fileName
+                cell.title?.lineBreakMode = .byTruncatingTail
+                if metadata.name == NCGlobal.shared.appName {
+                    cell.info?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
+                } else {
+                    cell.info?.text = metadata.subline
+                    cell.titleInfoTrailingFull()
+                }
+                if let literalSearch = self.literalSearch {
+                    let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
+                    let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
+                    attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)], range: longestWordRange)
+                    cell.title?.attributedText = attributedString
+                }
+            } else {
+                cell.title?.text = metadata.fileNameView
+                cell.title?.lineBreakMode = .byTruncatingMiddle
+                cell.info?.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+            }
+
         }
 
 
@@ -1525,14 +1545,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         //
         if layoutForView?.layout == NCGlobal.shared.layoutList {
 
-//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-//            cell.delegate = self
 
-//            cell.fileObjectId = metadata.ocId
-            cell.fileUser = metadata.ownerId
-            cell.labelTitle.textColor = NCBrandColor.shared.label
-            cell.labelInfo.textColor = NCBrandColor.shared.systemGray
-            cell.titleInfoTrailingDefault()
 
             if isSearching {
                 cell.labelTitle.text = metadata.fileName

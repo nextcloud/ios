@@ -387,6 +387,8 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
     func setButtonMore(named: String, image: UIImage) {}
+    func titleInfoTrailingDefault() {}
+    func titleInfoTrailingFull() {}
 }
 
 protocol NCNotificationCellDelegate: AnyObject {
