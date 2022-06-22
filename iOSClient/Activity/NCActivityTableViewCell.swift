@@ -93,11 +93,6 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         }
         set { }
     }
-    
-    @objc func tapAvatarImage() {
-        guard let fileUser = fileUser else { return }
-        viewController?.showProfileMenu(userId: fileUser)
-    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -107,6 +102,14 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         avatar.addGestureRecognizer(avatarRecognizer)
     }
+
+    @objc func tapAvatarImage() {
+        guard let fileUser = fileUser else { return }
+        viewController?.showProfileMenu(userId: fileUser)
+    }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
+    func setButtonMore(named: String, image: UIImage) {}
 }
 
 // MARK: - Collection View

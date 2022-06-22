@@ -389,6 +389,9 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         else { return }
         delegate?.tapAction(with: notification, label: label)
     }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
+    func setButtonMore(named: String, image: UIImage) {}
 }
 
 protocol NCNotificationCellDelegate: AnyObject {

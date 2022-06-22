@@ -83,6 +83,9 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     @IBAction func touchUpInsideMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableComments, sender: sender)
     }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
+    func setButtonMore(named: String, image: UIImage) {}
 }
 
 protocol NCShareCommentsCellDelegate: AnyObject {

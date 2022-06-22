@@ -152,7 +152,10 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
                 target: self,
                 selector: #selector(touchUpInsideMore))
         ]
+    }
 
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {
+        labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + CCUtility.transformedSize(totalBytes)
     }
 }
 

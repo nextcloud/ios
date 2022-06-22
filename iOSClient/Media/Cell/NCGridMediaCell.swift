@@ -119,4 +119,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
             imageVisualEffect.isHidden = true
         }
     }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
+    func setButtonMore(named: String, image: UIImage) {}
 }

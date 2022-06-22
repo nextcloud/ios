@@ -133,6 +133,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBAction func quickStatusClicked(_ sender: Any) {
         delegate?.quickStatus(with: tableShare, sender: sender)
     }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
+    func setButtonMore(named: String, image: UIImage) {}
 }
 
 protocol NCShareUserCellDelegate: AnyObject {
@@ -220,6 +223,8 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                     }
                 }
         }
-
     }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
+    func setButtonMore(named: String, image: UIImage) {}
 }

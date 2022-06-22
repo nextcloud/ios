@@ -599,7 +599,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.progress?.isHidden = true
                     cell.progress?.progress = .zero
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                        cell.info = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                        cell.writeInfoDateSize(date: metadata.date, totalBytes: metadata.size)
                     } else {
                         cell.info = ""
                     }

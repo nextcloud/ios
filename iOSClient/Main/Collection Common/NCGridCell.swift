@@ -200,6 +200,12 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {
 
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .none
+        dateFormatter.locale = Locale.current
+
+        labelInfo.text = dateFormatter.string(from: date as Date) + " · " + CCUtility.transformedSize(totalBytes)
     }
 }
 

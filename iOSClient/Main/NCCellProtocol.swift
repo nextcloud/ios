@@ -33,4 +33,5 @@ protocol NCCellProtocol {
     var progress: UIProgressView? { get set }
 
     func writeInfoDateSize(date: NSDate, totalBytes: Int64)
+    func setButtonMore(named: String, image: UIImage)
 }
