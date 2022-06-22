@@ -207,9 +207,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         labelInfo.text = dateFormatter.string(from: date as Date) + " · " + CCUtility.transformedSize(totalBytes)
     }
-
-    func titleInfoTrailingDefault() {}
-    func titleInfoTrailingFull() {}
 }
 
 protocol NCGridCellDelegate: AnyObject {
