@@ -38,7 +38,8 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     weak var delegate: NCShareCommentsCellDelegate?
 
     var filePreviewImageView: UIImageView? {
-        return nil
+        get { return nil }
+        set {}
     }
     var fileAvatarImageView: UIImageView? {
         return imageItem
@@ -48,9 +49,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         set {}
     }
     var fileUser: String? {
-        get {
-            return tableComments?.actorId
-        }
+        get { return tableComments?.actorId }
         set {}
     }
     var fileTitleLabel: UILabel? {

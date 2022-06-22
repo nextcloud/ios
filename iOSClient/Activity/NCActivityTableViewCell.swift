@@ -61,6 +61,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     }
     var filePreviewImageView: UIImageView? {
         get { return nil }
+        set {}
     }
     var fileUser: String? {
         get { return user }

@@ -1511,8 +1511,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileSharedImage?.image = nil
             cell.fileMoreImage?.image = nil
 
-            cell.imageItem.image = nil
-            cell.imageItem.backgroundColor = nil
+            cell.filePreviewImageView?.image = nil
+            cell.filePreviewImageView?.backgroundColor = nil
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
             cell.fileTitleLabel?.textColor = NCBrandColor.shared.label

@@ -52,6 +52,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     }
     var filePreviewImageView: UIImageView? {
         get { return imageItem }
+        set { imageItem = newValue }
     }
     var fileUser: String? {
         get { return user }

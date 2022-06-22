@@ -324,28 +324,19 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     var notification: NCCommunicationNotifications?
 
     var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
+        get { return nil }
+        set {}
     }
     var fileAvatarImageView: UIImageView? {
-        get {
-            return avatar
-        }
+        get { return avatar }
     }
     var fileObjectId: String? {
-        get {
-            return nil
-        }
+        get { return nil }
         set {}
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
     var fileTitleLabel: UILabel? {
         get { return nil }

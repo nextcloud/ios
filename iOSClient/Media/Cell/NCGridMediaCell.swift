@@ -36,30 +36,19 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     var date: Date?
 
     var filePreviewImageView: UIImageView? {
-        get {
-            return imageItem
-        }
+        get { return imageItem }
+        set {}
     }
     var fileAvatarImageView: UIImageView? {
-        get {
-            return nil
-        }
+        get { return nil }
     }
     var fileObjectId: String? {
-        get {
-            return objectId
-        }
-        set {
-            objectId = newValue ?? ""
-        }
+        get { return objectId }
+        set { objectId = newValue ?? "" }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
     var fileTitleLabel: UILabel? {
         get { return nil }

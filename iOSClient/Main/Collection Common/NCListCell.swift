@@ -51,30 +51,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
-        get {
-            return imageShared
-        }
+        get { return imageShared }
     }
     var fileObjectId: String? {
-        get {
-            return objectId
-        }
-        set {
-            objectId = newValue ?? ""
-        }
+        get { return objectId }
+        set { objectId = newValue ?? "" }
     }
     var filePreviewImageView: UIImageView? {
-        get {
-            return imageItem
-        }
+        get { return imageItem }
+        set { imageItem = newValue }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
     var fileTitleLabel: UILabel? {
         get { return labelTitle }

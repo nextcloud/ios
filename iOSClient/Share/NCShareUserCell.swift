@@ -38,15 +38,17 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     var tableShare: tableShare?
     weak var delegate: NCShareUserCellDelegate?
 
-    var fileAvatarImageView: UIImageView? { return imageItem }
-    var filePreviewImageView: UIImageView? { return nil }
-    var fileUser: String? {
-        get {
-            return tableShare?.shareWith
-        }
+    var filePreviewImageView: UIImageView? {
+        get { return nil }
         set {}
     }
-
+    var fileAvatarImageView: UIImageView? {
+        return imageItem
+    }
+    var fileUser: String? {
+        get { return tableShare?.shareWith }
+        set {}
+    }
     var fileObjectId: String? {
         get { return nil }
         set {}
@@ -180,20 +182,20 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
     private var user: String = ""
 
-    var fileAvatarImageView: UIImageView? { return imageItem }
-    var filePreviewImageView: UIImageView? { return nil }
-
+    var filePreviewImageView: UIImageView? {
+        get { return imageItem }
+        set {}
+    }
+    var fileAvatarImageView: UIImageView? {
+        get { return nil }
+    }
     var fileObjectId: String? {
         get { return nil }
         set {}
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
     var fileTitleLabel: UILabel? {
         get { return nil }
