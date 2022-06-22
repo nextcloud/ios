@@ -182,7 +182,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         set {}
     }
     var fileAvatarImageView: UIImageView? {
-        get { return imageItem }
+        return imageItem
     }
     var fileObjectId: String? {
         get { return nil }
@@ -228,7 +228,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         get { return nil }
         set {}
     }
-    
+
     func setupCell(sharee: NCCommunicationSharee, baseUrl: NCUserBaseUrl) {
         imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
