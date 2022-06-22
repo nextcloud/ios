@@ -42,9 +42,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     weak var delegate: NCGridCellDelegate?
     var namedButtonMore = ""
 
-    var fileAvatarImageView: UIImageView? {
-        get { return nil }
-    }
     var fileObjectId: String? {
         get { return objectId }
         set { objectId = newValue ?? "" }
@@ -85,15 +82,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return imageFavorite }
         set { imageFavorite = newValue }
     }
-    var fileSharedImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileMoreImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
 

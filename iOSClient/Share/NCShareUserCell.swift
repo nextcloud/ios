@@ -38,55 +38,11 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     var tableShare: tableShare?
     weak var delegate: NCShareUserCellDelegate?
 
-    var filePreviewImageView: UIImageView? {
-        get { return nil }
-        set {}
-    }
     var fileAvatarImageView: UIImageView? {
         return imageItem
     }
     var fileUser: String? {
         get { return tableShare?.shareWith }
-        set {}
-    }
-    var fileObjectId: String? {
-        get { return nil }
-        set {}
-    }
-    var fileTitleLabel: UILabel? {
-        get { return nil }
-        set {}
-    }
-    var fileInfoLabel: UILabel? {
-        get { return nil }
-        set { }
-    }
-    var fileProgressView: UIProgressView? {
-        get { return nil }
-        set { }
-    }
-    var fileSelectImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileStatusImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileLocalImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileFavoriteImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileSharedImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileMoreImage: UIImageView? {
-        get { return nil }
         set {}
     }
 
@@ -177,56 +133,12 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
     private var user: String = ""
 
-    var filePreviewImageView: UIImageView? {
-        get { return nil }
-        set {}
-    }
     var fileAvatarImageView: UIImageView? {
         return imageItem
-    }
-    var fileObjectId: String? {
-        get { return nil }
-        set {}
     }
     var fileUser: String? {
         get { return user }
         set { user = newValue ?? "" }
-    }
-    var fileTitleLabel: UILabel? {
-        get { return nil }
-        set {}
-    }
-    var fileInfoLabel: UILabel? {
-        get { return nil }
-        set { }
-    }
-    var fileProgressView: UIProgressView? {
-        get { return nil }
-        set { }
-    }
-    var fileSelectImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileStatusImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileLocalImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileFavoriteImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileSharedImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileMoreImage: UIImageView? {
-        get { return nil }
-        set {}
     }
 
     func setupCell(sharee: NCCommunicationSharee, baseUrl: NCUserBaseUrl) {

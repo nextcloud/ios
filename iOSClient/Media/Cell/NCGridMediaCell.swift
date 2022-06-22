@@ -39,9 +39,6 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         get { return imageItem }
         set {}
     }
-    var fileAvatarImageView: UIImageView? {
-        get { return nil }
-    }
     var fileObjectId: String? {
         get { return objectId }
         set { objectId = newValue ?? "" }
@@ -50,43 +47,7 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         get { return user }
         set { user = newValue ?? "" }
     }
-    var fileTitleLabel: UILabel? {
-        get { return nil }
-        set {}
-    }
-    var fileInfoLabel: UILabel? {
-        get { return nil }
-        set {}
-    }
-    var fileProgressView: UIProgressView? {
-        get { return nil }
-        set {}
-    }
-    var fileSelectImage: UIImageView? {
-        get { return imageSelect }
-        set { imageSelect = newValue }
-    }
-    var fileStatusImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileLocalImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileFavoriteImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileSharedImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileMoreImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         initCell()

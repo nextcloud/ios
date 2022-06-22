@@ -24,6 +24,7 @@
 import UIKit
 
 protocol NCCellProtocol {
+
     var fileAvatarImageView: UIImageView? { get }
     var fileObjectId: String? { get set }
     var filePreviewImageView: UIImageView? { get set }
@@ -47,6 +48,55 @@ protocol NCCellProtocol {
 }
 
 extension NCCellProtocol {
+
+    var fileAvatarImageView: UIImageView? {
+        return nil
+    }
+    var fileObjectId: String? {
+        get { return nil }
+        set {}
+    }
+    var filePreviewImageView: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileTitleLabel: UILabel? {
+        get { return nil }
+        set {}
+    }
+    var fileInfoLabel: UILabel? {
+        get { return nil }
+        set { }
+    }
+    var fileProgressView: UIProgressView? {
+        get { return nil }
+        set {}
+    }
+    var fileSelectImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileStatusImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileLocalImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileSharedImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileMoreImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
     func setButtonMore(named: String, image: UIImage) {}
     func hideButtonShare(_ status: Bool) {}

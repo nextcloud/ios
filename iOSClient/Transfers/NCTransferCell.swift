@@ -43,9 +43,6 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     var indexPath = IndexPath()
     var namedButtonMore = ""
 
-    var fileAvatarImageView: UIImageView? {
-        get { return nil }
-    }
     var fileObjectId: String? {
         get { return objectId }
         set { objectId = newValue ?? "" }
@@ -69,26 +66,6 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     var fileProgressView: UIProgressView? {
         get { return progressView }
         set { progressView = newValue }
-    }
-    var fileSelectImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileStatusImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileLocalImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileFavoriteImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileSharedImage: UIImageView? {
-        get { return nil }
-        set {}
     }
     var fileMoreImage: UIImageView? {
         get { return imageMore }

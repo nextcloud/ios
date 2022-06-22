@@ -323,58 +323,14 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     weak var delegate: NCNotificationCellDelegate?
     var notification: NCCommunicationNotifications?
 
-    var filePreviewImageView: UIImageView? {
-        get { return nil }
-        set {}
-    }
     var fileAvatarImageView: UIImageView? {
         get { return avatar }
-    }
-    var fileObjectId: String? {
-        get { return nil }
-        set {}
     }
     var fileUser: String? {
         get { return user }
         set { user = newValue ?? "" }
     }
-    var fileTitleLabel: UILabel? {
-        get { return nil }
-        set {}
-    }
-    var fileInfoLabel: UILabel? {
-        get { return nil }
-        set { }
-    }
-    var fileProgressView: UIProgressView? {
-        get { return nil }
-        set { }
-    }
-    var fileSelectImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileStatusImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileLocalImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileFavoriteImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileSharedImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var fileMoreImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }
