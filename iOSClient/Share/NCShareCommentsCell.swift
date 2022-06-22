@@ -61,7 +61,13 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
         }
         set { }
     }
-
+    var progress: UIProgressView? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
 

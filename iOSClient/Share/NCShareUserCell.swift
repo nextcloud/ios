@@ -59,6 +59,12 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             status.text = newValue ?? ""
         }
     }
+    var progress: UIProgressView? {
+        get {
+            return nil
+        }
+        set { }
+    }
     
     func setupCellUI(userId: String) {
         guard let tableShare = tableShare else {
@@ -165,6 +171,12 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         set { }
     }
     var info: String? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    var progress: UIProgressView? {
         get {
             return nil
         }

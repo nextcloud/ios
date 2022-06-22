@@ -30,4 +30,7 @@ protocol NCCellProtocol {
     var fileUser: String? { get }
     var title: String? { get set }
     var info: String? { get set }
+    var progress: UIProgressView? { get set }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64)
 }

@@ -92,6 +92,14 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             labelInfo.text = newValue ?? ""
         }
     }
+    var progress: UIProgressView? {
+        get {
+            return progressView
+        }
+        set {
+            progressView = newValue
+        }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -230,6 +238,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             separator.isHidden = false
         }
+    }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {
+        
     }
 }
 

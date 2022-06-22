@@ -85,6 +85,14 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
             labelInfo.text = newValue ?? ""
         }
     }
+    var progress: UIProgressView? {
+        get {
+            return progressView
+        }
+        set {
+            progressView = newValue
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -87,6 +87,12 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         }
         set { }
     }
+    var progress: UIProgressView? {
+        get {
+            return nil
+        }
+        set { }
+    }
     
     @objc func tapAvatarImage() {
         guard let fileUser = fileUser else { return }

@@ -84,6 +84,14 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             labelInfo.text = newValue ?? ""
         }
     }
+    var progress: UIProgressView? {
+        get {
+            return progressView
+        }
+        set {
+            progressView = newValue
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -188,6 +196,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
         }
+    }
+
+    func writeInfoDateSize(date: NSDate, totalBytes: Int64) {
+
     }
 }
 

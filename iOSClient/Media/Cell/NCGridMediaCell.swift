@@ -73,6 +73,12 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
         }
         set { }
     }
+    var progress: UIProgressView? {
+        get {
+            nil
+        }
+        set { }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

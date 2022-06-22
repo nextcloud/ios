@@ -594,9 +594,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
 
         if let cell = collectionView?.cellForItem(at: indexPath) {
-            if let cell = cell as? NCCellProtocol {
-                print (cell.title)
+            if var cell = cell as? NCCellProtocol {
+                if progressNumber.floatValue == 1 {
+                    cell.progress?.isHidden = true
+                    cell.progress?.progress = .zero
+                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                        cell.info = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                    } else {
+                        cell.info = ""
+                    }
+                } else {
+                    cell.progress?.isHidden = false
+                    cell.progress?.progress = progressNumber.floatValue
+                    if status == NCGlobal.shared.metadataStatusInDownload {
+                        cell.info = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                    } else if status == NCGlobal.shared.metadataStatusInUpload {
+                        cell.info = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                    }
+                }
             }
+            /*
             if cell is NCListCell {
                 let cell = cell as! NCListCell
                 if progressNumber.floatValue == 1 {
@@ -630,6 +647,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
                 }
             }
+            */
         }
     }
 
