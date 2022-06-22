@@ -101,6 +101,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return imageMore }
         set { imageMore = newValue }
     }
+    var cellSeparatorView: UIView? {
+        get { return separator }
+        set { separator = newValue }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

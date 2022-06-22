@@ -1497,9 +1497,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if cell is NCListCell {
                 (cell as? NCListCell)?.delegate = self
-                (cell as? NCListCell)?.titleInfoTrailingDefault()
-                (cell as? NCListCell)?.hideButtonShare(false)
-                (cell as? NCListCell)?.hideButtonMore(false)
             }
 
             if cell is NCGridCell {
@@ -1518,6 +1515,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileUser = metadata.ownerId
             cell.fileProgressView?.isHidden = true
             cell.fileProgressView?.progress = 0.0
+            cell.hideButtonShare(false)
+            cell.hideButtonMore(false)
+            cell.titleInfoTrailingDefault()
 
             if isSearching {
                 cell.fileTitleLabel?.text = metadata.fileName
@@ -1526,9 +1526,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
                 } else {
                     cell.fileInfoLabel?.text = metadata.subline
-                    if cell is NCListCell {
-                        (cell as? NCListCell)?.titleInfoTrailingFull()
-                    }
+                    cell.titleInfoTrailingFull()
                 }
                 if let literalSearch = self.literalSearch {
                     let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
@@ -1618,6 +1616,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
             }
 
+            // Button More
             if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
                 cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
             } else if metadata.lock == true {
@@ -1686,9 +1685,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             // Separator
             if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearching {
-                if cell is NCListCell { (cell as? NCListCell)?.separator.isHidden = true }
+                cell.cellSeparatorView?.isHidden = true
             } else {
-                if cell is NCListCell { (cell as? NCListCell)?.separator.isHidden = false }
+                cell.cellSeparatorView?.isHidden = false
             }
 
             // Edit mode

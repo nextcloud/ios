@@ -38,7 +38,10 @@ protocol NCCellProtocol {
     var fileFavoriteImage: UIImageView? { get set }
     var fileSharedImage: UIImageView? { get set }
     var fileMoreImage: UIImageView? { get set }
+    var cellSeparatorView: UIView? { get set }
 
+    func titleInfoTrailingDefault()
+    func titleInfoTrailingFull()
     func writeInfoDateSize(date: NSDate, totalBytes: Int64)
     func setButtonMore(named: String, image: UIImage)
     func hideButtonShare(_ status: Bool)
@@ -96,7 +99,13 @@ extension NCCellProtocol {
         get { return nil }
         set {}
     }
+    var cellSeparatorView: UIView? {
+        get { return nil }
+        set {}
+    }
 
+    func titleInfoTrailingDefault() {}
+    func titleInfoTrailingFull() {}
     func writeInfoDateSize(date: NSDate, totalBytes: Int64) {}
     func setButtonMore(named: String, image: UIImage) {}
     func hideButtonShare(_ status: Bool) {}
