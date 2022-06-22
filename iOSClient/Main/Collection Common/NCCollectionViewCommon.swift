@@ -1516,8 +1516,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.backgroundColor = nil
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
-            cell.fileTitleLabel?.textColor = NCBrandColor.shared.label
-            cell.fileInfoLabel?.textColor = NCBrandColor.shared.systemGray
             cell.fileProgressView?.isHidden = true
             cell.fileProgressView?.progress = 0.0
 
@@ -1706,178 +1704,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.selectMode(false)
             }
 
-            //cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
-            //cell.accessibilityValue = a11yValues.joined(separator: ", ")
-
+            if cell is NCListCell {
+                (cell as? NCListCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
+                (cell as? NCListCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
+            }
+            if cell is NCGridCell {
+                (cell as? NCGridCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
+                (cell as? NCGridCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
+            }
         }
-
-
 
         return cell!
-
-
-
-
-/*
-
-
-        //
-        // LAYOUT LIST
-        //
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-
-
-
-
-
-
-            
-
-            return cell
-        }
-
-        //
-        // LAYOUT GRID
-        //
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
-            cell.delegate = self
-
-            cell.fileObjectId = metadata.ocId
-            cell.fileUser = metadata.ownerId
-            cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.shared.label
-            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-            cell.labelInfo.textColor = NCBrandColor.shared.systemGray
-
-            if isSearching, let literalSearch = self.literalSearch {
-                let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
-                let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
-                attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)], range: longestWordRange)
-                cell.labelTitle.attributedText = attributedString
-            }
-
-            cell.imageSelect.image = nil
-            cell.imageStatus.image = nil
-            cell.imageLocal.image = nil
-            cell.imageFavorite.image = nil
-
-            cell.imageItem.image = nil
-            cell.imageItem.backgroundColor = nil
-
-            cell.hideButtonMore(false)
-
-            // Progress
-            var progress: Float = 0.0
-            if let progressType = appDelegate.listProgress[metadata.ocId] {
-                progress = progressType.progress
-            }
-
-            if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-                cell.progressView.isHidden = false
-                cell.progressView.progress = progress
-                cell.accessibilityLabel = metadata.fileNameView + ", \(Int(progress * 100))%"
-            } else {
-                cell.progressView.isHidden = true
-                cell.progressView.progress = 0.0
-                cell.accessibilityLabel = metadata.fileNameView
-            }
-
-            var a11yValues: [String] = []
-            if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
-                a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
-            }
-
-            if metadata.directory {
-
-                if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
-                } else if isShare {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare!.shareType != 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare!.shareType == 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
-                } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
-                } else if isMounted {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderExternal
-                } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderAutomaticUpload
-                } else {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folder
-                }
-
-                let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
-
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-                }
-
-            } else {
-
-                // image Local
-                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
-                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-                    a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                } else if CCUtility.fileProviderStorageExists(metadata) {
-                    cell.imageLocal.image = NCBrandColor.cacheImages.local
-                }
-            }
-
-            // image Favorite
-            if metadata.favorite {
-                cell.imageFavorite.image = NCBrandColor.cacheImages.favorite
-                a11yValues.append(NSLocalizedString("_favorite_", comment: ""))
-            }
-
-            // Transfer
-            if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-            } else if metadata.lock == true {
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
-                a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
-            } else {
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
-            }
-
-            // Live Photo
-            if metadata.livePhoto {
-                cell.imageStatus.image = NCBrandColor.cacheImages.livePhoto
-                a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
-            }
-
-            // URL
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
-                cell.imageLocal.image = nil
-                cell.hideButtonMore(true)
-                if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
-                    cell.fileUser = ownerId
-                }
-            }
-
-            // Edit mode
-            if isEditMode {
-                cell.selectMode(true)
-                if selectOcId.contains(metadata.ocId) {
-                    cell.selected(true)
-                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
-                } else {
-                    cell.selected(false)
-                }
-            } else {
-                cell.selectMode(false)
-            }
-            cell.accessibilityValue = a11yValues.joined(separator: ", ")
-
-            return cell
-        }
-
-        return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
- */
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {

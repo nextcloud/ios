@@ -135,6 +135,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         labelTitle.text = ""
         labelInfo.text = ""
+        labelTitle.textColor = NCBrandColor.shared.label
+        labelInfo.textColor = NCBrandColor.shared.systemGray
     }
 
     override func prepareForReuse() {
