@@ -24,7 +24,6 @@
 import UIKit
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol, NCTrashCell {
-    var labelInfo: UILabel?
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -32,6 +31,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
@@ -68,7 +68,23 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             user = newValue ?? ""
         }
     }
-
+    var title: String? {
+        get {
+            return labelTitle.text
+        }
+        set {
+            labelTitle.text = newValue ?? ""
+        }
+    }
+    var info: String? {
+        get {
+            return labelInfo.text
+        }
+        set {
+            labelInfo.text = newValue ?? ""
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -100,6 +116,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGestureMore.delegate = self
         longPressedGestureMore.delaysTouchesBegan = true
         buttonMore.addGestureRecognizer(longPressedGestureMore)
+
+        labelTitle.text = ""
+        labelInfo.text = ""
     }
 
     override func prepareForReuse() {
@@ -189,7 +208,7 @@ extension NCGridCellDelegate {
 
 class NCGridLayout: UICollectionViewFlowLayout {
 
-    var heightLabelPlusButton: CGFloat = 45
+    var heightLabelPlusButton: CGFloat = 60
     var marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
     var itemWidthDefault: CGFloat = 120

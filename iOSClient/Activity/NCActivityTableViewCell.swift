@@ -75,7 +75,19 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-
+    var title: String? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    var info: String? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    
     @objc func tapAvatarImage() {
         guard let fileUser = fileUser else { return }
         viewController?.showProfileMenu(userId: fileUser)

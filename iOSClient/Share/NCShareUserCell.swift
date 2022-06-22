@@ -43,6 +43,23 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     var filePreviewImageView: UIImageView? { return nil }
     var fileUser: String? { return tableShare?.shareWith }
 
+    var title: String? {
+        get {
+            return labelTitle.text
+        }
+        set {
+            labelTitle.text = newValue ?? ""
+        }
+    }
+    var info: String? {
+        get {
+            return status.text
+        }
+        set {
+            status.text = newValue ?? ""
+        }
+    }
+    
     func setupCellUI(userId: String) {
         guard let tableShare = tableShare else {
             return
@@ -141,7 +158,19 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-
+    var title: String? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    var info: String? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    
     func setupCell(sharee: NCCommunicationSharee, baseUrl: NCUserBaseUrl) {
         imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)

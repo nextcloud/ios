@@ -32,7 +32,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCell {
     @IBOutlet weak var imageSelect: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelInfo: UILabel?
+    @IBOutlet weak var labelInfo: UILabel!
 
     @IBOutlet weak var imageRestore: UIImageView!
     @IBOutlet weak var imageMore: UIImageView!
@@ -127,7 +127,7 @@ protocol NCTrashListCellDelegate: AnyObject {
 protocol NCTrashCell {
     var objectId: String { get set }
     var labelTitle: UILabel! { get set }
-    var labelInfo: UILabel? { get set }
+    var labelInfo: UILabel! { get set }
     var imageItem: UIImageView! { get set }
 
     func selectMode(_ status: Bool)

@@ -346,7 +346,19 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
             user = newValue ?? ""
         }
     }
-
+    var title: String? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    var info: String? {
+        get {
+            return nil
+        }
+        set { }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }

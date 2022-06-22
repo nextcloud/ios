@@ -28,4 +28,6 @@ protocol NCCellProtocol {
     var fileObjectId: String? { get }
     var filePreviewImageView: UIImageView? { get }
     var fileUser: String? { get }
+    var title: String? { get set }
+    var info: String? { get set }
 }

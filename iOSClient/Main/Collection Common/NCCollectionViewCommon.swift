@@ -594,6 +594,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
 
         if let cell = collectionView?.cellForItem(at: indexPath) {
+            if let cell = cell as? NCCellProtocol {
+                print (cell.title)
+            }
             if cell is NCListCell {
                 let cell = cell as! NCListCell
                 if progressNumber.floatValue == 1 {
@@ -1727,6 +1730,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileUser = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.shared.label
+            cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.textColor = NCBrandColor.shared.systemGray
 
             if isSearching, let literalSearch = self.literalSearch {
                 let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)

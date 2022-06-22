@@ -76,6 +76,22 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             user = newValue ?? ""
         }
     }
+    var title: String? {
+        get {
+            return labelTitle.text
+        }
+        set {
+            labelTitle.text = newValue ?? ""
+        }
+    }
+    var info: String? {
+        get {
+            return labelInfo.text
+        }
+        set {
+            labelInfo.text = newValue ?? ""
+        }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
