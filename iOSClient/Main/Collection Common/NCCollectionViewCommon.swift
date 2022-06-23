@@ -1464,24 +1464,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            if layoutForView?.layout == NCGlobal.shared.layoutList {
-                return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-            } else {
-                return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
-            }
-        }
-
         var cell: UICollectionViewCell?
-        var isShare = false
-        var isMounted = false
-
-        if metadataFolder != nil {
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
-        }
-
-        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
 
         // LAYOUT LIST
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -1493,227 +1476,229 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell
         }
 
-        if var cell = cell as? NCCellProtocol {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), var cell = cell as? NCCellProtocol else { return UICollectionViewCell() }
 
-            if cell is NCListCell {
-                (cell as? NCListCell)?.delegate = self
-            }
+        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
+        var isShare = false
+        var isMounted = false
+        
+        if metadataFolder != nil {
+            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionShared)
+            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
+        }
 
-            if cell is NCGridCell {
-                (cell as? NCGridCell)?.delegate = self
-            }
+        cell.delegate = self
+        cell.fileSelectImage?.image = nil
+        cell.fileStatusImage?.image = nil
+        cell.fileLocalImage?.image = nil
+        cell.fileFavoriteImage?.image = nil
+        cell.fileSharedImage?.image = nil
+        cell.fileMoreImage?.image = nil
+        cell.filePreviewImageView?.image = nil
+        cell.filePreviewImageView?.backgroundColor = nil
+        cell.fileObjectId = metadata.ocId
+        cell.fileUser = metadata.ownerId
+        cell.fileProgressView?.isHidden = true
+        cell.fileProgressView?.progress = 0.0
+        cell.hideButtonShare(false)
+        cell.hideButtonMore(false)
+        cell.titleInfoTrailingDefault()
 
-            cell.fileSelectImage?.image = nil
-            cell.fileStatusImage?.image = nil
-            cell.fileLocalImage?.image = nil
-            cell.fileFavoriteImage?.image = nil
-            cell.fileSharedImage?.image = nil
-            cell.fileMoreImage?.image = nil
-            cell.filePreviewImageView?.image = nil
-            cell.filePreviewImageView?.backgroundColor = nil
-            cell.fileObjectId = metadata.ocId
-            cell.fileUser = metadata.ownerId
-            cell.fileProgressView?.isHidden = true
-            cell.fileProgressView?.progress = 0.0
-            cell.hideButtonShare(false)
-            cell.hideButtonMore(false)
-            cell.titleInfoTrailingDefault()
-
-            if isSearching {
-                cell.fileTitleLabel?.text = metadata.fileName
-                cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
-                if metadata.name == NCGlobal.shared.appName {
-                    cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
-                } else {
-                    cell.fileInfoLabel?.text = metadata.subline
-                    cell.titleInfoTrailingFull()
-                }
-                if let literalSearch = self.literalSearch {
-                    let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
-                    let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
-                    attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)], range: longestWordRange)
-                    cell.fileTitleLabel?.attributedText = attributedString
-                }
+        if isSearching {
+            cell.fileTitleLabel?.text = metadata.fileName
+            cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
+            if metadata.name == NCGlobal.shared.appName {
+                cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
             } else {
-                cell.fileTitleLabel?.text = metadata.fileNameView
-                cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
-                cell.fileInfoLabel?.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                cell.fileInfoLabel?.text = metadata.subline
+                cell.titleInfoTrailingFull()
             }
-
-            // Progress
-            var progress: Float = 0.0
-            var totalBytes: Int64 = 0
-            if let progressType = appDelegate.listProgress[metadata.ocId] {
-                progress = progressType.progress
-                totalBytes = progressType.totalBytes
+            if let literalSearch = self.literalSearch {
+                let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
+                let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
+                attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)], range: longestWordRange)
+                cell.fileTitleLabel?.attributedText = attributedString
             }
-            if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-                cell.fileProgressView?.isHidden = false
-                cell.fileProgressView?.progress = progress
-            }
-            var a11yValues: [String] = []
-            if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
-                a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
-            }
+        } else {
+            cell.fileTitleLabel?.text = metadata.fileNameView
+            cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
+            cell.fileInfoLabel?.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+        }
 
-            if metadata.directory {
+        // Progress
+        var progress: Float = 0.0
+        var totalBytes: Int64 = 0
+        if let progressType = appDelegate.listProgress[metadata.ocId] {
+            progress = progressType.progress
+            totalBytes = progressType.totalBytes
+        }
+        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
+            cell.fileProgressView?.isHidden = false
+            cell.fileProgressView?.progress = progress
+        }
+        var a11yValues: [String] = []
+        if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
+            a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
+        }
 
-                if metadata.e2eEncrypted {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderEncrypted
-                } else if isShare {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare?.shareType != 3 {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare?.shareType == 3 {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic
-                } else if metadata.mountType == "group" {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderGroup
-                } else if isMounted {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderExternal
-                } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderAutomaticUpload
-                    cell.fileTitleLabel?.text = (cell.fileTitleLabel?.text ?? "") + " - " + NSLocalizedString("_auto_upload_folder_", comment: "")
-                } else {
-                    cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folder
-                }
+        if metadata.directory {
 
-                let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
-
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
-                }
-
-            } else {
-
-                // image local
-                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
-                    a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                    cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
-                } else if CCUtility.fileProviderStorageExists(metadata) {
-                    cell.fileLocalImage?.image = NCBrandColor.cacheImages.local
-                }
-            }
-
-            // image Favorite
-            if metadata.favorite {
-                cell.fileFavoriteImage?.image = NCBrandColor.cacheImages.favorite
-                a11yValues.append(NSLocalizedString("_favorite_", comment: ""))
-            }
-
-            // Share image
-            if isShare {
-                cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
-            } else if tableShare != nil && tableShare?.shareType == 3 {
-                cell.fileSharedImage?.image = NCBrandColor.cacheImages.shareByLink
+            if metadata.e2eEncrypted {
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderEncrypted
+            } else if isShare {
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
             } else if tableShare != nil && tableShare?.shareType != 3 {
-                cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
+            } else if tableShare != nil && tableShare?.shareType == 3 {
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic
+            } else if metadata.mountType == "group" {
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderGroup
+            } else if isMounted {
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderExternal
+            } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderAutomaticUpload
+                cell.fileTitleLabel?.text = (cell.fileTitleLabel?.text ?? "") + " - " + NSLocalizedString("_auto_upload_folder_", comment: "")
             } else {
-                cell.fileSharedImage?.image = NCBrandColor.cacheImages.canShare
-            }
-            if appDelegate.account != metadata.account {
-                cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
+                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folder
             }
 
-            // Button More
-            if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-            } else if metadata.lock == true {
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
-                a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
-            } else {
-                cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
+            let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
+            let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
+
+            // Local image: offline
+            if tableDirectory != nil && tableDirectory!.offline {
+                cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
             }
 
-            // Write status on Label Info
-            switch metadata.status {
-            case NCGlobal.shared.metadataStatusWaitDownload:
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
-                break
-            case NCGlobal.shared.metadataStatusInDownload:
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
-                break
-            case NCGlobal.shared.metadataStatusDownloading:
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
-                break
-            case NCGlobal.shared.metadataStatusWaitUpload:
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
-                break
-            case NCGlobal.shared.metadataStatusInUpload:
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
-                break
-            case NCGlobal.shared.metadataStatusUploading:
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
-                break
-            case NCGlobal.shared.metadataStatusUploadError:
-                if metadata.sessionError != "" {
-                    cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "") + " " + metadata.sessionError
-                } else {
-                    cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "")
-                }
-                break
-            default:
-                break
-            }
+        } else {
 
-            // Live Photo
-            if metadata.livePhoto {
-                cell.fileStatusImage?.image = NCBrandColor.cacheImages.livePhoto
-                a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
-            }
-
-            // E2EE
-            if metadata.e2eEncrypted || isEncryptedFolder {
-                cell.hideButtonShare(true)
-            }
-
-            // URL
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
-                cell.fileLocalImage?.image = nil
-                cell.hideButtonShare(true)
-                cell.hideButtonMore(true)
-                if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
-                    cell.fileUser = ownerId
-                }
-            }
-
-            // Disable Share Button
-            if appDelegate.disableSharesView {
-                cell.hideButtonShare(true)
-            }
-
-            // Separator
-            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearching {
-                cell.cellSeparatorView?.isHidden = true
-            } else {
-                cell.cellSeparatorView?.isHidden = false
-            }
-
-            // Edit mode
-            if isEditMode {
-                cell.selectMode(true)
-                if selectOcId.contains(metadata.ocId) {
-                    cell.selected(true)
-                    a11yValues.append(NSLocalizedString("_selected_", comment: ""))
-                } else {
-                    cell.selected(false)
-                }
-            } else {
-                cell.selectMode(false)
-            }
-
-            if cell is NCListCell {
-                (cell as? NCListCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
-                (cell as? NCListCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
-            }
-            if cell is NCGridCell {
-                (cell as? NCGridCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
-                (cell as? NCGridCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
+            // image local
+            if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
+                a11yValues.append(NSLocalizedString("_offline_", comment: ""))
+                cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
+            } else if CCUtility.fileProviderStorageExists(metadata) {
+                cell.fileLocalImage?.image = NCBrandColor.cacheImages.local
             }
         }
 
-        return cell!
+        // image Favorite
+        if metadata.favorite {
+            cell.fileFavoriteImage?.image = NCBrandColor.cacheImages.favorite
+            a11yValues.append(NSLocalizedString("_favorite_", comment: ""))
+        }
+
+        // Share image
+        if isShare {
+            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
+        } else if tableShare != nil && tableShare?.shareType == 3 {
+            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shareByLink
+        } else if tableShare != nil && tableShare?.shareType != 3 {
+            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
+        } else {
+            cell.fileSharedImage?.image = NCBrandColor.cacheImages.canShare
+        }
+        if appDelegate.account != metadata.account {
+            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
+        }
+
+        // Button More
+        if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
+        } else if metadata.lock == true {
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
+            a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
+        } else {
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
+        }
+
+        // Write status on Label Info
+        switch metadata.status {
+        case NCGlobal.shared.metadataStatusWaitDownload:
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+            break
+        case NCGlobal.shared.metadataStatusInDownload:
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
+            break
+        case NCGlobal.shared.metadataStatusDownloading:
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+            break
+        case NCGlobal.shared.metadataStatusWaitUpload:
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+            break
+        case NCGlobal.shared.metadataStatusInUpload:
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
+            break
+        case NCGlobal.shared.metadataStatusUploading:
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            break
+        case NCGlobal.shared.metadataStatusUploadError:
+            if metadata.sessionError != "" {
+                cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "") + " " + metadata.sessionError
+            } else {
+                cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "")
+            }
+            break
+        default:
+            break
+        }
+
+        // Live Photo
+        if metadata.livePhoto {
+            cell.fileStatusImage?.image = NCBrandColor.cacheImages.livePhoto
+            a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
+        }
+
+        // E2EE
+        if metadata.e2eEncrypted || isEncryptedFolder {
+            cell.hideButtonShare(true)
+        }
+
+        // URL
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+            cell.fileLocalImage?.image = nil
+            cell.hideButtonShare(true)
+            cell.hideButtonMore(true)
+            if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata) {
+                cell.fileUser = ownerId
+            }
+        }
+
+        // Disable Share Button
+        if appDelegate.disableSharesView {
+            cell.hideButtonShare(true)
+        }
+
+        // Separator
+        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearching {
+            cell.cellSeparatorView?.isHidden = true
+        } else {
+            cell.cellSeparatorView?.isHidden = false
+        }
+
+        // Edit mode
+        if isEditMode {
+            cell.selectMode(true)
+            if selectOcId.contains(metadata.ocId) {
+                cell.selected(true)
+                a11yValues.append(NSLocalizedString("_selected_", comment: ""))
+            } else {
+                cell.selected(false)
+            }
+        } else {
+            cell.selectMode(false)
+        }
+
+        if cell is NCListCell {
+            (cell as? NCListCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
+            (cell as? NCListCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
+        }
+        if cell is NCGridCell {
+            (cell as? NCGridCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
+            (cell as? NCGridCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
+        }
+
+
+        return cell as! UICollectionViewCell
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {

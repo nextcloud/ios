@@ -40,6 +40,8 @@ protocol NCCellProtocol {
     var fileMoreImage: UIImageView? { get set }
     var cellSeparatorView: UIView? { get set }
 
+    var delegate: AnyObject? { get set }
+
     func titleInfoTrailingDefault()
     func titleInfoTrailingFull()
     func writeInfoDateSize(date: NSDate, totalBytes: Int64)
@@ -100,6 +102,10 @@ extension NCCellProtocol {
         set {}
     }
     var cellSeparatorView: UIView? {
+        get { return nil }
+        set {}
+    }
+    var delegate: AnyObject? {
         get { return nil }
         set {}
     }
