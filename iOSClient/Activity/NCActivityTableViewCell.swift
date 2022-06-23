@@ -47,7 +47,6 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     private var user: String = ""
 
     var idActivity: Int = 0
-    var account: String = ""
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController: UIViewController?
@@ -240,7 +239,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             } else {
 
-                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
+                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
 

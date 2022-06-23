@@ -1558,7 +1558,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderExternal
             } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderAutomaticUpload
-                cell.fileTitleLabel?.text = (cell.fileTitleLabel?.text ?? "") + " - " + NSLocalizedString("_auto_upload_folder_", comment: "")
+                if cell is NCListCell {
+                    cell.fileTitleLabel?.text = (cell.fileTitleLabel?.text ?? "") + " - " + NSLocalizedString("_auto_upload_folder_", comment: "")
+                }
             } else {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folder
             }
@@ -1699,7 +1701,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
 
-        return cell as! UICollectionViewCell
+        return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
