@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol, NCTrashCell {
+class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol, NCTrashCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -81,10 +81,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var fileFavoriteImage: UIImageView? {
         get { return imageFavorite }
         set { imageFavorite = newValue }
-    }
-    var fileDelegate: AnyObject? {
-        get { return delegate }
-        set { delegate = newValue as? NCGridCellDelegate }
     }
 
     override func awakeFromNib() {

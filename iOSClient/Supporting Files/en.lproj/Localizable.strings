@@ -730,6 +730,7 @@
 "_trash_view_"                      = "Deleted files";
 "_trash_restore_all_"               = "Restore all files";
 "_trash_delete_all_"                = "Empty trash";
+"_trash_delete_permanently_"        = "Delete permanently";
 "_trash_delete_all_description_"    = "Do you want to empty the trash bin?";
 "_trash_no_trash_"                  = "No files deleted";
 "_trash_no_trash_description_"      = "You can restore deleted files from here";

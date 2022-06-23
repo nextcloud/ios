@@ -77,7 +77,7 @@ extension NCTrash: UICollectionViewDataSource {
             }
         }
 
-        var cell: NCTrashCell & UICollectionViewCell
+        var cell: NCTrashCellProtocol & UICollectionViewCell
 
         if collectionView.collectionViewLayout == listLayout {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell else { return UICollectionViewCell() }

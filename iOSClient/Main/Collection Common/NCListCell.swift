@@ -105,11 +105,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return separator }
         set { separator = newValue }
     }
-    var fileDelegate: AnyObject? {
-        get { return delegate }
-        set { delegate = newValue as? NCListCellDelegate }
-    }
-    
+ 
     override func awakeFromNib() {
         super.awakeFromNib()
 

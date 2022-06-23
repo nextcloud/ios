@@ -1464,19 +1464,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        var cell: UICollectionViewCell?
+        var cell: NCCellProtocol & UICollectionViewCell
 
         // LAYOUT LIST
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell
-        }
-
+            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return UICollectionViewCell() }
+            listCell.delegate = self
+            cell = listCell
+        } else {
         // LAYOUT GRID
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell
+            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return UICollectionViewCell() }
+            gridCell.delegate = self
+            cell = gridCell
         }
 
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), var cell = cell as? NCCellProtocol else { return UICollectionViewCell() }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
 
         let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
         var isShare = false
@@ -1487,7 +1489,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
         }
 
-        cell.fileDelegate = self
         cell.fileSelectImage?.image = nil
         cell.fileStatusImage?.image = nil
         cell.fileLocalImage?.image = nil
