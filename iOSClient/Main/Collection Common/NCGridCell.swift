@@ -224,7 +224,7 @@ extension NCGridCellDelegate {
 class NCGridLayout: UICollectionViewFlowLayout {
 
     var heightLabelPlusButton: CGFloat = 60
-    var marginLeftRight: CGFloat = 5
+    var marginLeftRight: CGFloat = 10
     var itemForLine: CGFloat = 3
     var itemWidthDefault: CGFloat = 140
 
