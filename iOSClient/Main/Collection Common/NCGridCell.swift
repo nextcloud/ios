@@ -223,9 +223,9 @@ extension NCGridCellDelegate {
 class NCGridLayout: UICollectionViewFlowLayout {
 
     var heightLabelPlusButton: CGFloat = 60
-    var marginLeftRight: CGFloat = 6
+    var marginLeftRight: CGFloat = 5
     var itemForLine: CGFloat = 3
-    var itemWidthDefault: CGFloat = 120
+    var itemWidthDefault: CGFloat = 150
 
     // MARK: - View Life Cycle
 
