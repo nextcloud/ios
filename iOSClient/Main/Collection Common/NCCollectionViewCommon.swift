@@ -1487,7 +1487,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
         }
 
-        cell.delegate = self
+        cell.fileDelegate = self
         cell.fileSelectImage?.image = nil
         cell.fileStatusImage?.image = nil
         cell.fileLocalImage?.image = nil

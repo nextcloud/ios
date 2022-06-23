@@ -40,7 +40,7 @@ protocol NCCellProtocol {
     var fileMoreImage: UIImageView? { get set }
     var cellSeparatorView: UIView? { get set }
 
-    var delegate: AnyObject? { get set }
+    var fileDelegate: AnyObject? { get set }
 
     func titleInfoTrailingDefault()
     func titleInfoTrailingFull()
@@ -105,7 +105,7 @@ extension NCCellProtocol {
         get { return nil }
         set {}
     }
-    var delegate: AnyObject? {
+    var fileDelegate: AnyObject? {
         get { return nil }
         set {}
     }

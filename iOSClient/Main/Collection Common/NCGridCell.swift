@@ -82,6 +82,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return imageFavorite }
         set { imageFavorite = newValue }
     }
+    var fileDelegate: AnyObject? {
+        get { return delegate }
+        set { delegate = newValue as? NCGridCellDelegate }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
