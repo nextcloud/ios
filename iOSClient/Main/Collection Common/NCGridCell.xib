@@ -28,7 +28,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2po-8g-XeS">
-                        <rect key="frame" x="9" y="464" width="372" height="12"/>
+                        <rect key="frame" x="9" y="464" width="382" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" systemColor="systemGray2Color"/>
                         <nil key="highlightedColor"/>
@@ -94,7 +94,7 @@
                 <constraint firstItem="2po-8g-XeS" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" constant="5" id="5wo-Td-XeT"/>
                 <constraint firstItem="W0L-HY-al1" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="6tC-PK-fYX"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="centerY" secondItem="2po-8g-XeS" secondAttribute="centerY" id="8qW-SF-u1h"/>
-                <constraint firstItem="EJs-Ro-nbe" firstAttribute="leading" secondItem="2po-8g-XeS" secondAttribute="trailing" constant="10" id="ABr-PB-TZg"/>
+                <constraint firstItem="EJs-Ro-nbe" firstAttribute="leading" secondItem="2po-8g-XeS" secondAttribute="trailing" id="ABr-PB-TZg"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="JQo-Vc-Ejk" secondAttribute="trailing" constant="5" id="E03-Dk-iZ5"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
