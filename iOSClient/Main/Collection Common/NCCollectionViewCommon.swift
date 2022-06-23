@@ -1483,7 +1483,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
         var isShare = false
         var isMounted = false
-        
+        var a11yValues: [String] = []
+
         if metadataFolder != nil {
             isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionShared)
             isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder!.permissions.contains(NCGlobal.shared.permissionMounted)
@@ -1537,7 +1538,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileProgressView?.isHidden = false
             cell.fileProgressView?.progress = progress
         }
-        var a11yValues: [String] = []
+
+        // Accessibility [shared]
         if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
             a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
         }
@@ -1691,15 +1693,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.selectMode(false)
         }
 
-        if cell is NCListCell {
-            (cell as? NCListCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
-            (cell as? NCListCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
-        }
-        if cell is NCGridCell {
-            (cell as? NCGridCell)?.accessibilityLabel = metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "")
-            (cell as? NCGridCell)?.accessibilityValue = a11yValues.joined(separator: ", ")
-        }
-
+        // Accessibility
+        cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         return cell
     }

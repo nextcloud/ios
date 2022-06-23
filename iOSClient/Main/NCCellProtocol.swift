@@ -48,6 +48,7 @@ protocol NCCellProtocol {
     func hideButtonMore(_ status: Bool)
     func selectMode(_ status: Bool)
     func selected(_ status: Bool)
+    func setAccessibility(label: String, value: String)
 }
 
 extension NCCellProtocol {
@@ -112,4 +113,5 @@ extension NCCellProtocol {
     func hideButtonMore(_ status: Bool) {}
     func selectMode(_ status: Bool) {}
     func selected(_ status: Bool) {}
+    func setAccessibility(label: String, value: String) {}
 }

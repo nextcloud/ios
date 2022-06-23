@@ -199,6 +199,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         labelInfo.text = dateFormatter.string(from: date as Date) + ", " + CCUtility.transformedSize(size)
     }
+
+    func setAccessibility(label: String, value: String) {
+        accessibilityLabel = label
+        accessibilityValue = value
+    }
 }
 
 protocol NCGridCellDelegate: AnyObject {
