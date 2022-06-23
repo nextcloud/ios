@@ -600,7 +600,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     cell.fileProgressView?.progress = .zero
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                        cell.writeInfoDateSize(date: metadata.date, totalBytes: metadata.size)
+                        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
                     } else {
                         cell.fileInfoLabel?.text = ""
                     }
@@ -1522,7 +1522,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
-            cell.fileInfoLabel?.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+            cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
         // Progress
