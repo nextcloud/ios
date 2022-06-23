@@ -82,13 +82,13 @@ class NCDataSource: NSObject {
             if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
                 continue
             }
-            let section = self.getSectionValue(metadata: metadata)
+            let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "").lowercased().firstUppercased
             if !self.sectionsValue.contains(section) {
                 self.sectionsValue.append(section)
             }
         }
 
-        if let providers = self.providers , !providers.isEmpty {
+        if let providers = self.providers, !providers.isEmpty {
             var sectionsDictionary: [String:Int] = [:]
             for section in self.sectionsValue {
                 if let provider = providers.filter({ $0.name.lowercased() == section.lowercased()}).first {
@@ -97,18 +97,20 @@ class NCDataSource: NSObject {
             }
             self.sectionsValue.removeAll()
             let sectionsDictionarySorted = sectionsDictionary.sorted(by: { $0.value < $1.value } )
+            let appName = NSLocalizedString(NCGlobal.shared.appName, comment: "").lowercased().firstUppercased
             for section in sectionsDictionarySorted {
-                if section.key == NCGlobal.shared.appName {
+                if section.key == appName {
                     self.sectionsValue.insert(section.key, at: 0)
                 } else {
                     self.sectionsValue.append(section.key)
                 }
             }
         } else {
+            let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
-                if directoryOnTop && $0.lowercased() == "directory" {
+                if directoryOnTop && $0 == directory {
                     return true
-                } else if directoryOnTop && $1.lowercased() == "directory" {
+                } else if directoryOnTop && $1 == directory {
                     return false
                 }
                 if self.ascending {
@@ -319,11 +321,11 @@ class NCDataSource: NSObject {
 
         switch self.groupByField {
         case "name":
-            return metadata.name
+            return NSLocalizedString(metadata.name, comment: "").lowercased().firstUppercased
         case "classFile":
-            return metadata.classFile
+            return NSLocalizedString(metadata.classFile, comment: "").lowercased().firstUppercased
         default:
-            return metadata.name
+            return NSLocalizedString(metadata.name, comment: "").lowercased().firstUppercased
         }
     }
 }
