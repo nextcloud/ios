@@ -26,7 +26,6 @@ import UIKit
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
@@ -39,7 +38,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var separator: UIView!
+
+    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var infoTrailingConstraint: NSLayoutConstraint!
 
     private var objectId = ""
     private var user = ""
@@ -48,32 +51,61 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var namedButtonMore = ""
 
     var fileAvatarImageView: UIImageView? {
-        get {
-            return imageShared
-        }
+        get { return imageShared }
     }
     var fileObjectId: String? {
-        get {
-            return objectId
-        }
-        set {
-            objectId = newValue ?? ""
-        }
+        get { return objectId }
+        set { objectId = newValue ?? "" }
     }
     var filePreviewImageView: UIImageView? {
-        get {
-            return imageItem
-        }
+        get { return imageItem }
+        set { imageItem = newValue }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
-
+    var fileTitleLabel: UILabel? {
+        get { return labelTitle }
+        set { labelTitle = newValue }
+    }
+    var fileInfoLabel: UILabel? {
+        get { return labelInfo }
+        set { labelInfo = newValue }
+    }
+    var fileProgressView: UIProgressView? {
+        get { return progressView }
+        set { progressView = newValue }
+    }
+    var fileSelectImage: UIImageView? {
+        get { return imageSelect }
+        set { imageSelect = newValue }
+    }
+    var fileStatusImage: UIImageView? {
+        get { return imageStatus }
+        set { imageStatus = newValue }
+    }
+    var fileLocalImage: UIImageView? {
+        get { return imageLocal }
+        set { imageLocal = newValue }
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return imageFavorite }
+        set { imageFavorite = newValue }
+    }
+    var fileSharedImage: UIImageView? {
+        get { return imageShared }
+        set { imageShared = newValue }
+    }
+    var fileMoreImage: UIImageView? {
+        get { return imageMore }
+        set { imageMore = newValue }
+    }
+    var cellSeparatorView: UIView? {
+        get { return separator }
+        set { separator = newValue }
+    }
+ 
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -104,6 +136,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
+
+        labelTitle.text = ""
+        labelInfo.text = ""
+        labelTitle.textColor = NCBrandColor.shared.label
+        labelInfo.textColor = NCBrandColor.shared.systemGray
     }
 
     override func prepareForReuse() {
@@ -143,6 +180,16 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 selector: #selector(touchUpInsideMore))
         ]
     }
+
+    func titleInfoTrailingFull() {
+        titleTrailingConstraint.constant = 10
+        infoTrailingConstraint.constant = 10
+    }
+
+    func titleInfoTrailingDefault() {
+        titleTrailingConstraint.constant = 90
+        infoTrailingConstraint.constant = 90
+    }
     
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
@@ -159,6 +206,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func hideButtonShare(_ status: Bool) {
         imageShared.isHidden = status
         buttonShared.isHidden = status
+    }
+
+    func hideSeparator(_ status: Bool) {
+        separator.isHidden = status
     }
 
     func selectMode(_ status: Bool) {
@@ -197,6 +248,15 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             separator.isHidden = false
         }
+    }
+
+    func writeInfoDateSize(date: NSDate, size: Int64) {
+        labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + CCUtility.transformedSize(size)
+    }
+
+    func setAccessibility(label: String, value: String) {
+        accessibilityLabel = label
+        accessibilityValue = value
     }
 }
 

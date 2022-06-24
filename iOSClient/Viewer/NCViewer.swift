@@ -43,6 +43,15 @@ class NCViewer: NSObject {
         var editor = editor
         var xxxxxxx = NCCommunicationCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
 
+        // URL
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+
+            if let url = URL(string: metadata.url) {
+                UIApplication.shared.open(url)
+            }
+            return
+        }
+
         // IMAGE AUDIO VIDEO
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
 

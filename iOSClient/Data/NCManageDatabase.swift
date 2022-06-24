@@ -149,9 +149,10 @@ class NCManageDatabase: NSObject {
                         }
                     }
 
-                    if oldSchemaVersion < 222 && NCUtility.shared.SYSTEM_VERSION_LESS_THAN(version: "13") {
+                    if oldSchemaVersion < 227 {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableTrash.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -1229,6 +1230,14 @@ class NCManageDatabase: NSObject {
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
+    }
+
+    @objc func getTableLocalFile(account: String) -> [tableLocalFile] {
+
+        let realm = try! Realm()
+
+        let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
+        return Array(results.map { tableLocalFile.init(value: $0) })
     }
 
     @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {

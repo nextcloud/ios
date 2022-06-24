@@ -34,6 +34,9 @@ class NCShares: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_list_shares_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
+        headerMenuButtonsCommand = false
+        headerMenuButtonsView = true
+        headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "share")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_list_shares_no_files_"
         emptyDescription = "_tutorial_list_shares_view_"
@@ -55,7 +58,15 @@ class NCShares: NCCollectionViewCommon {
                 }
             }
 
-            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+                                           account: self.appDelegate.account,
+                                           sort: self.layoutForView?.sort,
+                                           ascending: self.layoutForView?.ascending,
+                                           directoryOnTop: self.layoutForView?.directoryOnTop,
+                                           favoriteOnTop: true,
+                                           filterLivePhoto: true,
+                                           groupByField: self.groupByField,
+                                           providers: self.providers)
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()

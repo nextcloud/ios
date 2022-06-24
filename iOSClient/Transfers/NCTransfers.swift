@@ -36,6 +36,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
+        headerMenuButtonsCommand = false
+        headerMenuButtonsView = false
+        headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "arrow.left.arrow.right")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
@@ -45,15 +48,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        collectionView?.collectionViewLayout = listLayout
+        NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
-        serverUrl = appDelegate.activeServerUrl
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        collectionView?.collectionViewLayout = listLayout
     }
 
     override func setNavigationItem() {
@@ -156,10 +152,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // nothing
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 0)
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -270,7 +262,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.reloadDataSource()
 
         metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-        self.dataSource = NCDataSource(metadatasSource: metadatasSource)
+        self.dataSource = NCDataSource(metadatasSource: metadatasSource, account: self.appDelegate.account)
 
         refreshControl.endRefreshing()
         collectionView.reloadData()

@@ -58,11 +58,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     private var emptyDataSet: NCEmptyDataSet?
 
-    private let keyLayout = NCGlobal.shared.layoutViewMove
+    private let layoutKey = NCGlobal.shared.layoutViewMove
     private var serverUrlPush = ""
     private var metadataFolder = tableMetadata()
 
     private var isEditMode = false
+    private var isSearching = false
     private var networkInProgress = false
     private var selectOcId: [String] = []
     private var overwrite = true
@@ -71,16 +72,13 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     internal var richWorkspaceText: String?
 
     private var layoutForView: NCGlobal.layoutForViewType?
+    internal var headerMenu: NCSectionHeaderMenu?
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
 
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
-
-    private let headerHeight: CGFloat = 50
-    private var headerRichWorkspaceHeight: CGFloat = 0
-    private let footerHeight: CGFloat = 50
 
     private var shares: [tableShare]?
 
@@ -120,7 +118,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: headerHeight, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView, delegate: self)
 
         // Type of command view
         if typeOfCommandView == .select || typeOfCommandView == .selectCreateFolder {
@@ -179,7 +177,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, account: activeAccount.account)
 
-        layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -275,10 +273,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     // MARK: TAP EVENT
 
-    func tapSwitchHeader(sender: Any) {
+    func tapButtonSwitch(_ sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
+            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
@@ -286,8 +285,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                 })
             })
             layoutForView?.layout = NCGlobal.shared.layoutList
+            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         } else {
             // grid layout
+            headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
@@ -295,13 +296,15 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                 })
             })
             layoutForView?.layout = NCGlobal.shared.layoutGrid
+            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
+        reloadDataSource()
     }
 
-    func tapOrderHeader(sender: Any) {
+    func tapButtonOrder(_ sender: Any) {
 
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, key: keyLayout, sortButton: sender as? UIButton, serverUrl: serverUrl)
+        sortMenu.toggleMenu(viewController: self, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
 
     // MARK: - Push metadata
@@ -361,38 +364,6 @@ extension NCSelect: UICollectionViewDelegate {
 
 extension NCSelect: UICollectionViewDataSource {
 
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
-        if kind == UICollectionView.elementKindSectionHeader {
-
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
-
-            if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(UIImage(named: "switchList")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
-            } else {
-                header.buttonSwitch.setImage(UIImage(named: "switchGrid")?.image(color: NCBrandColor.shared.gray, size: 25), for: .normal)
-            }
-
-            header.delegate = self
-            header.setStatusButton(count: dataSource.metadatas.count)
-            header.setTitleSorted(datasourceTitleButton: layoutForView?.titleButtonHeader ?? "")
-            header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
-            header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
-
-            return header
-
-        } else {
-
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-
-            let info = dataSource.getFilesInformation()
-            footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
-
-            return footer
-        }
-
-    }
-
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
 
@@ -411,7 +382,7 @@ extension NCSelect: UICollectionViewDataSource {
            activeAccount.account == metadata.account,
            let cell = cell as? NCCellProtocol {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
-            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView)
+            NCOperationQueue.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.fileAvatarImageView)
         }
     }
 
@@ -420,11 +391,11 @@ extension NCSelect: UICollectionViewDataSource {
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return dataSource.numberOfSections()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItems = dataSource.numberOfItems()
+        let numberOfItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberOfItems, section: section)
         return numberOfItems
     }
@@ -439,16 +410,13 @@ extension NCSelect: UICollectionViewDataSource {
             }
         }
 
-        var tableShare: tableShare?
         var isShare = false
         var isMounted = false
 
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        if dataSource.metadataShare[metadata.ocId] != nil {
-            tableShare = dataSource.metadataShare[metadata.ocId]
-        }
+        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
 
         // LAYOUT LIST
 
@@ -509,7 +477,7 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
                 // image local
-                if dataSource.metadataOffLine.contains(metadata.ocId) {
+                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.local
@@ -606,7 +574,7 @@ extension NCSelect: UICollectionViewDataSource {
             } else {
 
                 // image Local
-                if dataSource.metadataOffLine.contains(metadata.ocId) {
+                if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
                 } else if CCUtility.fileProviderStorageExists(metadata) {
                     cell.imageLocal.image = NCBrandColor.cacheImages.local
@@ -632,26 +600,118 @@ extension NCSelect: UICollectionViewDataSource {
 
         return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
     }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+
+        if kind == UICollectionView.elementKindSectionHeader {
+
+            if indexPath.section == 0 {
+
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
+                let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+
+                self.headerMenu = header
+
+                if collectionView.collectionViewLayout == gridLayout {
+                    header.setImageSwitchList()
+                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
+                } else {
+                    header.setImageSwitchGrid()
+                    header.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
+                }
+
+                header.delegate = self
+
+                header.setButtonsCommand(heigt: 0)
+                header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
+                header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
+                header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
+
+                header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
+                header.setRichWorkspaceText(richWorkspaceText)
+
+                header.setSectionHeight(heightHeaderSection)
+                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                header.labelSection.textColor = NCBrandColor.shared.label
+
+                return header
+
+            } else {
+
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
+
+                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                header.labelSection.textColor = NCBrandColor.shared.brandElement
+
+                return header
+            }
+
+        } else {
+
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            let sections = dataSource.numberOfSections()
+            let section = indexPath.section
+
+            footer.setTitleLabel(text: "")
+            footer.separatorIsHidden(true)
+
+            if sections == 1 || section == sections - 1 {
+                let info = dataSource.getFooterInformation()
+                footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
+            } else {
+                footer.separatorIsHidden(false)
+            }
+
+            return footer
+        }
+    }
 }
 
 extension NCSelect: UICollectionViewDelegateFlowLayout {
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func getHeaderHeight(section:Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
 
-        headerRichWorkspaceHeight = 0
+        var headerRichWorkspace: CGFloat = 0
 
         if let richWorkspaceText = richWorkspaceText {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if trimmed.count > 0 {
-                headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
+            if trimmed.count > 0 && !isSearching {
+                headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
         }
 
-        return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
+        if section == 0 && dataSource.numberOfSections() > 1 {
+            return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
+        } else if section == 0 && dataSource.numberOfSections() == 1 {
+            if collectionView.collectionViewLayout == gridLayout {
+                return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
+            } else {
+                return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
+            }
+        } else if section > 0 && dataSource.numberOfSections() > 1 {
+            return (0, 0, NCGlobal.shared.heightSection)
+        } else {
+            return (0, 0, 0)
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+
+        let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+        let heightHeader = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+
+        return CGSize(width: collectionView.frame.width, height: heightHeader)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: footerHeight)
+
+        let sections = dataSource.numberOfSections()
+
+        if section == sections - 1 {
+            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightFooter)
+        }
     }
 }
 
@@ -666,8 +726,14 @@ extension NCSelect {
     @objc func loadDatasource(withLoadFolder: Bool) {
 
         var predicate: NSPredicate?
+        var groupByField = "name"
+        
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
 
-        layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
+        // set GroupField for Grid
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+            groupByField = "classFile"
+        }
 
         if includeDirectoryE2EEncryption {
 
@@ -686,8 +752,16 @@ extension NCSelect {
             }
         }
 
+
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatasSource: metadatasSource, sort: layoutForView?.sort, ascending: layoutForView?.ascending, directoryOnTop: layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource(metadatasSource: metadatasSource,
+                                       account: activeAccount.account,
+                                       sort: layoutForView?.sort,
+                                       ascending: layoutForView?.ascending,
+                                       directoryOnTop: layoutForView?.directoryOnTop,
+                                       favoriteOnTop: true,
+                                       filterLivePhoto: true,
+                                       groupByField: groupByField)
 
         if withLoadFolder {
             loadFolder()

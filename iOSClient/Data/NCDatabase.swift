@@ -350,6 +350,14 @@ class tableLocalFile: Object {
 }
 
 class tableMetadata: Object, NCUserBaseUrl {
+    override func isEqual(_ object: Any?) -> Bool {
+        if let object = object as? tableMetadata {
+            return self.fileId == object.fileId && self.account == object.account
+                   && self.path == object.path && self.fileName == object.fileName
+        } else {
+            return false
+        }
+    }
 
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
@@ -376,8 +384,10 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var fileNameWithoutExt = ""
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
+    @objc dynamic var iconUrl = ""
     @objc dynamic var livePhoto: Bool = false
     @objc dynamic var mountType = ""
+    @objc dynamic var name = ""
     @objc dynamic var note = ""
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
@@ -405,6 +415,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     let shareType = List<Int>()
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
+    @objc dynamic var subline: String?
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()

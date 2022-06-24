@@ -27,16 +27,25 @@ extension NCShareExtension {
 
     @objc func reloadDatasource(withLoadFolder: Bool) {
 
+        var groupByField = "name"
+
         layoutForView = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
+
+        // set GroupField for Grid
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+            groupByField = "classFile"
+        }
 
         let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
         self.dataSource = NCDataSource(
             metadatasSource: metadatasSource,
+            account: activeAccount.account,
             sort: layoutForView?.sort,
             ascending: layoutForView?.ascending,
             directoryOnTop: layoutForView?.directoryOnTop,
             favoriteOnTop: true,
-            filterLivePhoto: true)
+            filterLivePhoto: true,
+            groupByField: groupByField)
 
         if withLoadFolder {
             loadFolder()

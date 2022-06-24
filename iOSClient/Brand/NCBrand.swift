@@ -139,6 +139,15 @@ class NCBrandColor: NSObject {
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
         static var buttonRestore = UIImage()
+        static var buttonTrash = UIImage()
+
+        static var iconContacts = UIImage()
+        static var iconTalk = UIImage()
+        static var iconCalendar = UIImage()
+        static var iconDeck = UIImage()
+        static var iconMail = UIImage()
+        static var iconConfirm = UIImage()
+        static var iconPages = UIImage()
     }
 
     // Color
@@ -155,6 +164,12 @@ class NCBrandColor: NSObject {
     @objc public let yellowFavorite: UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
 
     public var userColors: [CGColor] = []
+
+    @objc public var annotationColor: UIColor {
+        get {
+            return .systemBlue
+        }
+    }
 
     @objc public var systemBackground: UIColor {
         get {
@@ -252,6 +267,16 @@ class NCBrandColor: NSObject {
                 return .systemGray
             } else {
                 return UIColor(red: 0.56, green: 0.56, blue: 0.58, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemGray1: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
+            } else {
+                return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
             }
         }
     }
@@ -358,6 +383,15 @@ class NCBrandColor: NSObject {
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
         cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: gray, size: 50)
         cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
+        cacheImages.buttonTrash = UIImage(named: "trash")!.image(color: gray, size: 50)
+
+        cacheImages.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
     }
 
     #if !EXTENSION

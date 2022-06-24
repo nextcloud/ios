@@ -70,3 +70,7 @@ extension String {
         return digestData.map { String(format: "%02hhx", $0) }.joined()
     }
 }
+
+extension StringProtocol {
+    var firstUppercased: String { lowercased().prefix(1).uppercased() + dropFirst() }
+}

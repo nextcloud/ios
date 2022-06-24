@@ -196,7 +196,7 @@ class NCEndToEndInitialize: NSObject {
                 alertController.addAction(cancel)
                 alertController.addTextField { textField -> Void in
                     passphraseTextField = textField
-                    passphraseTextField?.placeholder = "Enter passphrase (12 words)"
+                    passphraseTextField?.placeholder = NSLocalizedString("_enter_passphrase_", comment: "")
                 }
 
                 self.appDelegate.window?.rootViewController?.present(alertController, animated: true)

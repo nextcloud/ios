@@ -222,7 +222,7 @@ extension NCActivity: UITableViewDataSource {
 
         // Image
         let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
-        NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
+        NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = NCBrandColor.shared.label
@@ -265,8 +265,9 @@ extension NCActivity: UITableViewDataSource {
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + fileNameIcon
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                let image = NCUtility.shared.loadImage(named: fileNameIcon, color: NCBrandColor.shared.gray)
-                cell.icon.image = image
+                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                    cell.icon.image = image
+                }
             } else {
                 NCCommunication.shared.downloadContent(serverUrl: activity.icon) { _, data, errorCode, _ in
                     if errorCode == 0 {
@@ -288,7 +289,7 @@ extension NCActivity: UITableViewDataSource {
 
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
 
-            NCOperationQueue.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
+            NCOperationQueue.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         }
 
         // subject

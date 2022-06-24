@@ -37,6 +37,9 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewViewInFolder
         enableSearchBar = false
+        headerMenuButtonsCommand = false
+        headerMenuButtonsView = true
+        headerRichWorkspaceDisable = false
         emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
@@ -88,7 +91,15 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                 }
             }
 
-            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+                                           account: self.appDelegate.account,
+                                           sort: self.layoutForView?.sort,
+                                           ascending: self.layoutForView?.ascending,
+                                           directoryOnTop: self.layoutForView?.directoryOnTop,
+                                           favoriteOnTop: true,
+                                           filterLivePhoto: true,
+                                           groupByField: self.groupByField,
+                                           providers: self.providers)
 
             DispatchQueue.main.async {
 
@@ -98,12 +109,13 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                 // Blink file
                 if self.fileName != nil {
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, self.fileName!)) {
-                        if let row = self.dataSource.getIndexMetadata(ocId: metadata.ocId) {
+                        let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+                        if let indexPath = indexPath {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 UIView.animate(withDuration: 0.3) {
-                                    self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: false)
+                                    self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
                                 } completion: { _ in
-                                    if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
+                                    if let cell = self.collectionView.cellForItem(at: indexPath) {
                                         cell.backgroundColor = .darkGray
                                         UIView.animate(withDuration: 2) {
                                             cell.backgroundColor = .clear

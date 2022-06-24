@@ -27,9 +27,7 @@ import Realm
 import UIKit
 import NCCommunication
 
-class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCTrashSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
-
-    var selectableDataSource: [RealmSwiftObject] { datasource }
+class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -37,6 +35,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkFileId: String?
     var emptyDataSet: NCEmptyDataSet?
+    var selectableDataSource: [RealmSwiftObject] { datasource }
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
@@ -47,7 +46,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var layoutForView: NCGlobal.layoutForViewType?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
-    let highHeader: CGFloat = 50
+
     private let refreshControl = UIRefreshControl()
 
     // MARK: - View Life Cycle
@@ -62,8 +61,8 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
         // Header - Footer
-        collectionView.register(UINib(nibName: "NCTrashSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
-        collectionView.register(UINib(nibName: "NCTrashSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
+        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
@@ -77,7 +76,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
         // Empty
-        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: highHeader, delegate: self)
+        emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView + NCGlobal.shared.heightButtonsCommand, delegate: self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
@@ -135,7 +134,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     // MARK: TAP EVENT
 
-    func tapSwitchHeaderMenu(sender: Any) {
+    func tapButtonSwitch(_ sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -158,16 +157,15 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
         }
+        reloadDataSource()
     }
 
-    func tapOrderHeaderMenu(sender: Any) {
+    func tapButtonOrder(_ sender: Any) {
         let sortMenu = NCSortMenu()
         sortMenu.toggleMenu(viewController: self, key: NCGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }
 
-    func tapMoreHeaderMenu(sender: Any) {
-        toggleMenuMoreHeader()
-    }
+    func tapButtonMore(_ sender: Any) { }
 
     func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
 
@@ -199,12 +197,48 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
             collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        } // else: undefined sender
+        }
+    }
+
+    func tapButton1(_ sender: Any) {
+
+        if isEditMode {
+            if selectOcId.isEmpty { return }
+            self.selectOcId.forEach(self.restoreItem)
+            self.tapSelect()
+        } else {
+            if datasource.isEmpty { return }
+            datasource.forEach({ self.restoreItem(with: $0.fileId) })
+        }
+    }
+
+    func tapButton2(_ sender: Any) {
+
+        if isEditMode {
+            if selectOcId.isEmpty { return }
+            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
+                self.selectOcId.forEach(self.deleteItem)
+                self.tapSelect()
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            if datasource.isEmpty { return }
+            let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_description_", comment: ""), message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_trash_delete_all_", comment: ""), style: .destructive, handler: { _ in
+                self.emptyTrash()
+            }))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) { }
+
+    // MARK: - DataSource
 
     @objc func reloadDataSource() {
 

@@ -25,14 +25,14 @@
 
 import UIKit
 
-class NCTrashListCell: UICollectionViewCell, NCTrashCell {
+class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelInfo: UILabel?
+    @IBOutlet weak var labelInfo: UILabel!
 
     @IBOutlet weak var imageRestore: UIImageView!
     @IBOutlet weak var imageMore: UIImageView!
@@ -65,7 +65,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCell {
         ]
 
         imageRestore.image = NCBrandColor.cacheImages.buttonRestore
-        imageMore.image = NCUtility.shared.loadImage(named: "trash")
+        imageMore.image = NCBrandColor.cacheImages.buttonTrash
 
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
@@ -124,30 +124,36 @@ protocol NCTrashListCellDelegate: AnyObject {
     func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any)
 }
 
-protocol NCTrashCell {
+protocol NCTrashCellProtocol {
     var objectId: String { get set }
     var labelTitle: UILabel! { get set }
-    var labelInfo: UILabel? { get set }
+    var labelInfo: UILabel! { get set }
     var imageItem: UIImageView! { get set }
 
     func selectMode(_ status: Bool)
     func selected(_ status: Bool)
 }
 
-extension NCTrashCell where Self: UICollectionViewCell {
+extension NCTrashCellProtocol where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
         self.objectId = tableTrash.fileId
         self.labelTitle.text = tableTrash.trashbinFileName
         self.labelTitle.textColor = NCBrandColor.shared.label
-        let infoText: String
+        if self is NCTrashListCell {
+            self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date)
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .short
+            dateFormatter.timeStyle = .none
+            dateFormatter.locale = Locale.current
+            self.labelInfo?.text = dateFormatter.string(from: tableTrash.date as Date)
+        }
         if tableTrash.directory {
             self.imageItem.image = NCBrandColor.cacheImages.folder
-            infoText = CCUtility.dateDiff(tableTrash.date as Date)
         } else {
             self.imageItem.image = image
-            infoText = CCUtility.dateDiff(tableTrash.date as Date) + ", " + CCUtility.transformedSize(tableTrash.size)
+            self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + CCUtility.transformedSize(tableTrash.size)
         }
-        self.labelInfo?.text = infoText
-        self.accessibilityLabel = tableTrash.trashbinFileName + ", " + infoText
+        self.accessibilityLabel = tableTrash.trashbinFileName + ", " + (self.labelInfo?.text ?? "")
     }
 }

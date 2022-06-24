@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+"_itunes_"                  = "iTunes";
 "_cancel_"                  = "Cancel";
 "_tap_to_cancel_"           = "Tap to cancel";
 "_cancel_request_"          = "Do you want to cancel?";
@@ -114,6 +115,8 @@
 "_comments_"                = "Comments";
 "_sharing_"                 = "Sharing";
 "_details_"                 = "Details";
+"_sub_details_"             = "Subscription Details";
+"_subscriptions_"           = "Subscriptions";
 "_dark_mode_"               = "Dark mode";
 "_dark_mode_detect_"        = "Detect iOS dark mode";
 "_screen_"                  = "Screen";
@@ -146,6 +149,10 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+"_premium_"                 = "Premium";
+"_professional_"            = "Professional";
+"_current_"                 = "Current";
+"_buy_"                     = "Buy";
 
 /* MARK: Files lock */
 
@@ -389,7 +396,9 @@
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";
 "_format_compatibility_footer_" = "\"Most compatible\" will save photos as JPEG, if possible.";
+"_terms_"                       = "Terms of Service";
 "_privacy_"                     = "Privacy";
+"_privacy_policy_"              = "Privacy Policy";
 "_privacy_footer_"              = "Nextcloud iOS uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
@@ -730,6 +739,7 @@
 "_trash_view_"                      = "Deleted files";
 "_trash_restore_all_"               = "Restore all files";
 "_trash_delete_all_"                = "Empty trash";
+"_trash_delete_permanently_"        = "Delete permanently";
 "_trash_delete_all_description_"    = "Do you want to empty the trash bin?";
 "_trash_no_trash_"                  = "No files deleted";
 "_trash_no_trash_description_"      = "You can restore deleted files from here";
@@ -836,6 +846,10 @@
 "_1_month_"                 = "1 month";
 "_1_week_"                  = "1 week";
 "_1_day_"                   = "1 day";
+"_monthly_"                 = "Monthly";
+"_yearly_"                  = "Yearly";
+"_weekly_"                  = "Weekly";
+"_day_"                     = "Day";
 "_used_space_"              = "Used space";
 "_open_in_onlyoffice_"      = "Open in ONLYOFFICE";
 "_open_in_collabora_"       = "Open with Collabora Online";
@@ -854,6 +868,10 @@
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
 "_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
+"_scan_"                    = "Scan";
+"_in_"                      = "in";
+"_enter_passphrase_"        = "Enter passphrase (12 words)";
+
 // Video
 "_select_trace_"            = "Select the trace";
 "_video_processing_"        = "Video processing";
@@ -889,3 +907,20 @@
 "_off_"                         = "Off";
 "_grid_view_"                   = "Show grid view";
 "_list_view_"                   = "Show list view";
+
+// MARK: Plan customer
+"_leave_plan_title"             = "We're sorry to see you go";
+"_leave_plan_description"       = "You'll no longer have access to:";
+"_current_plan_"                = "Current Plan";
+"_billing_plan_"                = "Billing Plan";
+"_keep_plan_"                   = "Keep Plan";
+"_leave_plan_"                  = "Leave Plan";
+"_change_plan_"                 = "Change Plan";
+"_manage_plan_"                 = "Manage Plan";
+"_purchase_plan_"               = "Purchase Plan";
+"_restore_plan_"                = "Restore Purchased Plan";
+"_purchase_plan_description_"   = "Purchases have been restored";
+"_choose_plan_"                 = "You should choose a plan in order to purchase it.";
+"_already_plan_"                = "The selected plan is been already bought.";
+"_change_billing_"              = "Change Billing";
+"_payment_method_"              = "Payment Method";

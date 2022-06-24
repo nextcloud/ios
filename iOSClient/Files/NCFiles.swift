@@ -37,6 +37,9 @@ class NCFiles: NCCollectionViewCommon {
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
+        headerMenuButtonsCommand = true
+        headerMenuButtonsView = true
+        headerRichWorkspaceDisable = false
         emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
@@ -70,21 +73,27 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource() {
         super.reloadDataSource()
 
-        DispatchQueue.global(qos: .background).async {
-
-            if !self.isSearching && self.appDelegate.account != "" && self.appDelegate.urlBase != "" {
-                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-                if self.metadataFolder == nil {
-                    self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
-                }
+        if !self.isSearching && !self.appDelegate.account.isEmpty && !self.appDelegate.urlBase.isEmpty {
+            self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+            if self.metadataFolder == nil {
+                self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
             }
+        }
 
-            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource(
+            metadatasSource: self.metadatasSource,
+            account: self.appDelegate.account,
+            sort: self.layoutForView?.sort,
+            ascending: self.layoutForView?.ascending,
+            directoryOnTop: self.layoutForView?.directoryOnTop,
+            favoriteOnTop: true,
+            filterLivePhoto: true,
+            groupByField: self.groupByField,
+            providers: self.providers)
 
-            DispatchQueue.main.async { [weak self] in
-                self?.refreshControl.endRefreshing()
-                self?.collectionView.reloadData()
-            }
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
         }
     }
 

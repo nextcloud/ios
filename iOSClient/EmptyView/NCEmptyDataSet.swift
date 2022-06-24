@@ -42,6 +42,10 @@ class NCEmptyDataSet: NSObject {
     private var fillBackgroundName: String = ""
     private var fillBackgroundView = UIImageView()
 
+    private var centerXAnchor: NSLayoutConstraint?
+    private var centerYAnchor: NSLayoutConstraint?
+
+
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
 
@@ -63,14 +67,23 @@ class NCEmptyDataSet: NSObject {
 
             emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
             emptyView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+
             if let view = view.superview {
-                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
+                centerXAnchor = emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+                centerYAnchor = emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset)
             } else {
-                emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-                emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
+                centerXAnchor = emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+                centerYAnchor = emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset)
             }
+
+            centerXAnchor?.isActive = true
+            centerYAnchor?.isActive = true
         }
+    }
+
+    func setOffset(_ offset: CGFloat) {
+
+        centerYAnchor?.constant = offset
     }
 
     func numberOfItemsInSection(_ num: Int, section: Int) {

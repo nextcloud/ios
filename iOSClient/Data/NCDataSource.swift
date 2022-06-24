@@ -22,79 +22,405 @@
 //
 
 import UIKit
+import NCCommunication
 
 class NCDataSource: NSObject {
 
-    public var metadatas: [tableMetadata] = []
-    public var metadataShare: [String: tableShare] = [:]
-    public var metadataOffLine: [String] = []
+    public var metadatasSource: [tableMetadata] = []
+    public var metadatasForSection: [NCMetadatasForSection] = []
+
+    private var sectionsValue: [String] = []
+    private var providers: [NCCSearchProvider]?
+    private var shares: [tableShare] = []
+    private var localFiles: [tableLocalFile] = []
 
     private var ascending: Bool = true
     private var sort: String = ""
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
     private var filterLivePhoto: Bool = true
+    private var groupByField: String = ""
 
     override init() {
         super.init()
     }
 
-    init(metadatasSource: [tableMetadata], sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true) {
+    init(metadatasSource: [tableMetadata], account: String, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NCCSearchProvider]? = nil) {
         super.init()
 
+        self.metadatasSource = metadatasSource
+        self.shares = NCManageDatabase.shared.getTableShares(account: account)
+        self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
         self.sort = sort ?? "none"
         self.ascending = ascending ?? false
         self.directoryOnTop = directoryOnTop ?? true
         self.favoriteOnTop = favoriteOnTop ?? true
         self.filterLivePhoto = filterLivePhoto ?? true
+        self.groupByField = groupByField
+        self.providers = providers
 
-        createMetadatas(metadatasSource: metadatasSource)
+        createSections()
+
+        for sectionValue in self.sectionsValue {
+            createMetadataForSection(sectionValue: sectionValue)
+        }
     }
 
     // MARK: -
 
-    private func createMetadatas(metadatasSource: [tableMetadata]) {
+    func clearDataSource() {
 
-        var metadatasSourceSorted: [tableMetadata] = []
-        var metadataFavoriteDirectory: [tableMetadata] = []
-        var metadataFavoriteFile: [tableMetadata] = []
-        var metadataDirectory: [tableMetadata] = []
-        var metadataFile: [tableMetadata] = []
+        self.metadatasSource.removeAll()
+        self.metadatasForSection.removeAll()
+        self.sectionsValue.removeAll()
+    }
 
-        /*
-        Metadata order
-        */
+    internal func createSections() {
 
-        if sort != "none" && sort != "" {
-            metadatasSourceSorted = metadatasSource.sorted { (obj1: tableMetadata, obj2: tableMetadata) -> Bool in
-                if sort == "date" {
-                    if ascending {
-                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
-                    } else {
-                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
-                    }
-                } else if sort == "size" {
-                    if ascending {
-                        return obj1.size < obj2.size
-                    } else {
-                        return obj1.size > obj2.size
-                    }
+        for metadata in metadatasSource {
+            // skipped livePhoto
+            if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
+                continue
+            }
+            let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "").lowercased().firstUppercased
+            if !self.sectionsValue.contains(section) {
+                self.sectionsValue.append(section)
+            }
+        }
+
+        if let providers = self.providers, !providers.isEmpty {
+            var sectionsDictionary: [String:Int] = [:]
+            for section in self.sectionsValue {
+                if let provider = providers.filter({ $0.name.lowercased() == section.lowercased()}).first {
+                    sectionsDictionary[section] = provider.order
+                }
+            }
+            self.sectionsValue.removeAll()
+            let sectionsDictionarySorted = sectionsDictionary.sorted(by: { $0.value < $1.value } )
+            let appName = NSLocalizedString(NCGlobal.shared.appName, comment: "").lowercased().firstUppercased
+            for section in sectionsDictionarySorted {
+                if section.key == appName {
+                    self.sectionsValue.insert(section.key, at: 0)
                 } else {
+                    self.sectionsValue.append(section.key)
+                }
+            }
+        } else {
+            let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
+            self.sectionsValue = self.sectionsValue.sorted {
+                if directoryOnTop && $0 == directory {
+                    return true
+                } else if directoryOnTop && $1 == directory {
+                    return false
+                }
+                if self.ascending {
+                    return $0 < $1
+                } else {
+                    return $0 > $1
+                }
+            }
+        }
+    }
+
+    internal func createMetadataForSection(sectionValue: String) {
+
+        let metadatas = metadatasSource.filter({ getSectionValue(metadata: $0) == sectionValue})
+        let metadataForSection = NCMetadatasForSection.init(sectionValue: sectionValue,
+                                                            metadatas: metadatas,
+                                                            shares: self.shares,
+                                                            localFiles: self.localFiles,
+                                                            sort: self.sort,
+                                                            ascending: self.ascending,
+                                                            directoryOnTop: self.directoryOnTop,
+                                                            favoriteOnTop: self.favoriteOnTop,
+                                                            filterLivePhoto: self.filterLivePhoto)
+        metadatasForSection.append(metadataForSection)
+    }
+
+    // MARK: -
+
+    @discardableResult
+    func addMetadata(_ metadata: tableMetadata) -> (indexPath: IndexPath?, sameSections: Bool) {
+
+        let numberOfSections = self.numberOfSections()
+
+        // ADD metadatasSource
+        if let rowIndex = self.metadatasSource.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
+            self.metadatasSource[rowIndex] = metadata
+        } else {
+            self.metadatasSource.append(metadata)
+        }
+
+        // ADD metadataForSection
+        if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == self.getSectionValue(metadata: metadata) }) {
+            let metadataForSection = metadatasForSection[sectionIndex]
+            if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
+                metadataForSection.metadatas[rowIndex] = metadata
+                return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+            } else {
+                metadataForSection.metadatas.append(metadata)
+                metadataForSection.createMetadatasForSection()
+                if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
+                    return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+                }
+                return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+            }
+        } else {
+            // NEW section
+            createSections()
+            let sectionValue = getSectionValue(metadata: metadata)
+            createMetadataForSection(sectionValue: sectionValue)
+            // get IndexPath of new section
+            if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue }) {
+                let metadataForSection = metadatasForSection[sectionIndex]
+                if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
+                    return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+                }
+            }
+        }
+
+        return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+    }
+
+    func deleteMetadata(ocId: String) -> (indexPath: IndexPath?, sameSections: Bool) {
+
+        let numberOfSections = self.numberOfSections()
+        var indexPathReturn: IndexPath?
+        var removeMetadataForSection = false
+        var sectionValue = ""
+
+        // DELETE metadataForSection (IMPORTANT FIRST)
+        let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocId)
+        if let indexPath = indexPath, let metadataForSection = metadataForSection {
+            metadataForSection.metadatas.remove(at: indexPath.row)
+            if metadataForSection.metadatas.count == 0 {
+                sectionValue = metadataForSection.sectionValue
+                removeMetadataForSection = true
+            } else {
+                metadataForSection.createMetadatasForSection()
+            }
+            indexPathReturn = indexPath
+        }
+
+        // DELETE metadatasSource (IMPORTANT LAST)
+        if let rowIndex = self.metadatasSource.firstIndex(where: {$0.ocId == ocId}) {
+            self.metadatasSource.remove(at: rowIndex)
+        }
+
+        // REMOVE sectionsValue / metadatasForSection
+        if removeMetadataForSection {
+            if let index = self.sectionsValue.firstIndex(where: {$0 == sectionValue }) {
+                self.sectionsValue.remove(at: index)
+            }
+            if let index = self.metadatasForSection.firstIndex(where: {$0.sectionValue == sectionValue }) {
+                self.metadatasForSection.remove(at: index)
+            }
+        }
+
+        return (indexPathReturn, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+    }
+
+    @discardableResult
+    func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> (indexPath: IndexPath?, sameSections: Bool) {
+
+        let numberOfSections = self.numberOfSections()
+        var ocIdSearch = ocId
+        var indexPath: IndexPath?
+        var metadataForSection: NCMetadatasForSection?
+
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections)) }
+
+        if let ocIdTemp = ocIdTemp {
+            ocIdSearch = ocIdTemp
+        }
+
+        // UPDATE metadataForSection (IMPORTANT FIRST)
+        (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocIdSearch)
+        if let indexPath = indexPath, let metadataForSection = metadataForSection {
+            metadataForSection.metadatas[indexPath.row] = metadata
+            metadataForSection.createMetadatasForSection()
+        }
+
+        // UPDATE metadatasSource (IMPORTANT LAST)
+        if let rowIndex = self.metadatasSource.firstIndex(where: {$0.ocId == ocIdSearch}) {
+            self.metadatasSource[rowIndex] = metadata
+        }
+
+        return (indexPath, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+    }
+
+    // MARK: -
+
+    func getIndexPathMetadata(ocId: String) -> (indexPath: IndexPath?, metadataForSection: NCMetadatasForSection?) {
+
+        if let metadata = metadatasSource.filter({ $0.ocId == ocId}).first {
+            let sectionValue = getSectionValue(metadata: metadata)
+            if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue}) {
+                for metadataForSection in self.metadatasForSection {
+                    if metadataForSection.sectionValue == sectionValue {
+                        if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == ocId}) {
+                            return (IndexPath(row: rowIndex, section: sectionIndex), metadataForSection)
+                        }
+                    }
+                }
+            }
+        }
+
+        return (nil, nil)
+    }
+
+    func isSameNumbersOfSections(numberOfSections: Int) -> Bool {
+        if self.metadatasForSection.count == 0 { return false }
+        return numberOfSections == self.numberOfSections()
+    }
+
+    func numberOfSections() -> Int {
+
+        if self.metadatasForSection.count == 0 {
+            return 1
+        } else {
+            return self.metadatasForSection.count
+        }
+    }
+    
+    func numberOfItemsInSection(_ section: Int) -> Int {
+
+        if self.metadatasForSection.count == 0 || self.metadatasSource.count == 0 { return 0 }
+        return self.metadatasForSection[section].metadatas.count
+    }
+
+    func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
+
+        let metadatasForSection = self.metadatasForSection[indexPath.section]
+        return metadatasForSection.metadatas[indexPath.row]
+    }
+
+    func getSectionValue(indexPath: IndexPath) -> String {
+
+        if metadatasForSection.count == 0 { return "" }
+        let metadataForSection = self.metadatasForSection[indexPath.section]
+        return metadataForSection.sectionValue
+    }
+
+    func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
+
+        var directories: Int = 0
+        var files: Int = 0
+        var size: Int64 = 0
+
+        for metadataForSection in metadatasForSection {
+            directories += metadataForSection.numDirectory
+            files += metadataForSection.numFile
+            size += metadataForSection.totalSize
+        }
+
+        return (directories, files, size)
+    }
+
+    internal func getSectionValue(metadata: tableMetadata) -> String {
+
+        switch self.groupByField {
+        case "name":
+            return NSLocalizedString(metadata.name, comment: "").lowercased().firstUppercased
+        case "classFile":
+            return NSLocalizedString(metadata.classFile, comment: "").lowercased().firstUppercased
+        default:
+            return NSLocalizedString(metadata.name, comment: "").lowercased().firstUppercased
+        }
+    }
+}
+
+class NCMetadatasForSection: NSObject {
+
+    var sectionValue: String
+    var metadatas: [tableMetadata]
+    var shares: [tableShare]
+    var localFiles: [tableLocalFile]
+
+    private var sort : String
+    private var ascending: Bool
+    private var directoryOnTop: Bool
+    private var favoriteOnTop: Bool
+    private var filterLivePhoto: Bool
+
+    private var metadatasSourceSorted: [tableMetadata] = []
+    private var metadatasFavoriteDirectory: [tableMetadata] = []
+    private var metadatasFavoriteFile: [tableMetadata] = []
+    private var metadatasDirectory: [tableMetadata] = []
+    private var metadatasFile: [tableMetadata] = []
+
+    public var numDirectory: Int = 0
+    public var numFile: Int = 0
+    public var totalSize: Int64 = 0
+    public var metadataShare: [String: tableShare] = [:]
+    public var metadataOffLine: [String] = []
+
+
+    init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], localFiles: [tableLocalFile], sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+
+        self.sectionValue = sectionValue
+        self.metadatas = metadatas
+        self.shares = shares
+        self.localFiles = localFiles
+        self.sort = sort
+        self.ascending = ascending
+        self.directoryOnTop = directoryOnTop
+        self.favoriteOnTop = favoriteOnTop
+        self.filterLivePhoto = filterLivePhoto
+
+        super.init()
+
+        createMetadatasForSection()
+    }
+
+    func createMetadatasForSection() {
+
+        // Clear
+        //
+        metadatasSourceSorted.removeAll()
+        metadatasFavoriteDirectory.removeAll()
+        metadatasFavoriteFile.removeAll()
+        metadatasDirectory.removeAll()
+        metadatasFile.removeAll()
+        metadataShare.removeAll()
+        metadataOffLine.removeAll()
+
+        numDirectory = 0
+        numFile = 0
+        totalSize = 0
+
+        // Metadata order
+        //
+        if sort != "none" && sort != "" {
+            metadatasSourceSorted = metadatas.sorted {
+
+                switch sort {
+                case "date":
                     if ascending {
-                        return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedAscending
+                        return ($0.date as Date) < ($1.date as Date)
                     } else {
-                        return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedDescending
+                        return ($0.date as Date) > ($1.date as Date)
+                    }
+                case "size":
+                    if ascending {
+                        return $0.size < $1.size
+                    } else {
+                        return $0.size > $1.size
+                    }
+                default:
+                    if ascending {
+                        return $0.fileNameView.lowercased() < $1.fileNameView.lowercased()
+                    } else {
+                        return $0.fileNameView.lowercased() > $1.fileNameView.lowercased()
                     }
                 }
             }
         } else {
-            metadatasSourceSorted = metadatasSource
+            metadatasSourceSorted = metadatas
         }
 
-        /*
-        Initialize datasource
-        */
-
+        // Initialize datasource
+        //
         for metadata in metadatasSourceSorted {
 
             // skipped the root file
@@ -103,23 +429,22 @@ class NCDataSource: NSObject {
             }
 
             // skipped livePhoto
-            if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
+            if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
                 continue
             }
 
             // share
-            let shares = NCManageDatabase.shared.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            if shares.count > 0 {
-                metadataShare[metadata.ocId] = shares.first
+            if let share = self.shares.filter({ $0.serverUrl == metadata.serverUrl && $0.fileName == metadata.fileName }).first {
+                metadataShare[metadata.ocId] = share
             }
 
             // is Local / offline
             if !metadata.directory, CCUtility.fileProviderStorageExists(metadata) {
-                let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                if tableLocalFile == nil {
+                let localFile = self.localFiles.filter({ $0.ocId == metadata.ocId }).first
+                if localFile == nil {
                     NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 }
-                if tableLocalFile?.offline ?? false {
+                if localFile?.offline ?? false {
                     metadataOffLine.append(metadata.ocId)
                 }
             }
@@ -127,126 +452,31 @@ class NCDataSource: NSObject {
             // Organized the metadata
             if metadata.favorite && favoriteOnTop {
                 if metadata.directory {
-                    metadataFavoriteDirectory.append(metadata)
+                    metadatasFavoriteDirectory.append(metadata)
                 } else {
-                    metadataFavoriteFile.append(metadata)
+                    metadatasFavoriteFile.append(metadata)
                 }
             } else if  metadata.directory && directoryOnTop {
-                metadataDirectory.append(metadata)
+                metadatasDirectory.append(metadata)
             } else {
-                metadataFile.append(metadata)
+                metadatasFile.append(metadata)
+            }
+
+            //Info
+            if metadata.directory {
+                numDirectory += 1
+            } else {
+                numFile += 1
+                totalSize += metadata.size
             }
         }
 
         metadatas.removeAll()
-        metadatas += metadataFavoriteDirectory
-        metadatas += metadataFavoriteFile
-        metadatas += metadataDirectory
-        metadatas += metadataFile
-    }
 
-    // MARK: -
-
-    func getFilesInformation() -> (directories: Int, files: Int, size: Int64) {
-
-        var directories: Int = 0
-        var files: Int = 0
-        var size: Int64 = 0
-
-        for metadata in metadatas {
-            if metadata.directory {
-                directories += 1
-            } else {
-                files += 1
-            }
-            size += metadata.size
-        }
-
-        return (directories, files, size)
-    }
-
-    func deleteMetadata(ocId: String) -> Int? {
-
-        if let index = self.getIndexMetadata(ocId: ocId) {
-            metadatas.remove(at: index)
-            return index
-        }
-
-        return nil
-    }
-
-    @discardableResult
-    func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> Int? {
-
-        var index: Int?
-
-        if let ocIdTemp = ocIdTemp {
-            index = self.getIndexMetadata(ocId: ocIdTemp)
-        } else {
-            index = self.getIndexMetadata(ocId: ocId)
-        }
-
-        guard let index = index, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
-        metadatas[index] = metadata
-
-        if CCUtility.fileProviderStorageExists(metadata) {
-            let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            if tableLocalFile?.offline ?? false {
-                metadataOffLine.append(metadata.ocId)
-            }
-        }
-
-        return index
-    }
-
-    @discardableResult
-    func addMetadata(_ metadata: tableMetadata) -> Int? {
-
-        var index: Int = 0
-
-        // Already exists
-        for metadataCount in metadatas {
-            if metadataCount.fileNameView == metadata.fileNameView || metadataCount.ocId == metadata.ocId {
-                metadatas[index] = metadata
-                return index
-            }
-            index += 1
-        }
-
-        // Append & rebuild
-        metadatas.append(metadata)
-        createMetadatas(metadatasSource: metadatas)
-
-        return getIndexMetadata(ocId: metadata.ocId)
-    }
-
-    func getIndexMetadata(ocId: String) -> Int? {
-
-        var index: Int = 0
-
-        for metadataCount in metadatas {
-            if metadataCount.ocId == ocId {
-                return index
-            }
-            index += 1
-        }
-
-        return nil
-    }
-
-    func numberOfItems() -> Int {
-
-        return metadatas.count
-    }
-
-    func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
-
-        let row = indexPath.row
-
-        if row > metadatas.count - 1 {
-            return nil
-        } else {
-            return metadatas[row]
-        }
+        // Struct view : favorite dir -> favorite file -> directory -> files
+        metadatas += metadatasFavoriteDirectory
+        metadatas += metadatasFavoriteFile
+        metadatas += metadatasDirectory
+        metadatas += metadatasFile
     }
 }

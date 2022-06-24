@@ -146,7 +146,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 cell.fileUser = user
-                NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView)
+                NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
             }
         }
 
@@ -323,28 +323,12 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     weak var delegate: NCNotificationCellDelegate?
     var notification: NCCommunicationNotifications?
 
-    var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
-    }
     var fileAvatarImageView: UIImageView? {
-        get {
-            return avatar
-        }
-    }
-    var fileObjectId: String? {
-        get {
-            return nil
-        }
+        get { return avatar }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
 
     override func awakeFromNib() {

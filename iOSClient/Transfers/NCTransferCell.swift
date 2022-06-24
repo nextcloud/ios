@@ -43,33 +43,35 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     var indexPath = IndexPath()
     var namedButtonMore = ""
 
-    var fileAvatarImageView: UIImageView? {
-        get {
-            return nil
-        }
-    }
     var fileObjectId: String? {
-        get {
-            return objectId
-        }
-        set {
-            objectId = newValue ?? ""
-        }
+        get { return objectId }
+        set { objectId = newValue ?? "" }
     }
     var filePreviewImageView: UIImageView? {
-        get {
-            return imageItem
-        }
+        get { return imageItem }
+        set { imageItem = newValue }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
-
+    var fileTitleLabel: UILabel? {
+        get { return labelTitle }
+        set { labelTitle = newValue }
+    }
+    var fileInfoLabel: UILabel? {
+        get { return labelInfo }
+        set { labelInfo = newValue }
+    }
+    var fileProgressView: UIProgressView? {
+        get { return progressView }
+        set { progressView = newValue }
+    }
+    var fileMoreImage: UIImageView? {
+        get { return imageMore }
+        set { imageMore = newValue }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -96,6 +98,9 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
+
+        labelTitle.text = ""
+        labelInfo.text = ""
     }
 
     override func prepareForReuse() {
@@ -128,7 +133,10 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
                 target: self,
                 selector: #selector(touchUpInsideMore))
         ]
+    }
 
+    func writeInfoDateSize(date: NSDate, size: Int64) {
+        labelInfo.text = CCUtility.dateDiff(date as Date) + " · " + CCUtility.transformedSize(size)
     }
 }
 

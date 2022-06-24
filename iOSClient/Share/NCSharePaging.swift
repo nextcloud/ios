@@ -325,7 +325,7 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = UIImage(named: "file")
             }
         }
-        headerView.path.text = NCUtilityFileSystem.shared.getPath(metadata: metadata)
+        headerView.path.text = NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: true)
         headerView.path.textColor = NCBrandColor.shared.label
         headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {

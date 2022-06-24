@@ -47,38 +47,16 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     private var user: String = ""
 
     var idActivity: Int = 0
-    var account: String = ""
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController: UIViewController?
 
     var fileAvatarImageView: UIImageView? {
-        get {
-            return avatar
-        }
-    }
-    var fileObjectId: String? {
-        get {
-            return nil
-        }
-    }
-    var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
+        get { return avatar }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
-    }
-
-    @objc func tapAvatarImage() {
-        guard let fileUser = fileUser else { return }
-        viewController?.showProfileMenu(userId: fileUser)
+        get { return user }
+        set { user = newValue ?? "" }
     }
 
     override func awakeFromNib() {
@@ -88,6 +66,11 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         collectionView.dataSource = self
         let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         avatar.addGestureRecognizer(avatarRecognizer)
+    }
+
+    @objc func tapAvatarImage() {
+        guard let fileUser = fileUser else { return }
+        viewController?.showProfileMenu(userId: fileUser)
     }
 }
 
@@ -130,7 +113,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             return
         }
 
-        if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
+        if activityPreview.view == NCGlobal.shared.appName && activityPreview.mimeType != "dir" {
 
             guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
@@ -176,7 +159,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                     let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
 
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { account, metadata, errorCode, _ in
+                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, errorCode, _ in
 
                         NCUtility.shared.stopActivityIndicator()
 
@@ -256,7 +239,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             } else {
 
-                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
+                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
 

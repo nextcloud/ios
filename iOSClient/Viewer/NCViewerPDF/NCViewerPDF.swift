@@ -479,7 +479,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfSelection.pages.forEach { page in
             let highlight = PDFAnnotation(bounds: pdfSelection.bounds(for: page), forType: .highlight, withProperties: nil)
             highlight.endLineStyle = .square
-            highlight.color = .yellow
+            highlight.color = NCBrandColor.shared.annotationColor
             page.addAnnotation(highlight)
         }
         if let page = pdfSelection.pages.first {
