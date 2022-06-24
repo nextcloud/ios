@@ -337,8 +337,11 @@ import XLForm
                 if errorCode == 0 && account == self.appDelegate.account {
 
                     if url != nil && url!.count > 0 {
-                        let results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
-
+                        var results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+                        //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
+                        if results.mimeType.isEmpty {
+                            results.mimeType = "text/x-markdown"
+                        }
                         self.dismiss(animated: true, completion: {
                             let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: results.mimeType)
 

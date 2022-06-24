@@ -88,8 +88,8 @@ extension NCManageDatabase {
         }
         metadata.size = file.size
         metadata.classFile = file.classFile
-        //FIXME: iOS 12.0,* don't detect UTI "text/markdown"
-        if metadata.contentType == "text/markdown" && metadata.classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue {
+        //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
+        if (metadata.contentType == "text/markdown" || metadata.contentType == "text/x-markdown") && metadata.classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue {
             metadata.classFile = NCCommunicationCommon.typeClassFile.document.rawValue
         }
         if let date = file.uploadDate {
@@ -180,6 +180,11 @@ extension NCManageDatabase {
             metadata.contentType = mimeType
             metadata.iconName = iconName
             metadata.classFile = classFile
+            //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
+            if classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue && (mimeType == "text/x-markdown" || mimeType == "text/markdown") {
+                metadata.iconName = NCCommunicationCommon.typeIconFile.txt.rawValue
+                metadata.classFile = NCCommunicationCommon.typeClassFile.document.rawValue
+            }
         }
         if let iconUrl = iconUrl {
             metadata.iconUrl = iconUrl
