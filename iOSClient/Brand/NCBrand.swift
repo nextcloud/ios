@@ -165,6 +165,12 @@ class NCBrandColor: NSObject {
 
     public var userColors: [CGColor] = []
 
+    @objc public var annotationColor: UIColor {
+        get {
+            return .systemBlue
+        }
+    }
+
     @objc public var systemBackground: UIColor {
         get {
             if #available(iOS 13, *) {
