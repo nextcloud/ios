@@ -709,6 +709,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
+        self.emptyDataSet?.setOffset(getHeaderHeight())
         if isSearching {
             view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
             if isReloadDataSourceNetworkInProgress {
