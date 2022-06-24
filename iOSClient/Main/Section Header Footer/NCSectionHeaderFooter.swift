@@ -116,7 +116,9 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
+
         gradient.frame = viewRichWorkspace.bounds
+        setInterfaceColor()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
