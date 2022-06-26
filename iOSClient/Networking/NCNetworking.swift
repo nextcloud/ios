@@ -931,16 +931,17 @@ import Queuer
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping ([tableMetadata]?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping ([NCCSearchResult]?, [tableMetadata]?) -> Void, completion: @escaping ([NCCSearchResult]?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
+        var searchResults: [NCCSearchResult] = []
         var searchFiles: [tableMetadata] = []
-        var errCode = 0
-        var errDescr = ""
+        var errorCode = 0
+        var errorDescription = ""
         let concurrentQueue = DispatchQueue(label: "com.nextcloud.requestUnifiedSearch.concurrentQueue", attributes: .concurrent)
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(Array(searchFiles), errCode, errDescr)
+            completion(searchResults, Array(searchFiles), errorCode, errorDescription)
         }
 
         NCCommunication.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90) { provider in
@@ -955,7 +956,8 @@ import Queuer
             providers(allProviders)
         } update: { partialResult, provider, errorCode, errorDescription in
             guard let partialResult = partialResult else { return }
-            
+            searchResults.append(partialResult)
+
             switch provider.id {
             case "files":
                 partialResult.entries.forEach({ entry in
@@ -1003,12 +1005,15 @@ import Queuer
                     }
                 })
             }
-            update(searchFiles)
-        } completion: { results, errorCode, errorDescription in
+            update(searchResults, searchFiles)
+        } completion: { results, code, description in
             self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()
-            errCode = errorCode
-            errDescr = errorDescription
+            if let results = results {
+                searchResults = results
+            }
+            errorCode = code
+            errorDescription = description
         }
     }
 

@@ -53,6 +53,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     internal var groupByField = "name"
     internal var providers: [NCCSearchProvider]?
+    internal var searchResults: [NCCSearchResult]?
 
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
@@ -750,6 +751,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.isSearching = true
 
         self.providers?.removeAll()
+        self.searchResults?.removeAll()
         self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
 
@@ -771,6 +773,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.isSearching = false
         self.literalSearch = ""
         self.providers?.removeAll()
+        self.searchResults?.removeAll()
 
         reloadDataSource()
     }
@@ -1029,16 +1032,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
             return
         }
-        let completionHandler: ([tableMetadata]?, Int, String) ->  Void =  { metadatas, errorCode, errorDescription in
-            DispatchQueue.main.async {
-                if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
-                    self.metadatasSource = metadatas
-                }
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
-            }
-        }
 
         isReloadDataSourceNetworkInProgress = true
         self.metadatasSource.removeAll()
@@ -1050,8 +1043,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.refreshControl.beginRefreshing()
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
-            } update: { metadatas in
+            } update: { searchResults, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
+                self.searchResults = searchResults
+
                 DispatchQueue.main.async {
                     if self.searchController?.isActive == true {
                         self.metadatasSource = metadatas
@@ -1062,15 +1057,34 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                        directoryOnTop: self.layoutForView?.directoryOnTop,
                                                        favoriteOnTop: true,
                                                        filterLivePhoto: true,
-                                                       providers: self.providers)
+                                                       providers: self.providers,
+                                                       searchResults: self.searchResults)
                         self.collectionView.reloadData()
                     }
                 }
-            } completion: { metadatas, errorCode, errorDescription in
-                completionHandler(metadatas, errorCode, errorDescription)
+            } completion: { searchResults, metadatas, errorCode, errorDescription in
+                DispatchQueue.main.async {
+                    if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
+                        self.searchResults = searchResults
+                        self.metadatasSource = metadatas
+                    }
+                    self.refreshControl.endRefreshing()
+                    self.isReloadDataSourceNetworkInProgress = false
+                    self.reloadDataSource()
+                }
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, completion: completionHandler)
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
+                DispatchQueue.main.async {
+                    if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
+                        self.searchResults = nil
+                        self.metadatasSource = metadatas
+                    }
+                    self.refreshControl.endRefreshing()
+                    self.isReloadDataSourceNetworkInProgress = false
+                    self.reloadDataSource()
+                }
+            }
         }
     }
 
