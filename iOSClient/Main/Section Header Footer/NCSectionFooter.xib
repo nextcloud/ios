@@ -11,11 +11,19 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="sectionFooter" id="Vin-9E-7nW" customClass="NCSectionFooter" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="121"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TK1-KX-Qe0">
+                    <rect key="frame" x="10" y="0.0" width="355" height="31"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                    <connections>
+                        <action selector="touchUpInsideButton:" destination="Vin-9E-7nW" eventType="touchUpInside" id="XSh-0v-WHJ"/>
+                    </connections>
+                </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s2m-yO-4x0" userLabel="separator">
-                    <rect key="frame" x="10" y="0.0" width="365" height="1"/>
+                    <rect key="frame" x="10" y="30" width="365" height="1"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -23,7 +31,7 @@
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn" userLabel="LabelFooter">
-                    <rect key="frame" x="10" y="17" width="355" height="16"/>
+                    <rect key="frame" x="10" y="52.5" width="355" height="16"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -31,19 +39,23 @@
             </subviews>
             <viewLayoutGuide key="safeArea" id="EFn-SN-cxu"/>
             <constraints>
+                <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="TK1-KX-Qe0" secondAttribute="trailing" constant="10" id="PoY-CD-99O"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" constant="-10" id="ai4-Qy-YWi"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" id="avP-sX-JB5"/>
-                <constraint firstItem="s2m-yO-4x0" firstAttribute="top" secondItem="EFn-SN-cxu" secondAttribute="top" id="b9q-Zv-YmO"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="s2m-yO-4x0" secondAttribute="trailing" id="dWj-wQ-cfb"/>
+                <constraint firstItem="TK1-KX-Qe0" firstAttribute="bottom" secondItem="s2m-yO-4x0" secondAttribute="bottom" id="ekM-Ii-N58"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
+                <constraint firstItem="TK1-KX-Qe0" firstAttribute="top" secondItem="EFn-SN-cxu" secondAttribute="top" id="qRR-61-ojt"/>
+                <constraint firstItem="TK1-KX-Qe0" firstAttribute="leading" secondItem="EFn-SN-cxu" secondAttribute="leading" constant="10" id="xqA-FX-AlG"/>
             </constraints>
             <connections>
+                <outlet property="buttonSection" destination="TK1-KX-Qe0" id="Y2u-vO-1c4"/>
                 <outlet property="labelSection" destination="gzy-cT-Gjn" id="hhG-DH-GJc"/>
                 <outlet property="separator" destination="s2m-yO-4x0" id="iBM-eM-d33"/>
                 <outlet property="separatorHeightConstraint" destination="FYD-Pc-spZ" id="MBt-D9-VxE"/>
             </connections>
-            <point key="canvasLocation" x="138" y="154"/>
+            <point key="canvasLocation" x="136.80000000000001" y="121.88905547226388"/>
         </collectionReusableView>
     </objects>
 </document>

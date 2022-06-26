@@ -27,7 +27,7 @@ import NCCommunication
 class NCDataSource: NSObject {
 
     public var metadatasSource: [tableMetadata] = []
-    public var metadatasForSection: [NCMetadatasForSection] = []
+    public var metadatasForSection: [NCMetadataForSection] = []
 
     private var sectionsValue: [String] = []
     private var providers: [NCCSearchProvider]?
@@ -131,7 +131,7 @@ class NCDataSource: NSObject {
             searchResult = searchResults.filter({ $0.name == sectionValue}).first
         }
         let metadatas = metadatasSource.filter({ getSectionValue(metadata: $0) == sectionValue})
-        let metadataForSection = NCMetadatasForSection.init(sectionValue: sectionValue,
+        let metadataForSection = NCMetadataForSection.init(sectionValue: sectionValue,
                                                             metadatas: metadatas,
                                                             shares: self.shares,
                                                             localFiles: self.localFiles,
@@ -233,7 +233,7 @@ class NCDataSource: NSObject {
         let numberOfSections = self.numberOfSections()
         var ocIdSearch = ocId
         var indexPath: IndexPath?
-        var metadataForSection: NCMetadatasForSection?
+        var metadataForSection: NCMetadataForSection?
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections)) }
 
@@ -258,7 +258,7 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    func getIndexPathMetadata(ocId: String) -> (indexPath: IndexPath?, metadataForSection: NCMetadatasForSection?) {
+    func getIndexPathMetadata(ocId: String) -> (indexPath: IndexPath?, metadataForSection: NCMetadataForSection?) {
 
         if let metadata = metadatasSource.filter({ $0.ocId == ocId}).first {
             let sectionValue = getSectionValue(metadata: metadata)
@@ -302,6 +302,12 @@ class NCDataSource: NSObject {
         return metadatasForSection.metadatas[indexPath.row]
     }
 
+    func getMetadataForSection(indexPath: IndexPath) -> NCMetadataForSection? {
+
+        if metadatasForSection.count == 0 { return nil }
+        return self.metadatasForSection[indexPath.section]
+    }
+
     func getSectionValue(indexPath: IndexPath) -> String {
 
         if metadatasForSection.count == 0 { return "" }
@@ -337,7 +343,7 @@ class NCDataSource: NSObject {
     }
 }
 
-class NCMetadatasForSection: NSObject {
+class NCMetadataForSection: NSObject {
 
     var sectionValue: String
     var metadatas: [tableMetadata]

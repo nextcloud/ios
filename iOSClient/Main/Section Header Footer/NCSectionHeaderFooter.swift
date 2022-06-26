@@ -317,6 +317,7 @@ class NCSectionHeader: UICollectionReusableView {
 
 class NCSectionFooter: UICollectionReusableView {
 
+    @IBOutlet weak var buttonSection: UIButton!
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
@@ -366,5 +367,15 @@ class NCSectionFooter: UICollectionReusableView {
     func separatorIsHidden(_ isHidden: Bool) {
 
         separator.isHidden = isHidden
+    }
+
+    func buttonIsHidden(_ isHidden: Bool) {
+
+        buttonSection.isHidden = isHidden
+    }
+
+    // MARK: - Action
+
+    @IBAction func touchUpInsideButton(_ sender: Any) {
     }
 }

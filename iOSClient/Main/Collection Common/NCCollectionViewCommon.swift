@@ -591,7 +591,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
               let ocId = userInfo["ocId"] as? String,
-              let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadatasForSection?)
+              let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadataForSection?)
         else {
             return
         }
@@ -1774,6 +1774,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
+            let metadataForSection = self.dataSource.getMetadataForSection(indexPath: indexPath)
 
             footer.setTitleLabel(text: "")
             footer.separatorIsHidden(true)
