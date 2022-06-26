@@ -1774,7 +1774,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
-            let metadataForSection = self.dataSource.getMetadataForSection(indexPath: indexPath)
+            let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
 
             footer.setTitleLabel(text: "")
             footer.separatorIsHidden(true)
@@ -1850,6 +1850,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
 
         let sections = dataSource.numberOfSections()
+        let metadataForSection = self.dataSource.getMetadataForSection(section)
 
         if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)

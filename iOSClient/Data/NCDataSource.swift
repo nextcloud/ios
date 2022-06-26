@@ -302,10 +302,10 @@ class NCDataSource: NSObject {
         return metadatasForSection.metadatas[indexPath.row]
     }
 
-    func getMetadataForSection(indexPath: IndexPath) -> NCMetadataForSection? {
+    func getMetadataForSection(_ section: Int) -> NCMetadataForSection? {
 
         if metadatasForSection.count == 0 { return nil }
-        return self.metadatasForSection[indexPath.section]
+        return self.metadatasForSection[section]
     }
 
     func getSectionValue(indexPath: IndexPath) -> String {
