@@ -822,6 +822,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
+        if !isSearching {
+            reloadDataSource()
+        }
     }
 
     func tapButtonOrder(_ sender: Any) {
