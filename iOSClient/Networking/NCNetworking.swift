@@ -1017,11 +1017,11 @@ import Queuer
         }
     }
 
-    func unifiedSearchFilesProvider(urlBase: NCUserBaseUrl, id: String, term: String, cursor: Int, completion: @escaping (NCCSearchResult?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    func unifiedSearchFilesProvider(urlBase: NCUserBaseUrl, id: String, term: String, limit: Int, cursor: Int, completion: @escaping (NCCSearchResult?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
         var metadatas: [tableMetadata] = []
 
-        NCCommunication.shared.searchProvider(id, term: term, limit: 5, cursor: cursor, timeout: 60) { searchResult, errorCode, errorDescription in
+        NCCommunication.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60) { searchResult, errorCode, errorDescription in
             guard let searchResult = searchResult else {
                 DispatchQueue.main.async {
                     completion(nil, metadatas, errorCode, errorDescription)

@@ -895,7 +895,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
 
         if let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch {
-            NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
+            NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
                 guard let searchResult = searchResult, let metadatas = metadatas else {
                     return
                 }
@@ -908,7 +908,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
                 self.collectionView?.performBatchUpdates({
-                    self.collectionView?.deleteItems(at: indexPaths)
+                    self.collectionView?.insertItems(at: indexPaths)
                 }, completion: { _ in
                     self.collectionView?.reloadData()
                 })
