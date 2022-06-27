@@ -350,6 +350,7 @@ class NCMetadataForSection: NSObject {
     var shares: [tableShare]
     var localFiles: [tableLocalFile]
     var searchResult: NCCSearchResult?
+    var unifiedSearchInProgress: Bool = false
 
     private var sort : String
     private var ascending: Bool

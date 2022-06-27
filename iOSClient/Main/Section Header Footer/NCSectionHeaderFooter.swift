@@ -318,6 +318,7 @@ class NCSectionHeader: UICollectionReusableView {
 class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
     @IBOutlet weak var buttonSection: UIButton!
+    @IBOutlet weak var activityIndicatorSection: UIActivityIndicatorView!
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
@@ -337,6 +338,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         separatorHeightConstraint.constant = 0.5
 
         buttonIsHidden(true)
+        activityIndicatorSection.isHidden = true
     }
 
     func setTitleLabel(directories: Int, files: Int, size: Int64) {
@@ -388,6 +390,21 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         } else {
             buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
         }
+    }
+
+    func showActivityIndicatorSection() {
+
+        buttonSection.isHidden = true
+        buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
+
+        activityIndicatorSection.isHidden = false
+        activityIndicatorSection.startAnimating()
+    }
+
+    func hideActivityIndicatorSection() {
+
+        activityIndicatorSection.stopAnimating()
+        activityIndicatorSection.isHidden = true
     }
 
     // MARK: - Action

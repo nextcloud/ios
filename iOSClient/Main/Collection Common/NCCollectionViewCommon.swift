@@ -895,7 +895,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
 
         if let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch {
+
+            metadataForSection.unifiedSearchInProgress = true
+            self.collectionView?.reloadData()
+
             NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
+
+                metadataForSection.unifiedSearchInProgress = false
+                self.collectionView?.reloadData()
+
                 guard let searchResult = searchResult, let metadatas = metadatas else {
                     return
                 }
@@ -1800,6 +1808,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
             let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
+            let unifiedSearchInProgress = metadataForSection?.unifiedSearchInProgress ?? false
 
             footer.delegate = self
             footer.metadataForSection = metadataForSection
@@ -1808,6 +1817,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             footer.setButtonText(NSLocalizedString("_show_more_results_", comment: ""))
             footer.separatorIsHidden(true)
             footer.buttonIsHidden(true)
+            footer.hideActivityIndicatorSection()
 
             if isSearching {
                 if sections > 1 && section != sections - 1 {
@@ -1815,6 +1825,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 if isSearching && isPaginated {
                     footer.buttonIsHidden(false)
+                }
+                if unifiedSearchInProgress {
+                    footer.showActivityIndicatorSection()
                 }
             } else {
                 if sections == 1 || section == sections - 1 {

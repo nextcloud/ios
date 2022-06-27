@@ -29,6 +29,9 @@
                         <action selector="touchUpInsideButton:" destination="Vin-9E-7nW" eventType="touchUpInside" id="XSh-0v-WHJ"/>
                     </connections>
                 </button>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="qWG-SR-Qly">
+                    <rect key="frame" x="177.5" y="5" width="20" height="20"/>
+                </activityIndicatorView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s2m-yO-4x0" userLabel="separator">
                     <rect key="frame" x="10" y="30" width="365" height="1"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -46,10 +49,12 @@
             </subviews>
             <viewLayoutGuide key="safeArea" id="EFn-SN-cxu"/>
             <constraints>
+                <constraint firstItem="qWG-SR-Qly" firstAttribute="centerX" secondItem="EFn-SN-cxu" secondAttribute="centerX" id="18M-RP-YIn"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="TK1-KX-Qe0" secondAttribute="trailing" constant="10" id="PoY-CD-99O"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" constant="-10" id="ai4-Qy-YWi"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" id="avP-sX-JB5"/>
+                <constraint firstItem="qWG-SR-Qly" firstAttribute="centerY" secondItem="TK1-KX-Qe0" secondAttribute="centerY" id="baS-g9-E8a"/>
                 <constraint firstItem="EFn-SN-cxu" firstAttribute="trailing" secondItem="s2m-yO-4x0" secondAttribute="trailing" id="dWj-wQ-cfb"/>
                 <constraint firstItem="TK1-KX-Qe0" firstAttribute="bottom" secondItem="s2m-yO-4x0" secondAttribute="bottom" constant="-1" id="ekM-Ii-N58"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
@@ -57,6 +62,7 @@
                 <constraint firstItem="TK1-KX-Qe0" firstAttribute="leading" secondItem="EFn-SN-cxu" secondAttribute="leading" constant="10" id="xqA-FX-AlG"/>
             </constraints>
             <connections>
+                <outlet property="activityIndicatorSection" destination="qWG-SR-Qly" id="t9x-qH-lxP"/>
                 <outlet property="buttonSection" destination="TK1-KX-Qe0" id="Y2u-vO-1c4"/>
                 <outlet property="buttonSectionHeightConstraint" destination="Qvv-k4-hfY" id="kif-9a-gD8"/>
                 <outlet property="labelSection" destination="gzy-cT-Gjn" id="hhG-DH-GJc"/>
