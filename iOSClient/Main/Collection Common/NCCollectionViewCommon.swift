@@ -892,8 +892,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func tapButtonSection(_ sender: Any) {
-        
+    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
+
+        if let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch {
+            NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
+                //
+            }
+        }
     }
 
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -1782,6 +1787,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
 
             footer.delegate = self
+            footer.metadataForSection = metadataForSection
 
             footer.setTitleLabel("")
             footer.setButtonText(NSLocalizedString("_show_more_results_", comment: ""))

@@ -1017,6 +1017,53 @@ import Queuer
         }
     }
 
+    func unifiedSearchFilesProvider(urlBase: NCUserBaseUrl, id: String, term: String, cursor: Int, completion: @escaping (NCCSearchResult?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+
+        var metadatas: [tableMetadata] = []
+
+        NCCommunication.shared.searchProvider(id, term: term, limit: 5, cursor: cursor, timeout: 60) { searchResult, errorCode, errorDescription in
+            guard let searchResult = searchResult else {
+                completion(nil, metadatas, errorCode, errorDescription)
+                return
+            }
+
+            switch id {
+            case "files":
+                searchResult.entries.forEach({ entry in
+                    if let fileId = entry.fileId, let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                        metadatas.append(newMetadata)
+                    } else if let filePath = entry.filePath {
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { newMetadata in
+                            metadatas.append(newMetadata)
+                        }
+                    } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
+                })
+                break
+            case "fulltextsearch":
+                // NOTE: FTS could also return attributes like files
+                // https://github.com/nextcloud/files_fulltextsearch/issues/143
+                searchResult.entries.forEach({ entry in
+                    let url = URLComponents(string: entry.resourceURL)
+                    guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
+                    if let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
+                        metadatas.append(newMetadata)
+                    } else {
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { newMetadata in
+                            metadatas.append(newMetadata)
+                        }
+                    }
+                })
+            default:
+                searchResult.entries.forEach({ entry in
+                    let newMetadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    metadatas.append(newMetadata)
+                })
+            }
+
+            completion(searchResult, metadatas, errorCode, errorDescription)
+        }
+    }
+
     func cancelUnifiedSearchFiles() {
         for request in requestsUnifiedSearch {
             request.cancel()
@@ -1024,11 +1071,11 @@ import Queuer
         requestsUnifiedSearch.removeAll()
     }
 
-    func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup, completion: @escaping (tableMetadata) -> Void) {
+    func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
         let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
-        dispatchGroup.enter()
+        dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
-            defer { dispatchGroup.leave() }
+            defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
             DispatchQueue.main.async {
                 NCManageDatabase.shared.addMetadata(metadata)

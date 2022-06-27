@@ -324,6 +324,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
     @IBOutlet weak var buttonSectionHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionFooterDelegate?
+    var metadataForSection: NCMetadataForSection?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -392,15 +393,15 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
     // MARK: - Action
 
     @IBAction func touchUpInsideButton(_ sender: Any) {
-        delegate?.tapButtonSection(sender)
+        delegate?.tapButtonSection(sender, metadataForSection: metadataForSection)
     }
 }
 
 protocol NCSectionFooterDelegate: AnyObject {
-    func tapButtonSection(_ sender: Any)
+    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?)
 }
 
 // optional func
 extension NCSectionFooterDelegate {
-    func tapButtonSection(_ sender: Any) {}
+    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {}
 }
