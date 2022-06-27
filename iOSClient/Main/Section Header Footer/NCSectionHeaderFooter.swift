@@ -315,12 +315,15 @@ class NCSectionHeader: UICollectionReusableView {
     }
 }
 
-class NCSectionFooter: UICollectionReusableView {
+class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
     @IBOutlet weak var buttonSection: UIButton!
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var buttonSectionHeightConstraint: NSLayoutConstraint!
+
+    weak var delegate: NCSectionFooterDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -331,6 +334,8 @@ class NCSectionFooter: UICollectionReusableView {
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
+
+        buttonIsHidden(true)
     }
 
     func setTitleLabel(directories: Int, files: Int, size: Int64) {
@@ -372,10 +377,24 @@ class NCSectionFooter: UICollectionReusableView {
     func buttonIsHidden(_ isHidden: Bool) {
 
         buttonSection.isHidden = isHidden
+        if isHidden {
+            buttonSectionHeightConstraint.constant = 0
+        } else {
+            buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
+        }
     }
 
     // MARK: - Action
 
     @IBAction func touchUpInsideButton(_ sender: Any) {
     }
+}
+
+protocol NCSectionFooterDelegate: AnyObject {
+    func tapButtonSection(_ sender: Any)
+}
+
+// optional func
+extension NCSectionFooterDelegate {
+    func tapButtonSection(_ sender: Any) {}
 }

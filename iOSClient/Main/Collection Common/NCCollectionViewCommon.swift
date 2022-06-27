@@ -1862,7 +1862,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         }
 
         if isSearching && isPaginated {
-            size.height += 50
+            size.height += NCGlobal.shared.heightFooterButton
         }
 
         return size
