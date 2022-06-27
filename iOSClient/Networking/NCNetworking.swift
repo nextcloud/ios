@@ -1023,7 +1023,9 @@ import Queuer
 
         NCCommunication.shared.searchProvider(id, term: term, limit: 5, cursor: cursor, timeout: 60) { searchResult, errorCode, errorDescription in
             guard let searchResult = searchResult else {
-                completion(nil, metadatas, errorCode, errorDescription)
+                DispatchQueue.main.async {
+                    completion(nil, metadatas, errorCode, errorDescription)
+                }
                 return
             }
 
@@ -1060,7 +1062,9 @@ import Queuer
                 })
             }
 
-            completion(searchResult, metadatas, errorCode, errorDescription)
+            DispatchQueue.main.async {
+                completion(searchResult, metadatas, errorCode, errorDescription)
+            }
         }
     }
 

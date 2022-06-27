@@ -896,7 +896,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch {
             NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
-                //
+                guard let searchResult = searchResult, let metadatas = metadatas else {
+                    return
+                }
+                metadataForSection.searchResult = searchResult
+                var indexPaths: [IndexPath] = []
+                for metadata in metadatas {
+                    let (indexPath, sameSections) = self.dataSource.addMetadata(metadata)
+                    if let indexPath = indexPath, sameSections {
+                        indexPaths.append(indexPath)
+                    }
+                }
+                self.collectionView?.performBatchUpdates({
+                    self.collectionView?.deleteItems(at: indexPaths)
+                }, completion: { _ in
+                    self.collectionView?.reloadData()
+                })
             }
         }
     }
