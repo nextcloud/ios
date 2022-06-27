@@ -885,9 +885,9 @@ import Queuer
         }
     }
 
-    @objc func readFile(serverUrlFileName: String, queue: DispatchQueue = NCCommunicationCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NCCommunicationCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: queue) { account, files, _, errorCode, errorDescription in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, queue: queue) { account, files, _, errorCode, errorDescription in
 
             if errorCode == 0 && files.count == 1 {
 
@@ -1078,7 +1078,7 @@ import Queuer
     func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
         let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
         dispatchGroup?.enter()
-        self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
+        self.readFile(serverUrlFileName: urlPath, showHiddenFiles: true) { account, metadata, errorCode, errorDescription in
             defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
             DispatchQueue.main.async {
