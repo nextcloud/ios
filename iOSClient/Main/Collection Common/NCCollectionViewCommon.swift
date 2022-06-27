@@ -1775,7 +1775,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
-
+            let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
+            
             footer.setTitleLabel(text: "")
             footer.separatorIsHidden(true)
 
@@ -1851,11 +1852,19 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         let sections = dataSource.numberOfSections()
         let metadataForSection = self.dataSource.getMetadataForSection(section)
+        let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
+        var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
-            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
+            size.height += NCGlobal.shared.endHeightFooter
         } else {
-            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightFooter)
+            size.height += NCGlobal.shared.heightFooter
         }
+
+        if isSearching && isPaginated {
+            size.height += 50
+        }
+
+        return size
     }
 }
