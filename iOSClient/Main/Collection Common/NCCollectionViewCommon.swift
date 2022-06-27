@@ -1049,10 +1049,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.providers = allProviders
             } update: { searchResults, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
-                self.searchResults = searchResults
 
                 DispatchQueue.main.async {
                     if self.searchController?.isActive == true {
+                        self.searchResults = searchResults
                         self.metadatasSource = metadatas
                         self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
                                                        account: self.appDelegate.account,
