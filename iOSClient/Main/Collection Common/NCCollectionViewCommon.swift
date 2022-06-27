@@ -25,7 +25,7 @@ import UIKit
 import Realm
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -890,6 +890,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.present(navigationController, animated: true, completion: nil)
             }
         }
+    }
+
+    func tapButtonSection(_ sender: Any) {
+        
     }
 
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -1776,13 +1780,20 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
             let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
-            
-            footer.setTitleLabel(text: "")
+
+            footer.delegate = self
+
+            footer.setTitleLabel("")
+            footer.setButtonText(NSLocalizedString("_show_more_results_", comment: ""))
             footer.separatorIsHidden(true)
+            footer.buttonIsHidden(true)
 
             if isSearching {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
+                }
+                if isSearching && isPaginated {
+                    footer.buttonIsHidden(false)
                 }
             } else {
                 if sections == 1 || section == sections - 1 {

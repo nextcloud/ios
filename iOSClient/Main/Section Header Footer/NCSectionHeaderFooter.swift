@@ -364,9 +364,14 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         }
     }
 
-    func setTitleLabel(text: String) {
+    func setTitleLabel(_ text: String) {
 
         labelSection.text = text
+    }
+
+    func setButtonText(_ text: String) {
+
+        buttonSection.setTitle(text, for: .normal)
     }
 
     func separatorIsHidden(_ isHidden: Bool) {
@@ -387,6 +392,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
     // MARK: - Action
 
     @IBAction func touchUpInsideButton(_ sender: Any) {
+        delegate?.tapButtonSection(sender)
     }
 }
 

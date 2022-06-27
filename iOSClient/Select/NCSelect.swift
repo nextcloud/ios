@@ -652,7 +652,7 @@ extension NCSelect: UICollectionViewDataSource {
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
 
-            footer.setTitleLabel(text: "")
+            footer.setTitleLabel("")
             footer.separatorIsHidden(true)
 
             if sections == 1 || section == sections - 1 {

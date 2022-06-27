@@ -177,7 +177,7 @@ extension NCTrash: UICollectionViewDataSource {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter
             else { return UICollectionReusableView() }
 
-            footer.setTitleLabel(text: setTextFooter(datasource: datasource))
+            footer.setTitleLabel(setTextFooter(datasource: datasource))
             footer.separatorIsHidden(true)
 
             return footer
