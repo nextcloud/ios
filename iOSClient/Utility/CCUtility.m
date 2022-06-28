@@ -1150,13 +1150,22 @@
 
 + (BOOL)fileProviderStorageExists:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
-        return false;
-    }
+    NSString *fileNameViewPath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
+    NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
+    BOOL isFolderEncrypted = [self isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account urlBase:metadata.urlBase];
 
-    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
-    return fileSize == metadata.size;
+    unsigned long long fileNameViewSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNameViewPath error:nil] fileSize];
+    unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+
+    if (isFolderEncrypted == true) {
+        if (fileNameSize == metadata.size && fileNameViewSize > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return fileNameViewSize == metadata.size;
+    }
 }
 
 + (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView
