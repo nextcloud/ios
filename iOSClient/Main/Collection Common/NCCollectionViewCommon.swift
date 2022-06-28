@@ -369,12 +369,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let fileNameView = userInfo["fileNameView"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String,
+              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
               (serverUrl == serverUrl && account == appDelegate.account)
         else {
             return
         }
         if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
             reloadDataSourceNetwork(forced: true)
+        } else if onlyLocalCache {
+            self.collectionView?.reloadData()
         } else {
             let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
             if let indexPath = indexPath {

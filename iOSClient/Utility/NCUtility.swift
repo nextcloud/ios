@@ -444,16 +444,15 @@ class NCUtility: NSObject {
         }
     }
 
-    func createImageFrom(fileName: String, ocId: String, etag: String, classFile: String) {
+    func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String) {
 
         var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
 
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
         let fileNamePathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)!
         let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
 
-        if FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
-        if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileName) != 0 { return }
+        if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
         if classFile != NCCommunicationCommon.typeClassFile.image.rawValue && classFile != NCCommunicationCommon.typeClassFile.video.rawValue { return }
 
         if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
