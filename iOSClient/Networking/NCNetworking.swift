@@ -1021,7 +1021,7 @@ import Queuer
 
         var metadatas: [tableMetadata] = []
 
-        NCCommunication.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60) { searchResult, errorCode, errorDescription in
+        let request = NCCommunication.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60) { searchResult, errorCode, errorDescription in
             guard let searchResult = searchResult else {
                 DispatchQueue.main.async {
                     completion(nil, metadatas, errorCode, errorDescription)
@@ -1066,6 +1066,9 @@ import Queuer
                 completion(searchResult, metadatas, errorCode, errorDescription)
             }
         }
+        if let request = request {
+            requestsUnifiedSearch.append(request)
+        }
     }
 
     func cancelUnifiedSearchFiles() {
@@ -1075,7 +1078,7 @@ import Queuer
         requestsUnifiedSearch.removeAll()
     }
 
-    func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
+    private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
         let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
         dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath, showHiddenFiles: true) { account, metadata, errorCode, errorDescription in
