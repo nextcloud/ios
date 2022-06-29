@@ -1072,6 +1072,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView?.reloadData()
         
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             self.refreshControl.beginRefreshing()
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
@@ -1106,7 +1107,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
+
         } else {
+
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
 
                 DispatchQueue.main.async { self.refreshControl.endRefreshing() }
