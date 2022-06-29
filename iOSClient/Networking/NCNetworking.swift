@@ -912,7 +912,7 @@ import Queuer
     @objc func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
         NCCommunication.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
-            guard errorCode != 0 else {
+            guard errorCode == 0 else {
                 return completion(nil, errorCode, errorDescription)
             }
 
