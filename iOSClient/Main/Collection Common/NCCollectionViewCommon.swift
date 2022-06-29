@@ -902,11 +902,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
 
                 metadataForSection.unifiedSearchInProgress = false
-                self.collectionView?.reloadData()
-
-                guard let searchResult = searchResult, let metadatas = metadatas else {
-                    return
-                }
+                guard let searchResult = searchResult, let metadatas = metadatas else { return }
                 metadataForSection.searchResult = searchResult
                 var indexPaths: [IndexPath] = []
                 for metadata in metadatas {
@@ -916,11 +912,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         indexPaths.append(indexPath)
                     }
                 }
-                self.collectionView?.performBatchUpdates({
-                    self.collectionView?.insertItems(at: indexPaths)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
+                DispatchQueue.main.async {
+                    self.collectionView?.performBatchUpdates({
+                        self.collectionView?.insertItems(at: indexPaths)
+                    }, completion: { _ in
+                        self.collectionView?.reloadData()
+                    })
+                }
             }
         }
     }
@@ -1062,19 +1060,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
         else {
-            DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+            self.refreshControl.endRefreshing()
             return
         }
 
         isReloadDataSourceNetworkInProgress = true
         self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
-        collectionView?.reloadData()
-        
+        self.refreshControl.beginRefreshing()
+        self.collectionView.reloadData()
+
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            self.refreshControl.beginRefreshing()
+
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
             } update: { searchResults, metadatas in
@@ -1103,7 +1101,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.searchResults = searchResults
                     self.metadatasSource = metadatas
                 }
-                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
@@ -1117,7 +1114,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.searchResults = nil
                     self.metadatasSource = metadatas
                 }
-
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
