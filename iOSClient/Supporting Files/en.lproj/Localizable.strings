@@ -871,6 +871,7 @@
 "_scan_"                    = "Scan";
 "_in_"                      = "in";
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
+"_show_more_results_"       = "show more results";
 
 // Video
 "_select_trace_"            = "Select the trace";

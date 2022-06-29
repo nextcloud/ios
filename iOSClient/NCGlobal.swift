@@ -186,6 +186,7 @@ class NCGlobal: NSObject {
     let heightButtonsView: CGFloat                  = 50
     let heightSection: CGFloat                      = 30
     let heightFooter: CGFloat                       = 1
+    let heightFooterButton: CGFloat                 = 30
     let endHeightFooter: CGFloat                    = 85
 
     // Text -  OnlyOffice - Collabora - QuickLook

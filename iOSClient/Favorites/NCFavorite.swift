@@ -36,7 +36,7 @@ class NCFavorite: NCCollectionViewCommon {
         enableSearchBar = false
         headerMenuButtonsCommand = false
         headerMenuButtonsView = true
-        headerRichWorkspaceDisable = true
+        headerRichWorkspaceDisable = false
         emptyImage = UIImage(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
@@ -63,7 +63,8 @@ class NCFavorite: NCCollectionViewCommon {
                                        favoriteOnTop: true,
                                        filterLivePhoto: true,
                                        groupByField: self.groupByField,
-                                       providers: self.providers)
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
 
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()

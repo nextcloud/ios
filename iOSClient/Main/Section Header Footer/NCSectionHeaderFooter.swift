@@ -116,7 +116,9 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
+
         gradient.frame = viewRichWorkspace.bounds
+        setInterfaceColor()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -313,11 +315,17 @@ class NCSectionHeader: UICollectionReusableView {
     }
 }
 
-class NCSectionFooter: UICollectionReusableView {
+class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
+    @IBOutlet weak var buttonSection: UIButton!
+    @IBOutlet weak var activityIndicatorSection: UIActivityIndicatorView!
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var buttonSectionHeightConstraint: NSLayoutConstraint!
+
+    weak var delegate: NCSectionFooterDelegate?
+    var metadataForSection: NCMetadataForSection?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -328,6 +336,9 @@ class NCSectionFooter: UICollectionReusableView {
 
         separator.backgroundColor = NCBrandColor.shared.separator
         separatorHeightConstraint.constant = 0.5
+
+        buttonIsHidden(true)
+        activityIndicatorSection.isHidden = true
     }
 
     func setTitleLabel(directories: Int, files: Int, size: Int64) {
@@ -356,13 +367,58 @@ class NCSectionFooter: UICollectionReusableView {
         }
     }
 
-    func setTitleLabel(text: String) {
+    func setTitleLabel(_ text: String) {
 
         labelSection.text = text
+    }
+
+    func setButtonText(_ text: String) {
+
+        buttonSection.setTitle(text, for: .normal)
     }
 
     func separatorIsHidden(_ isHidden: Bool) {
 
         separator.isHidden = isHidden
     }
+
+    func buttonIsHidden(_ isHidden: Bool) {
+
+        buttonSection.isHidden = isHidden
+        if isHidden {
+            buttonSectionHeightConstraint.constant = 0
+        } else {
+            buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
+        }
+    }
+
+    func showActivityIndicatorSection() {
+
+        buttonSection.isHidden = true
+        buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
+
+        activityIndicatorSection.isHidden = false
+        activityIndicatorSection.startAnimating()
+    }
+
+    func hideActivityIndicatorSection() {
+
+        activityIndicatorSection.stopAnimating()
+        activityIndicatorSection.isHidden = true
+    }
+
+    // MARK: - Action
+
+    @IBAction func touchUpInsideButton(_ sender: Any) {
+        delegate?.tapButtonSection(sender, metadataForSection: metadataForSection)
+    }
+}
+
+protocol NCSectionFooterDelegate: AnyObject {
+    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?)
+}
+
+// optional func
+extension NCSectionFooterDelegate {
+    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {}
 }

@@ -97,21 +97,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
-    
-    // Automatic download image
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_automatic_Download_Image_footer_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"automaticDownloadImage" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_automatic_Download_Image_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-    if ([CCUtility getAutomaticDownloadImage]) row.value = @"1";
-    else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-    [section addFormRow:row];
-    
+
     // Section : Files App --------------------------------------------------------------
     
     if (![NCBrandOptions shared].disable_openin_file) {
@@ -368,11 +354,6 @@
     if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {
         
         [CCUtility setDisableLocalCacheAfterUpload:[[rowDescriptor.value valueData] boolValue]];
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"automaticDownloadImage"]) {
-        
-        [CCUtility setAutomaticDownloadImage:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {

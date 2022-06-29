@@ -55,7 +55,8 @@ class NCRecent: NCCollectionViewCommon {
                                            directoryOnTop: false,
                                            favoriteOnTop: false,
                                            groupByField: self.groupByField,
-                                           providers: self.providers)
+                                           providers: self.providers,
+                                           searchResults: self.searchResults)
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()

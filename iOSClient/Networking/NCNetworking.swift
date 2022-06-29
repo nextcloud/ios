@@ -399,9 +399,6 @@ import Queuer
             }
 
             self.downloadRequest[fileNameLocalPath] = nil
-            #if !EXTENSION
-            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-            #endif
 
             if error?.isExplicitlyCancelledError ?? false {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId])
@@ -409,7 +406,12 @@ import Queuer
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": errorCode, "errorDescription": errorDescription])
             }
 
-            completion(errorCode)
+            DispatchQueue.main.async {
+                #if !EXTENSION
+                (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil
+                #endif
+                completion(errorCode)
+            }
         }
     }
 
@@ -885,9 +887,9 @@ import Queuer
         }
     }
 
-    @objc func readFile(serverUrlFileName: String, queue: DispatchQueue = NCCommunicationCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NCCommunicationCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: queue) { account, files, _, errorCode, errorDescription in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, queue: queue) { account, files, _, errorCode, errorDescription in
 
             if errorCode == 0 && files.count == 1 {
 
@@ -910,7 +912,7 @@ import Queuer
     @objc func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
         NCCommunication.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { (account, files, errorCode, errorDescription) in
-            guard errorCode != 0 else {
+            guard errorCode == 0 else {
                 return completion(nil, errorCode, errorDescription)
             }
 
@@ -931,16 +933,17 @@ import Queuer
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping ([tableMetadata]?) -> Void, completion: @escaping (_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping ([NCCSearchResult]?, [tableMetadata]?) -> Void, completion: @escaping ([NCCSearchResult]?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
+        var searchResults: [NCCSearchResult] = []
         var searchFiles: [tableMetadata] = []
-        var errCode = 0
-        var errDescr = ""
+        var errorCode = 0
+        var errorDescription = ""
         let concurrentQueue = DispatchQueue(label: "com.nextcloud.requestUnifiedSearch.concurrentQueue", attributes: .concurrent)
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(Array(searchFiles), errCode, errDescr)
+            completion(searchResults, Array(searchFiles), errorCode, errorDescription)
         }
 
         NCCommunication.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90) { provider in
@@ -955,7 +958,8 @@ import Queuer
             providers(allProviders)
         } update: { partialResult, provider, errorCode, errorDescription in
             guard let partialResult = partialResult else { return }
-            
+            searchResults.append(partialResult)
+
             switch provider.id {
             case "files":
                 partialResult.entries.forEach({ entry in
@@ -1003,12 +1007,69 @@ import Queuer
                     }
                 })
             }
-            update(searchFiles)
-        } completion: { results, errorCode, errorDescription in
+            update(searchResults, searchFiles)
+        } completion: { results, code, description in
             self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()
-            errCode = errorCode
-            errDescr = errorDescription
+            if let results = results {
+                searchResults = results
+            }
+            errorCode = code
+            errorDescription = description
+        }
+    }
+
+    func unifiedSearchFilesProvider(urlBase: NCUserBaseUrl, id: String, term: String, limit: Int, cursor: Int, completion: @escaping (NCCSearchResult?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+
+        var metadatas: [tableMetadata] = []
+
+        let request = NCCommunication.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60) { searchResult, errorCode, errorDescription in
+            guard let searchResult = searchResult else {
+                DispatchQueue.main.async {
+                    completion(nil, metadatas, errorCode, errorDescription)
+                }
+                return
+            }
+
+            switch id {
+            case "files":
+                searchResult.entries.forEach({ entry in
+                    if let fileId = entry.fileId, let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                        metadatas.append(newMetadata)
+                    } else if let filePath = entry.filePath {
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { newMetadata in
+                            metadatas.append(newMetadata)
+                        }
+                    } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
+                })
+                break
+            case "fulltextsearch":
+                // NOTE: FTS could also return attributes like files
+                // https://github.com/nextcloud/files_fulltextsearch/issues/143
+                searchResult.entries.forEach({ entry in
+                    let url = URLComponents(string: entry.resourceURL)
+                    guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
+                    if let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
+                        metadatas.append(newMetadata)
+                    } else {
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { newMetadata in
+                            metadatas.append(newMetadata)
+                        }
+                    }
+                })
+            default:
+                searchResult.entries.forEach({ entry in
+                    let newMetadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    metadatas.append(newMetadata)
+                })
+            }
+
+            DispatchQueue.main.async {
+                completion(searchResult, metadatas, errorCode, errorDescription)
+            }
+        }
+        if let request = request {
+            requestsUnifiedSearch.append(request)
         }
     }
 
@@ -1019,11 +1080,11 @@ import Queuer
         requestsUnifiedSearch.removeAll()
     }
 
-    func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup, completion: @escaping (tableMetadata) -> Void) {
+    private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
         let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
-        dispatchGroup.enter()
+        dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
-            defer { dispatchGroup.leave() }
+            defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
             DispatchQueue.main.async {
                 NCManageDatabase.shared.addMetadata(metadata)

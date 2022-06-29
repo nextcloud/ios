@@ -199,18 +199,11 @@ class NCViewerMedia: UIViewController {
     func reloadImage() {
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
             self.metadata = metadata
-            loadImage(metadata: metadata) { _, image in
-                self.image = image
-                // do not update if is present the videoLayer
-                let numSublayers = self.imageVideoContainer.layer.sublayers?.count
-                if numSublayers == nil {
-                    self.imageVideoContainer.image = image
-                }
-            }
+            loadImage(metadata: metadata)
         }
     }
 
-    func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?) -> Void) {
+    func loadImage(metadata: tableMetadata) {
 
         // Download preview
         if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -230,58 +223,43 @@ class NCViewerMedia: UIViewController {
                 heightPreview: NCGlobal.shared.sizePreview,
                 fileNameIconLocalPath: fileNameIconLocalPath,
                 sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource,
-                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+                queue: .main) { _, _, imageIcon, _, etag, errorCode, _ in
 
-                    if errorCode == 0 && imageIcon != nil {
+                    if let image = imageIcon, errorCode == 0 {
+                        if self.imageVideoContainer.layer.sublayers?.count == nil {
+                            self.image = image
+                            self.imageVideoContainer.image = image
+                        }
                         NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
                     }
 
-                    // Download file max resolution
                     downloadFile(metadata: metadata)
-                    // Download file live photo
-                    if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
                 }
         } else {
 
-            // Download file max resolution
+            let image = getImageMetadata(metadata)
+            if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
+                self.image = image
+                self.imageVideoContainer.image = image
+            }
             downloadFile(metadata: metadata)
-            // Download file live photo
-            if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
         }
 
-        // Download file max resolution
         func downloadFile(metadata: tableMetadata) {
-
-            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-            let ext = CCUtility.getExtension(metadata.fileNameView)
-
-            if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "") {
-
-                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
-
-                    DispatchQueue.main.async {
-                        let image = getImageMetadata(metadata)
-                        completion(metadata.ocId, image)
-                    }
-                }
-
-            } else {
-
-                DispatchQueue.main.async {
-                    let image = getImageMetadata(metadata)
-                    completion(metadata.ocId, image)
+            if metadata.livePhoto {
+                let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
                 }
             }
-        }
+            guard metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata), metadata.session == "" else { return }
 
-        // Download Live Photo
-        func downloadFileLivePhoto(metadata: tableMetadata) {
-
-            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
-
-                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
+            NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
+                let image = getImageMetadata(metadata)
+                if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
+                    self.image = image
+                    self.imageVideoContainer.image = image
+                }
             }
         }
 

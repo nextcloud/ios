@@ -161,6 +161,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
         if let metadata = self.metadata {
 
+            let extCurrent = (metadata.fileNameView as NSString).pathExtension
+
             if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
                 self.fileNameWithoutExt.text = (metadata.fileNameView as NSString).deletingPathExtension
                 return
@@ -182,9 +184,9 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                     extNew = ext.text!
                 }
 
-                if extNew != metadata.ext {
+                if extNew != extCurrent {
 
-                    let message = String(format: NSLocalizedString("_rename_ext_message_", comment: ""), extNew, metadata.ext)
+                    let message = String(format: NSLocalizedString("_rename_ext_message_", comment: ""), extNew, extCurrent)
                     let alertController = UIAlertController(title: NSLocalizedString("_rename_ext_title_", comment: ""), message: message, preferredStyle: .alert)
 
                     var title = NSLocalizedString("_use_", comment: "") + " ." + extNew
@@ -194,7 +196,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                         self.renameMetadata(metadata, fileNameNew: fileNameNew)
                     }))
 
-                    title = NSLocalizedString("_keep_", comment: "") + " ." + metadata.ext
+                    title = NSLocalizedString("_keep_", comment: "") + " ." + extCurrent
                     alertController.addAction(UIAlertAction(title: title, style: .default, handler: { _ in
                         self.ext.text = metadata.fileExtension
                     }))

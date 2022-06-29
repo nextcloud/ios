@@ -36,7 +36,7 @@ class NCOffline: NCCollectionViewCommon {
         enableSearchBar = false
         headerMenuButtonsCommand = false
         headerMenuButtonsView = true
-        headerRichWorkspaceDisable = true
+        headerRichWorkspaceDisable = false
         emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_offline_view_"
@@ -77,7 +77,8 @@ class NCOffline: NCCollectionViewCommon {
             favoriteOnTop: true,
             filterLivePhoto: true,
             groupByField: self.groupByField,
-            providers: self.providers)
+            providers: self.providers,
+            searchResults: self.searchResults)
 
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()

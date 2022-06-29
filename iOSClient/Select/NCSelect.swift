@@ -298,7 +298,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
-        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {
@@ -652,7 +651,7 @@ extension NCSelect: UICollectionViewDataSource {
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
 
-            footer.setTitleLabel(text: "")
+            footer.setTitleLabel("")
             footer.separatorIsHidden(true)
 
             if sections == 1 || section == sections - 1 {
