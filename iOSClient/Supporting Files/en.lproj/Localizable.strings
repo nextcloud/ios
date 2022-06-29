@@ -921,6 +921,6 @@
 "_restore_plan_"                = "Restore Purchased Plan";
 "_purchase_plan_description_"   = "Purchases have been restored";
 "_choose_plan_"                 = "You should choose a plan in order to purchase it.";
-"_already_plan_"                = "The selected plan is been already bought.";
+"_already_plan_"                = "The selected plan has already been bought.";
 "_change_billing_"              = "Change Billing";
 "_payment_method_"              = "Payment Method";
