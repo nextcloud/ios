@@ -399,9 +399,6 @@ import Queuer
             }
 
             self.downloadRequest[fileNameLocalPath] = nil
-            #if !EXTENSION
-            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-            #endif
 
             if error?.isExplicitlyCancelledError ?? false {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId])
@@ -409,7 +406,12 @@ import Queuer
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": errorCode, "errorDescription": errorDescription])
             }
 
-            completion(errorCode)
+            DispatchQueue.main.async {
+                #if !EXTENSION
+                (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil
+                #endif
+                completion(errorCode)
+            }
         }
     }
 
@@ -1081,7 +1083,7 @@ import Queuer
     private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
         let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
         dispatchGroup?.enter()
-        self.readFile(serverUrlFileName: urlPath, showHiddenFiles: true) { account, metadata, errorCode, errorDescription in
+        self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
             defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
             DispatchQueue.main.async {

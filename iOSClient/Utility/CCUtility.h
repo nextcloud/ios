@@ -168,9 +168,6 @@
 + (BOOL)getAudioMute;
 + (void)setAudioMute:(BOOL)set;
 
-+ (BOOL)getAutomaticDownloadImage;
-+ (void)setAutomaticDownloadImage:(BOOL)set;
-
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 

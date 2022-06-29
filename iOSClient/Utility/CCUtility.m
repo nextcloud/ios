@@ -659,17 +659,6 @@
     [UICKeyChainStore setString:sSet forKey:@"audioMute" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getAutomaticDownloadImage
-{
-    return [[UICKeyChainStore stringForKey:@"automaticDownloadImage" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setAutomaticDownloadImage:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"automaticDownloadImage" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getAccountRequest
 {
     return [[UICKeyChainStore stringForKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
