@@ -1079,44 +1079,44 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } update: { searchResults, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
 
-                DispatchQueue.main.async {
-                    if self.searchController?.isActive == true {
-                        self.searchResults = searchResults
-                        self.metadatasSource = metadatas
-                        self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
-                                                       account: self.appDelegate.account,
-                                                       sort: self.layoutForView?.sort,
-                                                       ascending: self.layoutForView?.ascending,
-                                                       directoryOnTop: self.layoutForView?.directoryOnTop,
-                                                       favoriteOnTop: true,
-                                                       filterLivePhoto: true,
-                                                       providers: self.providers,
-                                                       searchResults: self.searchResults)
-                        self.collectionView.reloadData()
-                    }
+                if self.isSearching {
+                    self.searchResults = searchResults
+                    self.metadatasSource = metadatas
+                    self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+                                                   account: self.appDelegate.account,
+                                                   sort: self.layoutForView?.sort,
+                                                   ascending: self.layoutForView?.ascending,
+                                                   directoryOnTop: self.layoutForView?.directoryOnTop,
+                                                   favoriteOnTop: true,
+                                                   filterLivePhoto: true,
+                                                   providers: self.providers,
+                                                   searchResults: self.searchResults)
+
+                    DispatchQueue.main.async { self.collectionView.reloadData() }
                 }
+                
             } completion: { searchResults, metadatas, errorCode, errorDescription in
-                DispatchQueue.main.async {
-                    if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
-                        self.searchResults = searchResults
-                        self.metadatasSource = metadatas
-                    }
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.reloadDataSource()
+
+                DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+                if self.isSearching, errorCode == 0, let metadatas = metadatas {
+                    self.searchResults = searchResults
+                    self.metadatasSource = metadatas
                 }
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
             }
         } else {
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
-                DispatchQueue.main.async {
-                    if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
-                        self.searchResults = nil
-                        self.metadatasSource = metadatas
-                    }
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.reloadDataSource()
+
+                DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+                if  self.isSearching, errorCode == 0, let metadatas = metadatas {
+                    self.searchResults = nil
+                    self.metadatasSource = metadatas
                 }
+
+                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
             }
         }
     }
