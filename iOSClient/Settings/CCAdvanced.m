@@ -336,7 +336,7 @@
 
         [CCUtility setRemovePhotoCameraRoll:[[rowDescriptor.value valueData] boolValue]];
     }
-    
+
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {
         
         [CCUtility setDisableFilesApp:[[rowDescriptor.value valueData] boolValue]];
@@ -490,7 +490,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.section == 7 && indexPath.row == 2) {
+    if (indexPath.section == 5 && indexPath.row == 2) {
         return 80;
     } else {
         return NCGlobal.shared.heightCellSettings;
