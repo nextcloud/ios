@@ -1810,6 +1810,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
             let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
+            let entriesCount: Int = metadataForSection?.searchResult?.entries.count ?? 0
             let unifiedSearchInProgress = metadataForSection?.unifiedSearchInProgress ?? false
 
             footer.delegate = self
@@ -1825,7 +1826,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
-                if isSearching && isPaginated {
+                if isSearching && isPaginated && entriesCount > 0 {
                     footer.buttonIsHidden(false)
                 }
                 if unifiedSearchInProgress {
@@ -1900,6 +1901,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         let sections = dataSource.numberOfSections()
         let metadataForSection = self.dataSource.getMetadataForSection(section)
         let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
+        let entriesCount: Int = metadataForSection?.searchResult?.entries.count ?? 0
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
@@ -1908,7 +1910,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             size.height += NCGlobal.shared.heightFooter
         }
 
-        if isSearching && isPaginated {
+        if isSearching && isPaginated && entriesCount > 0 {
             size.height += NCGlobal.shared.heightFooterButton
         }
 
