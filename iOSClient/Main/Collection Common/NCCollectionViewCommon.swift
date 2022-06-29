@@ -822,9 +822,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
-        if !isSearching {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {
@@ -912,6 +910,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 metadataForSection.searchResult = searchResult
                 var indexPaths: [IndexPath] = []
                 for metadata in metadatas {
+                    self.metadatasSource.append(metadata)
                     let (indexPath, sameSections) = self.dataSource.addMetadata(metadata)
                     if let indexPath = indexPath, sameSections {
                         indexPaths.append(indexPath)
