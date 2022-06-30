@@ -1093,9 +1093,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 semaphore.wait()
 
                 print(id)
-                if id == "files" {
-                    print("")
-                }
 
                 self.searchResults = searchResults
                 self.metadatasSource = metadatas
