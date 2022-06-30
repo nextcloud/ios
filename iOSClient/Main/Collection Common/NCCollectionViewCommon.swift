@@ -1032,6 +1032,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource + NC Endpoint
 
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        self.collectionView?.reloadData()
+        CATransaction.commit()
+    }
+
     @objc func reloadDataSource() {
 
         if appDelegate.account == "" { return }
@@ -1075,33 +1082,38 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            let serialQueue = DispatchQueue(label: "com.nextcloud.serialQueue")
+
+            let semaphore = DispatchSemaphore(value: 1)
+            
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
             } update: { searchResults, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
 
-                serialQueue.async {
-                    if self.isSearching {
-                        self.searchResults = searchResults
-                        self.metadatasSource = metadatas
-                        self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
-                                                       account: self.appDelegate.account,
-                                                       sort: self.layoutForView?.sort,
-                                                       ascending: self.layoutForView?.ascending,
-                                                       directoryOnTop: self.layoutForView?.directoryOnTop,
-                                                       favoriteOnTop: true,
-                                                       filterLivePhoto: true,
-                                                       providers: self.providers,
-                                                       searchResults: self.searchResults)
+                if self.isSearching {
+                    semaphore.wait()
 
-                        DispatchQueue.main.async { self.collectionView.reloadData() }
+                    self.searchResults = searchResults
+                    self.metadatasSource = metadatas
+                    self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+                                                   account: self.appDelegate.account,
+                                                   sort: self.layoutForView?.sort,
+                                                   ascending: self.layoutForView?.ascending,
+                                                   directoryOnTop: self.layoutForView?.directoryOnTop,
+                                                   favoriteOnTop: true,
+                                                   filterLivePhoto: true,
+                                                   providers: self.providers,
+                                                   searchResults: self.searchResults)
+
+                    DispatchQueue.main.sync {
+                        self.reloadDataThenPerform {
+                            semaphore.signal()
+                        }
                     }
                 }
             } completion: { searchResults, metadatas, errorCode, errorDescription in
 
-                serialQueue.async {
-                    DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+                DispatchQueue.global().async {
                     if self.isSearching, errorCode == 0, let metadatas = metadatas {
                         self.searchResults = searchResults
                         self.metadatasSource = metadatas
