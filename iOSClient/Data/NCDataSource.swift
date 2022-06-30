@@ -292,37 +292,25 @@ class NCDataSource: NSObject {
     
     func numberOfItemsInSection(_ section: Int) -> Int {
 
-        if self.metadatasForSection.count == 0 || self.metadatasSource.count == 0 || section >= metadatasForSection.count {
-            return 0
-        }
+        if self.metadatasForSection.count == 0 || self.metadatasSource.count == 0 { return 0 }
         return self.metadatasForSection[section].metadatas.count
     }
 
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
 
-        if metadatasForSection.count == 0 || indexPath.section >= metadatasForSection.count {
-            return nil
-        }
         let metadatasForSection = self.metadatasForSection[indexPath.section]
-        if indexPath.row >= metadatasForSection.metadatas.count {
-            return nil
-        }
         return metadatasForSection.metadatas[indexPath.row]
     }
 
     func getMetadataForSection(_ section: Int) -> NCMetadataForSection? {
 
-        if metadatasForSection.count == 0 || section >= metadatasForSection.count {
-            return nil
-        }
+        if metadatasForSection.count == 0 { return nil }
         return self.metadatasForSection[section]
     }
 
     func getSectionValue(indexPath: IndexPath) -> String {
 
-        if metadatasForSection.count == 0 || indexPath.section >= metadatasForSection.count {
-            return ""
-        }
+        if metadatasForSection.count == 0 { return "" }
         let metadataForSection = self.metadatasForSection[indexPath.section]
         return metadataForSection.sectionValue
     }
