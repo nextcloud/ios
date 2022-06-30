@@ -49,7 +49,7 @@ class NCDataSource: NSObject {
     init(metadatasSource: [tableMetadata], account: String, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NCCSearchProvider]? = nil, searchResults: [NCCSearchResult]? = nil) {
         super.init()
 
-        self.metadatasSource = Array(metadatasSource.map { tableMetadata.init(value: $0) })
+        self.metadatasSource = metadatasSource
         self.shares = NCManageDatabase.shared.getTableShares(account: account)
         self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
         self.sort = sort ?? "none"
@@ -302,7 +302,13 @@ class NCDataSource: NSObject {
 
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
 
+        if metadatasForSection.count == 0 || indexPath.section >= metadatasForSection.count {
+            return nil
+        }
         let metadatasForSection = self.metadatasForSection[indexPath.section]
+        if indexPath.row >= metadatasForSection.metadatas.count {
+            return nil
+        }
         return metadatasForSection.metadatas[indexPath.row]
     }
 

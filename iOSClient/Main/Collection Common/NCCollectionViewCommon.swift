@@ -1113,14 +1113,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             } completion: { searchResults, metadatas, errorCode, errorDescription in
 
-                DispatchQueue.global().async {
-                    if self.isSearching, errorCode == 0, let metadatas = metadatas {
-                        self.searchResults = searchResults
-                        self.metadatasSource = metadatas
-                    }
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.reloadDataSource()
+                if self.isSearching, errorCode == 0, let metadatas = metadatas {
+                    self.searchResults = searchResults
+                    self.metadatasSource = metadatas
                 }
+                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
             }
 
         } else {
@@ -1546,7 +1544,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell = gridCell
         }
 
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
         let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
         var isShare = false
