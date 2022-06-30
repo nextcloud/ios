@@ -931,7 +931,7 @@ import Queuer
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping ([NCCSearchResult]?, [tableMetadata]?) -> Void, completion: @escaping ([NCCSearchResult]?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping (_ id: String, [NCCSearchResult]?, [tableMetadata]?) -> Void, completion: @escaping ([NCCSearchResult]?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
         var searchResults: [NCCSearchResult] = []
         var searchFiles: [tableMetadata] = []
@@ -1005,7 +1005,7 @@ import Queuer
                     }
                 })
             }
-            update(searchResults, searchFiles)
+            update(provider.id, searchResults, searchFiles)
         } completion: { results, code, description in
             self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()

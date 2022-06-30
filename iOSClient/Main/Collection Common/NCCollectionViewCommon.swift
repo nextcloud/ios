@@ -1087,38 +1087,36 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
-            } update: { searchResults, metadatas in
-                guard let metadatas = metadatas, metadatas.count > 0 else { return }
+            } update: { id, searchResults, metadatas in
+                guard let metadatas = metadatas, metadatas.count > 0, self.isSearching else { return }
 
-                if self.isSearching {
-                    semaphore.wait()
+                semaphore.wait()
 
-                    self.searchResults = searchResults
-                    self.metadatasSource = metadatas
-                    self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
-                                                   account: self.appDelegate.account,
-                                                   sort: self.layoutForView?.sort,
-                                                   ascending: self.layoutForView?.ascending,
-                                                   directoryOnTop: self.layoutForView?.directoryOnTop,
-                                                   favoriteOnTop: true,
-                                                   filterLivePhoto: true,
-                                                   providers: self.providers,
-                                                   searchResults: self.searchResults)
+                print(id)
+                if id == "files" {
+                    print("")
+                }
 
-                    DispatchQueue.main.sync {
-                        self.reloadDataThenPerform {
-                            semaphore.signal()
-                        }
+                self.searchResults = searchResults
+                self.metadatasSource = metadatas
+                self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+                                               account: self.appDelegate.account,
+                                               sort: self.layoutForView?.sort,
+                                               ascending: self.layoutForView?.ascending,
+                                               directoryOnTop: self.layoutForView?.directoryOnTop,
+                                               favoriteOnTop: true,
+                                               filterLivePhoto: true,
+                                               providers: self.providers,
+                                               searchResults: self.searchResults)
+                DispatchQueue.main.sync {
+                    self.reloadDataThenPerform {
+                        semaphore.signal()
                     }
                 }
             } completion: { searchResults, metadatas, errorCode, errorDescription in
 
-                if self.isSearching, errorCode == 0, let metadatas = metadatas {
-                    self.searchResults = searchResults
-                    self.metadatasSource = metadatas
-                }
+                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
             }
 
         } else {
