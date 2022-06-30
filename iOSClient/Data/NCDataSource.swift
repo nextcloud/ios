@@ -75,6 +75,10 @@ class NCDataSource: NSObject {
         self.metadatasSource.removeAll()
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
+        self.providers = nil
+        self.searchResults = nil
+        self.shares.removeAll()
+        self.localFiles.removeAll()
     }
 
     internal func createSections() {

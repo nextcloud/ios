@@ -768,14 +768,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 
-        NCNetworking.shared.cancelUnifiedSearchFiles()
-        
-        self.isSearching = false
-        self.literalSearch = ""
-        self.providers?.removeAll()
-        self.searchResults?.removeAll()
+        DispatchQueue.global().async {
+            NCNetworking.shared.cancelUnifiedSearchFiles()
 
-        reloadDataSource()
+            self.isSearching = false
+            self.literalSearch = ""
+            self.providers?.removeAll()
+            self.searchResults?.removeAll()
+            self.dataSource.clearDataSource()
+
+            self.reloadDataSource()
+        }
     }
 
     // MARK: - TAP EVENT
@@ -1072,37 +1075,40 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-
+            let serialQueue = DispatchQueue(label: "com.nextcloud.serialQueue")
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
             } update: { searchResults, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0 else { return }
 
-                if self.isSearching {
-                    self.searchResults = searchResults
-                    self.metadatasSource = metadatas
-                    self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
-                                                   account: self.appDelegate.account,
-                                                   sort: self.layoutForView?.sort,
-                                                   ascending: self.layoutForView?.ascending,
-                                                   directoryOnTop: self.layoutForView?.directoryOnTop,
-                                                   favoriteOnTop: true,
-                                                   filterLivePhoto: true,
-                                                   providers: self.providers,
-                                                   searchResults: self.searchResults)
+                serialQueue.async {
+                    if self.isSearching {
+                        self.searchResults = searchResults
+                        self.metadatasSource = metadatas
+                        self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+                                                       account: self.appDelegate.account,
+                                                       sort: self.layoutForView?.sort,
+                                                       ascending: self.layoutForView?.ascending,
+                                                       directoryOnTop: self.layoutForView?.directoryOnTop,
+                                                       favoriteOnTop: true,
+                                                       filterLivePhoto: true,
+                                                       providers: self.providers,
+                                                       searchResults: self.searchResults)
 
-                    DispatchQueue.main.async { self.collectionView.reloadData() }
+                        DispatchQueue.main.async { self.collectionView.reloadData() }
+                    }
                 }
-                
             } completion: { searchResults, metadatas, errorCode, errorDescription in
 
-                DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-                if self.isSearching, errorCode == 0, let metadatas = metadatas {
-                    self.searchResults = searchResults
-                    self.metadatasSource = metadatas
+                serialQueue.async {
+                    DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+                    if self.isSearching, errorCode == 0, let metadatas = metadatas {
+                        self.searchResults = searchResults
+                        self.metadatasSource = metadatas
+                    }
+                    self.isReloadDataSourceNetworkInProgress = false
+                    self.reloadDataSource()
                 }
-                self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
             }
 
         } else {
