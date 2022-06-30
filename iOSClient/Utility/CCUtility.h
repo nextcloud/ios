@@ -148,9 +148,6 @@
 
 + (NSData *)getDatabaseEncryptionKey;
 
-+ (BOOL)getDisableLocalCacheAfterUpload;
-+ (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
-
 + (BOOL)getLivePhoto;
 + (void)setLivePhoto:(BOOL)set;
 

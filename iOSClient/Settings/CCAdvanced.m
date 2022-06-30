@@ -84,20 +84,6 @@
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
-    // Disable Local Cache After Upload
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_disableLocalCacheAfterUpload_footer_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"disableLocalCacheAfterUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_disableLocalCacheAfterUpload_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-    if ([CCUtility getDisableLocalCacheAfterUpload]) row.value = @"1";
-    else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-    [section addFormRow:row];
-
     // Section : Files App --------------------------------------------------------------
     
     if (![NCBrandOptions shared].disable_openin_file) {
@@ -350,12 +336,7 @@
 
         [CCUtility setRemovePhotoCameraRoll:[[rowDescriptor.value valueData] boolValue]];
     }
-    
-    if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {
-        
-        [CCUtility setDisableLocalCacheAfterUpload:[[rowDescriptor.value valueData] boolValue]];
-    }
-    
+
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {
         
         [CCUtility setDisableFilesApp:[[rowDescriptor.value valueData] boolValue]];
@@ -509,7 +490,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.section == 7 && indexPath.row == 2) {
+    if (indexPath.section == 5 && indexPath.row == 2) {
         return 80;
     } else {
         return NCGlobal.shared.heightCellSettings;

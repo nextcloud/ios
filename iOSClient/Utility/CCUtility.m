@@ -556,17 +556,6 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getDisableLocalCacheAfterUpload
-{
-    return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setDisableLocalCacheAfterUpload:(BOOL)disable
-{
-    NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getLivePhoto
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"livePhoto" service:NCGlobal.shared.serviceShareKeyChain];
