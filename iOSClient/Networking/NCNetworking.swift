@@ -931,17 +931,15 @@ import Queuer
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping (_ id: String, [NCCSearchResult]?, [tableMetadata]?) -> Void, completion: @escaping ([NCCSearchResult]?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping (_ id: String, NCCSearchResult?, [tableMetadata]?) -> Void, completion: @escaping ([NCCSearchResult]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
 
-        var searchResults: [NCCSearchResult] = []
-        var searchFiles: [tableMetadata] = []
+        var searchResults: [NCCSearchResult]?
         var errorCode = 0
         var errorDescription = ""
-        let concurrentQueue = DispatchQueue(label: "com.nextcloud.requestUnifiedSearch.concurrentQueue", attributes: .concurrent)
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(searchResults, Array(searchFiles), errorCode, errorDescription)
+            completion(searchResults, errorCode, errorDescription)
         }
 
         NCCommunication.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90) { provider in
@@ -956,21 +954,17 @@ import Queuer
             providers(allProviders)
         } update: { partialResult, provider, errorCode, errorDescription in
             guard let partialResult = partialResult else { return }
-            searchResults.append(partialResult)
+            var metadatas: [tableMetadata] = []
 
             switch provider.id {
             case "files":
                 partialResult.entries.forEach({ entry in
                     if let fileId = entry.fileId,
-                       let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
-                        concurrentQueue.async(flags: .barrier) {
-                            searchFiles.append(newMetadata)
-                        }
+                       let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                        metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { newMetadata in
-                            concurrentQueue.async(flags: .barrier) {
-                                searchFiles.append(newMetadata)
-                            }
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { metadata in
+                            metadatas.append(metadata)
                         }
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
@@ -981,39 +975,31 @@ import Queuer
                 partialResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
                               format: "account == %@ && path == %@ && fileName == %@",
                               urlBase.userAccount,
                               "/remote.php/dav/files/" + urlBase.user + dir,
                               filename)) {
-                        concurrentQueue.async(flags: .barrier) {
-                            searchFiles.append(newMetadata)
-                        }
+                        metadatas.append(metadata)
                     } else {
-                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { newMetadata in
-                            concurrentQueue.async(flags: .barrier) {
-                                searchFiles.append(newMetadata)
-                            }
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { metadata in
+                            metadatas.append(metadata)
                         }
                     }
                 })
             default:
                 partialResult.entries.forEach({ entry in
-                    concurrentQueue.async(flags: .barrier) {
-                        let newMetadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
-                        searchFiles.append(newMetadata)
-                    }
+                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    metadatas.append(metadata)
                 })
             }
-            update(provider.id, searchResults, searchFiles)
+            update(provider.id, partialResult, metadatas)
         } completion: { results, code, description in
             self.requestsUnifiedSearch.removeAll()
-            dispatchGroup.leave()
-            if let results = results {
-                searchResults = results
-            }
+            searchResults = results
             errorCode = code
             errorDescription = description
+            dispatchGroup.leave()
         }
     }
 

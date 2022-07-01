@@ -751,7 +751,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.isSearching = true
 
         self.providers?.removeAll()
-        self.searchResults?.removeAll()
         self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
 
@@ -774,7 +773,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.isSearching = false
             self.literalSearch = ""
             self.providers?.removeAll()
-            self.searchResults?.removeAll()
             self.dataSource.clearDataSource()
 
             self.reloadDataSource()
@@ -1085,11 +1083,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
-            } update: { id, searchResults, metadatas in
+            } update: { id, searchResult, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0, self.isSearching else { return }
 
-                print(id)
+                print("[XXX:]" + id)
+                if id == "files" {
+                    print("files")
+                }
 
+                /*
                 self.searchResults = searchResults
                 self.metadatasSource = metadatas
                 self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
@@ -1104,9 +1106,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 DispatchQueue.main.sync {
                     self.collectionView?.reloadData()
                 }
+                */
 
-            } completion: { searchResults, metadatas, errorCode, errorDescription in
+            } completion: {searchResults, errorCode, errorDescription in
 
+                self.searchResults = searchResults
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
             }
@@ -1117,7 +1121,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 DispatchQueue.main.async { self.refreshControl.endRefreshing() }
                 if  self.isSearching, errorCode == 0, let metadatas = metadatas {
-                    self.searchResults = nil
                     self.metadatasSource = metadatas
                 }
                 self.isReloadDataSourceNetworkInProgress = false
