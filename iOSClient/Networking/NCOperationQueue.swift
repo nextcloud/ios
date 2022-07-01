@@ -48,6 +48,7 @@ import NCCommunication
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
         downloadAvatarCancelAll()
+        dataSourceAddSectionCancelAll()
     }
 
     // Download file
@@ -199,8 +200,17 @@ import NCCommunication
     }
 
     // Datasource
+
     func dataSourceAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
         dataSourceQueue.addOperation(NCOperationDataSource.init(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
+    }
+
+    @objc func dataSourceAddSectionCancelAll() {
+        dataSourceQueue.cancelAll()
+    }
+
+    func dataSourceAddSectionCount() -> Int {
+        return dataSourceQueue.operationCount
     }
 }
 

@@ -931,15 +931,14 @@ import Queuer
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping (_ id: String, NCCSearchResult?, [tableMetadata]?) -> Void, completion: @escaping ([NCCSearchResult]?, _ errorCode: Int, _ errorDescription: String) -> ()) {
+    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NCCSearchProvider]?) -> Void, update: @escaping (_ id: String, NCCSearchResult?, [tableMetadata]?) -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> ()) {
 
-        var searchResults: [NCCSearchResult]?
         var errorCode = 0
         var errorDescription = ""
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(searchResults, errorCode, errorDescription)
+            completion(errorCode, errorDescription)
         }
 
         NCCommunication.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90) { provider in
@@ -994,10 +993,9 @@ import Queuer
                 })
             }
             update(provider.id, partialResult, metadatas)
-        } completion: { results, code, description in
+        } completion: { err, description in
             self.requestsUnifiedSearch.removeAll()
-            searchResults = results
-            errorCode = code
+            errorCode = err
             errorDescription = description
             dispatchGroup.leave()
         }

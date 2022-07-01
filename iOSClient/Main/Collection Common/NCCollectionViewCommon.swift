@@ -54,6 +54,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var groupByField = "name"
     internal var providers: [NCCSearchProvider]?
     internal var searchResults: [NCCSearchResult]?
+    internal var timerUnifiedSearch: Timer?
 
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
@@ -1058,6 +1059,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
 
+    @objc func unifiedSearchFilesTimer() {
+        if NCOperationQueue.shared.dataSourceAddSectionCount() == 0 {
+            self.timerUnifiedSearch?.invalidate()
+            self.refreshControl.endRefreshing()
+            self.isReloadDataSourceNetworkInProgress = false
+            self.collectionView.reloadData()
+        }
+    }
+
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
         else {
@@ -1073,7 +1083,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-
+            self.timerUnifiedSearch?.invalidate()
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
                 self.searchResults = []
@@ -1091,14 +1101,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } update: { id, searchResult, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0, self.isSearching , let searchResult = searchResult else { return }
                 NCOperationQueue.shared.dataSourceAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
-            } completion: {searchResults, errorCode, errorDescription in
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                    self.searchResults = searchResults
-//                    self.refreshControl.endRefreshing()
-//                    self.isReloadDataSourceNetworkInProgress = false
-//                    self.collectionView.reloadData()
-//                }
-                
+            } completion: {errorCode, errorDescription in
+                self.timerUnifiedSearch = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.unifiedSearchFilesTimer), userInfo: nil, repeats: true)
             }
 
         } else {
