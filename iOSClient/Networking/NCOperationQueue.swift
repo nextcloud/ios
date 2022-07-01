@@ -199,8 +199,8 @@ import NCCommunication
     }
 
     // Datasource
-    func dataSourceAddSection(dataSource: NCDataSource, metadatas: [tableMetadata], searchResult: NCCSearchResult, collectionView: UICollectionView) {
-        dataSourceQueue.addOperation(NCOperationDataSource.init(dataSource: dataSource, metadatas: metadatas, searchResult: searchResult, collectionView: collectionView))
+    func dataSourceAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
+        dataSourceQueue.addOperation(NCOperationDataSource.init(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
     }
 }
 
@@ -534,25 +534,21 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
 
 class NCOperationDataSource: ConcurrentOperation {
 
-    var dataSource: NCDataSource
+    var collectionViewCommon: NCCollectionViewCommon
     var metadatas: [tableMetadata]
     var searchResult: NCCSearchResult
-    var collectionView: UICollectionView
 
-    init(dataSource:NCDataSource, metadatas: [tableMetadata], searchResult: NCCSearchResult, collectionView: UICollectionView) {
-        self.dataSource = dataSource
+    init(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
+        self.collectionViewCommon = collectionViewCommon
         self.metadatas = metadatas
         self.searchResult = searchResult
-        self.collectionView = collectionView
     }
 
     func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        DispatchQueue.main.async {
-            CATransaction.begin()
-            CATransaction.setCompletionBlock(closure)
-            self.collectionView.reloadData()
-            CATransaction.commit()
-        }
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        self.collectionViewCommon.collectionView.reloadData()
+        CATransaction.commit()
     }
 
     override func start() {
@@ -560,7 +556,11 @@ class NCOperationDataSource: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+            self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+            for metadata in self.metadatas {
+                self.collectionViewCommon.metadatasSource.append(metadata)
+            }
+            self.collectionViewCommon.searchResults?.append(self.searchResult)
             reloadDataThenPerform {
                 self.finish()
             }

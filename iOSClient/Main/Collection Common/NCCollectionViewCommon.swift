@@ -1090,13 +1090,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     searchResults: self.searchResults)
             } update: { id, searchResult, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0, self.isSearching , let searchResult = searchResult else { return }
-
-                NCOperationQueue.shared.dataSourceAddSection(dataSource: self.dataSource, metadatas: metadatas, searchResult: searchResult, collectionView: self.collectionView)
+                NCOperationQueue.shared.dataSourceAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
             } completion: {searchResults, errorCode, errorDescription in
-
                 self.searchResults = searchResults
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
+                self.collectionView.reloadData()
             }
 
         } else {
