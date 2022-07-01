@@ -1083,14 +1083,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
 
-            let semaphore = DispatchSemaphore(value: 1)
-            
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
             } update: { id, searchResults, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0, self.isSearching else { return }
-
-                semaphore.wait()
 
                 print(id)
 
@@ -1106,10 +1102,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                providers: self.providers,
                                                searchResults: self.searchResults)
                 DispatchQueue.main.sync {
-                    self.reloadDataThenPerform {
-                        semaphore.signal()
-                    }
+                    self.collectionView?.reloadData()
                 }
+
             } completion: { searchResults, metadatas, errorCode, errorDescription in
 
                 self.refreshControl.endRefreshing()
