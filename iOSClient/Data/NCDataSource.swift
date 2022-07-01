@@ -180,8 +180,7 @@ class NCDataSource: NSObject {
         }
 
         // ADD metadataForSection
-        if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == self.getSectionValue(metadata: metadata) }) {
-            let metadataForSection = metadatasForSection[sectionIndex]
+        if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == self.getSectionValue(metadata: metadata) }), let metadataForSection = getMetadataForSection(sectionIndex) {
             if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
                 metadataForSection.metadatas[rowIndex] = metadata
                 return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
@@ -199,8 +198,7 @@ class NCDataSource: NSObject {
             let sectionValue = getSectionValue(metadata: metadata)
             createMetadataForSection(sectionValue: sectionValue)
             // get IndexPath of new section
-            if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue }) {
-                let metadataForSection = metadatasForSection[sectionIndex]
+            if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue }), let metadataForSection = getMetadataForSection(sectionIndex) {
                 if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
                     return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
                 }
@@ -303,18 +301,19 @@ class NCDataSource: NSObject {
     }
 
     func numberOfSections() -> Int {
-
-        if self.metadatasForSection.count == 0 {
+        if self.sectionsValue.count == 0 {
             return 1
         } else {
-            return self.metadatasForSection.count
+            return self.sectionsValue.count
         }
     }
     
     func numberOfItemsInSection(_ section: Int) -> Int {
 
-        if self.metadatasForSection.count == 0 || self.metadatasSource.count == 0 { return 0 }
-        return self.metadatasForSection[section].metadatas.count
+        if self.sectionsValue.count == 0 || self.metadatasSource.count == 0 { return 0 }
+        if let metadataForSection = getMetadataForSection(section) {
+            return metadataForSection.metadatas.count
+        } else { return 0 }
     }
 
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
@@ -322,17 +321,12 @@ class NCDataSource: NSObject {
         if metadatasForSection.count == 0 || indexPath.section >= metadatasForSection.count {
             return nil
         }
-        let metadatasForSection = self.metadatasForSection[indexPath.section]
-        if indexPath.row >= metadatasForSection.metadatas.count {
-            return nil
-        }
-        return metadatasForSection.metadatas[indexPath.row]
-    }
-
-    func getMetadataForSection(_ section: Int) -> NCMetadataForSection? {
-
-        if metadatasForSection.count == 0 { return nil }
-        return self.metadatasForSection[section]
+        if let metadataForSection = getMetadataForSection(indexPath.section) {
+            if indexPath.row >= metadataForSection.metadatas.count {
+                return nil
+            }
+            return metadataForSection.metadatas[indexPath.row]
+        } else { return nil }
     }
 
     func getSectionValue(indexPath: IndexPath) -> String {
@@ -376,6 +370,14 @@ class NCDataSource: NSObject {
         default:
             return NSLocalizedString(metadata.name, comment: "").lowercased().firstUppercased
         }
+    }
+
+    internal func getMetadataForSection(_ section: Int) -> NCMetadataForSection? {
+        guard section < sectionsValue.count else { return nil }
+        let sectionValue = sectionsValue[section]
+        if let metadataForSection = self.metadatasForSection.filter({ $0.sectionValue == sectionValue}).first {
+            return metadataForSection
+        } else { return nil }
     }
 }
 
