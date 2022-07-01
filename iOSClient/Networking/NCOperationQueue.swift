@@ -545,10 +545,12 @@ class NCOperationDataSource: ConcurrentOperation {
     }
 
     func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(closure)
-        self.collectionViewCommon.collectionView.reloadData()
-        CATransaction.commit()
+        DispatchQueue.main.async {
+            CATransaction.begin()
+            CATransaction.setCompletionBlock(closure)
+            self.collectionViewCommon.collectionView.reloadData()
+            CATransaction.commit()
+        }
     }
 
     override func start() {
