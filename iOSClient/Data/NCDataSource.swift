@@ -58,14 +58,11 @@ class NCDataSource: NSObject {
         self.favoriteOnTop = favoriteOnTop ?? true
         self.filterLivePhoto = filterLivePhoto ?? true
         self.groupByField = groupByField
+        // unified search
         self.providers = providers
         self.searchResults = searchResults
 
         createSections()
-
-        for sectionValue in self.sectionsValue {
-            createMetadataForSection(sectionValue: sectionValue)
-        }
     }
 
     // MARK: -
@@ -79,6 +76,19 @@ class NCDataSource: NSObject {
         self.searchResults = nil
         self.shares.removeAll()
         self.localFiles.removeAll()
+    }
+
+    func addSection(metadatas: [tableMetadata], searchResult: NCCSearchResult?) {
+
+        for metadata in metadatas {
+            self.metadatasSource.append(metadata)
+        }
+
+        if let searchResult = searchResult {
+            self.searchResults?.append(searchResult)
+        }
+
+        createSections()
     }
 
     internal func createSections() {
@@ -124,6 +134,13 @@ class NCDataSource: NSObject {
                 } else {
                     return $0 > $1
                 }
+            }
+        }
+
+        for sectionValue in self.sectionsValue {
+            if !existsMetadataForSection(sectionValue: sectionValue) {
+                print("DATASOURCE: create metadata for section: " + sectionValue)
+                createMetadataForSection(sectionValue: sectionValue)
             }
         }
     }
@@ -338,6 +355,15 @@ class NCDataSource: NSObject {
         }
 
         return (directories, files, size)
+    }
+
+    func existsMetadataForSection(sectionValue: String) -> Bool {
+        for metadataForSection in self.metadatasForSection {
+            if metadataForSection.sectionValue == sectionValue {
+                return true
+            }
+        }
+        return false
     }
 
     internal func getSectionValue(metadata: tableMetadata) -> String {

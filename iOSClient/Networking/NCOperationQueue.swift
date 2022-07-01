@@ -37,6 +37,7 @@ import NCCommunication
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private let dataSourceQueue = Queuer(name: "dataSourceQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
     private var timerReadFileForMediaQueue: Timer?
 
@@ -195,6 +196,11 @@ import NCCommunication
 
     @objc func downloadAvatarCancelAll() {
         downloadAvatarQueue.cancelAll()
+    }
+
+    // Datasource
+    func dataSourceAddSection(dataSource: NCDataSource, metadatas: [tableMetadata], searchResult: NCCSearchResult, collectionView: UICollectionView) {
+        dataSourceQueue.addOperation(NCOperationDataSource.init(dataSource: dataSource, metadatas: metadatas, searchResult: searchResult, collectionView: collectionView))
     }
 }
 
@@ -518,6 +524,44 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                     NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
 
+                self.finish()
+            }
+        }
+    }
+}
+
+// MARK: -
+
+class NCOperationDataSource: ConcurrentOperation {
+
+    var dataSource: NCDataSource
+    var metadatas: [tableMetadata]
+    var searchResult: NCCSearchResult
+    var collectionView: UICollectionView
+
+    init(dataSource:NCDataSource, metadatas: [tableMetadata], searchResult: NCCSearchResult, collectionView: UICollectionView) {
+        self.dataSource = dataSource
+        self.metadatas = metadatas
+        self.searchResult = searchResult
+        self.collectionView = collectionView
+    }
+
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        DispatchQueue.main.async {
+            CATransaction.begin()
+            CATransaction.setCompletionBlock(closure)
+            self.collectionView.reloadData()
+            CATransaction.commit()
+        }
+    }
+
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+            self.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+            reloadDataThenPerform {
                 self.finish()
             }
         }

@@ -1030,13 +1030,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource + NC Endpoint
 
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(closure)
-        self.collectionView?.reloadData()
-        CATransaction.commit()
-    }
-
     @objc func reloadDataSource() {
 
         if appDelegate.account == "" { return }
@@ -1083,31 +1076,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
+                self.searchResults = []
+                self.dataSource = NCDataSource(
+                    metadatasSource: self.metadatasSource,
+                    account: self.appDelegate.account,
+                    sort: self.layoutForView?.sort,
+                    ascending: self.layoutForView?.ascending,
+                    directoryOnTop: self.layoutForView?.directoryOnTop,
+                    favoriteOnTop: true,
+                    filterLivePhoto: true,
+                    groupByField: self.groupByField,
+                    providers: self.providers,
+                    searchResults: self.searchResults)
             } update: { id, searchResult, metadatas in
-                guard let metadatas = metadatas, metadatas.count > 0, self.isSearching else { return }
+                guard let metadatas = metadatas, metadatas.count > 0, self.isSearching , let searchResult = searchResult else { return }
 
-                print("[XXX:]" + id)
-                if id == "files" {
-                    print("files")
-                }
-
-                /*
-                self.searchResults = searchResults
-                self.metadatasSource = metadatas
-                self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
-                                               account: self.appDelegate.account,
-                                               sort: self.layoutForView?.sort,
-                                               ascending: self.layoutForView?.ascending,
-                                               directoryOnTop: self.layoutForView?.directoryOnTop,
-                                               favoriteOnTop: true,
-                                               filterLivePhoto: true,
-                                               providers: self.providers,
-                                               searchResults: self.searchResults)
-                DispatchQueue.main.sync {
-                    self.collectionView?.reloadData()
-                }
-                */
-
+                NCOperationQueue.shared.dataSourceAddSection(dataSource: self.dataSource, metadatas: metadatas, searchResult: searchResult, collectionView: self.collectionView)
             } completion: {searchResults, errorCode, errorDescription in
 
                 self.searchResults = searchResults
