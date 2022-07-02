@@ -1095,7 +1095,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     directoryOnTop: self.layoutForView?.directoryOnTop,
                     favoriteOnTop: true,
                     filterLivePhoto: true,
-                    groupByField: self.groupByField,
                     providers: self.providers,
                     searchResults: self.searchResults)
             } update: { id, searchResult, metadatas in
