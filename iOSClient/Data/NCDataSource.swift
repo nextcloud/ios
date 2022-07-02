@@ -280,52 +280,30 @@ class NCDataSource: NSObject {
     // MARK: -
 
     func getIndexPathMetadata(ocId: String) -> (indexPath: IndexPath?, metadataForSection: NCMetadataForSection?) {
-
-        if let metadata = metadatasSource.filter({ $0.ocId == ocId}).first {
-            let sectionValue = getSectionValue(metadata: metadata)
-            if let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue}) {
-                for metadataForSection in self.metadatasForSection {
-                    if metadataForSection.sectionValue == sectionValue {
-                        if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == ocId}) {
-                            return (IndexPath(row: rowIndex, section: sectionIndex), metadataForSection)
-                        }
-                    }
-                }
-            }
-        }
-
-        return (nil, nil)
+        guard let metadata = metadatasSource.filter({ $0.ocId == ocId}).first else { return (nil, nil) }
+        let sectionValue = getSectionValue(metadata: metadata)
+        guard let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == sectionValue}), let metadataForSection = getMetadataForSection(sectionValue), let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == ocId}) else { return (nil, nil) }
+        return (IndexPath(row: rowIndex, section: sectionIndex), metadataForSection)
     }
 
     func isSameNumbersOfSections(numberOfSections: Int) -> Bool {
         guard self.metadatasForSection.count > 0 else { return false }
-
         return numberOfSections == self.numberOfSections()
     }
 
     func numberOfSections() -> Int {
-
-        if self.sectionsValue.count == 0 {
-            return 1
-        } else {
-            return self.sectionsValue.count
-        }
+        guard self.sectionsValue.count > 0 else { return 1 }
+        return self.sectionsValue.count
     }
     
     func numberOfItemsInSection(_ section: Int) -> Int {
-        guard self.sectionsValue.count > 0 && self.metadatasSource.count > 0 else { return 0}
-
-        if let metadataForSection = getMetadataForSection(section) {
-            return metadataForSection.metadatas.count
-        } else { return 0 }
+        guard self.sectionsValue.count > 0 && self.metadatasSource.count > 0, let metadataForSection = getMetadataForSection(section) else { return 0}
+        return metadataForSection.metadatas.count
     }
 
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
-        guard metadatasForSection.count > 0 && indexPath.section < metadatasForSection.count else { return nil }
-
-        if let metadataForSection = getMetadataForSection(indexPath.section), indexPath.row < metadataForSection.metadatas.count {
-            return metadataForSection.metadatas[indexPath.row]
-        } else { return nil }
+        guard metadatasForSection.count > 0 && indexPath.section < metadatasForSection.count, let metadataForSection = getMetadataForSection(indexPath.section), indexPath.row < metadataForSection.metadatas.count  else { return nil }
+        return metadataForSection.metadatas[indexPath.row]
     }
 
     func getSectionValue(indexPath: IndexPath) -> String {
@@ -350,10 +328,6 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    internal func existsMetadataForSection(sectionValue: String) -> Bool {
-        return !self.metadatasForSection.filter({ $0.sectionValue == sectionValue }).isEmpty
-    }
-
     internal func getSectionValue(metadata: tableMetadata) -> String {
 
         switch self.groupByField {
@@ -366,8 +340,17 @@ class NCDataSource: NSObject {
         }
     }
 
+    internal func existsMetadataForSection(sectionValue: String) -> Bool {
+        return !self.metadatasForSection.filter({ $0.sectionValue == sectionValue }).isEmpty
+    }
+
     internal func getMetadataForSection(_ section: Int) -> NCMetadataForSection? {
         guard section < sectionsValue.count, let metadataForSection = self.metadatasForSection.filter({ $0.sectionValue == sectionsValue[section]}).first else { return nil }
+        return metadataForSection
+    }
+
+    internal func getMetadataForSection(_ sectionValue: String) -> NCMetadataForSection? {
+        guard let metadataForSection = self.metadatasForSection.filter({ $0.sectionValue == sectionValue }).first else { return nil }
         return metadataForSection
     }
 }
