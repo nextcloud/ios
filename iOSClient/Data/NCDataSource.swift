@@ -296,11 +296,13 @@ class NCDataSource: NSObject {
     }
 
     func isSameNumbersOfSections(numberOfSections: Int) -> Bool {
-        if self.metadatasForSection.count == 0 { return false }
+        guard self.metadatasForSection.count > 0 else { return false }
+
         return numberOfSections == self.numberOfSections()
     }
 
     func numberOfSections() -> Int {
+
         if self.sectionsValue.count == 0 {
             return 1
         } else {
@@ -309,29 +311,24 @@ class NCDataSource: NSObject {
     }
     
     func numberOfItemsInSection(_ section: Int) -> Int {
+        guard self.sectionsValue.count > 0 && self.metadatasSource.count > 0 else { return 0}
 
-        if self.sectionsValue.count == 0 || self.metadatasSource.count == 0 { return 0 }
         if let metadataForSection = getMetadataForSection(section) {
             return metadataForSection.metadatas.count
         } else { return 0 }
     }
 
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
+        guard metadatasForSection.count > 0 && indexPath.section < metadatasForSection.count else { return nil }
 
-        if metadatasForSection.count == 0 || indexPath.section >= metadatasForSection.count {
-            return nil
-        }
-        if let metadataForSection = getMetadataForSection(indexPath.section) {
-            if indexPath.row >= metadataForSection.metadatas.count {
-                return nil
-            }
+        if let metadataForSection = getMetadataForSection(indexPath.section), indexPath.row < metadataForSection.metadatas.count {
             return metadataForSection.metadatas[indexPath.row]
         } else { return nil }
     }
 
     func getSectionValue(indexPath: IndexPath) -> String {
+        guard metadatasForSection.count > 0 else { return ""}
 
-        if metadatasForSection.count == 0 { return "" }
         let metadataForSection = self.metadatasForSection[indexPath.section]
         return metadataForSection.sectionValue
     }
@@ -351,13 +348,10 @@ class NCDataSource: NSObject {
         return (directories, files, size)
     }
 
-    func existsMetadataForSection(sectionValue: String) -> Bool {
-        for metadataForSection in self.metadatasForSection {
-            if metadataForSection.sectionValue == sectionValue {
-                return true
-            }
-        }
-        return false
+    // MARK: -
+
+    internal func existsMetadataForSection(sectionValue: String) -> Bool {
+        return !self.metadatasForSection.filter({ $0.sectionValue == sectionValue }).isEmpty
     }
 
     internal func getSectionValue(metadata: tableMetadata) -> String {
@@ -373,11 +367,8 @@ class NCDataSource: NSObject {
     }
 
     internal func getMetadataForSection(_ section: Int) -> NCMetadataForSection? {
-        guard section < sectionsValue.count else { return nil }
-        let sectionValue = sectionsValue[section]
-        if let metadataForSection = self.metadatasForSection.filter({ $0.sectionValue == sectionValue}).first {
-            return metadataForSection
-        } else { return nil }
+        guard section < sectionsValue.count, let metadataForSection = self.metadatasForSection.filter({ $0.sectionValue == sectionsValue[section]}).first else { return nil }
+        return metadataForSection
     }
 }
 
