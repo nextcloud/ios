@@ -93,6 +93,7 @@ class NCDataSource: NSObject {
 
     internal func createSections() {
 
+        // get all Section
         for metadata in metadatasSource {
             // skipped livePhoto
             if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
@@ -103,7 +104,8 @@ class NCDataSource: NSObject {
                 self.sectionsValue.append(section)
             }
         }
-        
+
+        // Unified search
         if let providers = self.providers, !providers.isEmpty {
             var sectionsDictionary: [String:Int] = [:]
             for section in self.sectionsValue {
@@ -124,6 +126,7 @@ class NCDataSource: NSObject {
 
         } else {
 
+        // normal
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
                 if directoryOnTop && $0 == directory {
