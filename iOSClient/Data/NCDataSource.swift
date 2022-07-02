@@ -93,6 +93,17 @@ class NCDataSource: NSObject {
 
     internal func createSections() {
 
+        for metadata in metadatasSource {
+            // skipped livePhoto
+            if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
+                continue
+            }
+            let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "").lowercased().firstUppercased
+            if !self.sectionsValue.contains(section) {
+                self.sectionsValue.append(section)
+            }
+        }
+        
         if let providers = self.providers, !providers.isEmpty {
             var sectionsDictionary: [String:Int] = [:]
             for section in self.sectionsValue {
@@ -110,19 +121,8 @@ class NCDataSource: NSObject {
                     self.sectionsValue.append(section.key)
                 }
             }
-            
-        } else {
 
-            for metadata in metadatasSource {
-                // skipped livePhoto
-                if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
-                    continue
-                }
-                let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "").lowercased().firstUppercased
-                if !self.sectionsValue.contains(section) {
-                    self.sectionsValue.append(section)
-                }
-            }
+        } else {
 
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
