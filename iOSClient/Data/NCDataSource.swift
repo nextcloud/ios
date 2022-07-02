@@ -329,9 +329,7 @@ class NCDataSource: NSObject {
     }
 
     func getSectionValue(indexPath: IndexPath) -> String {
-        guard metadatasForSection.count > 0 else { return ""}
-
-        let metadataForSection = self.metadatasForSection[indexPath.section]
+        guard metadatasForSection.count > 0 , let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
         return metadataForSection.sectionValue
     }
 
