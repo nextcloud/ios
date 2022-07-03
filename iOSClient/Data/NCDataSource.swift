@@ -80,9 +80,7 @@ class NCDataSource: NSObject {
 
     func addSection(metadatas: [tableMetadata], searchResult: NCCSearchResult?) {
 
-        for metadata in metadatas {
-            self.metadatasSource.append(metadata)
-        }
+        self.metadatasSource.append(contentsOf: metadatas)
 
         if let searchResult = searchResult {
             self.searchResults?.append(searchResult)
@@ -161,7 +159,7 @@ class NCDataSource: NSObject {
                                                             metadatas: metadatas,
                                                             shares: self.shares,
                                                             localFiles: self.localFiles,
-                                                            searchResult: searchResult,
+                                                            lastSearchResult: searchResult,
                                                             sort: self.sort,
                                                             ascending: self.ascending,
                                                             directoryOnTop: self.directoryOnTop,
@@ -171,6 +169,26 @@ class NCDataSource: NSObject {
     }
 
     // MARK: -
+
+    func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NCCSearchResult) -> [IndexPath] {
+        
+        guard let sectionIndex = self.sectionsValue.firstIndex(where: {$0 == metadataForSection.sectionValue }) else { return [] }
+
+        var indexPaths: [IndexPath] = []
+
+        self.metadatasSource.append(contentsOf: metadatas)
+        metadataForSection.metadatas.append(contentsOf: metadatas)
+        metadataForSection.lastSearchResult = lastSearchResult
+        metadataForSection.createMetadatasForSection()
+
+        for metadata in metadatas {
+            if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
+                indexPaths.append(IndexPath(row: rowIndex, section: sectionIndex))
+            }
+        }
+
+        return indexPaths
+    }
 
     @discardableResult
     func addMetadata(_ metadata: tableMetadata) -> (indexPath: IndexPath?, sameSections: Bool) {
@@ -364,7 +382,7 @@ class NCMetadataForSection: NSObject {
     var metadatas: [tableMetadata]
     var shares: [tableShare]
     var localFiles: [tableLocalFile]
-    var searchResult: NCCSearchResult?
+    var lastSearchResult: NCCSearchResult?
     var unifiedSearchInProgress: Bool = false
 
     private var sort : String
@@ -386,13 +404,13 @@ class NCMetadataForSection: NSObject {
     public var metadataOffLine: [String] = []
 
 
-    init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], localFiles: [tableLocalFile], searchResult: NCCSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], localFiles: [tableLocalFile], lastSearchResult: NCCSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
 
         self.sectionValue = sectionValue
         self.metadatas = metadatas
         self.shares = shares
         self.localFiles = localFiles
-        self.searchResult = searchResult
+        self.lastSearchResult = lastSearchResult
         self.sort = sort
         self.ascending = ascending
         self.directoryOnTop = directoryOnTop

@@ -1094,7 +1094,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
 
-        guard let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch else { return }
+        guard let metadataForSection = metadataForSection, let searchResult = metadataForSection.lastSearchResult, let cursor = searchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
@@ -1104,15 +1104,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             metadataForSection.unifiedSearchInProgress = false
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
 
-            metadataForSection.searchResult = searchResult
-            var indexPaths: [IndexPath] = []
-            for metadata in metadatas {
-                self.metadatasSource.append(metadata)
-                let (indexPath, sameSections) = self.dataSource.addMetadata(metadata)
-                if let indexPath = indexPath, sameSections {
-                    indexPaths.append(indexPath)
-                }
-            }
+            self.metadatasSource.append(contentsOf: metadatas)
+            let indexPaths = self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
+
             DispatchQueue.main.async {
                 self.collectionView?.performBatchUpdates({
                     self.collectionView?.insertItems(at: indexPaths)
@@ -1810,8 +1804,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
-            let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
-            let entriesCount: Int = metadataForSection?.searchResult?.entries.count ?? 0
+            let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
+            let metadatasCount: Int = metadataForSection?.metadatas.count ?? 0
             let unifiedSearchInProgress = metadataForSection?.unifiedSearchInProgress ?? false
 
             footer.delegate = self
@@ -1827,7 +1821,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
-                if isSearching && isPaginated && entriesCount > 0 {
+                if isSearching && isPaginated && metadatasCount > 0 {
                     footer.buttonIsHidden(false)
                 }
                 if unifiedSearchInProgress {
@@ -1901,8 +1895,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         let sections = dataSource.numberOfSections()
         let metadataForSection = self.dataSource.getMetadataForSection(section)
-        let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
-        let entriesCount: Int = metadataForSection?.searchResult?.entries.count ?? 0
+        let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
+        let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
@@ -1911,7 +1905,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             size.height += NCGlobal.shared.heightFooter
         }
 
-        if isSearching && isPaginated && entriesCount > 0 {
+        if isSearching && isPaginated && metadatasCount > 0 {
             size.height += NCGlobal.shared.heightFooterButton
         }
 
