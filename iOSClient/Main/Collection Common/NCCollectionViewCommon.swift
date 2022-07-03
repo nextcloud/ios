@@ -896,33 +896,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
 
-        if let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch {
-
-            metadataForSection.unifiedSearchInProgress = true
-            self.collectionView?.reloadData()
-
-            NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
-
-                metadataForSection.unifiedSearchInProgress = false
-                guard let searchResult = searchResult, let metadatas = metadatas else { return }
-                metadataForSection.searchResult = searchResult
-                var indexPaths: [IndexPath] = []
-                for metadata in metadatas {
-                    self.metadatasSource.append(metadata)
-                    let (indexPath, sameSections) = self.dataSource.addMetadata(metadata)
-                    if let indexPath = indexPath, sameSections {
-                        indexPaths.append(indexPath)
-                    }
-                }
-                DispatchQueue.main.async {
-                    self.collectionView?.performBatchUpdates({
-                        self.collectionView?.insertItems(at: indexPaths)
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                }
-            }
-        }
+        unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -1114,6 +1088,37 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
+            }
+        }
+    }
+
+    func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
+
+        guard let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch else { return }
+
+        metadataForSection.unifiedSearchInProgress = true
+        self.collectionView?.reloadData()
+
+        NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
+
+            metadataForSection.unifiedSearchInProgress = false
+            guard let searchResult = searchResult, let metadatas = metadatas else { return }
+
+            metadataForSection.searchResult = searchResult
+            var indexPaths: [IndexPath] = []
+            for metadata in metadatas {
+                self.metadatasSource.append(metadata)
+                let (indexPath, sameSections) = self.dataSource.addMetadata(metadata)
+                if let indexPath = indexPath, sameSections {
+                    indexPaths.append(indexPath)
+                }
+            }
+            DispatchQueue.main.async {
+                self.collectionView?.performBatchUpdates({
+                    self.collectionView?.insertItems(at: indexPaths)
+                }, completion: { _ in
+                    self.collectionView?.reloadData()
+                })
             }
         }
     }
