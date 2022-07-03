@@ -1068,9 +1068,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.isReloadDataSourceNetworkInProgress = false
                 self.collectionView.reloadData()
             }
-
         } else {
-
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
                 if  self.isSearching, errorCode == 0, let metadatas = metadatas {
                     self.metadatasSource = metadatas
