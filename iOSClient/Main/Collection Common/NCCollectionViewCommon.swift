@@ -1830,7 +1830,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             } else {
                 if sections == 1 || section == sections - 1 {
-                    let info = dataSource.getFooterInformation()
+                    let info = dataSource.getFooterInformationAllMetadatas()
                     footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
                 } else {
                     footer.separatorIsHidden(false)

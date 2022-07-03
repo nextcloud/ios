@@ -314,7 +314,7 @@ class NCDataSource: NSObject {
         return metadataForSection.sectionValue
     }
 
-    func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
+    func getFooterInformationAllMetadatas() -> (directories: Int, files: Int, size: Int64) {
 
         var directories: Int = 0
         var files: Int = 0
