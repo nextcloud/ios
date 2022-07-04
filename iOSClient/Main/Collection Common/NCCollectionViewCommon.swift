@@ -1073,8 +1073,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if  self.isSearching, errorCode == 0, let metadatas = metadatas {
                     self.metadatasSource = metadatas
                 }
+                self.dataSource = NCDataSource(
+                    metadatasSource: self.metadatasSource,
+                    account: self.appDelegate.account,
+                    sort: self.layoutForView?.sort,
+                    ascending: self.layoutForView?.ascending,
+                    directoryOnTop: self.layoutForView?.directoryOnTop,
+                    favoriteOnTop: true,
+                    filterLivePhoto: true,
+                    groupByField: self.groupByField,
+                    providers: self.providers,
+                    searchResults: self.searchResults)
                 self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                    self.collectionView.reloadData()
+                }
             }
         }
     }
@@ -1855,18 +1869,14 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if section == 0 && dataSource.numberOfSections() > 1 {
-            return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
-        } else if section == 0 && dataSource.numberOfSections() == 1 {
-            if collectionView.collectionViewLayout == gridLayout {
+        if isSearching || collectionView.collectionViewLayout == gridLayout || dataSource.numberOfSections() > 1 {
+            if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {
-                return (getHeaderHeight(), headerRichWorkspace, 0)
+                return (0, 0, NCGlobal.shared.heightSection)
             }
-        } else if section > 0 && dataSource.numberOfSections() > 1 {
-            return (0, 0, NCGlobal.shared.heightSection)
         } else {
-            return (0, 0, 0)
+            return (getHeaderHeight(), headerRichWorkspace, 0)
         }
     }
 

@@ -403,7 +403,6 @@ class NCMetadataForSection: NSObject {
     public var metadataShare: [String: tableShare] = [:]
     public var metadataOffLine: [String] = []
 
-
     init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], localFiles: [tableLocalFile], lastSearchResult: NCCSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
 
         self.sectionValue = sectionValue
