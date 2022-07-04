@@ -299,7 +299,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
 
-        self.reloadDataSource()
+        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {

@@ -376,6 +376,8 @@ class NCDataSource: NSObject {
     }
 }
 
+// MARK: -
+
 class NCMetadataForSection: NSObject {
 
     var sectionValue: String

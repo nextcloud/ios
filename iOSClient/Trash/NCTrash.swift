@@ -157,6 +157,8 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
         }
+
+        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {
