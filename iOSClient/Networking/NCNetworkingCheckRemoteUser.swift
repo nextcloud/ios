@@ -66,10 +66,11 @@ import NCCommunication
 
                     } else {
 
-                         if UIApplication.shared.applicationState == .active && NCCommunication.shared.isNetworkReachable() && !CCUtility.getPassword(account).isEmpty {
+                        if UIApplication.shared.applicationState == .active && NCCommunication.shared.isNetworkReachable() && !CCUtility.getPassword(account).isEmpty && !self.appDelegate.deletePasswordSession {
                             let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                             NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
                             CCUtility.setPassword(account, password: nil)
+                            self.appDelegate.deletePasswordSession = true
                         }
                     }
 

@@ -40,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var userId: String = ""
     @objc var password: String = ""
 
+    var deletePasswordSession: Bool = false
     var activeAppConfigView: NCAppConfigView?
     var activeFiles: NCFiles?
     var activeFileViewInFolder: NCFileViewInFolder?
@@ -188,6 +189,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
+
+        self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
             // Privacy
