@@ -257,8 +257,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if appDelegate.account == "" { return }
 
         // Search
-        if searchController?.isActive ?? false {
+        if searchController?.isActive ?? false || isSearching {
             searchController?.isActive = false
+            isSearching = false
         }
 
         // Select
