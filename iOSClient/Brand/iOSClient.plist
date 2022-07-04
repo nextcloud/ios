@@ -45,7 +45,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
-	<string>3b2bb0b1-fa12-43cb-a78f-0f7e1afd33df</string>
+	<string>8e9f9874-938e-460b-a9be-f82cb3393971</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>nextcloudtalk</string>
@@ -75,6 +75,8 @@
 	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
+	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inconsolata-Light.ttf</string>
@@ -85,8 +87,6 @@
 		<string>Inconsolata-ExtraBold.ttf</string>
 		<string>Inconsolata-Black.ttf</string>
 	</array>
-	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
-	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
