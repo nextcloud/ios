@@ -124,6 +124,11 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
 
+    func hideButtonMore(_ status: Bool) {
+        imageMore.isHidden = status
+        buttonMore.isHidden = status
+    }
+
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image
