@@ -244,6 +244,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelInfo.text = ""
             break
         }
+        if self.appDelegate.account != metadata.account {
+            cell.labelInfo.text = NSLocalizedString("_user_", comment: "") + ": \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
+        }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
 
         // Remove last separator

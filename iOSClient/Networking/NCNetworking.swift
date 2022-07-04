@@ -418,7 +418,7 @@ import Queuer
     // MARK: - Upload
 
     @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
-        
+
         func uploadMetadata(_ metadata: tableMetadata) {
 
             // DETECT IF CHUNCK

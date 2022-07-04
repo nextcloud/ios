@@ -85,6 +85,12 @@ class NCNetworkingProcessUpload: NSObject {
 
                     for metadata in metadatas {
 
+                        // Different account
+                        if self.appDelegate.account != metadata.account {
+                            NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView) on account: \(metadata.account), because the actual account is \(self.appDelegate.account).")
+                            continue
+                        }
+
                         // Is already in upload background? skipped
                         if listOcId.contains(metadata.ocId) {
                             NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
