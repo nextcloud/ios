@@ -178,7 +178,7 @@ class NCDataSource: NSObject {
         self.metadatasSource.append(contentsOf: metadatas)
         metadataForSection.metadatas.append(contentsOf: metadatas)
         metadataForSection.lastSearchResult = lastSearchResult
-        metadataForSection.createMetadatasForSection()
+        metadataForSection.createMetadatas()
 
         for metadata in metadatas {
             if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
@@ -209,7 +209,7 @@ class NCDataSource: NSObject {
                 return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
             } else {
                 metadataForSection.metadatas.append(metadata)
-                metadataForSection.createMetadatasForSection()
+                metadataForSection.createMetadatas()
                 if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
                     return (IndexPath(row: rowIndex, section: sectionIndex), self.isSameNumbersOfSections(numberOfSections: numberOfSections))
                 }
@@ -249,7 +249,7 @@ class NCDataSource: NSObject {
                     self.metadatasForSection.remove(at: index)
                 }
             } else {
-                metadataForSection.createMetadatasForSection()
+                metadataForSection.createMetadatas()
             }
             indexPathReturn = indexPath
         } else { return (nil, false) }
@@ -267,8 +267,6 @@ class NCDataSource: NSObject {
 
         let numberOfSections = self.numberOfSections()
         var ocIdSearch = ocId
-        var indexPath: IndexPath?
-        var metadataForSection: NCMetadataForSection?
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return (nil, self.isSameNumbersOfSections(numberOfSections: numberOfSections)) }
 
@@ -277,10 +275,10 @@ class NCDataSource: NSObject {
         }
 
         // UPDATE metadataForSection (IMPORTANT FIRST)
-        (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocIdSearch)
+        let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocIdSearch)
         if let indexPath = indexPath, let metadataForSection = metadataForSection {
             metadataForSection.metadatas[indexPath.row] = metadata
-            metadataForSection.createMetadatasForSection()
+            metadataForSection.createMetadatas()
         }
 
         // UPDATE metadatasSource (IMPORTANT LAST)
@@ -288,7 +286,8 @@ class NCDataSource: NSObject {
             self.metadatasSource[rowIndex] = metadata
         }
 
-        return (indexPath, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
+        let result = self.getIndexPathMetadata(ocId: ocId)
+        return (result.indexPath, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
     }
 
     // MARK: -
@@ -420,10 +419,10 @@ class NCMetadataForSection: NSObject {
 
         super.init()
 
-        createMetadatasForSection()
+        createMetadatas()
     }
 
-    func createMetadatasForSection() {
+    func createMetadatas() {
 
         // Clear
         //
