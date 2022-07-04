@@ -167,7 +167,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
 
-        cell.imageItem.image = nil
+        cell.imageItem.image = NCBrandColor.cacheImages.file
         cell.imageItem.backgroundColor = nil
 
         cell.labelTitle.text = metadata.fileNameView
@@ -182,15 +182,28 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         cell.progressView.progress = 0.0
 
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
-            cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        }
+        /*
+        let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.fileNameView)!
 
+        if FileManager().fileExists(atPath: iconImagePath) {
+            cell.imageItem.image =  UIImage(contentsOfFile:iconImagePath)
+        } else if FileManager().fileExists(atPath: imagePath) {
+            if let image = UIImage(contentsOfFile: imagePath) {
+                let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true)
+                if let data = image?.jpegData(compressionQuality: 0.5) {
+                    do {
+                        try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                        cell.imageItem.image = image
+                    } catch {
+                    }
+                }
+            }
+        }
         if cell.imageItem.image == nil {
             cell.imageItem.image = NCBrandColor.cacheImages.file
         }
+        */
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
