@@ -958,9 +958,12 @@ import Queuer
                        let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
+                        let semaphore = Semaphore()
                         self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
                             metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
                 break
@@ -977,9 +980,12 @@ import Queuer
                               filename)) {
                         metadatas.append(metadata)
                     } else {
+                        let semaphore = Semaphore()
                         self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
                             metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     }
                 })
             default:
@@ -1013,9 +1019,12 @@ import Queuer
                     if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
+                        let semaphore = Semaphore()
                         self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
                             metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
                 break
@@ -1028,9 +1037,12 @@ import Queuer
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
                         metadatas.append(metadata)
                     } else {
+                        let semaphore = Semaphore()
                         self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
                             metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     }
                 })
             default:
@@ -1060,10 +1072,9 @@ import Queuer
         self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
             defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
-            DispatchQueue.main.async {
-                NCManageDatabase.shared.addMetadata(metadata)
-                completion(account, metadata, errorCode, errorDescription)
-            }
+            let returnMetadata = tableMetadata.init(value: metadata)
+            NCManageDatabase.shared.addMetadata(metadata)
+            completion(account, returnMetadata, errorCode, errorDescription)
         }
     }
 
