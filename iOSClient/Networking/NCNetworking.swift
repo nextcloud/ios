@@ -959,11 +959,7 @@ import Queuer
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
                         self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
-                            if errorCode == 0 {
-                                metadatas.append(metadata)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                            }
+                            metadatas.append(metadata)
                         }
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
@@ -982,11 +978,7 @@ import Queuer
                         metadatas.append(metadata)
                     } else {
                         self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
-                            if errorCode == 0 {
-                                metadatas.append(metadata)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                            }
+                            metadatas.append(metadata)
                         }
                     }
                 })
@@ -1022,11 +1014,7 @@ import Queuer
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
                         self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
-                            if errorCode == 0 {
-                                metadatas.append(metadata)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                            }
+                            metadatas.append(metadata)
                         }
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
@@ -1041,11 +1029,7 @@ import Queuer
                         metadatas.append(metadata)
                     } else {
                         self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
-                            if errorCode == 0 {
-                                metadatas.append(metadata)
-                            } else {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                            }
+                            metadatas.append(metadata)
                         }
                     }
                 })
