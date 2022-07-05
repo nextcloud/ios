@@ -958,8 +958,12 @@ import Queuer
                        let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { metadata in
-                            metadatas.append(metadata)
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
+                            if errorCode == 0 {
+                                metadatas.append(metadata)
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
                         }
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
@@ -977,8 +981,12 @@ import Queuer
                               filename)) {
                         metadatas.append(metadata)
                     } else {
-                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { metadata in
-                            metadatas.append(metadata)
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
+                            if errorCode == 0 {
+                                metadatas.append(metadata)
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
                         }
                     }
                 })
@@ -1010,11 +1018,15 @@ import Queuer
             switch id {
             case "files":
                 searchResult.entries.forEach({ entry in
-                    if let fileId = entry.fileId, let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
-                        metadatas.append(newMetadata)
+                    if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                        metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { newMetadata in
-                            metadatas.append(newMetadata)
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
+                            if errorCode == 0 {
+                                metadatas.append(metadata)
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
                         }
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
@@ -1025,11 +1037,15 @@ import Queuer
                 searchResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
-                        metadatas.append(newMetadata)
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
+                        metadatas.append(metadata)
                     } else {
-                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { newMetadata in
-                            metadatas.append(newMetadata)
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
+                            if errorCode == 0 {
+                                metadatas.append(metadata)
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
                         }
                     }
                 })
@@ -1054,7 +1070,7 @@ import Queuer
         requestsUnifiedSearch.removeAll()
     }
 
-    private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
+    private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (String, tableMetadata, Int, String) -> Void) {
         let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
         dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
@@ -1062,7 +1078,7 @@ import Queuer
             guard let metadata = metadata else { return }
             DispatchQueue.main.async {
                 NCManageDatabase.shared.addMetadata(metadata)
-                completion(metadata)
+                completion(account, metadata, errorCode, errorDescription)
             }
         }
     }

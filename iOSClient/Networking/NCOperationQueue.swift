@@ -555,7 +555,7 @@ class NCOperationDataSource: ConcurrentOperation {
     }
 
     func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             CATransaction.begin()
             CATransaction.setCompletionBlock(closure)
             self.collectionViewCommon.collectionView.reloadData()

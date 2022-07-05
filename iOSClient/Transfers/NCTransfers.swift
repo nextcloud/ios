@@ -251,10 +251,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         }
         if self.appDelegate.account != metadata.account {
-            cell.labelInfo.text = NSLocalizedString("_user_", comment: "") + ": \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
+            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "") + ": \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
         if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && NCNetworking.shared.networkReachability != NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
-            cell.labelInfo.text = NSLocalizedString("_wait_wifi_", comment: "")
+            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
