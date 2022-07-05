@@ -891,6 +891,7 @@
 "_subtitle_not_found_"      = "Subtitle not found";
 "_disable_"                 = "Disable";
 "_subtitle_not_dowloaded_"  = "There are subtitles not downloaded locally";
+"_user_"                    = "User";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

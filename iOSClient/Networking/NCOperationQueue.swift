@@ -37,6 +37,7 @@ import NCCommunication
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private let dataSourceQueue = Queuer(name: "dataSourceQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
     private var timerReadFileForMediaQueue: Timer?
 
@@ -47,6 +48,7 @@ import NCCommunication
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
         downloadAvatarCancelAll()
+        dataSourceAddSectionCancelAll()
     }
 
     // Download file
@@ -195,6 +197,20 @@ import NCCommunication
 
     @objc func downloadAvatarCancelAll() {
         downloadAvatarQueue.cancelAll()
+    }
+
+    // Datasource
+
+    func dataSourceAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
+        dataSourceQueue.addOperation(NCOperationDataSource.init(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
+    }
+
+    @objc func dataSourceAddSectionCancelAll() {
+        dataSourceQueue.cancelAll()
+    }
+
+    func dataSourceAddSectionCount() -> Int {
+        return dataSourceQueue.operationCount
     }
 }
 
@@ -518,6 +534,46 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                     NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
 
+                self.finish()
+            }
+        }
+    }
+}
+
+// MARK: -
+
+class NCOperationDataSource: ConcurrentOperation {
+
+    var collectionViewCommon: NCCollectionViewCommon
+    var metadatas: [tableMetadata]
+    var searchResult: NCCSearchResult
+
+    init(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
+        self.collectionViewCommon = collectionViewCommon
+        self.metadatas = metadatas
+        self.searchResult = searchResult
+    }
+
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        DispatchQueue.main.async {
+            CATransaction.begin()
+            CATransaction.setCompletionBlock(closure)
+            self.collectionViewCommon.collectionView.reloadData()
+            CATransaction.commit()
+        }
+    }
+
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+            self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
+            for metadata in self.metadatas {
+                self.collectionViewCommon.metadatasSource.append(metadata)
+            }
+            self.collectionViewCommon.searchResults?.append(self.searchResult)
+            reloadDataThenPerform {
                 self.finish()
             }
         }

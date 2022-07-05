@@ -257,8 +257,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if appDelegate.account == "" { return }
 
         // Search
-        if searchController?.isActive ?? false {
+        if searchController?.isActive ?? false || isSearching {
             searchController?.isActive = false
+            isSearching = false
         }
 
         // Select
@@ -599,7 +600,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if let cell = collectionView?.cellForItem(at: indexPath) {
             if let cell = cell as? NCCellProtocol {
-                if progressNumber.floatValue == 1 {
+                if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
                     cell.fileProgressView?.isHidden = true
                     cell.fileProgressView?.progress = .zero
                     cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCBrandColor.cacheImages.buttonMore)
@@ -751,7 +752,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.isSearching = true
 
         self.providers?.removeAll()
-        self.searchResults?.removeAll()
         self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
 
@@ -768,14 +768,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 
-        NCNetworking.shared.cancelUnifiedSearchFiles()
-        
-        self.isSearching = false
-        self.literalSearch = ""
-        self.providers?.removeAll()
-        self.searchResults?.removeAll()
+        DispatchQueue.global().async {
+            NCNetworking.shared.cancelUnifiedSearchFiles()
 
-        reloadDataSource()
+            self.isSearching = false
+            self.literalSearch = ""
+            self.providers?.removeAll()
+            self.dataSource.clearDataSource()
+
+            self.reloadDataSource()
+        }
     }
 
     // MARK: - TAP EVENT
@@ -822,6 +824,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
+        
         reloadDataSource()
     }
 
@@ -894,35 +897,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
 
-        if let metadataForSection = metadataForSection, let searchResult = metadataForSection.searchResult, let cursor = searchResult.cursor, let term = literalSearch {
-
-            metadataForSection.unifiedSearchInProgress = true
-            self.collectionView?.reloadData()
-
-            NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
-
-                metadataForSection.unifiedSearchInProgress = false
-                self.collectionView?.reloadData()
-
-                guard let searchResult = searchResult, let metadatas = metadatas else {
-                    return
-                }
-                metadataForSection.searchResult = searchResult
-                var indexPaths: [IndexPath] = []
-                for metadata in metadatas {
-                    self.metadatasSource.append(metadata)
-                    let (indexPath, sameSections) = self.dataSource.addMetadata(metadata)
-                    if let indexPath = indexPath, sameSections {
-                        indexPaths.append(indexPath)
-                    }
-                }
-                self.collectionView?.performBatchUpdates({
-                    self.collectionView?.insertItems(at: indexPaths)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            }
-        }
+        unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -1062,61 +1037,85 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
         else {
-            DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+            self.refreshControl.endRefreshing()
             return
         }
 
         isReloadDataSourceNetworkInProgress = true
         self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
-        collectionView?.reloadData()
-        
+        self.refreshControl.beginRefreshing()
+        self.collectionView.reloadData()
+
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            self.refreshControl.beginRefreshing()
             NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
                 self.providers = allProviders
-            } update: { searchResults, metadatas in
-                guard let metadatas = metadatas, metadatas.count > 0 else { return }
-
-                DispatchQueue.main.async {
-                    if self.searchController?.isActive == true {
-                        self.searchResults = searchResults
-                        self.metadatasSource = metadatas
-                        self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
-                                                       account: self.appDelegate.account,
-                                                       sort: self.layoutForView?.sort,
-                                                       ascending: self.layoutForView?.ascending,
-                                                       directoryOnTop: self.layoutForView?.directoryOnTop,
-                                                       favoriteOnTop: true,
-                                                       filterLivePhoto: true,
-                                                       providers: self.providers,
-                                                       searchResults: self.searchResults)
-                        self.collectionView.reloadData()
-                    }
-                }
-            } completion: { searchResults, metadatas, errorCode, errorDescription in
-                DispatchQueue.main.async {
-                    if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
-                        self.searchResults = searchResults
-                        self.metadatasSource = metadatas
-                    }
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.reloadDataSource()
-                }
+                self.searchResults = []
+                self.dataSource = NCDataSource(
+                    metadatasSource: self.metadatasSource,
+                    account: self.appDelegate.account,
+                    sort: self.layoutForView?.sort,
+                    ascending: self.layoutForView?.ascending,
+                    directoryOnTop: self.layoutForView?.directoryOnTop,
+                    favoriteOnTop: true,
+                    filterLivePhoto: true,
+                    providers: self.providers,
+                    searchResults: self.searchResults)
+            } update: { id, searchResult, metadatas in
+                guard let metadatas = metadatas, metadatas.count > 0, self.isSearching , let searchResult = searchResult else { return }
+                NCOperationQueue.shared.dataSourceAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
+            } completion: {errorCode, errorDescription in
+                self.refreshControl.endRefreshing()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.collectionView.reloadData()
             }
         } else {
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
-                DispatchQueue.main.async {
-                    if self.searchController?.isActive == true, errorCode == 0, let metadatas = metadatas {
-                        self.searchResults = nil
-                        self.metadatasSource = metadatas
-                    }
-                    self.refreshControl.endRefreshing()
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.reloadDataSource()
+                if  self.isSearching, errorCode == 0, let metadatas = metadatas {
+                    self.metadatasSource = metadatas
                 }
+                self.dataSource = NCDataSource(
+                    metadatasSource: self.metadatasSource,
+                    account: self.appDelegate.account,
+                    sort: self.layoutForView?.sort,
+                    ascending: self.layoutForView?.ascending,
+                    directoryOnTop: self.layoutForView?.directoryOnTop,
+                    favoriteOnTop: true,
+                    filterLivePhoto: true,
+                    groupByField: self.groupByField,
+                    providers: self.providers,
+                    searchResults: self.searchResults)
+                self.isReloadDataSourceNetworkInProgress = false
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+
+    func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
+
+        guard let metadataForSection = metadataForSection, let searchResult = metadataForSection.lastSearchResult, let cursor = searchResult.cursor, let term = literalSearch else { return }
+
+        metadataForSection.unifiedSearchInProgress = true
+        self.collectionView?.reloadData()
+
+        NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, ErrorDescription in
+
+            metadataForSection.unifiedSearchInProgress = false
+            guard let searchResult = searchResult, let metadatas = metadatas else { return }
+
+            self.metadatasSource.append(contentsOf: metadatas)
+            let indexPaths = self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
+
+            DispatchQueue.main.async {
+                self.collectionView?.performBatchUpdates({
+                    self.collectionView?.insertItems(at: indexPaths)
+                }, completion: { _ in
+                    self.collectionView?.reloadData()
+                })
             }
         }
     }
@@ -1529,7 +1528,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell = gridCell
         }
 
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
         let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
         var isShare = false
@@ -1808,8 +1807,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
-            let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
-            let entriesCount: Int = metadataForSection?.searchResult?.entries.count ?? 0
+            let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
+            let metadatasCount: Int = metadataForSection?.metadatas.count ?? 0
             let unifiedSearchInProgress = metadataForSection?.unifiedSearchInProgress ?? false
 
             footer.delegate = self
@@ -1825,7 +1824,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
-                if isSearching && isPaginated && entriesCount > 0 {
+                if isSearching && isPaginated && metadatasCount > 0 {
                     footer.buttonIsHidden(false)
                 }
                 if unifiedSearchInProgress {
@@ -1833,7 +1832,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             } else {
                 if sections == 1 || section == sections - 1 {
-                    let info = dataSource.getFooterInformation()
+                    let info = dataSource.getFooterInformationAllMetadatas()
                     footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
                 } else {
                     footer.separatorIsHidden(false)
@@ -1872,18 +1871,14 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if section == 0 && dataSource.numberOfSections() > 1 {
-            return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
-        } else if section == 0 && dataSource.numberOfSections() == 1 {
-            if collectionView.collectionViewLayout == gridLayout {
+        if isSearching || collectionView.collectionViewLayout == gridLayout || dataSource.numberOfSections() > 1 {
+            if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {
-                return (getHeaderHeight(), headerRichWorkspace, 0)
+                return (0, 0, NCGlobal.shared.heightSection)
             }
-        } else if section > 0 && dataSource.numberOfSections() > 1 {
-            return (0, 0, NCGlobal.shared.heightSection)
         } else {
-            return (0, 0, 0)
+            return (getHeaderHeight(), headerRichWorkspace, 0)
         }
     }
 
@@ -1899,8 +1894,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         let sections = dataSource.numberOfSections()
         let metadataForSection = self.dataSource.getMetadataForSection(section)
-        let isPaginated = metadataForSection?.searchResult?.isPaginated ?? false
-        let entriesCount: Int = metadataForSection?.searchResult?.entries.count ?? 0
+        let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
+        let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
@@ -1909,7 +1904,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             size.height += NCGlobal.shared.heightFooter
         }
 
-        if isSearching && isPaginated && entriesCount > 0 {
+        if isSearching && isPaginated && metadatasCount > 0 {
             size.height += NCGlobal.shared.heightFooterButton
         }
 

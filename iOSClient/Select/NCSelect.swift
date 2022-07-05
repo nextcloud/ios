@@ -298,6 +298,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
         }
+
+        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {
@@ -655,7 +657,7 @@ extension NCSelect: UICollectionViewDataSource {
             footer.separatorIsHidden(true)
 
             if sections == 1 || section == sections - 1 {
-                let info = dataSource.getFooterInformation()
+                let info = dataSource.getFooterInformationAllMetadatas()
                 footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
             } else {
                 footer.separatorIsHidden(false)
@@ -679,18 +681,14 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if section == 0 && dataSource.numberOfSections() > 1 {
-            return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
-        } else if section == 0 && dataSource.numberOfSections() == 1 {
-            if collectionView.collectionViewLayout == gridLayout {
+        if isSearching || collectionView.collectionViewLayout == gridLayout || dataSource.numberOfSections() > 1 {
+            if section == 0 {
                 return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {
-                return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
+                return (0, 0, NCGlobal.shared.heightSection)
             }
-        } else if section > 0 && dataSource.numberOfSections() > 1 {
-            return (0, 0, NCGlobal.shared.heightSection)
         } else {
-            return (0, 0, 0)
+            return (NCGlobal.shared.heightButtonsView, headerRichWorkspace, 0)
         }
     }
 
