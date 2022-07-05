@@ -188,15 +188,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if FileManager().fileExists(atPath: iconImagePath) {
             cell.imageItem.image =  UIImage(contentsOfFile:iconImagePath)
         } else if FileManager().fileExists(atPath: imagePath) {
-            if let image = UIImage(contentsOfFile: imagePath) {
-                let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true)
-                if let data = image?.jpegData(compressionQuality: 0.5) {
-                    do {
-                        try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                        cell.imageItem.image = image
-                    } catch {
-                    }
-                }
+            if let image = UIImage(contentsOfFile: imagePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    cell.imageItem.image = image
+                } catch { }
             }
         } else {
             cell.imageItem.image = NCBrandColor.cacheImages.file

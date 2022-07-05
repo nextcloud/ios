@@ -1424,8 +1424,19 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if metadata.name == NCGlobal.shared.appName {
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+
+                let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+
+                if FileManager().fileExists(atPath: iconImagePath) {
                     (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                } else if metadata.status > NCGlobal.shared.metadataStatusNormal && FileManager().fileExists(atPath: imagePath) {
+                    if let image = UIImage(contentsOfFile: imagePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                        do {
+                            try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                            (cell as! NCCellProtocol).filePreviewImageView?.image = image
+                        } catch { }
+                    }
                 } else {
                     NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
                 }

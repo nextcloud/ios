@@ -497,6 +497,8 @@ class NCMetadataForSection: NSObject {
                 if localFile?.offline ?? false {
                     metadataOffLine.append(metadata.ocId)
                 }
+            } else {
+                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             }
 
             // Organized the metadata
