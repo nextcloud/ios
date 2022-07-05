@@ -872,6 +872,7 @@
 "_in_"                      = "in";
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
 "_show_more_results_"       = "Show more results";
+"_wait_wifi_"               = "Waiting for: network is reachable via WiFi or cable";
 
 // Video
 "_select_trace_"            = "Select the trace";
