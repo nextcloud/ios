@@ -167,7 +167,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
 
-        cell.imageItem.image = NCBrandColor.cacheImages.file
+        cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
 
         cell.labelTitle.text = metadata.fileNameView
@@ -182,9 +182,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         cell.progressView.progress = 0.0
 
-        /*
         let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.fileNameView)!
+        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
         if FileManager().fileExists(atPath: iconImagePath) {
             cell.imageItem.image =  UIImage(contentsOfFile:iconImagePath)
@@ -199,11 +198,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                     }
                 }
             }
-        }
-        if cell.imageItem.image == nil {
+        } else {
             cell.imageItem.image = NCBrandColor.cacheImages.file
         }
-        */
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
