@@ -605,7 +605,7 @@ import Queuer
 
             let metadata = tableMetadata.init(value: metadata)
 
-            NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+            NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
 
             metadata.uploadDate = date ?? NSDate()
             metadata.etag = etag ?? ""
@@ -625,21 +625,17 @@ import Queuer
                 metadata.deleteAssetLocalIdentifier = true
             }
 
-            // Remove file
-            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
-#if !EXTENSION
+            #if !EXTENSION
             self.getOcIdInBackgroundSession { listOcId in
                 if listOcId.count == 0 && self.uploadRequest.count == 0 {
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.networkingProcessUpload?.startProcess()
                 }
             }
-            CCUtility.setExif(metadata) { _, _, _, _, _ in }
-#endif
+            #endif
 
             NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
@@ -652,9 +648,9 @@ import Queuer
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 
             } else if errorCode == 401 || errorCode == 403 {
-#if !EXTENSION
+                #if !EXTENSION
                 NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, errorCode: errorCode, errorDescription: errorDescription)
-#endif
+                #endif
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
             } else {
                 if size == 0 {
@@ -666,9 +662,9 @@ import Queuer
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
         }
 
-#if !EXTENSION
+        #if !EXTENSION
         DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-#endif
+        #endif
         // Delete
         self.uploadMetadataInBackground[fileName + serverUrl] = nil
     }
