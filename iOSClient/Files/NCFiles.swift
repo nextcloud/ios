@@ -27,6 +27,7 @@ import NCCommunication
 class NCFiles: NCCollectionViewCommon {
 
     internal var isRoot: Bool = true
+    internal var etagFolder: String?
 
     // MARK: - View Life Cycle
 
@@ -80,9 +81,17 @@ class NCFiles: NCCollectionViewCommon {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
         }
 
+        // etagFolder verify
+        if let etag = self.dataSource.etag, let etagFolder = self.metadataFolder?.etag, etag == etagFolder {
+            return
+        } else if let etagFolder = self.metadataFolder?.etag, !self.metadatasSource.isEmpty {
+            self.etagFolder = etagFolder
+        }
+
         self.dataSource = NCDataSource(
             metadatasSource: self.metadatasSource,
             account: self.appDelegate.account,
+            etag: etagFolder,
             sort: self.layoutForView?.sort,
             ascending: self.layoutForView?.ascending,
             directoryOnTop: self.layoutForView?.directoryOnTop,
@@ -118,6 +127,11 @@ class NCFiles: NCCollectionViewCommon {
                         }
                     }
                 }
+            }
+
+            // clear etag datasource
+            if forced {
+                self.dataSource.etag = nil
             }
 
             DispatchQueue.main.async {
