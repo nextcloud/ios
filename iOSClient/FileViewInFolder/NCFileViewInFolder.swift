@@ -79,7 +79,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(removeEtagFolder: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {

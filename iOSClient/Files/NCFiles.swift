@@ -71,7 +71,7 @@ class NCFiles: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(removeEtagFolder: Bool = true) {
         super.reloadDataSource()
 
         guard !self.isSearching, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty else { return }
@@ -82,6 +82,9 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         // etagFolder verify
+        if removeEtagFolder {
+            self.dataSource.etag = nil
+        }
         if let etag = self.dataSource.etag, let etagFolder = self.metadataFolder?.etag, etag == etagFolder {
             return
         } else if let etagFolder = self.metadataFolder?.etag, !self.metadatasSource.isEmpty {
@@ -139,7 +142,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.isReloadDataSourceNetworkInProgress = false
                 self.richWorkspaceText = tableDirectory?.richWorkspace
                 if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                    self.reloadDataSource()
+                    self.reloadDataSource(removeEtagFolder: forced)
                 } else {
                     self.collectionView?.reloadData()
                 }

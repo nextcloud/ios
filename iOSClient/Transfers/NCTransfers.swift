@@ -271,7 +271,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(removeEtagFolder: Bool = true) {
         super.reloadDataSource()
 
         metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)

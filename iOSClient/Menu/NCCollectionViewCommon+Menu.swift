@@ -158,7 +158,9 @@ extension NCCollectionViewCommon {
         // OFFLINE
         //
         if !isFolderEncrypted {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, completion: self.reloadDataSource))
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, completion: {
+                self.reloadDataSource(removeEtagFolder: true)
+            }))
         }
 
         //

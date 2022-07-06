@@ -44,7 +44,7 @@ class NCOffline: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(removeEtagFolder: Bool = true) {
         super.reloadDataSource()
 
         var ocIds: [String] = []

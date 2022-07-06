@@ -181,7 +181,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationItem()
 
         changeTheming()
-        reloadDataSource()
+        reloadDataSource(removeEtagFolder: false)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -285,7 +285,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         setNavigationItem()
-        reloadDataSource()
+        reloadDataSource(removeEtagFolder: false)
         changeTheming()
     }
 
@@ -1006,7 +1006,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource + NC Endpoint
 
-    @objc func reloadDataSource() {
+    @objc func reloadDataSource(removeEtagFolder: Bool = true) {
 
         if appDelegate.account == "" { return }
 
