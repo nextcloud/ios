@@ -605,7 +605,7 @@ import Queuer
 
             let metadata = tableMetadata.init(value: metadata)
 
-            NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+            NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
 
             metadata.uploadDate = date ?? NSDate()
             metadata.etag = etag ?? ""
@@ -625,21 +625,17 @@ import Queuer
                 metadata.deleteAssetLocalIdentifier = true
             }
 
-            // Remove file
-            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
-#if !EXTENSION
+            #if !EXTENSION
             self.getOcIdInBackgroundSession { listOcId in
                 if listOcId.count == 0 && self.uploadRequest.count == 0 {
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.networkingProcessUpload?.startProcess()
                 }
             }
-            CCUtility.setExif(metadata) { _, _, _, _, _ in }
-#endif
+            #endif
 
             NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
@@ -652,9 +648,9 @@ import Queuer
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 
             } else if errorCode == 401 || errorCode == 403 {
-#if !EXTENSION
+                #if !EXTENSION
                 NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, errorCode: errorCode, errorDescription: errorDescription)
-#endif
+                #endif
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
             } else {
                 if size == 0 {
@@ -666,9 +662,9 @@ import Queuer
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
         }
 
-#if !EXTENSION
+        #if !EXTENSION
         DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-#endif
+        #endif
         // Delete
         self.uploadMetadataInBackground[fileName + serverUrl] = nil
     }
@@ -962,9 +958,12 @@ import Queuer
                        let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { metadata in
+                        let semaphore = Semaphore()
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
                             metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
                 break
@@ -981,9 +980,12 @@ import Queuer
                               filename)) {
                         metadatas.append(metadata)
                     } else {
-                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { metadata in
+                        let semaphore = Semaphore()
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { account, metadata, errorCode, errorDescription in
                             metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     }
                 })
             default:
@@ -1014,12 +1016,15 @@ import Queuer
             switch id {
             case "files":
                 searchResult.entries.forEach({ entry in
-                    if let fileId = entry.fileId, let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
-                        metadatas.append(newMetadata)
+                    if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                        metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { newMetadata in
-                            metadatas.append(newMetadata)
+                        let semaphore = Semaphore()
+                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
+                            metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
                 break
@@ -1029,12 +1034,15 @@ import Queuer
                 searchResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let newMetadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
-                        metadatas.append(newMetadata)
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
+                        metadatas.append(metadata)
                     } else {
-                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { newMetadata in
-                            metadatas.append(newMetadata)
+                        let semaphore = Semaphore()
+                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { account, metadata, errorCode, errorDescription in
+                            metadatas.append(metadata)
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     }
                 })
             default:
@@ -1058,16 +1066,15 @@ import Queuer
         requestsUnifiedSearch.removeAll()
     }
 
-    private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (tableMetadata) -> Void) {
+    private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (String, tableMetadata, Int, String) -> Void) {
         let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
         dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath) { account, metadata, errorCode, errorDescription in
             defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
-            DispatchQueue.main.async {
-                NCManageDatabase.shared.addMetadata(metadata)
-                completion(metadata)
-            }
+            let returnMetadata = tableMetadata.init(value: metadata)
+            NCManageDatabase.shared.addMetadata(metadata)
+            completion(account, returnMetadata, errorCode, errorDescription)
         }
     }
 

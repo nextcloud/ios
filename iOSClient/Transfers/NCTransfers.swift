@@ -167,7 +167,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
 
-        cell.imageItem.image = NCBrandColor.cacheImages.file
+        cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
 
         cell.labelTitle.text = metadata.fileNameView
@@ -182,28 +182,21 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         cell.progressView.progress = 0.0
 
-        /*
         let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.fileNameView)!
+        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
         if FileManager().fileExists(atPath: iconImagePath) {
             cell.imageItem.image =  UIImage(contentsOfFile:iconImagePath)
         } else if FileManager().fileExists(atPath: imagePath) {
-            if let image = UIImage(contentsOfFile: imagePath) {
-                let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true)
-                if let data = image?.jpegData(compressionQuality: 0.5) {
-                    do {
-                        try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                        cell.imageItem.image = image
-                    } catch {
-                    }
-                }
+            if let image = UIImage(contentsOfFile: imagePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    cell.imageItem.image = image
+                } catch { }
             }
-        }
-        if cell.imageItem.image == nil {
+        } else {
             cell.imageItem.image = NCBrandColor.cacheImages.file
         }
-        */
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
@@ -258,8 +251,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         }
         if self.appDelegate.account != metadata.account {
-            cell.labelInfo.text = NSLocalizedString("_user_", comment: "") + ": \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
+            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "") + ": \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
+        if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && NCNetworking.shared.networkReachability != NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
+            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
+        }
+        
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
 
         // Remove last separator
