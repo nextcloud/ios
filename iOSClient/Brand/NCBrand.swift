@@ -106,8 +106,17 @@ import UIKit
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
+        #if !EXTENSION
+        if let tableAccount = NCManageDatabase.shared.getActiveAccount() {
+            instance.settingThemingColor(account: tableAccount.account)
+        } else {
+            instance.createImagesThemingColor()
+        }
+        instance.createUserColors()
+        #else
         instance.createImagesThemingColor()
         instance.createUserColors()
+        #endif
         return instance
     }()
 
@@ -416,63 +425,63 @@ class NCBrandColor: NSObject {
                 // COLOR
                 if themingColor.first == "#" {
                     if let color = UIColor(hex: themingColor) {
-                        NCBrandColor.shared.brand = color
+                        brand = color
                     } else {
-                        NCBrandColor.shared.brand = NCBrandColor.shared.customer
+                        brand = customer
                     }
                 } else {
-                    NCBrandColor.shared.brand = NCBrandColor.shared.customer
+                    brand = customer
                 }
 
                 // COLOR TEXT
                 if themingColorText.first == "#" {
                     if let color = UIColor(hex: themingColorText) {
-                        NCBrandColor.shared.brandText = color
+                        brandText = color
                     } else {
-                        NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+                        brandText = customerText
                     }
                 } else {
-                    NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+                    brandText = customerText
                 }
 
                 // COLOR ELEMENT
                 if themingColorElement.first == "#" {
                     if let color = UIColor(hex: themingColorElement) {
-                        NCBrandColor.shared.brandElement = color
+                        brandElement = color
                     } else {
-                        NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+                        brandElement = brand
                     }
                 } else {
-                    NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+                    brandElement = brand
                 }
             }
 
-            if NCBrandColor.shared.brandElement.isTooLight() {
-                if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
-                    NCBrandColor.shared.brandElement = color
+            if brandElement.isTooLight() {
+                if let color = brandElement.darker(by: darker) {
+                    brandElement = color
                 }
-            } else if NCBrandColor.shared.brandElement.isTooDark() {
-                if let color = NCBrandColor.shared.brandElement.lighter(by: lighter) {
-                    NCBrandColor.shared.brandElement = color
+            } else if brandElement.isTooDark() {
+                if let color = brandElement.lighter(by: lighter) {
+                    brandElement = color
                 }
             }
 
         } else {
 
-            if NCBrandColor.shared.customer.isTooLight() {
-                if let color = NCBrandColor.shared.customer.darker(by: darker) {
-                    NCBrandColor.shared.brandElement = color
+            if self.customer.isTooLight() {
+                if let color = customer.darker(by: darker) {
+                    brandElement = color
                 }
-            } else if NCBrandColor.shared.customer.isTooDark() {
-                if let color = NCBrandColor.shared.customer.lighter(by: lighter) {
-                    NCBrandColor.shared.brandElement = color
+            } else if customer.isTooDark() {
+                if let color = customer.lighter(by: lighter) {
+                    brandElement = color
                 }
             } else {
-                NCBrandColor.shared.brandElement = NCBrandColor.shared.customer
+                brandElement = customer
             }
 
-            NCBrandColor.shared.brand = NCBrandColor.shared.customer
-            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+            brand = customer
+            brandText = customerText
         }
         
         createImagesThemingColor()
