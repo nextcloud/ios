@@ -306,9 +306,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
 
-        // Setting Theming
-        NCBrandColor.shared.settingThemingColor(account: account)
-
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in }
 

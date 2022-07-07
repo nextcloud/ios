@@ -403,9 +403,7 @@ class NCBrandColor: NSObject {
         if NCBrandOptions.shared.use_themingColor {
 
             let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
-
             let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
-
             let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
 
             settingBrandColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
@@ -437,11 +435,8 @@ class NCBrandColor: NSObject {
             NCBrandColor.shared.brand = NCBrandColor.shared.customer
             NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
         }
-
-        DispatchQueue.main.async {
-            self.createImagesThemingColor()
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
-        }
+        
+        createImagesThemingColor()
     }
     #endif
 

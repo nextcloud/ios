@@ -3277,7 +3277,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
-				branch = unifiedsearchimprovement;
+				branch = develop;
 				kind = branch;
 			};
 		};

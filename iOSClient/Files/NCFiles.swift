@@ -99,6 +99,7 @@ class NCFiles: NCCollectionViewCommon {
             searchResults: self.searchResults)
 
         DispatchQueue.main.async {
+            self.changeTheming()
             self.refreshControl.endRefreshing()
             self.collectionView.reloadData()
         }

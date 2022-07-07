@@ -135,7 +135,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Notification
 
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
 
         changeTheming()
     }
@@ -181,7 +181,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         setNavigationItem()
 
-        changeTheming()
         reloadDataSource()
     }
 
@@ -287,9 +286,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         setNavigationItem()
         reloadDataSource()
-        changeTheming()
     }
 
+    @objc func changeThemingWithReloadData() {
+        changeTheming()
+        self.collectionView.reloadData()
+    }
+    
     @objc func changeTheming() {
 
         view.backgroundColor = NCBrandColor.shared.systemBackground
@@ -336,8 +339,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 collectionView.backgroundColor = NCBrandColor.shared.systemBackground
             }
         }
-
-        collectionView.reloadData()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
