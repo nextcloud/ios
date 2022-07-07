@@ -164,6 +164,9 @@ class NCBrandColor: NSObject {
     @objc public let yellowFavorite: UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
 
     public var userColors: [CGColor] = []
+    public var themingColor: String = ""
+    public var themingColorElement: String = ""
+    public var themingColorText: String = ""
 
     @objc public var annotationColor: UIColor {
         get {
@@ -402,11 +405,47 @@ class NCBrandColor: NSObject {
 
         if NCBrandOptions.shared.use_themingColor {
 
-            let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
-            let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
-            let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
+            if let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor),
+               let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement),
+               let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText) {
 
-            settingBrandColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
+                self.themingColor = themingColor
+                self.themingColorElement = themingColorElement
+                self.themingColorText = themingColorText
+                
+                // COLOR
+                if themingColor?.first == "#" {
+                    if let color = UIColor(hex: themingColor) {
+                        NCBrandColor.shared.brand = color
+                    } else {
+                        NCBrandColor.shared.brand = NCBrandColor.shared.customer
+                    }
+                } else {
+                    NCBrandColor.shared.brand = NCBrandColor.shared.customer
+                }
+
+                // COLOR TEXT
+                if themingColorText?.first == "#" {
+                    if let color = UIColor(hex: themingColorText) {
+                        NCBrandColor.shared.brandText = color
+                    } else {
+                        NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+                    }
+                } else {
+                    NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+                }
+
+                // COLOR ELEMENT
+                if themingColorElement?.first == "#" {
+                    if let color = UIColor(hex: themingColorElement) {
+                        NCBrandColor.shared.brandElement = color
+                    } else {
+                        NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+                    }
+                } else {
+                    NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
+                }
+            }
 
             if NCBrandColor.shared.brandElement.isTooLight() {
                 if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
@@ -439,42 +478,6 @@ class NCBrandColor: NSObject {
         createImagesThemingColor()
     }
     #endif
-
-    @objc func settingBrandColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
-
-        // COLOR
-        if themingColor?.first == "#" {
-            if let color = UIColor(hex: themingColor!) {
-                NCBrandColor.shared.brand = color
-            } else {
-                NCBrandColor.shared.brand = NCBrandColor.shared.customer
-            }
-        } else {
-            NCBrandColor.shared.brand = NCBrandColor.shared.customer
-        }
-
-        // COLOR TEXT
-        if themingColorText?.first == "#" {
-            if let color = UIColor(hex: themingColorText!) {
-                NCBrandColor.shared.brandText = color
-            } else {
-                NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
-            }
-        } else {
-            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
-        }
-
-        // COLOR ELEMENT
-        if themingColorElement?.first == "#" {
-            if let color = UIColor(hex: themingColorElement!) {
-                NCBrandColor.shared.brandElement = color
-            } else {
-                NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
-            }
-        } else {
-            NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
-        }
-    }
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
         var step = [CGFloat](repeating: 0, count: 3)
