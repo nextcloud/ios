@@ -28,7 +28,7 @@ class NCDataSource: NSObject {
 
     public var metadatasSource: [tableMetadata] = []
     public var metadatasForSection: [NCMetadataForSection] = []
-    
+
     public var directory: tableDirectory?
 
     private var sectionsValue: [String] = []
