@@ -118,6 +118,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.action(for: .valueChanged) { _ in
+            self.dataSource.clearDataSource()
             self.reloadDataSourceNetwork(forced: true)
         }
 
