@@ -127,14 +127,14 @@ class NCService: NSObject {
     private func requestServerStatus() {
 
         NCCommunication.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NCCommunicationCommon.shared.backgroundQueue) { serverProductName, _, versionMajor, _, _, extendedSupport, errorCode, _ in
+            guard errorCode == 0, extendedSupport == false else {
+                return
+            }
 
-            if errorCode == 0 && extendedSupport == false {
-
-                if serverProductName == "owncloud" {
-                    NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-                } else if versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
-                    NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-                }
+            if serverProductName == "owncloud" {
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+            } else if versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
             }
         }
     }
@@ -267,8 +267,4 @@ class NCService: NSObject {
     }
 
     // MARK: - Thirt Part
-
-    private func requestHC() {
-
-    }
 }
