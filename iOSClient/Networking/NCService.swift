@@ -39,11 +39,11 @@ class NCService: NSObject {
 
         NCManageDatabase.shared.clearAllAvatarLoaded()
 
-        if appDelegate.account == "" { return }
+        guard !appDelegate.account.isEmpty else { return }
 
-        self.addInternalTypeIdentifier()
-        self.requestUserProfile()
-        self.requestServerStatus()
+        addInternalTypeIdentifier()
+        requestServerStatus()
+        requestUserProfile()
     }
 
     // MARK: -
@@ -79,11 +79,27 @@ class NCService: NSObject {
         NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: "com.apple.iwork.keynote.key", classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorQuickLook, iconName: NCCommunicationCommon.typeIconFile.ppt.rawValue, name: "keynote")
     }
 
+    private func requestServerStatus() {
+
+        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NCCommunicationCommon.shared.backgroundQueue) { serverProductName, _, versionMajor, _, _, extendedSupport, errorCode, _ in
+            guard errorCode == 0, extendedSupport == false else {
+                return
+            }
+
+            if serverProductName == "owncloud" {
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+            } else if versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
+                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+            }
+        }
+    }
+
     private func requestUserProfile() {
         guard !appDelegate.account.isEmpty else { return }
 
         NCCommunication.shared.getUserProfile(queue: NCCommunicationCommon.shared.backgroundQueue) { account, userProfile, errorCode, errorDescription in
             guard errorCode == 0, account == self.appDelegate.account else {
+                NCBrandColor.shared.settingThemingColor(account: account)
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
                 }
@@ -124,28 +140,13 @@ class NCService: NSObject {
         }
     }
 
-    private func requestServerStatus() {
-
-        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NCCommunicationCommon.shared.backgroundQueue) { serverProductName, _, versionMajor, _, _, extendedSupport, errorCode, _ in
-            guard errorCode == 0, extendedSupport == false else {
-                return
-            }
-
-            if serverProductName == "owncloud" {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-            } else if versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-            }
-        }
-    }
-
     private func requestServerCapabilities() {
         guard !appDelegate.account.isEmpty else { return }
 
         NCCommunication.shared.getCapabilities(queue: NCCommunicationCommon.shared.backgroundQueue) { account, data, errorCode, errorDescription in
             guard errorCode == 0, let data = data else {
+                NCBrandColor.shared.settingThemingColor(account: account)
                 if errorCode == 401 || errorCode == 403 {
-                    NCBrandColor.shared.settingThemingColor(account: account)
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
                 }
                 return
