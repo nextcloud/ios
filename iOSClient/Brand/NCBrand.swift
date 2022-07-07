@@ -414,7 +414,7 @@ class NCBrandColor: NSObject {
                 self.themingColorText = themingColorText
                 
                 // COLOR
-                if themingColor?.first == "#" {
+                if themingColor.first == "#" {
                     if let color = UIColor(hex: themingColor) {
                         NCBrandColor.shared.brand = color
                     } else {
@@ -425,7 +425,7 @@ class NCBrandColor: NSObject {
                 }
 
                 // COLOR TEXT
-                if themingColorText?.first == "#" {
+                if themingColorText.first == "#" {
                     if let color = UIColor(hex: themingColorText) {
                         NCBrandColor.shared.brandText = color
                     } else {
@@ -436,7 +436,7 @@ class NCBrandColor: NSObject {
                 }
 
                 // COLOR ELEMENT
-                if themingColorElement?.first == "#" {
+                if themingColorElement.first == "#" {
                     if let color = UIColor(hex: themingColorElement) {
                         NCBrandColor.shared.brandElement = color
                     } else {
