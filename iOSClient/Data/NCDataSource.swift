@@ -28,6 +28,7 @@ class NCDataSource: NSObject {
 
     public var metadatasSource: [tableMetadata] = []
     public var metadatasForSection: [NCMetadataForSection] = []
+    
     public var directory: tableDirectory?
 
     private var sectionsValue: [String] = []
@@ -73,6 +74,7 @@ class NCDataSource: NSObject {
 
         self.metadatasSource.removeAll()
         self.metadatasForSection.removeAll()
+        self.directory = nil
         self.sectionsValue.removeAll()
         self.providers = nil
         self.searchResults = nil
