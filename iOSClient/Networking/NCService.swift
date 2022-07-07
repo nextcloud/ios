@@ -83,46 +83,44 @@ class NCService: NSObject {
         guard !appDelegate.account.isEmpty else { return }
 
         NCCommunication.shared.getUserProfile(queue: NCCommunicationCommon.shared.backgroundQueue) { account, userProfile, errorCode, errorDescription in
-
-            if errorCode == 0 && account == self.appDelegate.account {
-
-                // Update User (+ userProfile.id) & active account & account network
-                guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
-                    NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-                    return
-                }
-
-                self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
-
-                // Synchronize favorite
-                NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, _, _ in }
-
-                // Synchronize Offline
-                self.synchronizeOffline(account: tableAccount.account)
-
-                // Get Avatar
-                let fileName = tableAccount.userBaseUrl + "-" + self.appDelegate.user + ".png"
-                let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-                let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-
-                NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, etag, errorCode, _ in
-
-                    if let etag = etag, errorCode == 0 {
-                        NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
-                    } else if errorCode == NCGlobal.shared.errorNotModified {
-
-                        NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
-                    }
-                }
-                self.requestServerCapabilities()
-
-            } else {
-
+            guard errorCode == 0, account == self.appDelegate.account else {
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
                 }
+                return
             }
+
+            // Update User (+ userProfile.id) & active account & account network
+            guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
+                NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+                return
+            }
+
+            self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
+
+            // Synchronize favorite
+            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, _, _ in }
+
+            // Synchronize Offline
+            self.synchronizeOffline(account: tableAccount.account)
+
+            // Get Avatar
+            let fileName = tableAccount.userBaseUrl + "-" + self.appDelegate.user + ".png"
+            let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
+            let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+
+            NCCommunication.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, etag, errorCode, _ in
+                guard let etag = etag, errorCode == 0 else {
+                    if errorCode == NCGlobal.shared.errorNotModified {
+                        NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
+                    }
+                    return
+                }
+                NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
+            }
+
+            self.requestServerCapabilities()
         }
     }
 
@@ -145,7 +143,6 @@ class NCService: NSObject {
         guard !appDelegate.account.isEmpty else { return }
 
         NCCommunication.shared.getCapabilities(queue: NCCommunicationCommon.shared.backgroundQueue) { account, data, errorCode, errorDescription in
-
             guard errorCode == 0, let data = data else {
                 if errorCode == 401 || errorCode == 403 {
                     NCBrandColor.shared.settingThemingColor(account: account)
