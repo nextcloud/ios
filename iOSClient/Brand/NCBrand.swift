@@ -354,13 +354,13 @@ class NCBrandColor: NSObject {
     }
 
     override init() {
-        self.brand = self.customer
-        self.brandElement = self.customer
-        self.brandText = self.customerText
+        brand = customer
+        brandElement = customer
+        brandText = customerText
     }
 
     private func createUserColors() {
-        self.userColors = generateColors()
+        userColors = generateColors()
     }
 
     public func createImagesThemingColor() {
