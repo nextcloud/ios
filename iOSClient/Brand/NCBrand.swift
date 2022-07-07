@@ -476,6 +476,7 @@ class NCBrandColor: NSObject {
         }
         
         createImagesThemingColor()
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
     #endif
 

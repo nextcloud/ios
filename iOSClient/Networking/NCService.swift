@@ -149,7 +149,6 @@ class NCService: NSObject {
             guard errorCode == 0, let data = data else {
                 if errorCode == 401 || errorCode == 403 {
                     NCBrandColor.shared.settingThemingColor(account: account)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
 
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
                 }
@@ -171,7 +170,6 @@ class NCService: NSObject {
             let themingColorTextNew = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
             if themingColorNew != NCBrandColor.shared.themingColor || themingColorElementNew != NCBrandColor.shared.themingColorElement || themingColorTextNew != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
             }
 
             // File Sharing
