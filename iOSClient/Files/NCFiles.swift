@@ -79,10 +79,16 @@ class NCFiles: NCCollectionViewCommon {
         if self.metadataFolder == nil {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
         }
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl))
+
+        if let directory = directory, directory.etag == self.dataSource.directory?.etag {
+            return
+        }
 
         self.dataSource = NCDataSource(
             metadatasSource: self.metadatasSource,
             account: self.appDelegate.account,
+            directory: directory,
             sort: self.layoutForView?.sort,
             ascending: self.layoutForView?.ascending,
             directoryOnTop: self.layoutForView?.directoryOnTop,
@@ -121,7 +127,6 @@ class NCFiles: NCCollectionViewCommon {
             }
 
             DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.richWorkspaceText = tableDirectory?.richWorkspace
                 if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
@@ -129,6 +134,7 @@ class NCFiles: NCCollectionViewCommon {
                 } else {
                     self.collectionView?.reloadData()
                 }
+                self.refreshControl.endRefreshing()
             }
         }
     }
