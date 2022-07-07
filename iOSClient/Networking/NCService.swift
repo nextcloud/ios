@@ -146,7 +146,6 @@ class NCService: NSObject {
             guard errorCode == 0, let data = data else {
                 if errorCode == 401 || errorCode == 403 {
                     NCBrandColor.shared.settingThemingColor(account: account)
-
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, errorCode: errorCode, errorDescription: errorDescription)
                 }
                 return
