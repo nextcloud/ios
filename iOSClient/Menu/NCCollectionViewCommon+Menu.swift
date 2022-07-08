@@ -159,7 +159,7 @@ extension NCCollectionViewCommon {
         //
         if !isFolderEncrypted {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, completion: {
-                self.reloadDataSource(forced: true)
+                self.reloadDataSource()
             }))
         }
 

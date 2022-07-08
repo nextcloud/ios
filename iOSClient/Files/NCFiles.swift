@@ -69,7 +69,9 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     // MARK: - DataSource + NC Endpoint
-
+    //
+    // forced: do no make the etag of directory test (default)
+    //
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
@@ -81,6 +83,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl))
 
+        // FORCED false: yes, test the directory.etag
         if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag {
             return
         }
