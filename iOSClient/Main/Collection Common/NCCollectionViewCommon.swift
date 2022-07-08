@@ -1007,8 +1007,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - DataSource + NC Endpoint
 
     @objc func reloadDataSource(forced: Bool = true) {
-
-        if appDelegate.account == "" { return }
+        guard !appDelegate.account.isEmpty else { return }
 
         // Get richWorkspace Text
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
