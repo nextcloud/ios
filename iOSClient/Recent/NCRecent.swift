@@ -42,6 +42,12 @@ class NCRecent: NCCollectionViewCommon {
         emptyDescription = ""
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        reloadDataSourceNetwork()
+    }
+
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource(forced: Bool = true) {
@@ -67,11 +73,6 @@ class NCRecent: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        if isSearching {
-            networkSearch()
-            return
-        }
 
         let requestBodyRecent =
         """

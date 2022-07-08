@@ -46,13 +46,14 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
+            reloadDataSource()
         }
-
-        super.viewWillAppear(animated)
+        reloadDataSourceNetwork()
     }
 
     // MARK: - NotificationCenter
@@ -75,20 +76,20 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        guard !self.isSearching, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty else { return }
+        guard !isSearching, !appDelegate.account.isEmpty, !appDelegate.urlBase.isEmpty, !serverUrl.isEmpty else { return }
 
-        self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         if self.metadataFolder == nil {
-            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
+            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: appDelegate.urlBase, serverUrl: serverUrl)
         }
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl))
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
 
         // FORCED false: yes, test the directory.etag
-        if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag {
+        if !forced, let directory = directory, directory.etag == dataSource.directory?.etag {
             return
         }
 
-        self.dataSource = NCDataSource(
+        dataSource = NCDataSource(
             metadatasSource: self.metadatasSource,
             account: self.appDelegate.account,
             directory: directory,

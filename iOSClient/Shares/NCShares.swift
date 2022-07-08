@@ -42,6 +42,12 @@ class NCShares: NCCollectionViewCommon {
         emptyDescription = "_tutorial_list_shares_view_"
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        reloadDataSourceNetwork()
+    }
+
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource(forced: Bool = true) {
@@ -78,11 +84,6 @@ class NCShares: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        if isSearching {
-            networkSearch()
-            return
-        }
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

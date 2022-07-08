@@ -42,6 +42,12 @@ class NCOffline: NCCollectionViewCommon {
         emptyDescription = "_tutorial_offline_view_"
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        reloadDataSourceNetwork()
+    }
+
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource(forced: Bool = true) {
@@ -88,11 +94,6 @@ class NCOffline: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        guard !isSearching else {
-            networkSearch()
-            return
-        }
 
         guard !serverUrl.isEmpty else {
             self.reloadDataSource()
