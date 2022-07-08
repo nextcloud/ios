@@ -46,11 +46,11 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
         if isRoot {
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
         }
+        super.viewWillAppear(animated)
     }
 
     // MARK: - NotificationCenter
