@@ -134,7 +134,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Notification
 
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
@@ -249,9 +249,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - NotificationCenter
 
-    @objc func initialize() {
-
-        if appDelegate.account == "" { return }
+    @objc func initialize(_ notification: NSNotification) {
+        guard !appDelegate.account.isEmpty else { return }
 
         // Search
         if searchController?.isActive ?? false || isSearching {
@@ -1008,7 +1007,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
 
         // get layout for view
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        //layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
 
         // set GroupField for Grid
         if !self.isSearching && layoutForView?.layout == NCGlobal.shared.layoutGrid {

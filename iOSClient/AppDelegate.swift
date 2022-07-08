@@ -130,7 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // initialize
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
 
         // Process upload
         networkingProcessUpload = NCNetworkingProcessUpload()
