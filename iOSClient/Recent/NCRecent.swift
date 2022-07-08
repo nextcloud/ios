@@ -42,12 +42,6 @@ class NCRecent: NCCollectionViewCommon {
         emptyDescription = ""
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        reloadDataSourceNetwork()
-    }
-
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource(forced: Bool = true) {

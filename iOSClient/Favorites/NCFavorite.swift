@@ -42,12 +42,6 @@ class NCFavorite: NCCollectionViewCommon {
         emptyDescription = "_tutorial_favorite_view_"
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        reloadDataSourceNetwork()
-    }
-
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource(forced: Bool = true) {

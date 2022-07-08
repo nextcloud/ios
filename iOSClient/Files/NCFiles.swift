@@ -50,10 +50,7 @@ class NCFiles: NCCollectionViewCommon {
 
         if isRoot {
             titleCurrentFolder = getNavigationTitle()
-            reloadDataSource()
         }
-
-        reloadDataSourceNetwork()
     }
 
     // MARK: - NotificationCenter
@@ -63,7 +60,7 @@ class NCFiles: NCCollectionViewCommon {
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
-            reloadDataSource()
+            reloadDataSource(forced: false)
             reloadDataSourceNetwork()
         }
 

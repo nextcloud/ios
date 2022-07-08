@@ -186,6 +186,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationItem()
 
         reloadDataSource(forced: false)
+        reloadDataSourceNetwork()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
