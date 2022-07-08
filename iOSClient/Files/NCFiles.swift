@@ -115,7 +115,6 @@ class NCFiles: NCCollectionViewCommon {
             networkSearch()
             return
         }
-
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
