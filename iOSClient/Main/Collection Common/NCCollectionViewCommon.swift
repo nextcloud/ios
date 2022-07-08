@@ -346,14 +346,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl
-        else {
-            return
-        }
-
         reloadDataSourceNetwork(forced: true)
     }
 
