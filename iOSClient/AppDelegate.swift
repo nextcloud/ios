@@ -298,8 +298,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: -
 
     @objc private func initialize() {
-
-        if account == "" { return }
+        guard !account.isEmpty else { return }
 
         NCCommunicationCommon.shared.writeLog("initialize Main")
 

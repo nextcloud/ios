@@ -121,10 +121,8 @@ class NCFiles: NCCollectionViewCommon {
         networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
-                    if !metadata.directory {
-                        if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                        }
+                    if !metadata.directory, NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
+                        NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                     }
                 }
             }
