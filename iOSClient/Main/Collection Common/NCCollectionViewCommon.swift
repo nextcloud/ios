@@ -136,17 +136,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // ACTIVE
         appDelegate.activeViewController = self
 
-        //
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
+
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(setNavigationItem), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil)
@@ -239,7 +243,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        changeTheming()
+       //changeTheming()
     }
 
     // MARK: - NotificationCenter
@@ -276,12 +280,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.navigationController?.popToRootViewController(animated: false)
         }
 
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
+
         setNavigationItem()
     }
 
     @objc func changeThemingWithReloadData() {
         changeTheming()
-        self.collectionView.reloadData()
+        collectionView.reloadData()
     }
     
     @objc func changeTheming() {
@@ -290,18 +302,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.tintColor = .gray
 
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
-
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            collectionView?.collectionViewLayout = listLayout
-        } else {
-            collectionView?.collectionViewLayout = gridLayout
-        }
-
         // IMAGE BACKGROUND
-        if layoutForView?.imageBackgroud != "" {
-            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView!.imageBackgroud
+        if let layoutForView = layoutForView, layoutForView.imageBackgroud != "" {
+            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView.imageBackgroud
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: imagePath))
                 if let image = UIImage(data: data) {

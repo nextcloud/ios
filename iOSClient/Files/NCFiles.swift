@@ -46,13 +46,16 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        if isRoot {
+            serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
+        }
         super.viewWillAppear(animated)
 
         if isRoot {
-            serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
             reloadDataSource()
         }
+
         reloadDataSourceNetwork()
     }
 
@@ -63,6 +66,7 @@ class NCFiles: NCCollectionViewCommon {
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
+            reloadDataSource()
             reloadDataSourceNetwork(forced: true)
         }
 
@@ -103,7 +107,6 @@ class NCFiles: NCCollectionViewCommon {
             searchResults: self.searchResults)
 
         DispatchQueue.main.async {
-            self.changeTheming()
             self.refreshControl.endRefreshing()
             self.collectionView.reloadData()
         }
