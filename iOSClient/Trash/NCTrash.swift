@@ -241,7 +241,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     // MARK: - DataSource
 
-    @objc func reloadDataSource() {
+    @objc func reloadDataSource(forced: Bool = true) {
 
         layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
 

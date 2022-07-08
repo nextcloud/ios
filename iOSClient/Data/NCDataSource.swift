@@ -82,6 +82,11 @@ class NCDataSource: NSObject {
         self.localFiles.removeAll()
     }
 
+    func clearDirectory() {
+
+        self.directory = nil
+    }
+
     func addSection(metadatas: [tableMetadata], searchResult: NCCSearchResult?) {
 
         self.metadatasSource.append(contentsOf: metadatas)

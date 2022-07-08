@@ -118,7 +118,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.action(for: .valueChanged) { _ in
-            self.dataSource.clearDataSource()
+            self.dataSource.clearDirectory()
             self.reloadDataSourceNetwork(forced: true)
         }
 
@@ -181,7 +181,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         setNavigationItem()
 
-        reloadDataSource()
+        reloadDataSource(forced: false)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -285,7 +285,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         setNavigationItem()
-        reloadDataSource()
+        reloadDataSource(forced: false)
     }
 
     @objc func changeThemingWithReloadData() {
@@ -342,7 +342,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-
         reloadDataSource()
     }
 
@@ -437,7 +436,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func renameFile(_ notification: NSNotification) {
-
         reloadDataSource()
     }
 
@@ -1008,7 +1006,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource + NC Endpoint
 
-    @objc func reloadDataSource() {
+    @objc func reloadDataSource(forced: Bool = true) {
 
         if appDelegate.account == "" { return }
 

@@ -44,7 +44,7 @@ class NCRecent: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {

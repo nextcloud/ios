@@ -70,7 +70,7 @@ class NCFiles: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
         guard !self.isSearching, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty else { return }
@@ -81,7 +81,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl))
 
-        if let directory = directory, directory.etag == self.dataSource.directory?.etag {
+        if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag {
             return
         }
 
@@ -131,7 +131,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.isReloadDataSourceNetworkInProgress = false
                 self.richWorkspaceText = tableDirectory?.richWorkspace
                 if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                    self.reloadDataSource()
+                    self.reloadDataSource(forced: false)
                 } else {
                     self.collectionView?.reloadData()
                 }
