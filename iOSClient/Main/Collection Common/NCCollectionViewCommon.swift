@@ -243,8 +243,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-
-       //changeTheming()
+        // Toggle Appearance
+        changeTheming()
     }
 
     // MARK: - NotificationCenter
