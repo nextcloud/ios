@@ -62,14 +62,16 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
         }
 
+        // ----
+        super.initialize(notification)
+        // ----
+
         if let userInfo = notification.userInfo as NSDictionary?, userInfo["atStart"] as? Int != nil {
             print("Initialize at Start")
         } else {
             reloadDataSource(forced: false)
             reloadDataSourceNetwork()
         }
-
-        super.initialize(notification)
     }
 
     // MARK: - DataSource + NC Endpoint
