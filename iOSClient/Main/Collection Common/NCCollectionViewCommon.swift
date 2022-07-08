@@ -285,7 +285,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         setNavigationItem()
-        reloadDataSource(forced: false)
     }
 
     @objc func changeThemingWithReloadData() {
