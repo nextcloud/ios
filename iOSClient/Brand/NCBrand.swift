@@ -411,7 +411,6 @@ class NCBrandColor: NSObject {
         cacheImages.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
     }
 
-    #if !EXTENSION
     func settingThemingColor(account: String) {
 
         let darker: CGFloat = 30    // %
@@ -490,9 +489,10 @@ class NCBrandColor: NSObject {
         }
         
         createImagesThemingColor()
+        #if !EXTENSION
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+        #endif
     }
-    #endif
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
         var step = [CGFloat](repeating: 0, count: 3)
