@@ -106,17 +106,6 @@ import UIKit
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
-        #if !EXTENSION
-        if let tableAccount = NCManageDatabase.shared.getActiveAccount() {
-            instance.settingThemingColor(account: tableAccount.account)
-        } else {
-            instance.createImagesThemingColor()
-        }
-        instance.createUserColors()
-        #else
-        instance.createImagesThemingColor()
-        instance.createUserColors()
-        #endif
         return instance
     }()
 
@@ -359,11 +348,27 @@ class NCBrandColor: NSObject {
         brandText = customerText
     }
 
-    private func createUserColors() {
+    /*
+    func createColors() {
+        #if !EXTENSION
+        if let tableAccount = NCManageDatabase.shared.getActiveAccount() {
+            settingThemingColor(account: tableAccount.account)
+        } else {
+            createImagesThemingColor()
+        }
+        createUserColors()
+        #else
+        createImagesThemingColor()
+        createUserColors()
+        #endif
+    }
+    */
+    
+    func createUserColors() {
         userColors = generateColors()
     }
 
-    public func createImagesThemingColor() {
+    func createImagesThemingColor() {
 
         let gray: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
 
@@ -407,7 +412,7 @@ class NCBrandColor: NSObject {
     }
 
     #if !EXTENSION
-    public func settingThemingColor(account: String) {
+    func settingThemingColor(account: String) {
 
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %

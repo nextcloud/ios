@@ -120,13 +120,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
 
+            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+
         } else {
 
             CCUtility.deleteAllChainStore()
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
+
+            NCBrandColor.shared.createImagesThemingColor()
         }
+
+        // Create user color
+        NCBrandColor.shared.createUserColors()
 
         // initialize
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
