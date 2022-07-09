@@ -74,8 +74,10 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-
-        if appDelegate.account == "" { return }
+        guard !appDelegate.account.isEmpty else {
+            completion(0)
+            return
+        }
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)

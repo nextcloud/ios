@@ -85,7 +85,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
 
-        // FORCED false: yes, test the directory.etag
+        // FORCED false: test the directory.etag
         if !forced, let directory = directory, directory.etag == dataSource.directory?.etag {
             return
         }
