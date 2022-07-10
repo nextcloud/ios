@@ -166,7 +166,9 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         sortMenu.toggleMenu(viewController: self, key: NCGlobal.shared.layoutViewTrash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }
 
-    func tapButtonMore(_ sender: Any) { }
+    func tapButtonMore(_ sender: Any) {
+        toggleMenuMoreHeader()
+    }
 
     func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
 
