@@ -172,7 +172,7 @@
             
             NSInteger logLevel = [CCUtility getLogLevel];
             BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
-            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp];
+            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
                 [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
             } else {

@@ -477,10 +477,14 @@ class NCUtility: NSObject {
         }
     }
 
-    @objc func getVersionApp() -> String {
+    @objc func getVersionApp(withBuild: Bool = true) -> String {
         if let dictionary = Bundle.main.infoDictionary {
             if let version = dictionary["CFBundleShortVersionString"], let build = dictionary["CFBundleVersion"] {
-                return "\(version).\(build)"
+                if withBuild {
+                    return "\(version).\(build)"
+                } else {
+                    return "\(version)"
+                }
             }
         }
         return ""
