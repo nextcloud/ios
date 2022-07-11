@@ -192,7 +192,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // ITMS-90076: Potential Loss of Keychain Access
         if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty, NCUtility.shared.getVersionApp(withBuild: false) == "4.4.1" {
 
-            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: NSLocalizedString("_ITMS-90076_", comment: ""), preferredStyle: .alert)
+            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings, we are sorry about what happened but it is not up to us.", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             window?.rootViewController?.present(alertController, animated: true, completion: { })
         }
