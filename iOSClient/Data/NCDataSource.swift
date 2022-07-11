@@ -29,6 +29,8 @@ class NCDataSource: NSObject {
     public var metadatasSource: [tableMetadata] = []
     public var metadatasForSection: [NCMetadataForSection] = []
 
+    public var directory: tableDirectory?
+
     private var sectionsValue: [String] = []
     private var providers: [NCCSearchProvider]?
     private var searchResults: [NCCSearchResult]?
@@ -46,10 +48,11 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatasSource: [tableMetadata], account: String, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NCCSearchProvider]? = nil, searchResults: [NCCSearchResult]? = nil) {
+    init(metadatasSource: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NCCSearchProvider]? = nil, searchResults: [NCCSearchResult]? = nil) {
         super.init()
 
         self.metadatasSource = metadatasSource
+        self.directory = directory
         self.shares = NCManageDatabase.shared.getTableShares(account: account)
         self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
         self.sort = sort ?? "none"
@@ -71,11 +74,17 @@ class NCDataSource: NSObject {
 
         self.metadatasSource.removeAll()
         self.metadatasForSection.removeAll()
+        self.directory = nil
         self.sectionsValue.removeAll()
         self.providers = nil
         self.searchResults = nil
         self.shares.removeAll()
         self.localFiles.removeAll()
+    }
+
+    func clearDirectory() {
+
+        self.directory = nil
     }
 
     func addSection(metadatas: [tableMetadata], searchResult: NCCSearchResult?) {

@@ -46,43 +46,54 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
         }
-
         super.viewWillAppear(animated)
     }
 
     // MARK: - NotificationCenter
 
-    override func initialize() {
-
+    override func initialize(_ notification: NSNotification) {
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
-            reloadDataSourceNetwork(forced: true)
+        }
+        super.initialize(notification)
+
+        if let userInfo = notification.userInfo as NSDictionary?, userInfo["atStart"] as? Int == 1 {
+            return
         }
 
-        super.initialize()
+        reloadDataSource(forced: false)
+        reloadDataSourceNetwork()
     }
 
     // MARK: - DataSource + NC Endpoint
-
-    override func reloadDataSource() {
+    //
+    // forced: do no make the etag of directory test (default)
+    //
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        guard !self.isSearching, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty else { return }
+        guard !isSearching, !appDelegate.account.isEmpty, !appDelegate.urlBase.isEmpty, !serverUrl.isEmpty else { return }
 
-        self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         if self.metadataFolder == nil {
-            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
+            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: appDelegate.urlBase, serverUrl: serverUrl)
+        }
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+
+        // FORCED false: test the directory.etag
+        if !forced, let directory = directory, directory.etag == dataSource.directory?.etag {
+            return
         }
 
-        self.dataSource = NCDataSource(
+        dataSource = NCDataSource(
             metadatasSource: self.metadatasSource,
             account: self.appDelegate.account,
+            directory: directory,
             sort: self.layoutForView?.sort,
             ascending: self.layoutForView?.ascending,
             directoryOnTop: self.layoutForView?.directoryOnTop,
@@ -100,34 +111,29 @@ class NCFiles: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        if isSearching {
+        guard !isSearching else {
             networkSearch()
             return
         }
-
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
         networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
-                    if !metadata.directory {
-                        if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                        }
+                    if !metadata.directory, NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
+                        NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                     }
                 }
             }
 
             DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.richWorkspaceText = tableDirectory?.richWorkspace
+                self.refreshControl.endRefreshing()
+                self.collectionView?.reloadData()
                 if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                    self.reloadDataSource()
-                } else {
-                    self.collectionView?.reloadData()
+                    self.reloadDataSource(forced: false)
                 }
             }
         }

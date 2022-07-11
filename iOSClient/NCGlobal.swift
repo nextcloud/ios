@@ -324,14 +324,13 @@ class NCGlobal: NSObject {
     let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
     let notificationCenterApplicationWillResignActive           = "applicationWillResignActive"
 
-    @objc let notificationCenterInitialize                      = "initialize"
+    @objc let notificationCenterInitialize                      = "initialize"                      // userInfo?: atStart
     @objc let notificationCenterChangeTheming                   = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterOpenFileViewInFolder                  = "openFileViewInFolder"            // userInfo: serverUrl, fileName
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"                // userInfo: ocId?, serverUrl?
     let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"   // userInfo: serverUrl?

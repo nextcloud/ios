@@ -53,8 +53,7 @@ class NCNetworkingProcessUpload: NSObject {
     }
 
     @objc private func process() {
-
-        if appDelegate.account == "" { return }
+        guard !appDelegate.account.isEmpty else { return }
 
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]

@@ -44,7 +44,7 @@ class NCOffline: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
         var ocIds: [String] = []
@@ -88,11 +88,6 @@ class NCOffline: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        guard !isSearching else {
-            networkSearch()
-            return
-        }
 
         guard !serverUrl.isEmpty else {
             self.reloadDataSource()

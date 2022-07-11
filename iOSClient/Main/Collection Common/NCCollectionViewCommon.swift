@@ -118,6 +118,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.action(for: .valueChanged) { _ in
+            self.dataSource.clearDirectory()
             self.reloadDataSourceNetwork(forced: true)
         }
 
@@ -133,19 +134,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Notification
 
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // ACTIVE
         appDelegate.activeViewController = self
 
-        //
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
+
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(setNavigationItem), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil)
@@ -180,16 +185,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         setNavigationItem()
 
-        changeTheming()
-        reloadDataSource()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        if !isSearching {
-            reloadDataSourceNetwork()
-        }
+        reloadDataSource(forced: false)
+        reloadDataSourceNetwork()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -246,15 +243,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-
+        // Toggle Appearance
         changeTheming()
     }
 
     // MARK: - NotificationCenter
 
-    @objc func initialize() {
-
-        if appDelegate.account == "" { return }
+    @objc func initialize(_ notification: NSNotification) {
+        guard !appDelegate.account.isEmpty else { return }
 
         // Search
         if searchController?.isActive ?? false || isSearching {
@@ -284,29 +280,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.navigationController?.popToRootViewController(animated: false)
         }
 
-        setNavigationItem()
-        reloadDataSource()
-        changeTheming()
-    }
-
-    @objc func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
-        refreshControl.tintColor = .gray
-
         layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
-
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
         }
 
+        setNavigationItem()
+    }
+
+    @objc func changeThemingWithReloadData() {
+        changeTheming()
+        collectionView.reloadData()
+    }
+    
+    @objc func changeTheming() {
+
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        refreshControl.tintColor = .gray
+
         // IMAGE BACKGROUND
-        if layoutForView?.imageBackgroud != "" {
-            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView!.imageBackgroud
+        if let layoutForView = layoutForView, layoutForView.imageBackgroud != "" {
+            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView.imageBackgroud
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: imagePath))
                 if let image = UIImage(data: data) {
@@ -335,24 +333,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 collectionView.backgroundColor = NCBrandColor.shared.systemBackground
             }
         }
-
-        collectionView.reloadData()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-
         reloadDataSource()
     }
 
     @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl
-        else {
-            return
-        }
-
         reloadDataSourceNetwork(forced: true)
     }
 
@@ -435,7 +422,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func renameFile(_ notification: NSNotification) {
-
         reloadDataSource()
     }
 
@@ -1006,9 +992,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource + NC Endpoint
 
-    @objc func reloadDataSource() {
-
-        if appDelegate.account == "" { return }
+    @objc func reloadDataSource(forced: Bool = true) {
+        guard !appDelegate.account.isEmpty else { return }
 
         // Get richWorkspace Text
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
@@ -1022,7 +1007,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
 
         // get layout for view
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        //layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
 
         // set GroupField for Grid
         if !self.isSearching && layoutForView?.layout == NCGlobal.shared.layoutGrid {

@@ -471,8 +471,7 @@ extension NCMedia {
     // MARK: - Datasource
 
     @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-
-        if appDelegate.account == "" { return }
+        guard !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
             self.metadatas = []

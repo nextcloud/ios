@@ -44,7 +44,7 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
@@ -78,11 +78,6 @@ class NCShares: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        if isSearching {
-            networkSearch()
-            return
-        }
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

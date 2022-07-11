@@ -120,17 +120,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
 
+            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+
         } else {
 
             CCUtility.deleteAllChainStore()
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
+
+            NCBrandColor.shared.createImagesThemingColor()
         }
+
+        // Create user color
+        NCBrandColor.shared.createUserColors()
 
         // initialize
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
 
         // Process upload
         networkingProcessUpload = NCNetworkingProcessUpload()
@@ -180,6 +187,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.presentPasscode {
                 self.enableTouchFaceID()
             }
+        }
+
+        // ITMS-90076: Potential Loss of Keychain Access
+        if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty, NCUtility.shared.getVersionApp(withBuild: false) == "4.4.1" {
+
+            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings, we are sorry about what happened but it is not up to us.", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+            window?.rootViewController?.present(alertController, animated: true, completion: { })
         }
 
         return true
@@ -298,16 +313,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: -
 
     @objc private func initialize() {
-
-        if account == "" { return }
+        guard !account.isEmpty else { return }
 
         NCCommunicationCommon.shared.writeLog("initialize Main")
 
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
-
-        // Setting Theming
-        NCBrandColor.shared.settingThemingColor(account: account)
 
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in }

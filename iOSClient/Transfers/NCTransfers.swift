@@ -167,7 +167,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
 
-        cell.imageItem.image = nil
+        cell.imageItem.image = NCBrandColor.cacheImages.file
         cell.imageItem.backgroundColor = nil
 
         cell.labelTitle.text = metadata.fileNameView
@@ -187,7 +187,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         if FileManager().fileExists(atPath: iconImagePath) {
             cell.imageItem.image =  UIImage(contentsOfFile:iconImagePath)
-        } else if FileManager().fileExists(atPath: imagePath) {
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, FileManager().fileExists(atPath: imagePath) {
             if let image = UIImage(contentsOfFile: imagePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
@@ -195,7 +195,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                 } catch { }
             }
         } else {
-            cell.imageItem.image = NCBrandColor.cacheImages.file
+            cell.imageItem.image = UIImage(named: metadata.iconName)
         }
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
@@ -271,7 +271,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
         metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)

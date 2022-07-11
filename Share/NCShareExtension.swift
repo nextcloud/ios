@@ -126,6 +126,14 @@ class NCShareExtension: UIViewController {
             NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
+        // Colors
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+        } else {
+            NCBrandColor.shared.createImagesThemingColor()
+        }
+        NCBrandColor.shared.createUserColors()
+
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5

@@ -44,7 +44,7 @@ class NCFavorite: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
         if !self.isSearching {
@@ -74,11 +74,6 @@ class NCFavorite: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        if isSearching {
-            networkSearch()
-            return
-        }
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
