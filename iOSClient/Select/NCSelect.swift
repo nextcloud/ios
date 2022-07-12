@@ -813,18 +813,30 @@ class NCSelectCommandView: UIView {
         selectButton?.layer.cornerRadius = 15
         selectButton?.layer.masksToBounds = true
         selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectButton?.backgroundColor = NCBrandColor.shared.brand
+        selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        selectButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         createFolderButton?.layer.cornerRadius = 15
         createFolderButton?.layer.masksToBounds = true
         createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
+        createFolderButton?.backgroundColor = NCBrandColor.shared.brand
+        createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        createFolderButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         copyButton?.layer.cornerRadius = 15
         copyButton?.layer.masksToBounds = true
         copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
+        copyButton?.backgroundColor = NCBrandColor.shared.brand
+        copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        copyButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         moveButton?.layer.cornerRadius = 15
         moveButton?.layer.masksToBounds = true
         moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
+        moveButton?.backgroundColor = NCBrandColor.shared.brand
+        moveButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        moveButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
     }
 
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {
