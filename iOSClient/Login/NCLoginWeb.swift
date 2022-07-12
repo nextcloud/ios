@@ -99,7 +99,7 @@ class NCLoginWeb: UIViewController {
         appDelegate.timerErrorNetworking?.invalidate()
 
         // ITMS-90076: Potential Loss of Keychain Access
-        if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty, NCUtility.shared.getVersionApp(withBuild: false) == "4.4.1" {
+        if let account = NCManageDatabase.shared.getActiveAccount(), appDelegate.errorITMS90076 {
 
             var title = titleView
             if let host = URL(string: urlBase)?.host {
