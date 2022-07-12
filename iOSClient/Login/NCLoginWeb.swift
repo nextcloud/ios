@@ -31,6 +31,7 @@ class NCLoginWeb: UIViewController {
     var activityIndicator: UIActivityIndicatorView!
     var webView: WKWebView?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var titleView: String = ""
 
     @objc var urlBase = ""
 
@@ -45,6 +46,9 @@ class NCLoginWeb: UIViewController {
         super.viewDidLoad()
 
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
+        // TITLE
+        titleView = urlBase
+        title = titleView
 
         if NCBrandOptions.shared.use_login_web_personalized  && accountCount > 0 {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
@@ -93,6 +97,21 @@ class NCLoginWeb: UIViewController {
 
         // Stop timer error network
         appDelegate.timerErrorNetworking?.invalidate()
+
+        // ITMS-90076: Potential Loss of Keychain Access
+        if let account = NCManageDatabase.shared.getActiveAccount(), appDelegate.errorITMS90076, !CCUtility.getPresentErrorITMS90076() {
+
+            var title = titleView
+            if let host = URL(string: urlBase)?.host {
+                title = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
+            }
+            let alertController = UIAlertController(title: title, message: "\n" + NSLocalizedString("_ITMS-90076_", comment: ""), preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+            present(alertController, animated: true, completion: {
+                CCUtility.setPresentErrorITMS90076(true)
+            })
+            return
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {

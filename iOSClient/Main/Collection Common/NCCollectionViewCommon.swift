@@ -186,7 +186,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationItem()
 
         reloadDataSource(forced: false)
-        reloadDataSourceNetwork()
+        if !isSearching {
+            reloadDataSourceNetwork()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -340,7 +342,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
-        reloadDataSourceNetwork(forced: true)
+        if !isSearching {
+            reloadDataSourceNetwork(forced: true)
+        }
     }
 
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
