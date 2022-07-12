@@ -723,6 +723,17 @@
     [UICKeyChainStore setString:sSet forKey:@"removePhotoCameraRoll" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)getPresentErrorITMS90076
+{
+    return [[UICKeyChainStore stringForKey:@"errorITMS90076" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setPresentErrorITMS90076:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"errorITMS90076" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

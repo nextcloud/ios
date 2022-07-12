@@ -99,7 +99,7 @@ class NCLoginWeb: UIViewController {
         appDelegate.timerErrorNetworking?.invalidate()
 
         // ITMS-90076: Potential Loss of Keychain Access
-        if let account = NCManageDatabase.shared.getActiveAccount(), appDelegate.errorITMS90076 {
+        if let account = NCManageDatabase.shared.getActiveAccount(), appDelegate.errorITMS90076, !CCUtility.getPresentErrorITMS90076() {
 
             var title = titleView
             if let host = URL(string: urlBase)?.host {
@@ -107,7 +107,9 @@ class NCLoginWeb: UIViewController {
             }
             let alertController = UIAlertController(title: title, message: "\n" + "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings, we are sorry about what happened but it is not up to us.", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-            present(alertController, animated: true, completion: { })
+            present(alertController, animated: true, completion: {
+                CCUtility.setPresentErrorITMS90076(true)
+            })
             return
         }
     }
