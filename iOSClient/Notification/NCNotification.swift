@@ -164,18 +164,20 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
         cell.primary.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.primary.setTitleColor(.white, for: .normal)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
         cell.primary.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
+        cell.primary.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true
         cell.secondary.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.secondary.setTitleColor(NCBrandColor.shared.label, for: .normal)
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
-        cell.secondary.layer.backgroundColor = NCBrandColor.shared.systemFill.cgColor
+        cell.secondary.layer.borderWidth = 1
+        cell.secondary.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        cell.secondary.layer.backgroundColor = NCBrandColor.shared.secondarySystemBackground.cgColor
+        cell.secondary.setTitleColor(.black, for: .normal)
 
         // Action
         if let actions = notification.actions,
