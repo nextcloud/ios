@@ -101,6 +101,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             navBarAppearance.configureWithTransparentBackground()
             navBarAppearance.shadowColor = .clear
             navBarAppearance.shadowImage = UIImage()
+            navBarAppearance.titleTextAttributes = [.foregroundColor: textColor]
+            navBarAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
             self.navigationController?.navigationBar.standardAppearance = navBarAppearance
             self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         } else {
