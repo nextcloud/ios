@@ -127,14 +127,16 @@ class NCFiles: NCCollectionViewCommon {
                 }
             }
 
+            self.isReloadDataSourceNetworkInProgress = false
+            self.richWorkspaceText = tableDirectory?.richWorkspace
+
             DispatchQueue.main.async {
-                self.isReloadDataSourceNetworkInProgress = false
-                self.richWorkspaceText = tableDirectory?.richWorkspace
                 self.refreshControl.endRefreshing()
                 self.collectionView?.reloadData()
-                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                    self.reloadDataSource(forced: false)
-                }
+            }
+
+            if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
+                self.reloadDataSource(forced: false)
             }
         }
     }
