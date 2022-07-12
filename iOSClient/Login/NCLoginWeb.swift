@@ -105,7 +105,7 @@ class NCLoginWeb: UIViewController {
             if let host = URL(string: urlBase)?.host {
                 title = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
             }
-            let alertController = UIAlertController(title: title, message: "\n" + "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings, we are sorry about what happened but it is not up to us.", preferredStyle: .alert)
+            let alertController = UIAlertController(title: title, message: "\n" + NSLocalizedString("_ITMS-90076_", comment: ""), preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             present(alertController, animated: true, completion: {
                 CCUtility.setPresentErrorITMS90076(true)
