@@ -345,8 +345,13 @@
         NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }];
+        UIAlertAction *copyPassphrase = [UIAlertAction actionWithTitle:NSLocalizedString(@"_copy_passphrase_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            UIPasteboard.generalPasteboard.string = e2ePassphrase;
+        }];
+
         [alertController addAction:okAction];
+        [alertController addAction:copyPassphrase];
         [self presentViewController:alertController animated:YES completion:nil];
         
     } else if ([passcodeType isEqualToString:@"removeLocallyEncryption"]) {

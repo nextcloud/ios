@@ -77,9 +77,7 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        DispatchQueue.main.async {
-            self.refreshControl.endRefreshing()
-        }
+        DispatchQueue.main.async { self.refreshControl.endRefreshing() }
         guard !isSearching, !appDelegate.account.isEmpty, !appDelegate.urlBase.isEmpty, !serverUrl.isEmpty else { return }
 
         self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
@@ -106,9 +104,7 @@ class NCFiles: NCCollectionViewCommon {
             providers: self.providers,
             searchResults: self.searchResults)
 
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
+        DispatchQueue.main.async { self.collectionView.reloadData() }
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
@@ -134,6 +130,8 @@ class NCFiles: NCCollectionViewCommon {
 
             if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
                 self.reloadDataSource(forced: false)
+            } else if self.dataSource.metadatasSource.isEmpty {
+                DispatchQueue.main.async { self.collectionView.reloadData() }
             }
         }
     }
