@@ -24,6 +24,7 @@
 import UIKit
 import CoreLocation
 import NCCommunication
+import Photos
 
 class NCAutoUpload: NSObject {
     @objc static let shared: NCAutoUpload = {
@@ -171,6 +172,9 @@ class NCAutoUpload: NSObject {
                         metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                         metadataForUpload.session = session
                         metadataForUpload.sessionSelector = selector
+                        if selector != NCGlobal.shared.selectorUploadAutoUploadAll {
+                            metadataForUpload.isAutoupload = true
+                        }
                         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                         if assetMediaType == PHAssetMediaType.video {
                             metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
@@ -200,6 +204,9 @@ class NCAutoUpload: NSObject {
                                     let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
                                     metadataForUpload.session = session
                                     metadataForUpload.sessionSelector = selector
+                                    if selector != NCGlobal.shared.selectorUploadAutoUploadAll {
+                                        metadataForUpload.isAutoupload = true
+                                    }
                                     metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
                                     metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                                     metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue

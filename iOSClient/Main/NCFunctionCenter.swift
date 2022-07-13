@@ -26,6 +26,7 @@ import NCCommunication
 import Queuer
 import JGProgressHUD
 import SVGKit
+import Photos
 
 @objc class NCFunctionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     @objc public static let shared: NCFunctionCenter = {

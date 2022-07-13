@@ -24,6 +24,7 @@
 import UIKit
 import TLPhotoPicker
 import MobileCoreServices
+import Photos
 
 // MARK: - Photo Picker
 

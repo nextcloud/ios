@@ -385,6 +385,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var iconUrl = ""
+    @objc dynamic var isAutoupload: Bool = false
     @objc dynamic var livePhoto: Bool = false
     @objc dynamic var mountType = ""
     @objc dynamic var name = ""

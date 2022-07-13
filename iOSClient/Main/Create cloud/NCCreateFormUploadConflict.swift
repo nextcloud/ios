@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import Photos
 
 @objc protocol NCCreateFormUploadConflictDelegate {
     @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)

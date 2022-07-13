@@ -27,6 +27,7 @@ import RealmSwift
 import NCCommunication
 import SwiftyJSON
 import CoreMedia
+import Photos
 
 class NCManageDatabase: NSObject {
     @objc static let shared: NCManageDatabase = {

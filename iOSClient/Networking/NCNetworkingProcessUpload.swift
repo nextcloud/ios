@@ -111,6 +111,10 @@ class NCNetworkingProcessUpload: NSObject {
 
                         // Chunk 
                         if metadata.chunk && UIApplication.shared.applicationState == .active {
+                            if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && metadata.isAutoupload && NCNetworking.shared.networkReachability != NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
+                                continue
+                            }
+
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     // start
