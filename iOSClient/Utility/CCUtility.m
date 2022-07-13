@@ -734,6 +734,17 @@
     [UICKeyChainStore setString:sSet forKey:@"errorITMS90076" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)getPlayerPlay
+{
+    return [[UICKeyChainStore stringForKey:@"playerPlay" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setPlayerPlay:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"playerPlay" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

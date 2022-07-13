@@ -388,6 +388,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+        guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
 
         if UIDevice.current.userInterfaceIdiom == .phone && self.pdfThumbnailScrollView.isHidden {
             if let tipView = self.tipView {

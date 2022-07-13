@@ -186,7 +186,7 @@ class NCPlayer: NSObject {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":self.metadata.ocId, "enableTimerAutoHide": false])
                     }
                     self.activateObserver()
-                    if self.autoPlay {
+                    if self.autoPlay || CCUtility.getPlayerPlay() {
                         self.player?.play()
                     }
                     self.isStartPlayer = true
