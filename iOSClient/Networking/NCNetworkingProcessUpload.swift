@@ -71,13 +71,7 @@ class NCNetworkingProcessUpload: NSObject {
                 if counterUpload < self.maxConcurrentOperationUpload {
 
                     let limit = self.maxConcurrentOperationUpload - counterUpload
-                    var predicate = NSPredicate()
-                    if UIApplication.shared.applicationState == .background {
-                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND (classFile != %@ || livePhoto == true)", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload, NCCommunicationCommon.typeClassFile.video.rawValue)
-                    } else {
-                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload)
-                    }
-                    let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
+                    let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
                         NCCommunicationCommon.shared.writeLog("PROCESS-UPLOAD find \(metadatas.count) items")
                     }
