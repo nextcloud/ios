@@ -98,13 +98,18 @@ extension NCCreateFormUploadConflictDelegate {
 
         buttonCancel.layer.cornerRadius = 20
         buttonCancel.layer.masksToBounds = true
+        buttonCancel.layer.borderWidth = 0.5
+        buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
+        buttonCancel.backgroundColor = NCBrandColor.shared.systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
+        buttonCancel.setTitleColor(NCBrandColor.shared.label, for: .normal)
 
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
+        buttonContinue.backgroundColor = NCBrandColor.shared.brand
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
+        buttonContinue.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         let blurEffect = UIBlurEffect(style: .light)
         blurView = UIVisualEffectView(effect: blurEffect)
