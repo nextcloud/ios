@@ -170,7 +170,6 @@ class NCAutoUpload: NSObject {
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         }
                         metadatas.append(metadata)
-
                         /* INSERT METADATA MOV LIVE PHOTO FOR UPLOAD */
                         if livePhoto {
                             let fileName = (fileName as NSString).deletingPathExtension + ".mov"
