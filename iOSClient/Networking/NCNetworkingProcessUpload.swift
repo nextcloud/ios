@@ -213,20 +213,15 @@ class NCNetworkingProcessUpload: NSObject {
     @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false) {
 
         var metadatasForUpload: [tableMetadata] = []
-
         for metadata in metadatas {
-
             if verifyAlreadyExists {
                 if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
                     continue
                 }
             }
-
             metadatasForUpload.append(metadata)
         }
-
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-
         startProcess()
     }
 
