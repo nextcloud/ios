@@ -151,7 +151,6 @@ class NCAutoUpload: NSObject {
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         }
                     } else {
-                        /* INSERT METADATA FOR UPLOAD */
                         let metadata = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
                         metadata.assetLocalIdentifier = asset.localIdentifier
                         metadata.session = session
@@ -168,24 +167,6 @@ class NCAutoUpload: NSObject {
                         if selector == NCGlobal.shared.selectorUploadAutoUpload {
                             NCCommunicationCommon.shared.writeLog("Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
-                        }
-                        metadatas.append(metadata)
-                        /* INSERT METADATA MOV LIVE PHOTO FOR UPLOAD */
-                        if livePhoto {
-                            let fileName = (fileName as NSString).deletingPathExtension + ".mov"
-                            let ocId = NSUUID().uuidString
-                            let metadata = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
-                            metadata.session = session
-                            metadata.sessionSelector = selector
-                            if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                                metadata.isAutoupload = true
-                            }
-                            metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-                            metadata.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
-                            if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                                NCCommunicationCommon.shared.writeLog("Automatic upload added Live Photo \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
-                            }
-                            metadatas.append(metadata)
                         }
                     }
                 }

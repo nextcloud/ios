@@ -362,7 +362,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             let useFolderPhotoRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
             let useSubFolderRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
             var useSubFolder: Bool = false
-            var metadatasMOV: [tableMetadata] = []
             var metadatasNOConflict: [tableMetadata] = []
             var metadatasUploadInConflict: [tableMetadata] = []
             let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
@@ -410,18 +409,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                if livePhoto {
-                    let fileNameMove = (fileName as NSString).deletingPathExtension + ".mov"
-                    let ocId = NSUUID().uuidString
-                    let metadataMOVForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileNameMove, fileNameView: fileNameMove, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
-
-                    metadataMOVForUpload.session = self.session
-                    metadataMOVForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                    metadataMOVForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                    metadataMOVForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
-                    metadatasMOV.append(metadataMOVForUpload)
-                }
-
                 if NCManageDatabase.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
                     metadatasUploadInConflict.append(metadataForUpload)
                 } else {
@@ -437,7 +424,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
                         conflict.serverUrl = self.serverUrl
                         conflict.metadatasNOConflict = metadatasNOConflict
-                        conflict.metadatasMOV = metadatasMOV
                         conflict.metadatasUploadInConflict = metadatasUploadInConflict
                         conflict.delegate = self.appDelegate
 
@@ -448,7 +434,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             } else {
 
                 self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
-                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasMOV)
             }
 
             DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }
