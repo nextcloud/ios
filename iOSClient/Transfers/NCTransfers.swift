@@ -127,12 +127,19 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     @objc func startTask(_ notification: Any) {
 
         guard let metadata = metadataTemp else { return }
+        guard let networkingProcessUpload = appDelegate.networkingProcessUpload else { return }
 
-//        metadata.status = NCGlobal.shared.metadataStatusInUpload
-//        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+        let (metadataForUpload, metadataLivePhotoForUpload) = networkingProcessUpload.extractFiles(from: metadata, queue: DispatchQueue.global(qos: .background))
 
-//        NCManageDatabase.shared.addMetadata(metadata)
-//        NCNetworking.shared.upload(metadata: metadata) { } completion: { _, _ in }
+        // Upload
+        if let metadata = metadataForUpload, let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+            NCNetworking.shared.upload(metadata: metadata)
+        }
+
+        // Upload Live photo
+        if let metadata = metadataLivePhotoForUpload, let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+            NCNetworking.shared.upload(metadata: metadata)
+        }
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
