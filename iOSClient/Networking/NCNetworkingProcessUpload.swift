@@ -110,8 +110,7 @@ class NCNetworkingProcessUpload: NSObject {
                         if let metadata = metadataForUpload {
                             if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active { continue }
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata) {
-                                } completion: { _, _ in }
+                                NCNetworking.shared.upload(metadata: metadata)
                             }
                             if metadata.e2eEncrypted || metadata.chunk {
                                 counterUpload = self.maxConcurrentOperationUpload
@@ -124,8 +123,7 @@ class NCNetworkingProcessUpload: NSObject {
                         if let metadata = metadataLivePhotoForUpload {
                             if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active { continue }
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata) {
-                                } completion: { _, _ in }
+                                NCNetworking.shared.upload(metadata: metadata)
                             }
                             if metadata.e2eEncrypted || metadata.chunk {
                                 counterUpload = self.maxConcurrentOperationUpload
