@@ -104,7 +104,7 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                         }
 
-                        let (metadataForUpload, metadataLivePhotoForUpload) = self.extractMetadataFileLive(metadata: metadata, queue: queue)
+                        let (metadataForUpload, metadataLivePhotoForUpload) = self.extractFiles(from: metadata, queue: queue)
 
                         // Upload
                         if let metadata = metadataForUpload {
@@ -186,7 +186,7 @@ class NCNetworkingProcessUpload: NSObject {
 
     // MARK: -
 
-    func extractMetadataFileLive(metadata: tableMetadata, queue: DispatchQueue) -> (metadataForUpload: tableMetadata?, metadataLivePhotoForUpload: tableMetadata?) {
+    func extractFiles(from metadata: tableMetadata, queue: DispatchQueue) -> (metadataForUpload: tableMetadata?, metadataLivePhotoForUpload: tableMetadata?) {
 
         var metadataForUpload: tableMetadata?
         var metadataLivePhotoForUpload: tableMetadata?
