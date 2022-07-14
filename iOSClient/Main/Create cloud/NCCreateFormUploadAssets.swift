@@ -365,13 +365,13 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             var metadatasMOV: [tableMetadata] = []
             var metadatasNOConflict: [tableMetadata] = []
             var metadatasUploadInConflict: [tableMetadata] = []
+            let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
 
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
                 self.serverUrl = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
 
-            let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
             if autoUploadPath == self.serverUrl {
                 if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
@@ -385,30 +385,23 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 var livePhoto: Bool = false
                 let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)!
                 let assetDate = asset.creationDate ?? Date()
-                let dateFormatter = DateFormatter()
 
-                // Detect LivePhoto Upload
                 if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
                     livePhoto = true
                 }
 
-                // Create serverUrl if use sub folder
                 if useSubFolder {
-
+                    let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy"
                     let yearString = dateFormatter.string(from: assetDate)
-
                     dateFormatter.dateFormat = "MM"
                     let monthString = dateFormatter.string(from: assetDate)
-
                     serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
                 }
 
                 // Check if is in upload
                 let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
-                if isRecordInSessions.count > 0 {
-                    continue
-                }
+                if isRecordInSessions.count > 0 { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
 
@@ -418,31 +411,15 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
                 if livePhoto {
-
                     let fileNameMove = (fileName as NSString).deletingPathExtension + ".mov"
                     let ocId = NSUUID().uuidString
-                    let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameMove)!
+                    let metadataMOVForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileNameMove, fileNameView: fileNameMove, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
 
-                    let semaphore = Semaphore()
-                    CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { url in
-                        if let url = url {
-                            let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
-                            let metadataMOVForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileNameMove, fileNameView: fileNameMove, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
-
-                            metadataForUpload.livePhoto = true
-                            metadataMOVForUpload.livePhoto = true
-
-                            metadataMOVForUpload.session = self.session
-                            metadataMOVForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                            metadataMOVForUpload.size = fileSize
-                            metadataMOVForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                            metadataMOVForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
-
-                            metadatasMOV.append(metadataMOVForUpload)
-                        }
-                        semaphore.continue()
-                    }
-                    semaphore.wait()
+                    metadataMOVForUpload.session = self.session
+                    metadataMOVForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                    metadataMOVForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                    metadataMOVForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+                    metadatasMOV.append(metadataMOVForUpload)
                 }
 
                 if NCManageDatabase.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
