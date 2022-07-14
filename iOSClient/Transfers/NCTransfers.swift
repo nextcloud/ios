@@ -127,6 +127,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     @objc func startTask(_ notification: Any) {
 
         guard let metadata = metadataTemp else { return }
+        guard appDelegate.account == metadata.account else { return }
         guard let networkingProcessUpload = appDelegate.networkingProcessUpload else { return }
 
         let (metadataForUpload, metadataLivePhotoForUpload) = networkingProcessUpload.extractFiles(from: metadata, queue: DispatchQueue.global(qos: .background))
