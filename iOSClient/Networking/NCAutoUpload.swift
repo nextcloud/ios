@@ -60,6 +60,7 @@ class NCAutoUpload: NSObject {
     }
 
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
+        
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window?.rootViewController) { hasPermission in
             guard hasPermission else { return }
 
@@ -208,10 +209,10 @@ class NCAutoUpload: NSObject {
 
         getCameraRollAssets(viewController: viewController, account: activeAccount, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { assets in
             NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: activeAccount.account)
-            if let assets = assets {
-                NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
-                NCCommunicationCommon.shared.writeLog("Align Photo Library \(assets.count)")
-            }
+            guard let assets = assets else { return }
+
+            NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
+            NCCommunicationCommon.shared.writeLog("Align Photo Library \(assets.count)")
         }
     }
 
@@ -264,7 +265,6 @@ class NCAutoUpload: NSObject {
                 }
             }
             completion(newAssets)
-
         }
     }
 }
