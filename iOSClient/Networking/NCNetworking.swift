@@ -421,8 +421,8 @@ import Photos
     @objc func upload(metadata: tableMetadata,
                       start: @escaping () -> () = { },
                       completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> () = { errorCode, errorDescription in }) {
-        let metadata = tableMetadata.init(value: metadata)
 
+        let metadata = tableMetadata.init(value: metadata)
         NCCommunicationCommon.shared.writeLog("Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.e2eEncrypted)]")
 
         if metadata.e2eEncrypted {
