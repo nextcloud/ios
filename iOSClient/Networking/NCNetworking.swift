@@ -489,7 +489,7 @@ import Photos
 
         } else {
 
-            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata) { extractMetadata, fileNamePath in
+            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, queue: .main) { extractMetadata, fileNamePath in
 
                 guard let metadata = extractMetadata else {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))

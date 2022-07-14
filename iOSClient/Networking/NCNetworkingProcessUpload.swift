@@ -24,6 +24,7 @@
 import UIKit
 import NCCommunication
 import Photos
+import Queuer
 
 class NCNetworkingProcessUpload: NSObject {
 
@@ -55,6 +56,7 @@ class NCNetworkingProcessUpload: NSObject {
     @objc private func process() {
         guard !appDelegate.account.isEmpty else { return }
 
+        let queue = DispatchQueue.global(qos: .background)
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -65,7 +67,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         print("[LOG] PROCESS-UPLOAD \(counterUpload)")
 
-        NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(qos: .background), completion: { listOcId in
+        NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
 
             for sessionSelector in sessionSelectors {
                 if counterUpload < self.maxConcurrentOperationUpload {
@@ -107,11 +109,12 @@ class NCNetworkingProcessUpload: NSObject {
                         }
 
                         // OK EXTRACT
+                        let semaphore = Semaphore()
                         if !metadata.assetLocalIdentifier.isEmpty {
-                            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata) { extractMetadata, fileNamePath in
+                            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, queue: queue) { extractMetadata, fileNamePath in
                                 if let metadata = extractMetadata {
                                     let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                                    NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: toPath)
+                                    NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath!, toPath: toPath)
                                     metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
                                     // DETECT IF CHUNCK
                                     if chunckSize > 0 && metadata.size > chunckSize {
@@ -130,7 +133,7 @@ class NCNetworkingProcessUpload: NSObject {
                                             let ocId = NSUUID().uuidString
                                             let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
                                             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
-                                            CCUtility.extractLivePhotoAsset(fetchAssets.firstObject, filePath: filePath) { url in
+                                            CCUtility.extractLivePhotoAsset(fetchAssets.firstObject, filePath: filePath, queue: queue) { url in
                                                 if url != nil {
                                                     let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
                                                     metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
@@ -146,17 +149,24 @@ class NCNetworkingProcessUpload: NSObject {
                                                     }
                                                     metadataLivePhotoForUpload = NCManageDatabase.shared.addMetadata(metadataLivePhoto)
                                                 }
+                                                semaphore.continue()
                                             }
+                                        } else {
+                                            semaphore.continue()
                                         }
+                                    } else {
+                                        semaphore.continue()
                                     }
                                 } else {
                                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                    semaphore.continue()
                                 }
                             }
                         } else {
-
+                            semaphore.continue()
                         }
-
+                        semaphore.wait()
+                        
                         // Chunk 
                         if metadata.chunk && UIApplication.shared.applicationState == .active {
 //                            if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && metadata.isAutoupload && NCNetworking.shared.networkReachability != NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {

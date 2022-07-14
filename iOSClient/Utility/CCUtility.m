@@ -1352,136 +1352,142 @@
     return path;
 }
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload queue:(dispatch_queue_t)queue completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
 {
     if (metadataForUpload == nil) {
-        return completion(nil, nil);
+        dispatch_async(queue, ^{
+            completion(nil, nil);
+        });
+        return;
     }
     
     tableMetadata *metadata = [[NCManageDatabase shared] copyObjectWithMetadata:metadataForUpload];
     
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
-        return completion(nil, nil);
+        dispatch_async(queue, ^{
+            completion(nil, nil);
+        });
+        return;
     }
     
     PHAsset *asset = result[0];
     NSDate *creationDate = asset.creationDate;
     NSDate *modificationDate = asset.modificationDate;
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    
-        // IMAGE
-        if (asset.mediaType == PHAssetMediaTypeImage) {
-            
-            PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = YES;
-            options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-            options.synchronous = YES;
-            options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
-                
-                NSLog(@"cacheAsset: %f", progress);
-                
-                if (error) {
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
-                    return completion(nil, nil);
-                }
-            };
-            
-            NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
-            
-            //raw image will always ignore any edits made to the photo if compatibility is false
-            if ([extensionAsset isEqualToString:@"DNG"]) {
-                options.version = PHImageRequestOptionsVersionOriginal;
-            }
-            
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                
-                NSError *error = nil;
-                NSString *fileName = metadata.fileNameView;
+    // IMAGE
+    if (asset.mediaType == PHAssetMediaTypeImage) {
 
-                if (([extensionAsset isEqualToString:@"HEIC"] || [extensionAsset isEqualToString:@"DNG"]) && [CCUtility getFormatCompatibility]) {
-                    
-                    CIImage *ciImage = [CIImage imageWithData:imageData];
-                    CIContext *context = [CIContext context];
-                    imageData = [context JPEGRepresentationOfImage:ciImage colorSpace:ciImage.colorSpace options:@{}];
-                    
-                    NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
-                    fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
-                    metadata.contentType = @"image/jpeg";
-                    metadata.ext = @"jpg";
-                }
-                
-                NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:fileName];
-                
-                [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
-                [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
-                
-                if (metadata.e2eEncrypted) {
-                    metadata.fileNameView = fileName;
-                } else {
-                    metadata.fileNameView = fileName;
-                    metadata.fileName = fileName;
-                }
-                     
-                metadata.creationDate = creationDate;
-                metadata.date = modificationDate;
-                metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(metadata, fileNamePath);
-                });
-            }];
-        }
-    
-        // VIDEO
-        if (asset.mediaType == PHAssetMediaTypeVideo) {
-            
-            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = YES;
-            options.version = PHVideoRequestOptionsVersionOriginal;
-            options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
-                
-                NSLog(@"cacheAsset: %f", progress);
-                
-                if (error) {
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
+        PHImageRequestOptions *options = [PHImageRequestOptions new];
+        options.networkAccessAllowed = YES;
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        options.synchronous = YES;
+        options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
+
+            NSLog(@"cacheAsset: %f", progress);
+
+            if (error) {
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
+                dispatch_async(queue, ^{
                     completion(nil, nil);
-                }
-            };
-            
-            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
-                
-                if ([asset isKindOfClass:[AVURLAsset class]]) {
-                    
-                    NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
-                    NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
-                    NSError *error = nil;
-                    //NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys: modificationDate, NSFileModificationDate, creationDate, NSFileCreationDate, NULL];
+                });
+                return;
+            }
+        };
 
-                    [[NSFileManager defaultManager] removeItemAtURL:fileNamePathURL error:nil];
-                    [[NSFileManager defaultManager] copyItemAtURL:[(AVURLAsset *)asset URL] toURL:fileNamePathURL error:&error];
-                    //[[NSFileManager defaultManager] setAttributes: attributes ofItemAtPath:fileNamePath error:nil];
+        NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
 
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        if (error) {
-                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
-                            completion(nil, nil);
-                        } else {
-                            metadata.creationDate = creationDate;
-                            metadata.date = modificationDate;
-                            metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
-                            completion(metadata, fileNamePath);
-                        }
-                    });
-                }
-            }];
+        //raw image will always ignore any edits made to the photo if compatibility is false
+        if ([extensionAsset isEqualToString:@"DNG"]) {
+            options.version = PHImageRequestOptionsVersionOriginal;
         }
-    });
+
+        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+
+            NSError *error = nil;
+            NSString *fileName = metadata.fileNameView;
+
+            if (([extensionAsset isEqualToString:@"HEIC"] || [extensionAsset isEqualToString:@"DNG"]) && [CCUtility getFormatCompatibility]) {
+
+                CIImage *ciImage = [CIImage imageWithData:imageData];
+                CIContext *context = [CIContext context];
+                imageData = [context JPEGRepresentationOfImage:ciImage colorSpace:ciImage.colorSpace options:@{}];
+
+                NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
+                fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
+                metadata.contentType = @"image/jpeg";
+                metadata.ext = @"jpg";
+            }
+
+            NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:fileName];
+
+            [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
+            [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
+
+            if (metadata.e2eEncrypted) {
+                metadata.fileNameView = fileName;
+            } else {
+                metadata.fileNameView = fileName;
+                metadata.fileName = fileName;
+            }
+
+            metadata.creationDate = creationDate;
+            metadata.date = modificationDate;
+            metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
+
+            dispatch_async(queue, ^{
+                completion(metadata, fileNamePath);
+            });
+        }];
+    }
+
+    // VIDEO
+    if (asset.mediaType == PHAssetMediaTypeVideo) {
+
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.networkAccessAllowed = YES;
+        options.version = PHVideoRequestOptionsVersionOriginal;
+        options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
+
+            NSLog(@"cacheAsset: %f", progress);
+
+            if (error) {
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
+                dispatch_async(queue, ^{
+                    completion(nil, nil);
+                });
+                return;
+            }
+        };
+
+        [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+
+            if ([asset isKindOfClass:[AVURLAsset class]]) {
+
+                NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
+                NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
+                NSError *error = nil;
+
+                [[NSFileManager defaultManager] removeItemAtURL:fileNamePathURL error:nil];
+                [[NSFileManager defaultManager] copyItemAtURL:[(AVURLAsset *)asset URL] toURL:fileNamePathURL error:&error];
+
+                dispatch_async(queue, ^{
+                    if (error) {
+                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
+                        completion(nil, nil);
+                    } else {
+                        metadata.creationDate = creationDate;
+                        metadata.date = modificationDate;
+                        metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
+                        completion(metadata, fileNamePath);
+                    }
+                });
+            }
+        }];
+    }
 }
 
-+ (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion
++ (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath queue:(dispatch_queue_t)queue withCompletion:(void (^)(NSURL* url))completion
 {    
     [CCUtility removeFileAtPath:filePath];
     NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
@@ -1501,12 +1507,24 @@
             }
             if(videoResource){
                 [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
-                    if (!error) {
-                        completion(fileUrl);
-                    } else { completion(nil); }
+                    dispatch_async(queue, ^{
+                        if (!error) {
+                            completion(fileUrl);
+                        } else {
+                            completion(nil);
+                        }
+                    });
                 }];
-            } else { completion(nil); }
-        } else { completion(nil); }
+            } else {
+                dispatch_async(queue, ^{
+                    completion(nil);
+                });
+            }
+        } else {
+            dispatch_async(queue, ^{
+                completion(nil);
+            });
+        }
     }];
 }
 
