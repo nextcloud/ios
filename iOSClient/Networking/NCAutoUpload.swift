@@ -156,7 +156,7 @@ class NCAutoUpload: NSObject {
                         metadata.assetLocalIdentifier = asset.localIdentifier
                         metadata.session = session
                         metadata.sessionSelector = selector
-                        if selector != NCGlobal.shared.selectorUploadAutoUploadAll {
+                        if selector == NCGlobal.shared.selectorUploadAutoUpload {
                             metadata.isAutoupload = true
                         }
                         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
@@ -177,7 +177,7 @@ class NCAutoUpload: NSObject {
                             let metadata = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
                             metadata.session = session
                             metadata.sessionSelector = selector
-                            if selector != NCGlobal.shared.selectorUploadAutoUploadAll {
+                            if selector == NCGlobal.shared.selectorUploadAutoUpload {
                                 metadata.isAutoupload = true
                             }
                             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
