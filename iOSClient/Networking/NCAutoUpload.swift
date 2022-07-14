@@ -82,6 +82,7 @@ class NCAutoUpload: NSObject {
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
+        let chunckSize = CCUtility.getChunkSize() * 1000000
         var counterLivePhoto: Int = 0
         var metadataFull: [tableMetadata] = []
         var counterItemsUpload: Int = 0
@@ -175,6 +176,9 @@ class NCAutoUpload: NSObject {
                         if selector != NCGlobal.shared.selectorUploadAutoUploadAll {
                             metadataForUpload.isAutoupload = true
                         }
+                        if chunckSize > 0 && metadataForUpload.size > chunckSize {
+                            metadataForUpload.chunk = true
+                        }
                         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                         if assetMediaType == PHAssetMediaType.video {
                             metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
@@ -210,7 +214,9 @@ class NCAutoUpload: NSObject {
                                     metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
                                     metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                                     metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
-
+                                    if chunckSize > 0 && metadataForUpload.size > chunckSize {
+                                        metadataForUpload.chunk = true
+                                    }
                                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                                         NCCommunicationCommon.shared.writeLog("Automatic upload added Live Photo \(metadataForUpload.fileNameView) with Identifier \(metadataForUpload.assetLocalIdentifier)")
                                         self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload], verifyAlreadyExists: true)
