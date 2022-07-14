@@ -74,6 +74,7 @@ class NCAutoUpload: NSObject {
         }
     }
 
+    // DispatchQueue
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
         guard !appDelegate.account.isEmpty else {
             completion(0)
@@ -82,33 +83,25 @@ class NCAutoUpload: NSObject {
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
-        let chunckSize = CCUtility.getChunkSize() * 1000000
         var counterLivePhoto: Int = 0
         var metadataFull: [tableMetadata] = []
         var counterItemsUpload: Int = 0
         DispatchQueue.global(qos: .background).async {
 
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
-
-                if assets == nil || assets?.count == 0 {
+                guard let assets = assets, !assets.isEmpty else {
                     NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found [" + log + "]")
-                    DispatchQueue.main.async {
-                        completion(counterItemsUpload)
-                    }
+                    completion(counterItemsUpload)
                     return
-                } else {
-                    NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets?.count ?? 0) assets found [" + log + "]")
                 }
-                guard let assets = assets else { return }
+                NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets.count) assets found [" + log + "]")
 
                 // Create the folder for auto upload & if request the subfolders
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
-                    DispatchQueue.main.async {
-                        if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
-                        }
-                        return completion(counterItemsUpload)
+                    if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                     }
+                    return completion(counterItemsUpload)
                 }
 
                 self.endForAssetToUpload = false
@@ -176,9 +169,6 @@ class NCAutoUpload: NSObject {
                         if selector != NCGlobal.shared.selectorUploadAutoUploadAll {
                             metadataForUpload.isAutoupload = true
                         }
-                        if chunckSize > 0 && metadataForUpload.size > chunckSize {
-                            metadataForUpload.chunk = true
-                        }
                         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                         if assetMediaType == PHAssetMediaType.video {
                             metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
@@ -201,8 +191,18 @@ class NCAutoUpload: NSObject {
                             counterLivePhoto += 1
                             let fileName = (fileName as NSString).deletingPathExtension + ".mov"
                             let ocId = NSUUID().uuidString
-                            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                            //let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
 
+                            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
+                            metadataForUpload.session = session
+                            metadataForUpload.sessionSelector = selector
+                            if selector != NCGlobal.shared.selectorUploadAutoUploadAll {
+                                metadataForUpload.isAutoupload = true
+                            }
+
+
+
+                            /*
                             CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { url in
                                 if url != nil {
                                     let metadataForUpload = NCManageDatabase.shared.createMetadata(account: account.account, user: account.user, userId: account.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: account.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
@@ -214,9 +214,6 @@ class NCAutoUpload: NSObject {
                                     metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
                                     metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                                     metadataForUpload.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
-                                    if chunckSize > 0 && metadataForUpload.size > chunckSize {
-                                        metadataForUpload.chunk = true
-                                    }
                                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                                         NCCommunicationCommon.shared.writeLog("Automatic upload added Live Photo \(metadataForUpload.fileNameView) with Identifier \(metadataForUpload.assetLocalIdentifier)")
                                         self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload], verifyAlreadyExists: true)
@@ -236,6 +233,7 @@ class NCAutoUpload: NSObject {
                                     }
                                 }
                             }
+                            */
                         }
                     }
                 }
@@ -243,12 +241,10 @@ class NCAutoUpload: NSObject {
                 self.endForAssetToUpload = true
 
                 if counterLivePhoto == 0 {
-                    DispatchQueue.main.async {
-                        if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                            self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadataFull)
-                        }
-                        completion(counterItemsUpload)
+                    if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
+                        self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadataFull)
                     }
+                    completion(counterItemsUpload)
                 }
             }
         }
