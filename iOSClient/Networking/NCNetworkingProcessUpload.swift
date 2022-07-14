@@ -193,7 +193,7 @@ class NCNetworkingProcessUpload: NSObject {
         var metadataForUpload: tableMetadata?
         var metadataLivePhotoForUpload: tableMetadata?
         let chunckSize = CCUtility.getChunkSize() * 1000000
-        var semaphore = Semaphore()
+        let semaphore = Semaphore()
 
         guard queue != .main else { return(nil, nil) }
         guard !metadata.assetLocalIdentifier.isEmpty else {
