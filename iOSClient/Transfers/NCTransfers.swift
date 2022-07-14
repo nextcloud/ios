@@ -128,11 +128,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         guard let metadata = metadataTemp else { return }
 
-        metadata.status = NCGlobal.shared.metadataStatusInUpload
-        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+//        metadata.status = NCGlobal.shared.metadataStatusInUpload
+//        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
 
-        NCManageDatabase.shared.addMetadata(metadata)
-        //NCNetworking.shared.upload(metadata: metadata) { } completion: { _, _ in }
+//        NCManageDatabase.shared.addMetadata(metadata)
+//        NCNetworking.shared.upload(metadata: metadata) { } completion: { _, _ in }
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
