@@ -132,7 +132,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
 
         NCManageDatabase.shared.addMetadata(metadata)
-        NCNetworking.shared.upload(metadata: metadata) { } completion: { _, _ in }
+        //NCNetworking.shared.upload(metadata: metadata) { } completion: { _, _ in }
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
