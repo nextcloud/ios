@@ -339,7 +339,14 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
         let metadata = uploadMetadata[counterUploaded]
-
+        //let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        //metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+        let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
+        metadata.contentType = results.mimeType
+        metadata.iconName = results.iconName
+        metadata.classFile = results.classFile
+        //if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadata.creationDate = date }
+        //if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadata.date = date }
         // E2EE
         metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         // CHUNCK
