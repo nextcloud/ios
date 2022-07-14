@@ -221,9 +221,11 @@ extension NCManageDatabase {
         return metadata
     }
 
-    @objc func addMetadata(_ metadata: tableMetadata) {
+    @discardableResult
+    @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
 
         let realm = try! Realm()
+        let returnMetadata = tableMetadata.init(value: metadata)
 
         do {
             try realm.safeWrite {
@@ -231,7 +233,9 @@ extension NCManageDatabase {
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            return nil
         }
+        return returnMetadata
     }
 
     @objc func addMetadatas(_ metadatas: [tableMetadata]) {

@@ -705,7 +705,7 @@ import Photos
         }
     }
 
-    func getOcIdInBackgroundSession(completion: @escaping (_ listOcId: [String]) -> Void) {
+    func getOcIdInBackgroundSession(queue: DispatchQueue = .main, completion: @escaping (_ listOcId: [String]) -> Void) {
 
         var listOcId: [String] = []
 
@@ -717,7 +717,7 @@ import Photos
                 for task in tasks {
                     listOcId.append(task.description)
                 }
-                completion(listOcId)
+                queue.async { completion(listOcId) }
             })
         })
     }

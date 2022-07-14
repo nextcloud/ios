@@ -57,15 +57,15 @@ class NCNetworkingProcessUpload: NSObject {
 
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
-
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
+        let chunckSize = CCUtility.getChunkSize() * 1000000
         counterUpload = metadatasUpload.count
 
         stopTimer()
 
         print("[LOG] PROCESS-UPLOAD \(counterUpload)")
 
-        NCNetworking.shared.getOcIdInBackgroundSession { listOcId in
+        NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(qos: .background), completion: { listOcId in
 
             for sessionSelector in sessionSelectors {
                 if counterUpload < self.maxConcurrentOperationUpload {
@@ -77,6 +77,9 @@ class NCNetworkingProcessUpload: NSObject {
                     }
 
                     for metadata in metadatas {
+
+                        var metadataForUpload: tableMetadata?
+                        var metadataLivePhotoForUpload: tableMetadata?
 
                         // Different account
                         if self.appDelegate.account != metadata.account {
@@ -101,6 +104,57 @@ class NCNetworkingProcessUpload: NSObject {
                                 self.startTimer()
                                 return
                             }
+                        }
+
+                        // OK EXTRACT
+                        if !metadata.assetLocalIdentifier.isEmpty {
+                            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata) { extractMetadata, fileNamePath in
+                                if let metadata = extractMetadata {
+                                    let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                                    NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: toPath)
+                                    metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+                                    // DETECT IF CHUNCK
+                                    if chunckSize > 0 && metadata.size > chunckSize {
+                                        metadata.chunk = true
+                                        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                                    }
+                                    // DETECT IF E2EE
+                                    if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                                        metadata.e2eEncrypted = true
+                                    }
+                                    // update
+                                    metadataForUpload = NCManageDatabase.shared.addMetadata(metadata)
+                                    if metadata.livePhoto {
+                                        let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
+                                        if fetchAssets.count > 0 {
+                                            let ocId = NSUUID().uuidString
+                                            let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+                                            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                                            CCUtility.extractLivePhotoAsset(fetchAssets.firstObject, filePath: filePath) { url in
+                                                if url != nil {
+                                                    let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
+                                                    metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+                                                    metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
+                                                    metadataLivePhoto.isAutoupload = metadata.isAutoupload
+                                                    metadataLivePhoto.session = metadata.session
+                                                    metadataLivePhoto.sessionSelector = metadata.sessionSelector
+                                                    metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+                                                    metadataLivePhoto.status = metadata.status
+                                                    if chunckSize > 0 && metadataLivePhoto.size > chunckSize {
+                                                        metadataLivePhoto.chunk = true
+                                                        metadataLivePhoto.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                                                    }
+                                                    metadataLivePhotoForUpload = NCManageDatabase.shared.addMetadata(metadataLivePhoto)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                }
+                            }
+                        } else {
+
                         }
 
                         // Chunk 
@@ -164,14 +218,16 @@ class NCNetworkingProcessUpload: NSObject {
             }
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-            if (counterUpload == 0 && !self.appDelegate.isPasscodePresented()) {
-                self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
+            DispatchQueue.main.async {
+                if (counterUpload == 0 && !self.appDelegate.isPasscodePresented()) {
+                    self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
+                        self.startTimer()
+                    }
+                } else {
                     self.startTimer()
                 }
-            } else {
-                self.startTimer()
             }
-        }
+        })
     }
 
     private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {

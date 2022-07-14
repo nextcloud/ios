@@ -280,7 +280,6 @@ extension NCCreateFormUploadConflictDelegate {
             }
         }
 
-
         dismiss(animated: true) {
             self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
         }

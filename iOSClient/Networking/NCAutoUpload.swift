@@ -168,6 +168,7 @@ class NCAutoUpload: NSObject {
                             NCCommunicationCommon.shared.writeLog("Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         }
+                        metadatas.append(metadata)
                     }
                 }
 
