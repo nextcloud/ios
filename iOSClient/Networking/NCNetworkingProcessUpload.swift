@@ -193,7 +193,7 @@ class NCNetworkingProcessUpload: NSObject {
         var metadataForUpload: tableMetadata?
         var metadataLivePhotoForUpload: tableMetadata?
         let chunckSize = CCUtility.getChunkSize() * 1000000
-        let semaphore = Semaphore()
+        var semaphore = Semaphore()
 
         guard queue != .main else { return(nil, nil) }
         guard !metadata.assetLocalIdentifier.isEmpty else {
@@ -239,6 +239,11 @@ class NCNetworkingProcessUpload: NSObject {
         }
         semaphore.wait()
 
+        if metadataForUpload == nil {
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            return (nil, nil)
+        }
+
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
         if metadata.livePhoto, fetchAssets.count > 0  {
             let ocId = NSUUID().uuidString
@@ -262,12 +267,9 @@ class NCNetworkingProcessUpload: NSObject {
                 }
                 semaphore.continue()
             }
+            semaphore.wait()
         }
-        semaphore.wait()
 
-        if metadataForUpload == nil {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        }
         return(metadataForUpload, metadataLivePhotoForUpload)
     }
 
