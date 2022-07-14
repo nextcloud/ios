@@ -60,7 +60,7 @@ class NCAutoUpload: NSObject {
     }
 
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
-        
+
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window?.rootViewController) { hasPermission in
             guard hasPermission else { return }
 
@@ -77,12 +77,13 @@ class NCAutoUpload: NSObject {
             completion(0)
             return
         }
-
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
-        var metadataFull: [tableMetadata] = []
-        var counterItemsUpload: Int = 0
+
         DispatchQueue.global(qos: .background).async {
+
+            let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
+            var metadataFull: [tableMetadata] = []
+            var counterItemsUpload: Int = 0
 
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
                 guard let assets = assets, !assets.isEmpty else {
