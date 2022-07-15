@@ -404,6 +404,7 @@ class NCUtility: NSObject {
         var fileNamePath: String?
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
+        var compatibilityFormat: Bool = false
 
         func callCompletion(error: Bool) {
             if error {
@@ -443,6 +444,7 @@ class NCUtility: NSObject {
             if !metadata.e2eEncrypted {
                 metadata.fileName = fileName
             }
+            compatibilityFormat = true
         } else {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         }
@@ -465,7 +467,11 @@ class NCUtility: NSObject {
             }
 
             PHImageManager.default().requestImageData(for: asset, options: options) { data, dataUI, orientation, info in
-                guard let data = data else { return callCompletion(error: true) }
+                guard var data = data else { return callCompletion(error: true) }
+                if compatibilityFormat {
+                    guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletion(error: true) }
+                    data = dataJPEG
+                }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
