@@ -243,9 +243,6 @@
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload queue:(dispatch_queue_t)queue completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion;
-+ (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath queue:(dispatch_queue_t)queue withCompletion:(void (^)(NSURL* url))completion;
-
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
