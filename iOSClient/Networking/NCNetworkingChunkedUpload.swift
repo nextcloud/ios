@@ -37,7 +37,7 @@ extension NCNetworking {
 
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
-        
+
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
             filesNames = NCCommunicationCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
