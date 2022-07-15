@@ -28,8 +28,7 @@ import NCCommunication
 import PDFKit
 import Accelerate
 import CoreMedia
-
-// MARK: - NCUtility
+import Queuer
 
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
@@ -409,7 +408,7 @@ class NCUtility: NSObject {
 
         defer {
             if returnError {
-                completion(nil, nil, true)
+                queue.async { completion(nil, nil, true) }
             } else {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
@@ -427,7 +426,7 @@ class NCUtility: NSObject {
                         metadataReturn = metadata
                     }
                 }
-                completion(metadataReturn, fileNamePath, returnError)
+                queue.async { completion(metadataReturn, fileNamePath, returnError) }
             }
         }
 
@@ -486,6 +485,7 @@ class NCUtility: NSObject {
                 if error != nil { return }
             }
 
+            let semaphore = Semaphore()
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
                 guard let asset = asset as? AVURLAsset else { return }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
@@ -498,7 +498,9 @@ class NCUtility: NSObject {
                 metadata.date = modificationDate as NSDate
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 returnError = false
+                semaphore.continue()
             }
+            semaphore.wait()
         }
     }
 
