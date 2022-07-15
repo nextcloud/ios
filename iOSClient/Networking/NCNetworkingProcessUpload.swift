@@ -226,27 +226,6 @@ class NCNetworkingProcessUpload: NSObject {
             }
             semaphore.continue()
         }
-
-        CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, queue: queue) { extractMetadata, fileNamePath in
-            if let metadata = extractMetadata {
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath!, toPath: toPath)
-                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
-                // DETECT IF CHUNCK
-                if chunckSize > 0 && metadata.size > chunckSize {
-                    metadata.chunk = true
-                    metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-                }
-                // DETECT IF E2EE
-                if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-                    metadata.e2eEncrypted = true
-                }
-                // update
-                metadata.isExtractFile = true
-                metadataForUpload = NCManageDatabase.shared.addMetadata(metadata)
-            }
-            semaphore.continue()
-        }
         semaphore.wait()
 
         if metadataForUpload == nil {
