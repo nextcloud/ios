@@ -223,9 +223,9 @@ class NCNetworkingProcessUpload: NSObject {
         if metadata.livePhoto, fetchAssets.count > 0  {
             let ocId = NSUUID().uuidString
             let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
-            CCUtility.extractLivePhotoAsset(fetchAssets.firstObject, filePath: filePath, queue: queue) { url in
-                if url != nil {
+            let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            NCUtility.shared.extractLivePhoto(asset: fetchAssets.firstObject,  fileNamePath: fileNamePath, queue: queue) { error in
+                if !error {
                     let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
                     metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
                     metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
@@ -233,7 +233,7 @@ class NCNetworkingProcessUpload: NSObject {
                     metadataLivePhoto.isExtractFile = true
                     metadataLivePhoto.session = metadata.session
                     metadataLivePhoto.sessionSelector = metadata.sessionSelector
-                    metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+                    metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                     metadataLivePhoto.status = metadata.status
                     if chunckSize > 0 && metadataLivePhoto.size > chunckSize {
                         metadataLivePhoto.chunk = true

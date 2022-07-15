@@ -29,6 +29,7 @@ import PDFKit
 import Accelerate
 import CoreMedia
 import Queuer
+import Photos
 
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
@@ -509,6 +510,29 @@ class NCUtility: NSObject {
             }
         } else {
             return callCompletion(error: true)
+        }
+    }
+
+    func extractLivePhoto(asset: PHAsset?, fileNamePath: String, queue: DispatchQueue, completion: @escaping (_ error: Bool) -> ()) {
+
+        guard let asset = asset else { return queue.async { completion(true) }}
+        let options = PHLivePhotoRequestOptions()
+        options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
+        options.isNetworkAccessAllowed = true
+
+        PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, info in
+            guard let livePhoto = livePhoto else { return queue.async { completion(true) }}
+            var videoResource: PHAssetResource?
+            for resource in PHAssetResource.assetResources(for: livePhoto) {
+                if resource.type == PHAssetResourceType.pairedVideo {
+                    videoResource = resource
+                    break
+                }
+            }
+            guard let videoResource = videoResource else { return queue.async { completion(true) }}
+            PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
+                queue.async { completion(error != nil) }
+            }
         }
     }
 
