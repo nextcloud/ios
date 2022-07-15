@@ -435,7 +435,7 @@ class NCUtility: NSObject {
         }
 
         if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
-            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + "jpg"
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
             metadata.ext = "jpg"
             fileNamePath = NSTemporaryDirectory() + fileName
@@ -470,7 +470,7 @@ class NCUtility: NSObject {
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch {
-                    return
+                    return callCompletion(error: true)
                 }
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
@@ -489,12 +489,12 @@ class NCUtility: NSObject {
             }
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
-                guard let asset = asset as? AVURLAsset else { return }
+                guard let asset = asset as? AVURLAsset else { return callCompletion(error: true) }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
                 do {
                     try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
                 } catch {
-                    return
+                    return callCompletion(error: true)
                 }
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
