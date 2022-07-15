@@ -874,7 +874,7 @@
 "_show_more_results_"       = "Show more results";
 "_waiting_for_"             = "Waiting for:";
 "_reachable_wifi_"          = "network reachable via Wi-Fi or cable";
-"_ITMS-90076_"              = "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings. We are sorry about what happened but it is not up to us.";
+"_ITMS-90076_"              = "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings. We are sorry about that.";
 "_copy_passphrase_"        = "Copy passphrase";
 
 
