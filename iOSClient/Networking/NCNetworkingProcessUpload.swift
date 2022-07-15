@@ -213,8 +213,18 @@ class NCNetworkingProcessUpload: NSObject {
             if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
                 metadata.e2eEncrypted = true
             }
+            metadata.isExtractFile = true
             let metadata = NCManageDatabase.shared.addMetadata(metadata)
             return (metadata, nil)
+        }
+
+        NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadata, modifyMetadataForUpload: true, queue: queue) { metadata, fileNamePath, returnError in
+            if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
+                metadataForUpload = metadata
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
+            }
+            semaphore.continue()
         }
 
         CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, queue: queue) { extractMetadata, fileNamePath in

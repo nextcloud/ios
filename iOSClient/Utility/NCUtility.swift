@@ -400,6 +400,108 @@ class NCUtility: NSObject {
 
     // MARK: -
 
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, queue: DispatchQueue, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ returnError: Bool) -> ()) {
+
+        var fileNamePath: String?
+        let metadata = tableMetadata.init(value: metadata)
+        var returnError: Bool = true
+        let chunckSize = CCUtility.getChunkSize() * 1000000
+
+        defer {
+            if returnError {
+                completion(nil, nil, true)
+            } else {
+                var metadataReturn = metadata
+                if modifyMetadataForUpload {
+                    metadata.isExtractFile = true
+                    // DETECT IF CHUNCK
+                    if chunckSize > 0 && metadata.size > chunckSize {
+                        metadata.chunk = true
+                        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                    }
+                    // DETECT IF E2EE
+                    if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                        metadata.e2eEncrypted = true
+                    }
+                    if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                        metadataReturn = metadata
+                    }
+                }
+                completion(metadataReturn, fileNamePath, returnError)
+            }
+        }
+
+        let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
+        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else { return }
+
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + "jpg"
+            metadata.contentType = "image/jpeg"
+            metadata.ext = "jpg"
+            fileNamePath = NSTemporaryDirectory() + fileName
+            metadata.fileNameView = fileName
+            if !metadata.e2eEncrypted {
+                metadata.fileName = fileName
+            }
+        } else {
+            fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+        }
+        guard let fileNamePath = fileNamePath, let creationDate = asset.creationDate, let modificationDate = asset.modificationDate else { return }
+
+        if asset.mediaType == PHAssetMediaType.image {
+
+            let options = PHImageRequestOptions()
+            options.isNetworkAccessAllowed = true
+            options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+            options.isSynchronous = true
+            if extensionAsset == "DNG" {
+                options.version = PHImageRequestOptionsVersion.original
+            }
+            options.progressHandler = { (progress, error, stop, info) in
+                print(progress)
+                if error != nil { return }
+            }
+
+            PHImageManager.default().requestImageData(for: asset, options: options) { data, dataUI, orientation, info in
+                guard let data = data else { return }
+                NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                do {
+                    try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                } catch {
+                    return
+                }
+                metadata.creationDate = creationDate as NSDate
+                metadata.date = modificationDate as NSDate
+                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                returnError = false
+            }
+
+        } else if asset.mediaType == PHAssetMediaType.video {
+            
+            let options = PHVideoRequestOptions()
+            options.isNetworkAccessAllowed = true
+            options.version = PHVideoRequestOptionsVersion.original
+            options.progressHandler = { (progress, error, stop, info) in
+                print(progress)
+                if error != nil { return }
+            }
+
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
+                guard let asset = asset as? AVURLAsset else { return }
+                NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                do {
+                    try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
+                } catch {
+                    return
+                }
+                metadata.creationDate = creationDate as NSDate
+                metadata.date = modificationDate as NSDate
+                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                returnError = false
+            }
+        }
+    }
+
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
 
         let asset = AVURLAsset(url: url)
