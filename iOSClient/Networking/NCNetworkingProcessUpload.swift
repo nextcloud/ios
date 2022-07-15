@@ -242,6 +242,7 @@ class NCNetworkingProcessUpload: NSObject {
                     metadata.e2eEncrypted = true
                 }
                 // update
+                metadata.isExtractFile = true
                 metadataForUpload = NCManageDatabase.shared.addMetadata(metadata)
             }
             semaphore.continue()
