@@ -105,8 +105,7 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                         }
 
-                        let metadatas = self.extractFiles(from: metadata, queue: queue)
-                        for metadata in metadatas {
+                        for metadata in self.extractFiles(from: metadata, queue: queue) {
                             if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata)
