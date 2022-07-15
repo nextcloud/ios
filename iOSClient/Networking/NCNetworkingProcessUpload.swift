@@ -214,6 +214,11 @@ class NCNetworkingProcessUpload: NSObject {
         }
         semaphore.wait()
 
+        if metadatas.isEmpty {
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            return(metadatas)
+        }
+
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
         if metadata.livePhoto, fetchAssets.count > 0  {
             let ocId = NSUUID().uuidString
@@ -243,9 +248,6 @@ class NCNetworkingProcessUpload: NSObject {
             semaphore.wait()
         }
 
-        if metadatas.isEmpty {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        }
         return(metadatas)
     }
 
