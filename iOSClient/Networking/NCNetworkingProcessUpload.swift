@@ -122,7 +122,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                         // Upload Live photo
                         if let metadata = metadataLivePhotoForUpload {
-                            if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active { continue }
+                            if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata)
                             }
