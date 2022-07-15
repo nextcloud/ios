@@ -399,15 +399,14 @@ class NCUtility: NSObject {
 
     // MARK: -
 
-    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, queue: DispatchQueue, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ returnError: Bool) -> ()) {
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, queue: DispatchQueue, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
 
         var fileNamePath: String?
         let metadata = tableMetadata.init(value: metadata)
-        var returnError: Bool = true
         let chunckSize = CCUtility.getChunkSize() * 1000000
 
-        defer {
-            if returnError {
+        func callCompletion(error: Bool) {
+            if error {
                 queue.async { completion(nil, nil, true) }
             } else {
                 var metadataReturn = metadata
@@ -426,12 +425,14 @@ class NCUtility: NSObject {
                         metadataReturn = metadata
                     }
                 }
-                queue.async { completion(metadataReturn, fileNamePath, returnError) }
+                queue.async { completion(metadataReturn, fileNamePath, error) }
             }
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else { return }
+        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else {
+            return callCompletion(error: true)
+        }
 
         if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + "jpg"
@@ -445,7 +446,9 @@ class NCUtility: NSObject {
         } else {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         }
-        guard let fileNamePath = fileNamePath, let creationDate = asset.creationDate, let modificationDate = asset.modificationDate else { return }
+        guard let fileNamePath = fileNamePath, let creationDate = asset.creationDate, let modificationDate = asset.modificationDate else {
+            return callCompletion(error: true)
+        }
 
         if asset.mediaType == PHAssetMediaType.image {
 
@@ -458,11 +461,11 @@ class NCUtility: NSObject {
             }
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return }
+                if error != nil { return callCompletion(error: true) }
             }
 
             PHImageManager.default().requestImageData(for: asset, options: options) { data, dataUI, orientation, info in
-                guard let data = data else { return }
+                guard let data = data else { return callCompletion(error: true) }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
@@ -472,7 +475,7 @@ class NCUtility: NSObject {
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                returnError = false
+                return callCompletion(error: false)
             }
 
         } else if asset.mediaType == PHAssetMediaType.video {
@@ -482,10 +485,9 @@ class NCUtility: NSObject {
             options.version = PHVideoRequestOptionsVersion.original
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return }
+                if error != nil { return callCompletion(error: true) }
             }
 
-            let semaphore = Semaphore()
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
                 guard let asset = asset as? AVURLAsset else { return }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
@@ -497,10 +499,10 @@ class NCUtility: NSObject {
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                returnError = false
-                semaphore.continue()
+                return callCompletion(error: false)
             }
-            semaphore.wait()
+        } else {
+            return callCompletion(error: true)
         }
     }
 
