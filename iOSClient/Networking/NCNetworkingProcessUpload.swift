@@ -40,7 +40,7 @@ class NCNetworkingProcessUpload: NSObject {
 
     @objc func startProcess() {
         if timerProcess?.isValid ?? false {
-            process()
+            DispatchQueue.main.async { self.process() }
         }
     }
 
@@ -57,6 +57,7 @@ class NCNetworkingProcessUpload: NSObject {
         guard !appDelegate.account.isEmpty else { return }
 
         let queue = DispatchQueue.global(qos: .background)
+        let applicationState = UIApplication.shared.applicationState
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -108,7 +109,7 @@ class NCNetworkingProcessUpload: NSObject {
 
                         // Upload
                         if let metadata = metadataForUpload {
-                            if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active { continue }
+                            if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata)
                             }
