@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import Photos
 
 @objc protocol NCCreateFormUploadConflictDelegate {
     @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
@@ -52,7 +53,6 @@ extension NCCreateFormUploadConflictDelegate {
 
     @objc var metadatasNOConflict: [tableMetadata]
     @objc var metadatasUploadInConflict: [tableMetadata]
-    @objc var metadatasMOV: [tableMetadata]
     @objc var serverUrl: String?
     @objc weak var delegate: NCCreateFormUploadConflictDelegate?
     @objc var alwaysNewFileNameNumber: Bool = false
@@ -67,7 +67,6 @@ extension NCCreateFormUploadConflictDelegate {
 
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatasNOConflict = []
-        self.metadatasMOV = []
         self.metadatasUploadInConflict = []
         super.init(coder: aDecoder)
     }
@@ -99,13 +98,18 @@ extension NCCreateFormUploadConflictDelegate {
 
         buttonCancel.layer.cornerRadius = 20
         buttonCancel.layer.masksToBounds = true
+        buttonCancel.layer.borderWidth = 0.5
+        buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
+        buttonCancel.backgroundColor = NCBrandColor.shared.systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
+        buttonCancel.setTitleColor(NCBrandColor.shared.label, for: .normal)
 
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
+        buttonContinue.backgroundColor = NCBrandColor.shared.brand
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
+        buttonContinue.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         let blurEffect = UIBlurEffect(style: .light)
         blurView = UIVisualEffectView(effect: blurEffect)
@@ -250,7 +254,6 @@ extension NCCreateFormUploadConflictDelegate {
             // keep both
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
 
-                let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 var fileName = metadata.fileNameView
                 let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
                 let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
@@ -272,45 +275,15 @@ extension NCCreateFormUploadConflictDelegate {
 
                 metadatasNOConflict.append(metadata)
 
-                // MOV (Live Photo)
-                if let metadataMOV = self.metadatasMOV.first(where: { $0.fileName == fileNameMOV }) {
-
-                    let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
-                    let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
-
-                    metadataMOV.ocId = UUID().uuidString
-                    metadataMOV.fileName = newFileNameMOV
-                    metadataMOV.fileNameView = newFileNameMOV
-
-                    let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
-                    CCUtility.moveFile(atPath: oldPath, toPath: newPath)
-                }
-
             // overwrite
             } else if metadatasConflictNewFiles.contains(metadata.ocId) {
 
                 metadatasNOConflict.append(metadata)
 
-            // remove (MOV)
-            } else if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
-
-                let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                var index = 0
-
-                for metadataMOV in metadatasMOV {
-                    if metadataMOV.fileNameView == fileNameMOV {
-                        metadatasMOV.remove(at: index)
-                        break
-                    }
-                    index += 1
-                }
-
             } else {
                 // used UIAlert (replace all)
             }
         }
-
-        metadatasNOConflict.append(contentsOf: metadatasMOV)
 
         dismiss(animated: true) {
             self.delegate?.dismissCreateFormUploadConflict(metadatas: self.metadatasNOConflict)
@@ -423,7 +396,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
                 } else {
 
-                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile) { metadataNew, fileNamePath in
+                    // PREVIEW
+                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, queue: .main) { metadataNew, fileNamePath in
 
                         if metadataNew != nil {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!

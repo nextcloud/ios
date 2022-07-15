@@ -26,6 +26,7 @@ import OpenSSL
 import NCCommunication
 import Alamofire
 import Queuer
+import Photos
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
@@ -417,88 +418,38 @@ import Queuer
 
     // MARK: - Upload
 
-    @objc func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc func upload(metadata: tableMetadata,
+                      start: @escaping () -> () = { },
+                      completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> () = { errorCode, errorDescription in }) {
 
-        func uploadMetadata(_ metadata: tableMetadata) {
-
-            // DETECT IF CHUNCK
-            let chunckSize = CCUtility.getChunkSize() * 1000000
-            if chunckSize > 0 && metadata.size > chunckSize {
-                metadata.chunk = true
-                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-            }
-
-            // DETECT IF E2EE
-            if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-                metadata.e2eEncrypted = true
-            }
-
-            NCManageDatabase.shared.addMetadata(metadata)
-            let metadata = tableMetadata.init(value: metadata)
-
-            NCCommunicationCommon.shared.writeLog("Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.e2eEncrypted)]")
-
-            if metadata.e2eEncrypted {
-#if !EXTENSION_FILE_PROVIDER_EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { errorCode, errorDescription in
-                    DispatchQueue.main.async {
-                        completion(errorCode, errorDescription)
-                    }
-                }
-#endif
-            } else if metadata.chunk {
-                uploadChunkedFile(metadata: metadata, start: start) { errorCode, errorDescription in
-                    DispatchQueue.main.async {
-                        completion(errorCode, errorDescription)
-                    }
-                }
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                uploadFile(metadata: metadata, start: start) { errorCode, errorDescription in
-                    DispatchQueue.main.async {
-                        completion(errorCode, errorDescription)
-                    }
-                }
-            } else {
-                uploadFileInBackground(metadata: metadata, start: start) { errorCode, errorDescription in
-                    DispatchQueue.main.async {
-                        completion(errorCode, errorDescription)
-                    }
-                }
-            }
-        }
-        
         let metadata = tableMetadata.init(value: metadata)
+        NCCommunicationCommon.shared.writeLog("Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.e2eEncrypted)]")
 
-        if metadata.assetLocalIdentifier.isEmpty {
-
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.classFile = results.classFile
-            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: fileNameLocalPath) {
-                 metadata.creationDate = date
-            }
-            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: fileNameLocalPath) {
-                metadata.date = date
-            }
-            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
-
-            uploadMetadata(metadata)
-
-        } else {
-
-            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata) { extractMetadata, fileNamePath in
-
-                guard let metadata = extractMetadata else {
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    return completion(NCGlobal.shared.errorInternalError, "Internal error")
+        if metadata.e2eEncrypted {
+            #if !EXTENSION_FILE_PROVIDER_EXTENSION
+            NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { errorCode, errorDescription in
+                DispatchQueue.main.async {
+                    completion(errorCode, errorDescription)
                 }
-
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
-
-                uploadMetadata(metadata)
+            }
+            #endif
+        } else if metadata.chunk {
+            uploadChunkedFile(metadata: metadata, start: start) { errorCode, errorDescription in
+                DispatchQueue.main.async {
+                    completion(errorCode, errorDescription)
+                }
+            }
+        } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
+            uploadFile(metadata: metadata, start: start) { errorCode, errorDescription in
+                DispatchQueue.main.async {
+                    completion(errorCode, errorDescription)
+                }
+            }
+        } else {
+            uploadFileInBackground(metadata: metadata, start: start) { errorCode, errorDescription in
+                DispatchQueue.main.async {
+                    completion(errorCode, errorDescription)
+                }
             }
         }
     }
@@ -704,7 +655,7 @@ import Queuer
         }
     }
 
-    func getOcIdInBackgroundSession(completion: @escaping (_ listOcId: [String]) -> Void) {
+    func getOcIdInBackgroundSession(queue: DispatchQueue = .main, completion: @escaping (_ listOcId: [String]) -> Void) {
 
         var listOcId: [String] = []
 
@@ -716,7 +667,7 @@ import Queuer
                 for task in tasks {
                     listOcId.append(task.description)
                 }
-                completion(listOcId)
+                queue.async { completion(listOcId) }
             })
         })
     }

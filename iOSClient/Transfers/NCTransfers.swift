@@ -127,12 +127,20 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     @objc func startTask(_ notification: Any) {
 
         guard let metadata = metadataTemp else { return }
+        guard appDelegate.account == metadata.account else { return }
+        guard let networkingProcessUpload = appDelegate.networkingProcessUpload else { return }
 
-        metadata.status = NCGlobal.shared.metadataStatusInUpload
-        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+        let (metadataForUpload, metadataLivePhotoForUpload) = networkingProcessUpload.extractFiles(from: metadata, queue: DispatchQueue.global(qos: .background))
 
-        NCManageDatabase.shared.addMetadata(metadata)
-        NCNetworking.shared.upload(metadata: metadata) { } completion: { _, _ in }
+        // Upload
+        if let metadata = metadataForUpload, let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+            NCNetworking.shared.upload(metadata: metadata)
+        }
+
+        // Upload Live photo
+        if let metadata = metadataLivePhotoForUpload, let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+            NCNetworking.shared.upload(metadata: metadata)
+        }
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
@@ -149,6 +157,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     // MARK: - Collection View
+
+    @available(iOS 13.0, *)
+    override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return nil
+    }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // nothing
@@ -182,13 +195,20 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         cell.progressView.progress = 0.0
 
-        let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
         if FileManager().fileExists(atPath: iconImagePath) {
             cell.imageItem.image =  UIImage(contentsOfFile:iconImagePath)
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, FileManager().fileExists(atPath: imagePath) {
-            if let image = UIImage(contentsOfFile: imagePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, FileManager().fileExists(atPath: filePath) {
+            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    cell.imageItem.image = image
+                } catch { }
+            }
+        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, FileManager().fileExists(atPath: filePath) {
+            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
                     cell.imageItem.image = image

@@ -339,7 +339,10 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
         let metadata = uploadMetadata[counterUploaded]
-
+        let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
+        metadata.contentType = results.mimeType
+        metadata.iconName = results.iconName
+        metadata.classFile = results.classFile
         // E2EE
         metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         // CHUNCK

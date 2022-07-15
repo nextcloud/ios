@@ -24,6 +24,7 @@
 import UIKit
 import NCCommunication
 import Photos
+import Queuer
 
 class NCNetworkingProcessUpload: NSObject {
 
@@ -39,7 +40,7 @@ class NCNetworkingProcessUpload: NSObject {
 
     @objc func startProcess() {
         if timerProcess?.isValid ?? false {
-            process()
+            DispatchQueue.main.async { self.process() }
         }
     }
 
@@ -55,9 +56,10 @@ class NCNetworkingProcessUpload: NSObject {
     @objc private func process() {
         guard !appDelegate.account.isEmpty else { return }
 
+        let queue = DispatchQueue.global(qos: .background)
+        let applicationState = UIApplication.shared.applicationState
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
-
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         counterUpload = metadatasUpload.count
 
@@ -65,19 +67,13 @@ class NCNetworkingProcessUpload: NSObject {
 
         print("[LOG] PROCESS-UPLOAD \(counterUpload)")
 
-        NCNetworking.shared.getOcIdInBackgroundSession { listOcId in
+        NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
 
             for sessionSelector in sessionSelectors {
                 if counterUpload < self.maxConcurrentOperationUpload {
 
                     let limit = self.maxConcurrentOperationUpload - counterUpload
-                    var predicate = NSPredicate()
-                    if UIApplication.shared.applicationState == .background {
-                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND (classFile != %@ || livePhoto == true)", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload, NCCommunicationCommon.typeClassFile.video.rawValue)
-                    } else {
-                        predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload)
-                    }
-                    let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
+                    let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
                         NCCommunicationCommon.shared.writeLog("PROCESS-UPLOAD find \(metadatas.count) items")
                     }
@@ -104,56 +100,39 @@ class NCNetworkingProcessUpload: NSObject {
                         // Is already in upload E2EE / CHUNK ? exit [ ONLY ONE IN QUEUE ]
                         for metadata in metadatasUpload {
                             if metadata.chunk || metadata.e2eEncrypted {
-                                self.startTimer()
-                                return
+                                counterUpload = self.maxConcurrentOperationUpload
+                                continue
                             }
                         }
 
-                        // Chunk 
-                        if metadata.chunk && UIApplication.shared.applicationState == .active {
+                        let (metadataForUpload, metadataLivePhotoForUpload) = self.extractFiles(from: metadata, queue: queue)
+
+                        // Upload
+                        if let metadata = metadataForUpload {
+                            if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata) {
-                                    // start
-                                } completion: { _, _ in
-                                    DispatchQueue.main.async {
-                                        self.startTimer()
-                                    }
-                                }
-                            } else {
-                                self.startTimer()
+                                NCNetworking.shared.upload(metadata: metadata)
                             }
-                            return
+                            if metadata.e2eEncrypted || metadata.chunk {
+                                counterUpload = self.maxConcurrentOperationUpload
+                            } else {
+                                counterUpload += 1
+                            }
                         }
 
-                        // E2EE
-                        if metadata.e2eEncrypted && UIApplication.shared.applicationState == .active {
+                        // Upload Live photo
+                        if let metadata = metadataLivePhotoForUpload {
+                            if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata) {
-                                    // start
-                                } completion: { _, _ in
-                                    DispatchQueue.main.async {
-                                        self.startTimer()
-                                    }
-                                }
-                            } else {
-                                self.startTimer()
+                                NCNetworking.shared.upload(metadata: metadata)
                             }
-                            return
-                        }
-
-                        counterUpload += 1
-                        if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                            NCNetworking.shared.upload(metadata: metadata) {
-                                // start
-                            } completion: { _, _ in
-                                // completion
+                            if metadata.e2eEncrypted || metadata.chunk {
+                                counterUpload = self.maxConcurrentOperationUpload
+                            } else {
+                                counterUpload += 1
                             }
                         }
                     }
-
-                } else {
-                    self.startTimer()
-                    return
                 }
             }
 
@@ -166,14 +145,16 @@ class NCNetworkingProcessUpload: NSObject {
             }
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-            if (counterUpload == 0 && !self.appDelegate.isPasscodePresented()) {
-                self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
+            DispatchQueue.main.async {
+                if (counterUpload == 0 && !self.appDelegate.isPasscodePresented()) {
+                    self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
+                        self.startTimer()
+                    }
+                } else {
                     self.startTimer()
                 }
-            } else {
-                self.startTimer()
             }
-        }
+        })
     }
 
     private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
@@ -206,23 +187,105 @@ class NCNetworkingProcessUpload: NSObject {
 
     // MARK: -
 
+    func extractFiles(from metadata: tableMetadata, queue: DispatchQueue) -> (metadataForUpload: tableMetadata?, metadataLivePhotoForUpload: tableMetadata?) {
+
+        var metadataForUpload: tableMetadata?
+        var metadataLivePhotoForUpload: tableMetadata?
+        let chunckSize = CCUtility.getChunkSize() * 1000000
+        let semaphore = Semaphore()
+
+        guard queue != .main else { return(nil, nil) }
+        guard !metadata.assetLocalIdentifier.isEmpty else {
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+            let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
+            metadata.contentType = results.mimeType
+            metadata.iconName = results.iconName
+            metadata.classFile = results.classFile
+            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadata.creationDate = date }
+            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadata.date = date }
+            // DETECT IF CHUNCK
+            if chunckSize > 0 && metadata.size > chunckSize {
+                metadata.chunk = true
+                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+            }
+            // DETECT IF E2EE
+            if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                metadata.e2eEncrypted = true
+            }
+            let metadata = NCManageDatabase.shared.addMetadata(metadata)
+            return (metadata, nil)
+        }
+
+        CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, queue: queue) { extractMetadata, fileNamePath in
+            if let metadata = extractMetadata {
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath!, toPath: toPath)
+                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+                // DETECT IF CHUNCK
+                if chunckSize > 0 && metadata.size > chunckSize {
+                    metadata.chunk = true
+                    metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                }
+                // DETECT IF E2EE
+                if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
+                    metadata.e2eEncrypted = true
+                }
+                // update
+                metadataForUpload = NCManageDatabase.shared.addMetadata(metadata)
+            }
+            semaphore.continue()
+        }
+        semaphore.wait()
+
+        if metadataForUpload == nil {
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            return (nil, nil)
+        }
+
+        let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
+        if metadata.livePhoto, fetchAssets.count > 0  {
+            let ocId = NSUUID().uuidString
+            let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            CCUtility.extractLivePhotoAsset(fetchAssets.firstObject, filePath: filePath, queue: queue) { url in
+                if url != nil {
+                    let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
+                    metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+                    metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
+                    metadataLivePhoto.isAutoupload = metadata.isAutoupload
+                    metadataLivePhoto.session = metadata.session
+                    metadataLivePhoto.sessionSelector = metadata.sessionSelector
+                    metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+                    metadataLivePhoto.status = metadata.status
+                    if chunckSize > 0 && metadataLivePhoto.size > chunckSize {
+                        metadataLivePhoto.chunk = true
+                        metadataLivePhoto.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                    }
+                    metadataLivePhotoForUpload = NCManageDatabase.shared.addMetadata(metadataLivePhoto)
+                }
+                semaphore.continue()
+            }
+            semaphore.wait()
+        }
+
+        return(metadataForUpload, metadataLivePhotoForUpload)
+    }
+
+    // MARK: -
+
     @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false) {
 
         var metadatasForUpload: [tableMetadata] = []
-
         for metadata in metadatas {
-
             if verifyAlreadyExists {
                 if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
                     continue
                 }
             }
-
             metadatasForUpload.append(metadata)
         }
-
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-
         startProcess()
     }
 
