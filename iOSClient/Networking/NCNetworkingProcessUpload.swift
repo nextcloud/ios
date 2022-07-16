@@ -105,6 +105,7 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                         }
 
+                        let semaphore = Semaphore()
                         self.extractFiles(from: metadata, queue: queue) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -120,7 +121,9 @@ class NCNetworkingProcessUpload: NSObject {
                                     counterUpload += 1
                                 }
                             }
+                            semaphore.continue()
                         }
+                        semaphore.wait()
                     }
                 }
             }
@@ -182,7 +185,7 @@ class NCNetworkingProcessUpload: NSObject {
         var metadatas: [tableMetadata] = []
         let metadataSource = tableMetadata.init(value: metadata)
 
-        guard !metadata.isExtractFile else { return completition([metadataSource]) }
+        guard !metadata.isExtractFile else { return queue.async { completition([metadataSource]) }}
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
             metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
@@ -205,7 +208,7 @@ class NCNetworkingProcessUpload: NSObject {
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
             }
-            return completition(metadatas)
+            return queue.async { completition(metadatas) }
         }
 
         NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, queue: queue) { metadata, fileNamePath, returnError in
@@ -214,7 +217,7 @@ class NCNetworkingProcessUpload: NSObject {
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
             } else {
-                return completition(metadatas)
+                return queue.async { completition(metadatas) }
             }
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
             if metadataSource.livePhoto, fetchAssets.count > 0  {
@@ -222,10 +225,10 @@ class NCNetworkingProcessUpload: NSObject {
                     if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadatas.append(metadata)
                     }
-                    completition(metadatas)
+                    queue.async { completition(metadatas) }
                 }
             } else {
-                completition(metadatas)
+                queue.async { completition(metadatas) }
             }
         }
     }
