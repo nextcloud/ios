@@ -158,6 +158,8 @@ extension NCNetworking {
 
                 let serverUrl = metadata.serverUrl
                 let assetLocalIdentifier = metadata.assetLocalIdentifier
+                let isLivePhoto = metadata.livePhoto
+                let isE2eEncrypted = metadata.e2eEncrypted
 
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
@@ -168,6 +170,9 @@ extension NCNetworking {
                     if errorCode == 0, let metadata = metadata {
 
                         metadata.assetLocalIdentifier = assetLocalIdentifier
+                        metadata.e2eEncrypted = isE2eEncrypted
+                        metadata.livePhoto = isLivePhoto
+
                         // Delete Asset on Photos album
                         if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
                             metadata.deleteAssetLocalIdentifier = true
