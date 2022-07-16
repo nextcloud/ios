@@ -106,6 +106,9 @@ class NCNetworkingProcessUpload: NSObject {
                         }
 
                         self.extractFiles(from: metadata, queue: queue) { metadatas in
+                            if metadatas.isEmpty {
+                                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            }
                             for metadata in metadatas {
                                 if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
@@ -211,7 +214,6 @@ class NCNetworkingProcessUpload: NSObject {
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
             } else {
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataSource.ocId))
                 return completition(metadatas)
             }
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
