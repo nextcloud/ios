@@ -579,15 +579,6 @@ import Photos
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
-            #if !EXTENSION
-            self.getOcIdInBackgroundSession { listOcId in
-                if listOcId.count == 0 && self.uploadRequest.count == 0 {
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.networkingProcessUpload?.startProcess()
-                }
-            }
-            #endif
-
             NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
         } else {

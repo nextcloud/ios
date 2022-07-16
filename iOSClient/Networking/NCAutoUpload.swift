@@ -51,9 +51,6 @@ class NCAutoUpload: NSObject {
             }
 
             self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
-                if items > 0 {
-                    self.appDelegate.networkingProcessUpload?.startProcess()
-                }
                 completion(items)
             }
         }
