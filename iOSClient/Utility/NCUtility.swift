@@ -530,6 +530,7 @@ class NCUtility: NSObject {
                 }
             }
             guard let videoResource = videoResource else { return queue.async { completion(true) }}
+            NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 queue.async { completion(error != nil) }
             }
