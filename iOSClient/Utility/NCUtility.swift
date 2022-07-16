@@ -513,15 +513,19 @@ class NCUtility: NSObject {
         }
     }
 
-    func extractLivePhoto(asset: PHAsset?, fileNamePath: String, queue: DispatchQueue, completion: @escaping (_ error: Bool) -> ()) {
+    func createMetadataLivePhotoFromMetadata(_ metadata: tableMetadata, asset: PHAsset?, queue: DispatchQueue, completion: @escaping (_ metadata: tableMetadata?) -> ()) {
 
-        guard let asset = asset else { return queue.async { completion(true) }}
+        guard let asset = asset else { return queue.async { completion(nil) }}
         let options = PHLivePhotoRequestOptions()
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
+        let chunckSize = CCUtility.getChunkSize() * 1000000
+        let ocId = NSUUID().uuidString
+        let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
 
         PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, info in
-            guard let livePhoto = livePhoto else { return queue.async { completion(true) }}
+            guard let livePhoto = livePhoto else { return queue.async { completion(nil) }}
             var videoResource: PHAssetResource?
             for resource in PHAssetResource.assetResources(for: livePhoto) {
                 if resource.type == PHAssetResourceType.pairedVideo {
@@ -529,10 +533,24 @@ class NCUtility: NSObject {
                     break
                 }
             }
-            guard let videoResource = videoResource else { return queue.async { completion(true) }}
+            guard let videoResource = videoResource else { return queue.async { completion(nil) }}
             NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
-                queue.async { completion(error != nil) }
+                if error != nil { return queue.async { completion(nil) }}
+                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
+                metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+                metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
+                metadataLivePhoto.isAutoupload = metadata.isAutoupload
+                metadataLivePhoto.isExtractFile = true
+                metadataLivePhoto.session = metadata.session
+                metadataLivePhoto.sessionSelector = metadata.sessionSelector
+                metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                metadataLivePhoto.status = metadata.status
+                if chunckSize > 0 && metadataLivePhoto.size > chunckSize {
+                    metadataLivePhoto.chunk = true
+                    metadataLivePhoto.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                }
+                return queue.async { completion(NCManageDatabase.shared.addMetadata(metadataLivePhoto)) }
             }
         }
     }
