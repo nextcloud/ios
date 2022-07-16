@@ -609,7 +609,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if status == NCGlobal.shared.metadataStatusInDownload {
                         cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusInUpload {
-                        cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                        if totalBytes > 0 {
+                            cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                        } else {
+                            cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ …"
+                        }
                     }
                 }
             }
@@ -1698,7 +1702,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
             break
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            if totalBytes > 0 {
+                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            } else {
+                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
+            }
             break
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError != "" {

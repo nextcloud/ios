@@ -253,7 +253,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            if totalBytes > 0 {
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            } else {
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
+            }
             break
         case NCGlobal.shared.metadataStatusUploadError:
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
