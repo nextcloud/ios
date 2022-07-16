@@ -177,57 +177,54 @@ class NCNetworkingProcessUpload: NSObject {
 
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var metadatas: [tableMetadata] = []
+        let metadataSource = tableMetadata.init(value: metadata)
 
-        guard !metadata.isExtractFile else { return completition([metadata]) }
-        guard queue != .main else { return completition([metadata]) }
-        guard !metadata.assetLocalIdentifier.isEmpty else {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
-            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-            let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.classFile = results.classFile
-            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadata.creationDate = date }
-            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadata.date = date }
+        guard !metadata.isExtractFile else { return completition(metadatas) }
+        guard !metadataSource.assetLocalIdentifier.isEmpty else {
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
+            metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+            let results = NCCommunicationCommon.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
+            metadataSource.contentType = results.mimeType
+            metadataSource.iconName = results.iconName
+            metadataSource.classFile = results.classFile
+            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadataSource.creationDate = date }
+            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadataSource.date = date }
             // DETECT IF CHUNCK
-            if chunckSize > 0 && metadata.size > chunckSize {
-                metadata.chunk = true
-                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+            if chunckSize > 0 && metadataSource.size > chunckSize {
+                metadataSource.chunk = true
+                metadataSource.session = NCCommunicationCommon.shared.sessionIdentifierUpload
             }
             // DETECT IF E2EE
-            if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-                metadata.e2eEncrypted = true
+            if CCUtility.isFolderEncrypted(metadataSource.serverUrl, e2eEncrypted: metadataSource.e2eEncrypted, account: metadataSource.account, urlBase: metadataSource.urlBase) {
+                metadataSource.e2eEncrypted = true
             }
-            metadata.isExtractFile = true
-            if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+            metadataSource.isExtractFile = true
+            if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
             }
-            return completition([metadata])
+            return completition(metadatas)
         }
 
-        NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadata, modifyMetadataForUpload: true, queue: queue) { metadata, fileNamePath, returnError in
+        NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, queue: queue) { metadata, fileNamePath, returnError in
             if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
                 metadatas.append(metadata)
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
+            } else {
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataSource.ocId))
+                return completition(metadatas)
             }
-        }
-
-        if metadatas.isEmpty {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            return completition([metadata])
-        }
-
-        let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        if metadata.livePhoto, fetchAssets.count > 0  {
-            NCUtility.shared.createMetadataLivePhotoFromMetadata(metadata, asset: fetchAssets.firstObject, queue: queue) { metadata in
-                if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
-                    metadatas.append(metadata)
+            let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
+            if metadataSource.livePhoto, fetchAssets.count > 0  {
+                NCUtility.shared.createMetadataLivePhotoFromMetadata(metadataSource, asset: fetchAssets.firstObject, queue: queue) { metadata in
+                    if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                        metadatas.append(metadata)
+                    }
                 }
+                completition(metadatas)
+            } else {
+                completition(metadatas)
             }
-            completition([metadata])
-        } else {
-            completition([metadata])
         }
     }
 
