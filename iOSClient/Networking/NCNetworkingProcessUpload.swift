@@ -182,7 +182,7 @@ class NCNetworkingProcessUpload: NSObject {
         var metadatas: [tableMetadata] = []
         let metadataSource = tableMetadata.init(value: metadata)
 
-        guard !metadata.isExtractFile else { return completition(metadatas) }
+        guard !metadata.isExtractFile else { return completition([metadataSource]) }
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
             metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
@@ -222,8 +222,8 @@ class NCNetworkingProcessUpload: NSObject {
                     if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadatas.append(metadata)
                     }
+                    completition(metadatas)
                 }
-                completition(metadatas)
             } else {
                 completition(metadatas)
             }
