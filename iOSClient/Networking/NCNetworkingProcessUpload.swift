@@ -105,15 +105,17 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                         }
 
-                        for metadata in self.extractFiles(from: metadata, queue: queue) {
-                            if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
-                            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                NCNetworking.shared.upload(metadata: metadata)
-                            }
-                            if metadata.e2eEncrypted || metadata.chunk {
-                                counterUpload = self.maxConcurrentOperationUpload
-                            } else {
-                                counterUpload += 1
+                        self.extractFiles(from: metadata, queue: queue) { metadatas in
+                            for metadata in metadatas {
+                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
+                                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                                    NCNetworking.shared.upload(metadata: metadata)
+                                }
+                                if metadata.e2eEncrypted || metadata.chunk {
+                                    counterUpload = self.maxConcurrentOperationUpload
+                                } else {
+                                    counterUpload += 1
+                                }
                             }
                         }
                     }
@@ -171,14 +173,13 @@ class NCNetworkingProcessUpload: NSObject {
 
     // MARK: -
 
-    func extractFiles(from metadata: tableMetadata, queue: DispatchQueue) -> [tableMetadata] {
+    func extractFiles(from metadata: tableMetadata, queue: DispatchQueue, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         let chunckSize = CCUtility.getChunkSize() * 1000000
-        let semaphore = Semaphore()
         var metadatas: [tableMetadata] = []
 
-        guard !metadata.isExtractFile else { return([metadata]) }
-        guard queue != .main else { return(metadatas) }
+        guard !metadata.isExtractFile else { return completition([metadata]) }
+        guard queue != .main else { return completition([metadata]) }
         guard !metadata.assetLocalIdentifier.isEmpty else {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
@@ -201,7 +202,7 @@ class NCNetworkingProcessUpload: NSObject {
             if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                 metadatas.append(metadata)
             }
-            return(metadatas)
+            return completition([metadata])
         }
 
         NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadata, modifyMetadataForUpload: true, queue: queue) { metadata, fileNamePath, returnError in
@@ -210,13 +211,11 @@ class NCNetworkingProcessUpload: NSObject {
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
             }
-            semaphore.continue()
         }
-        semaphore.wait()
 
         if metadatas.isEmpty {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            return(metadatas)
+            return completition([metadata])
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
@@ -225,12 +224,11 @@ class NCNetworkingProcessUpload: NSObject {
                 if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                     metadatas.append(metadata)
                 }
-                semaphore.continue()
             }
-            semaphore.wait()
+            completition([metadata])
+        } else {
+            completition([metadata])
         }
-
-        return(metadatas)
     }
 
     // MARK: -

@@ -130,9 +130,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard appDelegate.account == metadata.account else { return }
         guard let networkingProcessUpload = appDelegate.networkingProcessUpload else { return }
 
-        for metadata in networkingProcessUpload.extractFiles(from: metadata, queue: DispatchQueue.global(qos: .background)) {
-            if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                NCNetworking.shared.upload(metadata: metadata)
+        networkingProcessUpload.extractFiles(from: metadata, queue: DispatchQueue.global(qos: .background)) { metadatas in
+            for metadata in metadatas {
+                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                    NCNetworking.shared.upload(metadata: metadata)
+                }
             }
         }
     }
