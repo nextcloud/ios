@@ -106,7 +106,7 @@ class NCNetworkingProcessUpload: NSObject {
                         }
 
                         let semaphore = Semaphore()
-                        self.extractFiles(from: metadata, queue: queue) { metadatas in
+                        self.extractFiles(from: metadata) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
@@ -179,13 +179,13 @@ class NCNetworkingProcessUpload: NSObject {
 
     // MARK: -
 
-    func extractFiles(from metadata: tableMetadata, queue: DispatchQueue, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    func extractFiles(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var metadatas: [tableMetadata] = []
         let metadataSource = tableMetadata.init(value: metadata)
 
-        guard !metadata.isExtractFile else { return queue.async { completition([metadataSource]) }}
+        guard !metadata.isExtractFile else { return  completition([metadataSource]) }
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
             metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
@@ -208,27 +208,27 @@ class NCNetworkingProcessUpload: NSObject {
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
             }
-            return queue.async { completition(metadatas) }
+            return completition(metadatas)
         }
 
-        NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, queue: queue) { metadata, fileNamePath, returnError in
+        NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, returnError in
             if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
                 metadatas.append(metadata)
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
             } else {
-                return queue.async { completition(metadatas) }
+                return completition(metadatas)
             }
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
             if metadataSource.livePhoto, fetchAssets.count > 0  {
-                NCUtility.shared.createMetadataLivePhotoFromMetadata(metadataSource, asset: fetchAssets.firstObject, queue: queue) { metadata in
+                NCUtility.shared.createMetadataLivePhotoFromMetadata(metadataSource, asset: fetchAssets.firstObject) { metadata in
                     if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadatas.append(metadata)
                     }
-                    queue.async { completition(metadatas) }
+                    completition(metadatas)
                 }
             } else {
-                queue.async { completition(metadatas) }
+                completition(metadatas)
             }
         }
     }

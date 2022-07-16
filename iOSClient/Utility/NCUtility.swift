@@ -400,7 +400,7 @@ class NCUtility: NSObject {
 
     // MARK: -
 
-    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, queue: DispatchQueue, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
 
         var fileNamePath: String?
         let metadata = tableMetadata.init(value: metadata)
@@ -409,7 +409,7 @@ class NCUtility: NSObject {
 
         func callCompletion(error: Bool) {
             if error {
-                queue.async { completion(nil, nil, true) }
+                completion(nil, nil, true)
             } else {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
@@ -427,7 +427,7 @@ class NCUtility: NSObject {
                         metadataReturn = metadata
                     }
                 }
-                queue.async { completion(metadataReturn, fileNamePath, error) }
+                completion(metadataReturn, fileNamePath, error)
             }
         }
 
@@ -513,9 +513,9 @@ class NCUtility: NSObject {
         }
     }
 
-    func createMetadataLivePhotoFromMetadata(_ metadata: tableMetadata, asset: PHAsset?, queue: DispatchQueue, completion: @escaping (_ metadata: tableMetadata?) -> ()) {
+    func createMetadataLivePhotoFromMetadata(_ metadata: tableMetadata, asset: PHAsset?, completion: @escaping (_ metadata: tableMetadata?) -> ()) {
 
-        guard let asset = asset else { return queue.async { completion(nil) }}
+        guard let asset = asset else { return completion(nil) }
         let options = PHLivePhotoRequestOptions()
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
@@ -525,7 +525,7 @@ class NCUtility: NSObject {
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
 
         PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, info in
-            guard let livePhoto = livePhoto else { return queue.async { completion(nil) }}
+            guard let livePhoto = livePhoto else { return completion(nil) }
             var videoResource: PHAssetResource?
             for resource in PHAssetResource.assetResources(for: livePhoto) {
                 if resource.type == PHAssetResourceType.pairedVideo {
@@ -533,10 +533,10 @@ class NCUtility: NSObject {
                     break
                 }
             }
-            guard let videoResource = videoResource else { return queue.async { completion(nil) }}
+            guard let videoResource = videoResource else { return completion(nil) }
             NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
-                if error != nil { return queue.async { completion(nil) }}
+                if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
                 metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
                 metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
@@ -550,7 +550,7 @@ class NCUtility: NSObject {
                     metadataLivePhoto.chunk = true
                     metadataLivePhoto.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 }
-                return queue.async { completion(NCManageDatabase.shared.addMetadata(metadataLivePhoto)) }
+                return completion(NCManageDatabase.shared.addMetadata(metadataLivePhoto))
             }
         }
     }
