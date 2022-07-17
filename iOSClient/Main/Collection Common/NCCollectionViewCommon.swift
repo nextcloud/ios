@@ -1049,7 +1049,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.providers = allProviders
                 self.searchResults = []
                 self.dataSource = NCDataSource(
-                    metadatasSource: self.metadatasSource,
+                    metadatasSource: [] ,
                     account: self.appDelegate.account,
                     sort: self.layoutForView?.sort,
                     ascending: self.layoutForView?.ascending,
