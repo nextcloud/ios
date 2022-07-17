@@ -80,7 +80,7 @@ class NCFiles: NCCollectionViewCommon {
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
         guard !isSearching, !appDelegate.account.isEmpty, !appDelegate.urlBase.isEmpty, !serverUrl.isEmpty else { return }
 
-        self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         if self.metadataFolder == nil {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: appDelegate.urlBase, serverUrl: serverUrl)
         }
@@ -92,7 +92,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         dataSource = NCDataSource(
-            metadatasSource: self.metadatasSource,
+            metadatasSource: metadatas,
             account: self.appDelegate.account,
             directory: directory,
             sort: self.layoutForView?.sort,
@@ -130,7 +130,7 @@ class NCFiles: NCCollectionViewCommon {
 
             if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
                 self.reloadDataSource(forced: false)
-            } else if self.dataSource.metadatasSource.isEmpty {
+            } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
                 DispatchQueue.main.async { self.collectionView.reloadData() }
             }
         }
