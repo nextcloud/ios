@@ -47,15 +47,16 @@ class NCFavorite: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        if !self.isSearching {
-            if self.serverUrl.isEmpty {
-                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
-            } else {
-                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-            }
+        var metadatas: [tableMetadata] = []
+
+        if self.serverUrl.isEmpty {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
+        } else {
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         }
 
-        self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
+
+        self.dataSource = NCDataSource(metadatas: metadatas,
                                        account: self.appDelegate.account,
                                        sort: self.layoutForView?.sort,
                                        ascending: self.layoutForView?.ascending,

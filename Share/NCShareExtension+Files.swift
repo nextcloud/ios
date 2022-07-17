@@ -36,9 +36,9 @@ extension NCShareExtension {
             groupByField = "classFile"
         }
 
-        let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
         self.dataSource = NCDataSource(
-            metadatasSource: metadatasSource,
+            metadatas: metadatas,
             account: activeAccount.account,
             sort: layoutForView?.sort,
             ascending: layoutForView?.ascending,

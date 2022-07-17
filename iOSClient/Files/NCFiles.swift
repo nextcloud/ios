@@ -92,7 +92,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         dataSource = NCDataSource(
-            metadatasSource: metadatas,
+            metadatas: metadatas,
             account: self.appDelegate.account,
             directory: directory,
             sort: self.layoutForView?.sort,

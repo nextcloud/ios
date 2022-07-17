@@ -569,9 +569,9 @@ class NCOperationDataSource: ConcurrentOperation {
             self.finish()
         } else {
             self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
-            for metadata in self.metadatas {
-                self.collectionViewCommon.metadatasSource.append(metadata)
-            }
+//            for metadata in self.metadatas {
+//                self.collectionViewCommon.metadatasSource.append(metadata)
+//            }
             self.collectionViewCommon.searchResults?.append(self.searchResult)
             reloadDataThenPerform {
                 self.finish()

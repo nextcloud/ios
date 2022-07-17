@@ -39,7 +39,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isEncryptedFolder = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
-    internal var metadatasSource: [tableMetadata] = []
     internal var metadataFolder: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
@@ -749,7 +748,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.isSearching = true
 
         self.providers?.removeAll()
-        self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
 
         self.collectionView.reloadData()
@@ -1038,7 +1036,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         isReloadDataSourceNetworkInProgress = true
-        self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
@@ -1049,7 +1046,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.providers = allProviders
                 self.searchResults = []
                 self.dataSource = NCDataSource(
-                    metadatasSource: [] ,
+                    metadatas: [] ,
                     account: self.appDelegate.account,
                     sort: self.layoutForView?.sort,
                     ascending: self.layoutForView?.ascending,
@@ -1068,11 +1065,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         } else {
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
-                if  self.isSearching, errorCode == 0, let metadatas = metadatas {
-                    self.metadatasSource = metadatas
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                    self.collectionView.reloadData()
                 }
+                guard let metadatas = metadatas, errorCode == 0, self.isSearching else { return }
                 self.dataSource = NCDataSource(
-                    metadatasSource: self.metadatasSource,
+                    metadatas: metadatas,
                     account: self.appDelegate.account,
                     sort: self.layoutForView?.sort,
                     ascending: self.layoutForView?.ascending,
@@ -1083,10 +1082,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     providers: self.providers,
                     searchResults: self.searchResults)
                 self.isReloadDataSourceNetworkInProgress = false
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.collectionView.reloadData()
-                }
             }
         }
     }
@@ -1107,7 +1102,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             metadataForSection.unifiedSearchInProgress = false
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
 
-            self.metadatasSource.append(contentsOf: metadatas)
+            //self.metadatasSource.append(contentsOf: metadatas)
             let indexPaths = self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
             DispatchQueue.main.async {
