@@ -46,7 +46,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var headerMenu: NCSectionHeaderMenu?
 
     internal var layoutForView: NCGlobal.layoutForViewType?
-    internal var selectableDataSource: [RealmSwiftObject] { dataSource.metadatasSource }
+    internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -1327,6 +1327,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         appDelegate.activeMetadata = metadata
+        let metadataSourceForAllSections = dataSource.getMetadataSourceForAllSections()
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -1335,7 +1336,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatasSource.count)"
+            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(metadataSourceForAllSections.count)"
             return
         }
 
@@ -1354,7 +1355,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                 var metadatas: [tableMetadata] = []
-                for metadata in dataSource.metadatasSource {
+                for metadata in metadataSourceForAllSections {
                     if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                         metadatas.append(metadata)
                     }
@@ -1797,7 +1798,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     header.setButtonsCommand(heigt: 0)
                 }
                 if headerMenuButtonsView {
-                    header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
+                    header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
                     header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
                     header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
                 } else {
