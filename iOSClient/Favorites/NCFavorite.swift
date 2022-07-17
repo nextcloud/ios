@@ -55,7 +55,6 @@ class NCFavorite: NCCollectionViewCommon {
             metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         }
 
-
         self.dataSource = NCDataSource(metadatas: metadatas,
                                        account: self.appDelegate.account,
                                        sort: self.layoutForView?.sort,

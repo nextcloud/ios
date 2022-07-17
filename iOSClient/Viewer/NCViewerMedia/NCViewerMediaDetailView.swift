@@ -79,7 +79,12 @@ class NCViewerMediaDetailView: UIView {
         self.mapView = nil
     }
 
-    func show(metadata: tableMetadata, image: UIImage?, textColor: UIColor?, mediaMetadata: NCImageMetadata, ncplayer: NCPlayer?, delegate: NCViewerMediaDetailViewDelegate?) {
+    func show(metadata: tableMetadata,
+              image: UIImage?,
+              textColor: UIColor?,
+              mediaMetadata: NCImageMetadata,
+              ncplayer: NCPlayer?,
+              delegate: NCViewerMediaDetailViewDelegate?) {
 
         self.metadata = metadata
         self.latitude = mediaMetadata.latitude
