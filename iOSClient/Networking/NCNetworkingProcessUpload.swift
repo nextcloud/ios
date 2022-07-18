@@ -58,7 +58,6 @@ class NCNetworkingProcessUpload: NSObject {
 
         stopTimer()
 
-        let queue = DispatchQueue.global(qos: .background)
         let applicationState = UIApplication.shared.applicationState
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
@@ -67,7 +66,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         print("[LOG] PROCESS-UPLOAD \(counterUpload)")
 
-        NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
+        NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(qos: .background), completion: { listOcId in
 
             for sessionSelector in sessionSelectors {
                 if counterUpload < self.maxConcurrentOperationUpload {
@@ -111,7 +110,7 @@ class NCNetworkingProcessUpload: NSObject {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
                             for metadata in metadatas {
-                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { continue }
+                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { break }
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
                                 }
