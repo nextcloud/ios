@@ -406,14 +406,14 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                 if mediaType == PHAssetMediaType.image {
                                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                     if let image = UIImage(data: data) {
-                                        cell.imageNewFile.image = image
+                                        DispatchQueue.main.async { cell.imageNewFile.image = image }
                                     }
                                 } else if mediaType == PHAssetMediaType.video {
                                     if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
-                                        cell.imageNewFile.image = image
+                                        DispatchQueue.main.async { cell.imageNewFile.image = image }
                                     }
                                 }
-                                cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                                DispatchQueue.main.async { cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize) }
                             } catch { print("Error: \(error)") }
                         }
                     }
