@@ -110,7 +110,11 @@ class NCNetworkingProcessUpload: NSObject {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
                             for metadata in metadatas {
-                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active { break }
+                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active {  continue }
+                                let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
+                                let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account))
+                                if !isWiFi, let account = account, account.autoUploadWWAnPhoto, metadata.isAutoupload, metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue { continue }
+                                if !isWiFi, let account = account, account.autoUploadWWAnVideo, metadata.isAutoupload, metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue { continue }
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
                                 }
