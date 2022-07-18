@@ -417,7 +417,6 @@ class NCUtility: NSObject {
                     // DETECT IF CHUNCK
                     if chunckSize > 0 && metadata.size > chunckSize {
                         metadata.chunk = true
-                        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                     }
                     // DETECT IF E2EE
                     if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
@@ -548,7 +547,6 @@ class NCUtility: NSObject {
                 metadataLivePhoto.status = metadata.status
                 if chunckSize > 0 && metadataLivePhoto.size > chunckSize {
                     metadataLivePhoto.chunk = true
-                    metadataLivePhoto.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 }
                 return completion(NCManageDatabase.shared.addMetadata(metadataLivePhoto))
             }

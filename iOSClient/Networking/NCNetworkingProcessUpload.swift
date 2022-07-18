@@ -112,9 +112,7 @@ class NCNetworkingProcessUpload: NSObject {
                             for metadata in metadatas {
                                 if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active {  continue }
                                 let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
-                                let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account))
-                                if !isWiFi, let account = account, account.autoUploadWWAnPhoto, metadata.isAutoupload, metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue { continue }
-                                if !isWiFi, let account = account, account.autoUploadWWAnVideo, metadata.isAutoupload, metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue { continue }
+                                if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
                                 }
@@ -201,7 +199,6 @@ class NCNetworkingProcessUpload: NSObject {
             // DETECT IF CHUNCK
             if chunckSize > 0 && metadataSource.size > chunckSize {
                 metadataSource.chunk = true
-                metadataSource.session = NCCommunicationCommon.shared.sessionIdentifierUpload
             }
             // DETECT IF E2EE
             if CCUtility.isFolderEncrypted(metadataSource.serverUrl, e2eEncrypted: metadataSource.e2eEncrypted, account: metadataSource.account, urlBase: metadataSource.urlBase) {
