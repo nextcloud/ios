@@ -57,12 +57,10 @@ class NCOffline: NCCollectionViewCommon {
                         ocIds.append(directory.ocId)
                     }
                 }
-
                 let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
                 for file in files {
                     ocIds.append(file.ocId)
                 }
-
                 metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
             } else {
                 metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
