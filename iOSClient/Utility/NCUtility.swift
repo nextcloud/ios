@@ -413,15 +413,9 @@ class NCUtility: NSObject {
             } else {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
+                    metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
+                    metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
                     metadata.isExtractFile = true
-                    // DETECT IF CHUNCK
-                    if chunckSize > 0 && metadata.size > chunckSize {
-                        metadata.chunk = true
-                    }
-                    // DETECT IF E2EE
-                    if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
-                        metadata.e2eEncrypted = true
-                    }
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
                     }
@@ -545,9 +539,7 @@ class NCUtility: NSObject {
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
                 metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 metadataLivePhoto.status = metadata.status
-                if chunckSize > 0 && metadataLivePhoto.size > chunckSize {
-                    metadataLivePhoto.chunk = true
-                }
+                metadataLivePhoto.chunk = chunckSize != 0 && metadata.size > chunckSize
                 return completion(NCManageDatabase.shared.addMetadata(metadataLivePhoto))
             }
         }

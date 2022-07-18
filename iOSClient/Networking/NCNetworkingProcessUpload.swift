@@ -196,14 +196,8 @@ class NCNetworkingProcessUpload: NSObject {
             metadataSource.classFile = results.classFile
             if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadataSource.creationDate = date }
             if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadataSource.date = date }
-            // DETECT IF CHUNCK
-            if chunckSize > 0 && metadataSource.size > chunckSize {
-                metadataSource.chunk = true
-            }
-            // DETECT IF E2EE
-            if CCUtility.isFolderEncrypted(metadataSource.serverUrl, e2eEncrypted: metadataSource.e2eEncrypted, account: metadataSource.account, urlBase: metadataSource.urlBase) {
-                metadataSource.e2eEncrypted = true
-            }
+            metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
+            metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
