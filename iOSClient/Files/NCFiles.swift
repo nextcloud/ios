@@ -78,33 +78,35 @@ class NCFiles: NCCollectionViewCommon {
         super.reloadDataSource()
 
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
-        guard !isSearching, !appDelegate.account.isEmpty, !appDelegate.urlBase.isEmpty, !serverUrl.isEmpty else { return }
+        DispatchQueue.global().async {
+            guard !self.isSearching, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
 
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
-        if self.metadataFolder == nil {
-            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: appDelegate.urlBase, serverUrl: serverUrl)
+            let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+            if self.metadataFolder == nil {
+                self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
+            }
+            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+
+            // FORCED false: test the directory.etag
+            if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag {
+                return
+            }
+
+            self.dataSource = NCDataSource(
+                metadatas: metadatas,
+                account: self.appDelegate.account,
+                directory: directory,
+                sort: self.layoutForView?.sort,
+                ascending: self.layoutForView?.ascending,
+                directoryOnTop: self.layoutForView?.directoryOnTop,
+                favoriteOnTop: true,
+                filterLivePhoto: true,
+                groupByField: self.groupByField,
+                providers: self.providers,
+                searchResults: self.searchResults)
+
+            DispatchQueue.main.async { self.collectionView.reloadData() }
         }
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
-
-        // FORCED false: test the directory.etag
-        if !forced, let directory = directory, directory.etag == dataSource.directory?.etag {
-            return
-        }
-
-        dataSource = NCDataSource(
-            metadatas: metadatas,
-            account: self.appDelegate.account,
-            directory: directory,
-            sort: self.layoutForView?.sort,
-            ascending: self.layoutForView?.ascending,
-            directoryOnTop: self.layoutForView?.directoryOnTop,
-            favoriteOnTop: true,
-            filterLivePhoto: true,
-            groupByField: self.groupByField,
-            providers: self.providers,
-            searchResults: self.searchResults)
-
-        DispatchQueue.main.async { self.collectionView.reloadData() }
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
