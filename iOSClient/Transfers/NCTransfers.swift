@@ -294,11 +294,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
+        DispatchQueue.global().async {
+            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+            self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
 
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
+        }
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {

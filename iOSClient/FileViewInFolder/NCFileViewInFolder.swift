@@ -83,12 +83,10 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-
             let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
             if self.metadataFolder == nil {
                 self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl: self.serverUrl)
             }
-
 
             self.dataSource = NCDataSource(metadatas: metadatas,
                                            account: self.appDelegate.account,
@@ -102,10 +100,8 @@ class NCFileViewInFolder: NCCollectionViewCommon {
                                            searchResults: self.searchResults)
 
             DispatchQueue.main.async {
-
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
-
                 // Blink file
                 if self.fileName != nil {
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, self.fileName!)) {
