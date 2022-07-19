@@ -84,9 +84,6 @@ extension NCNetworking {
                 }, taskHandler: { task in
 
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
-
                     NCCommunicationCommon.shared.writeLog("Upload chunk: " + fileName)
 
                 }, progressHandler: { progress in
