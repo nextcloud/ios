@@ -627,7 +627,7 @@ import Photos
             return completion()
         }
 
-        if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
+        if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload || metadata.chunk {
 
             guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
 
