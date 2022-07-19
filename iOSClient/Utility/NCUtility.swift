@@ -533,7 +533,6 @@ class NCUtility: NSObject {
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
                 metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
                 metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
-                metadataLivePhoto.isAutoupload = metadata.isAutoupload
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
