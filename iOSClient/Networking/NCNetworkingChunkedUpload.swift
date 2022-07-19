@@ -92,9 +92,9 @@ extension NCNetworking {
                 }, progressHandler: { progress in
 
                     if let size = size {
-                        let totalBytesExpected = size + progress.completedUnitCount
-                        let totalBytes = metadata.size
-                        let fractionCompleted = Float(totalBytesExpected) / Float(totalBytes)
+                        let totalBytesExpected = metadata.size
+                        let totalBytes = size + progress.completedUnitCount
+                        let fractionCompleted = Float(totalBytes) / Float(totalBytesExpected)
 
                         NotificationCenter.default.postOnMainThread(
                             name: NCGlobal.shared.notificationCenterProgressTask,
