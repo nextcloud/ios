@@ -216,17 +216,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
-        // Transfer
-        var progress: Float = 0.0
-        var totalBytes: Int64 = 0
-        if let progressType = appDelegate.listProgress[metadata.ocId] {
-            progress = progressType.progress
-            totalBytes = progressType.totalBytes
-        }
-
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
-            cell.progressView.progress = progress
         } else {
             cell.progressView.isHidden = true
         }
@@ -243,11 +234,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         case NCGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ …"
             break
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = ""
             break
         case NCGlobal.shared.metadataStatusInUpload:
             cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
@@ -255,15 +246,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
-            if totalBytes > 0 {
-                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
-            } else {
-                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
-            }
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
             break
         case NCGlobal.shared.metadataStatusUploadError:
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = metadata.sessionError
             break
         default:
             cell.labelStatus.text = ""

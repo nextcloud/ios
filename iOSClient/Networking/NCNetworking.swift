@@ -315,11 +315,6 @@ import Photos
 
     @objc func cancelDownload(ocId: String, serverUrl: String, fileNameView: String) {
 
-        #if !EXTENSION
-        // removed progress ocid
-        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil }
-        #endif
-
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView) else { return }
 
         if let request = downloadRequest[fileNameLocalPath] {
@@ -358,12 +353,6 @@ import Photos
         }, progressHandler: { (progress) in
             
             if notificationCenterProgressTask {
-                #if !EXTENSION
-                // add progress ocid
-                let progressType = NCGlobal.progressType(progress: Float(progress.fractionCompleted), totalBytes: progress.totalUnitCount, totalBytesExpected: progress.completedUnitCount)
-                DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-                #endif
-                
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             }
             
@@ -408,9 +397,6 @@ import Photos
             }
 
             DispatchQueue.main.async {
-                #if !EXTENSION
-                (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil
-                #endif
                 completion(errorCode)
             }
         }
@@ -473,12 +459,6 @@ import Photos
             start()
 
         }, progressHandler: { progress in
-
-            #if !EXTENSION
-            // add progress ocid
-            let progressType = NCGlobal.progressType(progress: Float(progress.fractionCompleted), totalBytes: progress.totalUnitCount, totalBytesExpected: progress.completedUnitCount)
-            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-            #endif
 
             NotificationCenter.default.postOnMainThread(
                 name: NCGlobal.shared.notificationCenterProgressTask,
@@ -603,12 +583,7 @@ import Photos
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
             }
 
-            #if !EXTENSION
-            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-            #endif
-            // Delete
             self.uploadMetadataInBackground[fileName + serverUrl] = nil
-
             self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
         }
     }
@@ -628,12 +603,6 @@ import Photos
             }
 
             if let metadata = metadata {
-                #if !EXTENSION
-                // add progress ocid
-                let progressType = NCGlobal.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
-                DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-                #endif
-
                 NotificationCenter.default.postOnMainThread(
                     name: NCGlobal.shared.notificationCenterProgressTask,
                     userInfo: [
@@ -671,12 +640,7 @@ import Photos
     @objc func cancelTransferMetadata(_ metadata: tableMetadata, completion: @escaping () -> Void) {
 
         let metadata = tableMetadata.init(value: metadata)
-
-        #if !EXTENSION
-        // removed progress ocid
-        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-        #endif
-
+        
         if metadata.session.count == 0 {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             return completion()

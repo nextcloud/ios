@@ -55,7 +55,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var listFilesVC: [String: NCFiles] = [:]
     var listFavoriteVC: [String: NCFavorite] = [:]
     var listOfflineVC: [String: NCOffline] = [:]
-    var listProgress: [String: NCGlobal.progressType] = [:]
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?

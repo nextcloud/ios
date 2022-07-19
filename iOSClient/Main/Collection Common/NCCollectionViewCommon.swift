@@ -1590,16 +1590,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        // Progress
-        var progress: Float = 0.0
-        var totalBytes: Int64 = 0
-        if let progressType = appDelegate.listProgress[metadata.ocId] {
-            progress = progressType.progress
-            totalBytes = progressType.totalBytes
-        }
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.fileProgressView?.isHidden = false
-            cell.fileProgressView?.progress = progress
         }
 
         // Accessibility [shared]
@@ -1688,7 +1680,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
             break
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↓ …"
             break
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
@@ -1697,11 +1689,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
             break
         case NCGlobal.shared.metadataStatusUploading:
-            if totalBytes > 0 {
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
-            } else {
-                cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
-            }
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
             break
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError != "" {

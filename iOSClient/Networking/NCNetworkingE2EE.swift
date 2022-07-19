@@ -290,11 +290,6 @@ import Alamofire
                             "totalBytes": NSNumber(value: progress.totalUnitCount),
                             "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
-                    #if !EXTENSION
-                    let progressType = NCGlobal.progressType(progress: Float(progress.fractionCompleted), totalBytes: progress.totalUnitCount, totalBytesExpected: progress.completedUnitCount)
-                    DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-                    #endif
-
                 }) { account, ocId, etag, date, _, _, error, errorCode, errorDescription in
 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil

@@ -108,11 +108,6 @@ extension NCNetworking {
                                 "progress": NSNumber(value: fractionCompleted),
                                 "totalBytes": NSNumber(value: totalBytes),
                                 "totalBytesExpected": NSNumber(value: totalBytesExpected)])
-
-                        #if !EXTENSION
-                        let progressType = NCGlobal.progressType(progress: Float(fractionCompleted), totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
-                        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-                        #endif
                     }
 
                 }) { _, _, _, _, _, _, _, errorCode, errorDescription in
