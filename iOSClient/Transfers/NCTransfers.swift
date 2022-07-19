@@ -130,16 +130,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard appDelegate.account == metadata.account else { return }
         guard let networkingProcessUpload = appDelegate.networkingProcessUpload else { return }
 
-        let (metadataForUpload, metadataLivePhotoForUpload) = networkingProcessUpload.extractFiles(from: metadata, queue: DispatchQueue.global(qos: .background))
-
-        // Upload
-        if let metadata = metadataForUpload, let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-            NCNetworking.shared.upload(metadata: metadata)
-        }
-
-        // Upload Live photo
-        if let metadata = metadataLivePhotoForUpload, let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-            NCNetworking.shared.upload(metadata: metadata)
+        networkingProcessUpload.extractFiles(from: metadata) { metadatas in
+            for metadata in metadatas {
+                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                    NCNetworking.shared.upload(metadata: metadata)
+                }
+            }
         }
     }
 
@@ -220,17 +216,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
-        // Transfer
-        var progress: Float = 0.0
-        var totalBytes: Int64 = 0
-        if let progressType = appDelegate.listProgress[metadata.ocId] {
-            progress = progressType.progress
-            totalBytes = progressType.totalBytes
-        }
-
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
-            cell.progressView.progress = progress
         } else {
             cell.progressView.isHidden = true
         }
@@ -247,11 +234,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         case NCGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ …"
             break
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = ""
             break
         case NCGlobal.shared.metadataStatusInUpload:
             cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
@@ -259,11 +246,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         case NCGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
             break
         case NCGlobal.shared.metadataStatusUploadError:
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            cell.labelInfo.text = metadata.sessionError
             break
         default:
             cell.labelStatus.text = ""
@@ -271,9 +258,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             break
         }
         if self.appDelegate.account != metadata.account {
-            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "") + ": \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
+            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
-        if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && NCNetworking.shared.networkReachability != NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
+        let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
+        if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         
@@ -294,11 +282,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-        self.dataSource = NCDataSource(metadatasSource: metadatasSource, account: self.appDelegate.account)
+        DispatchQueue.global().async {
+            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+            self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
 
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
+        }
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {

@@ -39,14 +39,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isEncryptedFolder = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
-    internal var metadatasSource: [tableMetadata] = []
     internal var metadataFolder: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionHeaderMenu?
 
     internal var layoutForView: NCGlobal.layoutForViewType?
-    internal var selectableDataSource: [RealmSwiftObject] { dataSource.metadatasSource }
+    internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -533,6 +532,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else {
             return
         }
+        if metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            return
+        }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -606,7 +608,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if status == NCGlobal.shared.metadataStatusInDownload {
                         cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                     } else if status == NCGlobal.shared.metadataStatusInUpload {
-                        cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                        if totalBytes > 0 {
+                            cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                        } else {
+                            cell.fileInfoLabel?.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ …"
+                        }
                     }
                 }
             }
@@ -742,7 +748,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.isSearching = true
 
         self.providers?.removeAll()
-        self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
 
         self.collectionView.reloadData()
@@ -1031,7 +1036,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         isReloadDataSourceNetworkInProgress = true
-        self.metadatasSource.removeAll()
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
@@ -1042,7 +1046,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.providers = allProviders
                 self.searchResults = []
                 self.dataSource = NCDataSource(
-                    metadatasSource: self.metadatasSource,
+                    metadatas: [] ,
                     account: self.appDelegate.account,
                     sort: self.layoutForView?.sort,
                     ascending: self.layoutForView?.ascending,
@@ -1053,7 +1057,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     searchResults: self.searchResults)
             } update: { id, searchResult, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0, self.isSearching , let searchResult = searchResult else { return }
-                NCOperationQueue.shared.dataSourceAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
+                NCOperationQueue.shared.unifiedSearchAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
             } completion: {errorCode, errorDescription in
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
@@ -1061,11 +1065,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         } else {
             NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
-                if  self.isSearching, errorCode == 0, let metadatas = metadatas {
-                    self.metadatasSource = metadatas
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                    self.collectionView.reloadData()
                 }
+                guard let metadatas = metadatas, errorCode == 0, self.isSearching else { return }
                 self.dataSource = NCDataSource(
-                    metadatasSource: self.metadatasSource,
+                    metadatas: metadatas,
                     account: self.appDelegate.account,
                     sort: self.layoutForView?.sort,
                     ascending: self.layoutForView?.ascending,
@@ -1076,10 +1082,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     providers: self.providers,
                     searchResults: self.searchResults)
                 self.isReloadDataSourceNetworkInProgress = false
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                    self.collectionView.reloadData()
-                }
             }
         }
     }
@@ -1100,7 +1102,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             metadataForSection.unifiedSearchInProgress = false
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
 
-            self.metadatasSource.append(contentsOf: metadatas)
             let indexPaths = self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
             DispatchQueue.main.async {
@@ -1118,57 +1119,41 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadataFolder, errorCode, errorDescription) in
+            guard errorCode == 0 else {
+                completion(nil, nil, nil, nil, errorCode, errorDescription)
+                return
+            }
 
-            if errorCode == 0 {
-
-                if let metadataFolder = metadataFolder {
-                    tableDirectory = NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: self.serverUrl, account: account)
-                }
-
-                if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
-
-                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription in
-
-                        if errorCode == 0 {
-                            self.metadataFolder = metadataFolder
-
-                            // E2EE
-                            if let metadataFolder = metadataFolder {
-                                if metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-
-                                    NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, errorCode, errorDescription in
-
-                                        if errorCode == 0 && e2eMetadata != nil {
-
-                                            if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
-
-                                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata)
-                                            } else {
-                                                self.reloadDataSource()
-                                            }
-
-                                        } else if errorCode != NCGlobal.shared.errorResourceNotFound {
-
-                                            NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata)
-                                        }
-
-                                        completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
-                                    }
-                                } else {
-                                    completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
-                                }
-                            } else {
-                                completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
-                            }
-                        } else {
-                            completion(tableDirectory, nil, nil, nil, errorCode, errorDescription)
-                        }
+            if let metadataFolder = metadataFolder {
+                tableDirectory = NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: self.serverUrl, account: account)
+            }
+            if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
+                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription in
+                    guard errorCode == 0 else {
+                        completion(tableDirectory, nil, nil, nil, errorCode, errorDescription)
+                        return
                     }
-                } else {
-                    completion(tableDirectory, nil, nil, nil, 0, "")
+                    self.metadataFolder = metadataFolder
+                    // E2EE
+                    if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
+                        NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, errorCode, errorDescription in
+                            if errorCode == 0, let e2eMetadata = e2eMetadata {
+                                if NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
+                                    self.reloadDataSource()
+                                } else {
+                                    NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata)
+                                }
+                            } else if errorCode != NCGlobal.shared.errorResourceNotFound {
+                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata)
+                            }
+                            completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                        }
+                    } else {
+                        completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                    }
                 }
             } else {
-               completion(nil, nil, nil, nil, errorCode, errorDescription)
+                completion(tableDirectory, nil, nil, nil, 0, "")
             }
         }
     }
@@ -1320,6 +1305,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         appDelegate.activeMetadata = metadata
+        let metadataSourceForAllSections = dataSource.getMetadataSourceForAllSections()
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -1328,7 +1314,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(dataSource.metadatasSource.count)"
+            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(metadataSourceForAllSections.count)"
             return
         }
 
@@ -1347,7 +1333,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                 var metadatas: [tableMetadata] = []
-                for metadata in dataSource.metadatasSource {
+                for metadata in metadataSourceForAllSections {
                     if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
                         metadatas.append(metadata)
                     }
@@ -1588,16 +1574,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        // Progress
-        var progress: Float = 0.0
-        var totalBytes: Int64 = 0
-        if let progressType = appDelegate.listProgress[metadata.ocId] {
-            progress = progressType.progress
-            totalBytes = progressType.totalBytes
-        }
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.fileProgressView?.isHidden = false
-            cell.fileProgressView?.progress = progress
         }
 
         // Accessibility [shared]
@@ -1686,7 +1664,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
             break
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↓ …"
             break
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
@@ -1695,7 +1673,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
             break
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
             break
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError != "" {
@@ -1786,7 +1764,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     header.setButtonsCommand(heigt: 0)
                 }
                 if headerMenuButtonsView {
-                    header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
+                    header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
                     header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
                     header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
                 } else {

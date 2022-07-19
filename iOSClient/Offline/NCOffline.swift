@@ -47,42 +47,41 @@ class NCOffline: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        var ocIds: [String] = []
+        DispatchQueue.global().async {
+            var ocIds: [String] = []
+            var metadatas: [tableMetadata] = []
 
-        if !self.isSearching {
             if self.serverUrl.isEmpty {
                 if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "serverUrl", ascending: true) {
                     for directory: tableDirectory in directories {
                         ocIds.append(directory.ocId)
                     }
                 }
-
                 let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
                 for file in files {
                     ocIds.append(file.ocId)
                 }
-
-                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
+                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
             } else {
-                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
             }
-        }
 
-        self.dataSource = NCDataSource(
-            metadatasSource: self.metadatasSource,
-            account: self.appDelegate.account,
-            sort: self.layoutForView?.sort,
-            ascending: self.layoutForView?.ascending,
-            directoryOnTop: self.layoutForView?.directoryOnTop,
-            favoriteOnTop: true,
-            filterLivePhoto: true,
-            groupByField: self.groupByField,
-            providers: self.providers,
-            searchResults: self.searchResults)
+            self.dataSource = NCDataSource(
+                metadatas: metadatas,
+                account: self.appDelegate.account,
+                sort: self.layoutForView?.sort,
+                ascending: self.layoutForView?.ascending,
+                directoryOnTop: self.layoutForView?.directoryOnTop,
+                favoriteOnTop: true,
+                filterLivePhoto: true,
+                groupByField: self.groupByField,
+                providers: self.providers,
+                searchResults: self.searchResults)
 
-        DispatchQueue.main.async {
-            self.refreshControl.endRefreshing()
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
         }
     }
 

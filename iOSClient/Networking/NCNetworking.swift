@@ -112,22 +112,18 @@ import Photos
 
     func networkReachabilityObserver(_ typeReachability: NCCommunicationCommon.typeReachability) {
 
-        #if !EXTENSION
+#if !EXTENSION
         if typeReachability == NCCommunicationCommon.typeReachability.reachableCellular || typeReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
-
             if !lastReachability {
                 NCService.shared.startRequestServicesServer()
             }
             lastReachability = true
-
         } else {
-
             if lastReachability {
                 NCContentPresenter.shared.messageNotification("_network_not_available_", description: nil, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: -1009)
             }
             lastReachability = false
         }
-
         networkReachability = typeReachability
         #endif
     }
@@ -233,7 +229,6 @@ import Photos
         if x509cert == nil {
             print("[LOG] OpenSSL couldn't parse X509 Certificate")
         } else {
-
             // save details
             if FileManager.default.fileExists(atPath: certNamePathTXT) {
                 do {
@@ -247,7 +242,6 @@ import Photos
                 BIO_free(output)
             }
             fclose(fileCertInfo)
-
             X509_free(x509cert)
         }
 
@@ -255,29 +249,26 @@ import Photos
     }
 
     func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ errorCode: Int) -> Void) {
-
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
         NCCommunication.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { errorCode, _ in
+            guard errorCode == 0 else {
+                completion(0)
+                return
+            }
 
             if errorCode == 0 {
-
                 NCNetworking.shared.writeCertificate(host: host)
                 completion(errorCode)
-
             } else if errorCode == NSURLErrorServerCertificateUntrusted {
-
                 let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
-
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
                     NCNetworking.shared.writeCertificate(host: host)
                     completion(0)
                 }))
-
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in
                     completion(errorCode)
                 }))
-
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
                     if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                         let vcCertificateDetails = navigationController.topViewController as! NCViewCertificateDetails
@@ -285,12 +276,7 @@ import Photos
                         viewController?.present(navigationController, animated: true)
                     }
                 }))
-
                 viewController?.present(alertController, animated: true)
-
-            } else {
-
-                completion(0)
             }
         }
     }
@@ -315,21 +301,13 @@ import Photos
 
     @objc func cancelDownload(ocId: String, serverUrl: String, fileNameView: String) {
 
-        #if !EXTENSION
-        // removed progress ocid
-        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[ocId] = nil }
-        #endif
-
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView) else { return }
 
         if let request = downloadRequest[fileNameLocalPath] {
             request.cancel()
-        } else {
-            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-
-                NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId])
-            }
+        } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            NCManageDatabase.shared.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId])
         }
     }
     
@@ -358,15 +336,8 @@ import Photos
         }, progressHandler: { (progress) in
             
             if notificationCenterProgressTask {
-                #if !EXTENSION
-                // add progress ocid
-                let progressType = NCGlobal.progressType(progress: Float(progress.fractionCompleted), totalBytes: progress.totalUnitCount, totalBytesExpected: progress.completedUnitCount)
-                DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-                #endif
-                
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             }
-            
             progressHandler(progress)
                                         
         }) { (account, etag, date, _, allHeaderFields, error, errorCode, errorDescription) in
@@ -379,7 +350,6 @@ import Photos
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, etag: etag)
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
-
                 #if !EXTENSION
                 if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
 
@@ -391,7 +361,6 @@ import Photos
             } else {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: errorDescription, sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusDownloadError)
-
                 #if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, errorCode: errorCode, errorDescription: errorDescription)
@@ -400,17 +369,12 @@ import Photos
             }
 
             self.downloadRequest[fileNameLocalPath] = nil
-
             if error?.isExplicitlyCancelledError ?? false {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId])
             } else {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": errorCode, "errorDescription": errorDescription])
             }
-
             DispatchQueue.main.async {
-                #if !EXTENSION
-                (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil
-                #endif
                 completion(errorCode)
             }
         }
@@ -474,12 +438,6 @@ import Photos
 
         }, progressHandler: { progress in
 
-            #if !EXTENSION
-            // add progress ocid
-            let progressType = NCGlobal.progressType(progress: Float(progress.fractionCompleted), totalBytes: progress.totalUnitCount, totalBytesExpected: progress.completedUnitCount)
-            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-            #endif
-
             NotificationCenter.default.postOnMainThread(
                 name: NCGlobal.shared.notificationCenterProgressTask,
                 userInfo: [
@@ -521,7 +479,6 @@ import Photos
         if NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-
             completion(NCGlobal.shared.errorResourceNotFound, NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
 
         } else {
@@ -529,9 +486,7 @@ import Photos
             if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
-
                 completion(0, "")
 
             } else {
@@ -543,115 +498,98 @@ import Photos
     }
 
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String) {
-        guard delegate == nil else {
-            delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
-            return
-        }
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else { return }
-        let ocIdTemp = metadata.ocId
-        var errorDescription = errorDescription
-
-        if errorCode == 0, let ocId = ocId, size == metadata.size {
-
-            let metadata = tableMetadata.init(value: metadata)
-
-            NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-
-            metadata.uploadDate = date ?? NSDate()
-            metadata.etag = etag ?? ""
-            metadata.ocId = ocId
-
-            if let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) {
-                metadata.fileId = fileId
+        DispatchQueue.global().async {
+            guard self.delegate == nil, let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else {
+                self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
+                return
             }
+            let ocIdTemp = metadata.ocId
+            var errorDescription = errorDescription
 
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.sessionTaskIdentifier = 0
-            metadata.status = NCGlobal.shared.metadataStatusNormal
+            if errorCode == 0, let ocId = ocId, size == metadata.size {
 
-            // Delete Asset on Photos album
-            if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
-                metadata.deleteAssetLocalIdentifier = true
-            }
+                let metadata = tableMetadata.init(value: metadata)
 
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
 
-            #if !EXTENSION
-            self.getOcIdInBackgroundSession { listOcId in
-                if listOcId.count == 0 && self.uploadRequest.count == 0 {
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.networkingProcessUpload?.startProcess()
+                metadata.uploadDate = date ?? NSDate()
+                metadata.etag = etag ?? ""
+                metadata.ocId = ocId
+
+                if let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) {
+                    metadata.fileId = fileId
                 }
-            }
-            #endif
 
-            NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
-        } else {
-            if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionTaskIdentifier = 0
+                metadata.status = NCGlobal.shared.metadataStatusNormal
 
-                CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                // Delete Asset on Photos album
+                if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
+                    metadata.deleteAssetLocalIdentifier = true
+                }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
-            } else if errorCode == 401 || errorCode == 403 {
-                #if !EXTENSION
-                NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, errorCode: errorCode, errorDescription: errorDescription)
-                #endif
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
             } else {
-                if size == 0 {
-                    errorDescription = "File length 0"
-                    NCCommunicationCommon.shared.writeLog("Upload error 0 length " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
-                }
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
-            }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
-        }
+                if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
-        #if !EXTENSION
-        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-        #endif
-        // Delete
-        self.uploadMetadataInBackground[fileName + serverUrl] = nil
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+
+                } else if errorCode == 401 || errorCode == 403 {
+                    #if !EXTENSION
+                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, errorCode: errorCode, errorDescription: errorDescription)
+                    #endif
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                } else {
+                    if size == 0 {
+                        errorDescription = "File length 0"
+                        NCCommunicationCommon.shared.writeLog("Upload error 0 length " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
+                    }
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
+            }
+
+            self.uploadMetadataInBackground[fileName + serverUrl] = nil
+            self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
+        }
     }
 
     func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
-        delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
+        DispatchQueue.global().async {
+            self.delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
 
-        var metadata: tableMetadata?
-        let description: String = task.taskDescription ?? ""
+            var metadata: tableMetadata?
+            let description: String = task.taskDescription ?? ""
 
-        if let metadataTmp = self.uploadMetadataInBackground[fileName+serverUrl] {
-            metadata = metadataTmp
-        } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromOcId(description) {
-            self.uploadMetadataInBackground[fileName+serverUrl] = metadataTmp
-            metadata = metadataTmp
-        }
+            if let metadataTmp = self.uploadMetadataInBackground[fileName+serverUrl] {
+                metadata = metadataTmp
+            } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromOcId(description) {
+                self.uploadMetadataInBackground[fileName+serverUrl] = metadataTmp
+                metadata = metadataTmp
+            }
 
-        if let metadata = metadata {
-
-            #if !EXTENSION
-            // add progress ocid
-            let progressType = NCGlobal.progressType(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
-            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = progressType }
-            #endif
-
-            NotificationCenter.default.postOnMainThread(
-                name: NCGlobal.shared.notificationCenterProgressTask,
-                userInfo: [
-                    "account": metadata.account,
-                    "ocId": metadata.ocId,
-                    "fileName": metadata.fileName,
-                    "serverUrl": serverUrl,
-                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
-                    "progress": NSNumber(value: progress),
-                    "totalBytes": NSNumber(value: totalBytes),
-                    "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+            if let metadata = metadata {
+                NotificationCenter.default.postOnMainThread(
+                    name: NCGlobal.shared.notificationCenterProgressTask,
+                    userInfo: [
+                        "account": metadata.account,
+                        "ocId": metadata.ocId,
+                        "fileName": metadata.fileName,
+                        "serverUrl": serverUrl,
+                        "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                        "progress": NSNumber(value: progress),
+                        "totalBytes": NSNumber(value: totalBytes),
+                        "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+            }
         }
     }
 
@@ -677,12 +615,7 @@ import Photos
     @objc func cancelTransferMetadata(_ metadata: tableMetadata, completion: @escaping () -> Void) {
 
         let metadata = tableMetadata.init(value: metadata)
-
-        #if !EXTENSION
-        // removed progress ocid
-        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).listProgress[metadata.ocId] = nil }
-        #endif
-
+        
         if metadata.session.count == 0 {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             return completion()
@@ -752,14 +685,10 @@ import Photos
         var counter = 0
         for metadata in metadatas {
             counter += 1
-
             if metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloadError {
-
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
             }
-
             if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-
                 self.cancelTransferMetadata(metadata) {
                     if counter == metadatas.count {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -778,14 +707,10 @@ import Photos
     func cancelAllDownloadTransfer() {
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal))
-
         for metadata in metadatas {
-
             if metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloadError {
-
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
             }
-
             if metadata.status == NCGlobal.shared.metadataStatusDownloading && metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
                 cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
             }
@@ -801,33 +726,30 @@ import Photos
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, _, errorCode, errorDescription in
+            guard errorCode == 0 else {
+                completion(account, nil, nil, nil, nil, nil, errorCode, errorDescription)
+                return
+            }
 
-            if errorCode == 0 {
+            NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, metadatasFolder, metadatas in
 
-                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, metadatasFolder, metadatas in
+                // Add metadata folder
+                NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
 
-                    // Add metadata folder
-                    NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
+                // Update directory
+                NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, account: metadataFolder.account)
+                NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
 
-                    // Update directory
-                    NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, account: metadataFolder.account)
-                    NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
-
-                    // Update sub directories NO Update richWorkspace
-                    for metadata in metadatasFolder {
-                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
-                    }
-
-                    let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
-                    let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareEtagLocal: true)
-
-                    completion(account, metadataFolder, metadatas, metadatasChanged.metadatasUpdate, metadatasChanged.metadatasLocalUpdate, metadatasChanged.metadatasDelete, errorCode, "")
+                // Update sub directories NO Update richWorkspace
+                for metadata in metadatasFolder {
+                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                    NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
                 }
 
-            } else {
+                let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
+                let metadatasChanged = NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareEtagLocal: true)
 
-                completion(account, nil, nil, nil, nil, nil, errorCode, errorDescription)
+                completion(account, metadataFolder, metadatas, metadatasChanged.metadatasUpdate, metadatasChanged.metadatasLocalUpdate, metadatasChanged.metadatasDelete, errorCode, "")
             }
         }
     }
@@ -835,19 +757,15 @@ import Photos
     @objc func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NCCommunicationCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String) -> Void) {
 
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, queue: queue) { account, files, _, errorCode, errorDescription in
-
-            if errorCode == 0 && files.count == 1 {
-
-                let file = files[0]
-                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase)
-                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
-
-                completion(account, metadata, errorCode, errorDescription)
-
-            } else {
-
+            guard errorCode == 0, files.count == 1, let file = files.first else {
                 completion(account, nil, errorCode, errorDescription)
+                return
             }
+
+            let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase)
+            let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
+
+            completion(account, metadata, errorCode, errorDescription)
         }
     }
     
@@ -1034,7 +952,6 @@ import Photos
     @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
 
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase)
-        
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if isDirectoryEncrypted {
@@ -1059,33 +976,26 @@ import Photos
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
         NCCommunication.shared.createFolder(fileNameFolderUrl) { account, ocId, _, errorCode, errorDescription in
-
-            if errorCode == 0 {
-
-                self.readFile(serverUrlFileName: fileNameFolderUrl) { (account, metadataFolder, errorCode, errorDescription) in
-
-                    if errorCode == 0 {
-
-                        if let metadata = metadataFolder {
-
-                            NCManageDatabase.shared.addMetadata(metadata)
-                            NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
-                        }
-
-                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId])
-                        }
-                    }
-
+            guard errorCode == 0 else {
+                if errorCode == 405 && overwrite {
+                    completion(0, "")
+                } else {
                     completion(errorCode, errorDescription)
                 }
+                return
+            }
 
-            } else if errorCode == 405 && overwrite {
+            self.readFile(serverUrlFileName: fileNameFolderUrl) { (account, metadataFolder, errorCode, errorDescription) in
 
-                completion(0, "")
-
-            } else {
-
+                if errorCode == 0 {
+                    if let metadata = metadataFolder {
+                        NCManageDatabase.shared.addMetadata(metadata)
+                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
+                    }
+                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId])
+                    }
+                }
                 completion(errorCode, errorDescription)
             }
         }
@@ -1263,21 +1173,21 @@ import Photos
 
     @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
         NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, errorCode, errorDescription in
-
-            if errorCode == 0 {
-                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
-                    NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
-                    if selector != NCGlobal.shared.selectorListingFavorite {
-                        #if !EXTENSION
-                        for metadata in metadatas {
-                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
-                        }
-                        #endif
-                    }
-                    completion(account, metadatas, errorCode, errorDescription)
-                }
-            } else {
+            guard errorCode == 0 else {
                 completion(account, nil, errorCode, errorDescription)
+                return
+            }
+
+            NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
+                NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
+                if selector != NCGlobal.shared.selectorListingFavorite {
+                    #if !EXTENSION
+                    for metadata in metadatas {
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
+                    }
+                    #endif
+                }
+                completion(account, metadatas, errorCode, errorDescription)
             }
         }
     }
@@ -1433,13 +1343,10 @@ import Photos
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { account, errorCode, errorDescription in
 
             if errorCode == 0 {
-
                 if metadata.directory {
                     NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: account)
                 }
-
                 NCManageDatabase.shared.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
-
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": metadata.ocId, "serverUrlFrom": serverUrlFrom])
             }
 
@@ -1477,10 +1384,8 @@ import Photos
         NCCommunication.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { _, errorCode, errorDescription in
 
             if errorCode == 0 {
-
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": metadata.ocId, "serverUrlTo": serverUrlTo])
             }
-
             completion(errorCode, errorDescription)
         }
     }
@@ -1490,13 +1395,9 @@ import Photos
     func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?) -> Void) {
 
         if CCUtility.fileProviderStorageExists(metadata) {
-
             completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
-
         } else {
-
             NCCommunication.shared.getDirectDownload(fileId: metadata.fileId) { _, url, errorCode, _ in
-
                 if errorCode == 0 && url != nil {
                     if let url = URL(string: url!) {
                         completition(url)

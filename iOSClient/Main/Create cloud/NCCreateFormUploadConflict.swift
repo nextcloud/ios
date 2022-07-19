@@ -397,29 +397,23 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
 
                     // PREVIEW
-                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, queue: .main) { metadataNew, fileNamePath in
-
-                        if metadataNew != nil {
+                    NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false) { metadata, fileNamePath, error in
+                        if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
-
                             do {
-
                                 let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
                                 let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
-
                                 if mediaType == PHAssetMediaType.image {
                                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                     if let image = UIImage(data: data) {
-                                        cell.imageNewFile.image = image
+                                        DispatchQueue.main.async { cell.imageNewFile.image = image }
                                     }
                                 } else if mediaType == PHAssetMediaType.video {
                                     if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
-                                        cell.imageNewFile.image = image
+                                        DispatchQueue.main.async { cell.imageNewFile.image = image }
                                     }
                                 }
-
-                                cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
-
+                                DispatchQueue.main.async { cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize) }
                             } catch { print("Error: \(error)") }
                         }
                     }

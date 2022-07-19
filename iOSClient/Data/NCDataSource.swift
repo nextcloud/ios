@@ -26,7 +26,7 @@ import NCCommunication
 
 class NCDataSource: NSObject {
 
-    public var metadatasSource: [tableMetadata] = []
+    public var metadatas: [tableMetadata] = []
     public var metadatasForSection: [NCMetadataForSection] = []
 
     public var directory: tableDirectory?
@@ -48,10 +48,10 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatasSource: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NCCSearchProvider]? = nil, searchResults: [NCCSearchResult]? = nil) {
+    init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NCCSearchProvider]? = nil, searchResults: [NCCSearchResult]? = nil) {
         super.init()
 
-        self.metadatasSource = metadatasSource
+        self.metadatas = metadatas
         self.directory = directory
         self.shares = NCManageDatabase.shared.getTableShares(account: account)
         self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
@@ -72,7 +72,7 @@ class NCDataSource: NSObject {
 
     func clearDataSource() {
 
-        self.metadatasSource.removeAll()
+        self.metadatas.removeAll()
         self.metadatasForSection.removeAll()
         self.directory = nil
         self.sectionsValue.removeAll()
@@ -89,7 +89,7 @@ class NCDataSource: NSObject {
 
     func addSection(metadatas: [tableMetadata], searchResult: NCCSearchResult?) {
 
-        self.metadatasSource.append(contentsOf: metadatas)
+        self.metadatas.append(contentsOf: metadatas)
 
         if let searchResult = searchResult {
             self.searchResults?.append(searchResult)
@@ -101,7 +101,7 @@ class NCDataSource: NSObject {
     internal func createSections() {
 
         // get all Section
-        for metadata in metadatasSource {
+        for metadata in self.metadatas {
             // skipped livePhoto
             if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
                 continue
@@ -163,7 +163,7 @@ class NCDataSource: NSObject {
         if let providers = self.providers, !providers.isEmpty, let searchResults = self.searchResults {
             searchResult = searchResults.filter({ $0.name == sectionValue}).first
         }
-        let metadatas = metadatasSource.filter({ getSectionValue(metadata: $0) == sectionValue})
+        let metadatas = self.metadatas.filter({ getSectionValue(metadata: $0) == sectionValue})
         let metadataForSection = NCMetadataForSection.init(sectionValue: sectionValue,
                                                             metadatas: metadatas,
                                                             shares: self.shares,
@@ -177,6 +177,17 @@ class NCDataSource: NSObject {
         metadatasForSection.append(metadataForSection)
     }
 
+    func getMetadataSourceForAllSections() -> [tableMetadata] {
+
+        var metadatas: [tableMetadata] = []
+
+        for section in metadatasForSection {
+            metadatas.append(contentsOf: section.metadatas)
+        }
+
+        return metadatas
+    }
+
     // MARK: -
 
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NCCSearchResult) -> [IndexPath] {
@@ -184,7 +195,7 @@ class NCDataSource: NSObject {
         guard let sectionIndex =  getSectionIndex(metadataForSection.sectionValue) else { return [] }
         var indexPaths: [IndexPath] = []
 
-        self.metadatasSource.append(contentsOf: metadatas)
+        self.metadatas.append(contentsOf: metadatas)
         metadataForSection.metadatas.append(contentsOf: metadatas)
         metadataForSection.lastSearchResult = lastSearchResult
         metadataForSection.createMetadatas()
@@ -205,10 +216,10 @@ class NCDataSource: NSObject {
         let sectionValue = getSectionValue(metadata: metadata)
 
         // ADD metadatasSource
-        if let rowIndex = self.metadatasSource.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
-            self.metadatasSource[rowIndex] = metadata
+        if let rowIndex = self.metadatas.firstIndex(where: {$0.fileNameView == metadata.fileNameView || $0.ocId == metadata.ocId}) {
+            self.metadatas[rowIndex] = metadata
         } else {
-            self.metadatasSource.append(metadata)
+            self.metadatas.append(metadata)
         }
 
         // ADD metadataForSection
@@ -264,8 +275,8 @@ class NCDataSource: NSObject {
         } else { return (nil, false) }
 
         // DELETE metadatasSource (IMPORTANT LAST)
-        if let rowIndex = self.metadatasSource.firstIndex(where: {$0.ocId == ocId}) {
-            self.metadatasSource.remove(at: rowIndex)
+        if let rowIndex = self.metadatas.firstIndex(where: {$0.ocId == ocId}) {
+            self.metadatas.remove(at: rowIndex)
         }
 
         return (indexPathReturn, self.isSameNumbersOfSections(numberOfSections: numberOfSections))
@@ -291,8 +302,8 @@ class NCDataSource: NSObject {
         }
 
         // UPDATE metadatasSource (IMPORTANT LAST)
-        if let rowIndex = self.metadatasSource.firstIndex(where: {$0.ocId == ocIdSearch}) {
-            self.metadatasSource[rowIndex] = metadata
+        if let rowIndex = self.metadatas.firstIndex(where: {$0.ocId == ocIdSearch}) {
+            self.metadatas[rowIndex] = metadata
         }
 
         let result = self.getIndexPathMetadata(ocId: ocId)
@@ -302,7 +313,7 @@ class NCDataSource: NSObject {
     // MARK: -
 
     func getIndexPathMetadata(ocId: String) -> (indexPath: IndexPath?, metadataForSection: NCMetadataForSection?) {
-        guard let metadata = metadatasSource.filter({ $0.ocId == ocId}).first else { return (nil, nil) }
+        guard let metadata = self.metadatas.filter({ $0.ocId == ocId}).first else { return (nil, nil) }
         let sectionValue = getSectionValue(metadata: metadata)
         guard let sectionIndex = getSectionIndex(sectionValue), let metadataForSection = getMetadataForSection(sectionValue), let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == ocId}) else { return (nil, nil) }
         return (IndexPath(row: rowIndex, section: sectionIndex), metadataForSection)
@@ -319,7 +330,7 @@ class NCDataSource: NSObject {
     }
     
     func numberOfItemsInSection(_ section: Int) -> Int {
-        guard self.sectionsValue.count > 0 && self.metadatasSource.count > 0, let metadataForSection = getMetadataForSection(section) else { return 0}
+        guard self.sectionsValue.count > 0 && self.metadatas.count > 0, let metadataForSection = getMetadataForSection(section) else { return 0}
         return metadataForSection.metadatas.count
     }
 
@@ -402,7 +413,7 @@ class NCMetadataForSection: NSObject {
     private var favoriteOnTop: Bool
     private var filterLivePhoto: Bool
 
-    private var metadatasSourceSorted: [tableMetadata] = []
+    private var metadatasSorted: [tableMetadata] = []
     private var metadatasFavoriteDirectory: [tableMetadata] = []
     private var metadatasFavoriteFile: [tableMetadata] = []
     private var metadatasDirectory: [tableMetadata] = []
@@ -436,7 +447,7 @@ class NCMetadataForSection: NSObject {
 
         // Clear
         //
-        metadatasSourceSorted.removeAll()
+        metadatasSorted.removeAll()
         metadatasFavoriteDirectory.removeAll()
         metadatasFavoriteFile.removeAll()
         metadatasDirectory.removeAll()
@@ -451,7 +462,7 @@ class NCMetadataForSection: NSObject {
         // Metadata order
         //
         if sort != "none" && sort != "" {
-            metadatasSourceSorted = metadatas.sorted {
+            metadatasSorted = metadatas.sorted {
 
                 switch sort {
                 case "date":
@@ -475,12 +486,12 @@ class NCMetadataForSection: NSObject {
                 }
             }
         } else {
-            metadatasSourceSorted = metadatas
+            metadatasSorted = metadatas
         }
 
         // Initialize datasource
         //
-        for metadata in metadatasSourceSorted {
+        for metadata in metadatasSorted {
 
             // skipped the root file
             if metadata.fileName == "." || metadata.serverUrl == ".." {

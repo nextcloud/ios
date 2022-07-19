@@ -84,18 +84,14 @@ extension NCNetworking {
                 }, taskHandler: { task in
 
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
-
                     NCCommunicationCommon.shared.writeLog("Upload chunk: " + fileName)
 
                 }, progressHandler: { progress in
 
                     if let size = size {
-
-                        let totalBytesExpected = size + progress.completedUnitCount
-                        let totalBytes = metadata.size
-                        let fractionCompleted = Float(totalBytesExpected) / Float(totalBytes)
+                        let totalBytesExpected = metadata.size
+                        let totalBytes = size + progress.completedUnitCount
+                        let fractionCompleted = Float(totalBytes) / Float(totalBytesExpected)
 
                         NotificationCenter.default.postOnMainThread(
                             name: NCGlobal.shared.notificationCenterProgressTask,
@@ -146,7 +142,7 @@ extension NCNetworking {
             addCustomHeaders["X-OC-CTime"] = creationDate
             addCustomHeaders["X-OC-MTime"] = modificationDate
 
-            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { _, errorCode, errorDescription in
+            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
 
                 NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
 
@@ -158,6 +154,8 @@ extension NCNetworking {
 
                 let serverUrl = metadata.serverUrl
                 let assetLocalIdentifier = metadata.assetLocalIdentifier
+                let isLivePhoto = metadata.livePhoto
+                let isE2eEncrypted = metadata.e2eEncrypted
 
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
@@ -168,6 +166,9 @@ extension NCNetworking {
                     if errorCode == 0, let metadata = metadata {
 
                         metadata.assetLocalIdentifier = assetLocalIdentifier
+                        metadata.e2eEncrypted = isE2eEncrypted
+                        metadata.livePhoto = isLivePhoto
+
                         // Delete Asset on Photos album
                         if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
                             metadata.deleteAssetLocalIdentifier = true

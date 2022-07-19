@@ -625,7 +625,7 @@ extension NCSelect: UICollectionViewDataSource {
 
                 header.setButtonsCommand(heigt: 0)
                 header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
-                header.setStatusButtonsView(enable: !dataSource.metadatasSource.isEmpty)
+                header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
                 header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
 
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
@@ -749,9 +749,8 @@ extension NCSelect {
             }
         }
 
-
-        let metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatasSource: metadatasSource,
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
+        self.dataSource = NCDataSource(metadatas: metadatas,
                                        account: activeAccount.account,
                                        sort: layoutForView?.sort,
                                        ascending: layoutForView?.ascending,

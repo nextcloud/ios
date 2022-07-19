@@ -47,28 +47,30 @@ class NCFavorite: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        if !self.isSearching {
+        DispatchQueue.global().async {
+            var metadatas: [tableMetadata] = []
+
             if self.serverUrl.isEmpty {
-                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
+                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
             } else {
-                self.metadatasSource = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
             }
-        }
 
-        self.dataSource = NCDataSource(metadatasSource: self.metadatasSource,
-                                       account: self.appDelegate.account,
-                                       sort: self.layoutForView?.sort,
-                                       ascending: self.layoutForView?.ascending,
-                                       directoryOnTop: self.layoutForView?.directoryOnTop,
-                                       favoriteOnTop: true,
-                                       filterLivePhoto: true,
-                                       groupByField: self.groupByField,
-                                       providers: self.providers,
-                                       searchResults: self.searchResults)
+            self.dataSource = NCDataSource(metadatas: metadatas,
+                                           account: self.appDelegate.account,
+                                           sort: self.layoutForView?.sort,
+                                           ascending: self.layoutForView?.ascending,
+                                           directoryOnTop: self.layoutForView?.directoryOnTop,
+                                           favoriteOnTop: true,
+                                           filterLivePhoto: true,
+                                           groupByField: self.groupByField,
+                                           providers: self.providers,
+                                           searchResults: self.searchResults)
 
-        DispatchQueue.main.async {
-            self.refreshControl.endRefreshing()
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
         }
     }
 

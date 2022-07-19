@@ -37,7 +37,7 @@ import NCCommunication
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let dataSourceQueue = Queuer(name: "dataSourceQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
+    private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
     private var timerReadFileForMediaQueue: Timer?
 
@@ -48,10 +48,10 @@ import NCCommunication
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
         downloadAvatarCancelAll()
-        dataSourceAddSectionCancelAll()
+        unifiedSearchCancelAll()
     }
 
-    // Download file
+    // MARK: - Download file
 
     func download(metadata: tableMetadata, selector: String) {
         for operation in downloadQueue.operations as! [NCOperationDownload] {
@@ -64,7 +64,7 @@ import NCCommunication
     @objc func downloadCancelAll() {
         downloadQueue.cancelAll()
     }
-    @objc func downloadCount() -> Int {
+    @objc func downloadQueueCount() -> Int {
         return downloadQueue.operationCount
     }
     @objc func downloadExists(metadata: tableMetadata) -> Bool {
@@ -76,7 +76,7 @@ import NCCommunication
         return false
     }
 
-    // Delete file
+    // MARK: - Delete file
 
     @objc func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
         for operation in deleteQueue.operations as! [NCOperationDelete] {
@@ -89,11 +89,8 @@ import NCCommunication
     @objc func deleteCancelAll() {
         deleteQueue.cancelAll()
     }
-    @objc func deleteCount() -> Int {
-        return deleteQueue.operationCount
-    }
 
-    // Copy Move file
+    // MARK: - Copy Move file
 
     @objc func copyMove(metadata: tableMetadata, serverUrl: String, overwrite: Bool, move: Bool) {
         for operation in copyMoveQueue.operations as! [NCOperationCopyMove] {
@@ -106,11 +103,8 @@ import NCCommunication
     @objc func copyMoveCancelAll() {
         copyMoveQueue.cancelAll()
     }
-    @objc func copyMoveCount() -> Int {
-        return copyMoveQueue.operationCount
-    }
 
-    // Synchronization
+    // MARK: - Synchronization
 
     @objc func synchronizationMetadata(_ metadata: tableMetadata, selector: String) {
         for operation in synchronizationQueue.operations as! [NCOperationSynchronization] {
@@ -124,7 +118,7 @@ import NCCommunication
         synchronizationQueue.cancelAll()
     }
 
-    // Download Thumbnail
+    // MARK: - Download Thumbnail
 
     @objc func downloadThumbnail(metadata: tableMetadata, placeholder: Bool, cell: UIView?, view: UIView?) {
 
@@ -160,7 +154,7 @@ import NCCommunication
         downloadThumbnailQueue.cancelAll()
     }
 
-    // Download Avatar
+    // MARK: - Download Avatar
 
     func downloadAvatar(user: String, dispalyName: String?, fileName: String, cell: NCCellProtocol, view: UIView?, cellImageView: UIImageView?) {
 
@@ -199,18 +193,14 @@ import NCCommunication
         downloadAvatarQueue.cancelAll()
     }
 
-    // Datasource
+    // MARK: - Unified Search
 
-    func dataSourceAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
-        dataSourceQueue.addOperation(NCOperationDataSource.init(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
+    func unifiedSearchAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
+        unifiedSearchQueue.addOperation(NCOperationUnifiedSearch.init(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
     }
 
-    @objc func dataSourceAddSectionCancelAll() {
-        dataSourceQueue.cancelAll()
-    }
-
-    func dataSourceAddSectionCount() -> Int {
-        return dataSourceQueue.operationCount
+    @objc func unifiedSearchCancelAll() {
+        unifiedSearchQueue.cancelAll()
     }
 }
 
@@ -542,7 +532,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
 
 // MARK: -
 
-class NCOperationDataSource: ConcurrentOperation {
+class NCOperationUnifiedSearch: ConcurrentOperation {
 
     var collectionViewCommon: NCCollectionViewCommon
     var metadatas: [tableMetadata]
@@ -569,9 +559,6 @@ class NCOperationDataSource: ConcurrentOperation {
             self.finish()
         } else {
             self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)
-            for metadata in self.metadatas {
-                self.collectionViewCommon.metadatasSource.append(metadata)
-            }
             self.collectionViewCommon.searchResults?.append(self.searchResult)
             reloadDataThenPerform {
                 self.finish()
