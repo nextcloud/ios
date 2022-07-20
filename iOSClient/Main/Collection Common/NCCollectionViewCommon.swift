@@ -224,6 +224,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+
         let viewController = presentationController.presentedViewController
         if viewController is NCViewerRichWorkspaceWebView {
             closeRichWorkspaceWebView()
@@ -293,7 +294,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func changeThemingWithReloadData() {
-        
+
         changeTheming()
         collectionView.reloadData()
     }
@@ -630,6 +631,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func setNavigationItem() {
         self.setNavigationHeader()
+
         guard !isEditMode, layoutKey == NCGlobal.shared.layoutViewFiles else { return }
         
         // PROFILE BUTTON
@@ -689,6 +691,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
+
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
             return NCBrandOptions.shared.brand
@@ -709,7 +712,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func colorPickerDidChange(lightColor: String, darkColor: String) {
 
         NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
-
         changeTheming()
     }
 
@@ -746,17 +748,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - SEARCH
 
     func updateSearchResults(for searchController: UISearchController) {
-
         self.literalSearch = searchController.searchBar.text
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
 
         self.isSearching = true
-
         self.providers?.removeAll()
         self.dataSource.clearDataSource()
-
         self.collectionView.reloadData()
 
     }
@@ -785,6 +784,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - TAP EVENT
 
     func accountRequestChangeAccount(account: String) {
+
         NCManageDatabase.shared.setAccountActive(account)
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
@@ -837,6 +837,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButton1(_ sender: Any) {
+
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: self) { hasPermission in
             if hasPermission {
                 NCPhotosPickerViewController.init(viewController: self, maxSelectedAssets: 0, singleSelectedMode: false)
@@ -845,12 +846,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButton2(_ sender: Any) {
+
         guard !appDelegate.activeServerUrl.isEmpty else { return }
         let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
         appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
     }
 
     func tapButton3(_ sender: Any) {
+
         if #available(iOS 13.0, *) {
             if let viewController = appDelegate.window?.rootViewController {
                 NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
@@ -859,7 +862,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
-
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, sender: sender)
     }
 
@@ -898,7 +900,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
-
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
@@ -1389,8 +1390,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        animator.addCompletion {
 
+        animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {
                 self.collectionView(collectionView, didSelectItemAt: indexPath)
             }
@@ -1479,15 +1480,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
-    }
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) { }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return dataSource.numberOfSections()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         let numberItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
         return numberItems
