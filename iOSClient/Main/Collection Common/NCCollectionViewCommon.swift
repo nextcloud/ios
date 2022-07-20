@@ -293,6 +293,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func changeThemingWithReloadData() {
+        
         changeTheming()
         collectionView.reloadData()
     }
@@ -341,6 +342,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
+
         if !isSearching {
             reloadDataSourceNetwork(forced: true)
         }
@@ -425,7 +427,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func renameFile(_ notification: NSNotification) {
-        reloadDataSource()
+
+        if isSearching {
+            reloadDataSourceNetwork()
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func createFolder(_ notification: NSNotification) {
