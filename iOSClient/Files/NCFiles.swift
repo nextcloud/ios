@@ -87,6 +87,7 @@ class NCFiles: NCCollectionViewCommon {
             }
             let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
             let metadataTransfer = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl))
+            self.richWorkspaceText = directory?.richWorkspace
 
             // FORCED false: test the directory.etag
             if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil {
