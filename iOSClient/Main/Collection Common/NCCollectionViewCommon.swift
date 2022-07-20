@@ -1445,39 +1445,20 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     (cell as! NCCellProtocol).filePreviewImageView?.image = NCBrandColor.cacheImages.file
                 }
 
-                //var urlString: String = ""
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = NCUtility.shared.getAvatarFromIconUrl(metadata: metadata), let cell = cell as? NCCellProtocol {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
                         NCOperationQueue.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
                     }
-
-                    /*
-                    if metadata.iconUrl.starts(with: "/apps") {
-                        //urlString = metadata.urlBase + metadata.iconUrl
-                    } else if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
-                        let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
-                        var found:Bool = false
-                        var ownerId: String = ""
-                        for item in splitIconUrl {
-                            if found {
-                                ownerId = item
-                                break
-                            }
-                            if item == "avatar" { found = true}
-                        }
-                        let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
-                        if let cell = cell as? NCCellProtocol {
-                            NCOperationQueue.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
-                        }
-                    }
-//                    NCCommunication.shared.downloadContent(serverUrl: urlString) { _, data, errorCode, _ in
-//                        if errorCode == 0, let data = data, let image = UIImage(data: data) {
-//                            (cell as! NCCellProtocol).filePreviewImageView?.image = image
-//                        }
-//                    }
-                     */
                 }
+
+//                if metadata.iconName.contains("contacts"), let subline = metadata.subline, !subline.isEmpty, let cell = cell as? NCCellProtocol {
+//                    let components = subline.components(separatedBy: "@")
+//                    if let user = components.first {
+//                        let fileName = metadata.userBaseUrl + "-" + user + ".png"
+//                        NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
+//                    }
+//                }
             }
         }
 
