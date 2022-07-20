@@ -437,17 +437,15 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                 etag: etagResource,
                 queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
 
-                    if errorCode == 0 && imageIcon != nil {
+                    if errorCode == 0, let imageIcon = imageIcon {
                         NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                         DispatchQueue.main.async {
-                            if self.metadata.ocId == self.cell?.fileObjectId {
-                                if let filePreviewImageView = self.cell?.filePreviewImageView {
-                                    UIView.transition(with: filePreviewImageView,
-                                                      duration: 0.75,
-                                                      options: .transitionCrossDissolve,
-                                                      animations: { filePreviewImageView.image = imageIcon! },
-                                                      completion: nil)
-                                }
+                            if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
+                                UIView.transition(with: filePreviewImageView,
+                                                  duration: 0.75,
+                                                  options: .transitionCrossDissolve,
+                                                  animations: { filePreviewImageView.image = imageIcon },
+                                                  completion: nil)
                             } else {
                                 if self.view is UICollectionView {
                                     (self.view as? UICollectionView)?.reloadData()
@@ -494,20 +492,16 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
             NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NCCommunicationCommon.shared.backgroundQueue) { _, imageAvatar, _, etag, errorCode, _ in
 
                 if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag {
-
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
-
                     DispatchQueue.main.async {
-                        if self.user == self.cell.fileUser {
-                            if let avatarImageView = self.cellImageView {
-                                UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
-                                    avatarImageView.image = imageAvatar
-                                } completion: { _ in
-                                    if self.view is UICollectionView {
-                                        (self.view as? UICollectionView)?.reloadData()
-                                    } else if self.view is UITableView {
-                                        (self.view as? UITableView)?.reloadData()
-                                    }
+                        if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
+                            UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
+                                avatarImageView.image = imageAvatar
+                            } completion: { _ in
+                                if self.view is UICollectionView {
+                                    (self.view as? UICollectionView)?.reloadData()
+                                } else if self.view is UITableView {
+                                    (self.view as? UITableView)?.reloadData()
                                 }
                             }
                         } else {
@@ -518,12 +512,9 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                             }
                         }
                     }
-
                 } else if errorCode == NCGlobal.shared.errorNotModified {
-
                     NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
-
                 self.finish()
             }
         }
