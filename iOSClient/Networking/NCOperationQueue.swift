@@ -495,15 +495,11 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                     DispatchQueue.main.async {
                         if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
-                            UIView.transition(with: avatarImageView, duration: 0.75, options: .transitionCrossDissolve) {
-                                avatarImageView.image = imageAvatar
-                            } completion: { _ in
-                                if self.view is UICollectionView {
-                                    (self.view as? UICollectionView)?.reloadData()
-                                } else if self.view is UITableView {
-                                    (self.view as? UITableView)?.reloadData()
-                                }
-                            }
+                            UIView.transition(with: avatarImageView,
+                                              duration: 0.75,
+                                              options: .transitionCrossDissolve,
+                                              animations: { avatarImageView.image = imageAvatar },
+                                              completion: nil)
                         } else {
                             if self.view is UICollectionView {
                                 (self.view as? UICollectionView)?.reloadData()
