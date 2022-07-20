@@ -39,7 +39,7 @@ class NCFileViewInFolder: NCCollectionViewCommon {
         enableSearchBar = false
         headerMenuButtonsCommand = false
         headerMenuButtonsView = true
-        headerRichWorkspaceDisable = false
+        headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
