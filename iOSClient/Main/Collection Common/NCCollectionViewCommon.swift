@@ -430,9 +430,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-              metadata.serverUrl == serverUrl,
-              metadata.account == appDelegate.account
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
 
         pushMetadata(metadata)
