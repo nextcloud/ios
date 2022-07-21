@@ -903,8 +903,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
-
-        self.headerMenu?.setStatusButtonsView(enable: false)
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
@@ -1110,15 +1108,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             metadataForSection.unifiedSearchInProgress = false
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
-
-            let indexPaths = self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
+            self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
             DispatchQueue.main.async {
-                self.collectionView?.performBatchUpdates({
-                    self.collectionView?.insertItems(at: indexPaths)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
+                self.collectionView?.reloadData()
             }
         }
     }
