@@ -430,11 +430,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func createFolder(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account ) {
-            pushMetadata(metadata)
-        } else {
-            reloadDataSourceNetwork()
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              metadata.serverUrl == serverUrl,
+              metadata.account == appDelegate.account
+        else {
+            return
         }
+
+        pushMetadata(metadata)
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
