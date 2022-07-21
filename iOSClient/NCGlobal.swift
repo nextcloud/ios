@@ -337,22 +337,22 @@ class NCGlobal: NSObject {
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, selector, errorCode, errorDescription
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId
+    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, serverUrl, account
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, serverUrl, account, selector, errorCode, errorDescription
+    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, serverUrl, account
 
-    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId
-    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account
+    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, ocIdTemp, errorCode, errorDescription
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, serverUrl, account, classFile, onlyLocalCache
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, errorCode, errorDescription
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, serverUrlFrom
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
-    let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId
+    let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"

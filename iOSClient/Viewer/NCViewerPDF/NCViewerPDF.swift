@@ -268,63 +268,63 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0  && metadata.ocId == self.metadata.ocId {
-                    pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-                    pdfView.document = pdfDocument
-                    pdfView.layoutDocumentView()
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == metadata.ocId,
+              let errorCode = userInfo["errorCode"] as? Int,
+              errorCode == 0
+        else {
+            return
         }
+
+        pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
+        pdfView.document = pdfDocument
+        pdfView.layoutDocumentView()
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadata
-                }
-            }
-        }
+        self.metadata = metadata
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let ocIdNew = userInfo["ocIdNew"] as? String,
+              let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadataNew
-                }
-            }
-        }
+        self.metadata = metadataNew
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["OcId"] as? String {
-                if ocId == self.metadata.ocId {
-                    viewUnload()
-                }
-            }
-        }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId
+        else { return }
+
+        viewUnload()
     }
 
     @objc func renameFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadata
-                    navigationItem.title = metadata.fileNameView
-                }
-            }
-        }
+        self.metadata = metadata
+        navigationItem.title = metadata.fileNameView
     }
 
     @objc func searchText() {

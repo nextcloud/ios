@@ -124,14 +124,13 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     @objc func favoriteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadata
-                }
-            }
-        }
+        self.metadata = metadata
     }
 
     @objc func keyboardDidShow(notification: Notification) {

@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import QuickLook
 
 class NCViewer: NSObject {
     @objc static let shared: NCViewer = {
@@ -214,13 +215,17 @@ class NCViewer: NSObject {
             }
         }
 
-        // OTHER
-        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-
-        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-
-        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
-        viewController.present(viewerQuickLook, animated: true)
+        // QLPreview
+        let item = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        if QLPreviewController.canPreview(item as QLPreviewItem) {
+            let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+            CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
+            viewController.present(viewerQuickLook, animated: true)
+        } else {
+        // Document Interaction Controller
+            NCFunctionCenter.shared.openDocumentController(metadata: metadata)
+        }
     }
 }
 

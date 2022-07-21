@@ -49,25 +49,26 @@ import Photos
               let selector = userInfo["selector"] as? String,
               let errorCode = userInfo["errorCode"] as? Int,
               let errorDescription = userInfo["errorDescription"] as? String,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-              metadata.account == appDelegate.account
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
         else { return }
 
         guard errorCode == 0 else {
             // File do not exists on server, remove in local
             if errorCode == NCGlobal.shared.errorResourceNotFound || errorCode == NCGlobal.shared.errorBadServerResponse {
                 do {
-                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
                 } catch { }
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
                 
             } else {
                 NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
             }
             return
         }
-        
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+
         switch selector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
             let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
@@ -164,17 +165,15 @@ import Photos
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let errorCode = userInfo["errorCode"] as? Int,
+              let errorDescription = userInfo["errorDescription"] as? String,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
 
-                if metadata.account == appDelegate.account {
-                    if errorCode != 0 {
-                        if errorCode != -999 && errorDescription != "" {
-                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
-                        }
-                    }
-                }
-            }
+        if errorCode != 0, errorCode != -999, errorDescription != "" {
+            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
         }
     }
 

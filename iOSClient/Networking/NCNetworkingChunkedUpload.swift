@@ -63,7 +63,7 @@ extension NCNetworking {
                 return
             }
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 
             for fileName in filesNames {
 
@@ -235,6 +235,6 @@ extension NCNetworking {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": metadata.ocId, "errorCode": errorCode, "errorDescription": ""])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "ocIdTemp": metadata.ocId, "errorCode": errorCode, "errorDescription": ""])
     }
 }

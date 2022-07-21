@@ -46,6 +46,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
@@ -56,6 +57,7 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - NotificationCenter
 
     override func initialize(_ notification: NSNotification) {
+
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
@@ -111,8 +113,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(forced: Bool = false) {        super.reloadDataSourceNetwork(forced: forced)
         guard !isSearching else {
             networkSearch()
             return

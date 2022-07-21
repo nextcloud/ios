@@ -207,14 +207,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
         pushed = false
@@ -224,6 +216,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+
         let viewController = presentationController.presentedViewController
         if viewController is NCViewerRichWorkspaceWebView {
             closeRichWorkspaceWebView()
@@ -293,6 +286,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func changeThemingWithReloadData() {
+
         changeTheming()
         collectionView.reloadData()
     }
@@ -341,6 +335,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
+
         if !isSearching {
             reloadDataSourceNetwork(forced: true)
         }
@@ -360,12 +355,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String,
               let fileNameView = userInfo["fileNameView"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
-              (serverUrl == serverUrl && account == appDelegate.account)
-        else {
-            return
-        }
+              account == appDelegate.account,
+              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
+        else { return }
+
         if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
             reloadDataSourceNetwork(forced: true)
         } else if onlyLocalCache {
@@ -394,9 +389,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String,
               let serverUrlFrom = userInfo["serverUrlFrom"] as? String,
               serverUrlFrom == self.serverUrl
-        else {
-            return
-        }
+        else { return }
+
         let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -418,33 +412,42 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrlTo = userInfo["serverUrlTo"] as? String,
               serverUrlTo == self.serverUrl
-        else {
-            return
-        }
+        else { return }
+
         reloadDataSource()
     }
 
     @objc func renameFile(_ notification: NSNotification) {
-        reloadDataSource()
+
+        if isSearching {
+            reloadDataSourceNetwork()
+        } else {
+            reloadDataSource()
+        }
     }
 
     @objc func createFolder(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account ) {
-            pushMetadata(metadata)
-        } else {
-            reloadDataSourceNetwork()
-        }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
+
+        pushMetadata(metadata)
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else {
-            reloadDataSource()
-            return
-        }
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl
+        else { return }
+
         dataSource.reloadMetadata(ocId: ocId)
         collectionView?.reloadData()
     }
@@ -452,11 +455,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadStartFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else {
-            reloadDataSource()
-            return
-        }
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
+
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -472,11 +477,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else {
-            reloadDataSource()
-            return
-        }
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
+
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -492,11 +499,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadCancelFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else {
-            reloadDataSource()
-            return
-        }
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
+
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -513,11 +522,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-              (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account)
-        else {
-            return
-        }
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
+
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
         dataSource.addMetadata(metadata)
         self.collectionView?.reloadData()
     }
@@ -527,14 +538,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let ocIdTemp = userInfo["ocIdTemp"] as? String,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-              (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account)
-        else {
-            return
-        }
-        if metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-            return
-        }
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
+
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        if metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue { return }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -556,11 +567,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              (serverUrl == self.serverUrl && account == appDelegate.account)
-        else {
-            return
-        }
+              account == appDelegate.account
+        else { return }
+
         let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -585,11 +596,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
               let ocId = userInfo["ocId"] as? String,
               let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadataForSection?)
-        else {
-            return
-        }
-        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+        else { return }
 
+        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
         if let cell = collectionView?.cellForItem(at: indexPath) {
             if let cell = cell as? NCCellProtocol {
                 if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
@@ -623,6 +632,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func setNavigationItem() {
         self.setNavigationHeader()
+
         guard !isEditMode, layoutKey == NCGlobal.shared.layoutViewFiles else { return }
         
         // PROFILE BUTTON
@@ -682,6 +692,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
+
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
             return NCBrandOptions.shared.brand
@@ -702,7 +713,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func colorPickerDidChange(lightColor: String, darkColor: String) {
 
         NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
-
         changeTheming()
     }
 
@@ -739,17 +749,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - SEARCH
 
     func updateSearchResults(for searchController: UISearchController) {
-
         self.literalSearch = searchController.searchBar.text
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
 
         self.isSearching = true
-
         self.providers?.removeAll()
         self.dataSource.clearDataSource()
-
         self.collectionView.reloadData()
 
     }
@@ -778,6 +785,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - TAP EVENT
 
     func accountRequestChangeAccount(account: String) {
+
         NCManageDatabase.shared.setAccountActive(account)
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
@@ -799,28 +807,30 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
-                    self.collectionView.reloadData()
-                })
-            })
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
+                self.groupByField = "name"
+                self.dataSource.changeGroupByField(self.groupByField)
+                self.collectionView.reloadData()
+            })
         } else {
             // grid layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
-                    self.collectionView.reloadData()
-                })
-            })
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
+                if self.isSearching {
+                    self.groupByField = "name"
+                } else {
+                    self.groupByField = "classFile"
+                }
+                self.dataSource.changeGroupByField(self.groupByField)
+                self.collectionView.reloadData()
+            })
         }
-        
-        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {
@@ -830,6 +840,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButton1(_ sender: Any) {
+
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: self) { hasPermission in
             if hasPermission {
                 NCPhotosPickerViewController.init(viewController: self, maxSelectedAssets: 0, singleSelectedMode: false)
@@ -838,12 +849,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButton2(_ sender: Any) {
+
         guard !appDelegate.activeServerUrl.isEmpty else { return }
         let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
         appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
     }
 
     func tapButton3(_ sender: Any) {
+
         if #available(iOS 13.0, *) {
             if let viewController = appDelegate.window?.rootViewController {
                 NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
@@ -852,7 +865,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
-
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, sender: sender)
     }
 
@@ -891,7 +903,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
-
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
@@ -1097,15 +1108,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             metadataForSection.unifiedSearchInProgress = false
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
-
-            let indexPaths = self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
+            self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
             DispatchQueue.main.async {
-                self.collectionView?.performBatchUpdates({
-                    self.collectionView?.insertItems(at: indexPaths)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
+                self.collectionView?.reloadData()
             }
         }
     }
@@ -1382,8 +1388,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        animator.addCompletion {
 
+        animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {
                 self.collectionView(collectionView, didSelectItemAt: indexPath)
             }
@@ -1472,15 +1478,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
-    }
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) { }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return dataSource.numberOfSections()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         let numberItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
         return numberItems
