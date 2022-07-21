@@ -352,7 +352,7 @@ class NCGlobal: NSObject {
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, errorCode, errorDescription
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, serverUrlFrom
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
-    let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId
+    let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"

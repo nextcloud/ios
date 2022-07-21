@@ -355,9 +355,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String,
               let fileNameView = userInfo["fileNameView"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
-              (serverUrl == serverUrl && account == appDelegate.account)
+              account == appDelegate.account,
+              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
         else { return }
 
         if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
@@ -440,7 +441,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func favoriteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
+              let ocId = userInfo["ocId"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl
         else { return }
 
         dataSource.reloadMetadata(ocId: ocId)
@@ -452,8 +455,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              (serverUrl == self.serverUrl && account == appDelegate.account)
+              account == appDelegate.account
         else { return }
 
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
@@ -473,8 +477,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              (serverUrl == self.serverUrl && account == appDelegate.account)
+              account == appDelegate.account
         else { return }
 
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
@@ -494,8 +499,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              (serverUrl == self.serverUrl && account == appDelegate.account)
+              account == appDelegate.account
         else { return }
 
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
@@ -515,8 +521,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              (serverUrl == self.serverUrl && account == appDelegate.account)
+              account == appDelegate.account
         else { return }
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
@@ -530,8 +537,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String,
               let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              (serverUrl == self.serverUrl && account == appDelegate.account)
+              account == appDelegate.account
         else { return }
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
@@ -557,8 +565,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              (serverUrl == self.serverUrl && account == appDelegate.account)
+              account == appDelegate.account
         else { return }
 
         let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
