@@ -221,15 +221,15 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let progressNumber = userInfo["progress"] as? NSNumber {
-                let progress = progressNumber.floatValue
-                if progress == 1 {
-                    self.progressView.progress = 0
-                } else {
-                    self.progressView.progress = progress
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let progressNumber = userInfo["progress"] as? NSNumber
+        else { return }
+
+        let progress = progressNumber.floatValue
+        if progress == 1 {
+            self.progressView.progress = 0
+        } else {
+            self.progressView.progress = progress
         }
     }
 
@@ -238,63 +238,60 @@ class NCViewerMediaPage: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let errorCode = userInfo["errorCode"] as? Int,
-              errorCode == 0
+              errorCode == 0,
+              let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else {
             return
         }
-        
-        if let index = metadatas.firstIndex(where: {$0.ocId == ocId}), let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            metadatas[index] = metadata
-            if currentViewController.metadata.ocId == ocId {
-                currentViewController.reloadImage()
-            } else {
-                modifiedOcId.append(ocId)
-            }
+
+        metadatas[index] = metadata
+        if currentViewController.metadata.ocId == ocId {
+            currentViewController.reloadImage()
+        } else {
+            modifiedOcId.append(ocId)
         }
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
 
-                let metadatas = self.metadatas.filter { $0.ocId != ocId }
-                if self.metadatas.count == metadatas.count { return }
-                self.metadatas = metadatas
+        let metadatas = self.metadatas.filter { $0.ocId != ocId }
+        if self.metadatas.count == metadatas.count { return }
+        self.metadatas = metadatas
 
-                if ocId == currentViewController.metadata.ocId {
-                    shiftCurrentPage()
-                }
-            }
+        if ocId == currentViewController.metadata.ocId {
+            shiftCurrentPage()
         }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
-                    metadatas[index] = metadata
-                    if index == currentIndex {
-                        navigationItem.title = metadata.fileNameView
-                        currentViewController.metadata = metadata
-                        self.currentViewController.metadata = metadata
-                    }
-                }
-            }
+        metadatas[index] = metadata
+        if index == currentIndex {
+            navigationItem.title = metadata.fileNameView
+            currentViewController.metadata = metadata
+            self.currentViewController.metadata = metadata
         }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
 
-                if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
-                    deleteFile(notification)
-                }
-            }
+        if metadatas.firstIndex(where: {$0.ocId == ocId}) != nil {
+            deleteFile(notification)
         }
     }
 
