@@ -173,46 +173,48 @@ class NCViewerProviderContextMenu: UIViewController {
 
     @objc func downloadStartFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-                if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-                    NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false)
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
+
+        if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
+            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false)
         }
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
-                    if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-                        viewImage(metadata: metadata)
-                    } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                        viewVideo(metadata: metadata)
-                    } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                        playSound(metadata: metadata)
-                    }
-                }
-                if errorCode == 0 && metadata.ocId == self.metadataLivePhoto?.ocId {
-                    viewVideo(metadata: metadata)
-                }
-                if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-                    NCUtility.shared.stopActivityIndicator()
-                }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let errorCode = userInfo["errorCode"] as? Int,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
+
+        if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
+            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+                viewImage(metadata: metadata)
+            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                viewVideo(metadata: metadata)
+            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                playSound(metadata: metadata)
             }
+        }
+        if errorCode == 0 && metadata.ocId == self.metadataLivePhoto?.ocId {
+            viewVideo(metadata: metadata)
+        }
+        if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
+            NCUtility.shared.stopActivityIndicator()
         }
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-                if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-                    NCUtility.shared.stopActivityIndicator()
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
+
+        if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
+            NCUtility.shared.stopActivityIndicator()
         }
     }
 
