@@ -87,6 +87,17 @@ class NCDataSource: NSObject {
         self.directory = nil
     }
 
+    func changeGroupByField(_ groupByField: String) {
+
+        self.groupByField = groupByField
+        print("DATASOURCE: set group by filed " + groupByField)
+        self.metadatasForSection.removeAll()
+        self.sectionsValue.removeAll()
+        print("DATASOURCE: remove  all sections")
+
+        createSections()
+    }
+
     func addSection(metadatas: [tableMetadata], searchResult: NCCSearchResult?) {
 
         self.metadatas.append(contentsOf: metadatas)

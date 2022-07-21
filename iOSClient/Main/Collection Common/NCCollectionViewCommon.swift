@@ -807,28 +807,30 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
-                    self.collectionView.reloadData()
-                })
-            })
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
+                self.groupByField = "name"
+                self.dataSource.changeGroupByField(self.groupByField)
+                self.collectionView.reloadData()
+            })
         } else {
             // grid layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
-                    self.collectionView.reloadData()
-                })
-            })
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
+                if self.isSearching {
+                    self.groupByField = "name"
+                } else {
+                    self.groupByField = "classFile"
+                }
+                self.dataSource.changeGroupByField(self.groupByField)
+                self.collectionView.reloadData()
+            })
         }
-        
-        reloadDataSource()
     }
 
     func tapButtonOrder(_ sender: Any) {
@@ -901,6 +903,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
+
+        self.headerMenu?.setStatusButtonsView(enable: false)
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
