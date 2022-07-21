@@ -201,6 +201,7 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
+    @discardableResult
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NCCSearchResult) -> [IndexPath] {
         
         guard let sectionIndex =  getSectionIndex(metadataForSection.sectionValue) else { return [] }
