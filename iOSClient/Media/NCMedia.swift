@@ -175,64 +175,52 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
 
-                let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == ocId }
-                let metadatas = self.metadatas.filter { $0.ocId != ocId }
-                self.metadatas = metadatas
+        let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == ocId }
+        let metadatas = self.metadatas.filter { $0.ocId != ocId }
+        self.metadatas = metadatas
 
-                if self.metadatas.count == 0 {
-                    collectionView?.reloadData()
-                } else if let row = indexes.first {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.deleteItems(at: [indexPath])
-                }
-
-                self.updateMediaControlVisibility()
-            }
+        if self.metadatas.count == 0 {
+            collectionView?.reloadData()
+        } else if let row = indexes.first {
+            let indexPath = IndexPath(row: row, section: 0)
+            collectionView?.deleteItems(at: [indexPath])
         }
+
+        self.updateMediaControlVisibility()
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
 
-                if metadata.account == appDelegate.account {
-
-                    let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
-                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                    self.metadatas = metadatas
-
-                    if self.metadatas.count == 0 {
-                        collectionView?.reloadData()
-                    } else if let row = indexes.first {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.deleteItems(at: [indexPath])
-                    }
-
-                    self.updateMediaControlVisibility()
-                }
-            }
-        }
+        self.reloadDataSourceWithCompletion { _ in }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
 
-                if metadata.account == appDelegate.account {
-                    self.reloadDataSourceWithCompletion { _ in }
-                }
-            }
-        }
+        self.reloadDataSourceWithCompletion { _ in }
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?, let errorCode = userInfo["errorCode"] as? Int, errorCode == 0 , let account = userInfo["account"] as? String, account == appDelegate.account else { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let errorCode = userInfo["errorCode"] as? Int, errorCode == 0 ,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account
+        else { return }
+
         self.reloadDataSourceWithCompletion { _ in }
     }
 

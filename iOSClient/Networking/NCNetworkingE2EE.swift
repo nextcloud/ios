@@ -177,7 +177,7 @@ import Alamofire
                         try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                     } catch { }
 
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
                 }
 
                 // unlock
