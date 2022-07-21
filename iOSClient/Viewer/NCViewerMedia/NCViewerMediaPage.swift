@@ -101,31 +101,14 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(reloadMediaPage(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     deinit {
-        
-        print("deinit NCViewerMediaPage")
-    }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-            ncplayer.playerPause()
-            ncplayer.saveCurrentTime()
-        }
-        currentViewController.playerToolBar?.stopTimerAutoHide()
-        clearCommandCenter()
-
-        metadatas.removeAll()
-        ncplayerLivePhoto = nil
-
-        // Remove Observer
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -141,6 +124,17 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
+            ncplayer.saveCurrentTime()
+        }
+        currentViewController.playerToolBar?.stopTimerAutoHide()
+        clearCommandCenter()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -241,16 +235,20 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0, let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
-                    metadatas[index] = metadata
-                    if currentViewController.metadata.ocId == ocId {
-                        currentViewController.reloadImage()
-                    } else {
-                        modifiedOcId.append(ocId)
-                    }
-                }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let errorCode = userInfo["errorCode"] as? Int,
+              errorCode == 0
+        else {
+            return
+        }
+        
+        if let index = metadatas.firstIndex(where: {$0.ocId == ocId}), let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            metadatas[index] = metadata
+            if currentViewController.metadata.ocId == ocId {
+                currentViewController.reloadImage()
+            } else {
+                modifiedOcId.append(ocId)
             }
         }
     }

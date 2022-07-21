@@ -232,13 +232,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0 && metadata.account == appDelegate.account {
-                    self.reloadDataSourceWithCompletion { _ in }
-                }
-            }
-        }
+        guard let userInfo = notification.userInfo as NSDictionary?, let errorCode = userInfo["errorCode"] as? Int, errorCode == 0 , let account = userInfo["account"] as? String, account == appDelegate.account else { return }
+        self.reloadDataSourceWithCompletion { _ in }
     }
 
     // MARK: - Command
@@ -690,7 +685,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
 
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-        
+
         let y = view.safeAreaInsets.top
         scrollView.contentOffset.y = -(insetsTop + y)
     }

@@ -268,15 +268,18 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0  && metadata.ocId == self.metadata.ocId {
-                    pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-                    pdfView.document = pdfDocument
-                    pdfView.layoutDocumentView()
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == metadata.ocId,
+              let errorCode = userInfo["errorCode"] as? Int,
+              errorCode == 0
+        else {
+            return
         }
+
+        pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
+        pdfView.document = pdfDocument
+        pdfView.layoutDocumentView()
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
