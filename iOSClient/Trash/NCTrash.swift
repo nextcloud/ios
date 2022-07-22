@@ -239,9 +239,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     @objc func reloadDataSource(forced: Bool = true) {
 
         layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-
         datasource.removeAll()
-
         guard let trashPath = self.getTrashPath(), let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account) else {
             return
         }
@@ -302,22 +300,19 @@ extension NCTrash {
 
     func restoreItem(with fileId: String) {
 
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else {
-            return
-        }
-
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
 
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, errorCode, errorDescription in
-            if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
-                self.reloadDataSource()
-            } else if errorCode != 0 {
+
+            guard errorCode == 0, account == self.appDelegate.account else {
                 NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                return
             }
+
+            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
+            self.reloadDataSource()
         }
     }
 
@@ -326,34 +321,31 @@ extension NCTrash {
         let serverUrlFileName = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/trashbin/" + appDelegate.userId + "/trash"
 
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { account, errorCode, errorDescription in
-            if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.appDelegate.account)
-            } else if errorCode != 0 {
+
+            guard errorCode == 0, account == self.appDelegate.account else {
                 NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                return
             }
+
+            NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.appDelegate.account)
             self.reloadDataSource()
         }
     }
 
     func deleteItem(with fileId: String) {
 
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else {
-            return
-        }
-
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { account, errorCode, errorDescription in
-            if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
-                self.reloadDataSource()
-            } else if errorCode != 0 {
+
+            guard errorCode == 0, account == self.appDelegate.account else {
                 NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                return
             }
+
+            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
+            self.reloadDataSource()
         }
     }
 
