@@ -24,6 +24,7 @@
 import UIKit
 import Realm
 import NCCommunication
+import EasyTipView
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
 
@@ -63,6 +64,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isReloadDataSourceNetworkInProgress: Bool = false
 
     private var pushed: Bool = false
+
+    private var tipView: EasyTipView?
 
     // DECLARE
     internal var layoutKey = ""
@@ -131,8 +134,28 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
 
-        // Notification
+        // Tip
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest){
 
+            var preferences = EasyTipView.Preferences()
+            preferences.drawing.foregroundColor = .white
+            preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+            preferences.drawing.textAlignment = .left
+            preferences.drawing.arrowPosition = .left
+            preferences.drawing.cornerRadius = 10
+
+            preferences.positioning.bubbleInsets.right = UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0
+
+            preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+            preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+            preferences.animating.showInitialAlpha = 0
+            preferences.animating.showDuration = 1.5
+            preferences.animating.dismissDuration = 1.5
+
+            tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
+        }
+
+        // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(initialize(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -187,6 +210,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSource(forced: false)
         if !isSearching {
             reloadDataSourceNetwork()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if self is NCFiles, self.serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account), let v = self.navigationItem.leftBarButtonItem?.customView {
+            self.tipView?.show(forView: v, withinSuperview: nil)
         }
     }
 
@@ -1894,3 +1925,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         return size
     }
 }
+
+extension NCCollectionViewCommon: EasyTipViewDelegate {
+
+    func easyTipViewDidTap(_ tipView: EasyTipView) {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+    }
+
+    func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+}
+
