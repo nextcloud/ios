@@ -129,6 +129,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityValue = nil
     }
 
+    override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
+        return nil
+    }
+
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
     }

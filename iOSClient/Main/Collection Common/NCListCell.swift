@@ -151,6 +151,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityValue = nil
     }
 
+    override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
+        return nil
+    }
+    
     @IBAction func touchUpInsideShare(_ sender: Any) {
         delegate?.tapShareListItem(with: objectId, sender: sender)
     }
