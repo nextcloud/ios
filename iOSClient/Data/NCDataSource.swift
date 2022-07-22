@@ -26,10 +26,11 @@ import NCCommunication
 
 class NCDataSource: NSObject {
 
-    public var metadatas: [tableMetadata] = []
-    public var metadatasForSection: [NCMetadataForSection] = []
+    var metadatas: [tableMetadata] = []
+    var metadatasForSection: [NCMetadataForSection] = []
 
-    public var directory: tableDirectory?
+    var directory: tableDirectory?
+    var groupByField: String = ""
 
     private var sectionsValue: [String] = []
     private var providers: [NCCSearchProvider]?
@@ -42,7 +43,6 @@ class NCDataSource: NSObject {
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
     private var filterLivePhoto: Bool = true
-    private var groupByField: String = ""
 
     override init() {
         super.init()
