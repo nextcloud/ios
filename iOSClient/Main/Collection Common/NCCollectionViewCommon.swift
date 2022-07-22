@@ -1760,7 +1760,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setRichWorkspaceText(richWorkspaceText)
 
                 header.setSectionHeight(heightHeaderSection)
-                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                if heightHeaderSection == 0 {
+                    header.labelSection.text = ""
+
+                } else {
+                    header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                }
                 header.labelSection.textColor = NCBrandColor.shared.label
 
                 return header
