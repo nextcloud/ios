@@ -900,6 +900,7 @@
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
+"_tip_accountrequest_"      = "Touch here to change account or to add a new one";
 
 // MARK: Accessibility
 
