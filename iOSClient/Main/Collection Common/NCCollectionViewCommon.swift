@@ -24,6 +24,7 @@
 import UIKit
 import Realm
 import NCCommunication
+import EasyTipView
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
 
@@ -63,6 +64,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isReloadDataSourceNetworkInProgress: Bool = false
 
     private var pushed: Bool = false
+
+    private var tipView: EasyTipView?
 
     // DECLARE
     internal var layoutKey = ""
@@ -131,8 +134,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
 
-        // Notification
+        // TIP
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .top
+        preferences.drawing.cornerRadius = 10
 
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 1.5
+        preferences.animating.dismissDuration = 1.5
+
+        tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
+
+        // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(initialize(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
@@ -190,6 +208,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // TIP
+        if self is NCFiles, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account), let view = self.navigationItem.leftBarButtonItem?.customView {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), NCManageDatabase.shared.getAllAccountOrderAlias().count > 0 {
+                self.tipView?.show(forView: view)
+            }
+        }
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -213,6 +242,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // REQUEST
         NCNetworking.shared.cancelUnifiedSearchFiles()
+
+        // TIP
+        self.tipView?.dismiss()
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -685,6 +717,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     
                     UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
                 }
+
+                // TIP
+                self.dismissTip()
             }
         }
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
@@ -759,6 +794,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.dataSource.clearDataSource()
         self.collectionView.reloadData()
 
+        // TIP
+        self.tipView?.dismiss()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -1551,12 +1588,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileInfoLabel?.text = metadata.subline
                 cell.titleInfoTrailingFull()
             }
-            if let literalSearch = self.literalSearch {
-                let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
-                let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
-                attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : NCBrandColor.shared.annotationColor], range: longestWordRange)
-                cell.fileTitleLabel?.attributedText = attributedString
-            }
         } else {
             cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
@@ -1724,6 +1755,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Accessibility
         cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
+        // Color string find in search
+        if isSearching, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
+            let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
+            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
+            attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : NCBrandColor.shared.annotationColor], range: longestWordRange)
+            cell.fileTitleLabel?.attributedText = attributedString
+        }
         return cell
     }
 
@@ -1894,3 +1932,18 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         return size
     }
 }
+
+extension NCCollectionViewCommon: EasyTipViewDelegate {
+
+    func easyTipViewDidTap(_ tipView: EasyTipView) {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+    }
+
+    func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+
+    func dismissTip() {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+        self.tipView?.dismiss()
+    }
+}
+
