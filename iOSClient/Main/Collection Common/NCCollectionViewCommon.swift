@@ -804,32 +804,39 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapButtonSwitch(_ sender: Any) {
 
-        if collectionView.collectionViewLayout == gridLayout {
+        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+
             // list layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
-                self.groupByField = "name"
+            self.groupByField = "name"
+            if self.dataSource.groupByField != self.groupByField {
                 self.dataSource.changeGroupByField(self.groupByField)
-                self.collectionView.reloadData()
-            })
+            }
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+
         } else {
+
             // grid layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
-                if self.isSearching {
-                    self.groupByField = "name"
-                } else {
-                    self.groupByField = "classFile"
-                }
+            if self.isSearching {
+                self.groupByField = "name"
+            } else {
+                self.groupByField = "classFile"
+            }
+            if self.dataSource.groupByField != self.groupByField {
                 self.dataSource.changeGroupByField(self.groupByField)
-                self.collectionView.reloadData()
-            })
+            }
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
         }
     }
 
@@ -1731,7 +1738,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 self.headerMenu = header
 
-                if collectionView.collectionViewLayout == gridLayout {
+                if layoutForView?.layout == NCGlobal.shared.layoutGrid {
                     header.setImageSwitchList()
                     header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
                 } else {
@@ -1757,7 +1764,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setRichWorkspaceText(richWorkspaceText)
 
                 header.setSectionHeight(heightHeaderSection)
-                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                if heightHeaderSection == 0 {
+                    header.labelSection.text = ""
+
+                } else {
+                    header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                }
                 header.labelSection.textColor = NCBrandColor.shared.label
 
                 return header
@@ -1842,7 +1854,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if isSearching || collectionView.collectionViewLayout == gridLayout || dataSource.numberOfSections() > 1 {
+        if isSearching || layoutForView?.layout == NCGlobal.shared.layoutGrid || dataSource.numberOfSections() > 1 {
             if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {

@@ -79,7 +79,7 @@ extension NCTrash: UICollectionViewDataSource {
 
         var cell: NCTrashCellProtocol & UICollectionViewCell
 
-        if collectionView.collectionViewLayout == listLayout {
+        if layoutForView?.layout ==  NCGlobal.shared.layoutList {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell else { return UICollectionViewCell() }
             listCell.delegate = self
             cell = listCell
@@ -146,7 +146,7 @@ extension NCTrash: UICollectionViewDataSource {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu
             else { return UICollectionReusableView() }
 
-            if collectionView.collectionViewLayout == gridLayout {
+            if layoutForView?.layout == NCGlobal.shared.layoutGrid {
                 header.setImageSwitchList()
                 header.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             } else {
