@@ -137,28 +137,25 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     func tapButtonSwitch(_ sender: Any) {
 
         if collectionView.collectionViewLayout == gridLayout {
+
             // list layout
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { _ in
-                    self.collectionView.reloadData()
-                })
-            })
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+
         } else {
+
             // grid layout
-            UIView.animate(withDuration: 0.0, animations: {
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { _ in
-                    self.collectionView.reloadData()
-                })
-            })
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
-        }
 
-        reloadDataSource()
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+        }
     }
 
     func tapButtonOrder(_ sender: Any) {
