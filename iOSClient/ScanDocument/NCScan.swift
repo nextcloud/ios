@@ -98,7 +98,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
         preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
+        preferences.drawing.arrowPosition = .left
         preferences.drawing.cornerRadius = 10
 
         preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
@@ -120,7 +120,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
         // TIP
         if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
-            self.tipView?.show(forView: add)
+            self.tipView?.show(forView: add, withinSuperview: self.view)
         }
     }
 
