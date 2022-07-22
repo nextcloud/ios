@@ -214,7 +214,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // TIP
         if self is NCFiles, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account), let view = self.navigationItem.leftBarButtonItem?.customView {
             if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), NCManageDatabase.shared.getAllAccountOrderAlias().count > 0 {
-                self.tipView?.show(forView: view, withinSuperview: nil)
+                self.tipView?.show(forView: view)
             }
         }
     }
@@ -719,8 +719,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
 
                 // TIP
-                NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
-                self.tipView?.dismiss()
+                self.dismissTip()
             }
         }
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
@@ -1935,11 +1934,15 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
 
-    // TIP
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+
+    func dismissTip() {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+        self.tipView?.dismiss()
+    }
 }
 

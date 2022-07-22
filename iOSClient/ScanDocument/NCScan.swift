@@ -23,6 +23,7 @@
 
 import UIKit
 import Photos
+import EasyTipView
 
 @available(iOS 13.0, *)
 class NCScan: UIViewController, NCScanCellCellDelegate {
@@ -44,6 +45,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal var itemsDestination: [String] = []
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+
+    private var tipView: EasyTipView?
 
     enum TypeFilter {
         case original
@@ -90,10 +93,35 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         let longPressRecognizerPlus = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizerPlus)
 
+        // TIP
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .top
+        preferences.drawing.cornerRadius = 10
+
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 1.5
+        preferences.animating.dismissDuration = 1.5
+
+        tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
+
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
 
         loadImage()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // TIP
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+            self.tipView?.show(forView: add)
+        }
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -133,6 +161,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @IBAction func add(sender: UIButton) {
+
+        // TIP
+        dismissTip()
 
         NCCreateScanDocument.shared.openScannerDocument(viewController: self)
     }
@@ -315,6 +346,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                 UIMenuController.shared.setTargetRect(recognizerView.frame, in: recognizerSuperView)
                 UIMenuController.shared.setMenuVisible(true, animated: true)
             }
+
+            // TIP
+            dismissTip()
         }
     }
 
@@ -369,5 +403,21 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             imagesDestination[imageIndex] = image
             cell.customImageView.image = image
         }
+    }
+}
+
+@available(iOS 13.0, *)
+extension NCScan: EasyTipViewDelegate {
+
+    // TIP
+    func easyTipViewDidTap(_ tipView: EasyTipView) {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+    }
+
+    func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+
+    func dismissTip() {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        self.tipView?.dismiss()
     }
 }
