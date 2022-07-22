@@ -1588,12 +1588,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileInfoLabel?.text = metadata.subline
                 cell.titleInfoTrailingFull()
             }
-            if let literalSearch = self.literalSearch {
-                let longestWordRange = (metadata.fileName.lowercased() as NSString).range(of: literalSearch)
-                let attributedString = NSMutableAttributedString(string: metadata.fileName, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
-                attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : NCBrandColor.shared.annotationColor], range: longestWordRange)
-                cell.fileTitleLabel?.attributedText = attributedString
-            }
         } else {
             cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
@@ -1761,6 +1755,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Accessibility
         cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
+        // Color string find in search
+        if isSearching, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
+            let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
+            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
+            attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : NCBrandColor.shared.annotationColor], range: longestWordRange)
+            cell.fileTitleLabel?.attributedText = attributedString
+        }
         return cell
     }
 
