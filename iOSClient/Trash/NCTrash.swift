@@ -99,10 +99,6 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             collectionView.collectionViewLayout = gridLayout
         }
 
-        if trashPath.isEmpty {
-            guard let userId = (appDelegate.userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return }
-            trashPath = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/trashbin/" + userId + "/trash/"
-        }
         setNavigationItem()
         reloadDataSource()
     }
@@ -246,7 +242,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
         datasource.removeAll()
 
-        guard let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account) else {
+        guard let trashPath = self.getTrashPath(), let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account) else {
             return
         }
 
@@ -269,6 +265,17 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
             }
         }
     }
+
+    func getTrashPath() -> String? {
+
+        if self.trashPath.isEmpty {
+            guard let userId = (appDelegate.userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return nil }
+            let trashPath = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/trashbin/" + userId + "/trash/"
+            return trashPath
+        } else {
+            return self.trashPath
+        }
+    }
 }
 
 // MARK: - NC API & Algorithm
@@ -279,19 +286,17 @@ extension NCTrash {
 
         NCCommunication.shared.listingTrash(showHiddenFiles: false, queue: NCCommunicationCommon.shared.backgroundQueue) { account, items, errorCode, errorDescription in
 
-            if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.shared.deleteTrash(filePath: self.trashPath, account: self.appDelegate.account)
-                NCManageDatabase.shared.addTrash(account: account, items: items)
-            } else if errorCode != 0 {
+            DispatchQueue.main.async { self.refreshControl.endRefreshing() }
+
+            guard errorCode == 0, account == self.appDelegate.account, let trashPath = self.getTrashPath() else {
                 NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                return
             }
 
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.reloadDataSource()
-            }
+            NCManageDatabase.shared.deleteTrash(filePath: trashPath, account: self.appDelegate.account)
+            NCManageDatabase.shared.addTrash(account: account, items: items)
+
+            DispatchQueue.main.async { self.reloadDataSource() }
         }
     }
 
