@@ -109,10 +109,7 @@ import Photos
             
         case NCGlobal.shared.selectorSaveAlbum:
             saveAlbum(metadata: metadata)
-            
-        case NCGlobal.shared.selectorSaveBackground:
-            saveBackground(metadata: metadata)
-            
+
         case NCGlobal.shared.selectorSaveAlbumLivePhotoIMG, NCGlobal.shared.selectorSaveAlbumLivePhotoMOV:
 
             var metadata = metadata
@@ -383,25 +380,6 @@ import Photos
         })
     }
 
-    func saveBackground(metadata: tableMetadata) {
-
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let destination = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + metadata.fileNameView
-
-        if NCUtilityFileSystem.shared.copyFile(atPath: fileNamePath, toPath: destination) {
-
-            if appDelegate.activeViewController is NCCollectionViewCommon {
-                let viewController: NCCollectionViewCommon = appDelegate.activeViewController as! NCCollectionViewCommon
-                let layoutKey = viewController.layoutKey
-                let serverUrl = viewController.serverUrl
-                if serverUrl == metadata.serverUrl {
-                    NCUtility.shared.setBackgroundImageForView(key: layoutKey, serverUrl: serverUrl, imageBackgroud: metadata.fileNameView, imageBackgroudContentMode: "")
-                    viewController.changeTheming()
-                }
-            }
-        }
-    }
-
     // MARK: - Copy & Paste
 
     func copyPasteboard(pasteboardOcIds: [String], hudView: UIView) {
@@ -654,14 +632,6 @@ import Photos
             }
         }
 
-        let saveBackground = UIAction(title: NSLocalizedString("_use_as_background_", comment: ""), image: UIImage(systemName: "text.below.photo")) { _ in
-            if CCUtility.fileProviderStorageExists(metadata) {
-                self.saveBackground(metadata: metadata)
-            } else {
-                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveBackground)
-            }
-        }
-
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
             self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         }
@@ -779,14 +749,6 @@ import Photos
 
         if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
             children.insert(modify, at: children.count - 1)
-        }
-
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && viewController is NCCollectionViewCommon && !NCBrandOptions.shared.disable_background_image {
-            let viewController: NCCollectionViewCommon = viewController as! NCCollectionViewCommon
-            let layoutKey = viewController.layoutKey
-            if layoutKey == NCGlobal.shared.layoutViewFiles {
-                children.insert(saveBackground, at: children.count - 1)
-            }
         }
 
         let submenu = UIMenu(title: "", options: .displayInline, children: children)

@@ -271,29 +271,6 @@ extension NCCollectionViewCommon {
             actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view))
         }
         
-        /*
-        //
-        // USE AS BACKGROUND
-        //
-        if #available(iOS 13.0, *) {
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_use_as_background_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "text.below.photo"),
-                        action: { menuAction in
-                            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCFunctionCenter.shared.saveBackground(metadata: metadata)
-                            } else {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveBackground)
-                            }
-                        }
-                    )
-                )
-            }
-        }
-        */
-
         //
         // MODIFY
         //

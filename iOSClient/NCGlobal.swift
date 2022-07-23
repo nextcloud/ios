@@ -79,8 +79,6 @@ class NCGlobal: NSObject {
         var directoryOnTop: Bool
         var titleButtonHeader: String
         var itemForLine: Int
-        var imageBackgroud: String
-        var imageBackgroudContentMode: String
     }
 
     // Directory on Group
@@ -292,7 +290,6 @@ class NCGlobal: NSObject {
     let selectorUploadFile                          = "uploadFile"
     let selectorUploadFileShareExtension            = "uploadFileShareExtension"
     let selectorSaveAlbum                           = "saveAlbum"
-    let selectorSaveBackground                      = "saveBackground"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
     let selectorSaveAsScan                          = "saveAsScan"

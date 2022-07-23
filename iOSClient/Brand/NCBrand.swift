@@ -90,9 +90,6 @@ import UIKit
     @objc public var disable_request_account:           Bool = false
     @objc public var disable_log:                       Bool = false
 
-    @objc public var disable_background_color:          Bool = true
-    @objc public var disable_background_image:          Bool = true
-
     override init() {
 
         if folderBrandAutoUpload != "" {

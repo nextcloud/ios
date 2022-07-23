@@ -329,8 +329,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.tintColor = .gray
 
+        /*
         // IMAGE BACKGROUND
-        if let layoutForView = layoutForView, layoutForView.imageBackgroud != "" {
+        if let layoutForView = layoutForView, layoutForView.directoryColor != "" {
             let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView.imageBackgroud
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: imagePath))
@@ -344,7 +345,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             backgroundImageView.image = nil
             collectionView.backgroundView = nil
         }
-
+        */
+        
         // COLOR BACKGROUND
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         if traitCollection.userInterfaceStyle == .dark {
@@ -1002,11 +1004,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if serverUrl != "" {
             listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
         }
-        if #available(iOS 13.0, *) {
-            if !NCBrandOptions.shared.disable_background_color {
-                listMenuItems.append(UIMenuItem(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
-            }
-        }
 
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
@@ -1024,11 +1021,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return true
             }
         }
-
-        if #selector(backgroundFilesMenu) == action {
-            return true
-        }
-
         return false
     }
 
@@ -1036,6 +1028,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCFunctionCenter.shared.pastePasteboard(serverUrl: serverUrl)
     }
 
+    /*
     @objc func backgroundFilesMenu() {
 
         if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
@@ -1053,6 +1046,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.present(popup, animated: true)
         }
     }
+    */
 
     // MARK: - DataSource + NC Endpoint
 
