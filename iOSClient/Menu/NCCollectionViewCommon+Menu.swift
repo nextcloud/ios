@@ -295,6 +295,30 @@ extension NCCollectionViewCommon {
         }
 
         //
+        // CHANGE COLOR
+        //
+        if metadata.directory {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_change_color_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "palette"),
+                    action: { _ in
+                        if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
+
+                            vcBackgroundImageColor.delegate = self
+                            //vcBackgroundImageColor.setupColor = collectionView.backgroundColor
+
+                            let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
+                            popup.backgroundAlpha = 0
+
+                            self.present(popup, animated: true)
+                        }
+                    }
+                )
+            )
+        }
+
+        //
         // DELETE
         //
         actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self))

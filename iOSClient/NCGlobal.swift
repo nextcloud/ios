@@ -113,7 +113,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 232
+    let databaseSchemaVersion: UInt64               = 233
 
     // Intro selector
     //

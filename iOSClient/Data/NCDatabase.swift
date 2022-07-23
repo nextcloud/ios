@@ -260,7 +260,8 @@ class tableDirectEditingEditors: Object {
 class tableDirectory: Object {
 
     @objc dynamic var account = ""
-    @objc dynamic var color: String?
+    @objc dynamic var colorFolder: String?
+    @objc dynamic var colorBackground: String?
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
