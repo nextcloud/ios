@@ -299,6 +299,10 @@ extension NCCollectionViewCommon {
         // CHANGE COLOR
         //
         if #available(iOS 14.0, *), metadata.directory {
+
+            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+            let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
@@ -306,11 +310,28 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         let picker = UIColorPickerViewController()
                         picker.delegate = self
+                        if let colorFolderHex = tableDirectory?.colorFolder, let color = UIColor(hex: colorFolderHex) {
+                            picker.selectedColor = color
+                        }
                         self.present(picker, animated: true, completion: nil)
                     }
                 )
             )
+
+            if tableDirectory?.colorFolder != nil {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_remove_color_", comment: ""),
+                        icon: NCUtility.shared.loadImage(named: "palette"),
+                        action: { _ in
+                            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: nil, account: metadata.account)
+                            self.reloadDataSource()
+                        }
+                    )
+                )
+            }
         }
+        
         //
         // DELETE
         //

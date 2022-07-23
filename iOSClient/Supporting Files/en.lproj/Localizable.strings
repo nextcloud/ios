@@ -877,6 +877,7 @@
 "_ITMS-90076_"              = "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings. We are sorry about that.";
 "_copy_passphrase_"         = "Copy passphrase";
 "_change_color_"            = "Change color";
+"_remove_color_"            = "Remove color";
 
 // Video
 "_select_trace_"            = "Select the trace";
