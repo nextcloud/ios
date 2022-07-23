@@ -1928,8 +1928,8 @@ extension NCCollectionViewCommon: UIColorPickerViewControllerDelegate {
         if let metadata = menuMetadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             let hexColor = viewController.selectedColor.hexString
-            if let directory = NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) {
-                
+            if NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) != nil {
+                reloadDataSource()
             }
         }
         
