@@ -41,6 +41,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var metadataFolder: tableMetadata?
+    internal var menuMetadata: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionHeaderMenu?
@@ -1914,6 +1915,20 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func dismissTip() {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
         self.tipView?.dismiss()
+    }
+}
+
+@available(iOS 14.0, *)
+extension NCCollectionViewCommon: UIColorPickerViewControllerDelegate {
+
+    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+
+        if let metadata = menuMetadata {
+            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+            let hexColor = viewController.selectedColor.hexString
+            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account)
+        }
+        
     }
 }
 

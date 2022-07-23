@@ -870,6 +870,20 @@ class NCManageDatabase: NSObject {
         }
     }
 
+    @objc func setDirectory(serverUrl: String, colorFolder: String?, account: String) {
+
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
+                result?.colorFolder = colorFolder
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     // MARK: -
     // MARK: Table e2e Encryption
 

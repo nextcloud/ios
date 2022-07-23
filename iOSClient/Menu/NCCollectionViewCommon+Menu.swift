@@ -37,6 +37,7 @@ extension NCCollectionViewCommon {
         var actions = [NCMenuAction]()
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
+        self.menuMetadata = metadata
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
@@ -297,27 +298,19 @@ extension NCCollectionViewCommon {
         //
         // CHANGE COLOR
         //
-        if metadata.directory {
+        if #available(iOS 14.0, *), metadata.directory {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "palette"),
                     action: { _ in
-                        if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
-
-                            vcBackgroundImageColor.delegate = self
-                            //vcBackgroundImageColor.setupColor = collectionView.backgroundColor
-
-                            let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
-                            popup.backgroundAlpha = 0
-
-                            self.present(popup, animated: true)
-                        }
+                        let picker = UIColorPickerViewController()
+                        picker.delegate = self
+                        self.present(picker, animated: true, completion: nil)
                     }
                 )
             )
         }
-
         //
         // DELETE
         //
