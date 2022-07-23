@@ -329,24 +329,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.tintColor = .gray
 
-        /*
-        // IMAGE BACKGROUND
-        if let layoutForView = layoutForView, layoutForView.directoryColor != "" {
-            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView.imageBackgroud
-            do {
-                let data = try Data(contentsOf: URL(fileURLWithPath: imagePath))
-                if let image = UIImage(data: data) {
-                    backgroundImageView.image = image
-                    backgroundImageView.contentMode = .scaleToFill
-                    collectionView.backgroundView = backgroundImageView
-                }
-            } catch { }
-        } else {
-            backgroundImageView.image = nil
-            collectionView.backgroundView = nil
-        }
-        */
-        
         // COLOR BACKGROUND
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         if traitCollection.userInterfaceStyle == .dark {
@@ -967,13 +949,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
 
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
-        /*
-        if #available(iOS 13.0, *) {
-            
-            let interaction = UIContextMenuInteraction(delegate: self)
-            self.view.addInteraction(interaction)
-        }
-        */
     }
 
     @available(iOS 13.0, *)

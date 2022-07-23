@@ -700,23 +700,6 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
 
-    /*
-    @objc func addDirectoryRichWorkspace(ocId: String, richWorkspace: String?) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.safeWrite {
-                if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
-                    result.richWorkspace = richWorkspace
-                }
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    */
-
     @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
 
         let realm = try! Realm()

@@ -378,26 +378,6 @@ class NCViewerMediaPage: UIViewController {
             }
         }
 
-        // AUDIO < >
-        /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                        
-            MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
-            appDelegate.nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
-                
-                self.forward()
-                return .success
-            }
-            
-            MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
-            appDelegate.previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
-             
-                self.backward()
-                return .success
-            }
-        }
-        */
-
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds
         if let image = currentViewController.image {

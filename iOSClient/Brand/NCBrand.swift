@@ -345,22 +345,6 @@ class NCBrandColor: NSObject {
         brandText = customerText
     }
 
-    /*
-    func createColors() {
-        #if !EXTENSION
-        if let tableAccount = NCManageDatabase.shared.getActiveAccount() {
-            settingThemingColor(account: tableAccount.account)
-        } else {
-            createImagesThemingColor()
-        }
-        createUserColors()
-        #else
-        createImagesThemingColor()
-        createUserColors()
-        #endif
-    }
-    */
-    
     func createUserColors() {
         userColors = generateColors()
     }

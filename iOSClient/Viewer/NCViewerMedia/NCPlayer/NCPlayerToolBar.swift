@@ -487,27 +487,11 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapForward(_ sender: Any) {
 
         skip(seconds: 10)
-
-        /*
-         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-         skip(seconds: 10)
-         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-         forward()
-         }
-         */
     }
 
     @IBAction func tapBack(_ sender: Any) {
 
         skip(seconds: -10)
-
-        /*
-         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-         skip(seconds: -10)
-         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-         backward()
-         }
-         */
     }
 
     @IBAction func tapSubtitle(_ sender: Any) {
