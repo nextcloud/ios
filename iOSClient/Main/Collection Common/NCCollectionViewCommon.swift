@@ -1141,7 +1141,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             if let metadataFolder = metadataFolder {
-                tableDirectory = NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: self.serverUrl, account: account)
+                tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             }
             if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription in
@@ -1597,12 +1597,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folder
             }
 
-            let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-            let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
-
             // Local image: offline
-            if tableDirectory != nil && tableDirectory!.offline {
+            if let tableDirectory = tableDirectory, tableDirectory.offline {
                 cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
+            }
+
+            // color folder
+            if let colorFolderHex = tableDirectory?.colorFolder, let color = UIColor(hex: colorFolderHex) {
+                cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.imageColor(color)
             }
 
         } else {
@@ -1926,7 +1928,9 @@ extension NCCollectionViewCommon: UIColorPickerViewControllerDelegate {
         if let metadata = menuMetadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             let hexColor = viewController.selectedColor.hexString
-            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account)
+            if let directory = NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) {
+                
+            }
         }
         
     }
