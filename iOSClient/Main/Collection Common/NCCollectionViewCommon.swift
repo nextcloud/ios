@@ -1920,7 +1920,6 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     }
 }
 
-//@available(iOS 15.0, *)
 extension NCCollectionViewCommon: NCColorPickerDelegate {
 
     /*

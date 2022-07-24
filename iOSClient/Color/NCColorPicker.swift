@@ -89,6 +89,6 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
         defaultButton.backgroundColor = NCBrandColor.shared.brandElement
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
-        defaultLabel.text = NSLocalizedString("_gray_", comment: "")
+        defaultLabel.text = NSLocalizedString("_default_", comment: "")
     }
 }

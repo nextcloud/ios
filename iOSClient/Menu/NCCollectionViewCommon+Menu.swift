@@ -316,7 +316,7 @@ extension NCCollectionViewCommon {
                             }
                             picker.defaultColor = NCBrandColor.shared.brandElement
 
-                            let popup = NCPopupViewController(contentController: picker, popupWidth: 300, popupHeight: 500)
+                            let popup = NCPopupViewController(contentController: picker, popupWidth: 300, popupHeight: 450)
                             popup.backgroundAlpha = 0
 
                             self.present(popup, animated: true)
