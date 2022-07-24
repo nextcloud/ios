@@ -26,7 +26,7 @@ import Realm
 import NCCommunication
 import EasyTipView
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCSelectableNavigationView {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -330,18 +330,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.tintColor = .gray
 
         // COLOR BACKGROUND
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        if traitCollection.userInterfaceStyle == .dark {
-            if activeAccount?.darkColorBackground != "" {
-                collectionView.backgroundColor = UIColor(hex: activeAccount?.darkColorBackground ?? "")
-            } else {
-                collectionView.backgroundColor = NCBrandColor.shared.systemBackground
-            }
-        } else {
-           if activeAccount?.lightColorBackground != "" {
-                collectionView.backgroundColor = UIColor(hex: activeAccount?.lightColorBackground ?? "")
-            } else {
-                collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl)) {
+            if let colorBackground = tableDirectory.colorBackground, let color = UIColor(hex: colorBackground)  {
+                collectionView.backgroundColor = color
             }
         }
     }
@@ -719,22 +710,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return userAlias
     }
 
-    // MARK: - BackgroundImageColor Delegate
-
-    func colorPickerCancel() {
-        changeTheming()
-    }
-
-    func colorPickerWillChange(color: UIColor) {
-        collectionView.backgroundColor = color
-    }
-
-    func colorPickerDidChange(lightColor: String, darkColor: String) {
-
-        NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
-        changeTheming()
-    }
-
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
@@ -1002,26 +977,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func pasteFilesMenu() {
         NCFunctionCenter.shared.pastePasteboard(serverUrl: serverUrl)
     }
-
-    /*
-    @objc func backgroundFilesMenu() {
-
-        if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
-
-            vcBackgroundImageColor.delegate = self
-            vcBackgroundImageColor.setupColor = collectionView.backgroundColor
-            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-                vcBackgroundImageColor.lightColor = activeAccount.lightColorBackground
-                vcBackgroundImageColor.darkColor = activeAccount.darkColorBackground
-            }
-
-            let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
-            popup.backgroundAlpha = 0
-
-            self.present(popup, animated: true)
-        }
-    }
-    */
 
     // MARK: - DataSource + NC Endpoint
 

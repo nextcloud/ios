@@ -89,7 +89,7 @@
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <connections>
-                                    <action selector="yellowButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="suP-DD-70c"/>
+                                    <action selector="blackButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="M8N-Pu-LSN"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gSF-6R-gbh">
@@ -193,6 +193,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="blackButton" destination="I9w-cx-QlY" id="lB1-aF-eee"/>
+                        <outlet property="blackText" destination="gSF-6R-gbh" id="Jll-za-OcY"/>
                         <outlet property="blueButton" destination="C2a-jB-FVB" id="lIY-Ag-Nkv"/>
                         <outlet property="blueText" destination="Dmu-fr-Dtf" id="aRt-Mp-vYQ"/>
                         <outlet property="defaultButton" destination="Uaq-hC-U4a" id="t6X-aV-hPF"/>
@@ -207,8 +209,6 @@
                         <outlet property="redText" destination="p7z-g7-hkV" id="FiU-ZR-JxH"/>
                         <outlet property="violaButton" destination="dOn-SY-wnl" id="XFX-c3-ky3"/>
                         <outlet property="violaText" destination="DoG-RI-jcO" id="axQ-8d-eQr"/>
-                        <outlet property="yellowButton" destination="I9w-cx-QlY" id="wOl-Pu-9FD"/>
-                        <outlet property="yellowText" destination="gSF-6R-gbh" id="YWk-et-MCu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

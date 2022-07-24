@@ -15,7 +15,7 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var redButton: UIButton!
     @IBOutlet weak var violaButton: UIButton!
     @IBOutlet weak var blueButton: UIButton!
-    @IBOutlet weak var yellowButton: UIButton!
+    @IBOutlet weak var blackButton: UIButton!
     @IBOutlet weak var greenButton: UIButton!
     @IBOutlet weak var grayButton: UIButton!
     @IBOutlet weak var defaultButton: UIButton!
@@ -24,7 +24,7 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var redText: UITextField!
     @IBOutlet weak var violaText: UITextField!
     @IBOutlet weak var blueText: UITextField!
-    @IBOutlet weak var yellowText: UITextField!
+    @IBOutlet weak var blackText: UITextField!
     @IBOutlet weak var greenText: UITextField!
     @IBOutlet weak var grayText: UITextField!
     @IBOutlet weak var defaultLabel: UILabel!
@@ -56,10 +56,10 @@ class NCColorPicker: UIViewController {
         blueButton.layer.masksToBounds = true
         blueText.text = NSLocalizedString("_blue_", comment: "")
 
-        yellowButton.backgroundColor = .yellow
-        yellowButton.layer.cornerRadius = 5
-        yellowButton.layer.masksToBounds = true
-        yellowText.text = NSLocalizedString("_yellow_", comment: "")
+        blackButton.backgroundColor = .black
+        blackButton.layer.cornerRadius = 5
+        blackButton.layer.masksToBounds = true
+        blackText.text = NSLocalizedString("_black_", comment: "")
 
         greenButton.backgroundColor = .green
         greenButton.layer.cornerRadius = 5
@@ -93,8 +93,8 @@ class NCColorPicker: UIViewController {
         updateColor(hexColor: UIColor.blue.hexString)
     }
 
-    @IBAction func yellowButtonAction(_ sender: UIButton) {
-        updateColor(hexColor: UIColor.yellow.hexString)
+    @IBAction func blackButtonAction(_ sender: UIButton) {
+        updateColor(hexColor: UIColor.black.hexString)
     }
 
     @IBAction func greenButtonAction(_ sender: UIButton) {

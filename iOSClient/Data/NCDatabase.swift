@@ -85,10 +85,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var website = ""
     @objc dynamic var zip = ""
 
-    // COLOR Files
-    @objc dynamic var darkColorBackground = ""
-    @objc dynamic var lightColorBackground = ""
-
     // HC
     @objc dynamic var hcIsTrial: Bool = false
     @objc dynamic var hcTrialExpired: Bool = false
