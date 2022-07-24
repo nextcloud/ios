@@ -78,42 +78,42 @@ class NCColorPicker: UIViewController {
     }
 
     @IBAction func orangeButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: UIColor.orange.hexString)
+        updateColor(hexColor: UIColor.orange.hexString)
     }
 
     @IBAction func redButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: UIColor.red.hexString)
+        updateColor(hexColor: UIColor.red.hexString)
     }
 
     @IBAction func violaButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: "#8f00ff")
+        updateColor(hexColor: "#8f00ff")
     }
 
     @IBAction func blueButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: UIColor.blue.hexString)
+        updateColor(hexColor: UIColor.blue.hexString)
     }
 
     @IBAction func yellowButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: UIColor.yellow.hexString)
+        updateColor(hexColor: UIColor.yellow.hexString)
     }
 
     @IBAction func greenButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: UIColor.green.hexString)
+        updateColor(hexColor: UIColor.green.hexString)
     }
 
     @IBAction func grayButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: UIColor.gray.hexString)
+        updateColor(hexColor: UIColor.gray.hexString)
     }
 
     @IBAction func defaultButtonAction(_ sender: UIButton) {
-        UpdateColor(hexColor: NCBrandColor.shared.brandElement.hexString)
+        updateColor(hexColor: NCBrandColor.shared.brandElement.hexString)
     }
 
-    func UpdateColor(hexColor: String?) {
+    func updateColor(hexColor: String?) {
         if let metadata = metadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             if NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) != nil {
-                //reloadDataSource()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": metadata.serverUrl])
             }
         }
     }
