@@ -20,16 +20,17 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var grayButton: UIButton!
     @IBOutlet weak var defaultButton: UIButton!
 
-    @IBOutlet weak var orangeText: UITextField!
-    @IBOutlet weak var redText: UITextField!
-    @IBOutlet weak var purpleText: UITextField!
-    @IBOutlet weak var blueText: UITextField!
-    @IBOutlet weak var blackText: UITextField!
-    @IBOutlet weak var greenText: UITextField!
-    @IBOutlet weak var grayText: UITextField!
+    @IBOutlet weak var orangeLabel: UILabel!
+    @IBOutlet weak var redLabel: UILabel!
+    @IBOutlet weak var purpleLabel: UILabel!
+    @IBOutlet weak var blueLabel: UILabel!
+    @IBOutlet weak var blackLabel: UILabel!
+    @IBOutlet weak var greenLabel: UILabel!
+    @IBOutlet weak var grayLabel: UILabel!
     @IBOutlet weak var defaultLabel: UILabel!
 
     var metadata: tableMetadata?
+    var tapAction: UITapGestureRecognizer?
 
     // MARK: - View Life Cycle
 
@@ -39,73 +40,89 @@ class NCColorPicker: UIViewController {
         orangeButton.backgroundColor = .orange
         orangeButton.layer.cornerRadius = 5
         orangeButton.layer.masksToBounds = true
-        orangeText.text = NSLocalizedString("_orange_", comment: "")
+        orangeLabel.text = NSLocalizedString("_orange_", comment: "")
+        let orangeLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(orangeButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(orangeLabelTapAction)
 
         redButton.backgroundColor = .red
         redButton.layer.cornerRadius = 5
         redButton.layer.masksToBounds = true
-        redText.text = NSLocalizedString("_red_", comment: "")
+        redLabel.text = NSLocalizedString("_red_", comment: "")
+        let redLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(redButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(redLabelTapAction)
 
         purpleButton.backgroundColor = .purple
         purpleButton.layer.cornerRadius = 5
         purpleButton.layer.masksToBounds = true
-        purpleText.text = NSLocalizedString("_purple_", comment: "")
+        purpleLabel.text = NSLocalizedString("_purple_", comment: "")
+        let purpleLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(purpleButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(purpleLabelTapAction)
 
         blueButton.backgroundColor = .blue
         blueButton.layer.cornerRadius = 5
         blueButton.layer.masksToBounds = true
-        blueText.text = NSLocalizedString("_blue_", comment: "")
+        blueLabel.text = NSLocalizedString("_blue_", comment: "")
+        let blueLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(blueButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(blueLabelTapAction)
 
         blackButton.backgroundColor = .black
         blackButton.layer.cornerRadius = 5
         blackButton.layer.masksToBounds = true
-        blackText.text = NSLocalizedString("_black_", comment: "")
+        blackLabel.text = NSLocalizedString("_black_", comment: "")
+        let blackLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(blackButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(blackLabelTapAction)
 
         greenButton.backgroundColor = .green
         greenButton.layer.cornerRadius = 5
         greenButton.layer.masksToBounds = true
-        greenText.text = NSLocalizedString("_green_", comment: "")
+        greenLabel.text = NSLocalizedString("_green_", comment: "")
+        let greenLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(greenButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(greenLabelTapAction)
 
         grayButton.backgroundColor = .gray
         grayButton.layer.cornerRadius = 5
         grayButton.layer.masksToBounds = true
-        grayText.text = NSLocalizedString("_gray_", comment: "")
+        grayLabel.text = NSLocalizedString("_gray_", comment: "")
+        let grayLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(grayButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(grayLabelTapAction)
 
         defaultButton.backgroundColor = NCBrandColor.shared.brandElement
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
         defaultLabel.text = NSLocalizedString("_default_", comment: "")
+        let defaultLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(defaultButtonAction(_:)))
+        defaultLabel?.addGestureRecognizer(defaultLabelTapAction)
     }
 
-    @IBAction func orangeButtonAction(_ sender: UIButton) {
+    @IBAction func orangeButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.orange.hexString)
     }
 
-    @IBAction func redButtonAction(_ sender: UIButton) {
+    @IBAction func redButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.red.hexString)
     }
 
-    @IBAction func pupleButtonAction(_ sender: UIButton) {
+    @IBAction func purpleButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.purple.hexString)
     }
 
-    @IBAction func blueButtonAction(_ sender: UIButton) {
+    @IBAction func blueButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.blue.hexString)
     }
 
-    @IBAction func blackButtonAction(_ sender: UIButton) {
+    @IBAction func blackButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.black.hexString)
     }
 
-    @IBAction func greenButtonAction(_ sender: UIButton) {
+    @IBAction func greenButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.green.hexString)
     }
 
-    @IBAction func grayButtonAction(_ sender: UIButton) {
+    @IBAction func grayButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.gray.hexString)
     }
 
-    @IBAction func defaultButtonAction(_ sender: UIButton) {
+    @IBAction func defaultButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: nil)
     }
 
