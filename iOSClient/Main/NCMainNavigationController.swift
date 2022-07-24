@@ -30,25 +30,6 @@ class NCMainNavigationController: UINavigationController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
-    }
-
-    // MARK: - Theming
-
-    @objc func changeTheming() {
-
         if #available(iOS 13.0, *) {
 
             let appearance = UINavigationBarAppearance()
@@ -72,6 +53,5 @@ class NCMainNavigationController: UINavigationController {
         }
 
         navigationBar.tintColor = .systemBlue
-        navigationBar.setNeedsLayout()
     }
 }
