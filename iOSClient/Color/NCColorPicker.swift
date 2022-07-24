@@ -27,10 +27,18 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
     @IBOutlet weak var orangeButton: UIButton!
     @IBOutlet weak var redButton: UIButton!
     @IBOutlet weak var violaButton: UIButton!
+    @IBOutlet weak var blueButton: UIButton!
+    @IBOutlet weak var yellowButton: UIButton!
+    @IBOutlet weak var greenButton: UIButton!
+    @IBOutlet weak var grayButton: UIButton!
 
     @IBOutlet weak var orangeText: UITextField!
     @IBOutlet weak var redText: UITextField!
     @IBOutlet weak var violaText: UITextField!
+    @IBOutlet weak var blueText: UITextField!
+    @IBOutlet weak var yellowText: UITextField!
+    @IBOutlet weak var greenText: UITextField!
+    @IBOutlet weak var grayText: UITextField!
 
     weak var delegate: NCColorPickerDelegate?
     var selectedColor: UIColor?
@@ -56,6 +64,24 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
         violaButton.layer.masksToBounds = true
         violaText.text = NSLocalizedString("_viola_", comment: "")
 
-    }
+        blueButton.backgroundColor = .blue
+        blueButton.layer.cornerRadius = 5
+        blueButton.layer.masksToBounds = true
+        blueText.text = NSLocalizedString("_blue_", comment: "")
 
+        yellowButton.backgroundColor = .yellow
+        yellowButton.layer.cornerRadius = 5
+        yellowButton.layer.masksToBounds = true
+        yellowText.text = NSLocalizedString("_yellow_", comment: "")
+
+        greenButton.backgroundColor = .green
+        greenButton.layer.cornerRadius = 5
+        greenButton.layer.masksToBounds = true
+        greenText.text = NSLocalizedString("_green_", comment: "")
+
+        grayButton.backgroundColor = .gray
+        grayButton.layer.cornerRadius = 5
+        grayButton.layer.masksToBounds = true
+        grayText.text = NSLocalizedString("_gray_", comment: "")
+    }
 }
