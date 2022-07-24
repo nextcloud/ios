@@ -17,25 +17,53 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zr2-rF-YUt">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JUR-Vj-yBU">
                                 <rect key="frame" x="10" y="10" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="LDf-aO-ruY"/>
+                                    <constraint firstAttribute="height" constant="40" id="U5p-9E-WGx"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zr2-rF-YUt">
+                                <rect key="frame" x="10" y="60" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="krX-Ql-hLX"/>
                                     <constraint firstAttribute="width" constant="40" id="pBq-i1-K9T"/>
                                 </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Jc0-7X-JuE">
+                                <rect key="frame" x="70" y="21" width="230" height="18.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p7z-g7-hkV">
+                                <rect key="frame" x="70" y="71" width="230" height="18.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Zr2-rF-YUt" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="adH-I3-HO4"/>
+                            <constraint firstItem="Jc0-7X-JuE" firstAttribute="leading" secondItem="JUR-Vj-yBU" secondAttribute="trailing" constant="20" id="7em-8z-JQY"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Jc0-7X-JuE" secondAttribute="trailing" constant="20" id="8gW-Zv-r2i"/>
+                            <constraint firstItem="p7z-g7-hkV" firstAttribute="centerY" secondItem="Zr2-rF-YUt" secondAttribute="centerY" id="Jv1-Lb-kNB"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="p7z-g7-hkV" secondAttribute="trailing" constant="20" id="YOZ-Wq-rX9"/>
+                            <constraint firstItem="JUR-Vj-yBU" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="ZH3-0g-M1x"/>
+                            <constraint firstItem="p7z-g7-hkV" firstAttribute="leading" secondItem="Zr2-rF-YUt" secondAttribute="trailing" constant="20" id="dFH-h5-ShO"/>
+                            <constraint firstItem="Jc0-7X-JuE" firstAttribute="centerY" secondItem="JUR-Vj-yBU" secondAttribute="centerY" id="fR6-2Q-pkZ"/>
+                            <constraint firstItem="Zr2-rF-YUt" firstAttribute="top" secondItem="JUR-Vj-yBU" secondAttribute="bottom" constant="10" id="kLH-Zl-k0m"/>
                             <constraint firstItem="Zr2-rF-YUt" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="zBA-2T-5J8"/>
+                            <constraint firstItem="JUR-Vj-yBU" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="zbI-KC-mx0"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="orangeButton" destination="JUR-Vj-yBU" id="aGO-8f-0Em"/>
+                        <outlet property="orangeText" destination="Jc0-7X-JuE" id="IAe-Ps-Cr2"/>
                         <outlet property="redButton" destination="Zr2-rF-YUt" id="jib-wX-2Of"/>
+                        <outlet property="redText" destination="p7z-g7-hkV" id="FiU-ZR-JxH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

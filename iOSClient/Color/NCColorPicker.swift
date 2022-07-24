@@ -24,7 +24,11 @@ public extension NCColorPickerDelegate {
 
 class NCColorPicker: UIViewController, NCColorPickerDelegate {
 
+    @IBOutlet weak var orangeButton: UIButton!
     @IBOutlet weak var redButton: UIButton!
+
+    @IBOutlet weak var orangeText: UITextField!
+    @IBOutlet weak var redText: UITextField!
 
     weak var delegate: NCColorPickerDelegate?
     var selectedColor: UIColor?
@@ -37,8 +41,6 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
 
         redButton.backgroundColor = .red
         redButton.layer.cornerRadius = 5
-        redButton.layer.borderWidth = 0.5
-        redButton.layer.borderColor = NCBrandColor.shared.label.cgColor
         redButton.layer.masksToBounds = true
     }
 
