@@ -26,9 +26,11 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
 
     @IBOutlet weak var orangeButton: UIButton!
     @IBOutlet weak var redButton: UIButton!
+    @IBOutlet weak var violaButton: UIButton!
 
     @IBOutlet weak var orangeText: UITextField!
     @IBOutlet weak var redText: UITextField!
+    @IBOutlet weak var violaText: UITextField!
 
     weak var delegate: NCColorPickerDelegate?
     var selectedColor: UIColor?
@@ -42,14 +44,17 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
         orangeButton.backgroundColor = .orange
         orangeButton.layer.cornerRadius = 5
         orangeButton.layer.masksToBounds = true
-
-        orangeText.text = "Orange"
+        orangeText.text = NSLocalizedString("_orange_", comment: "")
 
         redButton.backgroundColor = .red
         redButton.layer.cornerRadius = 5
         redButton.layer.masksToBounds = true
+        redText.text = NSLocalizedString("_red_", comment: "")
 
-        redText.text = "Red"
+        violaButton.backgroundColor = UIColor(hex: "#8f00ff")
+        violaButton.layer.cornerRadius = 5
+        violaButton.layer.masksToBounds = true
+        violaText.text = NSLocalizedString("_viola_", comment: "")
 
     }
 
