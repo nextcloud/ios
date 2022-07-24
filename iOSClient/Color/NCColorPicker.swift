@@ -113,8 +113,10 @@ class NCColorPicker: UIViewController {
         if let metadata = metadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             if NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) != nil {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": metadata.serverUrl])
+                self.dismiss(animated: true)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
             }
         }
+        self.dismiss(animated: true)
     }
 }
