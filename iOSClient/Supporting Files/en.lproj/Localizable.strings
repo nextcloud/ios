@@ -885,6 +885,7 @@
 "_green_"                   = "Green";
 "_gray_"                    = "Gray";
 "_default_"                 = "Default";
+"_custom_"                  = "Custom";
 
 // Video
 "_select_trace_"            = "Select the trace";
