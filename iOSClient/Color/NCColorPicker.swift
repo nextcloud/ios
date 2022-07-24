@@ -39,9 +39,18 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        orangeButton.backgroundColor = .orange
+        orangeButton.layer.cornerRadius = 5
+        orangeButton.layer.masksToBounds = true
+
+        orangeText.text = "Orange"
+
         redButton.backgroundColor = .red
         redButton.layer.cornerRadius = 5
         redButton.layer.masksToBounds = true
+
+        redText.text = "Red"
+
     }
 
 }

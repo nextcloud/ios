@@ -33,13 +33,13 @@
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Jc0-7X-JuE">
-                                <rect key="frame" x="70" y="21" width="230" height="18.5"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Jc0-7X-JuE">
+                                <rect key="frame" x="60" y="21" width="240" height="18.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p7z-g7-hkV">
-                                <rect key="frame" x="70" y="71" width="230" height="18.5"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p7z-g7-hkV">
+                                <rect key="frame" x="60" y="71" width="240" height="18.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
@@ -47,12 +47,12 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Jc0-7X-JuE" firstAttribute="leading" secondItem="JUR-Vj-yBU" secondAttribute="trailing" constant="20" id="7em-8z-JQY"/>
+                            <constraint firstItem="Jc0-7X-JuE" firstAttribute="leading" secondItem="JUR-Vj-yBU" secondAttribute="trailing" constant="10" id="7em-8z-JQY"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Jc0-7X-JuE" secondAttribute="trailing" constant="20" id="8gW-Zv-r2i"/>
                             <constraint firstItem="p7z-g7-hkV" firstAttribute="centerY" secondItem="Zr2-rF-YUt" secondAttribute="centerY" id="Jv1-Lb-kNB"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="p7z-g7-hkV" secondAttribute="trailing" constant="20" id="YOZ-Wq-rX9"/>
                             <constraint firstItem="JUR-Vj-yBU" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="ZH3-0g-M1x"/>
-                            <constraint firstItem="p7z-g7-hkV" firstAttribute="leading" secondItem="Zr2-rF-YUt" secondAttribute="trailing" constant="20" id="dFH-h5-ShO"/>
+                            <constraint firstItem="p7z-g7-hkV" firstAttribute="leading" secondItem="Zr2-rF-YUt" secondAttribute="trailing" constant="10" id="dFH-h5-ShO"/>
                             <constraint firstItem="Jc0-7X-JuE" firstAttribute="centerY" secondItem="JUR-Vj-yBU" secondAttribute="centerY" id="fR6-2Q-pkZ"/>
                             <constraint firstItem="Zr2-rF-YUt" firstAttribute="top" secondItem="JUR-Vj-yBU" secondAttribute="bottom" constant="10" id="kLH-Zl-k0m"/>
                             <constraint firstItem="Zr2-rF-YUt" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="zBA-2T-5J8"/>
