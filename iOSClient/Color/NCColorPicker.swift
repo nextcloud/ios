@@ -9,20 +9,7 @@
 import Foundation
 import UIKit
 
-public protocol NCColorPickerDelegate: AnyObject {
-    func colorPickerCancel()
-    func colorPickerWillChange(color: UIColor)
-    func colorPickerDidChange(color: UIColor)
-}
-
-// optional func
-public extension NCColorPickerDelegate {
-    func colorPickerCancel() {}
-    func colorPickerWillChange(color: UIColor) { }
-    func colorPickerDidChange(color: UIColor) { }
-}
-
-class NCColorPicker: UIViewController, NCColorPickerDelegate {
+class NCColorPicker: UIViewController {
 
     @IBOutlet weak var orangeButton: UIButton!
     @IBOutlet weak var redButton: UIButton!
@@ -42,9 +29,7 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
     @IBOutlet weak var grayText: UITextField!
     @IBOutlet weak var defaultLabel: UILabel!
 
-    weak var delegate: NCColorPickerDelegate?
-    var selectedColor: UIColor?
-    var defaultColor: UIColor?
+    var metadata: tableMetadata?
 
     // MARK: - View Life Cycle
 
@@ -90,5 +75,46 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
         defaultLabel.text = NSLocalizedString("_default_", comment: "")
+    }
+
+    @IBAction func orangeButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: UIColor.orange.hexString)
+    }
+
+    @IBAction func redButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: UIColor.red.hexString)
+    }
+
+    @IBAction func violaButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: "#8f00ff")
+    }
+
+    @IBAction func blueButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: UIColor.blue.hexString)
+    }
+
+    @IBAction func yellowButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: UIColor.yellow.hexString)
+    }
+
+    @IBAction func greenButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: UIColor.green.hexString)
+    }
+
+    @IBAction func grayButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: UIColor.gray.hexString)
+    }
+
+    @IBAction func defaultButtonAction(_ sender: UIButton) {
+        UpdateColor(hexColor: NCBrandColor.shared.brandElement.hexString)
+    }
+
+    func UpdateColor(hexColor: String?) {
+        if let metadata = metadata {
+            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+            if NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) != nil {
+                //reloadDataSource()
+            }
+        }
     }
 }

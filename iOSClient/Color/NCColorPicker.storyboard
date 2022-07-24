@@ -24,6 +24,9 @@
                                     <constraint firstAttribute="height" constant="40" id="U5p-9E-WGx"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="orangeButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="qjx-Me-0xU"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Jc0-7X-JuE">
                                 <rect key="frame" x="60" y="21" width="250" height="18.5"/>
@@ -37,6 +40,9 @@
                                     <constraint firstAttribute="width" constant="40" id="pBq-i1-K9T"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="redButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="b2r-oG-GvU"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p7z-g7-hkV">
                                 <rect key="frame" x="60" y="71" width="250" height="18.5"/>
@@ -50,6 +56,9 @@
                                     <constraint firstAttribute="width" constant="40" id="v3I-Na-zQ5"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="violaButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="hIN-qB-6r5"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DoG-RI-jcO">
                                 <rect key="frame" x="60" y="121" width="250" height="18.5"/>
@@ -63,6 +72,9 @@
                                     <constraint firstAttribute="width" constant="40" id="n8f-nK-weh"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="blueButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="M04-54-NPB"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dmu-fr-Dtf">
                                 <rect key="frame" x="60" y="171" width="250" height="18.5"/>
@@ -76,6 +88,9 @@
                                     <constraint firstAttribute="width" constant="40" id="dHD-fs-7m0"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="yellowButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="suP-DD-70c"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gSF-6R-gbh">
                                 <rect key="frame" x="60" y="221" width="250" height="18.5"/>
@@ -89,6 +104,9 @@
                                     <constraint firstAttribute="width" constant="40" id="h5m-EQ-2Go"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="greenButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="VVw-Ra-U8N"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5XA-n8-8l6">
                                 <rect key="frame" x="60" y="271" width="250" height="18.5"/>
@@ -102,6 +120,9 @@
                                     <constraint firstAttribute="width" constant="40" id="y5l-31-c4D"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="grayButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="wP2-wX-3Hl"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DFY-QC-J1R">
                                 <rect key="frame" x="60" y="321" width="250" height="18.5"/>
@@ -115,6 +136,9 @@
                                     <constraint firstAttribute="width" constant="40" id="L0n-3P-wA1"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="defaultButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="VhY-1n-fwQ"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AVl-ZW-qt0">
                                 <rect key="frame" x="60" y="380" width="250" height="0.0"/>

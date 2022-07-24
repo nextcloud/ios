@@ -37,7 +37,6 @@ extension NCCollectionViewCommon {
         var actions = [NCMenuAction]()
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-        self.menuMetadata = metadata
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
@@ -309,16 +308,9 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "palette"),
                     action: { _ in
                         if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {
-
-                            picker.delegate = self
-                            if let colorFolderHex = tableDirectory?.colorFolder {
-                                picker.selectedColor = UIColor.init(hex: colorFolderHex)
-                            }
-                            picker.defaultColor = NCBrandColor.shared.brandElement
-
-                            let popup = NCPopupViewController(contentController: picker, popupWidth: 300, popupHeight: 450)
+                            picker.metadata = metadata
+                            let popup = NCPopupViewController(contentController: picker, popupWidth: 200, popupHeight: 410)
                             popup.backgroundAlpha = 0
-
                             self.present(popup, animated: true)
                         }
                     }
