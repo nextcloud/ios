@@ -15,7 +15,7 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var redButton: UIButton!
     @IBOutlet weak var purpleButton: UIButton!
     @IBOutlet weak var blueButton: UIButton!
-    @IBOutlet weak var blackButton: UIButton!
+    @IBOutlet weak var brownButton: UIButton!
     @IBOutlet weak var greenButton: UIButton!
     @IBOutlet weak var grayButton: UIButton!
     @IBOutlet weak var defaultButton: UIButton!
@@ -24,7 +24,7 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var redLabel: UILabel!
     @IBOutlet weak var purpleLabel: UILabel!
     @IBOutlet weak var blueLabel: UILabel!
-    @IBOutlet weak var blackLabel: UILabel!
+    @IBOutlet weak var brownLabel: UILabel!
     @IBOutlet weak var greenLabel: UILabel!
     @IBOutlet weak var grayLabel: UILabel!
     @IBOutlet weak var defaultLabel: UILabel!
@@ -65,12 +65,12 @@ class NCColorPicker: UIViewController {
         let blueLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(blueButtonAction(_:)))
         blueLabel?.addGestureRecognizer(blueLabelTapAction)
 
-        blackButton.backgroundColor = .black
-        blackButton.layer.cornerRadius = 5
-        blackButton.layer.masksToBounds = true
-        blackLabel.text = NSLocalizedString("_black_", comment: "")
-        let blackLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(blackButtonAction(_:)))
-        blackLabel?.addGestureRecognizer(blackLabelTapAction)
+        brownButton.backgroundColor = .brown
+        brownButton.layer.cornerRadius = 5
+        brownButton.layer.masksToBounds = true
+        brownLabel.text = NSLocalizedString("_brown_", comment: "")
+        let brownLabelTapAction = UITapGestureRecognizer(target: self, action: #selector(brownButtonAction(_:)))
+        brownLabel?.addGestureRecognizer(brownLabelTapAction)
 
         greenButton.backgroundColor = .green
         greenButton.layer.cornerRadius = 5
@@ -110,8 +110,8 @@ class NCColorPicker: UIViewController {
         updateColor(hexColor: UIColor.blue.hexString)
     }
 
-    @IBAction func blackButtonAction(_ sender: AnyObject) {
-        updateColor(hexColor: UIColor.black.hexString)
+    @IBAction func brownButtonAction(_ sender: AnyObject) {
+        updateColor(hexColor: UIColor.brown.hexString)
     }
 
     @IBAction func greenButtonAction(_ sender: AnyObject) {

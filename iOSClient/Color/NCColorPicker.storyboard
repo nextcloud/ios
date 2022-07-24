@@ -98,7 +98,7 @@
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <connections>
-                                    <action selector="blackButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="M8N-Pu-LSN"/>
+                                    <action selector="brownButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="AH7-Kr-g9S"/>
                                 </connections>
                             </button>
                             <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l8h-Ix-MAy">
@@ -208,10 +208,10 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="blackButton" destination="I9w-cx-QlY" id="lB1-aF-eee"/>
-                        <outlet property="blackLabel" destination="l8h-Ix-MAy" id="RoI-0K-JDW"/>
                         <outlet property="blueButton" destination="C2a-jB-FVB" id="lIY-Ag-Nkv"/>
                         <outlet property="blueLabel" destination="Bju-3l-U4U" id="SoS-he-ZYH"/>
+                        <outlet property="brownButton" destination="I9w-cx-QlY" id="b8T-np-0mw"/>
+                        <outlet property="brownLabel" destination="l8h-Ix-MAy" id="hLk-hf-tcf"/>
                         <outlet property="defaultButton" destination="Uaq-hC-U4a" id="t6X-aV-hPF"/>
                         <outlet property="defaultLabel" destination="AVl-ZW-qt0" id="Pdd-bQ-cNT"/>
                         <outlet property="grayButton" destination="LwF-26-oss" id="lzV-jY-LNd"/>
