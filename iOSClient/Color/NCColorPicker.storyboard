@@ -57,7 +57,7 @@
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <connections>
-                                    <action selector="violaButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="hIN-qB-6r5"/>
+                                    <action selector="pupleButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="SYH-xz-xzQ"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DoG-RI-jcO">
@@ -205,10 +205,10 @@
                         <outlet property="greenText" destination="5XA-n8-8l6" id="9Md-fj-QWW"/>
                         <outlet property="orangeButton" destination="JUR-Vj-yBU" id="aGO-8f-0Em"/>
                         <outlet property="orangeText" destination="Jc0-7X-JuE" id="IAe-Ps-Cr2"/>
+                        <outlet property="purpleButton" destination="dOn-SY-wnl" id="hes-XJ-gMJ"/>
+                        <outlet property="purpleText" destination="DoG-RI-jcO" id="jlj-qV-lqU"/>
                         <outlet property="redButton" destination="Zr2-rF-YUt" id="jib-wX-2Of"/>
                         <outlet property="redText" destination="p7z-g7-hkV" id="FiU-ZR-JxH"/>
-                        <outlet property="violaButton" destination="dOn-SY-wnl" id="XFX-c3-ky3"/>
-                        <outlet property="violaText" destination="DoG-RI-jcO" id="axQ-8d-eQr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
