@@ -31,6 +31,7 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
     @IBOutlet weak var yellowButton: UIButton!
     @IBOutlet weak var greenButton: UIButton!
     @IBOutlet weak var grayButton: UIButton!
+    @IBOutlet weak var defaultButton: UIButton!
 
     @IBOutlet weak var orangeText: UITextField!
     @IBOutlet weak var redText: UITextField!
@@ -39,6 +40,7 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
     @IBOutlet weak var yellowText: UITextField!
     @IBOutlet weak var greenText: UITextField!
     @IBOutlet weak var grayText: UITextField!
+    @IBOutlet weak var defaultLabel: UILabel!
 
     weak var delegate: NCColorPickerDelegate?
     var selectedColor: UIColor?
@@ -83,5 +85,10 @@ class NCColorPicker: UIViewController, NCColorPickerDelegate {
         grayButton.layer.cornerRadius = 5
         grayButton.layer.masksToBounds = true
         grayText.text = NSLocalizedString("_gray_", comment: "")
+
+        defaultButton.backgroundColor = NCBrandColor.shared.brandElement
+        defaultButton.layer.cornerRadius = 5
+        defaultButton.layer.masksToBounds = true
+        defaultLabel.text = NSLocalizedString("_gray_", comment: "")
     }
 }
