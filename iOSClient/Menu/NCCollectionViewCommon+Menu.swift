@@ -297,11 +297,7 @@ extension NCCollectionViewCommon {
         //
         // COLOR FOLDER
         //
-        if #available(iOS 14.0, *), metadata.directory {
-
-            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-
+        if metadata.directory {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
@@ -316,22 +312,6 @@ extension NCCollectionViewCommon {
                     }
                 )
             )
-            /*
-            if tableDirectory?.colorFolder != nil {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_remove_color_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "removepalette"),
-                        action: { _ in
-                            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: nil, account: metadata.account)
-                            self.reloadDataSource()
-                        }
-                    )
-                )
-            } else {
-
-            }
-            */
         }
         
         //

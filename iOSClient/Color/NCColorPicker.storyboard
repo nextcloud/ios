@@ -146,18 +146,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tmW-pC-mup">
-                                <rect key="frame" x="10" y="415" width="51" height="31"/>
-                                <connections>
-                                    <action selector="backgroundSwitchAction:" destination="Y6W-OH-hqX" eventType="valueChanged" id="y79-eX-Hyf"/>
-                                </connections>
-                            </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PIJ-97-HAZ">
-                                <rect key="frame" x="69" y="430.5" width="241" height="0.0"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -165,13 +153,11 @@
                             <constraint firstItem="I9w-cx-QlY" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="22D-Yw-5lN"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="gSF-6R-gbh" secondAttribute="trailing" constant="10" id="2Ou-LZ-bi8"/>
                             <constraint firstItem="I9w-cx-QlY" firstAttribute="top" secondItem="C2a-jB-FVB" secondAttribute="bottom" constant="10" id="2g7-M8-2kL"/>
-                            <constraint firstItem="PIJ-97-HAZ" firstAttribute="centerY" secondItem="tmW-pC-mup" secondAttribute="centerY" id="2nu-C9-LUC"/>
                             <constraint firstItem="Dmu-fr-Dtf" firstAttribute="leading" secondItem="C2a-jB-FVB" secondAttribute="trailing" constant="10" id="4XN-rH-Gte"/>
                             <constraint firstItem="AVl-ZW-qt0" firstAttribute="centerY" secondItem="Uaq-hC-U4a" secondAttribute="centerY" id="7a6-NR-1eL"/>
                             <constraint firstItem="Jc0-7X-JuE" firstAttribute="leading" secondItem="JUR-Vj-yBU" secondAttribute="trailing" constant="10" id="7em-8z-JQY"/>
                             <constraint firstItem="gSF-6R-gbh" firstAttribute="leading" secondItem="I9w-cx-QlY" secondAttribute="trailing" constant="10" id="7o7-14-0zf"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Jc0-7X-JuE" secondAttribute="trailing" constant="10" id="8gW-Zv-r2i"/>
-                            <constraint firstItem="PIJ-97-HAZ" firstAttribute="leading" secondItem="tmW-pC-mup" secondAttribute="trailing" constant="10" id="CPI-et-epQ"/>
                             <constraint firstItem="5XA-n8-8l6" firstAttribute="centerY" secondItem="8xv-8Y-A50" secondAttribute="centerY" id="FJZ-6Q-Ozk"/>
                             <constraint firstItem="DFY-QC-J1R" firstAttribute="centerY" secondItem="LwF-26-oss" secondAttribute="centerY" id="HHZ-nb-ljA"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="DFY-QC-J1R" secondAttribute="trailing" constant="10" id="HVw-JZ-pxs"/>
@@ -181,7 +167,6 @@
                             <constraint firstItem="gSF-6R-gbh" firstAttribute="centerY" secondItem="I9w-cx-QlY" secondAttribute="centerY" id="Pve-wf-jna"/>
                             <constraint firstItem="DFY-QC-J1R" firstAttribute="leading" secondItem="LwF-26-oss" secondAttribute="trailing" constant="10" id="QRT-pf-6SQ"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="DoG-RI-jcO" secondAttribute="trailing" constant="10" id="QU9-5b-yb2"/>
-                            <constraint firstItem="tmW-pC-mup" firstAttribute="top" secondItem="Uaq-hC-U4a" secondAttribute="bottom" constant="15" id="RHt-Lb-9D8"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Dmu-fr-Dtf" secondAttribute="trailing" constant="10" id="Xcf-y2-1ic"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="5XA-n8-8l6" secondAttribute="trailing" constant="10" id="Xfw-0h-dgq"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="p7z-g7-hkV" secondAttribute="trailing" constant="10" id="YOZ-Wq-rX9"/>
@@ -195,9 +180,7 @@
                             <constraint firstItem="Jc0-7X-JuE" firstAttribute="centerY" secondItem="JUR-Vj-yBU" secondAttribute="centerY" id="fR6-2Q-pkZ"/>
                             <constraint firstItem="dOn-SY-wnl" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="gfe-aq-7nk"/>
                             <constraint firstItem="LwF-26-oss" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="hNZ-DW-g0s"/>
-                            <constraint firstItem="tmW-pC-mup" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="i3h-bE-HlW"/>
                             <constraint firstItem="Uaq-hC-U4a" firstAttribute="top" secondItem="LwF-26-oss" secondAttribute="bottom" constant="10" id="ih7-Kg-mhn"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="PIJ-97-HAZ" secondAttribute="trailing" constant="10" id="jDB-Wv-JES"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="AVl-ZW-qt0" secondAttribute="trailing" constant="10" id="kDH-fe-OjZ"/>
                             <constraint firstItem="Zr2-rF-YUt" firstAttribute="top" secondItem="JUR-Vj-yBU" secondAttribute="bottom" constant="10" id="kLH-Zl-k0m"/>
                             <constraint firstItem="LwF-26-oss" firstAttribute="top" secondItem="8xv-8Y-A50" secondAttribute="bottom" constant="10" id="oom-Ex-tY4"/>
@@ -210,8 +193,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="backgroundLabel" destination="PIJ-97-HAZ" id="kfR-8W-m8e"/>
-                        <outlet property="backgroundSwitch" destination="tmW-pC-mup" id="abs-rv-Xcm"/>
                         <outlet property="blackButton" destination="I9w-cx-QlY" id="lB1-aF-eee"/>
                         <outlet property="blackText" destination="gSF-6R-gbh" id="Jll-za-OcY"/>
                         <outlet property="blueButton" destination="C2a-jB-FVB" id="lIY-Ag-Nkv"/>

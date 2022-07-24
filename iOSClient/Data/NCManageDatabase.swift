@@ -871,7 +871,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func setDirectory(serverUrl: String, colorFolder: String?, colorBackground: String?, account: String) -> tableDirectory? {
+    @objc func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
 
         let realm = try! Realm()
         var result: tableDirectory?
@@ -880,7 +880,6 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.colorFolder = colorFolder
-                result?.colorBackground = colorBackground
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")

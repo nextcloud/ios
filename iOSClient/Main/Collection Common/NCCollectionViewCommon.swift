@@ -328,13 +328,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         view.backgroundColor = NCBrandColor.shared.systemBackground
         collectionView.backgroundColor = NCBrandColor.shared.systemBackground
         refreshControl.tintColor = .gray
-
-        // COLOR BACKGROUND
-        if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl)) {
-            if let colorBackground = tableDirectory.colorBackground, let color = UIColor(hex: colorBackground)  {
-                collectionView.backgroundColor = color
-            }
-        }
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {

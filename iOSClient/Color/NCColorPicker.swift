@@ -29,11 +29,7 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var grayText: UITextField!
     @IBOutlet weak var defaultLabel: UILabel!
 
-    @IBOutlet weak var backgroundSwitch: UISwitch!
-    @IBOutlet weak var backgroundLabel: UILabel!
-
     var metadata: tableMetadata?
-    var isBackgroundColor: Bool = false
 
     // MARK: - View Life Cycle
 
@@ -79,10 +75,6 @@ class NCColorPicker: UIViewController {
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
         defaultLabel.text = NSLocalizedString("_default_", comment: "")
-
-        backgroundSwitch.isOn = false
-        backgroundLabel.text = NSLocalizedString("_background_color_", comment: "")
-
     }
 
     @IBAction func orangeButtonAction(_ sender: UIButton) {
@@ -117,18 +109,10 @@ class NCColorPicker: UIViewController {
         updateColor(hexColor: NCBrandColor.shared.brandElement.hexString)
     }
 
-    @IBAction func backgroundSwitchAction(_ sender: UISwitch) {
-        isBackgroundColor = backgroundSwitch.isOn
-    }
-
     func updateColor(hexColor: String?) {
         if let metadata = metadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            var colorBackground: String?
-            if isBackgroundColor {
-                colorBackground = hexColor
-            }
-            if NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, colorBackground: colorBackground, account: metadata.account) != nil {
+            if NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) != nil {
                 self.dismiss(animated: true)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
             }
