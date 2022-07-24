@@ -1920,9 +1920,10 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     }
 }
 
-@available(iOS 14.0, *)
-extension NCCollectionViewCommon: UIColorPickerViewControllerDelegate {
+//@available(iOS 15.0, *)
+extension NCCollectionViewCommon: NCColorPickerDelegate {
 
+    /*
     func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
 
         if let metadata = menuMetadata {
@@ -1932,7 +1933,7 @@ extension NCCollectionViewCommon: UIColorPickerViewControllerDelegate {
                 reloadDataSource()
             }
         }
-        
     }
+    */
 }
 

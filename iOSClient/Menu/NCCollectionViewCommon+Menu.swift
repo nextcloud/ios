@@ -303,6 +303,28 @@ extension NCCollectionViewCommon {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
 
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_change_color_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "palette"),
+                    action: { _ in
+                        if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {
+
+                            picker.delegate = self
+                            if let colorFolderHex = tableDirectory?.colorFolder {
+                                picker.selectedColor = UIColor.init(hex: colorFolderHex)
+                            }
+                            picker.defaultColor = NCBrandColor.shared.brandElement
+
+                            let popup = NCPopupViewController(contentController: picker, popupWidth: 400, popupHeight: 400)
+                            popup.backgroundAlpha = 0
+
+                            self.present(popup, animated: true)
+                        }
+                    }
+                )
+            )
+            /*
             if tableDirectory?.colorFolder != nil {
                 actions.append(
                     NCMenuAction(
@@ -315,19 +337,9 @@ extension NCCollectionViewCommon {
                     )
                 )
             } else {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_change_color_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "palette"),
-                        action: { _ in
-                            let picker = UIColorPickerViewController()
-                            picker.delegate = self
-                            picker.supportsAlpha = false
-                            self.present(picker, animated: true, completion: nil)
-                        }
-                    )
-                )
+
             }
+            */
         }
         
         //
