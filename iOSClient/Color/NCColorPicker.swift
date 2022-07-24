@@ -106,7 +106,7 @@ class NCColorPicker: UIViewController {
     }
 
     @IBAction func defaultButtonAction(_ sender: UIButton) {
-        updateColor(hexColor: NCBrandColor.shared.brandElement.hexString)
+        updateColor(hexColor: nil)
     }
 
     func updateColor(hexColor: String?) {
