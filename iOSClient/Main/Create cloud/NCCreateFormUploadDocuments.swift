@@ -65,6 +65,10 @@ import XLForm
 
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+
         let cancelButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
 
@@ -75,31 +79,11 @@ import XLForm
         // title 
         self.title = titleForm
 
-        changeTheming()
-
         initializeForm()
-
-        // load the templates available
         getTemplate()
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
 
-        changeTheming()
-    }
-
-    // MARK: - Theming
-
-    func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
-
-        tableView.reloadData()
-        collectionView.reloadData()
-    }
 
     // MARK: - Tableview (XLForm)
 
@@ -149,6 +133,8 @@ import XLForm
         section.addFormRow(row)
 
         self.form = form
+        //tableView.reloadData()
+        //collectionView.reloadData()
     }
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {

@@ -95,9 +95,11 @@ class NCSharePaging: UIViewController {
         let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: indexPage.rawValue) as? PagingIndexItem
         self.title = pagingIndexItem?.title
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
-        changeTheming()
+
+        pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
+        (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
+        pagingViewController.reloadMenu()
     }
 
     func setupCapabilities() {
@@ -156,12 +158,6 @@ class NCSharePaging: UIViewController {
             width: self.view.bounds.width / CGFloat(NCGlobal.NCSharePagingIndex.allCases.count),
             height: 40)
         currentVC?.textField?.resignFirstResponder()
-    }
-
-    @objc func changeTheming() {
-        pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
-        (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
-        pagingViewController.reloadMenu()
     }
 
     // MARK: - Keyboard & TextField

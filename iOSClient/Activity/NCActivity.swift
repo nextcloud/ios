@@ -68,10 +68,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
         tableView.contentInset = insets
         tableView.backgroundColor = NCBrandColor.shared.systemBackground
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
-
         if showComments {
             setupComments()
         }
@@ -124,10 +120,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
     @objc func initialize() {
         loadDataSource()
         fetchAll(isInitial: true)
-    }
-
-    @objc func changeTheming() {
-        tableView.reloadData()
     }
 
     func makeTableFooterView() -> UIView {

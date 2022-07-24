@@ -66,6 +66,9 @@ class NCAccountRequest: UIViewController {
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
+        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+
         progressView.trackTintColor = .clear
         progressView.progress = 1
         if enableTimerProgress {
@@ -76,8 +79,6 @@ class NCAccountRequest: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-
-        changeTheming()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -100,22 +101,6 @@ class NCAccountRequest: UIViewController {
         super.viewWillDisappear(animated)
 
         timer?.invalidate()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
-    }
-
-    // MARK: - Theming
-
-    @objc func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-
-        tableView.reloadData()
     }
 
     // MARK: - Action

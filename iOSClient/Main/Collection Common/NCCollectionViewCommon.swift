@@ -91,6 +91,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         collectionView.alwaysBounceVertical = true
 
+        // Color
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        refreshControl.tintColor = .gray
+
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
             searchController?.searchResultsUpdater = self
@@ -152,7 +157,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(initialize(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -267,12 +272,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return true
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        // Toggle Appearance
-        changeTheming()
-    }
-
     // MARK: - NotificationCenter
 
     @objc func initialize(_ notification: NSNotification) {
@@ -317,17 +316,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationItem()
     }
 
-    @objc func changeThemingWithReloadData() {
-
-        changeTheming()
-        collectionView.reloadData()
-    }
-    
     @objc func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
-        refreshControl.tintColor = .gray
+        collectionView.reloadData()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {

@@ -92,11 +92,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.indexPage == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
-
-        // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
     }
 
     func makeNewLinkShare() {
@@ -175,10 +170,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     @objc func openShareProfile() {
         guard let metadata = metadata else { return }
         self.showProfileMenu(userId: metadata.ownerId)
-    }
-
-    @objc func changeTheming() {
-        tableView.reloadData()
     }
 
     // MARK: -

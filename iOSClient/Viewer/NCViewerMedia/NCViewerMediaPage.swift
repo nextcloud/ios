@@ -83,7 +83,6 @@ class NCViewerMediaPage: UIViewController {
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
 
         progressView.tintColor = NCBrandColor.shared.brandElement
@@ -293,9 +292,6 @@ class NCViewerMediaPage: UIViewController {
         if metadatas.firstIndex(where: {$0.ocId == ocId}) != nil {
             deleteFile(notification)
         }
-    }
-
-    @objc func changeTheming() {
     }
 
     @objc func hidePlayerToolBar(_ notification: NSNotification) {

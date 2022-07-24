@@ -49,10 +49,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         // Empty
         let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
         emptyDataSet = NCEmptyDataSet(view: tableView, offset: -offset, delegate: self)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -84,10 +80,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     @objc func initialize() {
         getNetwokingNotification()
-    }
-
-    @objc func changeTheming() {
-        tableView.reloadData()
     }
 
     // MARK: - Empty
