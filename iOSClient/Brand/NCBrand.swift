@@ -169,6 +169,52 @@ class NCBrandColor: NSObject {
         }
     }
 
+    @objc public var systemBlue: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemBlue
+            } else {
+                return UIColor(red: 0.0, green: 122.0 / 255.0, blue: 1.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemIndigo: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemIndigo
+            } else {
+                return UIColor(red: 88.0 / 255.0, green: 86.0 / 255.0, blue: 214.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemPink: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemPink
+            } else {
+                return UIColor(red: 1.0, green: 45.0 / 255.0, blue: 85.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemTeal: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemTeal
+            } else {
+                return UIColor(red: 90.0 / 255.0, green: 200.0 / 255.0, blue: 250.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemMint: UIColor {
+        get {
+            return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
+        }
+    }
+
     @objc public var systemBackground: UIColor {
         get {
             if #available(iOS 13, *) {

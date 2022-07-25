@@ -23,11 +23,11 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var cyanButton: UIButton!
     @IBOutlet weak var yellowButton: UIButton!
 
-    @IBOutlet weak var indingoButton: UIButton!
-    @IBOutlet weak var mintButton: UIButton!
-    @IBOutlet weak var pinkButton: UIButton!
-    @IBOutlet weak var tealButton: UIButton!
-    @IBOutlet weak var systemblueButton: UIButton!
+    @IBOutlet weak var systemIndigoButton: UIButton!
+    @IBOutlet weak var systemMintButton: UIButton!
+    @IBOutlet weak var systemPinkButton: UIButton!
+    @IBOutlet weak var systemTealButton: UIButton!
+    @IBOutlet weak var systemBlueButton: UIButton!
 
     @IBOutlet weak var defaultButton: UIButton!
 
@@ -79,6 +79,26 @@ class NCColorPicker: UIViewController {
         yellowButton.layer.cornerRadius = 5
         yellowButton.layer.masksToBounds = true
 
+        systemBlueButton.backgroundColor = NCBrandColor.shared.systemBlue
+        systemBlueButton.layer.cornerRadius = 5
+        systemBlueButton.layer.masksToBounds = true
+
+        systemMintButton.backgroundColor = NCBrandColor.shared.systemMint
+        systemMintButton.layer.cornerRadius = 5
+        systemMintButton.layer.masksToBounds = true
+
+        systemPinkButton.backgroundColor = NCBrandColor.shared.systemPink
+        systemPinkButton.layer.cornerRadius = 5
+        systemPinkButton.layer.masksToBounds = true
+
+        systemTealButton.backgroundColor = NCBrandColor.shared.systemTeal
+        systemTealButton.layer.cornerRadius = 5
+        systemTealButton.layer.masksToBounds = true
+
+        systemIndigoButton.backgroundColor = NCBrandColor.shared.systemIndigo
+        systemIndigoButton.layer.cornerRadius = 5
+        systemIndigoButton.layer.masksToBounds = true
+
         defaultButton.backgroundColor = NCBrandColor.shared.brandElement
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
@@ -126,6 +146,26 @@ class NCColorPicker: UIViewController {
 
     @IBAction func yellowButtonAction(_ sender: AnyObject) {
         updateColor(hexColor: UIColor.yellow.hexString)
+    }
+
+    @IBAction func systemIndigoButtonAction(_ sender: AnyObject) {
+        updateColor(hexColor: NCBrandColor.shared.systemIndigo.hexString)
+    }
+
+    @IBAction func systemMintButtonAction(_ sender: AnyObject) {
+        updateColor(hexColor: NCBrandColor.shared.systemMint.hexString)
+    }
+
+    @IBAction func systemPinkButtonAction(_ sender: AnyObject) {
+        updateColor(hexColor: NCBrandColor.shared.systemPink.hexString)
+    }
+
+    @IBAction func systemTealButtonAction(_ sender: AnyObject) {
+        updateColor(hexColor: NCBrandColor.shared.systemTeal.hexString)
+    }
+
+    @IBAction func systemBlueButtonAction(_ sender: AnyObject) {
+        updateColor(hexColor: NCBrandColor.shared.systemBlue.hexString)
     }
 
     @IBAction func defaultButtonAction(_ sender: AnyObject) {

@@ -305,7 +305,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {
                             picker.metadata = metadata
-                            let popup = NCPopupViewController(contentController: picker, popupWidth: 150, popupHeight: 320)
+                            let popup = NCPopupViewController(contentController: picker, popupWidth: 200, popupHeight: 320)
                             popup.backgroundAlpha = 0
                             self.present(popup, animated: true)
                         }
