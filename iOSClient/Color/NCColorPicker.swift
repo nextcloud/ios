@@ -102,8 +102,6 @@ class NCColorPicker: UIViewController {
         defaultButton.backgroundColor = NCBrandColor.shared.brandElement
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
-        defaultButton.layer.borderColor = NCBrandColor.shared.label.cgColor
-        defaultButton.layer.borderWidth = 2
     }
 
     // MARK: - Action
