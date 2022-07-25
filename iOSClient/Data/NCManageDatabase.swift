@@ -700,23 +700,6 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
 
-    /*
-    @objc func addDirectoryRichWorkspace(ocId: String, richWorkspace: String?) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.safeWrite {
-                if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
-                    result.richWorkspace = richWorkspace
-                }
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    */
-
     @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
 
         let realm = try! Realm()
@@ -866,7 +849,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func setDirectory(richWorkspace: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
 
         let realm = try! Realm()
         var result: tableDirectory?
@@ -875,6 +858,28 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.richWorkspace = richWorkspace
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+
+        if let result = result {
+            return tableDirectory.init(value: result)
+        } else {
+            return nil
+        }
+    }
+
+    @discardableResult
+    @objc func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
+
+        let realm = try! Realm()
+        var result: tableDirectory?
+
+        do {
+            try realm.safeWrite {
+                result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
+                result?.colorFolder = colorFolder
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")

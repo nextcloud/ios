@@ -90,9 +90,6 @@ import UIKit
     @objc public var disable_request_account:           Bool = false
     @objc public var disable_log:                       Bool = false
 
-    @objc public var disable_background_color:          Bool = true
-    @objc public var disable_background_image:          Bool = true
-
     override init() {
 
         if folderBrandAutoUpload != "" {
@@ -169,6 +166,52 @@ class NCBrandColor: NSObject {
     @objc public var annotationColor: UIColor {
         get {
             return .systemBlue
+        }
+    }
+
+    @objc public var systemBlue: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemBlue
+            } else {
+                return UIColor(red: 0.0, green: 122.0 / 255.0, blue: 1.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemIndigo: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemIndigo
+            } else {
+                return UIColor(red: 88.0 / 255.0, green: 86.0 / 255.0, blue: 214.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemPink: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemPink
+            } else {
+                return UIColor(red: 1.0, green: 45.0 / 255.0, blue: 85.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemTeal: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemTeal
+            } else {
+                return UIColor(red: 90.0 / 255.0, green: 200.0 / 255.0, blue: 250.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemMint: UIColor {
+        get {
+            return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
         }
     }
 
@@ -348,22 +391,6 @@ class NCBrandColor: NSObject {
         brandText = customerText
     }
 
-    /*
-    func createColors() {
-        #if !EXTENSION
-        if let tableAccount = NCManageDatabase.shared.getActiveAccount() {
-            settingThemingColor(account: tableAccount.account)
-        } else {
-            createImagesThemingColor()
-        }
-        createUserColors()
-        #else
-        createImagesThemingColor()
-        createUserColors()
-        #endif
-    }
-    */
-    
     func createUserColors() {
         userColors = generateColors()
     }

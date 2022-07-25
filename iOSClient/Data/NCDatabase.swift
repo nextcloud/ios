@@ -85,10 +85,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var website = ""
     @objc dynamic var zip = ""
 
-    // COLOR Files
-    @objc dynamic var darkColorBackground = ""
-    @objc dynamic var lightColorBackground = ""
-
     // HC
     @objc dynamic var hcIsTrial: Bool = false
     @objc dynamic var hcTrialExpired: Bool = false
@@ -260,6 +256,7 @@ class tableDirectEditingEditors: Object {
 class tableDirectory: Object {
 
     @objc dynamic var account = ""
+    @objc dynamic var colorFolder: String?
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false

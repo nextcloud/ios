@@ -79,6 +79,11 @@ extension NCCreateFormUploadConflictDelegate {
         tableView.allowsSelection = false
         tableView.tableFooterView = UIView()
 
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+
         tableView.register(UINib(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
 
         if metadatasUploadInConflict.count == 1 {
@@ -117,27 +122,9 @@ extension NCCreateFormUploadConflictDelegate {
         blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(blurView)
 
-        changeTheming()
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.conflictDialog(fileCount: self.metadatasUploadInConflict.count)
         }
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
-    }
-
-    // MARK: - Theming
-
-    func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
     }
 
     // MARK: - ConflictDialog

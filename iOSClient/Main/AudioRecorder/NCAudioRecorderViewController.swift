@@ -54,7 +54,9 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         durationLabel.text = ""
         startStopLabel.text = NSLocalizedString("_voice_memo_start_", comment: "")
 
-        changeTheming()
+        view.backgroundColor = .clear
+        contentContainerView.backgroundColor = UIColor.lightGray
+        voiceRecordHUD.fillColor = UIColor.green
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -63,17 +65,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
-    }
-
-    // MARK: - Colors
-
-    func changeTheming() {
-
-        view.backgroundColor = .clear
-        contentContainerView.backgroundColor = UIColor.lightGray
-        voiceRecordHUD.fillColor = UIColor.green
     }
 
     // MARK: - Action

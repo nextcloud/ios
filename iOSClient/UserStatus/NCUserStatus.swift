@@ -77,6 +77,9 @@ class NCUserStatus: UIViewController {
 
         self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         onlineButton.layer.cornerRadius = 10
@@ -165,12 +168,6 @@ class NCUserStatus: UIViewController {
         getStatus()
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
-    }
-
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -191,16 +188,6 @@ class NCUserStatus: UIViewController {
                 }
             }
         }
-    }
-
-    // MARK: - Theming
-
-    @objc func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
-
-        tableView.reloadData()
     }
 
     // MARK: ACTION

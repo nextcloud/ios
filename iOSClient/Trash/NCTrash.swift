@@ -78,10 +78,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView + NCGlobal.shared.heightButtonsCommand, delegate: self)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
-
-        changeTheming()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -114,10 +111,6 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
-    }
-
-    @objc func changeTheming() {
-        collectionView.reloadData()
     }
 
     // MARK: - Empty

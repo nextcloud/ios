@@ -26,7 +26,7 @@ import Realm
 import NCCommunication
 import EasyTipView
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCBackgroundImageColorDelegate, NCSelectableNavigationView {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCSelectableNavigationView {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -91,6 +91,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         collectionView.alwaysBounceVertical = true
 
+        // Color
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        refreshControl.tintColor = .gray
+
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
             searchController?.searchResultsUpdater = self
@@ -152,7 +157,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(initialize(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeThemingWithReloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -258,19 +263,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: nil) { _ in
+        //coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView?.collectionViewLayout.invalidateLayout()
-        }
+            self.collectionView?.reloadData()
+        //}
     }
 
     override var canBecomeFirstResponder: Bool {
         return true
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        // Toggle Appearance
-        changeTheming()
     }
 
     // MARK: - NotificationCenter
@@ -317,49 +317,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationItem()
     }
 
-    @objc func changeThemingWithReloadData() {
-
-        changeTheming()
-        collectionView.reloadData()
-    }
-    
     @objc func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
-        refreshControl.tintColor = .gray
-
-        // IMAGE BACKGROUND
-        if let layoutForView = layoutForView, layoutForView.imageBackgroud != "" {
-            let imagePath = CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appBackground).path + "/" + layoutForView.imageBackgroud
-            do {
-                let data = try Data(contentsOf: URL(fileURLWithPath: imagePath))
-                if let image = UIImage(data: data) {
-                    backgroundImageView.image = image
-                    backgroundImageView.contentMode = .scaleToFill
-                    collectionView.backgroundView = backgroundImageView
-                }
-            } catch { }
-        } else {
-            backgroundImageView.image = nil
-            collectionView.backgroundView = nil
-        }
-
-        // COLOR BACKGROUND
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        if traitCollection.userInterfaceStyle == .dark {
-            if activeAccount?.darkColorBackground != "" {
-                collectionView.backgroundColor = UIColor(hex: activeAccount?.darkColorBackground ?? "")
-            } else {
-                collectionView.backgroundColor = NCBrandColor.shared.systemBackground
-            }
-        } else {
-           if activeAccount?.lightColorBackground != "" {
-                collectionView.backgroundColor = UIColor(hex: activeAccount?.lightColorBackground ?? "")
-            } else {
-                collectionView.backgroundColor = NCBrandColor.shared.systemBackground
-            }
-        }
+        collectionView.reloadData()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -735,22 +694,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return userAlias
     }
 
-    // MARK: - BackgroundImageColor Delegate
-
-    func colorPickerCancel() {
-        changeTheming()
-    }
-
-    func colorPickerWillChange(color: UIColor) {
-        collectionView.backgroundColor = color
-    }
-
-    func colorPickerDidChange(lightColor: String, darkColor: String) {
-
-        NCManageDatabase.shared.setAccountColorFiles(lightColorBackground: lightColor, darkColorBackground: darkColor)
-        changeTheming()
-    }
-
     // MARK: - Empty
 
     func emptyDataSetView(_ view: NCEmptyView) {
@@ -965,13 +908,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
 
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
-        /*
-        if #available(iOS 13.0, *) {
-            
-            let interaction = UIContextMenuInteraction(delegate: self)
-            self.view.addInteraction(interaction)
-        }
-        */
     }
 
     @available(iOS 13.0, *)
@@ -1002,11 +938,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if serverUrl != "" {
             listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
         }
-        if #available(iOS 13.0, *) {
-            if !NCBrandOptions.shared.disable_background_color {
-                listMenuItems.append(UIMenuItem(title: NSLocalizedString("_background_", comment: ""), action: #selector(backgroundFilesMenu)))
-            }
-        }
 
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
@@ -1024,34 +955,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return true
             }
         }
-
-        if #selector(backgroundFilesMenu) == action {
-            return true
-        }
-
         return false
     }
 
     @objc func pasteFilesMenu() {
         NCFunctionCenter.shared.pastePasteboard(serverUrl: serverUrl)
-    }
-
-    @objc func backgroundFilesMenu() {
-
-        if let vcBackgroundImageColor = UIStoryboard(name: "NCBackgroundImageColor", bundle: nil).instantiateInitialViewController() as? NCBackgroundImageColor {
-
-            vcBackgroundImageColor.delegate = self
-            vcBackgroundImageColor.setupColor = collectionView.backgroundColor
-            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-                vcBackgroundImageColor.lightColor = activeAccount.lightColorBackground
-                vcBackgroundImageColor.darkColor = activeAccount.darkColorBackground
-            }
-
-            let popup = NCPopupViewController(contentController: vcBackgroundImageColor, popupWidth: vcBackgroundImageColor.width, popupHeight: vcBackgroundImageColor.height)
-            popup.backgroundAlpha = 0
-
-            self.present(popup, animated: true)
-        }
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1171,7 +1079,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             if let metadataFolder = metadataFolder {
-                tableDirectory = NCManageDatabase.shared.setDirectory(richWorkspace: metadataFolder.richWorkspace, serverUrl: self.serverUrl, account: account)
+                tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             }
             if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription in
@@ -1554,6 +1462,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
         let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
+        let tableDirectory = dataSource.metadatasForSection[indexPath.section].directories?.filter({ $0.ocId == metadata.ocId }).first
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -1626,13 +1535,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folder
             }
 
-            let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-            let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
-
             // Local image: offline
-            if tableDirectory != nil && tableDirectory!.offline {
+            if let tableDirectory = tableDirectory, tableDirectory.offline {
                 cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
             }
+
+            // color folder
+            cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tableDirectory: tableDirectory)
 
         } else {
 

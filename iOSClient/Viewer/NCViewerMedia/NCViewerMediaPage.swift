@@ -83,7 +83,6 @@ class NCViewerMediaPage: UIViewController {
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
 
         progressView.tintColor = NCBrandColor.shared.brandElement
@@ -295,9 +294,6 @@ class NCViewerMediaPage: UIViewController {
         }
     }
 
-    @objc func changeTheming() {
-    }
-
     @objc func hidePlayerToolBar(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
@@ -377,26 +373,6 @@ class NCViewerMediaPage: UIViewController {
                 return.success
             }
         }
-
-        // AUDIO < >
-        /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                        
-            MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
-            appDelegate.nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
-                
-                self.forward()
-                return .success
-            }
-            
-            MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
-            appDelegate.previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
-             
-                self.backward()
-                return .success
-            }
-        }
-        */
 
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds

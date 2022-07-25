@@ -55,7 +55,10 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
-        // title
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
 
         // Button Play Stop
@@ -68,8 +71,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         labelTimer.textColor = NCBrandColor.shared.label
         labelDuration.textColor = NCBrandColor.shared.label
-
-        changeTheming()
 
         initializeForm()
     }
@@ -86,23 +87,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         if audioPlayer.isPlaying {
             stop()
         }
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
-    }
-
-    // MARK: - Theming
-
-    @objc func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
-
-        tableView.reloadData()
     }
 
     public func setup(serverUrl: String, fileNamePath: String, fileName: String) {

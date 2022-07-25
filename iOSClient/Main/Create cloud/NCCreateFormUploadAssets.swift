@@ -79,6 +79,10 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
         self.title = NSLocalizedString("_upload_photos_videos_", comment: "")
 
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
 
@@ -90,8 +94,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             })
         }
 
-        changeTheming()
-
         initializeForm()
         reloadForm()
     }
@@ -100,23 +102,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         super.viewWillDisappear(animated)
 
         self.delegate?.dismissFormUploadAssets()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
-    }
-
-    // MARK: - Theming
-
-    func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
-
-        tableView.reloadData()
     }
 
     // MARK: XLForm
@@ -334,26 +319,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             self.updateFormRow(row)
         }
     }
-
-    /*
-    func save() {
-        
-        self.dismiss(animated: true, completion: {
-            
-            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
-            let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
-            var useSubFolder : Bool = false
-            
-            if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
-                
-                self.serverUrl = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
-                useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
-            }
-            
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
-        })
-    }
-    */
 
     @objc func save() {
 

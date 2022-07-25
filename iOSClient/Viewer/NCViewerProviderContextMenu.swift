@@ -58,7 +58,7 @@ class NCViewerProviderContextMenu: UIViewController {
                 imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
             }
 
-            imageView.image = imageFolder
+            imageView.image = imageFolder.colorizeFolder(metadata: metadata)
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
 
         } else {

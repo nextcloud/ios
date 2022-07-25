@@ -436,6 +436,7 @@ class NCMetadataForSection: NSObject {
     public var totalSize: Int64 = 0
     public var metadataShare: [String: tableShare] = [:]
     public var metadataOffLine: [String] = []
+    public var directories: [tableDirectory]?
 
     init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], localFiles: [tableLocalFile], lastSearchResult: NCCSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
 
@@ -470,6 +471,8 @@ class NCMetadataForSection: NSObject {
         numDirectory = 0
         numFile = 0
         totalSize = 0
+
+        var ocIds: [String] = []
 
         // Metadata order
         //
@@ -548,12 +551,15 @@ class NCMetadataForSection: NSObject {
 
             //Info
             if metadata.directory {
+                ocIds.append(metadata.ocId)
                 numDirectory += 1
             } else {
                 numFile += 1
                 totalSize += metadata.size
             }
         }
+
+        directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "ocId IN %@", ocIds), sorted: "serverUrl", ascending: true)
 
         metadatas.removeAll()
 

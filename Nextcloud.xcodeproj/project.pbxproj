@@ -107,8 +107,6 @@
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */; };
 		F70A58C024D0545100DED00D /* NCCapabilitiesViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */; };
-		F70B866D2642A21300ED5349 /* NCBackgroundImageColor.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70B866B2642A21300ED5349 /* NCBackgroundImageColor.storyboard */; };
-		F70B866E2642A21300ED5349 /* NCBackgroundImageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70B866C2642A21300ED5349 /* NCBackgroundImageColor.swift */; };
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -144,8 +142,9 @@
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
 		F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */; };
+		F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F719D9DF288D37A300762E33 /* NCColorPicker.storyboard */; };
+		F719D9E2288D396100762E33 /* NCColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F719D9E1288D396100762E33 /* NCColorPicker.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
-		F7233B3A27835FA400F40A43 /* ChromaColorPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F7233B3927835FA400F40A43 /* ChromaColorPicker */; };
 		F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */; };
 		F7239871253D86B600257F49 /* NCEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmptyDataSet.swift */; };
 		F7239877253D86D300257F49 /* NCEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7239876253D86D300257F49 /* NCEmptyView.xib */; };
@@ -580,8 +579,6 @@
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCapabilitiesViewController.swift; sourceTree = "<group>"; };
 		F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCapabilitiesViewController.storyboard; sourceTree = "<group>"; };
-		F70B866B2642A21300ED5349 /* NCBackgroundImageColor.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCBackgroundImageColor.storyboard; sourceTree = "<group>"; };
-		F70B866C2642A21300ED5349 /* NCBackgroundImageColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBackgroundImageColor.swift; sourceTree = "<group>"; };
 		F70B866F2642CA9500ED5349 /* ChromaColorPicker.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ChromaColorPicker.xcframework; path = Carthage/Build/ChromaColorPicker.xcframework; sourceTree = "<group>"; };
 		F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = KTVHTTPCache.xcframework; path = Carthage/Build/KTVHTTPCache.xcframework; sourceTree = "<group>"; };
 		F70B867A2642CF5300ED5349 /* TLPhotoPicker.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TLPhotoPicker.xcframework; path = Carthage/Build/TLPhotoPicker.xcframework; sourceTree = "<group>"; };
@@ -637,6 +634,8 @@
 		F7176DB9256672640017E83C /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = Carthage/Build/iOS/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
 		F7176DDA256672D90017E83C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerMediaDetailView.swift; sourceTree = "<group>"; };
+		F719D9DF288D37A300762E33 /* NCColorPicker.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCColorPicker.storyboard; sourceTree = "<group>"; };
+		F719D9E1288D396100762E33 /* NCColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCColorPicker.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocument.storyboard; sourceTree = "<group>"; };
 		F7239870253D86B600257F49 /* NCEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEmptyDataSet.swift; sourceTree = "<group>"; };
@@ -1006,7 +1005,6 @@
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
-				F7233B3A27835FA400F40A43 /* ChromaColorPicker in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F7E572FD278F146C00F8C99E /* OpenSSL.xcframework in Frameworks */,
@@ -1131,13 +1129,13 @@
 			path = languages;
 			sourceTree = "<group>";
 		};
-		F70B866A2642A21300ED5349 /* BackgroundImageColor */ = {
+		F70B866A2642A21300ED5349 /* Color */ = {
 			isa = PBXGroup;
 			children = (
-				F70B866B2642A21300ED5349 /* NCBackgroundImageColor.storyboard */,
-				F70B866C2642A21300ED5349 /* NCBackgroundImageColor.swift */,
+				F719D9DF288D37A300762E33 /* NCColorPicker.storyboard */,
+				F719D9E1288D396100762E33 /* NCColorPicker.swift */,
 			);
-			path = BackgroundImageColor;
+			path = Color;
 			sourceTree = "<group>";
 		};
 		F70D87CC25EE6E58008CBBBD /* Rename file */ = {
@@ -1765,8 +1763,8 @@
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7CA213725F1372B00826ABB /* Account Request */,
 				F7A321621E9E37960069AD1B /* Activity */,
-				F70B866A2642A21300ED5349 /* BackgroundImageColor */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
+				F70B866A2642A21300ED5349 /* Color */,
 				F7BAAD951ED5A63D00B7EAD4 /* Data */,
 				F73FAEE224D2CA830090692E /* Diagnostics */,
 				F723986F253D867900257F49 /* EmptyView */,
@@ -2070,7 +2068,6 @@
 				F76DA96E277B78AE0082465B /* TLPhotoPicker */,
 				F710FC79277B7D0000AA9FBF /* Realm */,
 				F710FC7B277B7D0000AA9FBF /* RealmSwift */,
-				F7233B3927835FA400F40A43 /* ChromaColorPicker */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F758A01127A7F03E0069468B /* JGProgressHUD */,
 				F753BA92281FD8020015BFB6 /* EasyTipView */,
@@ -2194,7 +2191,6 @@
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
 				F76DA96D277B78AE0082465B /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
-				F7233B3827835FA300F40A43 /* XCRemoteSwiftPackageReference "ChromaColorPicker" */,
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
 				F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */,
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
@@ -2314,6 +2310,7 @@
 				F749C10D23C4A5340027D966 /* NCIntro.storyboard in Resources */,
 				F7239877253D86D300257F49 /* NCEmptyView.xib in Resources */,
 				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
+				F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */,
 				F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */,
 				F7F4F10A27ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
@@ -2332,7 +2329,6 @@
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F774264A22EB4D0000B23912 /* NCSearchUserDropDownCell.xib in Resources */,
 				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
-				F70B866D2642A21300ED5349 /* NCBackgroundImageColor.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
@@ -2526,7 +2522,6 @@
 				F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */,
 				F7F4F0F727ECDBA4008676F9 /* NCSubtitles.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
-				F70B866E2642A21300ED5349 /* NCBackgroundImageColor.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCFunctionCenter.swift in Sources */,
 				AF935067276B84E700BD078F /* NCMenu+FloatingPanel.swift in Sources */,
@@ -2614,6 +2609,7 @@
 				AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */,
 				F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
+				F719D9E2288D396100762E33 /* NCColorPicker.swift in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F79B646026CA661600838ACA /* UIControl+Extensions.swift in Sources */,
 				F7CA212D25F1333300826ABB /* NCAccountRequest.swift in Sources */,
@@ -2995,7 +2991,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3058,7 +3054,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3167,14 +3163,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 10.0.0;
-			};
-		};
-		F7233B3827835FA300F40A43 /* XCRemoteSwiftPackageReference "ChromaColorPicker" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/marinofaggiana/ChromaColorPicker";
-			requirement = {
-				branch = master;
-				kind = branch;
 			};
 		};
 		F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */ = {
@@ -3352,11 +3340,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7233B3927835FA400F40A43 /* ChromaColorPicker */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7233B3827835FA300F40A43 /* XCRemoteSwiftPackageReference "ChromaColorPicker" */;
-			productName = ChromaColorPicker;
 		};
 		F72CD01127A7E92400E59476 /* JGProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;

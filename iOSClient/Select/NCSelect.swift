@@ -95,6 +95,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.navigationController?.presentationController?.delegate = self
 
         view.backgroundColor = NCBrandColor.shared.systemBackground
+        selectCommandViewSelect?.separatorView.backgroundColor = NCBrandColor.shared.separator
 
         activeAccount = NCManageDatabase.shared.getActiveAccount()
 
@@ -156,11 +157,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             bottomContraint?.constant = 150
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
-
-        changeTheming()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -204,12 +202,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     // MARK: - NotificationCenter
-
-    @objc func changeTheming() {
-
-        collectionView.reloadData()
-        selectCommandViewSelect?.separatorView.backgroundColor = NCBrandColor.shared.separator
-    }
 
     @objc func createFolder(_ notification: NSNotification) {
 
@@ -460,16 +452,9 @@ extension NCSelect: UICollectionViewDataSource {
                 } else {
                     cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
+                cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
-
-                let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
-
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-                }
 
             } else {
 
@@ -561,14 +546,7 @@ extension NCSelect: UICollectionViewDataSource {
                 } else {
                     cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
-
-                let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
-
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-                }
+                cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
             } else {
 
