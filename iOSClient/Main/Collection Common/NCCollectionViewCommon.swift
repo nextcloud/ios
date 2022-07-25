@@ -1541,9 +1541,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
 
             // color folder
-            if let colorFolderHex = tableDirectory?.colorFolder, let color = UIColor(hex: colorFolderHex) {
-                cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.imageColor(color)
-            }
+            cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tableDirectory: tableDirectory)
 
         } else {
 
