@@ -12,6 +12,7 @@ import UIKit
 class NCColorPicker: UIViewController {
 
     @IBOutlet weak var closeButton: UIButton!
+    @IBOutlet weak var titleLabel: UILabel!
 
     @IBOutlet weak var orangeButton: UIButton!
     @IBOutlet weak var redButton: UIButton!
@@ -42,6 +43,7 @@ class NCColorPicker: UIViewController {
         view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
+        titleLabel.text = NSLocalizedString("_select_color_", comment: "")
 
         orangeButton.backgroundColor = .orange
         orangeButton.layer.cornerRadius = 5
