@@ -297,7 +297,7 @@ extension NCCollectionViewCommon {
         //
         // COLOR FOLDER
         //
-        if metadata.directory {
+        if self is NCFiles, metadata.directory {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
