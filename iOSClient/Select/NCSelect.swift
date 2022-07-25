@@ -452,16 +452,9 @@ extension NCSelect: UICollectionViewDataSource {
                 } else {
                     cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
+                cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
-
-                let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
-
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-                }
 
             } else {
 
@@ -553,14 +546,7 @@ extension NCSelect: UICollectionViewDataSource {
                 } else {
                     cell.imageItem.image = NCBrandColor.cacheImages.folder
                 }
-
-                let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
-
-                // Local image: offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
-                }
+                cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
             } else {
 

@@ -227,4 +227,13 @@ extension UIImage {
 
         return newImage
     }
+
+    func colorizeFolder(metadata: tableMetadata) -> UIImage {
+        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+        if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl)), let colorHex = tableDirectory.colorFolder, let color = UIColor(hex: colorHex) {
+            return self.imageColor(color)
+        } else {
+            return self
+        }
+    }
 }
