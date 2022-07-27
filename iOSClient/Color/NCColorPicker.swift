@@ -201,7 +201,7 @@ class NCColorPicker: UIViewController {
     }
 
     // MARK: -
-    
+
     func updateColor(hexColor: String?) {
         if let metadata = metadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
