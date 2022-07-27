@@ -27,13 +27,14 @@ class NCColorPicker: UIViewController {
     @IBOutlet weak var systemIndigoButton: UIButton!
     @IBOutlet weak var systemMintButton: UIButton!
     @IBOutlet weak var systemPinkButton: UIButton!
-    @IBOutlet weak var systemTealButton: UIButton!
     @IBOutlet weak var systemBlueButton: UIButton!
 
+    @IBOutlet weak var customButton: UIButton!
     @IBOutlet weak var defaultButton: UIButton!
 
     var metadata: tableMetadata?
     var tapAction: UITapGestureRecognizer?
+    var selectedColor: UIColor?
 
     // MARK: - View Life Cycle
 
@@ -41,6 +42,13 @@ class NCColorPicker: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+
+        if let metadata = metadata {
+            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+            if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl)), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
+                selectedColor = color
+            }
+        }
 
         closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
         titleLabel.text = NSLocalizedString("_select_color_", comment: "")
@@ -93,9 +101,18 @@ class NCColorPicker: UIViewController {
         systemPinkButton.layer.cornerRadius = 5
         systemPinkButton.layer.masksToBounds = true
 
-        systemTealButton.backgroundColor = NCBrandColor.shared.systemTeal
-        systemTealButton.layer.cornerRadius = 5
-        systemTealButton.layer.masksToBounds = true
+        if #available(iOS 14.0, *) {
+            customButton.setImage(UIImage(named: "rgb"), for: .normal)
+            if let selectedColor = selectedColor {
+                customButton.backgroundColor = selectedColor
+            } else {
+                customButton.backgroundColor = NCBrandColor.shared.systemBackground
+            }
+        } else {
+            customButton.backgroundColor = NCBrandColor.shared.systemTeal
+        }
+        customButton.layer.cornerRadius = 5
+        customButton.layer.masksToBounds = true
 
         systemIndigoButton.backgroundColor = NCBrandColor.shared.systemIndigo
         systemIndigoButton.layer.cornerRadius = 5
@@ -160,8 +177,19 @@ class NCColorPicker: UIViewController {
         updateColor(hexColor: NCBrandColor.shared.systemPink.hexString)
     }
 
-    @IBAction func systemTealButtonAction(_ sender: AnyObject) {
-        updateColor(hexColor: NCBrandColor.shared.systemTeal.hexString)
+    @IBAction func customButtonAction(_ sender: AnyObject) {
+
+        if #available(iOS 14.0, *) {
+            let picker = UIColorPickerViewController()
+            picker.delegate = self
+            picker.supportsAlpha = false
+            if let selectedColor = selectedColor {
+                picker.selectedColor = selectedColor
+            }
+            self.present(picker, animated: true, completion: nil)
+        } else {
+            updateColor(hexColor: NCBrandColor.shared.systemTeal.hexString)
+        }
     }
 
     @IBAction func systemBlueButtonAction(_ sender: AnyObject) {
@@ -181,5 +209,14 @@ class NCColorPicker: UIViewController {
             }
         }
         self.dismiss(animated: true)
+    }
+}
+
+@available(iOS 14.0, *)
+extension NCColorPicker: UIColorPickerViewControllerDelegate {
+
+    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+        let hexColor = viewController.selectedColor.hexString
+        updateColor(hexColor: hexColor)
     }
 }

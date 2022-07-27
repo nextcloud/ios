@@ -204,14 +204,13 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iB2-gu-3IO">
                                 <rect key="frame" x="145" y="210" width="40" height="40"/>
-                                <color key="backgroundColor" systemColor="labelColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="62A-PY-UZr"/>
                                     <constraint firstAttribute="height" constant="40" id="P8F-Uh-nef"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <connections>
-                                    <action selector="systemTealButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="2ye-Wz-wur"/>
+                                    <action selector="customButtonAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="sST-c5-Zap"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -260,6 +259,7 @@
                         <outlet property="blueButton" destination="C2a-jB-FVB" id="lIY-Ag-Nkv"/>
                         <outlet property="brownButton" destination="I9w-cx-QlY" id="b8T-np-0mw"/>
                         <outlet property="closeButton" destination="kwJ-4R-6nM" id="woU-Kz-IXU"/>
+                        <outlet property="customButton" destination="iB2-gu-3IO" id="Vtm-VH-D0l"/>
                         <outlet property="cyanButton" destination="OlH-Ak-sRA" id="26d-bc-OiU"/>
                         <outlet property="defaultButton" destination="Uaq-hC-U4a" id="t6X-aV-hPF"/>
                         <outlet property="grayButton" destination="LwF-26-oss" id="lzV-jY-LNd"/>
@@ -271,7 +271,6 @@
                         <outlet property="systemIndigoButton" destination="tt7-sI-TfL" id="tUi-Th-IDf"/>
                         <outlet property="systemMintButton" destination="Arw-up-GyD" id="gqG-tN-WiJ"/>
                         <outlet property="systemPinkButton" destination="I7I-Ed-32n" id="YzP-1f-nkJ"/>
-                        <outlet property="systemTealButton" destination="iB2-gu-3IO" id="S2F-rL-O44"/>
                         <outlet property="titleLabel" destination="8DH-gC-coa" id="k2U-jx-f6R"/>
                         <outlet property="yellowButton" destination="FU6-q8-9Iw" id="oAa-NT-Qhd"/>
                     </connections>
