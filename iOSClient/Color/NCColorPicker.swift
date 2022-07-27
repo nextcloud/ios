@@ -106,7 +106,7 @@ class NCColorPicker: UIViewController {
             if let selectedColor = selectedColor {
                 customButton.backgroundColor = selectedColor
             } else {
-                customButton.backgroundColor = NCBrandColor.shared.systemBackground
+                customButton.backgroundColor = NCBrandColor.shared.brandElement
             }
         } else {
             customButton.backgroundColor = NCBrandColor.shared.systemTeal
