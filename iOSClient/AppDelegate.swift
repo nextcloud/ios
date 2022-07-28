@@ -108,6 +108,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
+        // LOG Account
+        if let account = NCManageDatabase.shared.getActiveAccount() {
+            NCCommunicationCommon.shared.writeLog("Account active \(account.account)")
+            if CCUtility.getPassword(account.account).isEmpty {
+                NCCommunicationCommon.shared.writeLog("PASSWORD NOT FOUND for \(account.account)")
+            }
+        }
+
         // ITMS-90076: Potential Loss of Keychain Access
         if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty, NCUtility.shared.getVersionApp(withBuild: false).starts(with: "4.4") {
             errorITMS90076 = true
