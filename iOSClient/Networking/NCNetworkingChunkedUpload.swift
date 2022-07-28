@@ -41,11 +41,12 @@ extension NCNetworking {
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
-            NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
+            NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
             filesNames = NCCommunicationCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
             } else {
+                NCContentPresenter.shared.dismiss(after: 0)
                 NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorReadFile)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 return completion(uploadErrorCode, uploadErrorDescription)
@@ -56,6 +57,7 @@ extension NCNetworking {
 
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { errorCode, errorDescription in
 
+            NCContentPresenter.shared.dismiss(after: NCGlobal.shared.dismissAfterSecond)
             start()
 
             guard errorCode == 0 else {

@@ -165,6 +165,12 @@ class NCContentPresenter: NSObject {
         }
     }
 
+    func dismiss(after: TimeInterval) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + after) {
+            SwiftEntryKit.dismiss()
+        }
+    }
+
     // MARK: - Private
 
     private func getBackgroundColorFromType(_ type: messageType) -> UIColor {
