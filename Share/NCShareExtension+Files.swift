@@ -57,7 +57,7 @@ extension NCShareExtension {
     }
 
     @objc func didCreateFolder(_ notification: NSNotification) {
-        
+
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)

@@ -226,11 +226,11 @@ extension NCAccountRequest: UITableViewDataSource {
                    displayName: account.displayName,
                    userBaseUrl: account)
 
-            if account.alias != "" {
-                userLabel?.text = account.alias.uppercased()
-            } else {
+            if account.alias.isEmpty {
                 userLabel?.text = account.user.uppercased()
                 urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
+            } else {
+                userLabel?.text = account.alias.uppercased()
             }
 
             if account.active {
