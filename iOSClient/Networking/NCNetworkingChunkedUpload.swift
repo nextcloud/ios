@@ -41,6 +41,7 @@ extension NCNetworking {
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
+            NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
             filesNames = NCCommunicationCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
@@ -52,7 +53,6 @@ extension NCNetworking {
         } else {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         }
-        NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
 
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { errorCode, errorDescription in
 
@@ -144,9 +144,9 @@ extension NCNetworking {
             addCustomHeaders["X-OC-MTime"] = modificationDate
 
             // Calculate Assemble Timeout
-            let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3 min
-            let ASSEMBLE_TIME_MIN: Double       = 60                // 60s
-            let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30min
+            let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
+            let ASSEMBLE_TIME_MIN: Double       = 60                // 60 sec
+            let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30 min
             let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
 
             NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, timeout: timeout, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
