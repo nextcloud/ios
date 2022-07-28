@@ -19,40 +19,40 @@
                     <rect key="frame" x="0.0" y="0.0" width="551" height="50"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hie-dN-B9L">
-                            <rect key="frame" x="10" y="11" width="99" height="40"/>
+                            <rect key="frame" x="10" y="11" width="74" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="X1Q-Rt-PQI"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Button 1" image="buttonCreateFolder"/>
+                            <state key="normal" title="Button 1"/>
                             <connections>
                                 <action selector="touchUpInsideButton1:" destination="tys-A2-nDX" eventType="touchUpInside" id="n7r-8n-gT3"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cjh-je-E6h">
-                            <rect key="frame" x="119" y="11" width="101" height="40"/>
+                            <rect key="frame" x="94" y="11" width="76" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="Zjv-nS-ufy"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Button 2" image="buttonCreateFolder"/>
+                            <state key="normal" title="Button 2"/>
                             <connections>
                                 <action selector="touchUpInsideButton2:" destination="tys-A2-nDX" eventType="touchUpInside" id="hek-Xq-Lh2"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zta-tv-COt">
-                            <rect key="frame" x="230" y="11" width="101" height="40"/>
+                            <rect key="frame" x="180" y="11" width="76" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="Dm7-86-DVq"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="16" minY="0.0" maxX="8" maxY="0.0"/>
                             <inset key="imageEdgeInsets" minX="-8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Button 3" image="buttonCreateFolder"/>
+                            <state key="normal" title="Button 3"/>
                             <connections>
                                 <action selector="touchUpInsideButton3:" destination="tys-A2-nDX" eventType="touchUpInside" id="Krk-cP-Iq5"/>
                             </connections>
@@ -201,7 +201,6 @@
         </collectionReusableView>
     </objects>
     <resources>
-        <image name="buttonCreateFolder" width="25" height="25"/>
         <image name="moreBig" width="50" height="50"/>
         <image name="switchList" width="25" height="25"/>
         <systemColor name="darkTextColor">
