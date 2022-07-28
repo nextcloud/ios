@@ -142,7 +142,9 @@ extension NCNetworking {
             addCustomHeaders["X-OC-CTime"] = creationDate
             addCustomHeaders["X-OC-MTime"] = modificationDate
 
-            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
+            var timeout: TimeInterval = 60
+
+            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, timeout: timeout, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
 
                 NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
 
