@@ -34,6 +34,7 @@ extension NCNetworking {
         let chunkFolderPath = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/uploads/" + metadata.userId + "/" + chunkFolder
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let chunkSize = CCUtility.getChunkSize()
+        let fileSizeInGB = Double(metadata.size) / 1e9
 
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
@@ -142,7 +143,11 @@ extension NCNetworking {
             addCustomHeaders["X-OC-CTime"] = creationDate
             addCustomHeaders["X-OC-MTime"] = modificationDate
 
-            var timeout: TimeInterval = 60
+            // Calculate Assemble Timeout
+            let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3 min
+            let ASSEMBLE_TIME_MIN: Double       = 60                // 60s
+            let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30min
+            let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
 
             NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, timeout: timeout, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
 
