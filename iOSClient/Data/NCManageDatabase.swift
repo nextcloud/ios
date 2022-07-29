@@ -183,7 +183,7 @@ class NCManageDatabase: NSObject {
                         #if !EXTENSION
                         NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                         #endif
-                        NCCommunicationCommon.shared.writeLog("DATABASE ERROR: removed")
+                        NCCommunicationCommon.shared.writeLog("DATABASE CORRUPT: removed")
                         try FileManager.default.removeItem(at: databaseFileUrlPath)
                     } catch {}
                 }
@@ -206,7 +206,7 @@ class NCManageDatabase: NSObject {
                     #if !EXTENSION
                     NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                     #endif
-                    NCCommunicationCommon.shared.writeLog("DATABASE ERROR: removed")
+                    NCCommunicationCommon.shared.writeLog("DATABASE CORRUPT: removed")
                     try FileManager.default.removeItem(at: databaseFileUrlPath)
                 } catch {}
             }
