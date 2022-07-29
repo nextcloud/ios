@@ -34,16 +34,19 @@ extension NCNetworking {
         let chunkFolderPath = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/uploads/" + metadata.userId + "/" + chunkFolder
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let chunkSize = CCUtility.getChunkSize()
+        let fileSizeInGB = Double(metadata.size) / 1e9
 
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
+            NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
             filesNames = NCCommunicationCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
             } else {
+                NCContentPresenter.shared.dismiss(after: 0)
                 NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorReadFile)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 return completion(uploadErrorCode, uploadErrorDescription)
@@ -51,10 +54,10 @@ extension NCNetworking {
         } else {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         }
-        NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
 
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { errorCode, errorDescription in
 
+            NCContentPresenter.shared.dismiss(after: NCGlobal.shared.dismissAfterSecond)
             start()
 
             guard errorCode == 0 else {
@@ -142,7 +145,13 @@ extension NCNetworking {
             addCustomHeaders["X-OC-CTime"] = creationDate
             addCustomHeaders["X-OC-MTime"] = modificationDate
 
-            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
+            // Calculate Assemble Timeout
+            let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
+            let ASSEMBLE_TIME_MIN: Double       = 60                // 60 sec
+            let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30 min
+            let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
+
+            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, timeout: timeout, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
 
                 NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
 

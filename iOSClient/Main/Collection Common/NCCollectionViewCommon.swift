@@ -428,6 +428,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
 
+        reloadDataSource()
         pushMetadata(metadata)
     }
 

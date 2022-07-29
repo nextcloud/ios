@@ -38,11 +38,19 @@ class NCManageDatabase: NSObject {
     override init() {
 
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
-        let databaseFilePath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault)
+        let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault)
 
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let isAppex: Bool = bundlePathExtension == "appex"
+
+        if let databaseFilePath = databaseFileUrlPath?.path {
+            if FileManager.default.fileExists(atPath: databaseFilePath) {
+                NCCommunicationCommon.shared.writeLog("DATABASE FOUND in " + databaseFilePath)
+            } else {
+                NCCommunicationCommon.shared.writeLog("DATABASE NOT FOUND in " + databaseFilePath)
+            }
+        }
 
         // Disable file protection for directory DB
         // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
@@ -73,7 +81,7 @@ class NCManageDatabase: NSObject {
 
             let configCompact = Realm.Configuration(
 
-                fileURL: databaseFilePath,
+                fileURL: databaseFileUrlPath,
                 schemaVersion: NCGlobal.shared.databaseSchemaVersion,
 
                 migrationBlock: { migration, oldSchemaVersion in
@@ -170,12 +178,13 @@ class NCManageDatabase: NSObject {
             do {
                 _ = try Realm(configuration: configCompact)
             } catch {
-                if let databaseFilePath = databaseFilePath {
+                if let databaseFileUrlPath = databaseFileUrlPath {
                     do {
                         #if !EXTENSION
                         NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                         #endif
-                        try FileManager.default.removeItem(at: databaseFilePath)
+                        NCCommunicationCommon.shared.writeLog("DATABASE CORRUPT: removed")
+                        try FileManager.default.removeItem(at: databaseFileUrlPath)
                     } catch {}
                 }
             }
@@ -188,16 +197,17 @@ class NCManageDatabase: NSObject {
             Realm.Configuration.defaultConfiguration = config
         }
 
-        // Verify Database, if corrupr remove it
+        // Verify Database, if corrupt remove it
         do {
             _ = try Realm()
         } catch {
-            if let databaseFilePath = databaseFilePath {
+            if let databaseFileUrlPath = databaseFileUrlPath {
                 do {
                     #if !EXTENSION
                     NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                     #endif
-                    try FileManager.default.removeItem(at: databaseFilePath)
+                    NCCommunicationCommon.shared.writeLog("DATABASE CORRUPT: removed")
+                    try FileManager.default.removeItem(at: databaseFileUrlPath)
                 } catch {}
             }
         }

@@ -121,9 +121,9 @@ class NCShareExtension: UIViewController {
             NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
         }
         if isSimulatorOrTestFlight {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+            NCCommunicationCommon.shared.writeLog("Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+            NCCommunicationCommon.shared.writeLog("Start Share session with level \(levelLog) " + versionNextcloudiOS)
         }
 
         // Colors
