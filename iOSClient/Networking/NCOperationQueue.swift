@@ -32,7 +32,8 @@ import NCCommunication
     }()
 
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    private let deleteQueue = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
+    private let deleteQueue = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private let deleteQueueE2EE = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -79,13 +80,25 @@ import NCCommunication
     // MARK: - Delete file
 
     @objc func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
-        for operation in deleteQueue.operations as! [NCOperationDelete] {
-            if operation.metadata.ocId == metadata.ocId {
-                return
+
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        if isFolderEncrypted {
+            for operation in deleteQueueE2EE.operations as! [NCOperationDelete] {
+                if operation.metadata.ocId == metadata.ocId {
+                    return
+                }
             }
+            deleteQueueE2EE.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
+        } else {
+            for operation in deleteQueue.operations as! [NCOperationDelete] {
+                if operation.metadata.ocId == metadata.ocId {
+                    return
+                }
+            }
+            deleteQueue.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
         }
-        deleteQueue.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
     }
+
     @objc func deleteCancelAll() {
         deleteQueue.cancelAll()
     }
