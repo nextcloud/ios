@@ -2,9 +2,7 @@
 [![Releases](https://img.shields.io/github/release/nextcloud/ios.svg)](https://github.com/nextcloud/ios/releases/latest) [![Build](https://github.com/nextcloud/ios/actions/workflows/xcode.yml/badge.svg)](https://github.com/nextcloud/ios/actions/workflows/xcode.yml) [![SwiftLint](https://github.com/nextcloud/ios/actions/workflows/lint.yml/badge.svg)](https://github.com/nextcloud/ios/actions/workflows/lint.yml)
 [![irc](https://img.shields.io/badge/IRC-%23nextcloud--mobile%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-mobile)
 
-<img src="Animation.gif" 
-alt="Demo of the Nextcloud iOS files app"
-width="200" "height="400">
+<img src="Animation.gif" alt="Demo of the Nextcloud iOS files app" width="200" height="400">
 
 [<img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
 alt="Demo of the Nextcloud iOS files app"
