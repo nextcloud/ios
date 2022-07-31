@@ -465,7 +465,7 @@ class NCUtility: NSObject {
             
             let options = PHVideoRequestOptions()
             options.isNetworkAccessAllowed = true
-            options.version = PHVideoRequestOptionsVersion.original
+            options.version = PHVideoRequestOptionsVersion.current
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
                 if error != nil { return callCompletion(error: true) }
