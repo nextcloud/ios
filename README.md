@@ -8,7 +8,7 @@
 alt="Demo of the Nextcloud iOS files app"
 height="40">](https://itunes.apple.com/us/app/nextcloud/id1125420102)
 
-Check out https://nextcloud.com and follow us on [twitter.com/nextclouders](https://twitter.com/nextclouders) or [twitter.com/NextcloudiOS](https://twitter.com/NextcloudiOS)
+Check out https://nextcloud.com and follow us on [twitter.com/nextclouders](https://twitter.com/nextclouders)
 
 ## How to contribute
 If you want to [contribute](https://nextcloud.com/contribute/) to Nextcloud, you are very welcome:
