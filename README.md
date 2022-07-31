@@ -47,7 +47,7 @@ After forking a repository you have to build the dependencies. Dependencies are 
 Run
 
 ```
-carthage update --use-xcframeworks --platform iOS --cache-builds
+carthage update --use-xcframeworks --platform iOS
 ```
 to fetch and compile the dependencies.
 
