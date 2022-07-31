@@ -4,7 +4,7 @@
 
 <img src="Animation.gif" 
 alt="Demo of the Nextcloud iOS files app"
-height="400">
+width="200" "height="400">
 
 [<img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
 alt="Demo of the Nextcloud iOS files app"
