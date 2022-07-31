@@ -42,7 +42,7 @@ Easy starting points are also reviewing [pull requests](https://github.com/nextc
 
 #### Dependencies
 
-After forking a repository you have to build the dependencies. Dependencies are managed with Carthage version 0.37.0 or later. 
+After forking a repository you have to build the dependencies. Dependencies are managed with Carthage version 0.38.0 or later. 
 Run
 
 ```
