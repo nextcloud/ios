@@ -523,17 +523,6 @@ class NCMetadataForSection: NSObject {
                 metadataShare[metadata.ocId] = share
             }
 
-            // is Local / offline
-            if !metadata.directory, CCUtility.fileProviderStorageExists(metadata) {
-                let localFile = self.localFiles.filter({ $0.ocId == metadata.ocId }).first
-                if localFile == nil {
-                    NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                }
-                if localFile?.offline ?? false {
-                    metadataOffLine.append(metadata.ocId)
-                }
-            }
-
             // Organized the metadata
             if metadata.favorite && favoriteOnTop {
                 if metadata.directory {
