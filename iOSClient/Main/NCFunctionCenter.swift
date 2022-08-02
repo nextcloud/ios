@@ -458,11 +458,13 @@ import Photos
 
         var topNavigationController: UINavigationController?
         var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
+        var mostViewController = UIApplication.shared.keyWindow!.rootViewController!.topMostViewController()
 
-        let mostViewController = UIApplication.shared.keyWindow!.rootViewController!.topMostViewController()
-        let isPresented = mostViewController.presentedViewController
-
-        appDelegate.activeViewController?.navigationController?.popToRootViewController(animated: false)
+        if mostViewController.isModal {
+            mostViewController.dismiss(animated: false)
+            mostViewController = UIApplication.shared.keyWindow!.rootViewController!.topMostViewController()
+        }
+        mostViewController.navigationController?.popToRootViewController(animated: false)
         
         if let tabBarController = appDelegate.window?.rootViewController as? UITabBarController {
             tabBarController.selectedIndex = 0
