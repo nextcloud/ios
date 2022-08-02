@@ -1282,7 +1282,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             pushMetadata(metadata)
             
-        } else if !(self is NCFileViewInFolder) {
+        } else { //if !(self is NCFileViewInFolder) {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
