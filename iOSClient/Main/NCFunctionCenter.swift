@@ -454,12 +454,12 @@ import Photos
 
     // MARK: -
 
-    func openFileViewInFolder(viewController: UIViewController?, serverUrl: String, fileNameBlink: String?) {
+    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?) {
 
         var topNavigationController: UINavigationController?
         var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
 
-        viewController?.navigationController?.popToRootViewController(animated: false)
+        appDelegate.activeViewController?.navigationController?.popToRootViewController(animated: false)
         if let tabBarController = appDelegate.window?.rootViewController as? UITabBarController {
             tabBarController.selectedIndex = 0
             if let navigationController = tabBarController.viewControllers?.first as? UINavigationController {
@@ -634,7 +634,7 @@ import Photos
         }
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
-            self.openFileViewInFolder(viewController: viewController, serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName)
+            self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName)
         }
 
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in

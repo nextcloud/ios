@@ -865,7 +865,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
 
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            NCFunctionCenter.shared.openFileViewInFolder(viewController: self.activeViewController, serverUrl: serverUrl, fileNameBlink: fileName)
+                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: fileName)
                         }
 
                     } else {
