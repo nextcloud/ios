@@ -44,7 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var activeAppConfigView: NCAppConfigView?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
-    @objc var activeMedia: NCMedia?
     var activeServerUrl: String = ""
     @objc var activeViewController: UIViewController?
     var mainTabBar: NCMainTabBar?
