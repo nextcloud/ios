@@ -154,13 +154,7 @@ extension NCMenuAction {
             title: NSLocalizedString("_open_in_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
             action: { _ in
-                if viewController is NCFileViewInFolder {
-                    viewController.dismiss(animated: true) {
-                        NCFunctionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-                    }
-                } else {
-                    NCFunctionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
-                }
+                NCFunctionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
                 completion?()
             }
         )

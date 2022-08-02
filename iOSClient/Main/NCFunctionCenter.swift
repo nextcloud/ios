@@ -454,52 +454,7 @@ import Photos
 
     // MARK: -
 
-    /*
-    func openFileViewInFolder(serverUrl: String, fileName: String) {
-
-        let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
-        let navigationController = UINavigationController(rootViewController: viewController)
-
-        let topViewController = viewController
-        var listViewController = [NCFileViewInFolder]()
-        var serverUrl = serverUrl
-        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
-
-        while true {
-
-            var viewController: NCFileViewInFolder?
-            if serverUrl != homeUrl {
-                viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder
-                if viewController == nil {
-                    return
-                }
-                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
-            } else {
-                viewController = topViewController
-            }
-            guard let vc = viewController else { return }
-
-            vc.serverUrl = serverUrl
-            vc.fileName = fileName
-
-            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
-            listViewController.insert(vc, at: 0)
-
-            if serverUrl != homeUrl {
-                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: appDelegate.account, serverUrl: serverUrl)
-            } else {
-                break
-            }
-        }
-
-        navigationController.setViewControllers(listViewController, animated: false)
-        navigationController.modalPresentationStyle = .formSheet
-
-        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
-    }
-    */
-
-    func openFileViewInFolder(viewController: UIViewController?, serverUrl: String, fileName: String) {
+    func openFileViewInFolder(viewController: UIViewController?, serverUrl: String, fileNameBlink: String?) {
 
         var topNavigationController: UINavigationController?
         var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
@@ -512,19 +467,33 @@ import Photos
                 topNavigationController = navigationController
             }
         }
-        guard let topNavigationController = topNavigationController else { return}
+        if pushServerUrl == serverUrl {
+            let viewController = topNavigationController?.topViewController as? NCFiles
+            viewController?.blinkCell(fileName: fileNameBlink)
+            return
+        }
+        guard let topNavigationController = topNavigationController else { return }
 
-        while pushServerUrl != serverUrl {
+        let diffDirectory = serverUrl.replacingOccurrences(of: pushServerUrl, with: "")
+        var subDirs = diffDirectory.split(separator: "/")
 
-            guard let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles else { return }
-            pushServerUrl = pushServerUrl + "/" + fileName
-            viewController.isRoot = false
+        while pushServerUrl != serverUrl, subDirs.count > 0  {
+
+            guard let dir = subDirs.first, let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles else { return }
+            pushServerUrl = pushServerUrl + "/" + dir
+
             viewController.serverUrl = pushServerUrl
-            viewController.titleCurrentFolder = fileName
+            viewController.isRoot = false
+            viewController.titleCurrentFolder = String(dir)
+            if pushServerUrl == serverUrl {
+                viewController.fileNameBlink = fileNameBlink
+            }
             appDelegate.listFilesVC[serverUrl] = viewController
 
             viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
             topNavigationController.pushViewController(viewController, animated: false)
+
+            subDirs.remove(at: 0)
         }
     }
 
@@ -665,7 +634,7 @@ import Photos
         }
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
-            self.openFileViewInFolder(viewController: viewController, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            self.openFileViewInFolder(viewController: viewController, serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName)
         }
 
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in
