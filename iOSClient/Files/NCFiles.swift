@@ -34,7 +34,6 @@ class NCFiles: NCCollectionViewCommon {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
-        appDelegate.activeFiles = self
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true

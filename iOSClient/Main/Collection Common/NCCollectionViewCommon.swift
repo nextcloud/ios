@@ -883,7 +883,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
                 viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
                 viewerRichWorkspace.serverUrl = serverUrl
-
+                viewerRichWorkspace.delegate = self
+                
                 navigationController.modalPresentationStyle = .fullScreen
                 self.present(navigationController, animated: true, completion: nil)
             }

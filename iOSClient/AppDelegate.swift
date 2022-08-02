@@ -42,7 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var deletePasswordSession: Bool = false
     var activeAppConfigView: NCAppConfigView?
-    var activeFiles: NCFiles?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     @objc var activeMedia: NCMedia?

@@ -34,8 +34,9 @@ import MarkdownKit
     private var markdownParser = MarkdownParser()
     private var textViewColor: UIColor?
 
-    @objc public var richWorkspaceText: String = ""
-    @objc public var serverUrl: String = ""
+    var richWorkspaceText: String = ""
+    var serverUrl: String = ""
+    var delegate: NCCollectionViewCommon?
 
     // MARK: - View Life Cycle
 
@@ -66,7 +67,7 @@ import MarkdownKit
                 guard let metadata = metadata else { return }
                 NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                 if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
-                    self.appDelegate.activeFiles?.richWorkspaceText = self.richWorkspaceText
+                    self.delegate?.richWorkspaceText = self.richWorkspaceText
                     self.richWorkspaceText = metadata.richWorkspace!
                     DispatchQueue.main.async {
                         self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
