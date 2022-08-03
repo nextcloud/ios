@@ -54,6 +54,12 @@ class NCFiles: NCCollectionViewCommon {
         super.viewWillAppear(animated)
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        fileNameBlink = nil
+    }
+
     // MARK: - NotificationCenter
 
     override func initialize(_ notification: NSNotification) {
@@ -112,8 +118,10 @@ class NCFiles: NCCollectionViewCommon {
 
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
-                self.blinkCell(fileName: self.fileNameBlink)
-                self.fileNameBlink = nil
+                if !self.dataSource.metadatas.isEmpty {
+                    self.blinkCell(fileName: self.fileNameBlink)
+                    self.fileNameBlink = nil
+                }
             }
         }
     }
@@ -141,7 +149,9 @@ class NCFiles: NCCollectionViewCommon {
             if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
                 self.reloadDataSource(forced: false)
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
-                DispatchQueue.main.async { self.collectionView.reloadData() }
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
             }
         }
     }
