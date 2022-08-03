@@ -373,4 +373,5 @@ class NCGlobal: NSObject {
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
+    let tipNCViewerMediaDetailView                              = "tipncviewermediadetailview"
 }

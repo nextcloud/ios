@@ -24,6 +24,8 @@
 import UIKit
 import SVGKit
 import NCCommunication
+import EasyTipView
+import SwiftUI
 
 class NCViewerMedia: UIViewController {
 
@@ -38,6 +40,7 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
 
     private var _autoPlay: Bool = false
+    private var tipView: EasyTipView?
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     weak var viewerMediaPage: NCViewerMediaPage?
@@ -111,7 +114,23 @@ class NCViewerMedia: UIViewController {
                 self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
             }
         }
-        
+
+        // TIP
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .top
+        preferences.drawing.cornerRadius = 10
+
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 0.5
+        preferences.animating.dismissDuration = 0
+
+        tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
+
         detailViewTopConstraint.constant = 0
         detailView.hide()
 
@@ -172,15 +191,24 @@ class NCViewerMedia: UIViewController {
             viewerMediaPage?.clearCommandCenter()
         }
 
+        // TIP
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
+            self.tipView?.show(forView: view)
+        }
+
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        self.tipView?.dismiss()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+
+        self.tipView?.dismiss()
 
         coordinator.animate(alongsideTransition: { context in
             // back to the original size
@@ -423,6 +451,8 @@ extension NCViewerMedia {
 
     private func openDetail() {
 
+        self.dismissTip()
+        
         CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
 
             if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
@@ -536,6 +566,21 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
     func downloadFullResolution() {
         closeDetail()
         NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _ in }
+    }
+}
+
+extension NCViewerMedia: EasyTipViewDelegate {
+
+    // TIP
+    func easyTipViewDidTap(_ tipView: EasyTipView) {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+    }
+
+    func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+
+    func dismissTip() {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        self.tipView?.dismiss()
     }
 }
 
