@@ -76,6 +76,7 @@ class NCViewerMedia: UIViewController {
     deinit {
         print("deinit NCViewerMedia")
 
+        self.tipView?.dismiss()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
