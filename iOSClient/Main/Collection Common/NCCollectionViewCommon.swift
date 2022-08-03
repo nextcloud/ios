@@ -883,7 +883,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
                 viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
                 viewerRichWorkspace.serverUrl = serverUrl
-
+                viewerRichWorkspace.delegate = self
+                
                 navigationController.modalPresentationStyle = .fullScreen
                 self.present(navigationController, animated: true, completion: nil)
             }
@@ -1214,18 +1215,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        // VIEW IN FOLDER
-        if layoutKey == NCGlobal.shared.layoutViewViewInFolder && !pushed {
-
-            if let viewController: NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder {
-
-                viewController.serverUrl = serverUrlPush
-                viewController.titleCurrentFolder = metadata.fileNameView
-
-                pushViewController(viewController: viewController)
-            }
-        }
-
         // SHARES ( for push use Files ... he he he )
         if layoutKey == NCGlobal.shared.layoutViewShares && !pushed {
 
@@ -1282,7 +1271,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             pushMetadata(metadata)
             
-        } else if !(self is NCFileViewInFolder) {
+        } else {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 

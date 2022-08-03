@@ -27,13 +27,13 @@ import NCCommunication
 class NCFiles: NCCollectionViewCommon {
 
     internal var isRoot: Bool = true
+    internal var fileNameBlink: String?
 
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
-        appDelegate.activeFiles = self
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
@@ -52,6 +52,12 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        fileNameBlink = nil
     }
 
     // MARK: - NotificationCenter
@@ -76,6 +82,7 @@ class NCFiles: NCCollectionViewCommon {
     //
     // forced: do no make the etag of directory test (default)
     //
+
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
@@ -92,7 +99,7 @@ class NCFiles: NCCollectionViewCommon {
             self.richWorkspaceText = directory?.richWorkspace
 
             // FORCED false: test the directory.etag
-            if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil {
+            if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil {
                 return
             }
 
@@ -109,7 +116,13 @@ class NCFiles: NCCollectionViewCommon {
                 providers: self.providers,
                 searchResults: self.searchResults)
 
-            DispatchQueue.main.async { self.collectionView.reloadData() }
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+                if !self.dataSource.metadatas.isEmpty {
+                    self.blinkCell(fileName: self.fileNameBlink)
+                    self.fileNameBlink = nil
+                }
+            }
         }
     }
 
@@ -136,7 +149,30 @@ class NCFiles: NCCollectionViewCommon {
             if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
                 self.reloadDataSource(forced: false)
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
-                DispatchQueue.main.async { self.collectionView.reloadData() }
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+
+    func blinkCell(fileName: String?) {
+
+        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, fileName)) {
+            let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+            if let indexPath = indexPath {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    UIView.animate(withDuration: 0.3) {
+                        self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+                    } completion: { _ in
+                        if let cell = self.collectionView.cellForItem(at: indexPath) {
+                            cell.backgroundColor = .darkGray
+                            UIView.animate(withDuration: 2) {
+                                cell.backgroundColor = .clear
+                            }
+                        }
+                    }
+                }
             }
         }
     }

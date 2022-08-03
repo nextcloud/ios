@@ -454,48 +454,57 @@ import Photos
 
     // MARK: -
 
-    func openFileViewInFolder(serverUrl: String, fileName: String) {
+    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?) {
 
-        let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
-        let navigationController = UINavigationController(rootViewController: viewController)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            var topNavigationController: UINavigationController?
+            var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: self.appDelegate.account)
+            var mostViewController = UIApplication.shared.keyWindow!.rootViewController!.topMostViewController()
 
-        let topViewController = viewController
-        var listViewController = [NCFileViewInFolder]()
-        var serverUrl = serverUrl
-        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
-
-        while true {
-
-            var viewController: NCFileViewInFolder?
-            if serverUrl != homeUrl {
-                viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder
-                if viewController == nil {
-                    return
-                }
-                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
-            } else {
-                viewController = topViewController
+            if mostViewController.isModal {
+                mostViewController.dismiss(animated: false)
+                mostViewController = UIApplication.shared.keyWindow!.rootViewController!.topMostViewController()
             }
-            guard let vc = viewController else { return }
+            mostViewController.navigationController?.popToRootViewController(animated: false)
 
-            vc.serverUrl = serverUrl
-            vc.fileName = fileName
+            if let tabBarController = self.appDelegate.window?.rootViewController as? UITabBarController {
+                tabBarController.selectedIndex = 0
+                if let navigationController = tabBarController.viewControllers?.first as? UINavigationController {
+                    navigationController.popToRootViewController(animated: false)
+                    topNavigationController = navigationController
+                }
+            }
+            if pushServerUrl == serverUrl {
+                let viewController = topNavigationController?.topViewController as? NCFiles
+                viewController?.blinkCell(fileName: fileNameBlink)
+                return
+            }
+            guard let topNavigationController = topNavigationController else { return }
 
-            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
-            listViewController.insert(vc, at: 0)
+            let diffDirectory = serverUrl.replacingOccurrences(of: pushServerUrl, with: "")
+            var subDirs = diffDirectory.split(separator: "/")
 
-            if serverUrl != homeUrl {
-                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: appDelegate.account, serverUrl: serverUrl)
-            } else {
-                break
+            while pushServerUrl != serverUrl, subDirs.count > 0  {
+
+                guard let dir = subDirs.first, let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles else { return }
+                pushServerUrl = pushServerUrl + "/" + dir
+
+                viewController.serverUrl = pushServerUrl
+                viewController.isRoot = false
+                viewController.titleCurrentFolder = String(dir)
+                if pushServerUrl == serverUrl {
+                    viewController.fileNameBlink = fileNameBlink
+                }
+                self.appDelegate.listFilesVC[serverUrl] = viewController
+
+                viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
+                topNavigationController.pushViewController(viewController, animated: false)
+
+                subDirs.remove(at: 0)
             }
         }
-
-        navigationController.setViewControllers(listViewController, animated: false)
-        navigationController.modalPresentationStyle = .formSheet
-
-        appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
+
 
     // MARK: - NCSelect + Delegate
 
@@ -633,7 +642,7 @@ import Photos
         }
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
-            self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName)
         }
 
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in

@@ -281,13 +281,7 @@ extension NCCollectionViewCommon {
                         title: NSLocalizedString("_modify_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                         action: { menuAction in
-                            if self is NCFileViewInFolder {
-                                self.dismiss(animated: true) {
-                                    NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-                                }
-                            } else {
-                                NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-                            }
+                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
                         }
                     )
                 )

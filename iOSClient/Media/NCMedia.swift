@@ -71,8 +71,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        appDelegate.activeMedia = self
-
         view.backgroundColor = NCBrandColor.shared.systemBackground
 
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
