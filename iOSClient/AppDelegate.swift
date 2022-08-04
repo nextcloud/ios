@@ -49,9 +49,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
 
-    var listFilesVC: [String: NCFiles] = [:]
-    var listFavoriteVC: [String: NCFavorite] = [:]
-    var listOfflineVC: [String: NCOffline] = [:]
+    let listFilesVC = ThreadSafeDictionary<String,NCFiles>()
+    let listFavoriteVC = ThreadSafeDictionary<String,NCFavorite>()
+    let listOfflineVC = ThreadSafeDictionary<String,NCOffline>()
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?

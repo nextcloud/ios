@@ -287,7 +287,7 @@ import Alamofire
 
                 }) { account, ocId, etag, date, _, _, error, errorCode, errorDescription in
 
-                    NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
+                    NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
                         if error?.isExplicitlyCancelledError ?? false {
 

@@ -125,7 +125,7 @@ class NCDataSource: NSObject {
 
         // Unified search
         if let providers = self.providers, !providers.isEmpty {
-            var sectionsDictionary: [String:Int] = [:]
+            let sectionsDictionary = ThreadSafeDictionary<String,Int>()
             for section in self.sectionsValue {
                 if let provider = providers.filter({ $0.name.lowercased() == section.lowercased()}).first {
                     sectionsDictionary[section] = provider.order
@@ -434,7 +434,7 @@ class NCMetadataForSection: NSObject {
     public var numDirectory: Int = 0
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
-    public var metadataShare: [String: tableShare] = [:]
+    public let metadataShare  = ThreadSafeDictionary<String,tableShare>()
     public var metadataOffLine: [String] = []
     public var directories: [tableDirectory]?
 
