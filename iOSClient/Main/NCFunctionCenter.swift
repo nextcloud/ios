@@ -179,7 +179,9 @@ import Photos
     func openShare(viewController: UIViewController, metadata: tableMetadata, indexPage: NCGlobal.NCSharePagingIndex) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: false)
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, queue: .main) { account, metadata, errorCode, errorDescription in
+            NCUtility.shared.stopActivityIndicator()
             if let metadata = metadata, errorCode == 0 {
                 let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
                 let shareViewController = shareNavigationController.topViewController as! NCSharePaging
