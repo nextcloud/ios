@@ -112,7 +112,7 @@ extension NCNetworking {
 
                 }) { _, _, _, _, _, _, _, errorCode, errorDescription in
 
-                    self.uploadRequest[fileNameLocalPath] = nil
+                    self.uploadRequest.removeValue(forKey: fileNameLocalPath)
                     uploadErrorCode = errorCode
                     uploadErrorDescription = errorDescription
                     semaphore.continue()

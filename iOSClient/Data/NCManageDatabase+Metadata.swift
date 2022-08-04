@@ -132,7 +132,7 @@ extension NCManageDatabase {
 
         var counter: Int = 0
         var isEncrypted: Bool = false
-        var listServerUrl: [String: Bool] = [:]
+        let listServerUrl = ThreadSafeDictionary<String,Bool>()
 
         var metadataFolder = tableMetadata()
         var metadataFolders: [tableMetadata] = []

@@ -75,6 +75,7 @@ class NCNetworkingProcessUpload: NSObject {
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
                         NCCommunicationCommon.shared.writeLog("PROCESS-UPLOAD find \(metadatas.count) items")
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
                     }
 
                     for metadata in metadatas {

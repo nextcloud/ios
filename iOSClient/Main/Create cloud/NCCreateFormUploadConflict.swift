@@ -60,7 +60,7 @@ extension NCCreateFormUploadConflictDelegate {
 
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
-    var fileNamesPath: [String: String] = [:]
+    let fileNamesPath = ThreadSafeDictionary<String,String>()
     var blurView: UIVisualEffectView!
 
     // MARK: - View Life Cycle

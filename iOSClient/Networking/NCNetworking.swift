@@ -45,9 +45,9 @@ import Photos
 
     var lastReachability: Bool = true
     var networkReachability: NCCommunicationCommon.typeReachability?
-    var downloadRequest: [String: DownloadRequest] = [:]
-    var uploadRequest: [String: UploadRequest] = [:]
-    var uploadMetadataInBackground: [String: tableMetadata] = [:]
+    let downloadRequest = ThreadSafeDictionary<String,DownloadRequest>()
+    let uploadRequest = ThreadSafeDictionary<String,UploadRequest>()
+    let uploadMetadataInBackground = ThreadSafeDictionary<String,tableMetadata>()
     
     @objc public let sessionMaximumConnectionsPerHost = 5
     @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
@@ -327,6 +327,7 @@ import Photos
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NCCommunicationCommon.shared.backgroundQueue, requestHandler: { request in
 
             self.downloadRequest[fileNameLocalPath] = request
+            self.downloadRequest.removeValue(forKey: fileNameLocalPath)
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile, userInfo: ["ocId":metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
@@ -448,7 +449,7 @@ import Photos
 
         }) { _, ocId, etag, date, size, _, _, errorCode, errorDescription in
 
-            self.uploadRequest[fileNameLocalPath] = nil
+            self.uploadRequest.removeValue(forKey: fileNameLocalPath)
             if let uploadTask = uploadTask {
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, errorCode: errorCode, errorDescription: errorDescription)
             }
@@ -556,7 +557,7 @@ import Photos
                 }
             }
 
-            self.uploadMetadataInBackground[fileName + serverUrl] = nil
+            self.uploadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
             self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
         }
     }
