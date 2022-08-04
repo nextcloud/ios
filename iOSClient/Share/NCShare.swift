@@ -185,6 +185,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     @IBAction func searchFieldDidEndOnExit(textField: UITextField) {
         guard let searchString = textField.text, !searchString.isEmpty else { return }
+        if searchString.contains("@"), !NCUtility.shared.isValidEmail(searchString) { return }
         networking?.getSharees(searchString: searchString)
     }
 
