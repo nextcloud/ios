@@ -28,7 +28,6 @@ class NCMainTabBar: UITabBar {
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var timer: Timer?
 
     public var menuRect: CGRect {
         get {
@@ -45,10 +44,17 @@ class NCMainTabBar: UITabBar {
         super.init(coder: coder)
 
         appDelegate.mainTabBar = self
-        timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: (#selector(updateBadgeNumber)), userInfo: nil, repeats: true)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
+        
 
         barTintColor = NCBrandColor.shared.secondarySystemBackground
         backgroundColor = NCBrandColor.shared.secondarySystemBackground
@@ -211,15 +217,13 @@ class NCMainTabBar: UITabBar {
     @objc func updateBadgeNumber() {
         guard !appDelegate.account.isEmpty else { return }
 
-        let counterDownload = NCOperationQueue.shared.downloadQueueCount()
         let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
-        let total = counterDownload + counterUpload
 
-        UIApplication.shared.applicationIconBadgeNumber = total
+        UIApplication.shared.applicationIconBadgeNumber = counterUpload
 
         if let item = items?[0] {
-            if total > 0 {
-                item.badgeValue = String(total)
+            if counterUpload > 0 {
+                item.badgeValue = String(counterUpload)
             } else {
                 item.badgeValue = nil
             }
