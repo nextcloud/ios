@@ -755,7 +755,9 @@
     
     NSError *error = nil;
     BOOL success = [URL setResourceValue:[NSNumber numberWithBool: YES] forKey: NSURLIsExcludedFromBackupKey error: &error];
-    if(!success){
+    if(success) {
+        NSLog(@"Excluding %@ from backup", [URL lastPathComponent]);
+    } else {
         NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
     }
     
@@ -1034,17 +1036,15 @@
     path = NSTemporaryDirectory();
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory Background
-    path = [[dirGroup URLByAppendingPathComponent:NCGlobal.shared.appBackground] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
+
     // Directory Excluded From Backup
     [CCUtility addSkipBackupAttributeToItemAtURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
     [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.directoryProviderStorage]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appCertificates]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appDatabaseNextcloud]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appScan]];
     [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appUserData]];
-    
+
     #ifdef DEBUG
     NSLog(@"[LOG] Copy DB on Documents directory");
     NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:[[NCGlobal shared] appDatabaseNextcloud]] path]];
