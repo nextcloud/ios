@@ -83,13 +83,12 @@ class NCGlobal: NSObject {
 
     // Directory on Group
     //
-    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
-    @objc let appApplicationSupport                 = "Library/Application Support"
-    @objc let appUserData                           = "Library/Application Support/UserData"
-    @objc let appCertificates                       = "Library/Application Support/Certificates"
-    @objc let appScan                               = "Library/Application Support/Scan"
-    @objc let appBackground                         = "Library/Application Support/Background"
     @objc let directoryProviderStorage              = "File Provider Storage"
+    @objc let appApplicationSupport                 = "Library/Application Support"
+    @objc let appCertificates                       = "Library/Application Support/Certificates"
+    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
+    @objc let appScan                               = "Library/Application Support/Scan"
+    @objc let appUserData                           = "Library/Application Support/UserData"
 
     // Service
     //
@@ -99,6 +98,7 @@ class NCGlobal: NSObject {
     let processingTask                              = "com.nextcloud.processingTask"
 
     // Name
+    //
     @objc let appName                               = "files"
     
     // Nextcloud version
@@ -209,6 +209,7 @@ class NCGlobal: NSObject {
     let fileNameRichWorkspace                       = "Readme.md"
 
     // Extension
+    //
     @objc let extensionPreview                      = "ico"
 
     // ContentPresenter
@@ -368,8 +369,6 @@ class NCGlobal: NSObject {
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
 
-    // Tip
-    //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
