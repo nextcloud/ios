@@ -83,12 +83,12 @@ class NCGlobal: NSObject {
 
     // Directory on Group
     //
-    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
-    @objc let appApplicationSupport                 = "Library/Application Support"
-    @objc let appUserData                           = "Library/Application Support/UserData"
-    @objc let appCertificates                       = "Library/Application Support/Certificates"
-    @objc let appScan                               = "Library/Application Support/Scan"
     @objc let directoryProviderStorage              = "File Provider Storage"
+    @objc let appApplicationSupport                 = "Library/Application Support"
+    @objc let appCertificates                       = "Library/Application Support/Certificates"
+    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
+    @objc let appScan                               = "Library/Application Support/Scan"
+    @objc let appUserData                           = "Library/Application Support/UserData"
 
     // Service
     //
