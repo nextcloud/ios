@@ -98,6 +98,7 @@ class NCGlobal: NSObject {
     let processingTask                              = "com.nextcloud.processingTask"
 
     // Name
+    //
     @objc let appName                               = "files"
     
     // Nextcloud version
