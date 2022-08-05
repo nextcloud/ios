@@ -209,6 +209,7 @@ class NCGlobal: NSObject {
     let fileNameRichWorkspace                       = "Readme.md"
 
     // Extension
+    //
     @objc let extensionPreview                      = "ico"
 
     // ContentPresenter
@@ -368,8 +369,6 @@ class NCGlobal: NSObject {
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
 
-    // Tip
-    //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
