@@ -339,6 +339,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
 
         buttonIsHidden(true)
         activityIndicatorSection.isHidden = true
+        activityIndicatorSection.color = NCBrandColor.shared.label
     }
 
     func setTitleLabel(directories: Int, files: Int, size: Int64) {
