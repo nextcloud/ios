@@ -180,6 +180,7 @@ class NCGlobal: NSObject {
     let buttonMoreLock                              = "moreLock"
 
     // Standard height sections header/footer
+    //
     let heightButtonsCommand: CGFloat               = 50
     let heightButtonsView: CGFloat                  = 50
     let heightSection: CGFloat                      = 30
@@ -369,6 +370,8 @@ class NCGlobal: NSObject {
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
 
+    // TIP
+    //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
