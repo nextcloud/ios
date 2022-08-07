@@ -47,14 +47,7 @@ class NCMainTabBar: UITabBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillEnterForeground), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         barTintColor = NCBrandColor.shared.secondarySystemBackground
         backgroundColor = NCBrandColor.shared.secondarySystemBackground
@@ -214,16 +207,16 @@ class NCMainTabBar: UITabBar {
         self.addSubview(centerButton)
     }
 
-    @objc func updateBadgeNumber() {
-        guard !appDelegate.account.isEmpty else { return }
+    @objc func updateBadgeNumber(_ notification: NSNotification) {
 
-        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let counter = userInfo["counter"] as? Int
+        else { return }
 
-        UIApplication.shared.applicationIconBadgeNumber = counterUpload
-
-        if let item = items?[0] {
-            if counterUpload > 0 {
-                item.badgeValue = String(counterUpload)
+        UIApplication.shared.applicationIconBadgeNumber = counter
+        if let item = self.items?[0] {
+            if counter > 0 {
+                item.badgeValue = String(counter)
             } else {
                 item.badgeValue = nil
             }
