@@ -258,7 +258,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
     }
 
     // L' applicazione si dimetterà dallo stato di attivo
@@ -380,7 +380,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
                 NCCommunicationCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
                 task.setTaskCompleted(success: true)
             }
@@ -404,7 +403,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCService.shared.synchronizeOffline(account: account)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
             task.setTaskCompleted(success: true)
         }
@@ -422,7 +420,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
             if items == 0 {
                 completionHandler(UIBackgroundFetchResult.noData)

@@ -147,7 +147,7 @@ class NCFiles: NCCollectionViewCommon {
             self.richWorkspaceText = tableDirectory?.richWorkspace
 
             if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                self.reloadDataSource(forced: false)
+                self.reloadDataSource()
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
