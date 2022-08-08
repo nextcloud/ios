@@ -502,12 +502,11 @@ import Photos
             }
             let ocIdTemp = metadata.ocId
             var errorDescription = errorDescription
+            let selector = metadata.sessionSelector
 
             if errorCode == 0, let ocId = ocId, size == metadata.size {
 
                 let metadata = tableMetadata.init(value: metadata)
-
-                NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
 
                 metadata.uploadDate = date ?? NSDate()
                 metadata.etag = etag ?? ""
@@ -529,6 +528,13 @@ import Photos
 
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+
+                if selector == NCGlobal.shared.selectorUploadFileNODelete {
+                    NCUtilityFileSystem.shared.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+                    NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                } else {
+                    NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp))
+                }
 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])

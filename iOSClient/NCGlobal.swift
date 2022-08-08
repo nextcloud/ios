@@ -290,6 +290,7 @@ class NCGlobal: NSObject {
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
+    let selectorUploadFileNODelete                  = "UploadFileNODelete"
     let selectorUploadFileShareExtension            = "uploadFileShareExtension"
     let selectorSaveAlbum                           = "saveAlbum"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
