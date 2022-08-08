@@ -343,7 +343,7 @@ import Photos
                                         
         }) { (account, etag, date, _, allHeaderFields, error, errorCode, errorDescription) in
 
-            self.downloadRequest[fileNameLocalPath] = nil
+            self.downloadRequest.removeValue(forKey:fileNameLocalPath)
 
             if error?.isExplicitlyCancelledError ?? false {
 
