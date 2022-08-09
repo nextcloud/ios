@@ -190,6 +190,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
@@ -266,20 +267,37 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     // MARK: - NotificationCenter
 
+    @objc func uploadStartFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.metadata.serverUrl,
+              let fileName = userInfo["fileName"] as? String,
+              fileName == self.metadata.fileName
+        else { return }
+
+        NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, style: .gray)
+    }
+
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              ocId == metadata.ocId,
-              let errorCode = userInfo["errorCode"] as? Int,
-              errorCode == 0
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.metadata.serverUrl,
+              let fileName = userInfo["fileName"] as? String,
+              fileName == self.metadata.fileName,
+              let errorCode = userInfo["errorCode"] as? Int
         else {
             return
         }
 
-        pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-        pdfView.document = pdfDocument
-        pdfView.layoutDocumentView()
+        NCUtility.shared.stopActivityIndicator()
+
+        if errorCode == 0 {
+            pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
+            pdfView.document = pdfDocument
+            pdfView.layoutDocumentView()
+        }
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
