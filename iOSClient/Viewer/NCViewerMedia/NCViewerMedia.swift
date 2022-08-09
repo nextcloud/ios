@@ -234,36 +234,6 @@ class NCViewerMedia: UIViewController {
 
     func loadImage(metadata: tableMetadata) {
 
-        // Download preview
-        if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-
-            var etagResource: String?
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                etagResource = metadata.etagResource
-            }
-
-            NCCommunication.shared.downloadPreview(
-                fileNamePathOrFileId: fileNamePath,
-                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                widthPreview: NCGlobal.shared.sizePreview,
-                heightPreview: NCGlobal.shared.sizePreview,
-                fileNameIconLocalPath: fileNameIconLocalPath,
-                sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource,
-                queue: .main) { _, _, imageIcon, _, etag, errorCode, _ in
-
-                    if let image = imageIcon, errorCode == 0 {
-                        if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
-                            self.image = image
-                            self.imageVideoContainer.image = image
-                        }
-                        NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-                    }
-                }
-        }
-
         // Download image
         if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.session == "" {
 
