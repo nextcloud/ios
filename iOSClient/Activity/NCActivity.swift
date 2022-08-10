@@ -120,6 +120,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     @objc func initialize() {
         loadDataSource()
         fetchAll(isInitial: true)
+        view.setNeedsLayout()
     }
 
     func makeTableFooterView() -> UIView {
@@ -350,9 +351,10 @@ extension NCActivity {
         guard !isFetchingActivity else { return }
         self.isFetchingActivity = true
 
-        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-        NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
-
+        if let height = self.tabBarController?.tabBar.frame.height {
+            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: -height-20, style: .gray)
+        }
+        
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
 
