@@ -35,6 +35,8 @@ extension NCNetworking {
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let chunkSize = CCUtility.getChunkSize()
         let fileSizeInGB = Double(metadata.size) / 1e9
+        let ocIdTemp = metadata.ocId
+        let selector = metadata.sessionSelector
 
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
@@ -46,7 +48,7 @@ extension NCNetworking {
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
             } else {
-                NCContentPresenter.shared.dismiss(after: 0)
+                NCContentPresenter.shared.dismiss()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorReadFile)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 return completion(uploadErrorCode, uploadErrorDescription)
@@ -66,7 +68,7 @@ extension NCNetworking {
                 return
             }
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
 
             for fileName in filesNames {
 
@@ -165,10 +167,11 @@ extension NCNetworking {
                 let assetLocalIdentifier = metadata.assetLocalIdentifier
                 let isLivePhoto = metadata.livePhoto
                 let isE2eEncrypted = metadata.e2eEncrypted
+                let account = metadata.account
+                let fileName = metadata.fileName
 
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
-                NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: ocIdTemp)
 
                 self.readFile(serverUrlFileName: serverUrlFileNameDestination) { (_, metadata, _, _) in
 
@@ -183,11 +186,20 @@ extension NCNetworking {
                             metadata.deleteAssetLocalIdentifier = true
                         }
                         NCManageDatabase.shared.addMetadata(metadata)
+
+                        if selector == NCGlobal.shared.selectorUploadFileNODelete {
+                            NCUtilityFileSystem.shared.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName), toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName))
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                        }
+                        NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
+
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
 
                     } else {
 
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": ocIdTemp, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
                     }
 
                     completion(errorCode, errorDescription)
@@ -244,6 +256,6 @@ extension NCNetworking {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "ocIdTemp": metadata.ocId, "errorCode": errorCode, "errorDescription": ""])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": metadata.ocId, "errorCode": errorCode, "errorDescription": ""])
     }
 }

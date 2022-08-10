@@ -234,54 +234,15 @@ class NCViewerMedia: UIViewController {
 
     func loadImage(metadata: tableMetadata) {
 
-        // Download preview
-        if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+        // Download image
+        if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.session == "" {
 
-            var etagResource: String?
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                etagResource = metadata.etagResource
-            }
-
-            NCCommunication.shared.downloadPreview(
-                fileNamePathOrFileId: fileNamePath,
-                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                widthPreview: NCGlobal.shared.sizePreview,
-                heightPreview: NCGlobal.shared.sizePreview,
-                fileNameIconLocalPath: fileNameIconLocalPath,
-                sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource,
-                queue: .main) { _, _, imageIcon, _, etag, errorCode, _ in
-
-                    if let image = imageIcon, errorCode == 0 {
-                        if self.imageVideoContainer.layer.sublayers?.count == nil {
-                            self.image = image
-                            self.imageVideoContainer.image = image
-                        }
-                        NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-                    }
-
-                    downloadFile(metadata: metadata)
-                }
-        } else {
-
-            let image = getImageMetadata(metadata)
-            if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
-                self.image = image
-                self.imageVideoContainer.image = image
-            }
-            downloadFile(metadata: metadata)
-        }
-
-        func downloadFile(metadata: tableMetadata) {
             if metadata.livePhoto {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
                     NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
                 }
             }
-            guard metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata), metadata.session == "" else { return }
 
             NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
                 let image = getImageMetadata(metadata)
@@ -290,6 +251,13 @@ class NCViewerMedia: UIViewController {
                     self.imageVideoContainer.image = image
                 }
             }
+        }
+
+        // Get image
+        let image = getImageMetadata(metadata)
+        if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
+            self.image = image
+            self.imageVideoContainer.image = image
         }
 
         func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {

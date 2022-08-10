@@ -708,7 +708,7 @@ class NCUtility: NSObject {
 
     // MARK: -
 
-    @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {
+    @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0, top: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {
 
         if self.activityIndicator != nil {
             stopActivityIndicator()
@@ -772,14 +772,22 @@ class NCUtility: NSObject {
             guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
             viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
 
-            var verticalConstant: CGFloat = 0
-            if bottom > 0 {
-                verticalConstant = (viewBackgroundActivityIndicator.frame.size.height / 2) - bottom
+            if bottom < 0 {
+                NSLayoutConstraint.activate([
+                    viewActivityIndicator.bottomAnchor.constraint(equalTo: viewBackgroundActivityIndicator.bottomAnchor, constant: bottom)
+                ])
+            } else if top > 0 {
+                NSLayoutConstraint.activate([
+                    viewActivityIndicator.topAnchor.constraint(equalTo: viewBackgroundActivityIndicator.topAnchor, constant: top)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor)
+                ])
             }
 
             NSLayoutConstraint.activate([
-                viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor),
-                viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor, constant: verticalConstant)
+                viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor)
             ])
 
             activityIndicator.startAnimating()

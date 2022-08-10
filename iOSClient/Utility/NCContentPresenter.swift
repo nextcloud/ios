@@ -165,7 +165,7 @@ class NCContentPresenter: NSObject {
         }
     }
 
-    func dismiss(after: TimeInterval) {
+    func dismiss(after: TimeInterval = 0) {
         DispatchQueue.main.asyncAfter(deadline: .now() + after) {
             SwiftEntryKit.dismiss()
         }

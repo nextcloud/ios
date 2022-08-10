@@ -523,8 +523,9 @@ extension NCMedia {
             greaterDate = Calendar.current.date(byAdding: .day, value: value, to: lessDate)!
         }
 
-        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-        NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: height + 50, style: .gray)
+        if let height = self.tabBarController?.tabBar.frame.height {
+            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: -height-20, style: .gray)
+        }
 
         NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 300) { account, files, errorCode, errorDescription in
 
