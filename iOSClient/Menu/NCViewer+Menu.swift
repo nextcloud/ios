@@ -244,15 +244,12 @@ extension NCViewer {
         // MODIFY
         //
         if #available(iOS 13.0, *) {
-            if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
+            if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_modify_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                         action: { _ in
-                            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPauseMedia)
-                            }
                             NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
                         }
                     )

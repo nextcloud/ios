@@ -236,11 +236,13 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func uploadStartFile(_ notification: NSNotification) {
 
+        /*
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               let fileName = userInfo["fileName"] as? String,
               let sessionSelector = userInfo["sessionSelector"] as? String
         else { return }
+        */
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
