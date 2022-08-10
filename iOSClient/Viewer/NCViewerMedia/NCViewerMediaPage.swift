@@ -241,11 +241,6 @@ class NCViewerMediaPage: UIViewController {
               let fileName = userInfo["fileName"] as? String,
               let sessionSelector = userInfo["sessionSelector"] as? String
         else { return }
-
-        let metadata = metadatas[currentIndex]
-        if metadata.serverUrl == serverUrl, metadata.fileName == fileName, metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
-            
-        }
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {

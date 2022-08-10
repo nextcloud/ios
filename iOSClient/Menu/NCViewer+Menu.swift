@@ -250,6 +250,9 @@ extension NCViewer {
                         title: NSLocalizedString("_modify_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                         action: { _ in
+                            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPauseMedia)
+                            }
                             NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
                         }
                     )
