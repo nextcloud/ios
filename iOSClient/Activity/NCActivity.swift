@@ -354,9 +354,9 @@ extension NCActivity {
 
         var bottom: CGFloat = 0
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-            bottom = -mainTabBar.getHight() - 10
+            bottom = -mainTabBar.getHight()
         }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom, style: .gray)
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .gray)
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
