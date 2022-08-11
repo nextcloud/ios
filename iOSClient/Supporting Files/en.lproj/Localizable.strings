@@ -875,6 +875,7 @@
 "_waiting_for_"             = "Waiting for:";
 "_reachable_wifi_"          = "network reachable via Wi-Fi or cable";
 "_ITMS-90076_"              = "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings. We are sorry about that.";
+"_password_not_present_"    = "Please re-insert your credentials.";
 "_copy_passphrase_"         = "Copy passphrase";
 "_select_color_"            = "Select the color";
 "_change_color_"            = "Change color";
