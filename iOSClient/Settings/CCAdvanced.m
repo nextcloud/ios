@@ -416,7 +416,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_cache_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[NCActivityIndicator shared] startWithBackgroundView:nil blurEffect:true bottom:0 top:0 style: UIActivityIndicatorViewStyleWhiteLarge];
+        [[NCActivityIndicator shared] startActivityWithBackgroundView:nil blurEffect:true style: UIActivityIndicatorViewStyleWhiteLarge];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             [self clearCache];
         });

@@ -286,6 +286,7 @@ extension NCActivity: UITableViewDataSource {
         }
 
         // subject
+        cell.subject.text = activity.subject
         if activity.subjectRich.count > 0 {
 
             var subject = activity.subjectRich
@@ -351,10 +352,12 @@ extension NCActivity {
         guard !isFetchingActivity else { return }
         self.isFetchingActivity = true
 
-        if let height = self.tabBarController?.tabBar.frame.height {
-            NCActivityIndicator.shared.start(backgroundView: self.view, bottom: -height-20, style: .gray)
+        var bottom: CGFloat = 0
+        if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
+            bottom = -mainTabBar.getHight() - 10
         }
-        
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom, style: .gray)
+
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
 

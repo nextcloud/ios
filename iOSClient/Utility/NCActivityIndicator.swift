@@ -34,21 +34,27 @@ class NCActivityIndicator: NSObject {
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
-    @objc func start(backgroundView: UIView? = nil, blurEffect: Bool = false, bottom: CGFloat = 0, top: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {
+    @objc func startActivity(backgroundView: UIView?, blurEffect: Bool, style: UIActivityIndicatorView.Style) {
+        start(backgroundView: backgroundView, blurEffect: blurEffect, style: style)
+    }
+
+    func start(backgroundView: UIView? = nil, blurEffect: Bool = false, bottom: CGFloat? = nil, top: CGFloat? = nil, style: UIActivityIndicatorView.Style = .whiteLarge) {
 
         if self.activityIndicator != nil { stop() }
 
         DispatchQueue.main.async {
 
             self.activityIndicator = UIActivityIndicatorView(style: style)
-            guard let activityIndicator = self.activityIndicator else { return }
-            if self.viewBackgroundActivityIndicator != nil { return }
+            guard let activityIndicator = self.activityIndicator, self.viewBackgroundActivityIndicator == nil else { return }
 
             activityIndicator.color = NCBrandColor.shared.label
             activityIndicator.hidesWhenStopped = true
             activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
-            let sizeActivityIndicator = activityIndicator.frame.height + 50
+            var sizeActivityIndicator = activityIndicator.frame.height
+            if blurEffect {
+                sizeActivityIndicator += 50
+            }
 
             self.viewActivityIndicator = UIView(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
             self.viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
@@ -96,23 +102,14 @@ class NCActivityIndicator: NSObject {
             guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
             viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
 
-            if bottom < 0 {
-                NSLayoutConstraint.activate([
-                    viewActivityIndicator.bottomAnchor.constraint(equalTo: viewBackgroundActivityIndicator.bottomAnchor, constant: bottom)
-                ])
-            } else if top > 0 {
-                NSLayoutConstraint.activate([
-                    viewActivityIndicator.topAnchor.constraint(equalTo: viewBackgroundActivityIndicator.topAnchor, constant: top)
-                ])
+            if let constant = bottom {
+                viewActivityIndicator.bottomAnchor.constraint(equalTo: viewBackgroundActivityIndicator.bottomAnchor, constant: constant).isActive = true
+            } else if let constant = top {
+                viewActivityIndicator.topAnchor.constraint(equalTo: viewBackgroundActivityIndicator.topAnchor, constant: constant).isActive = true
             } else {
-                NSLayoutConstraint.activate([
-                    viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor)
-                ])
+                viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor).isActive = true
             }
-
-            NSLayoutConstraint.activate([
-                viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor)
-            ])
+            viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor).isActive = true
 
             activityIndicator.startAnimating()
         }
@@ -149,4 +146,3 @@ class NCViewActivityIndicator: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
