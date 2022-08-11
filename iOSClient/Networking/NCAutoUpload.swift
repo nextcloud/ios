@@ -62,7 +62,7 @@ class NCAutoUpload: NSObject {
             guard hasPermission else { return }
 
             NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: NCGlobal.shared.errorNoError, priority: .max)
-            NCActivityIndicator.shared.start(blurEffect: true)
+            NCActivityIndicator.shared.start()
             self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
                 NCActivityIndicator.shared.stop()
             }

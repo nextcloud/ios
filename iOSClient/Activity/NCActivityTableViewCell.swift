@@ -145,7 +145,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
 
             if let backgroundView = appDelegate.window?.rootViewController?.view {
-                NCActivityIndicator.shared.start(backgroundView: backgroundView, blurEffect: true)
+                NCActivityIndicator.shared.start(backgroundView: backgroundView)
             }
 
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in

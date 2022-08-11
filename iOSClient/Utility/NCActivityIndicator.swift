@@ -34,11 +34,11 @@ class NCActivityIndicator: NSObject {
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
-    @objc func startActivity(backgroundView: UIView?, blurEffect: Bool, style: UIActivityIndicatorView.Style) {
-        start(backgroundView: backgroundView, blurEffect: blurEffect, style: style)
+    @objc func startActivity(backgroundView: UIView?, style: UIActivityIndicatorView.Style) {
+        start(backgroundView: backgroundView, style: style)
     }
 
-    func start(backgroundView: UIView? = nil, blurEffect: Bool = false, bottom: CGFloat? = nil, top: CGFloat? = nil, style: UIActivityIndicatorView.Style = .whiteLarge) {
+    func start(backgroundView: UIView? = nil, bottom: CGFloat? = nil, top: CGFloat? = nil, style: UIActivityIndicatorView.Style = .whiteLarge) {
 
         if self.activityIndicator != nil { stop() }
 
@@ -52,7 +52,7 @@ class NCActivityIndicator: NSObject {
             activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
             var sizeActivityIndicator = activityIndicator.frame.height
-            if blurEffect {
+            if backgroundView == nil {
                 sizeActivityIndicator += 50
             }
 
@@ -83,7 +83,7 @@ class NCActivityIndicator: NSObject {
             guard let viewActivityIndicator = self.viewActivityIndicator else { return }
             viewActivityIndicator.addSubview(activityIndicator)
 
-            if blurEffect {
+            if backgroundView == nil {
                 let blurEffect = UIBlurEffect(style: .regular)
                 let blurEffectView = UIVisualEffectView(effect: blurEffect)
                 blurEffectView.frame = viewActivityIndicator.frame

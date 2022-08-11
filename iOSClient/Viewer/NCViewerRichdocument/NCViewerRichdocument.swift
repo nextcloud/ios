@@ -192,7 +192,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let url = URL(string: urlString) else { return }
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + metadata.fileNameWithoutExt
 
-                        NCActivityIndicator.shared.start(backgroundView: view, blurEffect: true)
+                        NCActivityIndicator.shared.start(backgroundView: view)
 
                         NCCommunication.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 

@@ -276,7 +276,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
               fileName == self.metadata.fileName
         else { return }
 
-        NCActivityIndicator.shared.start(blurEffect: true)
+        NCActivityIndicator.shared.start()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {

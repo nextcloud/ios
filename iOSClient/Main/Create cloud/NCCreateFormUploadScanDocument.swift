@@ -417,7 +417,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         } else {
 
-            NCActivityIndicator.shared.start(backgroundView: self.view, blurEffect: true)
+            NCActivityIndicator.shared.start(backgroundView: self.view)
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismissAndUpload(metadataForUpload)
@@ -429,7 +429,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         if metadatas != nil && metadatas!.count > 0 {
 
-            NCActivityIndicator.shared.start(backgroundView: self.view, blurEffect: true)
+            NCActivityIndicator.shared.start(backgroundView: self.view)
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismissAndUpload(metadatas![0])
