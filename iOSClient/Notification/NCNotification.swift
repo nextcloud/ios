@@ -272,7 +272,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func getNetwokingNotification() {
 
-        NCUtility.shared.startActivityIndicator(backgroundView: self.navigationController?.view, blurEffect: true)
+        NCActivityIndicator.shared.start(backgroundView: self.navigationController?.view, blurEffect: true)
 
         NCCommunication.shared.getNotifications { account, notifications, errorCode, _ in
 
@@ -291,7 +291,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 self.reloadDatasource()
             }
 
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
         }
     }
 }

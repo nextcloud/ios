@@ -192,7 +192,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let url = URL(string: urlString) else { return }
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + metadata.fileNameWithoutExt
 
-                        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
+                        NCActivityIndicator.shared.start(backgroundView: view, blurEffect: true)
 
                         NCCommunication.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
@@ -202,7 +202,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                         }, completionHandler: { account, _, _, _, allHeaderFields, error, errorCode, errorDescription in
 
-                            NCUtility.shared.stopActivityIndicator()
+                            NCActivityIndicator.shared.stop()
 
                             if errorCode == 0 && account == self.metadata.account {
 
@@ -332,7 +332,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NCUtility.shared.stopActivityIndicator()
+        NCActivityIndicator.shared.stop()
     }
 }
 

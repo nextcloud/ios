@@ -352,7 +352,7 @@ extension NCActivity {
         self.isFetchingActivity = true
 
         if let height = self.tabBarController?.tabBar.frame.height {
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: -height-20, style: .gray)
+            NCActivityIndicator.shared.start(backgroundView: self.view, bottom: -height-20, style: .gray)
         }
         
         let dispatchGroup = DispatchGroup()
@@ -366,7 +366,7 @@ extension NCActivity {
 
         dispatchGroup.notify(queue: .main) {
             self.loadDataSource()
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
 
             // otherwise is triggered again
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

@@ -143,7 +143,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
 
-            NCUtility.shared.startActivityIndicator(backgroundView: (appDelegate.window?.rootViewController?.view)!, blurEffect: true)
+            NCActivityIndicator.shared.start(backgroundView: (appDelegate.window?.rootViewController?.view)!, blurEffect: true)
 
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
@@ -161,7 +161,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
                     NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, errorCode, _ in
 
-                        NCUtility.shared.stopActivityIndicator()
+                        NCActivityIndicator.shared.stop()
 
                         if account == self.appDelegate.account && errorCode == 0 {
 
@@ -180,7 +180,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
                 } else {
 
-                    NCUtility.shared.stopActivityIndicator()
+                    NCActivityIndicator.shared.stop()
                 }
             }
         }
