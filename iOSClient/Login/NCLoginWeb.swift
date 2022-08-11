@@ -48,7 +48,12 @@ class NCLoginWeb: UIViewController {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
         // TITLE
         titleView = urlBase
-        title = titleView
+        if let host = URL(string: urlBase)?.host {
+            if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
+                titleView = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
+            }
+        }
+        self.title = titleView
 
         if NCBrandOptions.shared.use_login_web_personalized  && accountCount > 0 {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
@@ -99,18 +104,20 @@ class NCLoginWeb: UIViewController {
         appDelegate.timerErrorNetworking?.invalidate()
 
         // ITMS-90076: Potential Loss of Keychain Access
-        if let account = NCManageDatabase.shared.getActiveAccount(), appDelegate.errorITMS90076, !CCUtility.getPresentErrorITMS90076() {
+        if appDelegate.errorITMS90076, !CCUtility.getPresentErrorITMS90076() {
 
-            var title = titleView
-            if let host = URL(string: urlBase)?.host {
-                title = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
-            }
-            let alertController = UIAlertController(title: title, message: "\n" + NSLocalizedString("_ITMS-90076_", comment: ""), preferredStyle: .alert)
+            let message = "\n" + NSLocalizedString("_ITMS-90076_", comment: "")
+            let alertController = UIAlertController(title: titleView, message: message, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             present(alertController, animated: true, completion: {
                 CCUtility.setPresentErrorITMS90076(true)
             })
-            return
+        } else if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
+
+            let message = "\n" + NSLocalizedString("_password_not_present_", comment: "")
+            let alertController = UIAlertController(title: titleView, message: message, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+            present(alertController, animated: true)
         }
     }
 
