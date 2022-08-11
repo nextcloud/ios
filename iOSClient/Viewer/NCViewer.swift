@@ -101,10 +101,10 @@ class NCViewer: NSObject {
 
                 if metadata.url == "" {
 
-                    NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
+                    NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, errorCode, errorDescription in
 
-                        NCUtility.shared.stopActivityIndicator()
+                        NCActivityIndicator.shared.stop()
 
                         if errorCode == 0 && account == self.appDelegate.account && url != nil {
 
@@ -166,10 +166,10 @@ class NCViewer: NSObject {
                             customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
                         }
 
-                        NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
+                        NCActivityIndicator.shared.start(backgroundView: viewController.view)
                         NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
 
-                            NCUtility.shared.stopActivityIndicator()
+                            NCActivityIndicator.shared.stop()
 
                             if errorCode == 0 && account == self.appDelegate.account && url != nil {
 

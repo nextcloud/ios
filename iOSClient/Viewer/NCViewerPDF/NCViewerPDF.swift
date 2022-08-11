@@ -276,9 +276,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
               fileName == self.metadata.fileName
         else { return }
 
-        if let height = self.navigationController?.navigationBar.frame.height {
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, top: height+50 , style: .gray)
-        }
+        NCActivityIndicator.shared.start()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -293,7 +291,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             return
         }
 
-        NCUtility.shared.stopActivityIndicator()
+        NCActivityIndicator.shared.stop()
 
         if errorCode == 0 {
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))

@@ -286,6 +286,7 @@ extension NCActivity: UITableViewDataSource {
         }
 
         // subject
+        cell.subject.text = activity.subject
         if activity.subjectRich.count > 0 {
 
             var subject = activity.subjectRich
@@ -351,10 +352,12 @@ extension NCActivity {
         guard !isFetchingActivity else { return }
         self.isFetchingActivity = true
 
-        if let height = self.tabBarController?.tabBar.frame.height {
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false, bottom: -height-20, style: .gray)
+        var bottom: CGFloat = 0
+        if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
+            bottom = -mainTabBar.getHight()
         }
-        
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .gray)
+
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
 
@@ -366,7 +369,7 @@ extension NCActivity {
 
         dispatchGroup.notify(queue: .main) {
             self.loadDataSource()
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
 
             // otherwise is triggered again
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

@@ -37,10 +37,6 @@ class NCUtility: NSObject {
         return instance
     }()
 
-    private var activityIndicator: UIActivityIndicatorView?
-    private var viewActivityIndicator: UIView?
-    private var viewBackgroundActivityIndicator: UIView?
-
     func setLayoutForView(key: String, serverUrl: String, layoutForView: NCGlobal.layoutForViewType) {
 
         let string =  layoutForView.layout + "|" + layoutForView.sort + "|" + "\(layoutForView.ascending)" + "|" + layoutForView.groupBy + "|" + "\(layoutForView.directoryOnTop)" + "|" + layoutForView.titleButtonHeader + "|" + "\(layoutForView.itemForLine)"
@@ -706,112 +702,6 @@ class NCUtility: NSObject {
         return avatarImage
     }
 
-    // MARK: -
-
-    @objc func startActivityIndicator(backgroundView: UIView?, blurEffect: Bool, bottom: CGFloat = 0, top: CGFloat = 0, style: UIActivityIndicatorView.Style = .whiteLarge) {
-
-        if self.activityIndicator != nil {
-            stopActivityIndicator()
-        }
-
-        DispatchQueue.main.async {
-
-            self.activityIndicator = UIActivityIndicatorView(style: style)
-            guard let activityIndicator = self.activityIndicator else { return }
-            if self.viewBackgroundActivityIndicator != nil { return }
-
-            activityIndicator.color = NCBrandColor.shared.label
-            activityIndicator.hidesWhenStopped = true
-            activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-
-            let sizeActivityIndicator = activityIndicator.frame.height + 50
-
-            self.viewActivityIndicator = UIView(frame: CGRect(x: 0, y: 0, width: sizeActivityIndicator, height: sizeActivityIndicator))
-            self.viewActivityIndicator?.translatesAutoresizingMaskIntoConstraints = false
-            self.viewActivityIndicator?.layer.cornerRadius = 10
-            self.viewActivityIndicator?.layer.masksToBounds = true
-            self.viewActivityIndicator?.backgroundColor = .clear
-
-            #if !EXTENSION
-            if backgroundView == nil {
-                if let window = UIApplication.shared.keyWindow {
-                    self.viewBackgroundActivityIndicator?.removeFromSuperview()
-                    self.viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
-                    window.addSubview(self.viewBackgroundActivityIndicator!)
-                    self.viewBackgroundActivityIndicator?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                    self.viewBackgroundActivityIndicator?.backgroundColor = .clear
-                }
-            } else {
-                self.viewBackgroundActivityIndicator = backgroundView
-            }
-            #else
-            self.viewBackgroundActivityIndicator = backgroundView
-            #endif
-
-            // VIEW ACTIVITY INDICATOR
-
-            guard let viewActivityIndicator = self.viewActivityIndicator else { return }
-            viewActivityIndicator.addSubview(activityIndicator)
-
-            if blurEffect {
-                let blurEffect = UIBlurEffect(style: .regular)
-                let blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView.frame = viewActivityIndicator.frame
-                viewActivityIndicator.insertSubview(blurEffectView, at: 0)
-            }
-
-            NSLayoutConstraint.activate([
-                viewActivityIndicator.widthAnchor.constraint(equalToConstant: sizeActivityIndicator),
-                viewActivityIndicator.heightAnchor.constraint(equalToConstant: sizeActivityIndicator),
-                activityIndicator.centerXAnchor.constraint(equalTo: viewActivityIndicator.centerXAnchor),
-                activityIndicator.centerYAnchor.constraint(equalTo: viewActivityIndicator.centerYAnchor)
-            ])
-
-            // BACKGROUD VIEW ACTIVITY INDICATOR
-
-            guard let viewBackgroundActivityIndicator = self.viewBackgroundActivityIndicator else { return }
-            viewBackgroundActivityIndicator.addSubview(viewActivityIndicator)
-
-            if bottom < 0 {
-                NSLayoutConstraint.activate([
-                    viewActivityIndicator.bottomAnchor.constraint(equalTo: viewBackgroundActivityIndicator.bottomAnchor, constant: bottom)
-                ])
-            } else if top > 0 {
-                NSLayoutConstraint.activate([
-                    viewActivityIndicator.topAnchor.constraint(equalTo: viewBackgroundActivityIndicator.topAnchor, constant: top)
-                ])
-            } else {
-                NSLayoutConstraint.activate([
-                    viewActivityIndicator.centerYAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerYAnchor)
-                ])
-            }
-
-            NSLayoutConstraint.activate([
-                viewActivityIndicator.centerXAnchor.constraint(equalTo: viewBackgroundActivityIndicator.centerXAnchor)
-            ])
-
-            activityIndicator.startAnimating()
-        }
-    }
-
-    @objc func stopActivityIndicator() {
-
-        DispatchQueue.main.async {
-
-            self.activityIndicator?.stopAnimating()
-            self.activityIndicator?.removeFromSuperview()
-            self.activityIndicator = nil
-
-            self.viewActivityIndicator?.removeFromSuperview()
-            self.viewActivityIndicator = nil
-
-            if self.viewBackgroundActivityIndicator is NCViewActivityIndicator {
-                self.viewBackgroundActivityIndicator?.removeFromSuperview()
-            }
-            self.viewBackgroundActivityIndicator = nil
-        }
-    }
-
     /*
     Facebook's comparison algorithm:
     */
@@ -1051,20 +941,5 @@ class NCUtility: NSObject {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailPred.evaluate(with: email)
-    }
-}
-
-// MARK: -
-
-class NCViewActivityIndicator: UIView {
-
-    // MARK: - View Life Cycle
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

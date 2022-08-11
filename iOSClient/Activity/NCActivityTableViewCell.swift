@@ -23,6 +23,7 @@
 
 import Foundation
 import NCCommunication
+import FloatingPanel
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
 
@@ -143,7 +144,9 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
 
-            NCUtility.shared.startActivityIndicator(backgroundView: (appDelegate.window?.rootViewController?.view)!, blurEffect: true)
+            if let backgroundView = appDelegate.window?.rootViewController?.view {
+                NCActivityIndicator.shared.start(backgroundView: backgroundView)
+            }
 
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
@@ -161,7 +164,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
                     NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, errorCode, _ in
 
-                        NCUtility.shared.stopActivityIndicator()
+                        NCActivityIndicator.shared.stop()
 
                         if account == self.appDelegate.account && errorCode == 0 {
 
@@ -180,7 +183,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
                 } else {
 
-                    NCUtility.shared.stopActivityIndicator()
+                    NCActivityIndicator.shared.stop()
                 }
             }
         }

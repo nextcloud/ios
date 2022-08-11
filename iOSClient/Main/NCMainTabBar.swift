@@ -28,6 +28,7 @@ class NCMainTabBar: UITabBar {
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let centerButtonY: CGFloat = -28
 
     public var menuRect: CGRect {
         get {
@@ -173,9 +174,8 @@ class NCMainTabBar: UITabBar {
         if let centerButton = self.viewWithTag(99) {
             centerButton.removeFromSuperview()
         }
-        let centerButtonHeight: CGFloat = 57
-        let centerButtonY: CGFloat = -28
 
+        let centerButtonHeight: CGFloat = 57
         let centerButton = UIButton(frame: CGRect(x: (self.bounds.width / 2)-(centerButtonHeight/2), y: centerButtonY, width: centerButtonHeight, height: centerButtonHeight))
 
         centerButton.setTitle("", for: .normal)
@@ -229,5 +229,9 @@ class NCMainTabBar: UITabBar {
         } else {
             return nil
         }
+    }
+
+    func getHight() -> CGFloat {
+        return (frame.size.height - centerButtonY)
     }
 }

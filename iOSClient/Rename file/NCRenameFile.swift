@@ -231,11 +231,11 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
 
-        NCUtility.shared.startActivityIndicator(backgroundView: nil, blurEffect: true)
+        NCActivityIndicator.shared.start()
 
         NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, viewController: self) { errorCode, errorDescription in
 
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
 
             if errorCode == 0 {
 

@@ -194,7 +194,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NCUtility.shared.stopActivityIndicator()
+        NCActivityIndicator.shared.stop()
     }
 }
 

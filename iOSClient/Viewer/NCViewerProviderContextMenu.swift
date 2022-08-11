@@ -178,7 +178,7 @@ class NCViewerProviderContextMenu: UIViewController {
         else { return }
 
         if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-            NCUtility.shared.startActivityIndicator(backgroundView: self.view, blurEffect: false)
+            NCActivityIndicator.shared.start(backgroundView: self.view)
         }
     }
 
@@ -203,7 +203,7 @@ class NCViewerProviderContextMenu: UIViewController {
             viewVideo(metadata: metadata)
         }
         if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
         }
     }
 
@@ -214,7 +214,7 @@ class NCViewerProviderContextMenu: UIViewController {
         else { return }
 
         if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
         }
     }
 
