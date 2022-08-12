@@ -420,11 +420,10 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        let recentActivityId = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account)
-
-        guard recentActivityId > 0, metadata == nil, hasActivityToLoad else {
+        guard let result = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
+        let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
 
         disptachGroup.enter()
 
@@ -433,19 +432,19 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, activities, errorCode, _ in
+            previews: true) { account, _, activityFirstKnown, activityLastGiven, errorCode, _ in
                 defer { disptachGroup.leave() }
 
+                let largestActivityId = max(activityFirstKnown, activityLastGiven)
                 guard errorCode == 0,
                       account == self.appDelegate.account,
-                      let activity = activities.first,
-                      activity.idActivity > recentActivityId
+                      largestActivityId > resultActivityId
                 else {
                     self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
                     return
                 }
 
-                self.loadActivity(idActivity: 0, limit: activity.idActivity - recentActivityId, disptachGroup: disptachGroup)
+                self.loadActivity(idActivity: 0, limit: largestActivityId - resultActivityId, disptachGroup: disptachGroup)
             }
     }
 
@@ -459,7 +458,7 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, errorCode, _ in
+            previews: true) { account, activities, activityFirstKnown, activityLastGiven, errorCode, _ in
                 defer { disptachGroup.leave() }
                 guard errorCode == 0,
                       account == self.appDelegate.account,
@@ -472,7 +471,7 @@ extension NCActivity {
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 if self.metadata == nil {
-                    NCManageDatabase.shared.updateLatestActivityId(activities, account: account)
+                    NCManageDatabase.shared.updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
                 }
             }
     }

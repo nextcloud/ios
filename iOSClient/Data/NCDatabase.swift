@@ -134,7 +134,8 @@ class tableActivity: Object, DateCompareable {
 
 class tableActivityLatestId: Object {
     @objc dynamic var account = ""
-    @objc dynamic var mostRecentlyLoadedActivityId: Int = 0
+    @objc dynamic var activityFirstKnown: Int = 0
+    @objc dynamic var activityLastGiven: Int = 0
     override static func primaryKey() -> String {
         return "account"
     }
