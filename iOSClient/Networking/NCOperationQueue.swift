@@ -173,7 +173,7 @@ import NCCommunication
 
     func downloadThumbnailActivity(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, cell: NCActivityCollectionViewCell, collectionView: UICollectionView?) {
 
-        cell.imageView?.image = NCBrandColor.cacheImages.file
+        cell.imageView?.image = UIImage(named: "file_photo")
 
         if !FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
             for operation in downloadThumbnailActivityQueue.operations as! [NCOperationDownloadThumbnailActivity] {
@@ -530,19 +530,19 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
             NCCommunication.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePathOrFileId,
                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                widthPreview: NCGlobal.shared.sizePreview,
-                heightPreview: NCGlobal.shared.sizePreview,
-                sizeIcon: NCGlobal.shared.sizeIcon,
+                widthPreview: 0,
+                heightPreview: 0,
                 etag: nil,
-                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+                useInternalEndpoint: false,
+                queue: NCCommunicationCommon.shared.backgroundQueue) { _, imagePreview, _, _, _, errorCode, _ in
 
-                    if errorCode == 0, let imageIcon = imageIcon {
+                    if errorCode == 0, let imagePreview = imagePreview {
                         DispatchQueue.main.async {
                             if self.fileNamePathOrFileId == self.cell?.fileNamePathOrFileId, let imageView = self.cell?.imageView {
                                 UIView.transition(with: imageView,
                                                   duration: 0.75,
                                                   options: .transitionCrossDissolve,
-                                                  animations: { imageView.image = imageIcon },
+                                                  animations: { imageView.image = imagePreview },
                                                   completion: nil)
                             } else {
                                 self.collectionView?.reloadData()

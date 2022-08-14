@@ -222,7 +222,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.imageView.image = image
                     }
                 } else {
-                     cell.imageView.image = UIImage(named: "file")
+                     cell.imageView.image = UIImage(named: "file_photo")
                 }
             }
 
@@ -238,7 +238,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                             cell.imageView.image = image
                         }
                     } else {
-                        cell.imageView.image = UIImage(named: "file")
+                        cell.imageView.image = UIImage(named: "file_photo")
                     }
                 }
 
