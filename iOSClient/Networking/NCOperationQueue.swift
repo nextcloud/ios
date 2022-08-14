@@ -37,6 +37,7 @@ import NCCommunication
     private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
@@ -48,6 +49,7 @@ import NCCommunication
         copyMoveCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
+        downloadThumbnailActivityCancelAll()
         downloadAvatarCancelAll()
         unifiedSearchCancelAll()
     }
@@ -165,6 +167,34 @@ import NCCommunication
 
     @objc func downloadThumbnailCancelAll() {
         downloadThumbnailQueue.cancelAll()
+    }
+
+    // MARK: - Download Thumbnail Activity
+
+    func downloadThumbnailActivity(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, cell: NCActivityCollectionViewCell, collectionView: UICollectionView?) {
+
+        cell.imageView?.image = NCBrandColor.cacheImages.file
+
+        if !FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+            for operation in downloadThumbnailActivityQueue.operations as! [NCOperationDownloadThumbnailActivity] {
+                if operation.fileNamePathOrFileId == fileNamePathOrFileId {
+                    return
+                }
+            }
+            downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, cell: cell, collectionView: collectionView))
+        }
+    }
+
+    func cancelDownloadThumbnailActivity(fileNamePathOrFileId: String) {
+        for operation in downloadThumbnailActivityQueue.operations as! [NCOperationDownloadThumbnailActivity] {
+            if operation.fileNamePathOrFileId == fileNamePathOrFileId {
+                operation.cancel()
+            }
+        }
+    }
+
+    func downloadThumbnailActivityCancelAll() {
+        downloadThumbnailActivityQueue.cancelAll()
     }
 
     // MARK: - Download Avatar
@@ -467,6 +497,56 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                                 }
                             }
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedThumbnail, userInfo: ["ocId": self.metadata.ocId])
+                        }
+                    }
+                    self.finish()
+                }
+        }
+    }
+}
+
+// MARK: -
+
+class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
+
+    var cell: NCActivityCollectionViewCell?
+    var collectionView: UICollectionView?
+    var fileNamePathOrFileId: String = ""
+    var fileNamePreviewLocalPath: String = ""
+
+    init(fileNamePathOrFileId: String, fileNamePreviewLocalPath: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
+        self.fileNamePathOrFileId = fileNamePathOrFileId
+        self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
+        self.cell = cell
+        self.collectionView = collectionView
+    }
+
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+
+            NCCommunication.shared.downloadPreview(
+                fileNamePathOrFileId: fileNamePathOrFileId,
+                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                widthPreview: NCGlobal.shared.sizePreview,
+                heightPreview: NCGlobal.shared.sizePreview,
+                sizeIcon: NCGlobal.shared.sizeIcon,
+                etag: nil,
+                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+
+                    if errorCode == 0, let imageIcon = imageIcon {
+                        DispatchQueue.main.async {
+                            if self.fileNamePathOrFileId == self.cell?.fileNamePathOrFileId, let imageView = self.cell?.imageView {
+                                UIView.transition(with: imageView,
+                                                  duration: 0.75,
+                                                  options: .transitionCrossDissolve,
+                                                  animations: { imageView.image = imageIcon },
+                                                  completion: nil)
+                            } else {
+                                self.collectionView?.reloadData()
+                            }
                         }
                     }
                     self.finish()
