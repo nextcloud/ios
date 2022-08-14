@@ -451,6 +451,7 @@ extension NCActivity {
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
         guard hasActivityToLoad else { return }
 
+        var resultActivityId = 0
         disptachGroup.enter()
 
         NCCommunication.shared.getActivity(
@@ -470,7 +471,11 @@ extension NCActivity {
                 NCManageDatabase.shared.addActivity(activities, account: account)
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
-                if self.metadata == nil {
+                let largestActivityId = max(activityFirstKnown, activityLastGiven)
+                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.appDelegate.account) {
+                    resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
+                }
+                if self.metadata == nil, largestActivityId > resultActivityId {
                     NCManageDatabase.shared.updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
                 }
             }
