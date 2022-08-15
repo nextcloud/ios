@@ -29,7 +29,7 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var imageView: UIImageView!
 
-    var fileNamePathOrFileId = ""
+    var fileId = ""
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -256,8 +256,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                     } else {
 
-                        cell.fileNamePathOrFileId = activityPreview.source
-                        NCOperationQueue.shared.downloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, cell: cell, collectionView: collectionView)
+                        NCOperationQueue.shared.downloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView)
                     }
                 }
             }
