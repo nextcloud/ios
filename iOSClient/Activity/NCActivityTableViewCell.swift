@@ -29,6 +29,8 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var imageView: UIImageView!
 
+    var fileId = ""
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -220,7 +222,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.imageView.image = image
                     }
                 } else {
-                     cell.imageView.image = UIImage(named: "file")
+                     cell.imageView.image = UIImage(named: "file_photo")
                 }
             }
 
@@ -236,7 +238,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                             cell.imageView.image = image
                         }
                     } else {
-                        cell.imageView.image = UIImage(named: "file")
+                        cell.imageView.image = UIImage(named: "file_photo")
                     }
                 }
 
@@ -254,11 +256,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                     } else {
 
-                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { _, imagePreview, _, _, _, errorCode, _ in
-                            if errorCode == 0 && imagePreview != nil {
-                                self.collectionView.reloadData()
-                            }
-                        }
+                        NCOperationQueue.shared.downloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView)
                     }
                 }
             }
