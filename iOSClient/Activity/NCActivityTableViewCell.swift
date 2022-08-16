@@ -142,7 +142,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             var pathComponents = activityPreview.link.components(separatedBy: "?")
             pathComponents = pathComponents[1].components(separatedBy: "&")
             var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
+            serverUrlFileName = NCUtilityFileSystem.shared.getHomeServer(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
 
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
 
@@ -168,17 +168,19 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
                         NCActivityIndicator.shared.stop()
 
-                        if account == self.appDelegate.account && errorCode == 0 {
+                        DispatchQueue.main.async {
+                            if account == self.appDelegate.account && errorCode == 0 {
 
-                            // move from id to oc:id + instanceid (ocId)
-                            let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
+                                // move from id to oc:id + instanceid (ocId)
+                                let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
+                                let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
 
-                            CCUtility.moveFile(atPath: atPath, toPath: toPath)
+                                CCUtility.moveFile(atPath: atPath, toPath: toPath)
 
-                            NCManageDatabase.shared.addMetadata(metadata!)
-                            if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!], imageIcon: cell?.imageView.image)
+                                NCManageDatabase.shared.addMetadata(metadata!)
+                                if let viewController = self.viewController {
+                                    NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!], imageIcon: cell?.imageView.image)
+                                }
                             }
                         }
                     }
