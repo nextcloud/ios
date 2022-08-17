@@ -24,8 +24,94 @@
 import UIKit
 
 protocol NCCellProtocol {
+
     var fileAvatarImageView: UIImageView? { get }
-    var fileObjectId: String? { get }
-    var filePreviewImageView: UIImageView? { get }
-    var fileUser: String? { get }
+    var fileObjectId: String? { get set }
+    var filePreviewImageView: UIImageView? { get set }
+    var fileUser: String? { get set }
+    var fileTitleLabel: UILabel? { get set }
+    var fileInfoLabel: UILabel? { get set }
+    var fileProgressView: UIProgressView? { get set }
+    var fileSelectImage: UIImageView? { get set }
+    var fileStatusImage: UIImageView? { get set }
+    var fileLocalImage: UIImageView? { get set }
+    var fileFavoriteImage: UIImageView? { get set }
+    var fileSharedImage: UIImageView? { get set }
+    var fileMoreImage: UIImageView? { get set }
+    var cellSeparatorView: UIView? { get set }
+
+    func titleInfoTrailingDefault()
+    func titleInfoTrailingFull()
+    func writeInfoDateSize(date: NSDate, size: Int64)
+    func setButtonMore(named: String, image: UIImage)
+    func hideButtonShare(_ status: Bool)
+    func hideButtonMore(_ status: Bool)
+    func selectMode(_ status: Bool)
+    func selected(_ status: Bool)
+    func setAccessibility(label: String, value: String)
+}
+
+extension NCCellProtocol {
+
+    var fileAvatarImageView: UIImageView? {
+        return nil
+    }
+    var fileObjectId: String? {
+        get { return nil }
+        set {}
+    }
+    var filePreviewImageView: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileTitleLabel: UILabel? {
+        get { return nil }
+        set {}
+    }
+    var fileInfoLabel: UILabel? {
+        get { return nil }
+        set { }
+    }
+    var fileProgressView: UIProgressView? {
+        get { return nil }
+        set {}
+    }
+    var fileSelectImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileStatusImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileLocalImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileFavoriteImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileSharedImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var fileMoreImage: UIImageView? {
+        get { return nil }
+        set {}
+    }
+    var cellSeparatorView: UIView? {
+        get { return nil }
+        set {}
+    }
+
+    func titleInfoTrailingDefault() {}
+    func titleInfoTrailingFull() {}
+    func writeInfoDateSize(date: NSDate, size: Int64) {}
+    func setButtonMore(named: String, image: UIImage) {}
+    func hideButtonShare(_ status: Bool) {}
+    func hideButtonMore(_ status: Bool) {}
+    func selectMode(_ status: Bool) {}
+    func selected(_ status: Bool) {}
+    func setAccessibility(label: String, value: String) {}
 }

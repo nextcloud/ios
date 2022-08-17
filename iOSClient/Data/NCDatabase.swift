@@ -85,10 +85,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var website = ""
     @objc dynamic var zip = ""
 
-    // COLOR Files
-    @objc dynamic var darkColorBackground = ""
-    @objc dynamic var lightColorBackground = ""
-
     // HC
     @objc dynamic var hcIsTrial: Bool = false
     @objc dynamic var hcTrialExpired: Bool = false
@@ -138,7 +134,8 @@ class tableActivity: Object, DateCompareable {
 
 class tableActivityLatestId: Object {
     @objc dynamic var account = ""
-    @objc dynamic var mostRecentlyLoadedActivityId: Int = 0
+    @objc dynamic var activityFirstKnown: Int = 0
+    @objc dynamic var activityLastGiven: Int = 0
     override static func primaryKey() -> String {
         return "account"
     }
@@ -260,6 +257,7 @@ class tableDirectEditingEditors: Object {
 class tableDirectory: Object {
 
     @objc dynamic var account = ""
+    @objc dynamic var colorFolder: String?
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
@@ -350,6 +348,14 @@ class tableLocalFile: Object {
 }
 
 class tableMetadata: Object, NCUserBaseUrl {
+    override func isEqual(_ object: Any?) -> Bool {
+        if let object = object as? tableMetadata {
+            return self.fileId == object.fileId && self.account == object.account
+                   && self.path == object.path && self.fileName == object.fileName
+        } else {
+            return false
+        }
+    }
 
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
@@ -376,8 +382,11 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var fileNameWithoutExt = ""
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
+    @objc dynamic var iconUrl = ""
+    @objc dynamic var isExtractFile: Bool = false
     @objc dynamic var livePhoto: Bool = false
     @objc dynamic var mountType = ""
+    @objc dynamic var name = ""
     @objc dynamic var note = ""
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
@@ -405,6 +414,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     let shareType = List<Int>()
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
+    @objc dynamic var subline: String?
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()

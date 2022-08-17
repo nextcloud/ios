@@ -165,15 +165,18 @@ class NCUtilityFileSystem: NSObject {
         return home
     }
 
-    @objc func getPath(metadata: tableMetadata) -> String {
+    @objc func getPath(metadata: tableMetadata, withFileName: Bool) -> String {
 
-        return metadata.path.replacingOccurrences(of: "/remote.php/dav/files/"+metadata.user, with: "") + metadata.fileName
+        var path = metadata.path.replacingOccurrences(of: "/remote.php/dav/files/"+metadata.user, with: "")
+        if withFileName { path += metadata.fileName }
+        return path
     }
 
     @objc func deletingLastPathComponent(account: String, serverUrl: String) -> String {
+
         if getHomeServer(account: account) == serverUrl { return serverUrl }
         let fileName = (serverUrl as NSString).lastPathComponent
-        let serverUrl = serverUrl.replacingOccurrences(of: "/"+fileName, with: "", options: String.CompareOptions.backwards, range: nil)
+        let serverUrl = serverUrl.replacingOccurrences(of: "/" + fileName, with: "", options: String.CompareOptions.backwards, range: nil)
         return serverUrl
     }
 

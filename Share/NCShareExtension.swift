@@ -121,10 +121,18 @@ class NCShareExtension: UIViewController {
             NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
         }
         if isSimulatorOrTestFlight {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+            NCCommunicationCommon.shared.writeLog("Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {
-            NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+            NCCommunicationCommon.shared.writeLog("Start Share session with level \(levelLog) " + versionNextcloudiOS)
         }
+
+        // Colors
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+        } else {
+            NCBrandColor.shared.createImagesThemingColor()
+        }
+        NCBrandColor.shared.createUserColors()
 
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
@@ -303,8 +311,7 @@ extension NCShareExtension {
                 fileName: fileName, fileNameView: fileName,
                 ocId: ocId,
                 serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "",
-                contentType: "",
-                livePhoto: false)
+                contentType: "")
             metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
@@ -332,7 +339,10 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
         let metadata = uploadMetadata[counterUploaded]
-
+        let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
+        metadata.contentType = results.mimeType
+        metadata.iconName = results.iconName
+        metadata.classFile = results.classFile
         // E2EE
         metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         // CHUNCK

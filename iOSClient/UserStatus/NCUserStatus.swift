@@ -77,6 +77,9 @@ class NCUserStatus: UIViewController {
 
         self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
+        view.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         onlineButton.layer.cornerRadius = 10
@@ -148,7 +151,7 @@ class NCUserStatus: UIViewController {
         clearStatusMessageAfterText.addGestureRecognizer(tap)
         clearStatusMessageAfterText.text = "  " + NSLocalizedString("_dont_clear_", comment: "")
 
-        clearStatusMessageButton.layer.cornerRadius = 15
+        clearStatusMessageButton.layer.cornerRadius = 20
         clearStatusMessageButton.layer.masksToBounds = true
         clearStatusMessageButton.layer.borderWidth = 0.5
         clearStatusMessageButton.layer.borderColor = UIColor.darkGray.cgColor
@@ -156,19 +159,13 @@ class NCUserStatus: UIViewController {
         clearStatusMessageButton.setTitle(NSLocalizedString("_clear_status_message_", comment: ""), for: .normal)
         clearStatusMessageButton.setTitleColor(NCBrandColor.shared.label, for: .normal)
 
-        setStatusMessageButton.layer.cornerRadius = 15
+        setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true
         setStatusMessageButton.backgroundColor = NCBrandColor.shared.brand
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
         setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         getStatus()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        changeTheming()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -191,16 +188,6 @@ class NCUserStatus: UIViewController {
                 }
             }
         }
-    }
-
-    // MARK: - Theming
-
-    @objc func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
-
-        tableView.reloadData()
     }
 
     // MARK: ACTION

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icons8-nuovo-messaggio.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

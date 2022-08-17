@@ -27,6 +27,7 @@ import RealmSwift
 import NCCommunication
 import SwiftyJSON
 import CoreMedia
+import Photos
 
 class NCManageDatabase: NSObject {
     @objc static let shared: NCManageDatabase = {
@@ -37,11 +38,19 @@ class NCManageDatabase: NSObject {
     override init() {
 
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
-        let databaseFilePath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault)
+        let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault)
 
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let isAppex: Bool = bundlePathExtension == "appex"
+
+        if let databaseFilePath = databaseFileUrlPath?.path {
+            if FileManager.default.fileExists(atPath: databaseFilePath) {
+                NCCommunicationCommon.shared.writeLog("DATABASE FOUND in " + databaseFilePath)
+            } else {
+                NCCommunicationCommon.shared.writeLog("DATABASE NOT FOUND in " + databaseFilePath)
+            }
+        }
 
         // Disable file protection for directory DB
         // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
@@ -72,7 +81,7 @@ class NCManageDatabase: NSObject {
 
             let configCompact = Realm.Configuration(
 
-                fileURL: databaseFilePath,
+                fileURL: databaseFileUrlPath,
                 schemaVersion: NCGlobal.shared.databaseSchemaVersion,
 
                 migrationBlock: { migration, oldSchemaVersion in
@@ -149,9 +158,17 @@ class NCManageDatabase: NSObject {
                         }
                     }
 
-                    if oldSchemaVersion < 222 && NCUtility.shared.SYSTEM_VERSION_LESS_THAN(version: "13") {
+                    if oldSchemaVersion < 227 {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableTrash.className())
+                    }
+
+                    if oldSchemaVersion < 237 {
+                        migration.deleteData(forType: tableActivity.className())
+                        migration.deleteData(forType: tableActivityLatestId.className())
+                        migration.deleteData(forType: tableActivityPreview.className())
+                        migration.deleteData(forType: tableActivitySubjectRich.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -168,12 +185,13 @@ class NCManageDatabase: NSObject {
             do {
                 _ = try Realm(configuration: configCompact)
             } catch {
-                if let databaseFilePath = databaseFilePath {
+                if let databaseFileUrlPath = databaseFileUrlPath {
                     do {
                         #if !EXTENSION
                         NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                         #endif
-                        try FileManager.default.removeItem(at: databaseFilePath)
+                        NCCommunicationCommon.shared.writeLog("DATABASE CORRUPT: removed")
+                        try FileManager.default.removeItem(at: databaseFileUrlPath)
                     } catch {}
                 }
             }
@@ -186,16 +204,17 @@ class NCManageDatabase: NSObject {
             Realm.Configuration.defaultConfiguration = config
         }
 
-        // Verify Database, if corrupr remove it
+        // Verify Database, if corrupt remove it
         do {
             _ = try Realm()
         } catch {
-            if let databaseFilePath = databaseFilePath {
+            if let databaseFileUrlPath = databaseFileUrlPath {
                 do {
                     #if !EXTENSION
                     NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                     #endif
-                    try FileManager.default.removeItem(at: databaseFilePath)
+                    NCCommunicationCommon.shared.writeLog("DATABASE CORRUPT: removed")
+                    try FileManager.default.removeItem(at: databaseFileUrlPath)
                 } catch {}
             }
         }
@@ -698,23 +717,6 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
 
-    /*
-    @objc func addDirectoryRichWorkspace(ocId: String, richWorkspace: String?) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.safeWrite {
-                if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
-                    result.richWorkspace = richWorkspace
-                }
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    */
-
     @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
 
         let realm = try! Realm()
@@ -864,7 +866,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func setDirectory(richWorkspace: String?, serverUrl: String, account: String) -> tableDirectory? {
+    @objc func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
 
         let realm = try! Realm()
         var result: tableDirectory?
@@ -873,6 +875,28 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.richWorkspace = richWorkspace
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+
+        if let result = result {
+            return tableDirectory.init(value: result)
+        } else {
+            return nil
+        }
+    }
+
+    @discardableResult
+    @objc func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
+
+        let realm = try! Realm()
+        var result: tableDirectory?
+
+        do {
+            try realm.safeWrite {
+                result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
+                result?.colorFolder = colorFolder
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
@@ -1229,6 +1253,14 @@ class NCManageDatabase: NSObject {
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
+    }
+
+    @objc func getTableLocalFile(account: String) -> [tableLocalFile] {
+
+        let realm = try! Realm()
+
+        let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
+        return Array(results.map { tableLocalFile.init(value: $0) })
     }
 
     @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {

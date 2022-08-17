@@ -90,9 +90,6 @@ import UIKit
     @objc public var disable_request_account:           Bool = false
     @objc public var disable_log:                       Bool = false
 
-    @objc public var disable_background_color:          Bool = true
-    @objc public var disable_background_image:          Bool = true
-
     override init() {
 
         if folderBrandAutoUpload != "" {
@@ -106,8 +103,6 @@ import UIKit
 class NCBrandColor: NSObject {
     @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
-        instance.createImagesThemingColor()
-        instance.createUserColors()
         return instance
     }()
 
@@ -139,6 +134,15 @@ class NCBrandColor: NSObject {
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
         static var buttonRestore = UIImage()
+        static var buttonTrash = UIImage()
+
+        static var iconContacts = UIImage()
+        static var iconTalk = UIImage()
+        static var iconCalendar = UIImage()
+        static var iconDeck = UIImage()
+        static var iconMail = UIImage()
+        static var iconConfirm = UIImage()
+        static var iconPages = UIImage()
     }
 
     // Color
@@ -155,6 +159,61 @@ class NCBrandColor: NSObject {
     @objc public let yellowFavorite: UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
 
     public var userColors: [CGColor] = []
+    public var themingColor: String = ""
+    public var themingColorElement: String = ""
+    public var themingColorText: String = ""
+
+    @objc public var annotationColor: UIColor {
+        get {
+            return .systemBlue
+        }
+    }
+
+    @objc public var systemBlue: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemBlue
+            } else {
+                return UIColor(red: 0.0, green: 122.0 / 255.0, blue: 1.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemIndigo: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemIndigo
+            } else {
+                return UIColor(red: 88.0 / 255.0, green: 86.0 / 255.0, blue: 214.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemPink: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemPink
+            } else {
+                return UIColor(red: 1.0, green: 45.0 / 255.0, blue: 85.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemTeal: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return .systemTeal
+            } else {
+                return UIColor(red: 90.0 / 255.0, green: 200.0 / 255.0, blue: 250.0 / 255.0, alpha: 1.0)
+            }
+        }
+    }
+
+    @objc public var systemMint: UIColor {
+        get {
+            return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
+        }
+    }
 
     @objc public var systemBackground: UIColor {
         get {
@@ -256,6 +315,16 @@ class NCBrandColor: NSObject {
         }
     }
 
+    @objc public var systemGray1: UIColor {
+        get {
+            if #available(iOS 13, *) {
+                return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
+            } else {
+                return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
+            }
+        }
+    }
+
     @objc public var systemGray2: UIColor {
         get {
             if #available(iOS 13, *) {
@@ -317,16 +386,16 @@ class NCBrandColor: NSObject {
     }
 
     override init() {
-        self.brand = self.customer
-        self.brandElement = self.customer
-        self.brandText = self.customerText
+        brand = customer
+        brandElement = customer
+        brandText = customerText
     }
 
-    private func createUserColors() {
-        self.userColors = generateColors()
+    func createUserColors() {
+        userColors = generateColors()
     }
 
-    public func createImagesThemingColor() {
+    func createImagesThemingColor() {
 
         let gray: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
 
@@ -358,93 +427,98 @@ class NCBrandColor: NSObject {
         cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
         cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: gray, size: 50)
         cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
+        cacheImages.buttonTrash = UIImage(named: "trash")!.image(color: gray, size: 50)
+
+        cacheImages.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
+        cacheImages.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
     }
 
-    #if !EXTENSION
-    public func settingThemingColor(account: String) {
+    func settingThemingColor(account: String) {
 
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
 
         if NCBrandOptions.shared.use_themingColor {
 
-            let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
+            if let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor),
+               let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement),
+               let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText) {
 
-            let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
-
-            let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
-
-            settingBrandColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
-
-            if NCBrandColor.shared.brandElement.isTooLight() {
-                if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
-                    NCBrandColor.shared.brandElement = color
+                self.themingColor = themingColor
+                self.themingColorElement = themingColorElement
+                self.themingColorText = themingColorText
+                
+                // COLOR
+                if themingColor.first == "#" {
+                    if let color = UIColor(hex: themingColor) {
+                        brand = color
+                    } else {
+                        brand = customer
+                    }
+                } else {
+                    brand = customer
                 }
-            } else if NCBrandColor.shared.brandElement.isTooDark() {
-                if let color = NCBrandColor.shared.brandElement.lighter(by: lighter) {
-                    NCBrandColor.shared.brandElement = color
+
+                // COLOR TEXT
+                if themingColorText.first == "#" {
+                    if let color = UIColor(hex: themingColorText) {
+                        brandText = color
+                    } else {
+                        brandText = customerText
+                    }
+                } else {
+                    brandText = customerText
+                }
+
+                // COLOR ELEMENT
+                if themingColorElement.first == "#" {
+                    if let color = UIColor(hex: themingColorElement) {
+                        brandElement = color
+                    } else {
+                        brandElement = brand
+                    }
+                } else {
+                    brandElement = brand
+                }
+            }
+
+            if brandElement.isTooLight() {
+                if let color = brandElement.darker(by: darker) {
+                    brandElement = color
+                }
+            } else if brandElement.isTooDark() {
+                if let color = brandElement.lighter(by: lighter) {
+                    brandElement = color
                 }
             }
 
         } else {
 
-            if NCBrandColor.shared.customer.isTooLight() {
-                if let color = NCBrandColor.shared.customer.darker(by: darker) {
-                    NCBrandColor.shared.brandElement = color
+            if self.customer.isTooLight() {
+                if let color = customer.darker(by: darker) {
+                    brandElement = color
                 }
-            } else if NCBrandColor.shared.customer.isTooDark() {
-                if let color = NCBrandColor.shared.customer.lighter(by: lighter) {
-                    NCBrandColor.shared.brandElement = color
+            } else if customer.isTooDark() {
+                if let color = customer.lighter(by: lighter) {
+                    brandElement = color
                 }
             } else {
-                NCBrandColor.shared.brandElement = NCBrandColor.shared.customer
+                brandElement = customer
             }
 
-            NCBrandColor.shared.brand = NCBrandColor.shared.customer
-            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
+            brand = customer
+            brandText = customerText
         }
-
-        DispatchQueue.main.async {
-            self.createImagesThemingColor()
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
-        }
-    }
-    #endif
-
-    @objc func settingBrandColor(_ themingColor: String?, themingColorElement: String?, themingColorText: String?) {
-
-        // COLOR
-        if themingColor?.first == "#" {
-            if let color = UIColor(hex: themingColor!) {
-                NCBrandColor.shared.brand = color
-            } else {
-                NCBrandColor.shared.brand = NCBrandColor.shared.customer
-            }
-        } else {
-            NCBrandColor.shared.brand = NCBrandColor.shared.customer
-        }
-
-        // COLOR TEXT
-        if themingColorText?.first == "#" {
-            if let color = UIColor(hex: themingColorText!) {
-                NCBrandColor.shared.brandText = color
-            } else {
-                NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
-            }
-        } else {
-            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
-        }
-
-        // COLOR ELEMENT
-        if themingColorElement?.first == "#" {
-            if let color = UIColor(hex: themingColorElement!) {
-                NCBrandColor.shared.brandElement = color
-            } else {
-                NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
-            }
-        } else {
-            NCBrandColor.shared.brandElement = NCBrandColor.shared.brand
-        }
+        
+        createImagesThemingColor()
+        #if !EXTENSION
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+        #endif
     }
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {

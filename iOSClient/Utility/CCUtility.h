@@ -148,9 +148,6 @@
 
 + (NSData *)getDatabaseEncryptionKey;
 
-+ (BOOL)getDisableLocalCacheAfterUpload;
-+ (void)setDisableLocalCacheAfterUpload:(BOOL)disable;
-
 + (BOOL)getLivePhoto;
 + (void)setLivePhoto:(BOOL)set;
 
@@ -168,9 +165,6 @@
 + (BOOL)getAudioMute;
 + (void)setAudioMute:(BOOL)set;
 
-+ (BOOL)getAutomaticDownloadImage;
-+ (void)setAutomaticDownloadImage:(BOOL)set;
-
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 
@@ -185,6 +179,12 @@
 
 + (BOOL)getRemovePhotoCameraRoll;
 + (void)setRemovePhotoCameraRoll:(BOOL)set;
+
++ (BOOL)getPresentErrorITMS90076;
++ (void)setPresentErrorITMS90076:(BOOL)set;
+
++ (BOOL)getPlayerPlay;
++ (void)setPlayerPlay:(BOOL)set;
 
 // ===== Varius =====
 
@@ -242,9 +242,6 @@
 + (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
-
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion;
-+ (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion;
 
 // ===== E2E Encrypted =====
 

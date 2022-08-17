@@ -158,7 +158,9 @@ extension NCCollectionViewCommon {
         // OFFLINE
         //
         if !isFolderEncrypted {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, completion: self.reloadDataSource))
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, completion: {
+                self.reloadDataSource()
+            }))
         }
 
         //
@@ -269,29 +271,6 @@ extension NCCollectionViewCommon {
             actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view))
         }
         
-        /*
-        //
-        // USE AS BACKGROUND
-        //
-        if #available(iOS 13.0, *) {
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && self.layoutKey == NCGlobal.shared.layoutViewFiles && !NCBrandOptions.shared.disable_background_image {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_use_as_background_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "text.below.photo"),
-                        action: { menuAction in
-                            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                                NCFunctionCenter.shared.saveBackground(metadata: metadata)
-                            } else {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveBackground)
-                            }
-                        }
-                    )
-                )
-            }
-        }
-        */
-
         //
         // MODIFY
         //
@@ -302,19 +281,33 @@ extension NCCollectionViewCommon {
                         title: NSLocalizedString("_modify_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                         action: { menuAction in
-                            if self is NCFileViewInFolder {
-                                self.dismiss(animated: true) {
-                                    NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-                                }
-                            } else {
-                                NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-                            }
+                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
                         }
                     )
                 )
             }
         }
 
+        //
+        // COLOR FOLDER
+        //
+        if self is NCFiles, metadata.directory {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_change_color_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "palette"),
+                    action: { _ in
+                        if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {
+                            picker.metadata = metadata
+                            let popup = NCPopupViewController(contentController: picker, popupWidth: 200, popupHeight: 320)
+                            popup.backgroundAlpha = 0
+                            self.present(popup, animated: true)
+                        }
+                    }
+                )
+            )
+        }
+        
         //
         // DELETE
         //
@@ -323,7 +316,7 @@ extension NCCollectionViewCommon {
         //
         // SET FOLDER E2EE
         //
-        if !metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
+        if !metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome && metadata.size == 0 {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
@@ -348,7 +341,7 @@ extension NCCollectionViewCommon {
         //
         // UNSET FOLDER E2EE
         //
-        if metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
+        if metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome && metadata.size == 0 {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),

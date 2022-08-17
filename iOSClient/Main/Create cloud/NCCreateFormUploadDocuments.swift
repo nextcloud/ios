@@ -65,6 +65,10 @@ import XLForm
 
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
+        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+
         let cancelButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
 
@@ -75,31 +79,11 @@ import XLForm
         // title 
         self.title = titleForm
 
-        changeTheming()
-
         initializeForm()
-
-        // load the templates available
         getTemplate()
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
 
-        changeTheming()
-    }
-
-    // MARK: - Theming
-
-    func changeTheming() {
-
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
-
-        tableView.reloadData()
-        collectionView.reloadData()
-    }
 
     // MARK: - Tableview (XLForm)
 
@@ -149,6 +133,8 @@ import XLForm
         section.addFormRow(row)
 
         self.form = form
+        //tableView.reloadData()
+        //collectionView.reloadData()
     }
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -284,7 +270,7 @@ import XLForm
 
             if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
                 guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
                 conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
@@ -322,6 +308,8 @@ import XLForm
 
     func createDocument(fileNamePath: String, fileName: String) {
 
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
 
             var customUserAgent: String?
@@ -333,50 +321,43 @@ import XLForm
             } // else: use default
 
             NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
-
-                if errorCode == 0 && account == self.appDelegate.account {
-
-                    if url != nil && url!.count > 0 {
-                        let results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
-
-                        self.dismiss(animated: true, completion: {
-                            let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: results.mimeType, livePhoto: false)
-
-                            if let viewController = self.appDelegate.activeViewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
-                            }
-                        })
-                    }
-
-                } else if errorCode != 0 {
+                guard errorCode == 0, account == self.appDelegate.account, let url = url else {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                } else {
-                   print("[LOG] It has been changed user during networking process, error.")
+                    return
                 }
+
+                var results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+                //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
+                if results.mimeType.isEmpty {
+                    results.mimeType = "text/x-markdown"
+                }
+
+                self.dismiss(animated: true, completion: {
+                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: results.mimeType)
+                    if let viewController = self.appDelegate.activeViewController {
+                        NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    }
+                })
             }
         }
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
             NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, errorCode, errorDescription in
-
-                if errorCode == 0 && account == self.appDelegate.account && url != nil {
-
-                    self.dismiss(animated: true, completion: {
-
-                        let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
-                        let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
-
-                        if let viewController = self.appDelegate.activeViewController {
-                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
-                        }
-                   })
-
-                } else if errorCode != 0 {
+                guard errorCode == 0, account == self.appDelegate.account, let url = url else {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                } else {
-                    print("[LOG] It has been changed user during networking process, error.")
+                    return
                 }
+
+                self.dismiss(animated: true, completion: {
+                    let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
+                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
+                    if let viewController = self.appDelegate.activeViewController {
+                        NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    }
+               })
             }
         }
     }

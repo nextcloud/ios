@@ -83,7 +83,6 @@ class NCViewerMediaPage: UIViewController {
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
 
         progressView.tintColor = NCBrandColor.shared.brandElement
@@ -97,19 +96,35 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(reloadMediaPage(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     deinit {
-        
-        print("deinit NCViewerMediaPage")
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -121,26 +136,6 @@ class NCViewerMediaPage: UIViewController {
         }
         currentViewController.playerToolBar?.stopTimerAutoHide()
         clearCommandCenter()
-
-        metadatas.removeAll()
-        ncplayerLivePhoto = nil
-
-        // Remove Observer
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -227,80 +222,89 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let progressNumber = userInfo["progress"] as? NSNumber {
-                let progress = progressNumber.floatValue
-                if progress == 1 {
-                    self.progressView.progress = 0
-                } else {
-                    self.progressView.progress = progress
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let progressNumber = userInfo["progress"] as? NSNumber
+        else { return }
+
+        let progress = progressNumber.floatValue
+        if progress == 1 {
+            self.progressView.progress = 0
+        } else {
+            self.progressView.progress = progress
         }
+    }
+
+    @objc func uploadStartFile(_ notification: NSNotification) {
+
+        /*
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let fileName = userInfo["fileName"] as? String,
+              let sessionSelector = userInfo["sessionSelector"] as? String
+        else { return }
+        */
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0, let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
-                    metadatas[index] = metadata
-                    if currentViewController.metadata.ocId == ocId {
-                        currentViewController.reloadImage()
-                    } else {
-                        modifiedOcId.append(ocId)
-                    }
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let errorCode = userInfo["errorCode"] as? Int,
+              errorCode == 0,
+              let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else {
+            return
+        }
+
+        metadatas[index] = metadata
+        if currentViewController.metadata.ocId == ocId {
+            currentViewController.reloadImage()
+        } else {
+            modifiedOcId.append(ocId)
         }
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
 
-                let metadatas = self.metadatas.filter { $0.ocId != ocId }
-                if self.metadatas.count == metadatas.count { return }
-                self.metadatas = metadatas
+        let metadatas = self.metadatas.filter { $0.ocId != ocId }
+        if self.metadatas.count == metadatas.count { return }
+        self.metadatas = metadatas
 
-                if ocId == currentViewController.metadata.ocId {
-                    shiftCurrentPage()
-                }
-            }
+        if ocId == currentViewController.metadata.ocId {
+            shiftCurrentPage()
         }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
-                    metadatas[index] = metadata
-                    if index == currentIndex {
-                        navigationItem.title = metadata.fileNameView
-                        currentViewController.metadata = metadata
-                        self.currentViewController.metadata = metadata
-                    }
-                }
-            }
+        metadatas[index] = metadata
+        if index == currentIndex {
+            navigationItem.title = metadata.fileNameView
+            currentViewController.metadata = metadata
+            self.currentViewController.metadata = metadata
         }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
 
-                if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
-                    deleteFile(notification)
-                }
-            }
+        if metadatas.firstIndex(where: {$0.ocId == ocId}) != nil {
+            deleteFile(notification)
         }
-    }
-
-    @objc func changeTheming() {
     }
 
     @objc func hidePlayerToolBar(_ notification: NSNotification) {
@@ -382,26 +386,6 @@ class NCViewerMediaPage: UIViewController {
                 return.success
             }
         }
-
-        // AUDIO < >
-        /*
-        if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-                        
-            MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = true
-            appDelegate.nextTrackCommand = MPRemoteCommandCenter.shared().nextTrackCommand.addTarget { event in
-                
-                self.forward()
-                return .success
-            }
-            
-            MPRemoteCommandCenter.shared().previousTrackCommand.isEnabled = true
-            appDelegate.previousTrackCommand = MPRemoteCommandCenter.shared().previousTrackCommand.addTarget { event in
-             
-                self.backward()
-                return .success
-            }
-        }
-        */
 
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds

@@ -24,6 +24,8 @@
 import UIKit
 import SVGKit
 import NCCommunication
+import EasyTipView
+import SwiftUI
 
 class NCViewerMedia: UIViewController {
 
@@ -38,6 +40,7 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
 
     private var _autoPlay: Bool = false
+    private var tipView: EasyTipView?
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     weak var viewerMediaPage: NCViewerMediaPage?
@@ -73,6 +76,7 @@ class NCViewerMedia: UIViewController {
     deinit {
         print("deinit NCViewerMedia")
 
+        self.tipView?.dismiss()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
@@ -111,7 +115,23 @@ class NCViewerMedia: UIViewController {
                 self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
             }
         }
-        
+
+        // TIP
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .top
+        preferences.drawing.cornerRadius = 10
+
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 0.5
+        preferences.animating.dismissDuration = 0
+
+        tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
+
         detailViewTopConstraint.constant = 0
         detailView.hide()
 
@@ -172,15 +192,24 @@ class NCViewerMedia: UIViewController {
             viewerMediaPage?.clearCommandCenter()
         }
 
+        // TIP
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
+            self.tipView?.show(forView: view)
+        }
+
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        self.tipView?.dismiss()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+
+        self.tipView?.dismiss()
 
         coordinator.animate(alongsideTransition: { context in
             // back to the original size
@@ -199,90 +228,36 @@ class NCViewerMedia: UIViewController {
     func reloadImage() {
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
             self.metadata = metadata
-            loadImage(metadata: metadata) { _, image in
-                self.image = image
-                // do not update if is present the videoLayer
-                let numSublayers = self.imageVideoContainer.layer.sublayers?.count
-                if numSublayers == nil {
+            loadImage(metadata: metadata)
+        }
+    }
+
+    func loadImage(metadata: tableMetadata) {
+
+        // Download image
+        if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.session == "" {
+
+            if metadata.livePhoto {
+                let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
+                }
+            }
+
+            NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
+                let image = getImageMetadata(metadata)
+                if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
+                    self.image = image
                     self.imageVideoContainer.image = image
                 }
             }
         }
-    }
 
-    func loadImage(metadata: tableMetadata, completion: @escaping (_ ocId: String, _ image: UIImage?) -> Void) {
-
-        // Download preview
-        if metadata.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-
-            var etagResource: String?
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-                etagResource = metadata.etagResource
-            }
-
-            NCCommunication.shared.downloadPreview(
-                fileNamePathOrFileId: fileNamePath,
-                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                widthPreview: NCGlobal.shared.sizePreview,
-                heightPreview: NCGlobal.shared.sizePreview,
-                fileNameIconLocalPath: fileNameIconLocalPath,
-                sizeIcon: NCGlobal.shared.sizeIcon, etag: etagResource,
-                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
-
-                    if errorCode == 0 && imageIcon != nil {
-                        NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-                    }
-
-                    // Download file max resolution
-                    downloadFile(metadata: metadata)
-                    // Download file live photo
-                    if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
-                }
-        } else {
-
-            // Download file max resolution
-            downloadFile(metadata: metadata)
-            // Download file live photo
-            if metadata.livePhoto { downloadFileLivePhoto(metadata: metadata) }
-        }
-
-        // Download file max resolution
-        func downloadFile(metadata: tableMetadata) {
-
-            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-            let ext = CCUtility.getExtension(metadata.fileNameView)
-
-            if (CCUtility.getAutomaticDownloadImage() || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "") {
-
-                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
-
-                    DispatchQueue.main.async {
-                        let image = getImageMetadata(metadata)
-                        completion(metadata.ocId, image)
-                    }
-                }
-
-            } else {
-
-                DispatchQueue.main.async {
-                    let image = getImageMetadata(metadata)
-                    completion(metadata.ocId, image)
-                }
-            }
-        }
-
-        // Download Live Photo
-        func downloadFileLivePhoto(metadata: tableMetadata) {
-
-            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
-
-                NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
-            }
+        // Get image
+        let image = getImageMetadata(metadata)
+        if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
+            self.image = image
+            self.imageVideoContainer.image = image
         }
 
         func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
@@ -292,7 +267,7 @@ class NCViewerMedia: UIViewController {
             }
 
             if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
-                NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
             }
 
             if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -322,7 +297,7 @@ class NCViewerMedia: UIViewController {
 
                 if ext == "GIF" {
                     if !FileManager().fileExists(atPath: previewPath) {
-                        NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                        NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                     }
                     image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
                 } else if ext == "SVG" {
@@ -342,7 +317,7 @@ class NCViewerMedia: UIViewController {
                         return nil
                     }
                 } else {
-                    NCUtility.shared.createImageFrom(fileName: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                     image = UIImage(contentsOfFile: imagePath)
                 }
             }
@@ -445,6 +420,8 @@ extension NCViewerMedia {
 
     private func openDetail() {
 
+        self.dismissTip()
+        
         CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
 
             if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
@@ -558,6 +535,21 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
     func downloadFullResolution() {
         closeDetail()
         NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _ in }
+    }
+}
+
+extension NCViewerMedia: EasyTipViewDelegate {
+
+    // TIP
+    func easyTipViewDidTap(_ tipView: EasyTipView) {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+    }
+
+    func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
+
+    func dismissTip() {
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        self.tipView?.dismiss()
     }
 }
 

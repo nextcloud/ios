@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="QH7-hC-pPW">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="QH7-hC-pPW">
     <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -236,7 +236,7 @@
                                                 </constraints>
                                                 <prototypes>
                                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="45" id="laP-fj-qDh">
-                                                        <rect key="frame" x="0.0" y="24.333333969116211" width="408" height="45"/>
+                                                        <rect key="frame" x="0.0" y="44.666666030883789" width="408" height="45"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="laP-fj-qDh" id="HIM-ev-wMc">
                                                             <rect key="frame" x="0.0" y="0.0" width="408" height="45"/>
@@ -333,23 +333,22 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3CT-dJ-sEj">
-                                        <rect key="frame" x="10" y="67" width="192.66666666666666" height="30"/>
-                                        <color key="backgroundColor" systemColor="systemGray6Color"/>
+                                        <rect key="frame" x="10" y="57" width="192.66666666666666" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="30" id="1F4-Cv-RzK"/>
+                                            <constraint firstAttribute="height" constant="40" id="1F4-Cv-RzK"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="clear status message"/>
                                         <connections>
                                             <action selector="actionClearStatusMessage:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="kSK-3g-AiY"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3xN-e7-N0L">
-                                        <rect key="frame" x="225.33333333333337" y="67" width="192.66666666666663" height="30"/>
+                                        <rect key="frame" x="225.33333333333337" y="57" width="192.66666666666663" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="30" id="66i-0j-Qrn"/>
+                                            <constraint firstAttribute="height" constant="40" id="66i-0j-Qrn"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="set status message"/>
                                         <connections>
                                             <action selector="actionSetStatusMessage:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="p47-hL-BCM"/>
@@ -360,9 +359,9 @@
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="isA-Km-19L" secondAttribute="trailing" constant="10" id="6Tt-c6-ue6"/>
                                     <constraint firstItem="isA-Km-19L" firstAttribute="leading" secondItem="rha-b0-jMR" secondAttribute="trailing" constant="10" id="GfS-dA-0gf"/>
-                                    <constraint firstItem="3xN-e7-N0L" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="40" id="KVL-2d-xDr"/>
+                                    <constraint firstItem="3xN-e7-N0L" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="30" id="KVL-2d-xDr"/>
                                     <constraint firstItem="rha-b0-jMR" firstAttribute="leading" secondItem="LVo-6E-efl" secondAttribute="leading" constant="10" id="L1H-XE-sur"/>
-                                    <constraint firstItem="3CT-dJ-sEj" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="40" id="P6x-uB-lne"/>
+                                    <constraint firstItem="3CT-dJ-sEj" firstAttribute="top" secondItem="rha-b0-jMR" secondAttribute="bottom" constant="30" id="P6x-uB-lne"/>
                                     <constraint firstItem="3CT-dJ-sEj" firstAttribute="leading" secondItem="LVo-6E-efl" secondAttribute="leading" constant="10" id="ceW-Ca-9iB"/>
                                     <constraint firstAttribute="trailing" secondItem="3xN-e7-N0L" secondAttribute="trailing" constant="10" id="egg-HN-e1j"/>
                                     <constraint firstItem="rha-b0-jMR" firstAttribute="top" secondItem="LVo-6E-efl" secondAttribute="top" constant="10" id="mZV-JR-YrU"/>

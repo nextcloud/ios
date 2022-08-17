@@ -137,29 +137,37 @@ class NCContentPresenter: NSObject {
 
         if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: text) { return }
 
-        var attributes = EKAttributes.topNote
+        DispatchQueue.main.async {
+            var attributes = EKAttributes.topNote
 
-        attributes.windowLevel = .normal
-        attributes.displayDuration = delay
-        attributes.name = text
-        if let color = color {
-            attributes.entryBackground = .color(color: EKColor(color))
+            attributes.windowLevel = .normal
+            attributes.displayDuration = delay
+            attributes.name = text
+            if let color = color {
+                attributes.entryBackground = .color(color: EKColor(color))
+            }
+            if let type = type {
+                attributes.entryBackground = .color(color: EKColor(self.getBackgroundColorFromType(type)))
+            }
+            attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+
+            let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
+            let labelContent = EKProperty.LabelContent(text: text, style: style)
+
+            if let image = image {
+                let imageContent = EKProperty.ImageContent(image: image, size: CGSize(width: 17, height: 17))
+                let contentView = EKImageNoteMessageView(with: labelContent, imageContent: imageContent)
+                SwiftEntryKit.display(entry: contentView, using: attributes)
+            } else {
+                let contentView = EKNoteMessageView(with: labelContent)
+                SwiftEntryKit.display(entry: contentView, using: attributes)
+            }
         }
-        if let type = type {
-            attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
-        }
-        attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+    }
 
-        let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
-        let labelContent = EKProperty.LabelContent(text: text, style: style)
-
-        if let image = image {
-            let imageContent = EKProperty.ImageContent(image: image, size: CGSize(width: 17, height: 17))
-            let contentView = EKImageNoteMessageView(with: labelContent, imageContent: imageContent)
-            DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
-        } else {
-            let contentView = EKNoteMessageView(with: labelContent)
-            DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
+    func dismiss(after: TimeInterval = 0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + after) {
+            SwiftEntryKit.dismiss()
         }
     }
 

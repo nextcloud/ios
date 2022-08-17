@@ -373,62 +373,6 @@ extension NCManageDatabase {
         return tableAccount.init(value: returnAccount)
     }
 
-    /*
-    #if !EXTENSION
-    @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
-        
-        let realm = try! Realm()
-        
-        var returnAccount = tableAccount()
-
-        do {
-            guard let account = self.getAccountActive() else {
-                return nil
-            }
-            
-            try realm.write {
-                
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", account.account).first else {
-                    return
-                }
-                
-                result.hcIsTrial = features.isTrial
-                result.hcTrialExpired = features.trialExpired
-                result.hcTrialRemainingSec = features.trialRemainingSec
-                if features.trialEndTime > 0 {
-                    result.hcTrialEndTime = Date(timeIntervalSince1970: features.trialEndTime) as NSDate
-                } else {
-                    result.hcTrialEndTime = nil
-                }
-                
-                result.hcAccountRemoveExpired = features.accountRemoveExpired
-                result.hcAccountRemoveRemainingSec = features.accountRemoveRemainingSec
-                if features.accountRemoveTime > 0 {
-                    result.hcAccountRemoveTime = Date(timeIntervalSince1970: features.accountRemoveTime) as NSDate
-                } else {
-                    result.hcAccountRemoveTime = nil
-                }
-                
-                result.hcNextGroupExpirationGroup = features.nextGroupExpirationGroup
-                result.hcNextGroupExpirationGroupExpired = features.nextGroupExpirationGroupExpired
-                if features.nextGroupExpirationExpiresTime > 0 {
-                    result.hcNextGroupExpirationExpiresTime = Date(timeIntervalSince1970: features.nextGroupExpirationExpiresTime) as NSDate
-                } else {
-                    result.hcNextGroupExpirationExpiresTime = nil
-                }
-                result.hcNextGroupExpirationExpires = features.nextGroupExpirationExpires
-                
-                returnAccount = result
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-        
-        return tableAccount.init(value: returnAccount)
-    }
-    #endif
-    */
-
     @objc func setAccountMediaPath(_ path: String, account: String) {
 
         let realm = try! Realm()
@@ -476,22 +420,6 @@ extension NCManageDatabase {
                     } else {
                         result.alias = ""
                     }
-                }
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func setAccountColorFiles(lightColorBackground: String, darkColorBackground: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.safeWrite {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    result.lightColorBackground = lightColorBackground
-                    result.darkColorBackground = darkColorBackground
                 }
             }
         } catch let error {

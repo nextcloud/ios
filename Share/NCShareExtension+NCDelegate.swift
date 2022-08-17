@@ -76,6 +76,10 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
         }
         self.activeAccount = activeAccount
 
+        // COLORS
+        NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+        NCBrandColor.shared.createUserColors()
+
         // NETWORKING
         NCCommunicationCommon.shared.setup(
             account: activeAccount.account,

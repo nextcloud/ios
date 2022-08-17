@@ -23,10 +23,13 @@
 
 import Foundation
 import NCCommunication
+import FloatingPanel
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var imageView: UIImageView!
+
+    var fileId = ""
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -47,38 +50,16 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     private var user: String = ""
 
     var idActivity: Int = 0
-    var account: String = ""
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController: UIViewController?
 
     var fileAvatarImageView: UIImageView? {
-        get {
-            return avatar
-        }
-    }
-    var fileObjectId: String? {
-        get {
-            return nil
-        }
-    }
-    var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
+        get { return avatar }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
-    }
-
-    @objc func tapAvatarImage() {
-        guard let fileUser = fileUser else { return }
-        viewController?.showProfileMenu(userId: fileUser)
+        get { return user }
+        set { user = newValue ?? "" }
     }
 
     override func awakeFromNib() {
@@ -88,6 +69,11 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
         collectionView.dataSource = self
         let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         avatar.addGestureRecognizer(avatarRecognizer)
+    }
+
+    @objc func tapAvatarImage() {
+        guard let fileUser = fileUser else { return }
+        viewController?.showProfileMenu(userId: fileUser)
     }
 }
 
@@ -130,7 +116,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             return
         }
 
-        if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
+        if activityPreview.view == NCGlobal.shared.appName && activityPreview.mimeType != "dir" {
 
             guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
@@ -156,11 +142,12 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             var pathComponents = activityPreview.link.components(separatedBy: "?")
             pathComponents = pathComponents[1].components(separatedBy: "&")
             var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
-
+            serverUrlFileName = NCUtilityFileSystem.shared.getHomeServer(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
 
-            NCUtility.shared.startActivityIndicator(backgroundView: (appDelegate.window?.rootViewController?.view)!, blurEffect: true)
+            if let backgroundView = appDelegate.window?.rootViewController?.view {
+                NCActivityIndicator.shared.start(backgroundView: backgroundView)
+            }
 
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
@@ -176,28 +163,30 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                     let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
 
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { account, metadata, errorCode, _ in
+                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, errorCode, _ in
 
-                        NCUtility.shared.stopActivityIndicator()
+                        NCActivityIndicator.shared.stop()
 
-                        if account == self.appDelegate.account && errorCode == 0 {
+                        DispatchQueue.main.async {
+                            if account == self.appDelegate.account, errorCode == 0, let metadata = metadata {
 
-                            // move from id to oc:id + instanceid (ocId)
-                            let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
+                                // move from id to oc:id + instanceid (ocId)
+                                let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
+                                let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata.ocId
 
-                            CCUtility.moveFile(atPath: atPath, toPath: toPath)
+                                CCUtility.moveFile(atPath: atPath, toPath: toPath)
 
-                            NCManageDatabase.shared.addMetadata(metadata!)
-                            if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!], imageIcon: cell?.imageView.image)
+                                NCManageDatabase.shared.addMetadata(metadata)
+                                if let viewController = self.viewController {
+                                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
+                                }
                             }
                         }
                     }
 
                 } else {
 
-                    NCUtility.shared.stopActivityIndicator()
+                    NCActivityIndicator.shared.stop()
                 }
             }
         }
@@ -211,7 +200,8 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return activityPreviews.count
+        let results = activityPreviews.unique { $0.fileId }
+        return results.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -234,7 +224,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.imageView.image = image
                     }
                 } else {
-                     cell.imageView.image = UIImage(named: "file")
+                     cell.imageView.image = UIImage(named: "file_photo")
                 }
             }
 
@@ -250,13 +240,13 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                             cell.imageView.image = image
                         }
                     } else {
-                        cell.imageView.image = UIImage(named: "file")
+                        cell.imageView.image = UIImage(named: "file_photo")
                     }
                 }
 
             } else {
 
-                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
+                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
 
@@ -268,11 +258,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                     } else {
 
-                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, etag: nil, useInternalEndpoint: false) { _, imagePreview, _, _, _, errorCode, _ in
-                            if errorCode == 0 && imagePreview != nil {
-                                self.collectionView.reloadData()
-                            }
-                        }
+                        NCOperationQueue.shared.downloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView)
                     }
                 }
             }

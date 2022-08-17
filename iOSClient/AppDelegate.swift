@@ -40,28 +40,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var userId: String = ""
     @objc var password: String = ""
 
+    var deletePasswordSession: Bool = false
     var activeAppConfigView: NCAppConfigView?
-    var activeFiles: NCFiles?
-    var activeFileViewInFolder: NCFileViewInFolder?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
-    @objc var activeMedia: NCMedia?
     var activeServerUrl: String = ""
     @objc var activeViewController: UIViewController?
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
 
-    var listFilesVC: [String: NCFiles] = [:]
-    var listFavoriteVC: [String: NCFavorite] = [:]
-    var listOfflineVC: [String: NCOffline] = [:]
-    var listProgress: [String: NCGlobal.progressType] = [:]
+    let listFilesVC = ThreadSafeDictionary<String,NCFiles>()
+    let listFavoriteVC = ThreadSafeDictionary<String,NCFavorite>()
+    let listOfflineVC = ThreadSafeDictionary<String,NCOffline>()
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     var networkingProcessUpload: NCNetworkingProcessUpload?
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
-    
+
+    var errorITMS90076: Bool = false
+
     private var privacyProtectionWindow: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -106,6 +105,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
+        // LOG Account
+        if let account = NCManageDatabase.shared.getActiveAccount() {
+            NCCommunicationCommon.shared.writeLog("Account active \(account.account)")
+            if CCUtility.getPassword(account.account).isEmpty {
+                NCCommunicationCommon.shared.writeLog("PASSWORD NOT FOUND for \(account.account)")
+            }
+        }
+
+        // ITMS-90076: Potential Loss of Keychain Access
+        if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty, NCUtility.shared.getVersionApp(withBuild: false).starts(with: "4.4") {
+            errorITMS90076 = true
+        }
+
         // Activate user account
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
@@ -119,17 +131,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
 
+            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+
         } else {
 
             CCUtility.deleteAllChainStore()
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
+
+            NCBrandColor.shared.createImagesThemingColor()
         }
+
+        // Create user color
+        NCBrandColor.shared.createUserColors()
 
         // initialize
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
 
         // Process upload
         networkingProcessUpload = NCNetworkingProcessUpload()
@@ -189,6 +208,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione entrerà in primo piano (attivo sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
 
+        self.deletePasswordSession = false
+
         if !NCAskAuthorization.shared.isRequesting {
             // Privacy
             hidePrivacyProtectionWindow()
@@ -237,7 +258,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
     }
 
     // L' applicazione si dimetterà dallo stato di attivo
@@ -295,16 +316,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: -
 
     @objc private func initialize() {
-
-        if account == "" { return }
+        guard !account.isEmpty else { return }
 
         NCCommunicationCommon.shared.writeLog("initialize Main")
 
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
-
-        // Setting Theming
-        NCBrandColor.shared.settingThemingColor(account: account)
 
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in }
@@ -363,7 +380,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
                 NCCommunicationCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
                 task.setTaskCompleted(success: true)
             }
@@ -387,7 +403,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCService.shared.synchronizeOffline(account: account)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
             task.setTaskCompleted(success: true)
         }
@@ -405,7 +420,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber)
             NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
             if items == 0 {
                 completionHandler(UIBackgroundFetchResult.noData)
@@ -848,7 +862,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
 
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileName: fileName)
+                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: fileName)
                         }
 
                     } else {

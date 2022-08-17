@@ -49,10 +49,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         // Empty
         let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
         emptyDataSet = NCEmptyDataSet(view: tableView, offset: -offset, delegate: self)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-
-        changeTheming()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -84,10 +80,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     @objc func initialize() {
         getNetwokingNotification()
-    }
-
-    @objc func changeTheming() {
-        tableView.reloadData()
     }
 
     // MARK: - Empty
@@ -146,7 +138,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 cell.fileUser = user
-                NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView)
+                NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
             }
         }
 
@@ -164,18 +156,20 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.primary.isEnabled = false
         cell.primary.isHidden = true
         cell.primary.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.primary.setTitleColor(.white, for: .normal)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
         cell.primary.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
+        cell.primary.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true
         cell.secondary.titleLabel?.font = .systemFont(ofSize: 15)
-        cell.secondary.setTitleColor(NCBrandColor.shared.label, for: .normal)
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
-        cell.secondary.layer.backgroundColor = NCBrandColor.shared.systemFill.cgColor
+        cell.secondary.layer.borderWidth = 1
+        cell.secondary.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        cell.secondary.layer.backgroundColor = NCBrandColor.shared.secondarySystemBackground.cgColor
+        cell.secondary.setTitleColor(.black, for: .normal)
 
         // Action
         if let actions = notification.actions,
@@ -278,8 +272,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func getNetwokingNotification() {
 
-        NCUtility.shared.startActivityIndicator(backgroundView: self.navigationController?.view, blurEffect: true)
-
         NCCommunication.shared.getNotifications { account, notifications, errorCode, _ in
 
             if errorCode == 0 && account == self.appDelegate.account {
@@ -296,8 +288,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 self.reloadDatasource()
             }
-
-            NCUtility.shared.stopActivityIndicator()
         }
     }
 }
@@ -323,28 +313,12 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     weak var delegate: NCNotificationCellDelegate?
     var notification: NCCommunicationNotifications?
 
-    var filePreviewImageView: UIImageView? {
-        get {
-            return nil
-        }
-    }
     var fileAvatarImageView: UIImageView? {
-        get {
-            return avatar
-        }
-    }
-    var fileObjectId: String? {
-        get {
-            return nil
-        }
+        get { return avatar }
     }
     var fileUser: String? {
-        get {
-            return user
-        }
-        set {
-            user = newValue ?? ""
-        }
+        get { return user }
+        set { user = newValue ?? "" }
     }
 
     override func awakeFromNib() {

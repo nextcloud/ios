@@ -427,10 +427,12 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapPlayerPause(_ sender: Any) {
 
         if ncplayer?.player?.timeControlStatus == .playing {
+            CCUtility.setPlayerPlay(false)
             ncplayer?.playerPause()
             ncplayer?.saveCurrentTime()
             timerAutoHide?.invalidate()
         } else if ncplayer?.player?.timeControlStatus == .paused {
+            CCUtility.setPlayerPlay(true)
             ncplayer?.playerPlay()
             startTimerAutoHide()
         } else if ncplayer?.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
@@ -485,27 +487,11 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapForward(_ sender: Any) {
 
         skip(seconds: 10)
-
-        /*
-         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-         skip(seconds: 10)
-         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-         forward()
-         }
-         */
     }
 
     @IBAction func tapBack(_ sender: Any) {
 
         skip(seconds: -10)
-
-        /*
-         if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
-         skip(seconds: -10)
-         } else if metadata?.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
-         backward()
-         }
-         */
     }
 
     @IBAction func tapSubtitle(_ sender: Any) {

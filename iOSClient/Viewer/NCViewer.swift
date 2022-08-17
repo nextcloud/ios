@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import QuickLook
 
 class NCViewer: NSObject {
     @objc static let shared: NCViewer = {
@@ -42,6 +43,15 @@ class NCViewer: NSObject {
 
         var editor = editor
         var xxxxxxx = NCCommunicationCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
+
+        // URL
+        if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+
+            if let url = URL(string: metadata.url) {
+                UIApplication.shared.open(url)
+            }
+            return
+        }
 
         // IMAGE AUDIO VIDEO
         if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
@@ -91,10 +101,10 @@ class NCViewer: NSObject {
 
                 if metadata.url == "" {
 
-                    NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
+                    NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, errorCode, errorDescription in
 
-                        NCUtility.shared.stopActivityIndicator()
+                        NCActivityIndicator.shared.stop()
 
                         if errorCode == 0 && account == self.appDelegate.account && url != nil {
 
@@ -156,10 +166,10 @@ class NCViewer: NSObject {
                             customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
                         }
 
-                        NCUtility.shared.startActivityIndicator(backgroundView: viewController.view, blurEffect: true)
+                        NCActivityIndicator.shared.start(backgroundView: viewController.view)
                         NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
 
-                            NCUtility.shared.stopActivityIndicator()
+                            NCActivityIndicator.shared.stop()
 
                             if errorCode == 0 && account == self.appDelegate.account && url != nil {
 
@@ -205,13 +215,17 @@ class NCViewer: NSObject {
             }
         }
 
-        // OTHER
-        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-
-        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-
-        let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
-        viewController.present(viewerQuickLook, animated: true)
+        // QLPreview
+        let item = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        if QLPreviewController.canPreview(item as QLPreviewItem) {
+            let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+            CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
+            viewController.present(viewerQuickLook, animated: true)
+        } else {
+        // Document Interaction Controller
+            NCFunctionCenter.shared.openDocumentController(metadata: metadata)
+        }
     }
 }
 

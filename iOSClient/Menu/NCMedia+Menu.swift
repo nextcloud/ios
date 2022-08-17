@@ -53,7 +53,7 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString(filterClassTypeImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
+                    title: NSLocalizedString("_media_viewimage_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "photo"),
                     selected: filterClassTypeImage,
                     on: true,
@@ -67,7 +67,7 @@ extension NCMedia {
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString(filterClassTypeVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
+                    title: NSLocalizedString("_media_viewvideo_hide_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "video"),
                     selected: filterClassTypeVideo,
                     on: true,

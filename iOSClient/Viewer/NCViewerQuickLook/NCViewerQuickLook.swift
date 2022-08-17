@@ -147,11 +147,14 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             serverUrl: metadata.serverUrl,
             urlBase: metadata.urlBase,
             url: url.path,
-            contentType: "",
-            livePhoto: false)
+            contentType: "")
 
         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-        metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+        if override {
+            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
+        } else {
+            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+        }
         metadataForUpload.size = size
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
         (UIApplication.shared.delegate as? AppDelegate)?.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload])

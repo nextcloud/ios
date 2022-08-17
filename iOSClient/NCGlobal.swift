@@ -79,19 +79,16 @@ class NCGlobal: NSObject {
         var directoryOnTop: Bool
         var titleButtonHeader: String
         var itemForLine: Int
-        var imageBackgroud: String
-        var imageBackgroudContentMode: String
     }
 
     // Directory on Group
     //
-    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
-    @objc let appApplicationSupport                 = "Library/Application Support"
-    @objc let appUserData                           = "Library/Application Support/UserData"
-    @objc let appCertificates                       = "Library/Application Support/Certificates"
-    @objc let appScan                               = "Library/Application Support/Scan"
-    @objc let appBackground                         = "Library/Application Support/Background"
     @objc let directoryProviderStorage              = "File Provider Storage"
+    @objc let appApplicationSupport                 = "Library/Application Support"
+    @objc let appCertificates                       = "Library/Application Support/Certificates"
+    @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
+    @objc let appScan                               = "Library/Application Support/Scan"
+    @objc let appUserData                           = "Library/Application Support/UserData"
 
     // Service
     //
@@ -100,6 +97,10 @@ class NCGlobal: NSObject {
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
 
+    // Name
+    //
+    @objc let appName                               = "files"
+    
     // Nextcloud version
     //
     let nextcloudVersion12: Int                     =  12
@@ -112,7 +113,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 222
+    let databaseSchemaVersion: UInt64               = 237
 
     // Intro selector
     //
@@ -178,6 +179,15 @@ class NCGlobal: NSObject {
     let buttonMoreStop                              = "stop"
     let buttonMoreLock                              = "moreLock"
 
+    // Standard height sections header/footer
+    //
+    let heightButtonsCommand: CGFloat               = 50
+    let heightButtonsView: CGFloat                  = 50
+    let heightSection: CGFloat                      = 30
+    let heightFooter: CGFloat                       = 1
+    let heightFooterButton: CGFloat                 = 30
+    let endHeightFooter: CGFloat                    = 85
+
     // Text -  OnlyOffice - Collabora - QuickLook
     //
     let editorText                                  = "text"
@@ -200,6 +210,7 @@ class NCGlobal: NSObject {
     let fileNameRichWorkspace                       = "Readme.md"
 
     // Extension
+    //
     @objc let extensionPreview                      = "ico"
 
     // ContentPresenter
@@ -279,9 +290,9 @@ class NCGlobal: NSObject {
     let selectorUploadAutoUpload                    = "uploadAutoUpload"
     let selectorUploadAutoUploadAll                 = "uploadAutoUploadAll"
     let selectorUploadFile                          = "uploadFile"
+    let selectorUploadFileNODelete                  = "UploadFileNODelete"
     let selectorUploadFileShareExtension            = "uploadFileShareExtension"
     let selectorSaveAlbum                           = "saveAlbum"
-    let selectorSaveBackground                      = "saveBackground"
     let selectorSaveAlbumLivePhotoIMG               = "saveAlbumLivePhotoIMG"
     let selectorSaveAlbumLivePhotoMOV               = "saveAlbumLivePhotoMOV"
     let selectorSaveAsScan                          = "saveAsScan"
@@ -313,36 +324,36 @@ class NCGlobal: NSObject {
     let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
     let notificationCenterApplicationWillResignActive           = "applicationWillResignActive"
 
-    @objc let notificationCenterInitialize                      = "initialize"
+    @objc let notificationCenterInitialize                      = "initialize"                      // userInfo?: atStart
     @objc let notificationCenterChangeTheming                   = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
-    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"
+    let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counter
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterOpenFileViewInFolder                  = "openFileViewInFolder"            // userInfo: serverUrl, fileName
 
-    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                // userInfo: ocId?, serverUrl?
+    @objc let notificationCenterReloadDataSource                = "reloadDataSource"                // userInfo: serverUrl?
+    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: serverUrl?
     let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"   // userInfo: serverUrl?
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, selector, errorCode, errorDescription
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId
+    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, serverUrl, account
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, serverUrl, account, selector, errorCode, errorDescription
+    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, serverUrl, account
 
-    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId
-    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
+    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, errorCode, errorDescription
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, classFile, onlyLocalCache
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, errorCode, errorDescription
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, serverUrlTo
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlFrom
-    let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, serverUrl, account, classFile, onlyLocalCache
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
+    let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
@@ -361,7 +372,10 @@ class NCGlobal: NSObject {
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
 
-    // Tip
+    // TIP
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
+    let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
+    let tipNCScanAddImage                                       = "tipncscanaddimage"
+    let tipNCViewerMediaDetailView                              = "tipncviewermediadetailview"
 }

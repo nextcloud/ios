@@ -556,17 +556,6 @@
     [UICKeyChainStore setData:data forKey:@"databaseEncryptionKey" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getDisableLocalCacheAfterUpload
-{
-    return [[UICKeyChainStore stringForKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setDisableLocalCacheAfterUpload:(BOOL)disable
-{
-    NSString *sDisable = (disable) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDisable forKey:@"disableLocalCacheAfterUpload" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getLivePhoto
 {
     NSString *valueString = [UICKeyChainStore stringForKey:@"livePhoto" service:NCGlobal.shared.serviceShareKeyChain];
@@ -659,17 +648,6 @@
     [UICKeyChainStore setString:sSet forKey:@"audioMute" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getAutomaticDownloadImage
-{
-    return [[UICKeyChainStore stringForKey:@"automaticDownloadImage" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setAutomaticDownloadImage:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"automaticDownloadImage" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getAccountRequest
 {
     return [[UICKeyChainStore stringForKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
@@ -745,17 +723,39 @@
     [UICKeyChainStore setString:sSet forKey:@"removePhotoCameraRoll" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
++ (BOOL)getPresentErrorITMS90076
+{
+    return [[UICKeyChainStore stringForKey:@"errorITMS90076" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setPresentErrorITMS90076:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"errorITMS90076" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (BOOL)getPlayerPlay
+{
+    return [[UICKeyChainStore stringForKey:@"playerPlay" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setPlayerPlay:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"playerPlay" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL
-{
-    assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);
-    
+{    
     NSError *error = nil;
     BOOL success = [URL setResourceValue:[NSNumber numberWithBool: YES] forKey: NSURLIsExcludedFromBackupKey error: &error];
-    if(!success){
+    if(success) {
+        NSLog(@"Excluding %@ from backup", [URL lastPathComponent]);
+    } else {
         NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
     }
     
@@ -1034,17 +1034,17 @@
     path = NSTemporaryDirectory();
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    // create Directory Background
-    path = [[dirGroup URLByAppendingPathComponent:NCGlobal.shared.appBackground] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
+
     // Directory Excluded From Backup
     [CCUtility addSkipBackupAttributeToItemAtURL:[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]];
     [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.directoryProviderStorage]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appApplicationSupport]];
+
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appCertificates]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appDatabaseNextcloud]];
+    [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appScan]];
     [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appUserData]];
-    
+
     #ifdef DEBUG
     NSLog(@"[LOG] Copy DB on Documents directory");
     NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:[[NCGlobal shared] appDatabaseNextcloud]] path]];
@@ -1150,14 +1150,22 @@
 
 + (BOOL)fileProviderStorageExists:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
-        return false;
-    }
+    NSString *fileNameViewPath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
+    NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
+    BOOL isFolderEncrypted = [self isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account urlBase:metadata.urlBase];
 
-    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
-    if (fileSize > 0) return true;
-    else return false;
+    unsigned long long fileNameViewSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNameViewPath error:nil] fileSize];
+    unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+
+    if (isFolderEncrypted == true) {
+        if (fileNameSize == metadata.size && fileNameViewSize > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return fileNameViewSize == metadata.size;
+    }
 }
 
 + (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView
@@ -1344,164 +1352,6 @@
     return path;
 }
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
-{
-    if (metadataForUpload == nil) {
-        return completion(nil, nil);
-    }
-    
-    tableMetadata *metadata = [[NCManageDatabase shared] copyObjectWithMetadata:metadataForUpload];
-    
-    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
-    if (!result.count) {
-        return completion(nil, nil);
-    }
-    
-    PHAsset *asset = result[0];
-    NSDate *creationDate = asset.creationDate;
-    NSDate *modificationDate = asset.modificationDate;
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    
-        // IMAGE
-        if (asset.mediaType == PHAssetMediaTypeImage) {
-            
-            PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = YES;
-            options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-            options.synchronous = YES;
-            options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
-                
-                NSLog(@"cacheAsset: %f", progress);
-                
-                if (error) {
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
-                    return completion(nil, nil);
-                }
-            };
-            
-            NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
-            
-            //raw image will always ignore any edits made to the photo if compatibility is false
-            if ([extensionAsset isEqualToString:@"DNG"]) {
-                options.version = PHImageRequestOptionsVersionOriginal;
-            }
-            
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                
-                NSError *error = nil;
-                NSString *fileName = metadata.fileNameView;
-
-                if (([extensionAsset isEqualToString:@"HEIC"] || [extensionAsset isEqualToString:@"DNG"]) && [CCUtility getFormatCompatibility]) {
-                    
-                    CIImage *ciImage = [CIImage imageWithData:imageData];
-                    CIContext *context = [CIContext context];
-                    imageData = [context JPEGRepresentationOfImage:ciImage colorSpace:ciImage.colorSpace options:@{}];
-                    
-                    NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
-                    fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
-                    metadata.contentType = @"image/jpeg";
-                    metadata.ext = @"jpg";
-                }
-                
-                NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:fileName];
-                
-                [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
-                [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
-                
-                if (metadata.e2eEncrypted) {
-                    metadata.fileNameView = fileName;
-                } else {
-                    metadata.fileNameView = fileName;
-                    metadata.fileName = fileName;
-                }
-                     
-                metadata.creationDate = creationDate;
-                metadata.date = modificationDate;
-                metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(metadata, fileNamePath);
-                });
-            }];
-        }
-    
-        // VIDEO
-        if (asset.mediaType == PHAssetMediaTypeVideo) {
-            
-            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = YES;
-            options.version = PHVideoRequestOptionsVersionOriginal;
-            options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
-                
-                NSLog(@"cacheAsset: %f", progress);
-                
-                if (error) {
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
-                    completion(nil, nil);
-                }
-            };
-            
-            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
-                
-                if ([asset isKindOfClass:[AVURLAsset class]]) {
-                    
-                    NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
-                    NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
-                    NSError *error = nil;
-                    //NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys: modificationDate, NSFileModificationDate, creationDate, NSFileCreationDate, NULL];
-
-                    [[NSFileManager defaultManager] removeItemAtURL:fileNamePathURL error:nil];
-                    [[NSFileManager defaultManager] copyItemAtURL:[(AVURLAsset *)asset URL] toURL:fileNamePathURL error:&error];
-                    //[[NSFileManager defaultManager] setAttributes: attributes ofItemAtPath:fileNamePath error:nil];
-
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        if (error) {
-                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterUploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
-                            completion(nil, nil);
-                        } else {
-                            metadata.creationDate = creationDate;
-                            metadata.date = modificationDate;
-                            metadata.size = [[NCUtilityFileSystem shared] getFileSizeWithFilePath:fileNamePath];
-                            completion(metadata, fileNamePath);
-                        }
-                    });
-                }
-            }];
-        }
-    });
-}
-
-+ (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion
-{    
-    [CCUtility removeFileAtPath:filePath];
-    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-    PHLivePhotoRequestOptions *options = [PHLivePhotoRequestOptions new];
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-    options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
-        if (livePhoto) {
-            NSArray *assetResources = [PHAssetResource assetResourcesForLivePhoto:livePhoto];
-            PHAssetResource *videoResource = nil;
-            for(PHAssetResource *resource in assetResources){
-                if (resource.type == PHAssetResourceTypePairedVideo) {
-                    videoResource = resource;
-                    break;
-                }
-            }
-            if(videoResource){
-                [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
-                    if (!error) {
-                        completion(fileUrl);
-                    } else { completion(nil); }
-                }];
-            } else { completion(nil); }
-        } else { completion(nil); }
-    }];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1533,7 +1383,7 @@
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            serverUrl = [[NCUtilityFileSystem shared]  deletingLastPathComponentWithAccount:account serverUrl:serverUrl];
+            serverUrl = [[NCUtilityFileSystem shared] deletingLastPathComponentWithAccount:account serverUrl:serverUrl];
             directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         

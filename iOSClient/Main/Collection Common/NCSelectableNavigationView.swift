@@ -34,6 +34,7 @@ extension RealmSwiftObject {
 }
 
 protocol NCSelectableNavigationView: AnyObject {
+
     var appDelegate: AppDelegate { get }
     var selectableDataSource: [RealmSwiftObject] { get }
     var collectionView: UICollectionView! { get set }
@@ -44,7 +45,7 @@ protocol NCSelectableNavigationView: AnyObject {
 
     var selectActions: [NCMenuAction] { get }
 
-    func reloadDataSource()
+    func reloadDataSource(forced: Bool)
     func setNavigationItem()
 
     func tapSelectMenu()
@@ -52,7 +53,10 @@ protocol NCSelectableNavigationView: AnyObject {
 }
 
 extension NCSelectableNavigationView {
-    func setNavigationItem() { setNavigationHeader() }
+
+    func setNavigationItem() {
+        setNavigationHeader()
+    }
 
     func setNavigationHeader() {
         if isEditMode {
@@ -132,7 +136,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
             actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMediaMetadatas, completion: tapSelect))
         }
         actions.append(.setAvailableOfflineAction(selectedMetadatas: selectedMetadatas, isAnyOffline: isAnyOffline, viewController: self, completion: {
-            self.reloadDataSource()
+            self.reloadDataSource(forced: true)
             self.tapSelect()
         }))
 

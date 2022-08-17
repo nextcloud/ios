@@ -34,164 +34,176 @@ extension NCNetworking {
         let chunkFolderPath = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/uploads/" + metadata.userId + "/" + chunkFolder
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let chunkSize = CCUtility.getChunkSize()
+        let fileSizeInGB = Double(metadata.size) / 1e9
+        let ocIdTemp = metadata.ocId
+        let selector = metadata.sessionSelector
 
         var uploadErrorCode: Int = 0
         var uploadErrorDescription: String = ""
+
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
-
+            NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
             filesNames = NCCommunicationCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
-
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
             } else {
+                NCContentPresenter.shared.dismiss()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorReadFile)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 return completion(uploadErrorCode, uploadErrorDescription)
             }
-
         } else {
-
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         }
 
-        NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
-
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { errorCode, errorDescription in
 
+            NCContentPresenter.shared.dismiss(after: NCGlobal.shared.dismissAfterSecond)
             start()
 
-            if errorCode == 0 {
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
-
-                for fileName in filesNames {
-
-                    let serverUrlFileName = chunkFolderPath + "/" + fileName
-                    let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
-
-                    var size: Int64?
-                    if let tableChunk = NCManageDatabase.shared.getChunk(account: metadata.account, fileName: fileName) {
-                        size = tableChunk.size - NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
-                    }
-
-                    let semaphore = Semaphore()
-
-                    NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
-
-                        self.uploadRequest[fileNameLocalPath] = request
-
-                    }, taskHandler: { task in
-
-                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId])
-
-                        NCCommunicationCommon.shared.writeLog("Upload chunk: " + fileName)
-
-                    }, progressHandler: { progress in
-
-                        if let size = size {
-
-                            let totalBytesExpected = size + progress.completedUnitCount
-                            let totalBytes = metadata.size
-                            let fractionCompleted = Float(totalBytesExpected) / Float(totalBytes)
-
-                            NotificationCenter.default.postOnMainThread(
-                                name: NCGlobal.shared.notificationCenterProgressTask,
-                                object: nil,
-                                userInfo: [
-                                    "account": metadata.account,
-                                    "ocId": metadata.ocId,
-                                    "fileName": metadata.fileName,
-                                    "serverUrl": metadata.serverUrl,
-                                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
-                                    "progress": NSNumber(value: fractionCompleted),
-                                    "totalBytes": NSNumber(value: totalBytes),
-                                    "totalBytesExpected": NSNumber(value: totalBytesExpected)])
-                        }
-
-                    }) { _, _, _, _, _, _, _, errorCode, errorDescription in
-
-                        self.uploadRequest[fileNameLocalPath] = nil
-                        uploadErrorCode = errorCode
-                        uploadErrorDescription = errorDescription
-                        semaphore.continue()
-                    }
-
-                    semaphore.wait()
-
-                    if uploadErrorCode == 0 {
-                        NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileName: fileName)
-                    } else {
-                        break
-                    }
-                }
-
-                if uploadErrorCode == 0 {
-
-                    // Assembling the chunks
-                    let serverUrlFileNameSource = chunkFolderPath + "/.file"
-                    let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-                    let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
-
-                    var addCustomHeaders: [String: String] = [:]
-                    let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
-                    let modificationDate = "\(metadata.date.timeIntervalSince1970)"
-
-                    addCustomHeaders["X-OC-CTime"] = creationDate
-                    addCustomHeaders["X-OC-MTime"] = modificationDate
-
-                    NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders) { _, errorCode, errorDescription in
-
-                        NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
-
-                        if errorCode == 0 {
-
-                            let serverUrl = metadata.serverUrl
-                            let assetLocalIdentifier = metadata.assetLocalIdentifier
-
-                            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
-                            NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
-
-                            self.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account) { _, metadata, _, _ in
-
-                                if errorCode == 0, let metadata = metadata {
-
-                                    metadata.assetLocalIdentifier = assetLocalIdentifier
-                                    // Delete Asset on Photos album
-                                    if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
-                                        metadata.deleteAssetLocalIdentifier = true
-                                    }
-                                    NCManageDatabase.shared.addMetadata(metadata)
-                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
-
-                                } else {
-
-                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                                }
-
-                                completion(errorCode, errorDescription)
-                            }
-
-                        } else {
-
-                            self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
-                            completion(errorCode, errorDescription)
-                        }
-                    }
-
-                } else {
-
-                    self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
-                    completion(errorCode, errorDescription)
-                }
-
-            } else {
-
+            guard errorCode == 0 else {
                 self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
                 completion(errorCode, errorDescription)
+                return
+            }
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
+
+            for fileName in filesNames {
+
+                let serverUrlFileName = chunkFolderPath + "/" + fileName
+                let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
+
+                var size: Int64?
+                if let tableChunk = NCManageDatabase.shared.getChunk(account: metadata.account, fileName: fileName) {
+                    size = tableChunk.size - NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
+                }
+
+                let semaphore = Semaphore()
+
+                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
+
+                    self.uploadRequest[fileNameLocalPath] = request
+
+                }, taskHandler: { task in
+
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
+                    NCCommunicationCommon.shared.writeLog("Upload chunk: " + fileName)
+
+                }, progressHandler: { progress in
+
+                    if let size = size {
+                        let totalBytesExpected = metadata.size
+                        let totalBytes = size + progress.completedUnitCount
+                        let fractionCompleted = Float(totalBytes) / Float(totalBytesExpected)
+
+                        NotificationCenter.default.postOnMainThread(
+                            name: NCGlobal.shared.notificationCenterProgressTask,
+                            object: nil,
+                            userInfo: [
+                                "account": metadata.account,
+                                "ocId": metadata.ocId,
+                                "fileName": metadata.fileName,
+                                "serverUrl": metadata.serverUrl,
+                                "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                                "progress": NSNumber(value: fractionCompleted),
+                                "totalBytes": NSNumber(value: totalBytes),
+                                "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+                    }
+
+                }) { _, _, _, _, _, _, _, errorCode, errorDescription in
+
+                    self.uploadRequest.removeValue(forKey: fileNameLocalPath)
+                    uploadErrorCode = errorCode
+                    uploadErrorDescription = errorDescription
+                    semaphore.continue()
+                }
+
+                semaphore.wait()
+
+                if uploadErrorCode == 0 {
+                    NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileName: fileName)
+                } else {
+                    break
+                }
+            }
+
+            guard uploadErrorCode == 0 else {
+                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
+                completion(errorCode, errorDescription)
+                return
+            }
+
+            // Assembling the chunks
+            let serverUrlFileNameSource = chunkFolderPath + "/.file"
+            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
+
+            var addCustomHeaders: [String: String] = [:]
+            let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
+            let modificationDate = "\(metadata.date.timeIntervalSince1970)"
+
+            addCustomHeaders["X-OC-CTime"] = creationDate
+            addCustomHeaders["X-OC-MTime"] = modificationDate
+
+            // Calculate Assemble Timeout
+            let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
+            let ASSEMBLE_TIME_MIN: Double       = 60                // 60 sec
+            let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30 min
+            let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
+
+            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, timeout: timeout, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
+
+                NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
+
+                guard uploadErrorCode == 0 else {
+                    self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
+                    completion(errorCode, errorDescription)
+                    return
+                }
+
+                let serverUrl = metadata.serverUrl
+                let assetLocalIdentifier = metadata.assetLocalIdentifier
+                let isLivePhoto = metadata.livePhoto
+                let isE2eEncrypted = metadata.e2eEncrypted
+                let account = metadata.account
+                let fileName = metadata.fileName
+
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: ocIdTemp)
+
+                self.readFile(serverUrlFileName: serverUrlFileNameDestination) { (_, metadata, _, _) in
+
+                    if errorCode == 0, let metadata = metadata {
+
+                        metadata.assetLocalIdentifier = assetLocalIdentifier
+                        metadata.e2eEncrypted = isE2eEncrypted
+                        metadata.livePhoto = isLivePhoto
+
+                        // Delete Asset on Photos album
+                        if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
+                            metadata.deleteAssetLocalIdentifier = true
+                        }
+                        NCManageDatabase.shared.addMetadata(metadata)
+
+                        if selector == NCGlobal.shared.selectorUploadFileNODelete {
+                            NCUtilityFileSystem.shared.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName), toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName))
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                        }
+                        NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
+
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
+
+                    } else {
+
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": ocIdTemp, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
+                    }
+
+                    completion(errorCode, errorDescription)
+                }
             }
         }
     }
@@ -244,6 +256,6 @@ extension NCNetworking {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "ocIdTemp": metadata.ocId, "errorCode": errorCode, "errorDescription": ""])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": metadata.ocId, "errorCode": errorCode, "errorDescription": ""])
     }
 }

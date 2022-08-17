@@ -1,5 +1,5 @@
 //
-//  NCUtility.swift
+//  NCUserBaseUrl.swift
 //  Nextcloud
 //
 //  Created by Henrik Storch on 22.11.21.
@@ -27,10 +27,14 @@ import Foundation
     var user: String { get }
     var urlBase: String { get }
     var account: String { get }
+    var userId: String { get }
 }
 
 public extension NCUserBaseUrl {
     var userBaseUrl: String {
         user + "-" + (URL(string: urlBase)?.host ?? "")
+    }
+    var userAccount: String {
+        user + " " + urlBase
     }
 }

@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import Photos
 
 class NCManageAutoUploadFileName: XLFormViewController {
 

@@ -43,14 +43,14 @@ class NCShareNetworking: NSObject {
 
     func readShare(showLoadingIndicator: Bool) {
         if showLoadingIndicator {
-            NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
+            NCActivityIndicator.shared.start(backgroundView: view)
         }
 
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let parameter = NCCShareParameter(path: filenamePath)
         NCCommunication.shared.readShares(parameters: parameter) { account, shares, errorCode, errorDescription in
             if showLoadingIndicator {
-                NCUtility.shared.stopActivityIndicator()
+                NCActivityIndicator.shared.stop()
             }
 
              if errorCode == 0, let shares = shares {
@@ -71,11 +71,11 @@ class NCShareNetworking: NSObject {
         // Library update needed:
         // https://github.com/nextcloud/ios-communication-library/pull/104
 
-        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
+        NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
 
         NCCommunication.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions) { (account, share, errorCode, errorDescription) in
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
             if errorCode == 0, let share = share {
                 option.idShare = share.idShare
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
@@ -91,9 +91,9 @@ class NCShareNetworking: NSObject {
     }
 
     func unShare(idShare: Int) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
+        NCActivityIndicator.shared.start(backgroundView: view)
         NCCommunication.shared.deleteShare(idShare: idShare) { account, errorCode, errorDescription in
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
             if errorCode == 0 {
                 NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
@@ -104,9 +104,9 @@ class NCShareNetworking: NSObject {
     }
 
     func updateShare(option: NCTableShareable) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
+        NCActivityIndicator.shared.start(backgroundView: view)
         NCCommunication.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, errorCode, errorDescription in
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
             if errorCode == 0, let share = share {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
@@ -119,9 +119,9 @@ class NCShareNetworking: NSObject {
     }
 
     func getSharees(searchString: String) {
-        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: false)
+        NCActivityIndicator.shared.start(backgroundView: view)
         NCCommunication.shared.searchSharees(search: searchString) { _, sharees, errorCode, errorDescription in
-            NCUtility.shared.stopActivityIndicator()
+            NCActivityIndicator.shared.stop()
             if errorCode == 0 {
                 self.delegate?.getSharees(sharees: sharees)
             } else {

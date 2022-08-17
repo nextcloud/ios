@@ -84,34 +84,6 @@
     [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
-    // Disable Local Cache After Upload
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_disableLocalCacheAfterUpload_footer_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"disableLocalCacheAfterUpload" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_disableLocalCacheAfterUpload_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-    if ([CCUtility getDisableLocalCacheAfterUpload]) row.value = @"1";
-    else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-    [section addFormRow:row];
-    
-    // Automatic download image
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_automatic_Download_Image_footer_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"automaticDownloadImage" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_automatic_Download_Image_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-    if ([CCUtility getAutomaticDownloadImage]) row.value = @"1";
-    else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-    [section addFormRow:row];
-    
     // Section : Files App --------------------------------------------------------------
     
     if (![NCBrandOptions shared].disable_openin_file) {
@@ -200,7 +172,7 @@
             
             NSInteger logLevel = [CCUtility getLogLevel];
             BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
-            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp];
+            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
                 [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
             } else {
@@ -364,17 +336,7 @@
 
         [CCUtility setRemovePhotoCameraRoll:[[rowDescriptor.value valueData] boolValue]];
     }
-    
-    if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {
-        
-        [CCUtility setDisableLocalCacheAfterUpload:[[rowDescriptor.value valueData] boolValue]];
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"automaticDownloadImage"]) {
-        
-        [CCUtility setAutomaticDownloadImage:[[rowDescriptor.value valueData] boolValue]];
-    }
-    
+
     if ([rowDescriptor.tag isEqualToString:@"disablefilesapp"]) {
         
         [CCUtility setDisableFilesApp:[[rowDescriptor.value valueData] boolValue]];
@@ -441,11 +403,8 @@
     // Inizialized home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterInitialize object:nil userInfo:nil];
     
-    // Clear Media
-    [appDelegate.activeMedia reloadDataSourceWithCompletion:^(NSArray *metadatas) { }];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [[NCUtility shared] stopActivityIndicator];
+        [[NCActivityIndicator shared] stop];
         [self calculateSize];
     });
 }
@@ -457,7 +416,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_cache_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[NCUtility shared] startActivityIndicatorWithBackgroundView:nil blurEffect:true bottom:0 style: UIActivityIndicatorViewStyleWhiteLarge];
+        [[NCActivityIndicator shared] startActivityWithBackgroundView:nil style: UIActivityIndicatorViewStyleWhiteLarge];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             [self clearCache];
         });
@@ -528,7 +487,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.section == 7 && indexPath.row == 2) {
+    if (indexPath.section == 5 && indexPath.row == 2) {
         return 80;
     } else {
         return NCGlobal.shared.heightCellSettings;

@@ -34,6 +34,9 @@ class NCShares: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_list_shares_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
+        headerMenuButtonsCommand = false
+        headerMenuButtonsView = true
+        headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "share")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_list_shares_no_files_"
         emptyDescription = "_tutorial_list_shares_view_"
@@ -41,21 +44,30 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource() {
+    override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            self.metadatasSource.removeAll()
             let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
+            var metadatas: [tableMetadata] = []
             for share in sharess {
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
-                    if !(self.metadatasSource.contains { $0.ocId == metadata.ocId }) {
-                        self.metadatasSource.append(metadata)
+                    if !(metadatas.contains { $0.ocId == metadata.ocId }) {
+                        metadatas.append(metadata)
                     }
                 }
             }
 
-            self.dataSource = NCDataSource(metadatasSource: self.metadatasSource, sort: self.layoutForView?.sort, ascending: self.layoutForView?.ascending, directoryOnTop: self.layoutForView?.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource(metadatas: metadatas,
+                                           account: self.appDelegate.account,
+                                           sort: self.layoutForView?.sort,
+                                           ascending: self.layoutForView?.ascending,
+                                           directoryOnTop: self.layoutForView?.directoryOnTop,
+                                           favoriteOnTop: true,
+                                           filterLivePhoto: true,
+                                           groupByField: self.groupByField,
+                                           providers: self.providers,
+                                           searchResults: self.searchResults)
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
@@ -66,11 +78,6 @@ class NCShares: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        if isSearching {
-            networkSearch()
-            return
-        }
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

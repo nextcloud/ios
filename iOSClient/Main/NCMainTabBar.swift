@@ -28,7 +28,7 @@ class NCMainTabBar: UITabBar {
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var timer: Timer?
+    private let centerButtonY: CGFloat = -28
 
     public var menuRect: CGRect {
         get {
@@ -45,10 +45,10 @@ class NCMainTabBar: UITabBar {
         super.init(coder: coder)
 
         appDelegate.mainTabBar = self
-        timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: (#selector(updateBadgeNumber)), userInfo: nil, repeats: true)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         barTintColor = NCBrandColor.shared.secondarySystemBackground
         backgroundColor = NCBrandColor.shared.secondarySystemBackground
@@ -174,9 +174,8 @@ class NCMainTabBar: UITabBar {
         if let centerButton = self.viewWithTag(99) {
             centerButton.removeFromSuperview()
         }
-        let centerButtonHeight: CGFloat = 57
-        let centerButtonY: CGFloat = -28
 
+        let centerButtonHeight: CGFloat = 57
         let centerButton = UIButton(frame: CGRect(x: (self.bounds.width / 2)-(centerButtonHeight/2), y: centerButtonY, width: centerButtonHeight, height: centerButtonHeight))
 
         centerButton.setTitle("", for: .normal)
@@ -208,19 +207,16 @@ class NCMainTabBar: UITabBar {
         self.addSubview(centerButton)
     }
 
-    @objc func updateBadgeNumber() {
+    @objc func updateBadgeNumber(_ notification: NSNotification) {
 
-        if appDelegate.account == "" { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let counter = userInfo["counter"] as? Int
+        else { return }
 
-        let counterDownload = NCOperationQueue.shared.downloadCount()
-        let counterUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
-        let total = counterDownload + counterUpload
-
-        UIApplication.shared.applicationIconBadgeNumber = total
-
-        if let item = items?[0] {
-            if total > 0 {
-                item.badgeValue = String(total)
+        UIApplication.shared.applicationIconBadgeNumber = counter
+        if let item = self.items?[0] {
+            if counter > 0 {
+                item.badgeValue = String(counter)
             } else {
                 item.badgeValue = nil
             }
@@ -233,5 +229,9 @@ class NCMainTabBar: UITabBar {
         } else {
             return nil
         }
+    }
+
+    func getHight() -> CGFloat {
+        return (frame.size.height - centerButtonY)
     }
 }

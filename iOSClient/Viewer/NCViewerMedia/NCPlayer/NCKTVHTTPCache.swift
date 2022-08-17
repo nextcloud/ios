@@ -110,7 +110,7 @@ class NCKTVHTTPCache: NSObject {
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             KTVHTTPCache.cacheDelete(with: videoURL)
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         }
     }
 

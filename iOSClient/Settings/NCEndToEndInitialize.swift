@@ -196,7 +196,7 @@ class NCEndToEndInitialize: NSObject {
                 alertController.addAction(cancel)
                 alertController.addTextField { textField -> Void in
                     passphraseTextField = textField
-                    passphraseTextField?.placeholder = "Enter passphrase (12 words)"
+                    passphraseTextField?.placeholder = NSLocalizedString("_enter_passphrase_", comment: "")
                 }
 
                 self.appDelegate.window?.rootViewController?.present(alertController, animated: true)
@@ -210,8 +210,8 @@ class NCEndToEndInitialize: NSObject {
 
                 case NCGlobal.shared.errorResourceNotFound:
                     // message
-                    let e2ePassphrase = NYMnemonic.generateString(128, language: "english")
-                    let message = "\n" + NSLocalizedString("_e2e_settings_view_passphrase_", comment: "") + "\n\n" + e2ePassphrase!
+                    guard let e2ePassphrase = NYMnemonic.generateString(128, language: "english") else { return }
+                    let message = "\n" + NSLocalizedString("_e2e_settings_view_passphrase_", comment: "") + "\n\n" + e2ePassphrase
 
                     let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_title_", comment: ""), message: NSLocalizedString(message, comment: ""), preferredStyle: .alert)
 
@@ -220,9 +220,7 @@ class NCEndToEndInitialize: NSObject {
                         var privateKeyString: NSString?
 
                         guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
-
                             NCContentPresenter.shared.messageNotification("E2E privateKey", description: "Serious internal error to create PrivateKey chiper", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
-
                             return
                         }
 

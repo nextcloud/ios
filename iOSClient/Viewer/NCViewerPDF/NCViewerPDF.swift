@@ -190,6 +190,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
@@ -266,65 +267,82 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     // MARK: - NotificationCenter
 
+    @objc func uploadStartFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.metadata.serverUrl,
+              let fileName = userInfo["fileName"] as? String,
+              fileName == self.metadata.fileName
+        else { return }
+
+        NCActivityIndicator.shared.start()
+    }
+
     @objc func uploadedFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0  && metadata.ocId == self.metadata.ocId {
-                    pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-                    pdfView.document = pdfDocument
-                    pdfView.layoutDocumentView()
-                }
-            }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              serverUrl == self.metadata.serverUrl,
+              let fileName = userInfo["fileName"] as? String,
+              fileName == self.metadata.fileName,
+              let errorCode = userInfo["errorCode"] as? Int
+        else {
+            return
+        }
+
+        NCActivityIndicator.shared.stop()
+
+        if errorCode == 0 {
+            pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
+            pdfView.document = pdfDocument
+            pdfView.layoutDocumentView()
         }
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadata
-                }
-            }
-        }
+        self.metadata = metadata
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let ocIdNew = userInfo["ocIdNew"] as? String,
+              let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadataNew
-                }
-            }
-        }
+        self.metadata = metadataNew
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["OcId"] as? String {
-                if ocId == self.metadata.ocId {
-                    viewUnload()
-                }
-            }
-        }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId
+        else { return }
+
+        viewUnload()
     }
 
     @objc func renameFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadata
-                    navigationItem.title = metadata.fileNameView
-                }
-            }
-        }
+        self.metadata = metadata
+        navigationItem.title = metadata.fileNameView
     }
 
     @objc func searchText() {
@@ -388,6 +406,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+        guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
 
         if UIDevice.current.userInterfaceIdiom == .phone && self.pdfThumbnailScrollView.isHidden {
             if let tipView = self.tipView {
@@ -479,7 +498,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfSelection.pages.forEach { page in
             let highlight = PDFAnnotation(bounds: pdfSelection.bounds(for: page), forType: .highlight, withProperties: nil)
             highlight.endLineStyle = .square
-            highlight.color = .yellow
+            highlight.color = NCBrandColor.shared.annotationColor
             page.addAnnotation(highlight)
         }
         if let page = pdfSelection.pages.first {

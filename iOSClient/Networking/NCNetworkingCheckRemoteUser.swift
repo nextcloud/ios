@@ -29,7 +29,6 @@ import NCCommunication
         return instance
     }()
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var checkRemoteUserInProgress = false
 
     @objc func checkRemoteUser(account: String, errorCode: Int, errorDescription: String) {
@@ -58,18 +57,20 @@ import NCCommunication
 
                 NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, errorCode, _ in
 
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     if wipe {
 
-                        self.appDelegate.deleteAccount(account, wipe: true)
+                        appDelegate.deleteAccount(account, wipe: true)
                         NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                         NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _, _ in print("wipe") }
 
                     } else {
 
-                        if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
+                        if UIApplication.shared.applicationState == .active && NCCommunication.shared.isNetworkReachable() && !CCUtility.getPassword(account).isEmpty && !appDelegate.deletePasswordSession {
                             let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                             NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: errorCode, priority: .max)
                             CCUtility.setPassword(account, password: nil)
+                            appDelegate.deletePasswordSession = true
                         }
                     }
 

@@ -124,14 +124,13 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     @objc func favoriteFile(_ notification: NSNotification) {
 
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              ocId == self.metadata.ocId,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else { return }
 
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadata
-                }
-            }
-        }
+        self.metadata = metadata
     }
 
     @objc func keyboardDidShow(notification: Notification) {
@@ -193,7 +192,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let url = URL(string: urlString) else { return }
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + metadata.fileNameWithoutExt
 
-                        NCUtility.shared.startActivityIndicator(backgroundView: view, blurEffect: true)
+                        NCActivityIndicator.shared.start(backgroundView: view)
 
                         NCCommunication.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
@@ -203,7 +202,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                         }, completionHandler: { account, _, _, _, allHeaderFields, error, errorCode, errorDescription in
 
-                            NCUtility.shared.stopActivityIndicator()
+                            NCActivityIndicator.shared.stop()
 
                             if errorCode == 0 && account == self.metadata.account {
 
@@ -333,7 +332,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NCUtility.shared.stopActivityIndicator()
+        NCActivityIndicator.shared.stop()
     }
 }
 
