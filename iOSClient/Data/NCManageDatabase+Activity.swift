@@ -146,9 +146,17 @@ extension NCManageDatabase {
 
         let realm = try! Realm()
 
-        let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && id == %@", account, idActivity, id).first
+        let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && id == %@", account, idActivity, id)
+        var activitySubjectRich = results.first
+        if results.count == 2 {
+            for result in results {
+                if result.key == "newfile" {
+                    activitySubjectRich = result
+                }
+            }
+        }
 
-        return results.map { tableActivitySubjectRich.init(value: $0) }
+        return activitySubjectRich.map { tableActivitySubjectRich.init(value: $0) }
     }
 
     @objc func getActivityPreview(account: String, idActivity: Int, orderKeysId: [String]) -> [tableActivityPreview] {

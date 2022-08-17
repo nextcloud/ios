@@ -142,8 +142,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             var pathComponents = activityPreview.link.components(separatedBy: "?")
             pathComponents = pathComponents[1].components(separatedBy: "&")
             var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
-
+            serverUrlFileName = NCUtilityFileSystem.shared.getHomeServer(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
 
             if let backgroundView = appDelegate.window?.rootViewController?.view {
@@ -168,17 +167,19 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
                         NCActivityIndicator.shared.stop()
 
-                        if account == self.appDelegate.account && errorCode == 0 {
+                        DispatchQueue.main.async {
+                            if account == self.appDelegate.account, errorCode == 0, let metadata = metadata {
 
-                            // move from id to oc:id + instanceid (ocId)
-                            let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                            let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
+                                // move from id to oc:id + instanceid (ocId)
+                                let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
+                                let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata.ocId
 
-                            CCUtility.moveFile(atPath: atPath, toPath: toPath)
+                                CCUtility.moveFile(atPath: atPath, toPath: toPath)
 
-                            NCManageDatabase.shared.addMetadata(metadata!)
-                            if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!], imageIcon: cell?.imageView.image)
+                                NCManageDatabase.shared.addMetadata(metadata)
+                                if let viewController = self.viewController {
+                                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
+                                }
                             }
                         }
                     }
@@ -199,7 +200,8 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return activityPreviews.count
+        let results = activityPreviews.unique { $0.fileId }
+        return results.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
