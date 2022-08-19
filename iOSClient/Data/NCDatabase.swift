@@ -386,7 +386,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var isExtractFile: Bool = false
     @objc dynamic var livePhoto: Bool = false
     @objc dynamic var mountType = ""
-    @objc dynamic var name = ""
+    @objc dynamic var name = ""                                             // for unifiedSearch is the provider.id
     @objc dynamic var note = ""
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""
