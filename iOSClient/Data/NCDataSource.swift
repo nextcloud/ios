@@ -117,7 +117,7 @@ class NCDataSource: NSObject {
             if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
                 continue
             }
-            let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "").lowercased().firstUppercased
+            let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
             if !self.sectionsValue.contains(section) {
                 self.sectionsValue.append(section)
             }
@@ -127,15 +127,14 @@ class NCDataSource: NSObject {
         if let providers = self.providers, !providers.isEmpty {
             let sectionsDictionary = ThreadSafeDictionary<String,Int>()
             for section in self.sectionsValue {
-                if let provider = providers.filter({ $0.name.lowercased() == section.lowercased()}).first {
+                if let provider = providers.filter({ $0.id == section}).first {
                     sectionsDictionary[section] = provider.order
                 }
             }
             self.sectionsValue.removeAll()
             let sectionsDictionarySorted = sectionsDictionary.sorted(by: { $0.value < $1.value } )
-            let appName = NSLocalizedString(NCGlobal.shared.appName, comment: "").lowercased().firstUppercased
             for section in sectionsDictionarySorted {
-                if section.key == appName {
+                if section.key == NCGlobal.shared.appName {
                     self.sectionsValue.insert(section.key, at: 0)
                 } else {
                     self.sectionsValue.append(section.key)
@@ -172,7 +171,7 @@ class NCDataSource: NSObject {
 
         var searchResult: NCCSearchResult?
         if let providers = self.providers, !providers.isEmpty, let searchResults = self.searchResults {
-            searchResult = searchResults.filter({ $0.name == sectionValue}).first
+            searchResult = searchResults.filter({ $0.id == sectionValue}).first
         }
         let metadatas = self.metadatas.filter({ getSectionValue(metadata: $0) == sectionValue})
         let metadataForSection = NCMetadataForSection.init(sectionValue: sectionValue,
@@ -356,6 +355,14 @@ class NCDataSource: NSObject {
         return metadataForSection.sectionValue
     }
 
+    func getSectionValueLocalization(indexPath: IndexPath) -> String {
+        guard metadatasForSection.count > 0 , let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
+        if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
+            return searchResult.name
+        }
+        return metadataForSection.sectionValue
+    }
+
     func getFooterInformationAllMetadatas() -> (directories: Int, files: Int, size: Int64) {
 
         var directories: Int = 0
@@ -377,11 +384,11 @@ class NCDataSource: NSObject {
 
         switch self.groupByField {
         case "name":
-            return NSLocalizedString(metadata.name, comment: "").lowercased().firstUppercased
+            return NSLocalizedString(metadata.name, comment: "")
         case "classFile":
             return NSLocalizedString(metadata.classFile, comment: "").lowercased().firstUppercased
         default:
-            return NSLocalizedString(metadata.name, comment: "").lowercased().firstUppercased
+            return NSLocalizedString(metadata.classFile, comment: "")
         }
     }
 

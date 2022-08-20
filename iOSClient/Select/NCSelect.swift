@@ -611,7 +611,7 @@ extension NCSelect: UICollectionViewDataSource {
                 if heightHeaderSection == 0 {
                     header.labelSection.text = ""
                 } else {
-                    header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                    header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
                 header.labelSection.textColor = NCBrandColor.shared.label
 
@@ -621,7 +621,7 @@ extension NCSelect: UICollectionViewDataSource {
 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
 
-                header.labelSection.text = self.dataSource.getSectionValue(indexPath: indexPath)
+                header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 header.labelSection.textColor = NCBrandColor.shared.brandElement
 
                 return header
