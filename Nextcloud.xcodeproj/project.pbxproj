@@ -386,6 +386,8 @@
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
 		F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */; };
 		F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */; };
+		F7E0710128B13BB00001B882 /* NCDataDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E0710028B13BB00001B882 /* NCDataDashboard.swift */; };
+		F7E0710328B1453C0001B882 /* NCElementDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E0710228B1453C0001B882 /* NCElementDashboard.swift */; };
 		F7E0CDCF265CE8610044854E /* NCUserStatus.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0CDCE265CE8610044854E /* NCUserStatus.storyboard */; };
 		F7E4D9C422ED929B003675FD /* NCShareCommentsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */; };
 		F7E572FD278F146C00F8C99E /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86802642CF5400ED5349 /* OpenSSL.xcframework */; };
@@ -951,6 +953,8 @@
 		F7DE9AB01F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadAssets.swift; sourceTree = "<group>"; };
 		F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadScanDocument.swift; sourceTree = "<group>"; };
+		F7E0710028B13BB00001B882 /* NCDataDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDataDashboard.swift; sourceTree = "<group>"; };
+		F7E0710228B1453C0001B882 /* NCElementDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCElementDashboard.swift; sourceTree = "<group>"; };
 		F7E0CDCE265CE8610044854E /* NCUserStatus.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCUserStatus.storyboard; sourceTree = "<group>"; };
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommentsCell.swift; sourceTree = "<group>"; };
@@ -1299,6 +1303,8 @@
 			children = (
 				F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */,
 				F7346E1528B0EF5C006CE2D2 /* DashboardWidget.swift */,
+				F7E0710228B1453C0001B882 /* NCElementDashboard.swift */,
+				F7E0710028B13BB00001B882 /* NCDataDashboard.swift */,
 				F7346E2028B0FA3A006CE2D2 /* DashboardWidget-Brinding-header.h */,
 			);
 			path = DashboardWidget;
@@ -2575,6 +2581,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7E0710328B1453C0001B882 /* NCElementDashboard.swift in Sources */,
+				F7E0710128B13BB00001B882 /* NCDataDashboard.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* DashboardWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
