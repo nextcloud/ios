@@ -39,13 +39,15 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
 }
 
-struct DashboardWidgetEntryView : View {
+/*
+struct DashboardWidgetEntryView: View {
     var entry: Provider.Entry
 
     var body: some View {
         Text(entry.date, style: .time)
     }
 }
+*/
 
 @main
 struct DashboardWidget: Widget {
@@ -53,7 +55,8 @@ struct DashboardWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            DashboardWidgetEntryView(entry: entry)
+            //DashboardWidgetEntryView(entry: entry)
+            DashBoardList()
         }
         .configurationDisplayName("My Widget")
         .description("This is an example widget.")
@@ -62,7 +65,7 @@ struct DashboardWidget: Widget {
 
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
-        DashboardWidgetEntryView(entry: SimpleEntry(date: Date()))
-            .previewContext(WidgetPreviewContext(family: .systemLarge))
+        DashBoardList()
+            .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
     }
 }

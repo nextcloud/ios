@@ -12,8 +12,8 @@ import WidgetKit
 struct DashBoardList: View {
     var body: some View {
         VStack(alignment: .center) {
-            Text("Dashboard")
-                .font(.largeTitle)
+            Text("Good morning")
+                .font(.title)
                 .bold()
             VStack {
                 ForEach(NCDataDashboardList, id: \.id) { dataElement in
@@ -41,12 +41,11 @@ struct DashboardElement: View {
                     .foregroundColor(.accentColor)
             }
             Spacer()
-        }.padding()
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(.sRGB, red: 150 / 255, green: 150 / 255, blue: 150 / 255, opacity: 0.4), lineWidth: 1)
-        )
+        }.padding(10)
+        //.overlay(
+            //RoundedRectangle(cornerRadius: 8)
+             //   .stroke(Color(.sRGB, red: 150 / 255, green: 150 / 255, blue: 150 / 255, opacity: 0.4), lineWidth: 1)
+        //)
         .shadow(radius: 1)
     }
 }
