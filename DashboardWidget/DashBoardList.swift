@@ -1,5 +1,5 @@
 //
-//  NCElementDashboard.swift
+//  DashBoardList.swift
 //  DashboardWidgetExtension
 //
 //  Created by Marino Faggiana on 20/08/22.
@@ -9,19 +9,34 @@
 import SwiftUI
 import WidgetKit
 
-struct NCElementDashboard: View {
-    var dataElement: NCDataDashboard
+struct DashBoardList: View {
+    var body: some View {
+        VStack(alignment: .center) {
+            Text("Dashboard")
+                .font(.largeTitle)
+                .bold()
+            VStack {
+                ForEach(NCDataDashboardList, id: \.id) { dataElement in
+                    DashboardElement(element: dataElement)
+                }
+            }
+        }.padding()
+    }
+}
+
+struct DashboardElement: View {
+    var element: NCDataDashboard
     var body: some View {
         HStack {
-            Image(dataElement.image)
+            Image(element.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
             VStack(alignment: .leading) {
-                Text(dataElement.title)
+                Text(element.title)
                     .font(.headline)
-                Text(dataElement.subTitle)
+                Text(element.subTitle)
                     .font(.subheadline)
                     .foregroundColor(.accentColor)
             }
@@ -30,7 +45,7 @@ struct NCElementDashboard: View {
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(.sRGB, red: 150 / 255, green: 150/255, blue: 150/255, opacity: 0.4), lineWidth: 1)
+                .stroke(Color(.sRGB, red: 150 / 255, green: 150 / 255, blue: 150 / 255, opacity: 0.4), lineWidth: 1)
         )
         .shadow(radius: 1)
     }
@@ -38,14 +53,7 @@ struct NCElementDashboard: View {
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-
-//        ForEach(NCDataDashboardList, id: \.id) { dataDashboard in
-//            NCElementDashboard(dataElement: NCDataDashboardList[0])
-//                .previewContext(WidgetPreviewContext(family: .systemLarge))
-//        }
-
-
-        NCElementDashboard(dataElement: NCDataDashboardList[0])
+        DashBoardList()
             .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
