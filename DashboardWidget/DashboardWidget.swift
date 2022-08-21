@@ -54,8 +54,8 @@ struct DashboardWidget: Widget {
     let kind: String = "DashboardWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            //DashboardWidgetEntryView(entry: entry)
+        StaticConfiguration(kind: kind, provider: Provider()) { _ in
+            // DashboardWidgetEntryView(entry: entry)
             DashBoardList()
         }
         .configurationDisplayName("My Widget")
