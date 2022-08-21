@@ -7,21 +7,21 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct NCElementDashboard: View {
-    var data: NCDataDashboard
-
+    var dataElement: NCDataDashboard
     var body: some View {
         HStack {
-            Image(data.image)
+            Image(dataElement.image)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width:40, height: 40)
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 40, height: 40)
                 .clipShape(Circle())
             VStack(alignment: .leading) {
-                Text(data.title)
+                Text(dataElement.title)
                     .font(.headline)
-                Text(data.subTitle)
+                Text(dataElement.subTitle)
                     .font(.subheadline)
                     .foregroundColor(.accentColor)
             }
@@ -30,15 +30,22 @@ struct NCElementDashboard: View {
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(.sRGB, red: 150/255, green: 150/255, blue: 150/255, opacity: 0.4), lineWidth: 1)
+                .stroke(Color(.sRGB, red: 150 / 255, green: 150/255, blue: 150/255, opacity: 0.4), lineWidth: 1)
         )
         .shadow(radius: 1)
     }
 }
 
-struct TopAlbumCard_Previews: PreviewProvider {
+struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        NCElementDashboard(data: NCDataDashboardList[0])
-            .previewLayout(.fixed(width: 380, height: 75))
+
+//        ForEach(NCDataDashboardList, id: \.id) { dataDashboard in
+//            NCElementDashboard(dataElement: NCDataDashboardList[0])
+//                .previewContext(WidgetPreviewContext(family: .systemLarge))
+//        }
+
+
+        NCElementDashboard(dataElement: NCDataDashboardList[0])
+            .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

@@ -16,8 +16,8 @@ struct NCDataDashboard: Identifiable, Codable, Hashable {
 }
 
 let NCDataDashboardList: [NCDataDashboard] = [
-    .init(id: 1, image: "After Hours", title: "The Weeknd", subTitle: "theweeknd-after-hours"),
-    .init(id: 2, image: "Eternal Atake", title: "Lil Uzi", subTitle: "eternalatake-liluzivert"),
-    .init(id: 3, image: "bReAK mY heART", title: "Dua Lipa", subTitle: "dualipa-bReAK mY heART"),
-    .init(id: 4, image: "Jesus Is King", title: "Kanye West", subTitle: "kaynewest-jesusisking")
+    .init(id: 1, image: "nextcloud", title: "The Weeknd", subTitle: "theweeknd-after-hours"),
+    .init(id: 2, image: "nextcloud", title: "Lil Uzi", subTitle: "eternalatake-liluzivert"),
+    .init(id: 3, image: "nextcloud", title: "Dua Lipa", subTitle: "dualipa-bReAK mY heART"),
+    .init(id: 4, image: "nextcloud", title: "Kanye West", subTitle: "kaynewest-jesusisking")
 ]

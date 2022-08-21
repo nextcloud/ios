@@ -63,6 +63,6 @@ struct DashboardWidget: Widget {
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
         DashboardWidgetEntryView(entry: SimpleEntry(date: Date()))
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
+            .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
