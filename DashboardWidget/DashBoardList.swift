@@ -28,6 +28,8 @@ import WidgetKit
 
 struct ListWidgetEntryView: View {
     var entry: DashboardListEntry
+    var placeholderColor = Color(red: 0.9, green: 0.9, blue: 0.92)
+
     var body: some View {
         switch entry.dashboardDatas.isEmpty {
         case true:
@@ -39,21 +41,23 @@ struct ListWidgetEntryView: View {
 
     var emptyDasboardView: some View {
         VStack(alignment: .center) {
-            Text("Good morning")
-                .font(.title)
-                .bold()
+            Text("")
+                .frame(maxWidth: 280, minHeight: 20)
+                .background(placeholderColor)
+                .padding(5)
             VStack {
                 ForEach(1...5, id: \.self) { _ in
                     HStack {
-                        Image(systemName: "")
+                        Image(systemName: "circle.fill")
                             .font(.system(size: 40.0))
-                            .foregroundColor(.red)
-                        VStack(alignment: .leading) {
+                            .foregroundColor(placeholderColor)
+                        VStack(alignment: .leading, spacing: 5) {
                             Text("")
-                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .background(placeholderColor)
                             Text("")
-                                .font(.subheadline)
-                                .foregroundColor(.accentColor)
+                                .frame(maxWidth: .infinity)
+                                .background(placeholderColor)
                         }
                         Spacer()
                     }

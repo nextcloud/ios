@@ -14,12 +14,11 @@ struct Provider: TimelineProvider {
     typealias Entry = DashboardListEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), dashboardDatas: dataPreview)
+        return Entry(date: Date(), dashboardDatas: [])
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        let datas = dataPreview
-        completion(Entry(date: Date(), dashboardDatas: datas))
+        completion(Entry(date: Date(), dashboardDatas: dashboardDatasTest))
 //        if context.isPreview {
 //        } else {
 //        }
@@ -28,7 +27,7 @@ struct Provider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         let components = DateComponents(minute: 10)
         let futureDate = Calendar.current.date(byAdding: components, to: Date())!
-        let datas = dataPreview
+        let datas = dashboardDatasTest
         let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: datas)], policy: .after(futureDate))
         completion(timeLine)
     }
@@ -51,7 +50,7 @@ struct DashboardWidget: Widget {
 struct DashboardWidget_Previews: PreviewProvider {
 
     static var previews: some View {
-        let entry = DashboardListEntry(date: Date(), dashboardDatas: dataPreview)
+        let entry = DashboardListEntry(date: Date(), dashboardDatas: dashboardDatasTest)
         ListWidgetEntryView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
