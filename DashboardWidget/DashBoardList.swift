@@ -28,26 +28,24 @@ struct DashBoardList: View {
 struct DashboardElement: View {
     var element: DashboardData
     var body: some View {
-        HStack {
-            Image(element.image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 40, height: 40)
-                .clipShape(Circle())
-            VStack(alignment: .leading) {
-                Text(element.title)
-                    .font(.headline)
-                Text(element.subTitle)
-                    .font(.subheadline)
-                    .foregroundColor(.accentColor)
+        Link(destination: element.url) {
+            HStack {
+                Image(element.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+                VStack(alignment: .leading) {
+                    Text(element.title)
+                        .font(.headline)
+                    Text(element.subTitle)
+                        .font(.subheadline)
+                        .foregroundColor(.accentColor)
+                }
+                Spacer()
             }
-            Spacer()
-        }.padding(10)
-        //.overlay(
-            //RoundedRectangle(cornerRadius: 8)
-             //   .stroke(Color(.sRGB, red: 150 / 255, green: 150 / 255, blue: 150 / 255, opacity: 0.4), lineWidth: 1)
-        //)
-        .shadow(radius: 1)
+            .padding(10)
+        }
     }
 }
 
