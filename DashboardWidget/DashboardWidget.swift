@@ -18,18 +18,18 @@ struct Provider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        completion(Entry(date: Date(), dashboardDatas: dashboardDatasTest))
-//        if context.isPreview {
-//        } else {
-//        }
+        readDashboard { dashboardDatas in
+            completion(Entry(date: Date(), dashboardDatas: dashboardDatas))
+        }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        let components = DateComponents(minute: 10)
+        let components = DateComponents(minute: 5)
         let futureDate = Calendar.current.date(byAdding: components, to: Date())!
-        let datas = dashboardDatasTest
-        let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: datas)], policy: .after(futureDate))
-        completion(timeLine)
+        readDashboard { dashboardDatas in
+            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas)], policy: .after(futureDate))
+            completion(timeLine)
+        }
     }
 }
 
@@ -43,7 +43,7 @@ struct DashboardWidget: Widget {
         }
         .supportedFamilies([.systemLarge])
         .configurationDisplayName("Nextcloud Dashboard")
-        .description("subtitle.")
+        .description(NSLocalizedString("_subtitle_dashboard_", comment: ""))
     }
 }
 
