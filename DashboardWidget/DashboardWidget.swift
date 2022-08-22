@@ -40,24 +40,13 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
 }
 
-/*
-struct DashboardWidgetEntryView: View {
-    var entry: Provider.Entry
-
-    var body: some View {
-        Text(entry.date, style: .time)
-    }
-}
-*/
-
 @main
 struct DashboardWidget: Widget {
     let kind: String = "DashboardWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { _ in
-            // DashboardWidgetEntryView(entry: entry)
-            DashBoardList(data: DataDashboardPreview)
+            DashBoardList(data: dataDashboardPreview)
         }
         .supportedFamilies([.systemLarge])
         .configurationDisplayName("Nextcloud Dashboard Widget")
@@ -68,6 +57,6 @@ struct DashboardWidget: Widget {
 struct DashboardWidget_Previews: PreviewProvider {
 
     static var previews: some View {
-        DashBoardList(data: DataDashboardPreview).previewContext(WidgetPreviewContext(family: .systemLarge))
+        DashBoardList(data: dataDashboardPreview).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

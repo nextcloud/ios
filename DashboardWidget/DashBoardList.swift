@@ -54,7 +54,7 @@ struct DashboardElement: View {
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            DashBoardList(data: DataDashboardPreview).previewContext(WidgetPreviewContext(family: .systemLarge))
+            DashBoardList(data: dataDashboardPreview).previewContext(WidgetPreviewContext(family: .systemLarge))
         }
     }
 }
