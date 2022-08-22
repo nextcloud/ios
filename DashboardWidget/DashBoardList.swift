@@ -10,14 +10,15 @@ import SwiftUI
 import WidgetKit
 
 struct DashBoardList: View {
+    var data: [DashboardData]
     var body: some View {
         VStack(alignment: .center) {
             Text("Good morning")
                 .font(.title)
                 .bold()
             VStack {
-                ForEach(NCDataDashboardList, id: \.id) { dataElement in
-                    DashboardElement(element: dataElement)
+                ForEach(data, id: \.id) { element in
+                    DashboardElement(element: element)
                 }
             }
         }.padding()
@@ -25,7 +26,7 @@ struct DashBoardList: View {
 }
 
 struct DashboardElement: View {
-    var element: NCDataDashboard
+    var element: DashboardData
     var body: some View {
         HStack {
             Image(element.image)
@@ -52,7 +53,8 @@ struct DashboardElement: View {
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        DashBoardList()
-            .previewContext(WidgetPreviewContext(family: .systemLarge))
+        Group {
+            DashBoardList(data: DataDashboardPreview).previewContext(WidgetPreviewContext(family: .systemLarge))
+        }
     }
 }

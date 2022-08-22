@@ -10,6 +10,7 @@ import WidgetKit
 import SwiftUI
 
 struct Provider: TimelineProvider {
+
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date())
     }
@@ -56,16 +57,17 @@ struct DashboardWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { _ in
             // DashboardWidgetEntryView(entry: entry)
-            DashBoardList()
+            DashBoardList(data: DataDashboardPreview)
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .supportedFamilies([.systemLarge])
+        .configurationDisplayName("Nextcloud Dashboard Widget")
+        .description("Nextcloud Dashboard Widget.")
     }
 }
 
 struct DashboardWidget_Previews: PreviewProvider {
+
     static var previews: some View {
-        DashBoardList()
-            .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
+        DashBoardList(data: DataDashboardPreview).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
