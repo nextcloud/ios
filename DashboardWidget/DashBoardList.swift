@@ -86,7 +86,7 @@ struct ListWidgetEntryView: View {
                                     .font(.headline)
                                 Text(element.subTitle)
                                     .font(.subheadline)
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(Color(white: 0.4745))
                             }
                             Spacer()
                         }
@@ -100,7 +100,7 @@ struct ListWidgetEntryView: View {
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardListEntry(date: Date(), dashboardDatas: [])
+        let entry = DashboardListEntry(date: Date(), dashboardDatas: []) // dashboardDatasTest
         ListWidgetEntryView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
