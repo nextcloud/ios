@@ -29,6 +29,7 @@ import WidgetKit
 struct ListWidgetEntryView: View {
     var entry: DashboardListEntry
     var placeholderColor = Color(red: 0.9, green: 0.9, blue: 0.92)
+    let date = Date().formatted()
 
     var body: some View {
         switch entry.dashboardDatas.isEmpty {
@@ -69,7 +70,7 @@ struct ListWidgetEntryView: View {
 
     var bodyDasboardView: some View {
         VStack(alignment: .center) {
-            Text("Good morning")
+            Text("\(date)")
                 .font(.title)
                 .bold()
             VStack {
@@ -100,7 +101,7 @@ struct ListWidgetEntryView: View {
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardListEntry(date: Date(), dashboardDatas: []) // dashboardDatasTest
+        let entry = DashboardListEntry(date: Date(), dashboardDatas: dashboardDatasTest) // dashboardDatasTest
         ListWidgetEntryView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
