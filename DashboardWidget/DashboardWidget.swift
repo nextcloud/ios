@@ -11,33 +11,27 @@ import SwiftUI
 
 struct Provider: TimelineProvider {
 
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date())
+    typealias Entry = DashboardListEntry
+
+    func placeholder(in context: Context) -> Entry {
+        return Entry(date: Date(), dashboardDatas: dataPreview)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date())
-        completion(entry)
+    func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
+        let datas = dataPreview
+        completion(Entry(date: Date(), dashboardDatas: datas))
+//        if context.isPreview {
+//        } else {
+//        }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate)
-            entries.append(entry)
-        }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+        let components = DateComponents(minute: 10)
+        let futureDate = Calendar.current.date(byAdding: components, to: Date())!
+        let datas = dataPreview
+        let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: datas)], policy: .after(futureDate))
+        completion(timeLine)
     }
-}
-
-struct SimpleEntry: TimelineEntry {
-    let date: Date
 }
 
 @main
@@ -45,18 +39,19 @@ struct DashboardWidget: Widget {
     let kind: String = "DashboardWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { _ in
-            DashBoardList(data: dataDashboardPreview)
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+            ListWidgetEntryView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName("Nextcloud Dashboard Widget")
-        .description("Nextcloud Dashboard Widget.")
+        .configurationDisplayName("Nextcloud Dashboard")
+        .description("subtitle.")
     }
 }
 
 struct DashboardWidget_Previews: PreviewProvider {
 
     static var previews: some View {
-        DashBoardList(data: dataDashboardPreview).previewContext(WidgetPreviewContext(family: .systemLarge))
+        let entry = DashboardListEntry(date: Date(), dashboardDatas: dataPreview)
+        ListWidgetEntryView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
