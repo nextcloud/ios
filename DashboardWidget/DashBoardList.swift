@@ -44,7 +44,7 @@ struct DashboardElement: View {
                 }
                 Spacer()
             }
-            .padding(10)
+            .padding(5)
         }
     }
 }
