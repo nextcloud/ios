@@ -116,7 +116,7 @@ struct DashboardWidgetView: View {
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest) // dashboardDatasTest
+        let entry = DashboardDataEntry(date: Date(), dashboardDatas: []) // dashboardDatasTest
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

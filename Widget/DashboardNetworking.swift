@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NextcloudKit
 
 let dashboardDatasTest: [DashboardData] = [
     .init(id: 0, image: "nextcloud", title: "title 1", subTitle: "subTitle 1", url: URL(string: "https://nextcloud.com/")!),

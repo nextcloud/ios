@@ -328,6 +328,11 @@
 		F783030B28B4C58600B84583 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F783030A28B4C58600B84583 /* Queuer */; };
 		F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783030C28B4C59A00B84583 /* SwiftEntryKit */; };
 		F783031228B4C8EC00B84583 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		F783034228B511D200B84583 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783034128B511D200B84583 /* NextcloudKit */; };
+		F783034428B5142B00B84583 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783034328B5142B00B84583 /* NextcloudKit */; };
+		F783034628B5144B00B84583 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783034528B5144B00B84583 /* NextcloudKit */; };
+		F783034828B5145600B84583 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783034728B5145600B84583 /* NextcloudKit */; };
+		F783034A28B5146000B84583 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783034928B5146000B84583 /* NextcloudKit */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -1025,6 +1030,7 @@
 				F7EBCDD3277B821700A4EF67 /* UICKeyChainStore in Frameworks */,
 				F75E57C325BF0ED2002B72C2 /* SVGKit in Frameworks */,
 				F786D597253454D800E3DD7B /* NCCommunication in Frameworks */,
+				F783034A28B5146000B84583 /* NextcloudKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1043,6 +1049,7 @@
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */,
 				F710FC7E277B7D2600AA9FBF /* Realm in Frameworks */,
+				F783034628B5144B00B84583 /* NextcloudKit in Frameworks */,
 				F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */,
 				F7EBCDCF277B81FF00A4EF67 /* UICKeyChainStore in Frameworks */,
 				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
@@ -1058,6 +1065,7 @@
 			files = (
 				F783030528B4C50600B84583 /* SVGKit in Frameworks */,
 				F7346E2528B0FEFA006CE2D2 /* UICKeyChainStore in Frameworks */,
+				F783034428B5142B00B84583 /* NextcloudKit in Frameworks */,
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
 				F7346E2728B0FFF2006CE2D2 /* Realm in Frameworks */,
 				F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */,
@@ -1074,6 +1082,7 @@
 			files = (
 				F7EBCDD1277B820D00A4EF67 /* UICKeyChainStore in Frameworks */,
 				F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */,
+				F783034828B5145600B84583 /* NextcloudKit in Frameworks */,
 				F7EBCDD7277B834400A4EF67 /* Queuer in Frameworks */,
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
 				F710FC82277B7D3500AA9FBF /* Realm in Frameworks */,
@@ -1104,6 +1113,7 @@
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
+				F783034228B511D200B84583 /* NextcloudKit in Frameworks */,
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
@@ -2056,6 +2066,7 @@
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
 				F7EBCDD2277B821700A4EF67 /* UICKeyChainStore */,
 				F7EBCDD8277B834F00A4EF67 /* Queuer */,
+				F783034928B5146000B84583 /* NextcloudKit */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -2102,6 +2113,7 @@
 				F7EBCDCE277B81FF00A4EF67 /* UICKeyChainStore */,
 				F7EBCDD4277B82DE00A4EF67 /* Queuer */,
 				F72CD01127A7E92400E59476 /* JGProgressHUD */,
+				F783034528B5144B00B84583 /* NextcloudKit */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -2128,6 +2140,7 @@
 				F783030828B4C57600B84583 /* NCCommunication */,
 				F783030A28B4C58600B84583 /* Queuer */,
 				F783030C28B4C59A00B84583 /* SwiftEntryKit */,
+				F783034328B5142B00B84583 /* NextcloudKit */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -2154,6 +2167,7 @@
 				F710FC83277B7D3500AA9FBF /* RealmSwift */,
 				F7EBCDD0277B820D00A4EF67 /* UICKeyChainStore */,
 				F7EBCDD6277B834400A4EF67 /* Queuer */,
+				F783034728B5145600B84583 /* NextcloudKit */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -2200,6 +2214,7 @@
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F758A01127A7F03E0069468B /* JGProgressHUD */,
 				F753BA92281FD8020015BFB6 /* EasyTipView */,
+				F783034128B511D200B84583 /* NextcloudKit */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -2327,6 +2342,7 @@
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
 				F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */,
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
+				F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3519,6 +3535,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
+			requirement = {
+				branch = develop;
+				kind = branch;
+			};
+		};
 		F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
@@ -3728,6 +3752,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
 			productName = SwiftEntryKit;
+		};
+		F783034128B511D200B84583 /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F783034328B5142B00B84583 /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F783034528B5144B00B84583 /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F783034728B5145600B84583 /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F783034928B5146000B84583 /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
 		};
 		F786D58C253454BF00E3DD7B /* NCCommunication */ = {
 			isa = XCSwiftPackageProductDependency;
