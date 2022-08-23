@@ -1303,12 +1303,12 @@
 		F7346E1428B0EF5B006CE2D2 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
-				F741F3B028B3BBB70045394D /* Entries */,
 				F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */,
-				F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */,
+				F7E0710028B13BB00001B882 /* DashboardData.swift */,
 				F741F3B528B3D5720045394D /* DashboardNetworking.swift */,
-				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
+				F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
+				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -1338,14 +1338,6 @@
 				F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */,
 			);
 			path = Diagnostics;
-			sourceTree = "<group>";
-		};
-		F741F3B028B3BBB70045394D /* Entries */ = {
-			isa = PBXGroup;
-			children = (
-				F7E0710028B13BB00001B882 /* DashboardData.swift */,
-			);
-			path = Entries;
 			sourceTree = "<group>";
 		};
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
