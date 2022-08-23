@@ -34,4 +34,5 @@ struct DashboardData: Identifiable, Codable, Hashable {
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
     let dashboardDatas: [DashboardData]
+    let isPlaceholder: Bool
 }

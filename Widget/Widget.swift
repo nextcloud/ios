@@ -29,34 +29,18 @@ struct Provider: TimelineProvider {
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), dashboardDatas: [])
+        return Entry(date: Date(), dashboardDatas: [], isPlaceholder: true)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        readDashboard { dashboardDatas in
-            completion(Entry(date: Date(), dashboardDatas: dashboardDatas))
+        readDashboard { dashboardDatas, isPlaceholder in
+            completion(Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder))
         }
     }
 
-    /*
-     func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-                 var entries = [SimpleEntry]()
-                 let currentDate = Date()
-                 let midnight = Calendar.current.startOfDay(for: currentDate)
-                 let nextMidnight = Calendar.current.date(byAdding: .day, value: 1, to: midnight)!
-                 for offset in 0 ..< 60 * 24 {
-                     let entryDate = Calendar.current.date(byAdding: .minute, value: offset, to: midnight)!
-                     entries.append(SimpleEntry(date: entryDate))
-                 }
-
-                 let timeline = Timeline(entries: entries, policy: .after(nextMidnight))
-                 completion(timeline)
-             }
-     */
-    
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        readDashboard { dashboardDatas in
-            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas)], policy: .atEnd)
+        readDashboard { dashboardDatas, isPlaceholder in
+            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder)], policy: .atEnd)
             completion(timeLine)
         }
     }
@@ -79,7 +63,7 @@ struct DashboardWidget: Widget {
 struct DashboardWidget_Previews: PreviewProvider {
 
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest)
+        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false)
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

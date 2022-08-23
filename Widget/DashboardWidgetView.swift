@@ -43,47 +43,8 @@ import WidgetKit
 
 struct DashboardWidgetView: View {
     var entry: DashboardDataEntry
-    var placeholderColor = Color(red: 0.9, green: 0.9, blue: 0.92)
     let date = Date().formatted()
-
     var body: some View {
-        switch entry.dashboardDatas.isEmpty {
-        case true:
-            emptyDasboardView
-        case false:
-            bodyDasboardView
-        }
-    }
-
-    var emptyDasboardView: some View {
-        VStack(alignment: .center) {
-            Text("")
-                .frame(maxWidth: 280, minHeight: 20)
-                .background(placeholderColor)
-                .padding(5)
-            VStack {
-                ForEach(1...5, id: \.self) { _ in
-                    HStack {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 40.0))
-                            .foregroundColor(placeholderColor)
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text("")
-                                .frame(maxWidth: .infinity)
-                                .background(placeholderColor)
-                            Text("")
-                                .frame(maxWidth: .infinity)
-                                .background(placeholderColor)
-                        }
-                        Spacer()
-                    }
-                    .padding(5)
-                }
-            }
-        }.padding(5)
-    }
-
-    var bodyDasboardView: some View {
         VStack(alignment: .center) {
             Text("\(date)")
                 .font(.title)
@@ -111,12 +72,13 @@ struct DashboardWidgetView: View {
                 }
             }
         }.padding(5)
+            .redacted(reason: entry.isPlaceholder ? .placeholder : [])
     }
 }
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: []) // dashboardDatasTest
+        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false)
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
