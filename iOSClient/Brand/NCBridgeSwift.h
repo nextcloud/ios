@@ -38,5 +38,5 @@
 #endif
 
 #if defined(EXTENSION_WIDGET)
-#import "Widget-Swift.h"
+#import "Nextcloud_Widget-Swift.h"
 #endif
