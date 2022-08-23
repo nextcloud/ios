@@ -169,7 +169,7 @@
 		F7346E1228B0EF5B006CE2D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7346E1128B0EF5B006CE2D2 /* WidgetKit.framework */; };
 		F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79BCEEA270B49C800B5B71F /* SwiftUI.framework */; };
 		F7346E1628B0EF5C006CE2D2 /* DashboardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7346E1528B0EF5C006CE2D2 /* DashboardWidget.swift */; };
-		F7346E1C28B0EF5E006CE2D2 /* DashboardWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7346E1028B0EF5B006CE2D2 /* DashboardWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F7346E1C28B0EF5E006CE2D2 /* Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7346E1028B0EF5B006CE2D2 /* Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */; };
 		F7346E2528B0FEFA006CE2D2 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */; };
 		F7346E2728B0FFF2006CE2D2 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2628B0FFF2006CE2D2 /* Realm */; };
@@ -499,7 +499,7 @@
 				F771E3EB20E2392E00AFB62D /* File Provider Extension.appex in Embed App Extensions */,
 				F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */,
 				2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed App Extensions */,
-				F7346E1C28B0EF5E006CE2D2 /* DashboardWidgetExtension.appex in Embed App Extensions */,
+				F7346E1C28B0EF5E006CE2D2 /* Widget.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -690,11 +690,11 @@
 		F732D23227CF8AED000B0F1B /* NCPlayerToolBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCPlayerToolBar.xib; sourceTree = "<group>"; };
 		F733598025C1C188002ABA72 /* NCAskAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAskAuthorization.swift; sourceTree = "<group>"; };
 		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
-		F7346E1028B0EF5B006CE2D2 /* DashboardWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DashboardWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7346E1028B0EF5B006CE2D2 /* Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Widget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7346E1128B0EF5B006CE2D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		F7346E1528B0EF5C006CE2D2 /* DashboardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardWidget.swift; sourceTree = "<group>"; };
-		F7346E2028B0FA3A006CE2D2 /* DashboardWidget-Brinding-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DashboardWidget-Brinding-header.h"; sourceTree = "<group>"; };
-		F7346E2128B0FBEE006CE2D2 /* DashboardWidget_Extension.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = DashboardWidget_Extension.plist; sourceTree = "<group>"; };
+		F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Widget-Brinding-header.h"; sourceTree = "<group>"; };
+		F7346E2128B0FBEE006CE2D2 /* Widget.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Widget.plist; sourceTree = "<group>"; };
 		F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F736B551234DCF57008A5C9F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
@@ -1302,7 +1302,7 @@
 			name = Localizations;
 			sourceTree = "<group>";
 		};
-		F7346E1428B0EF5B006CE2D2 /* DashboardWidget */ = {
+		F7346E1428B0EF5B006CE2D2 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
 				F741F3B028B3BBB70045394D /* Entries */,
@@ -1310,9 +1310,9 @@
 				F72A17D728B221E300F3F159 /* DashBoardList.swift */,
 				F741F3B528B3D5720045394D /* DashboardNetworking.swift */,
 				F7346E1528B0EF5C006CE2D2 /* DashboardWidget.swift */,
-				F7346E2028B0FA3A006CE2D2 /* DashboardWidget-Brinding-header.h */,
+				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
 			);
-			path = DashboardWidget;
+			path = Widget;
 			sourceTree = "<group>";
 		};
 		F7381ED9218218A4000B1560 /* Offline */ = {
@@ -1691,7 +1691,7 @@
 		F7C742D31E7BD36600D9C973 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F7346E2128B0FBEE006CE2D2 /* DashboardWidget_Extension.plist */,
+				F7346E2128B0FBEE006CE2D2 /* Widget.plist */,
 				F771E3FB20E23A8700AFB62D /* File_Provider_Extension.entitlements */,
 				F771E3FC20E23A8800AFB62D /* File_Provider_Extension.plist */,
 				F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */,
@@ -1823,13 +1823,13 @@
 				F7C0F46D1C8880540059EC54 /* Share */,
 				2C33C48023E2C475005F963B /* Notification Service Extension */,
 				AF8ED1FA2757821000B8DBC4 /* NextcloudTests */,
-				F7346E1428B0EF5B006CE2D2 /* DashboardWidget */,
+				F7346E1428B0EF5B006CE2D2 /* Widget */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
 				2C33C47F23E2C475005F963B /* Notification Service Extension.appex */,
 				AF8ED1F92757821000B8DBC4 /* NextcloudTests.xctest */,
-				F7346E1028B0EF5B006CE2D2 /* DashboardWidgetExtension.appex */,
+				F7346E1028B0EF5B006CE2D2 /* Widget.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2085,9 +2085,9 @@
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		F7346E0F28B0EF5B006CE2D2 /* DashboardWidgetExtension */ = {
+		F7346E0F28B0EF5B006CE2D2 /* Widget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F7346E1F28B0EF5E006CE2D2 /* Build configuration list for PBXNativeTarget "DashboardWidgetExtension" */;
+			buildConfigurationList = F7346E1F28B0EF5E006CE2D2 /* Build configuration list for PBXNativeTarget "Widget" */;
 			buildPhases = (
 				F7346E0C28B0EF5B006CE2D2 /* Sources */,
 				F7346E0D28B0EF5B006CE2D2 /* Frameworks */,
@@ -2097,14 +2097,14 @@
 			);
 			dependencies = (
 			);
-			name = DashboardWidgetExtension;
+			name = Widget;
 			packageProductDependencies = (
 				F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */,
 				F7346E2628B0FFF2006CE2D2 /* Realm */,
 				F7346E2828B0FFF2006CE2D2 /* RealmSwift */,
 			);
 			productName = DashboardWidgetExtension;
-			productReference = F7346E1028B0EF5B006CE2D2 /* DashboardWidgetExtension.appex */;
+			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		F771E3CF20E2392D00AFB62D /* File Provider Extension */ = {
@@ -2307,7 +2307,7 @@
 			projectRoot = "";
 			targets = (
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
-				F7346E0F28B0EF5B006CE2D2 /* DashboardWidgetExtension */,
+				F7346E0F28B0EF5B006CE2D2 /* Widget */,
 				F71459B41D12E3B700CAFEEC /* Share */,
 				F771E3CF20E2392D00AFB62D /* File Provider Extension */,
 				2C33C47E23E2C475005F963B /* Notification Service Extension */,
@@ -2831,7 +2831,7 @@
 		};
 		F7346E1B28B0EF5E006CE2D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F7346E0F28B0EF5B006CE2D2 /* DashboardWidgetExtension */;
+			target = F7346E0F28B0EF5B006CE2D2 /* Widget */;
 			targetProxy = F7346E1A28B0EF5E006CE2D2 /* PBXContainerItemProxy */;
 		};
 		F771E3EA20E2392E00AFB62D /* PBXTargetDependency */ = {
@@ -3058,21 +3058,21 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
-					EXTENSION_DASHBOARD_WIDGET,
+					EXTENSION_WIDGET,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/DashboardWidget_Extension.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = DashboardWidget;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.DashboardWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_DASHBOARD_WIDGET";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGET";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/DashboardWidget/DashboardWidget-Brinding-header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Widget/Widget-Brinding-header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -3091,21 +3091,21 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
-					EXTENSION_DASHBOARD_WIDGET,
+					EXTENSION_WIDGET,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/DashboardWidget_Extension.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = DashboardWidget;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.DashboardWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_DASHBOARD_WIDGET";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGET";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/DashboardWidget/DashboardWidget-Brinding-header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Widget/Widget-Brinding-header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -3324,7 +3324,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F7346E1F28B0EF5E006CE2D2 /* Build configuration list for PBXNativeTarget "DashboardWidgetExtension" */ = {
+		F7346E1F28B0EF5E006CE2D2 /* Build configuration list for PBXNativeTarget "Widget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F7346E1D28B0EF5E006CE2D2 /* Debug */,

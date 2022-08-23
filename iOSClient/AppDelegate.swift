@@ -27,6 +27,7 @@ import NCCommunication
 import TOPasscodeViewController
 import LocalAuthentication
 import Firebase
+import WidgetKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate, NCUserBaseUrl {
@@ -332,6 +333,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // close detail
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuDetailClose)
+
+        // Reload Widget
+        if #available(iOS 14.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
 
         // Registeration domain File Provider
         // FileProviderDomain *fileProviderDomain = [FileProviderDomain new];

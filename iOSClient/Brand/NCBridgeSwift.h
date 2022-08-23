@@ -37,6 +37,6 @@
 #import "Notification_Service_Extension-Swift.h"
 #endif
 
-#if defined(EXTENSION_DASHBOARD_WIDGET)
-#import "DashboardWidget_Extension-Swift.h"
+#if defined(EXTENSION_WIDGET)
+#import "Widget-Swift.h"
 #endif

@@ -24,10 +24,8 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        let components = DateComponents(minute: 1)
-        let futureDate = Calendar.current.date(byAdding: components, to: Date())!
         readDashboard { dashboardDatas in
-            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas)], policy: .after(futureDate))
+            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas)], policy: .atEnd)
             completion(timeLine)
         }
     }
