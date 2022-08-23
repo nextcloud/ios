@@ -1,6 +1,6 @@
 //
 //  DashboardData.swift
-//  DashboardWidgetExtension
+//  Widget
 //
 //  Created by Marino Faggiana on 20/08/22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.

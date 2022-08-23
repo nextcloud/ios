@@ -307,6 +307,27 @@
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F782FDC424E6933900666099 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F78302F628B4C3C500B84583 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
+		F78302F728B4C3C900B84583 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
+		F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
+		F78302F928B4C3E600B84583 /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
+		F78302FA28B4C3EA00B84583 /* NCManageDatabase+Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61827562A4B0081CEEF /* NCManageDatabase+Metadata.swift */; };
+		F78302FB28B4C3EE00B84583 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
+		F78302FC28B4C3F300B84583 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
+		F78302FD28B4C42B00B84583 /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
+		F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F78302FF28B4C45000B84583 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
+		F783030028B4C45800B84583 /* NCGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */; };
+		F783030128B4C49700B84583 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
+		F783030228B4C4B800B84583 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F783030328B4C4DD00B84583 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
+		F783030528B4C50600B84583 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783030428B4C50600B84583 /* SVGKit */; };
+		F783030628B4C51E00B84583 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */; };
+		F783030728B4C52800B84583 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
+		F783030928B4C57600B84583 /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F783030828B4C57600B84583 /* NCCommunication */; };
+		F783030B28B4C58600B84583 /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F783030A28B4C58600B84583 /* Queuer */; };
+		F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783030C28B4C59A00B84583 /* SwiftEntryKit */; };
+		F783031228B4C8EC00B84583 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -815,6 +836,9 @@
 		F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Extension.swift"; sourceTree = "<group>"; };
 		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
+		F783030E28B4C83F00B84583 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		F783031028B4C86200B84583 /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
+		F783031128B4C86200B84583 /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
 		F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EE.swift; sourceTree = "<group>"; };
 		F787704E22E7019900F287A9 /* NCShareLinkCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkCell.xib; sourceTree = "<group>"; };
 		F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichWorkspaceWebView.swift; sourceTree = "<group>"; };
@@ -1031,11 +1055,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F783030528B4C50600B84583 /* SVGKit in Frameworks */,
 				F7346E2528B0FEFA006CE2D2 /* UICKeyChainStore in Frameworks */,
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
 				F7346E2728B0FFF2006CE2D2 /* Realm in Frameworks */,
 				F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */,
+				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
+				F783030B28B4C58600B84583 /* Queuer in Frameworks */,
 				F7346E1228B0EF5B006CE2D2 /* WidgetKit.framework in Frameworks */,
+				F783030928B4C57600B84583 /* NCCommunication in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1879,6 +1907,9 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F783031028B4C86200B84583 /* libc++.1.tbd */,
+				F783031128B4C86200B84583 /* libc++abi.tbd */,
+				F783030E28B4C83F00B84583 /* libc++.tbd */,
 				F702867E2773609C00ADA8BE /* libiconv.tbd */,
 				F702864E27735D1400ADA8BE /* ffmpegkit.xcframework */,
 				F702865127735D1500ADA8BE /* gmp.xcframework */,
@@ -2091,6 +2122,10 @@
 				F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */,
 				F7346E2628B0FFF2006CE2D2 /* Realm */,
 				F7346E2828B0FFF2006CE2D2 /* RealmSwift */,
+				F783030428B4C50600B84583 /* SVGKit */,
+				F783030828B4C57600B84583 /* NCCommunication */,
+				F783030A28B4C58600B84583 /* Queuer */,
+				F783030C28B4C59A00B84583 /* SwiftEntryKit */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -2584,10 +2619,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F78302FD28B4C42B00B84583 /* NCUserBaseUrl.swift in Sources */,
+				F78302F928B4C3E600B84583 /* NCManageDatabase+Account.swift in Sources */,
 				F7E0710128B13BB00001B882 /* DashboardData.swift in Sources */,
 				F741F3B628B3D5720045394D /* DashboardNetworking.swift in Sources */,
+				F783030328B4C4DD00B84583 /* ThreadSafeDictionary.swift in Sources */,
+				F78302F728B4C3C900B84583 /* NCManageDatabase.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
+				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
+				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
+				F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */,
+				F78302FA28B4C3EA00B84583 /* NCManageDatabase+Metadata.swift in Sources */,
+				F783030728B4C52800B84583 /* UIColor+Extensions.swift in Sources */,
+				F783030028B4C45800B84583 /* NCGlobal.swift in Sources */,
+				F78302FC28B4C3F300B84583 /* NCElementsJSON.swift in Sources */,
+				F783030628B4C51E00B84583 /* String+Extensions.swift in Sources */,
 				F72A17D828B221E300F3F159 /* DashboardWidgetView.swift in Sources */,
+				F78302FB28B4C3EE00B84583 /* NCManageDatabase+Video.swift in Sources */,
+				F783031228B4C8EC00B84583 /* CCUtility.m in Sources */,
+				F78302FF28B4C45000B84583 /* NCUtilityFileSystem.swift in Sources */,
+				F78302F628B4C3C500B84583 /* NCDatabase.swift in Sources */,
+				F783030128B4C49700B84583 /* UIImage+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3652,6 +3704,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */;
 			productName = FloatingPanel;
+		};
+		F783030428B4C50600B84583 /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		F783030828B4C57600B84583 /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
+		};
+		F783030A28B4C58600B84583 /* Queuer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */;
+			productName = Queuer;
+		};
+		F783030C28B4C59A00B84583 /* SwiftEntryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
+			productName = SwiftEntryKit;
 		};
 		F786D58C253454BF00E3DD7B /* NCCommunication */ = {
 			isa = XCSwiftPackageProductDependency;

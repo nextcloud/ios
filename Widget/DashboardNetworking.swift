@@ -32,5 +32,10 @@ let dashboardDatasTest: [DashboardData] = [
 ]
 
 func readDashboard(completion: @escaping (_ dashboardData: [DashboardData]) -> Void) {
+
+    guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+        return completion(dashboardDatasTest)
+    }
+
     completion(dashboardDatasTest)
 }
