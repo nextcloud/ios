@@ -80,7 +80,7 @@ struct DashboardWidgetView: View {
                     .padding(5)
                 }
             }
-        }.padding()
+        }.padding(5)
     }
 
     var bodyDasboardView: some View {
@@ -110,7 +110,7 @@ struct DashboardWidgetView: View {
                     }
                 }
             }
-        }.padding()
+        }.padding(5)
     }
 }
 
