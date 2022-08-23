@@ -891,6 +891,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     }
                 }
             }
+        } else {
+            app.open(url)
         }
 
         return true
