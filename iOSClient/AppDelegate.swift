@@ -273,6 +273,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             showPrivacyProtectionWindow()
         }
 
+        // Reload Widget
+        if #available(iOS 14.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+
         // Clear operation queue
         NCOperationQueue.shared.cancelAllQueue()
         // Clear download
