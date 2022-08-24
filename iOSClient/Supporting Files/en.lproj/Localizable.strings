@@ -587,6 +587,11 @@
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
 "_password_pdf_error_"          = "Wrong password";
 "_error_download_photobrowser_" = "Error: Unable to download photo";
+"_good_morning_"                = "Good morning";
+"_good_noon_"                   = "Good noon";
+"_good_afternoon_"              = "Good afternoon";
+"_good_evening_"                = "Good evening";
+"_good_night_"                  = "Good night";
 
 // MARK: Share
 
