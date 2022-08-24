@@ -32,11 +32,11 @@ let dashboardDatasTest: [DashboardData] = [
     .init(id: 4, image: "nextcloud", title: "title 5", subTitle: "subTitle - description 5", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func readDashboard(completion: @escaping (_ dashboardData: [DashboardData], _ isPlaceholder: Bool) -> Void) {
+func readDashboard(completion: @escaping (_ dashboardData: [DashboardData], _ isPlaceholder: Bool, _ title: String) -> Void) {
 
-    guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(dashboardDatasTest, true)
+    guard let account = NCManageDatabase.shared.getActiveAccount() else {
+        return completion(dashboardDatasTest, true, getTitle(account: nil))
     }
 
-    completion(dashboardDatasTest, false)
+    completion(dashboardDatasTest, false, getTitle(account: account))
 }

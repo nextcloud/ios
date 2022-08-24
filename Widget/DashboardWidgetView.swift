@@ -45,11 +45,12 @@ struct DashboardWidgetView: View {
     var entry: DashboardDataEntry
     let date = Date().formatted()
     var body: some View {
-        VStack(alignment: .center) {
-            Text("\(date)")
-                .font(.title)
+        VStack {
+            Text(entry.title)
+                .font(.title3)
                 .bold()
-            VStack {
+                .fixedSize(horizontal: false, vertical: true)
+            VStack(spacing: 5) {
                 ForEach(entry.dashboardDatas, id: \.id) { element in
                     Link(destination: element.url) {
                         HStack {
@@ -71,6 +72,10 @@ struct DashboardWidgetView: View {
                     }
                 }
             }
+            Text("\(date)")
+                .font(.caption2)
+                .padding(.trailing)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }.padding(5)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
     }
@@ -78,7 +83,7 @@ struct DashboardWidgetView: View {
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false)
+        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil))
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
