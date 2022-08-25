@@ -35,13 +35,13 @@ struct NextcloudWidgetView: View {
                     .frame(width: 10, height: 10)
                     .cornerRadius(3)
                 Text(NCBrandOptions.shared.brand + "")
-                    .font(.system(size: 12))
+                    .font(.system(size: 11))
                     .textCase(.uppercase)
             }
             .padding(.leading, 10)
             .padding(.top, 5)
             VStack(alignment: .leading, spacing: 5) {
-                VStack(spacing: 5) {
+                VStack(spacing: 6) {
                     ForEach(entry.nextcloudDatas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
@@ -76,7 +76,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = NextcloudDataEntry(date: Date(), nextcloudDatas: nextcloudDatasTest, isPlaceholder: false, footerText: "Nextcloud widget")
+        let entry = NextcloudDataEntry(date: Date(), nextcloudDatas: nextcloudDatasTest, isPlaceholder: false, footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

@@ -48,4 +48,28 @@ let nextcloudDatasTest: [NextcloudData] = [
 
 func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {
 
+    guard let account = NCManageDatabase.shared.getActiveAccount() else {
+        return completion(nextcloudDatasTest, true, NSLocalizedString("_no_active_account_", value: "No account found", comment: ""))
+    }
+
+    // LOG
+    let levelLog = CCUtility.getLogLevel()
+    let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+
+    NKCommon.shared.levelLog = levelLog
+    if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
+        NKCommon.shared.pathLog = pathDirectoryGroup
+    }
+    if isSimulatorOrTestFlight {
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+    } else {
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
+    }
+    NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget [Auto upload]")
+
+    NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+        completion(nextcloudDatasTest, false, "Auto upoload: \(items), \(Date().formatted())")
+        NKCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
+    }
 }
