@@ -27,12 +27,20 @@ import WidgetKit
 struct NextcloudWidgetView: View {
     var entry: NextcloudDataEntry
     var body: some View {
-        ZStack {
-            VStack {
-                Text(NCBrandOptions.shared.brand)
-                    .font(.title3)
-                    .bold()
-                    .fixedSize(horizontal: false, vertical: true)
+        ZStack(alignment: .top) {
+            HStack(spacing: 5) {
+                Image("nextcloud")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 10, height: 10)
+                    .cornerRadius(3)
+                Text(NCBrandOptions.shared.brand + "k")
+                    .font(.system(size: 12))
+                    .textCase(.uppercase)
+            }
+            .padding(.leading, 5)
+            .padding(.bottom, 5)
+            VStack(alignment: .leading, spacing: 5) {
                 VStack(spacing: 5) {
                     ForEach(entry.nextcloudDatas, id: \.id) { element in
                         Link(destination: element.url) {
@@ -55,19 +63,20 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-            }.padding(5)
+            }.padding(.top, 5)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-            }
-        Text(entry.footerText)
-                .font(.caption2)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                .padding([.bottom, .trailing], 5.0)
+            Text(entry.footerText)
+                    .font(.caption2)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(.trailing, 10.0)
+                    .padding(.bottom, 5.0)
+        }
     }
 }
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = NextcloudDataEntry(date: Date(), nextcloudDatas: nextcloudDatasTest, isPlaceholder: false, footerText: "Nextcloud Dashboard")
+        let entry = NextcloudDataEntry(date: Date(), nextcloudDatas: nextcloudDatasTest, isPlaceholder: false, footerText: "Nextcloud widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

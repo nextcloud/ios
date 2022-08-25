@@ -43,8 +43,7 @@ let nextcloudDatasTest: [NextcloudData] = [
     .init(id: 0, image: "nextcloud", title: "title 1", subTitle: "subTitle - description 1", url: URL(string: "https://nextcloud.com/")!),
     .init(id: 1, image: "nextcloud", title: "title 2", subTitle: "subTitle - description 2", url: URL(string: "https://nextcloud.com/")!),
     .init(id: 2, image: "nextcloud", title: "title 3", subTitle: "subTitle - description 3", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: 3, image: "nextcloud", title: "title 4", subTitle: "subTitle - description 4", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: 4, image: "nextcloud", title: "title 5", subTitle: "subTitle - description 5", url: URL(string: "https://nextcloud.com/")!)
+    .init(id: 3, image: "nextcloud", title: "title 4", subTitle: "subTitle - description 4", url: URL(string: "https://nextcloud.com/")!)
 ]
 
 func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {

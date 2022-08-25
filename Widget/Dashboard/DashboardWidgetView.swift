@@ -44,7 +44,7 @@ import WidgetKit
 struct DashboardWidgetView: View {
     var entry: DashboardDataEntry
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             VStack {
                 Text(entry.title)
                     .font(.title3)
@@ -74,11 +74,12 @@ struct DashboardWidgetView: View {
                 }
             }.padding(5)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-            }
-        Text(entry.footerText)
-                .font(.caption2)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                .padding([.bottom, .trailing], 5.0)
+            Text(entry.footerText)
+                    .font(.caption2)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(.trailing, 10.0)
+                    .padding(.bottom, 5.0)
+        }
     }
 }
 
