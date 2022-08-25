@@ -22,7 +22,7 @@
 //
 
 import WidgetKit
-import NextcloudKit
+import NCCommunication
 
 struct DashboardData: Identifiable, Codable, Hashable {
     var id: Int

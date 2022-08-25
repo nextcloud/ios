@@ -34,7 +34,7 @@ struct NextcloudWidgetView: View {
                     .scaledToFit()
                     .frame(width: 10, height: 10)
                     .cornerRadius(3)
-                Text(NCBrandOptions.shared.brand + "")
+                Text(NCBrandOptions.shared.brand + "c")
                     .font(.system(size: 11))
                     .textCase(.uppercase)
             }
