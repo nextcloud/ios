@@ -28,7 +28,6 @@ import Queuer
 
 class NCNetworkingProcessUpload: NSObject {
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var timerProcess: Timer?
 
     let maxConcurrentOperationUpload = 5
@@ -54,11 +53,12 @@ class NCNetworkingProcessUpload: NSObject {
     }
 
     @objc private func process() {
-        guard !appDelegate.account.isEmpty else { return }
+        guard let account = NCManageDatabase.shared.getActiveAccount() else {
+            return
+        }
 
         stopTimer()
 
-        let applicationState = UIApplication.shared.applicationState
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -84,8 +84,8 @@ class NCNetworkingProcessUpload: NSObject {
                     for metadata in metadatas {
 
                         // Different account
-                        if self.appDelegate.account != metadata.account {
-                            NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView) on account: \(metadata.account), because the actual account is \(self.appDelegate.account).")
+                        if account.account != metadata.account {
+                            NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView) on account: \(metadata.account), because the actual account is \(account.account).")
                             continue
                         }
 
@@ -114,7 +114,11 @@ class NCNetworkingProcessUpload: NSObject {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
                             for metadata in metadatas {
-                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active {  continue }
+                                #if !EXTENSION
+                                if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active {  continue }
+                                #else
+                                if (metadata.e2eEncrypted || metadata.chunk) { continue }
+                                #endif
                                 let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
                                 if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
@@ -142,18 +146,21 @@ class NCNetworkingProcessUpload: NSObject {
             }
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
+            #if !EXTENSION
             DispatchQueue.main.async {
-                if (counterUpload == 0 && !self.appDelegate.isPasscodePresented()) {
-                    self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
+                if (counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented()) {
+                    self.deleteAssetLocalIdentifiers(account: account.account) {
                         self.startTimer()
                     }
                 } else {
                     self.startTimer()
                 }
             }
+            #endif
         })
     }
 
+    #if !EXTENSION
     private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
 
         if UIApplication.shared.applicationState != .active {
@@ -181,6 +188,7 @@ class NCNetworkingProcessUpload: NSObject {
             }
         })
     }
+    #endif
 
     // MARK: -
 

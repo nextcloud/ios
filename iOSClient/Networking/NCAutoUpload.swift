@@ -25,6 +25,7 @@ import UIKit
 import CoreLocation
 import NCCommunication
 import Photos
+import NextcloudKit
 
 class NCAutoUpload: NSObject {
     @objc static let shared: NCAutoUpload = {
@@ -32,13 +33,12 @@ class NCAutoUpload: NSObject {
         return instance
     }()
 
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var endForAssetToUpload: Bool = false
 
     // MARK: -
 
     @objc func initAutoUpload(viewController: UIViewController?, completion: @escaping (_ items: Int) -> Void) {
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(), activeAccount.autoUpload else {
+        guard let account = NCManageDatabase.shared.getActiveAccount(), account.autoUpload else {
             completion(0)
             return
         }
@@ -58,23 +58,25 @@ class NCAutoUpload: NSObject {
 
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
 
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: appDelegate.window?.rootViewController) { hasPermission in
+        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
-
+            #if !EXTENSION
             NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: NCGlobal.shared.errorNoError, priority: .max)
             NCActivityIndicator.shared.start()
+            #endif
             self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
+                #if !EXTENSION
                 NCActivityIndicator.shared.stop()
+                #endif
             }
         }
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-        guard !appDelegate.account.isEmpty else {
+        guard let account = NCManageDatabase.shared.getActiveAccount() else {
             completion(0)
             return
         }
-        guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) else { return }
 
         DispatchQueue.global(qos: .background).async {
 
@@ -83,17 +85,26 @@ class NCAutoUpload: NSObject {
 
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
                 guard let assets = assets, !assets.isEmpty else {
+                    #if EXTENSION_WIDGET
+                    NKCommon.shared.writeLog("Automatic upload Dashboard widget, no new assets found [" + log + "]")
+                    #else
                     NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found [" + log + "]")
+                    #endif
                     completion(0)
                     return
                 }
+                #if EXTENSION_WIDGET
+                NKCommon.shared.writeLog("Automatic upload Dashboard widget, new \(assets.count) assets found [" + log + "]")
+                #else
                 NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets.count) assets found [" + log + "]")
-
+                #endif
                 // Create the folder for auto upload & if request the subfolders
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
+                    #if !EXTENSION
                     if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                         NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
                     }
+                    #endif
                     return completion(0)
                 }
 
@@ -159,7 +170,11 @@ class NCAutoUpload: NSObject {
                             metadata.classFile = NCCommunicationCommon.typeClassFile.image.rawValue
                         }
                         if selector == NCGlobal.shared.selectorUploadAutoUpload {
+                            #if EXTENSION_WIDGET
+                            NKCommon.shared.writeLog("Automatic upload Dashboard widget added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
+                            #else
                             NCCommunicationCommon.shared.writeLog("Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
+                            #endif
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         }
                         metadatas.append(metadata)
@@ -167,11 +182,18 @@ class NCAutoUpload: NSObject {
                 }
 
                 self.endForAssetToUpload = true
+                #if !EXTENSION
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+                    (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
                 } else {
-                    self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
+                    (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
                 }
+                #elseif EXTENSION_WIDGET
+                    if selector == NCGlobal.shared.selectorUploadAutoUpload {
+                        let networkingProcessUpload = NCNetworkingProcessUpload()
+                        networkingProcessUpload.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
+                    }
+                #endif
                 completion(metadatas.count)
             }
         }
@@ -187,7 +209,11 @@ class NCAutoUpload: NSObject {
             guard let assets = assets else { return }
 
             NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
+            #if EXTENSION_WIDGET
+            NKCommon.shared.writeLog("Dashboard widget align Photo Library \(assets.count)")
+            #else
             NCCommunicationCommon.shared.writeLog("Align Photo Library \(assets.count)")
+            #endif
         }
     }
 

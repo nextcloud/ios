@@ -38,5 +38,24 @@ func readDashboard(completion: @escaping (_ dashboardData: [DashboardData], _ is
         return completion(dashboardDatasTest, true, getTitle(account: nil))
     }
 
-    completion(dashboardDatasTest, false, getTitle(account: account))
+    // LOG
+    let levelLog = CCUtility.getLogLevel()
+    let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+
+    NKCommon.shared.levelLog = levelLog
+    if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
+        NKCommon.shared.pathLog = pathDirectoryGroup
+    }
+    if isSimulatorOrTestFlight {
+        NKCommon.shared.writeLog("Start Dashboard widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+    } else {
+        NKCommon.shared.writeLog("Start Dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
+    }
+    NKCommon.shared.writeLog("Start Dashboard widget [Auto upload]")
+
+    NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
+        completion(dashboardDatasTest, false, getTitle(account: account))
+        NKCommon.shared.writeLog("Completition Dashboard widget [Auto upload]")
+    }
 }

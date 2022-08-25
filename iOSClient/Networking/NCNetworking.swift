@@ -387,7 +387,7 @@ import Photos
         NCCommunicationCommon.shared.writeLog("Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.e2eEncrypted)]")
 
         if metadata.e2eEncrypted {
-            #if !EXTENSION_FILE_PROVIDER_EXTENSION
+            #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { errorCode, errorDescription in
                 DispatchQueue.main.async {
                     completion(errorCode, errorDescription)
