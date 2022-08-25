@@ -36,6 +36,7 @@ struct DashboardDataEntry: TimelineEntry {
     let dashboardDatas: [DashboardData]
     let isPlaceholder: Bool
     let title: String
+    let items: Int
 }
 
 func getTitle(account: tableAccount?) -> String {

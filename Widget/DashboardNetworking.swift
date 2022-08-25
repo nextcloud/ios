@@ -32,10 +32,10 @@ let dashboardDatasTest: [DashboardData] = [
     .init(id: 4, image: "nextcloud", title: "title 5", subTitle: "subTitle - description 5", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func readDashboard(completion: @escaping (_ dashboardData: [DashboardData], _ isPlaceholder: Bool, _ title: String) -> Void) {
+func readDashboard(completion: @escaping (_ dashboardData: [DashboardData], _ isPlaceholder: Bool, _ title: String, _ items: Int) -> Void) {
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(dashboardDatasTest, true, getTitle(account: nil))
+        return completion(dashboardDatasTest, true, getTitle(account: nil), 0)
     }
 
     // LOG
@@ -54,8 +54,8 @@ func readDashboard(completion: @escaping (_ dashboardData: [DashboardData], _ is
     }
     NKCommon.shared.writeLog("Start Dashboard widget [Auto upload]")
 
-    NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
-        completion(dashboardDatasTest, false, getTitle(account: account))
+    NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+        completion(dashboardDatasTest, false, getTitle(account: account), items)
         NKCommon.shared.writeLog("Completition Dashboard widget [Auto upload]")
     }
 }

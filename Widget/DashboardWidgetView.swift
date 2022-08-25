@@ -72,7 +72,7 @@ struct DashboardWidgetView: View {
                     }
                 }
             }
-            Text("\(date)")
+            Text("Auto upoload: \(entry.items), \(date)")
                 .font(.caption2)
                 .padding(.trailing)
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -83,7 +83,7 @@ struct DashboardWidgetView: View {
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil))
+        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), items: 0)
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
