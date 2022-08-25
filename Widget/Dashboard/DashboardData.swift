@@ -74,25 +74,6 @@ func readDashboardData(completion: @escaping (_ dashboardData: [DashboardData], 
         return completion(dashboardDatasTest, true, getTitle(account: nil), NSLocalizedString("_no_active_account_", value: "No account found", comment: ""))
     }
 
-    // LOG
-    let levelLog = CCUtility.getLogLevel()
-    let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
-
-    NKCommon.shared.levelLog = levelLog
-    if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-        NKCommon.shared.pathLog = pathDirectoryGroup
-    }
-    if isSimulatorOrTestFlight {
-        NKCommon.shared.writeLog("Start Dashboard widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
-    } else {
-        NKCommon.shared.writeLog("Start Dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
-    }
-    NKCommon.shared.writeLog("Start Dashboard widget [Auto upload]")
-
-    NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-        completion(dashboardDatasTest, false, getTitle(account: account), "Auto upoload: \(items), \(Date().formatted())")
-        NKCommon.shared.writeLog("Completition Dashboard widget [Auto upload]")
-    }
+    completion(dashboardDatasTest, false, getTitle(account: account), "\(Date().formatted())")
 }
 
