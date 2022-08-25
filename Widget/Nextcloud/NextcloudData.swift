@@ -48,11 +48,12 @@ let nextcloudDatasTest: [NextcloudData] = [
 
 func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {
 
-    guard let account = NCManageDatabase.shared.getActiveAccount(), let password = CCUtility.getPassword(account.account) else {
+    guard let account = NCManageDatabase.shared.getActiveAccount() else {
         return completion(nextcloudDatasTest, true, NSLocalizedString("_no_active_account_", value: "No account found", comment: ""))
     }
 
     // NETWORKING
+    let password = CCUtility.getPassword(account.account)!
     NCCommunicationCommon.shared.setup(
         account: account.account,
         user: account.user,
