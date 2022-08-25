@@ -29,18 +29,18 @@ struct Provider: TimelineProvider {
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), dashboardDatas: [], isPlaceholder: true, title: getTitle(account: nil), items: 0)
+        return Entry(date: Date(), dashboardDatas: [], isPlaceholder: true, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        readDashboard { dashboardDatas, isPlaceholder, title, items in
-            completion(Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, items: items))
+        readDashboard { dashboardDatas, isPlaceholder, title, footerText in
+            completion(Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, footerText: footerText))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        readDashboard { dashboardDatas, isPlaceholder, title, items in
-            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, items: items)], policy: .atEnd)
+        readDashboard { dashboardDatas, isPlaceholder, title, footerText in
+            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, footerText: footerText)], policy: .atEnd)
             completion(timeLine)
         }
     }
@@ -63,7 +63,7 @@ struct DashboardWidget: Widget {
 struct DashboardWidget_Previews: PreviewProvider {
 
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), items: 0)
+        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

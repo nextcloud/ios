@@ -43,47 +43,48 @@ import WidgetKit
 
 struct DashboardWidgetView: View {
     var entry: DashboardDataEntry
-    let date = Date().formatted()
     var body: some View {
-        VStack {
-            Text(entry.title)
-                .font(.title3)
-                .bold()
-                .fixedSize(horizontal: false, vertical: true)
-            VStack(spacing: 5) {
-                ForEach(entry.dashboardDatas, id: \.id) { element in
-                    Link(destination: element.url) {
-                        HStack {
-                            Image(element.image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 40, height: 40)
-                                .clipShape(Circle())
-                            VStack(alignment: .leading) {
-                                Text(element.title)
-                                    .font(.headline)
-                                Text(element.subTitle)
-                                    .font(.subheadline)
-                                    .foregroundColor(Color(white: 0.4745))
+        ZStack {
+            VStack {
+                Text(entry.title)
+                    .font(.title3)
+                    .bold()
+                    .fixedSize(horizontal: false, vertical: true)
+                VStack(spacing: 5) {
+                    ForEach(entry.dashboardDatas, id: \.id) { element in
+                        Link(destination: element.url) {
+                            HStack {
+                                Image(element.image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                                VStack(alignment: .leading) {
+                                    Text(element.title)
+                                        .font(.headline)
+                                    Text(element.subTitle)
+                                        .font(.subheadline)
+                                        .foregroundColor(Color(white: 0.4745))
+                                }
+                                Spacer()
                             }
-                            Spacer()
+                            .padding(5)
                         }
-                        .padding(5)
                     }
                 }
+            }.padding(5)
+                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
             }
-            Text("Auto upoload: \(entry.items), \(date)")
+        Text(entry.footerText)
                 .font(.caption2)
-                .padding(.trailing)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-        }.padding(5)
-            .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .padding([.bottom, .trailing], 5.0)
     }
 }
 
 struct NCElementDashboard_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), items: 0)
+        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
