@@ -27,19 +27,19 @@ import WidgetKit
 struct NextcloudWidgetView: View {
     var entry: NextcloudDataEntry
     var body: some View {
-        ZStack(alignment: .top) {
+        ZStack(alignment: .topLeading) {
             HStack(spacing: 5) {
                 Image("nextcloud")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 10, height: 10)
                     .cornerRadius(3)
-                Text(NCBrandOptions.shared.brand + "k")
+                Text(NCBrandOptions.shared.brand + "")
                     .font(.system(size: 12))
                     .textCase(.uppercase)
             }
-            .padding(.leading, 5)
-            .padding(.bottom, 5)
+            .padding(.leading, 10)
+            .padding(.top, 5)
             VStack(alignment: .leading, spacing: 5) {
                 VStack(spacing: 5) {
                     ForEach(entry.nextcloudDatas, id: \.id) { element in
@@ -59,11 +59,11 @@ struct NextcloudWidgetView: View {
                                 }
                                 Spacer()
                             }
-                            .padding(5)
+                            .padding(.leading, 5)
                         }
                     }
                 }
-            }.padding(.top, 5)
+            }.padding(.top, 30)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
             Text(entry.footerText)
                     .font(.caption2)
