@@ -48,7 +48,7 @@ let nextcloudDatasTest: [NextcloudData] = [
 
 func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {
 
-    guard let account = NCManageDatabase.shared.getActiveAccount() else {
+    guard let account = NCManageDatabase.shared.getActiveAccount(), let password = CCUtility.getPassword(account.account) else {
         return completion(nextcloudDatasTest, true, NSLocalizedString("_no_active_account_", value: "No account found", comment: ""))
     }
 
@@ -57,7 +57,7 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
         account: account.account,
         user: account.user,
         userId: account.userId,
-        password: CCUtility.getPassword(account.account),
+        password: password,
         urlBase: account.urlBase,
         userAgent: CCUtility.getUserAgent(),
         webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account),
@@ -160,9 +160,9 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
             if errorCode != 0 {
                 completion(nextcloudDatasTest, true, errorDescription)
             } else if nextcloudDatas.isEmpty {
-                completion(nextcloudDatasTest, true, "Auto upoload: \(0), \(Date().formatted())")
+                completion(nextcloudDatasTest, true, "Auto upoload: \(items), \(Date().formatted())")
             } else {
-                completion(nextcloudDatas, false, "Auto upoload: \(0), \(Date().formatted())")
+                completion(nextcloudDatas, false, "Auto upoload: \(items), \(Date().formatted())")
             }
         }
     }
