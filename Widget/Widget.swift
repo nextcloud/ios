@@ -47,6 +47,14 @@ struct Provider: TimelineProvider {
 }
 
 @main
+struct NextcloudWidget: WidgetBundle {
+
+    @WidgetBundleBuilder
+    var body: some Widget {
+        DashboardWidget()
+    }
+}
+
 struct DashboardWidget: Widget {
     let kind: String = "NextcloudWidget"
 
