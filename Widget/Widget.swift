@@ -24,54 +24,38 @@
 import WidgetKit
 import SwiftUI
 
-struct Provider: TimelineProvider {
-
-    typealias Entry = DashboardDataEntry
-
-    func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), dashboardDatas: [], isPlaceholder: true, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
-    }
-
-    func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        readDashboard { dashboardDatas, isPlaceholder, title, footerText in
-            completion(Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, footerText: footerText))
-        }
-    }
-
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        readDashboard { dashboardDatas, isPlaceholder, title, footerText in
-            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, footerText: footerText)], policy: .atEnd)
-            completion(timeLine)
-        }
-    }
-}
-
 @main
-struct NextcloudWidget: WidgetBundle {
+struct NextcloudWidgetBundle: WidgetBundle {
 
     @WidgetBundleBuilder
     var body: some Widget {
         DashboardWidget()
+        NextcloudWidget()
     }
 }
 
 struct DashboardWidget: Widget {
-    let kind: String = "NextcloudWidget"
+    let kind: String = "DashboardWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: DashboardWidgetProvider()) { entry in
             DashboardWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName("Nextcloud Dashboard")
-        .description(NSLocalizedString("_subtitle_dashboard_", comment: ""))
+        .configurationDisplayName("Dashboard")
+        .description(NSLocalizedString("_description_dashboardwidget_", comment: ""))
     }
 }
 
-struct DashboardWidget_Previews: PreviewProvider {
+struct NextcloudWidget: Widget {
+    let kind: String = "NextcloudWidget"
 
-    static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
-        DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: NextcloudWidgetProvider()) { entry in
+            NextcloudWidgetView(entry: entry)
+        }
+        .supportedFamilies([.systemLarge])
+        .configurationDisplayName(NCBrandOptions.shared.brand)
+        .description(NSLocalizedString("_description_nextcloudwidget_", comment: ""))
     }
 }

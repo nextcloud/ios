@@ -1,8 +1,8 @@
 //
-//  DashboardWidgetView.swift
+//  NextcloudWidgetView.swift
 //  Widget
 //
-//  Created by Marino Faggiana on 20/08/22.
+//  Created by Marino Faggiana on 25/08/22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -24,34 +24,17 @@
 import SwiftUI
 import WidgetKit
 
-/*
- @Environment(\.colorScheme) var colorScheme
-
-     var entry: Provider.Entry
-
-     var bgColor: some View {
-         colorScheme == .dark ? Color.red : Color.orange
-     }
-
-     var body: some View {
-         ZStack {
-             bgColor
-             Text(entry.date, style: .time)
-         }
-     }
- */
-
-struct DashboardWidgetView: View {
-    var entry: DashboardDataEntry
+struct NextcloudWidgetView: View {
+    var entry: NextcloudDataEntry
     var body: some View {
         ZStack {
             VStack {
-                Text(entry.title)
+                Text(NCBrandOptions.shared.brand)
                     .font(.title3)
                     .bold()
                     .fixedSize(horizontal: false, vertical: true)
                 VStack(spacing: 5) {
-                    ForEach(entry.dashboardDatas, id: \.id) { element in
+                    ForEach(entry.nextcloudDatas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
                                 Image(element.image)
@@ -82,9 +65,9 @@ struct DashboardWidgetView: View {
     }
 }
 
-struct NCElementDashboard_Previews: PreviewProvider {
+struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
-        DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
+        let entry = NextcloudDataEntry(date: Date(), nextcloudDatas: nextcloudDatasTest, isPlaceholder: false, footerText: "Nextcloud Dashboard")
+        NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
