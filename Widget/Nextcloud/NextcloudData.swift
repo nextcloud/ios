@@ -148,8 +148,8 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
     }
     NCCommunicationCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget [Auto upload]")
 
-    //NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-    NCCommunicationCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
+    NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+        NCCommunicationCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
         NCCommunication.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, errorCode, errorDescription in
             var nextcloudDatas: [NextcloudData] = []
             for file in files {
@@ -157,13 +157,13 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
                 let nextcloudData = NextcloudData.init(id: file.ocId, image: "", title: file.fileName, subTitle: "", url: URL(string: "https://nextcloud.com/")!)
                 nextcloudDatas.append(nextcloudData)
             }
-            if nextcloudDatas.isEmpty {
-                completion(nextcloudDatasTest, true, "Auto upoload: \(0), \(Date().formatted())")
-            } else if errorCode != 0 {
+            if errorCode != 0 {
                 completion(nextcloudDatasTest, true, errorDescription)
+            } else if nextcloudDatas.isEmpty {
+                completion(nextcloudDatasTest, true, "Auto upoload: \(0), \(Date().formatted())")
             } else {
-                completion(nextcloudDatas, false, "Auto upoload: \(items), \(Date().formatted())")
+                completion(nextcloudDatas, false, "Auto upoload: \(0), \(Date().formatted())")
             }
         }
-    //}
+    }
 }
