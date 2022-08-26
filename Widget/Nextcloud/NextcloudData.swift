@@ -200,9 +200,10 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
                 // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
 
-                let path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName)
+                guard let path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                guard let user = file.user.urlEncoded else { continue }
                 let link = file.urlBase + "/f/" + file.fileId
-                let urlString = "nextcloud://open-file?path=" + path + "&user=" + file.user + "&link=" + link
+                let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
                 let recentData = RecentData.init(id: file.ocId, image: iconImagePath, title: file.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)

@@ -66,7 +66,7 @@ struct NextcloudWidgetView: View {
                     }
                 }
             }
-            .padding(.top, 50)
+            .padding(.top, 45)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
             Text(entry.footerText)
                 .font(.caption2)
