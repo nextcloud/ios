@@ -206,7 +206,8 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
                 let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
                 // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard let path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                if path.first == "/" { path = String(path.dropFirst())}
                 guard let user = file.user.urlEncoded else { continue }
                 let link = file.urlBase + "/f/" + file.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
