@@ -54,6 +54,7 @@ struct NextcloudWidgetView: View {
                                 VStack(alignment: .leading) {
                                     Text(element.title)
                                         .font(.system(size: 12))
+                                        .fontWeight(.bold)
                                     Text(element.subTitle)
                                         .font(.system(size: CGFloat(10)))
                                         .foregroundColor(Color(white: 0.4745))
