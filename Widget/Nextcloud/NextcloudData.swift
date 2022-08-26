@@ -74,11 +74,11 @@ let recentDatasTest: [RecentData] = [
 ]
 
 let uploadDatasTest: [UploadData] = [
+    .init(id: "0", imagePath: "file"),
     .init(id: "1", imagePath: "file"),
     .init(id: "2", imagePath: "file"),
     .init(id: "3", imagePath: "file"),
-    .init(id: "4", imagePath: "file"),
-    .init(id: "5", imagePath: "file")
+    .init(id: "4", imagePath: "file")
 ]
 
 func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
@@ -232,6 +232,7 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
                     continue
                 }
                 uploadDatas.append(UploadData(id: metadata.ocId, imagePath: imagePath))
+                if uploadDatas.count == 5 { break}
             }
 
             // Completion

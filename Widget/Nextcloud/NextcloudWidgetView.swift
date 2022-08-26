@@ -65,9 +65,26 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
+                Spacer()
+                    .frame(width: .infinity, height: 15.0)
+                Text("File in upload ...")
+                    .font(.system(size: 12))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                HStack(spacing: 10) {
+                    ForEach(entry.uploadDatas, id: \.id) { element in
+                        Image(uiImage: (UIImage(contentsOfFile: element.imagePath) ?? UIImage(named: "file"))!)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 30, height: 30)
+                            .clipped()
+                            .cornerRadius(4)
+                    }
+                }.frame(maxWidth: .infinity, alignment: .trailing)
+
             }
             .padding(.top, 45)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+
             Text(entry.footerText)
                 .font(.caption2)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
