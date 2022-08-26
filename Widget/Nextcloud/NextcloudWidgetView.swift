@@ -34,7 +34,7 @@ struct NextcloudWidgetView: View {
                     .scaledToFit()
                     .frame(width: 10, height: 10)
                     .cornerRadius(3)
-                Text(NCBrandOptions.shared.brand + "c")
+                Text(NCBrandOptions.shared.brand + "w")
                     .font(.system(size: 11))
                     .textCase(.uppercase)
             }
@@ -45,16 +45,17 @@ struct NextcloudWidgetView: View {
                     ForEach(entry.nextcloudDatas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
-                                Image(element.image)
+                                Image(uiImage: (UIImage(contentsOfFile: element.image) ?? UIImage(named: "file"))!)
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
+                                    .scaledToFill()
+                                    .frame(width: 30, height: 30)
+                                    .clipped()
+                                    .cornerRadius(4)
                                 VStack(alignment: .leading) {
                                     Text(element.title)
-                                        .font(.headline)
+                                        .font(.system(size: 12))
                                     Text(element.subTitle)
-                                        .font(.subheadline)
+                                        .font(.system(size: CGFloat(10)))
                                         .foregroundColor(Color(white: 0.4745))
                                 }
                                 Spacer()

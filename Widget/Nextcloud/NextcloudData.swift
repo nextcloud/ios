@@ -40,10 +40,31 @@ struct NextcloudDataEntry: TimelineEntry {
 }
 
 let nextcloudDatasTest: [NextcloudData] = [
-    .init(id: "0", image: "nextcloud", title: "title 1", subTitle: "subTitle - description 1", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "1", image: "nextcloud", title: "title 2", subTitle: "subTitle - description 2", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "2", image: "nextcloud", title: "title 3", subTitle: "subTitle - description 3", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "3", image: "nextcloud", title: "title 4", subTitle: "subTitle - description 4", url: URL(string: "https://nextcloud.com/")!)
+    .init(id: "1",
+          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00395828ocvhmkstoevb/63074889b016c.small.ico",
+          title: "title 1",
+          subTitle: "subTitle - description 1",
+          url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "2",
+          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392008ocvhmkstoevb/a339c916eea984af8ada3815e1f0e9c6.small.ico",
+          title: "title 2",
+          subTitle: "subTitle - description 2",
+          url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "3",
+          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00391801ocvhmkstoevb/62f4c03fd46bd.small.ico",
+          title: "title 3",
+          subTitle: "subTitle - description 3",
+          url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "4",
+          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392070ocvhmkstoevb/00340fefc50d1fee8491de0c5dc1864b.small.ico",
+          title: "title 4",
+          subTitle: "subTitle - description 4",
+          url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "5",
+          image: "file",
+          title: "title 4",
+          subTitle: "subTitle - description 4",
+          url: URL(string: "https://nextcloud.com/")!)
 ]
 
 func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {
@@ -121,7 +142,7 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
         </d:order>
     </d:orderby>
     <d:limit>
-        <d:nresults>4</d:nresults>
+        <d:nresults>5</d:nresults>
     </d:limit>
     </d:basicsearch>
     </d:searchrequest>
@@ -155,7 +176,11 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
             var nextcloudDatas: [NextcloudData] = []
             for file in files {
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
-                let nextcloudData = NextcloudData.init(id: file.ocId, image: "", title: file.fileName, subTitle: subTitle, url: URL(string: "https://nextcloud.com/")!)
+                let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                //if FileManager().fileExists(atPath: iconImagePath) {
+                //    (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+                //}
+                let nextcloudData = NextcloudData.init(id: file.ocId, image: iconImagePath, title: file.fileName, subTitle: subTitle, url: URL(string: "https://nextcloud.com/")!)
                 nextcloudDatas.append(nextcloudData)
             }
             if errorCode != 0 {

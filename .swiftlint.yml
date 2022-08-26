@@ -41,6 +41,7 @@ excluded:
   - File Provider Extension/FileProviderExtension.swift
   - File Provider Extension/FileProviderUtility.swift
   - Notification Service Extension/NotificationService.swift
+  - Widget/Nextcloud/NextcloudData.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift
@@ -132,6 +133,5 @@ excluded:
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
   - iOSClient/Viewer/NCViewerProviderContextMenu.swift
   - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
-
 
 reporter: "xcode"
