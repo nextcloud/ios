@@ -34,7 +34,7 @@ struct NextcloudWidgetView: View {
                     .scaledToFit()
                     .frame(width: 18, height: 18)
                     .cornerRadius(4)
-                Text(NCBrandOptions.shared.brand + "333")
+                Text(NCBrandOptions.shared.brand + "")
                     .font(.system(size: 12))
                     .textCase(.uppercase)
             }
@@ -42,7 +42,7 @@ struct NextcloudWidgetView: View {
             .padding(.top, 10)
             VStack(alignment: .leading) {
                 VStack(spacing: 6) {
-                    ForEach(entry.nextcloudDatas, id: \.id) { element in
+                    ForEach(entry.recentDatas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
                                 Image(uiImage: (UIImage(contentsOfFile: element.image) ?? UIImage(named: "file"))!)
@@ -79,7 +79,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = NextcloudDataEntry(date: Date(), nextcloudDatas: nextcloudDatasTest, isPlaceholder: false, footerText: NCBrandOptions.shared.brand + " widget")
+        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: false, footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

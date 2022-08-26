@@ -24,7 +24,7 @@
 import WidgetKit
 import NCCommunication
 
-struct NextcloudData: Identifiable, Codable, Hashable {
+struct RecentData: Identifiable, Codable, Hashable {
     var id: String
     var image: String
     var title: String
@@ -34,12 +34,12 @@ struct NextcloudData: Identifiable, Codable, Hashable {
 
 struct NextcloudDataEntry: TimelineEntry {
     let date: Date
-    let nextcloudDatas: [NextcloudData]
+    let recentDatas: [RecentData]
     let isPlaceholder: Bool
     let footerText: String
 }
 
-let nextcloudDatasTest: [NextcloudData] = [
+let recentDatasTest: [RecentData] = [
     .init(id: "1",
           image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00395828ocvhmkstoevb/63074889b016c.small.ico",
           title: "title 1",
@@ -67,10 +67,10 @@ let nextcloudDatasTest: [NextcloudData] = [
           url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {
+func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) { // _ recentDatas: [RecentData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(nextcloudDatasTest, true, NSLocalizedString("_no_active_account_", value: "No account found", comment: ""))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     // NETWORKING
@@ -173,7 +173,7 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
     NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
         NCCommunicationCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
         NCCommunication.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, errorCode, errorDescription in
-            var nextcloudDatas: [NextcloudData] = []
+            var recentDatas: [RecentData] = []
             for file in files {
                 guard !file.directory else { continue }
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
@@ -189,16 +189,16 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
                 let link = file.urlBase + "/f/" + file.fileId
                 let urlString = "nextcloud://open-file?path=" + path + "&user=" + file.user + "&link=" + link
                 guard let url = URL(string: urlString) else { continue }
-                let nextcloudData = NextcloudData.init(id: file.ocId, image: iconImagePath, title: file.fileName, subTitle: subTitle, url: url)
-                nextcloudDatas.append(nextcloudData)
-                if nextcloudDatas.count == 5 { break}
+                let recentData = RecentData.init(id: file.ocId, image: iconImagePath, title: file.fileName, subTitle: subTitle, url: url)
+                recentDatas.append(recentData)
+                if recentDatas.count == 5 { break}
             }
             if errorCode != 0 {
-                completion(nextcloudDatasTest, true, errorDescription)
-            } else if nextcloudDatas.isEmpty {
-                completion(nextcloudDatasTest, true, "Auto upoload: \(items), \(Date().formatted())")
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: errorDescription))
+            } else if recentDatas.isEmpty {
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             } else {
-                completion(nextcloudDatas, false, "Auto upoload: \(items), \(Date().formatted())")
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             }
         }
     }

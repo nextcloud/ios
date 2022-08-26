@@ -29,18 +29,18 @@ struct NextcloudWidgetProvider: TimelineProvider {
     typealias Entry = NextcloudDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), nextcloudDatas: nextcloudDatasTest, isPlaceholder: true, footerText: "Nextcloud")
+        return Entry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: "Nextcloud")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        readNextcloudData { nextcloudDatas, isPlaceholder, footerText in
-            completion(Entry(date: Date(), nextcloudDatas: nextcloudDatas, isPlaceholder: isPlaceholder, footerText: footerText))
+        getDataEntry { entry in
+            completion(entry)
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        readNextcloudData { nextcloudDatas, isPlaceholder, footerText in
-            let timeLine = Timeline(entries: [Entry(date: Date(), nextcloudDatas: nextcloudDatas, isPlaceholder: isPlaceholder, footerText: footerText)], policy: .atEnd)
+        getDataEntry { entry in
+            let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }
     }
