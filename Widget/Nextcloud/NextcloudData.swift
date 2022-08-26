@@ -87,6 +87,15 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest,isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
+    func isLive(file: NCCommunicationFile, files: [NCCommunicationFile]) -> Bool {
+
+        if file.ext.lowercased() != "mov" { return false }
+        if files.filter({ ($0.fileNameWithoutExt == file.fileNameWithoutExt) && ($0.ext.lowercased() == "jpg") }).first != nil {
+            return true
+        }
+        return false
+    }
+
     // NETWORKING
     let password = CCUtility.getPassword(account.account)!
     NCCommunicationCommon.shared.setup(
@@ -156,7 +165,7 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
         </d:order>
     </d:orderby>
     <d:limit>
-        <d:nresults>20</d:nresults>
+        <d:nresults>50</d:nresults>
     </d:limit>
     </d:basicsearch>
     </d:searchrequest>
@@ -192,6 +201,8 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
             var recentDatas: [RecentData] = []
             for file in files {
                 guard !file.directory else { continue }
+                guard !isLive(file: file, files: files) else { continue }
+
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
                 let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
                 // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
