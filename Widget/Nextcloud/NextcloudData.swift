@@ -24,6 +24,14 @@
 import WidgetKit
 import NCCommunication
 
+struct NextcloudDataEntry: TimelineEntry {
+    let date: Date
+    let recentDatas: [RecentData]
+    let uploadDatas: [UploadData]
+    let isPlaceholder: Bool
+    let footerText: String
+}
+
 struct RecentData: Identifiable, Codable, Hashable {
     var id: String
     var image: String
@@ -32,11 +40,9 @@ struct RecentData: Identifiable, Codable, Hashable {
     var url: URL
 }
 
-struct NextcloudDataEntry: TimelineEntry {
-    let date: Date
-    let recentDatas: [RecentData]
-    let isPlaceholder: Bool
-    let footerText: String
+struct UploadData: Identifiable, Codable, Hashable {
+    var id: String
+    var image: String
 }
 
 let recentDatasTest: [RecentData] = [
@@ -67,10 +73,18 @@ let recentDatasTest: [RecentData] = [
           url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) { // _ recentDatas: [RecentData], _ isPlaceholder: Bool, _ footerText: String) -> Void) {
+let uploadDatasTest: [UploadData] = [
+    .init(id: "1", image: "file"),
+    .init(id: "2", image: "file"),
+    .init(id: "3", image: "file"),
+    .init(id: "4", image: "file"),
+    .init(id: "5", image: "file")
+]
+
+func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest,isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     // NETWORKING
@@ -174,6 +188,7 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
         NCCommunicationCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
         NCCommunication.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, errorCode, errorDescription in
             var recentDatas: [RecentData] = []
+            var uploadDatas: [UploadData] = []
             for file in files {
                 guard !file.directory else { continue }
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
@@ -194,11 +209,11 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
                 if recentDatas.count == 5 { break}
             }
             if errorCode != 0 {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: errorDescription))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: errorDescription))
             } else if recentDatas.isEmpty {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             } else {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerText: "Auto upoload: \(items), \(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, uploadDatas: uploadDatas, isPlaceholder: false, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             }
         }
     }
