@@ -1491,7 +1491,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.text = metadata.fileName
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
             if metadata.name == NCGlobal.shared.appName {
-                cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
+                cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user)
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
                 cell.titleInfoTrailingFull()

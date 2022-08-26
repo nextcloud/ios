@@ -618,7 +618,7 @@ import Photos
 
         let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { _ in
             let board = UIPasteboard.general
-            board.string = NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: true)
+            board.string = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
             NCContentPresenter.shared.messageNotification("", description: "_copied_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
         }
 

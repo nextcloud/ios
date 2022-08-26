@@ -142,7 +142,7 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
         </d:order>
     </d:orderby>
     <d:limit>
-        <d:nresults>5</d:nresults>
+        <d:nresults>20</d:nresults>
     </d:limit>
     </d:basicsearch>
     </d:searchrequest>
@@ -175,13 +175,23 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
         NCCommunication.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, errorCode, errorDescription in
             var nextcloudDatas: [NextcloudData] = []
             for file in files {
+                guard !file.directory else { continue }
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
                 let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
                 //if FileManager().fileExists(atPath: iconImagePath) {
                 //    (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 //}
-                let nextcloudData = NextcloudData.init(id: file.ocId, image: iconImagePath, title: file.fileName, subTitle: subTitle, url: URL(string: "https://nextcloud.com/")!)
+
+
+                // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+
+                let path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName)
+                let link = file.urlBase + "/f/" + file.fileId
+                let urlString = "nextcloud://open-file?path=" + path + "&user=" + file.user + "&link=" + link
+                guard let url = URL(string: urlString) else { continue }
+                let nextcloudData = NextcloudData.init(id: file.ocId, image: iconImagePath, title: file.fileName, subTitle: subTitle, url: url)
                 nextcloudDatas.append(nextcloudData)
+                if nextcloudDatas.count == 5 { break}
             }
             if errorCode != 0 {
                 completion(nextcloudDatasTest, true, errorDescription)

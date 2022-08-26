@@ -76,4 +76,3 @@ func readDashboardData(completion: @escaping (_ dashboardData: [DashboardData], 
 
     completion(dashboardDatasTest, false, getTitle(account: account), "\(Date().formatted())")
 }
-

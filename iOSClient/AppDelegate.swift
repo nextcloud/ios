@@ -834,6 +834,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var serverUrl: String = ""
         var matchedAccount: tableAccount?
 
+        /*
+         Example:
+         nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+         */
+
         if scheme == "nextcloud" && action == "open-file" {
 
             if !isSearchingMode, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
