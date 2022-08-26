@@ -73,8 +73,8 @@ struct NextcloudWidgetView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                 .padding(.trailing, 10.0)
                 .padding(.bottom, 5.0)
-        } // Z
-    } // var
+        }
+    }
 }
 
 struct NextcloudWidget_Previews: PreviewProvider {
