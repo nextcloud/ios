@@ -34,7 +34,7 @@ struct NextcloudDataEntry: TimelineEntry {
 
 struct RecentData: Identifiable, Codable, Hashable {
     var id: String
-    var image: String
+    var imagePath: String
     var title: String
     var subTitle: String
     var url: URL
@@ -42,43 +42,43 @@ struct RecentData: Identifiable, Codable, Hashable {
 
 struct UploadData: Identifiable, Codable, Hashable {
     var id: String
-    var image: String
+    var imagePath: String
 }
 
 let recentDatasTest: [RecentData] = [
     .init(id: "1",
-          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00395828ocvhmkstoevb/63074889b016c.small.ico",
+          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00395828ocvhmkstoevb/63074889b016c.small.ico",
           title: "title 1",
           subTitle: "subTitle - description 1",
           url: URL(string: "https://nextcloud.com/")!),
     .init(id: "2",
-          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392008ocvhmkstoevb/a339c916eea984af8ada3815e1f0e9c6.small.ico",
+          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392008ocvhmkstoevb/a339c916eea984af8ada3815e1f0e9c6.small.ico",
           title: "title 2",
           subTitle: "subTitle - description 2",
           url: URL(string: "https://nextcloud.com/")!),
     .init(id: "3",
-          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00391801ocvhmkstoevb/62f4c03fd46bd.small.ico",
+          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00391801ocvhmkstoevb/62f4c03fd46bd.small.ico",
           title: "title 3",
           subTitle: "subTitle - description 3",
           url: URL(string: "https://nextcloud.com/")!),
     .init(id: "4",
-          image: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392070ocvhmkstoevb/00340fefc50d1fee8491de0c5dc1864b.small.ico",
+          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392070ocvhmkstoevb/00340fefc50d1fee8491de0c5dc1864b.small.ico",
           title: "title 4",
           subTitle: "subTitle - description 4",
           url: URL(string: "https://nextcloud.com/")!),
     .init(id: "5",
-          image: "file",
+          imagePath: "file",
           title: "title 4",
           subTitle: "subTitle - description 4",
           url: URL(string: "https://nextcloud.com/")!)
 ]
 
 let uploadDatasTest: [UploadData] = [
-    .init(id: "1", image: "file"),
-    .init(id: "2", image: "file"),
-    .init(id: "3", image: "file"),
-    .init(id: "4", image: "file"),
-    .init(id: "5", image: "file")
+    .init(id: "1", imagePath: "file"),
+    .init(id: "2", imagePath: "file"),
+    .init(id: "3", imagePath: "file"),
+    .init(id: "4", imagePath: "file"),
+    .init(id: "5", imagePath: "file")
 ]
 
 func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
@@ -187,28 +187,54 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
     NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
         NCCommunicationCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
         NCCommunication.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, errorCode, errorDescription in
+
+            // Get recent files
             var recentDatas: [RecentData] = []
-            var uploadDatas: [UploadData] = []
             for file in files {
                 guard !file.directory else { continue }
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
                 let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
-                //if FileManager().fileExists(atPath: iconImagePath) {
-                //    (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                //}
-
-
                 // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-
                 guard let path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
                 guard let user = file.user.urlEncoded else { continue }
                 let link = file.urlBase + "/f/" + file.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
-                let recentData = RecentData.init(id: file.ocId, image: iconImagePath, title: file.fileName, subTitle: subTitle, url: url)
+                let recentData = RecentData.init(id: file.ocId, imagePath: iconImagePath, title: file.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
             }
+
+            // Get upload files
+            var uploadDatas: [UploadData] = []
+            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: 10, sorted: "sessionTaskIdentifier", ascending: false)
+            for metadata in metadatas {
+                let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+                let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                var imagePath = ""
+                if FileManager().fileExists(atPath: iconImagePath) {
+                    imagePath = iconImagePath
+                } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, FileManager().fileExists(atPath: filePath) {
+                    if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                        do {
+                            try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                            imagePath = iconImagePath
+                        } catch { }
+                    }
+                } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, FileManager().fileExists(atPath: filePath) {
+                    if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                        do {
+                            try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                            imagePath = iconImagePath
+                        } catch { }
+                    }
+                } else {
+                    continue
+                }
+                uploadDatas.append(UploadData(id: metadata.ocId, imagePath: imagePath))
+            }
+
+            // Completion
             if errorCode != 0 {
                 completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: errorDescription))
             } else if recentDatas.isEmpty {

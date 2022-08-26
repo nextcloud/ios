@@ -45,7 +45,7 @@ struct NextcloudWidgetView: View {
                     ForEach(entry.recentDatas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
-                                Image(uiImage: (UIImage(contentsOfFile: element.image) ?? UIImage(named: "file"))!)
+                                Image(uiImage: (UIImage(contentsOfFile: element.imagePath) ?? UIImage(named: "file"))!)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: 30, height: 30)
