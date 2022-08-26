@@ -79,8 +79,9 @@ struct NextcloudWidgetView: View {
                             .clipped()
                             .cornerRadius(4)
                     }
-                }.frame(maxWidth: .infinity, alignment: .trailing)
-
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.trailing, 10)
             }
             .padding(.top, 45)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])

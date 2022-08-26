@@ -182,18 +182,20 @@ class NCAutoUpload: NSObject {
                 }
 
                 self.endForAssetToUpload = true
-                #if !EXTENSION
-                if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
-                } else {
-                    (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
-                }
-                #elseif EXTENSION_WIDGET
-                    if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                        let networkingProcessUpload = NCNetworkingProcessUpload()
-                        networkingProcessUpload.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
+                DispatchQueue.main.async {
+                    #if !EXTENSION
+                    if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
+                        (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+                    } else {
+                        (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
                     }
-                #endif
+                    #elseif EXTENSION_WIDGET
+                        if selector == NCGlobal.shared.selectorUploadAutoUpload {
+                            let networkingProcessUpload = NCNetworkingProcessUpload()
+                            networkingProcessUpload.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
+                        }
+                    #endif
+                }
                 completion(metadatas.count)
             }
         }
