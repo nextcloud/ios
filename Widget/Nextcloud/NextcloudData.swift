@@ -155,7 +155,7 @@ func readNextcloudData(completion: @escaping (_ NextcloudDatas: [NextcloudData],
             var nextcloudDatas: [NextcloudData] = []
             for file in files {
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
-                let nextcloudData = NextcloudData.init(id: file.ocId, image: "", title: file.fileName, subTitle: "", url: URL(string: "https://nextcloud.com/")!)
+                let nextcloudData = NextcloudData.init(id: file.ocId, image: "", title: file.fileName, subTitle: subTitle, url: URL(string: "https://nextcloud.com/")!)
                 nextcloudDatas.append(nextcloudData)
             }
             if errorCode != 0 {
