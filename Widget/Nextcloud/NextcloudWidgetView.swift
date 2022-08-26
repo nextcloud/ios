@@ -32,16 +32,16 @@ struct NextcloudWidgetView: View {
                 Image("nextcloud")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 10, height: 10)
-                    .cornerRadius(3)
-                Text(NCBrandOptions.shared.brand + "w")
-                    .font(.system(size: 11))
+                    .frame(width: 18, height: 18)
+                    .cornerRadius(4)
+                Text(NCBrandOptions.shared.brand + "")
+                    .font(.system(size: 12))
                     .textCase(.uppercase)
             }
             .padding(.leading, 10)
-            .padding(.top, 5)
+            .padding(.top, 10)
             VStack(alignment: .leading, spacing: 5) {
-                VStack(spacing: 6) {
+                VStack(spacing: 10) {
                     ForEach(entry.nextcloudDatas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
@@ -57,6 +57,7 @@ struct NextcloudWidgetView: View {
                                     Text(element.subTitle)
                                         .font(.system(size: CGFloat(10)))
                                         .foregroundColor(Color(white: 0.4745))
+                                    Divider()
                                 }
                                 Spacer()
                             }
@@ -64,15 +65,16 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-            }.padding(.top, 30)
-                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+            }
+            .padding(.top, 50)
+            .redacted(reason: entry.isPlaceholder ? .placeholder : [])
             Text(entry.footerText)
-                    .font(.caption2)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(.trailing, 10.0)
-                    .padding(.bottom, 5.0)
-        }
-    }
+                .font(.caption2)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .padding(.trailing, 10.0)
+                .padding(.bottom, 5.0)
+        } // Z
+    } // var
 }
 
 struct NextcloudWidget_Previews: PreviewProvider {
