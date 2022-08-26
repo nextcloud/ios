@@ -34,14 +34,14 @@ struct NextcloudWidgetView: View {
                     .scaledToFit()
                     .frame(width: 18, height: 18)
                     .cornerRadius(4)
-                Text(NCBrandOptions.shared.brand + "")
+                Text(NCBrandOptions.shared.brand + "333")
                     .font(.system(size: 12))
                     .textCase(.uppercase)
             }
             .padding(.leading, 10)
             .padding(.top, 10)
-            VStack(alignment: .leading, spacing: 5) {
-                VStack(spacing: 10) {
+            VStack(alignment: .leading) {
+                VStack(spacing: 6) {
                     ForEach(entry.nextcloudDatas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
@@ -61,7 +61,7 @@ struct NextcloudWidgetView: View {
                                 }
                                 Spacer()
                             }
-                            .padding(.leading, 5)
+                            .padding(.leading, 10)
                         }
                     }
                 }
