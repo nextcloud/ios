@@ -32,53 +32,36 @@ struct NextcloudDataEntry: TimelineEntry {
     let footerText: String
 }
 
-struct RecentData: Identifiable, Codable, Hashable {
+struct RecentData: Identifiable, Hashable {
     var id: String
-    var imagePath: String
+    var image: UIImage
     var title: String
     var subTitle: String
     var url: URL
 }
 
-struct UploadData: Identifiable, Codable, Hashable {
+struct UploadData: Identifiable, Hashable {
     var id: String
-    var imagePath: String
+    var image: UIImage
 }
 
 let recentDatasTest: [RecentData] = [
-    .init(id: "1",
-          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00395828ocvhmkstoevb/63074889b016c.small.ico",
-          title: "title 1",
-          subTitle: "subTitle - description 1",
-          url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "2",
-          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392008ocvhmkstoevb/a339c916eea984af8ada3815e1f0e9c6.small.ico",
-          title: "title 2",
-          subTitle: "subTitle - description 2",
-          url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "3",
-          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00391801ocvhmkstoevb/62f4c03fd46bd.small.ico",
-          title: "title 3",
-          subTitle: "subTitle - description 3",
-          url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "4",
-          imagePath: "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/BDE5102B-F3D3-4951-804B-A9E7F6253D56/data/Containers/Shared/AppGroup/D425298A-F6F7-482A-BD07-7ECD42B2836B/File Provider Storage/00392070ocvhmkstoevb/00340fefc50d1fee8491de0c5dc1864b.small.ico",
-          title: "title 4",
-          subTitle: "subTitle - description 4",
-          url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "5",
-          imagePath: "file",
-          title: "title 4",
-          subTitle: "subTitle - description 4",
-          url: URL(string: "https://nextcloud.com/")!)
+    .init(id: "1", image: UIImage(named: "nextcloud")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "2", image: UIImage(named: "nextcloud")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "3", image: UIImage(named: "nextcloud")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "4", image: UIImage(named: "nextcloud")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "5", image: UIImage(named: "nextcloud")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!)
 ]
 
 let uploadDatasTest: [UploadData] = [
-    .init(id: "0", imagePath: "file"),
-    .init(id: "1", imagePath: "file"),
-    .init(id: "2", imagePath: "file"),
-    .init(id: "3", imagePath: "file"),
-    .init(id: "4", imagePath: "file")
+    .init(id: "1", image: UIImage(named: "nextcloud")!),
+    .init(id: "2", image: UIImage(named: "nextcloud")!),
+    .init(id: "3", image: UIImage(named: "nextcloud")!),
+    .init(id: "4", image: UIImage(named: "nextcloud")!),
+    .init(id: "5", image: UIImage(named: "nextcloud")!),
+    .init(id: "6", image: UIImage(named: "nextcloud")!),
+    .init(id: "7", image: UIImage(named: "nextcloud")!),
+    .init(id: "8", image: UIImage(named: "nextcloud")!)
 ]
 
 func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
@@ -204,7 +187,8 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
                 guard !isLive(file: file, files: files) else { continue }
 
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
-                let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                let image = UIImage(contentsOfFile: imagePath) ?? UIImage(named: "file")!
                 // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
                 guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
@@ -212,7 +196,7 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
                 let link = file.urlBase + "/f/" + file.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
-                let recentData = RecentData.init(id: file.ocId, imagePath: iconImagePath, title: file.fileName, subTitle: subTitle, url: url)
+                let recentData = RecentData.init(id: file.ocId, image: image, title: file.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
             }
@@ -243,7 +227,8 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
                 } else {
                     continue
                 }
-                uploadDatas.append(UploadData(id: metadata.ocId, imagePath: imagePath))
+                let image = UIImage(contentsOfFile: imagePath) ?? UIImage(named: "file")!
+                uploadDatas.append(UploadData(id: metadata.ocId, image: image))
                 if uploadDatas.count == 5 { break}
             }
 
