@@ -65,7 +65,11 @@ let uploadDatasTest: [UploadData] = [
     .init(id: "8", image: UIImage(named: "nextcloud")!, task: 0)
 ]
 
-func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
+func getDataEntry(isPreview: Bool, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
+
+    if isPreview {
+        completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
+    }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest,isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))

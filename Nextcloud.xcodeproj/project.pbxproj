@@ -1370,8 +1370,8 @@
 			isa = PBXGroup;
 			children = (
 				F72EA95728B7BC4F00C88F0C /* NextcloudData.swift */,
-				F72EA95328B7BABA00C88F0C /* NextcloudWidgetProvider.swift */,
 				F72EA95928B7BD0D00C88F0C /* NextcloudWidgetView.swift */,
+				F72EA95328B7BABA00C88F0C /* NextcloudWidgetProvider.swift */,
 			);
 			path = Nextcloud;
 			sourceTree = "<group>";

@@ -34,7 +34,7 @@ struct NextcloudWidgetView: View {
                     .scaledToFit()
                     .frame(width: 18, height: 18)
                     .cornerRadius(4)
-                Text(NCBrandOptions.shared.brand + "")
+                Text(NCBrandOptions.shared.brand + "dd")
                     .font(.system(size: 12))
                     .textCase(.uppercase)
             }
@@ -67,7 +67,7 @@ struct NextcloudWidgetView: View {
                     }
                 }
                 Spacer()
-                    .frame(width: .infinity, height: 15.0)
+                    .frame(width: .none, height: 15.0)
                 Text("File in upload ...")
                     .font(.system(size: 12))
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -85,7 +85,6 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 15)
             }
             .padding(.top, 45)
