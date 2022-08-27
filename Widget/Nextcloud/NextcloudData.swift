@@ -68,7 +68,7 @@ let uploadDatasTest: [UploadData] = [
 func getDataEntry(isPreview: Bool, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
     if isPreview {
-        completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {

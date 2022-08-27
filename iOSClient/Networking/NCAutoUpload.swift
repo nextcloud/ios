@@ -26,6 +26,7 @@ import CoreLocation
 import NCCommunication
 import Photos
 import NextcloudKit
+import Queuer
 
 class NCAutoUpload: NSObject {
     @objc static let shared: NCAutoUpload = {
@@ -182,22 +183,75 @@ class NCAutoUpload: NSObject {
                 }
 
                 self.endForAssetToUpload = true
-                DispatchQueue.main.async {
-                    #if !EXTENSION
-                    if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                        (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
-                    } else {
-                        (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
-                    }
-                    #elseif EXTENSION_WIDGET
-                        if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                            let networkingProcessUpload = NCNetworkingProcessUpload()
-                            networkingProcessUpload.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
-                        }
-                    #endif
+                // AUTO UPLOAD ALL
+                #if !EXTENSION
+                if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
+                    (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+                    completion(metadatas.count)
                 }
-                completion(metadatas.count)
+                #endif
+                // AUTO UPLOAD
+                self.createProcessUploads(metadatas: metadatas, completion: completion)
             }
+        }
+    }
+
+    // MARK: -
+
+    func createProcessUploads(metadatas: [tableMetadata], completion: @escaping (_ items: Int) -> Void) {
+
+        var metadatasForUpload: [tableMetadata] = []
+        var numStartUpload: Int = 0
+        let maxConcurrentOperationUpload = 5
+
+        for metadata in metadatas {
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
+                continue
+            }
+            metadatasForUpload.append(metadata)
+        }
+        NCManageDatabase.shared.addMetadatas(metadatasForUpload)
+
+        // Max file in Uploadading
+
+        let metadatasInUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
+        let counterUpload = maxConcurrentOperationUpload - metadatasInUpload.count
+        if counterUpload <= 0 {
+            return completion(0)
+        }
+
+        // Upload
+
+        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload), page: 0, limit: counterUpload, sorted: "date", ascending: true)
+
+        for metadata in metadatas {
+
+            let metadata = tableMetadata.init(value: metadata)
+            let semaphore = Semaphore()
+
+            NCUtility.shared.extractFiles(from: metadata) { metadatas in
+                if metadatas.isEmpty {
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                }
+                for metadata in metadatas {
+                    #if !EXTENSION
+                    if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active {  continue }
+                    #else
+                    if (metadata.e2eEncrypted || metadata.chunk) { continue }
+                    #endif
+                    let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
+                    if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
+                    if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                        NCNetworking.shared.upload(metadata: metadata)
+                        numStartUpload += 1
+                    }
+                }
+                semaphore.continue()
+            }
+            semaphore.wait()
+        }
+        DispatchQueue.main.async {
+            completion(numStartUpload)
         }
     }
 
