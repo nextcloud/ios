@@ -241,10 +241,15 @@ class NCAutoUpload: NSObject {
                     #endif
                     let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
                     if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
-                    if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                        NCNetworking.shared.upload(metadata: metadata)
+                    guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
+                    // Upload 
+                    let semaphoreUpload = Semaphore()
+                    NCNetworking.shared.upload(metadata: metadata) {
                         numStartUpload += 1
+                    } completion: { errorCode, errorDescription in
+                        semaphoreUpload.continue()
                     }
+                    semaphoreUpload.wait()
                 }
                 semaphore.continue()
             }
