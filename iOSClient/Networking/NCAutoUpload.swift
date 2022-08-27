@@ -220,8 +220,8 @@ class NCAutoUpload: NSObject {
             return completion(0)
         }
 
-        // Upload
-
+        // Extract file
+        
         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload), page: 0, limit: counterUpload, sorted: "date", ascending: true)
 
         for metadata in metadatas {
