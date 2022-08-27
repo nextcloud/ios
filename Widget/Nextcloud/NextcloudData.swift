@@ -43,6 +43,7 @@ struct RecentData: Identifiable, Hashable {
 struct UploadData: Identifiable, Hashable {
     var id: String
     var image: UIImage
+    var task: Int
 }
 
 let recentDatasTest: [RecentData] = [
@@ -54,14 +55,14 @@ let recentDatasTest: [RecentData] = [
 ]
 
 let uploadDatasTest: [UploadData] = [
-    .init(id: "1", image: UIImage(named: "nextcloud")!),
-    .init(id: "2", image: UIImage(named: "nextcloud")!),
-    .init(id: "3", image: UIImage(named: "nextcloud")!),
-    .init(id: "4", image: UIImage(named: "nextcloud")!),
-    .init(id: "5", image: UIImage(named: "nextcloud")!),
-    .init(id: "6", image: UIImage(named: "nextcloud")!),
-    .init(id: "7", image: UIImage(named: "nextcloud")!),
-    .init(id: "8", image: UIImage(named: "nextcloud")!)
+    .init(id: "1", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "2", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "3", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "4", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "5", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "6", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "7", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "8", image: UIImage(named: "nextcloud")!, task: 0)
 ]
 
 func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
@@ -228,7 +229,7 @@ func getDataEntry(completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
                     continue
                 }
                 let image = UIImage(contentsOfFile: imagePath) ?? UIImage(named: "file")!
-                uploadDatas.append(UploadData(id: metadata.ocId, image: image))
+                uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier))
                 if uploadDatas.count == 5 { break}
             }
 
