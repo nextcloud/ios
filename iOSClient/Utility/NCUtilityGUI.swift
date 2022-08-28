@@ -38,29 +38,28 @@ class NCUtilityGUI: NSObject {
             let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
             if FileManager().fileExists(atPath: iconImagePath) {
-                if let image = UIImage(contentsOfFile: iconImagePath) {
-                    imagePreview = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true)
-                }
+                imagePreview = UIImage(contentsOfFile: iconImagePath)
             } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                     do {
                         try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
                         imagePreview = image
                     } catch { }
                 }
             } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                     do {
                         try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
                         imagePreview = image
                     } catch { }
                 }
             } else if !metadata.iconName.isEmpty {
-                if let image = UIImage(named: metadata.iconName) {
-                    imagePreview = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true)
-                }
+                imagePreview = UIImage(named: metadata.iconName)
             }
 
+            if let image = imagePreview {
+                imagePreview = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true)
+            }
             return imagePreview
         }
     }
