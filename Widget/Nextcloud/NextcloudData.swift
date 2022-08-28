@@ -237,3 +237,29 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
         }
     }
 }
+
+func downloadPreview(metadata: tableMetadata, completion: @escaping (_ image: UIImage?) -> Void) {
+
+    let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+    var etagResource: String?
+    if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+        etagResource = metadata.etagResource
+    }
+
+    NCCommunication.shared.downloadPreview(
+        fileNamePathOrFileId: fileNamePath,
+        fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+        widthPreview: NCGlobal.shared.sizePreview,
+        heightPreview: NCGlobal.shared.sizePreview,
+        fileNameIconLocalPath: fileNameIconLocalPath,
+        sizeIcon: NCGlobal.shared.sizeIcon,
+        etag: etagResource,
+        queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+            if errorCode == 0 {
+                NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
+            }
+            completion(imageIcon)
+    }
+}
