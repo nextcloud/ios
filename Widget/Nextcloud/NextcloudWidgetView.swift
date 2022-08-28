@@ -49,7 +49,7 @@ struct NextcloudWidgetView: View {
                                     Image(uiImage: element.image)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(width: 30, height: 30)
+                                        .frame(width: imageSize, height: imageSize)
                                         .clipped()
                                         .cornerRadius(4)
                                     VStack(alignment: .leading) {
@@ -77,13 +77,13 @@ struct NextcloudWidgetView: View {
                             .textCase(.uppercase)
                     }
                     .padding(.leading, 10)
-                    HStack(spacing: 10) {
+                    HStack(spacing: spacingImageUpload) {
                         ForEach(entry.uploadDatas, id: \.id) { element in
                             VStack {
                                 Image(uiImage: element.image)
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 30, height: 30)
+                                    .frame(width: imageSize, height: imageSize)
                                     .clipped()
                                     .cornerRadius(4)
                                 Text("\(element.task)")

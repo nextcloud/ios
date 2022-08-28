@@ -24,6 +24,10 @@
 import WidgetKit
 import NCCommunication
 
+let imageSize:CGFloat = 30
+let spacingImageUpload:CGFloat = 10
+
+
 struct NextcloudDataEntry: TimelineEntry {
     let date: Date
     let recentDatas: [RecentData]
@@ -44,6 +48,7 @@ struct UploadData: Identifiable, Hashable {
     var id: String
     var image: UIImage
     var task: Int
+    var num: Int
 }
 
 let recentDatasTest: [RecentData] = [
@@ -55,19 +60,19 @@ let recentDatasTest: [RecentData] = [
 ]
 
 let uploadDatasTest: [UploadData] = [
-    .init(id: "1", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "2", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "3", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "4", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "5", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "6", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "7", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "8", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "9", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "0", image: UIImage(named: "nextcloud")!, task: 0)
+    .init(id: "1", image: UIImage(named: "nextcloud")!, task: 0, num: 0),
+    .init(id: "2", image: UIImage(named: "nextcloud")!, task: 0, num: 1),
+    .init(id: "3", image: UIImage(named: "nextcloud")!, task: 0, num: 2),
+    .init(id: "4", image: UIImage(named: "nextcloud")!, task: 0, num: 3),
+    .init(id: "5", image: UIImage(named: "nextcloud")!, task: 0, num: 4),
+    .init(id: "6", image: UIImage(named: "nextcloud")!, task: 0, num: 5),
+    .init(id: "7", image: UIImage(named: "nextcloud")!, task: 0, num: 6),
+    .init(id: "8", image: UIImage(named: "nextcloud")!, task: 0, num: 7),
+    .init(id: "9", image: UIImage(named: "nextcloud")!, task: 0, num: 8),
+    .init(id: "0", image: UIImage(named: "nextcloud")!, task: 0, num: 9)
 ]
 
-func getDataEntry(isPreview: Bool, size: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
+func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
     if isPreview {
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
@@ -209,21 +214,23 @@ func getDataEntry(isPreview: Bool, size: CGSize, completion: @escaping (_ entry:
             }
 
             // Get upload files
+            let limit = Int(displaySize.width / (imageSize + spacingImageUpload))
             var uploadDatas: [UploadData] = []
             let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: 10, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
                 // image
                 let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")!
                 // Upload Data
-                uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier))
-                if uploadDatas.count == 5 { break}
+                uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier, num: 0))
             }
 
             // Completion
             if errorCode != 0 {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: errorDescription))
+                let uploadDatas = uploadDatasTest.filter({ $0.num < limit})
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatas, isPlaceholder: true, footerText: errorDescription))
             } else if recentDatas.isEmpty {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
+                let uploadDatas = uploadDatasTest.filter({ $0.num < limit})
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatas, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             } else {
                 completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, uploadDatas: uploadDatas, isPlaceholder: false, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             }
