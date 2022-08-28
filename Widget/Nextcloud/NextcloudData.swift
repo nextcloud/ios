@@ -190,18 +190,18 @@ func getDataEntry(isPreview: Bool, completion: @escaping (_ entry: NextcloudData
             for file in files {
                 guard !file.directory else { continue }
                 guard !isLive(file: file, files: files) else { continue }
-
-                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
-                let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: account.account)
+                let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                 let image = UIImage(contentsOfFile: imagePath) ?? UIImage(named: "file")!
                 // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
-                guard let user = file.user.urlEncoded else { continue }
-                let link = file.urlBase + "/f/" + file.fileId
+                guard let user = metadata.user.urlEncoded else { continue }
+                let link = metadata.urlBase + "/f/" + metadata.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
-                let recentData = RecentData.init(id: file.ocId, image: image, title: file.fileName, subTitle: subTitle, url: url)
+                let recentData = RecentData.init(id: metadata.ocId, image: image, title: metadata.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
             }
