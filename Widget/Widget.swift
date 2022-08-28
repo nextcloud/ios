@@ -30,7 +30,7 @@ struct NextcloudWidgetBundle: WidgetBundle {
     @WidgetBundleBuilder
     var body: some Widget {
         NextcloudWidget()
-//        DashboardWidget()
+        DashboardWidget()
     }
 }
 
