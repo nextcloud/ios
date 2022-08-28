@@ -31,7 +31,6 @@ let spacingImageUpload:CGFloat = 10
 struct NextcloudDataEntry: TimelineEntry {
     let date: Date
     let recentDatas: [RecentData]
-    let uploadDatas: [UploadData]
     let isPlaceholder: Bool
     let footerText: String
 }
@@ -44,45 +43,23 @@ struct RecentData: Identifiable, Hashable {
     var url: URL
 }
 
-struct UploadData: Identifiable, Hashable {
-    var id: String
-    var image: UIImage
-    var task: Int
-    var num: Int
-}
-
 let recentDatasTest: [RecentData] = [
     .init(id: "1", image: UIImage(named: "nextcloud")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "2", image: UIImage(named: "nextcloud")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "3", image: UIImage(named: "nextcloud")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "4", image: UIImage(named: "nextcloud")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "5", image: UIImage(named: "nextcloud")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!)
-]
-
-let uploadDatasTest: [UploadData] = [
-    .init(id: "1", image: UIImage(named: "nextcloud")!, task: 0, num: 0),
-    .init(id: "2", image: UIImage(named: "nextcloud")!, task: 0, num: 1),
-    .init(id: "3", image: UIImage(named: "nextcloud")!, task: 0, num: 2),
-    .init(id: "4", image: UIImage(named: "nextcloud")!, task: 0, num: 3),
-    .init(id: "5", image: UIImage(named: "nextcloud")!, task: 0, num: 4),
-    .init(id: "6", image: UIImage(named: "nextcloud")!, task: 0, num: 5),
-    .init(id: "7", image: UIImage(named: "nextcloud")!, task: 0, num: 6),
-    .init(id: "8", image: UIImage(named: "nextcloud")!, task: 0, num: 7),
-    .init(id: "9", image: UIImage(named: "nextcloud")!, task: 0, num: 8),
-    .init(id: "0", image: UIImage(named: "nextcloud")!, task: 0, num: 9)
+    .init(id: "5", image: UIImage(named: "nextcloud")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
 ]
 
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
-    let limitUpload = Int(displaySize.width / (imageSize + spacingImageUpload))
-    let uploadDatasTest = uploadDatasTest.filter({ $0.num < limitUpload})
-
     if isPreview {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: ""))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest,isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     func isLive(file: NCCommunicationFile, files: [NCCommunicationFile]) -> Bool {
@@ -213,26 +190,18 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: false) ?? UIImage(named: "file")!
                 let recentData = RecentData.init(id: metadata.ocId, image: image, title: metadata.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
-                if recentDatas.count == 5 { break}
+                if recentDatas.count == 6 { break}
             }
 
-            // Get upload files
-            var uploadDatas: [UploadData] = []
-            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: limitUpload, sorted: "sessionTaskIdentifier", ascending: false)
-            for metadata in metadatas {
-                // image
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: false) ?? UIImage(named: "file")!
-                // Upload Data
-                uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier, num: 0))
-            }
+            let fileInUpload = NCManageDatabase.shared.getNumMetadatasInUpload()
 
             // Completion
             if errorCode != 0 {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: errorDescription))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: errorDescription))
             } else if recentDatas.isEmpty {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: "\(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: "\(Date().formatted())"))
             } else {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, uploadDatas: uploadDatas, isPlaceholder: false, footerText: "\(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerText: "\(Date().formatted())"))
             }
         }
     }

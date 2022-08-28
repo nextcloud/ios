@@ -78,18 +78,6 @@ struct NextcloudWidgetView: View {
                     }
                     .padding(.leading, 10)
                     HStack(spacing: spacingImageUpload) {
-                        ForEach(entry.uploadDatas, id: \.id) { element in
-                            VStack {
-                                Image(uiImage: element.image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: imageSize, height: imageSize)
-                                    .clipped()
-                                    .cornerRadius(4)
-                                Text("\(element.task)")
-                                    .font(.system(size: 9))
-                            }
-                        }
                     }
                     .frame(width: geo.size.width, alignment: .center)
                 }
@@ -107,7 +95,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: false, footerText: NCBrandOptions.shared.brand + " widget")
+        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: false, footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

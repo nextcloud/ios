@@ -860,4 +860,13 @@ extension NCManageDatabase {
         }
         return(Array(results.map { tableMetadata.init(value: $0) }), Array(metadatas.map { tableMetadata.init(value: $0) }))
     }
+
+    func getNumMetadatasInUpload() -> Int {
+
+        let realm = try! Realm()
+
+        let num = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status == %i || status == %i",  NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
+
+        return num
+    }
 }
