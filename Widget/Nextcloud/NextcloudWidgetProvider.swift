@@ -29,7 +29,9 @@ struct NextcloudWidgetProvider: TimelineProvider {
     typealias Entry = NextcloudDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: "Nextcloud")
+        let limit = Int(context.displaySize.width / (imageSize + spacingImageUpload))
+        let uploadDatas = uploadDatasTest.filter({ $0.num < limit})
+        return Entry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatas, isPlaceholder: true, footerText: "Nextcloud")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {

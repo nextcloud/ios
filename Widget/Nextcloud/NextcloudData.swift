@@ -74,6 +74,9 @@ let uploadDatasTest: [UploadData] = [
 
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
+    let limitUploadDatasTest = Int(displaySize.width / (imageSize + spacingImageUpload))
+    let uploadDatasTest = uploadDatasTest.filter({ $0.num < limitUploadDatasTest})
+
     if isPreview {
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
     }
@@ -214,7 +217,6 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             }
 
             // Get upload files
-            let limit = Int(displaySize.width / (imageSize + spacingImageUpload))
             var uploadDatas: [UploadData] = []
             let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: 10, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
@@ -226,11 +228,9 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
 
             // Completion
             if errorCode != 0 {
-                let uploadDatas = uploadDatasTest.filter({ $0.num < limit})
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatas, isPlaceholder: true, footerText: errorDescription))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: errorDescription))
             } else if recentDatas.isEmpty {
-                let uploadDatas = uploadDatasTest.filter({ $0.num < limit})
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatas, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             } else {
                 completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, uploadDatas: uploadDatas, isPlaceholder: false, footerText: "Auto upoload: \(items), \(Date().formatted())"))
             }
