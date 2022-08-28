@@ -68,10 +68,18 @@ struct NextcloudWidgetView: View {
                         }
                     }
                     Spacer()
-                        .frame(width: .none, height: 15.0)
-                    Text("File in upload ...")
-                        .font(.system(size: 12))
-                        .frame(maxWidth: .infinity, alignment: .center)
+                        .frame(width: geo.size.width, height: 15.0)
+                    HStack(spacing: 5) {
+                        Image("nextcloud")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                            .cornerRadius(4)
+                        Text("Uploading...")
+                            .font(.system(size: 12))
+                            .textCase(.uppercase)
+                    }
+                    .padding(.leading, 10)
                     HStack(spacing: 10) {
                         ForEach(entry.uploadDatas, id: \.id) { element in
                             VStack {
@@ -90,7 +98,6 @@ struct NextcloudWidgetView: View {
                 }
                 .padding(.top, 45)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-
                 Text(entry.footerText)
                     .font(.caption2)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
