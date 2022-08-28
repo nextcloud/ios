@@ -184,7 +184,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.labelPath.text = pathText
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
         cell.progressView.progress = 0.0
-        cell.imageItem.image = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")
+        cell.imageItem.image = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, createPreview: true) ?? UIImage(named: "file")
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false

@@ -1356,7 +1356,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if metadata.name == NCGlobal.shared.appName {
-                if let image = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) {
+                if let image = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, createPreview: !metadata.hasPreview) {
                     (cell as! NCCellProtocol).filePreviewImageView?.image = image
                 } else {
                     NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)

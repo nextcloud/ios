@@ -191,7 +191,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
     }
     NCCommunicationCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget [Auto upload]")
 
-    NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+    NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
         NCCommunicationCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
         NCCommunication.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, errorCode, errorDescription in
 
@@ -202,7 +202,8 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 guard !isLive(file: file, files: files) else { continue }
                 let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: account.account)
                 let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")!
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, createPreview: false) ?? UIImage(named: "file")!
+                //let image = UIImage(named: "file")!
                 // url: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
                 guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
@@ -221,7 +222,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: limitUpload, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
                 // image
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")!
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, createPreview: false) ?? UIImage(named: "file")!
                 // Upload Data
                 uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier, num: 0))
             }
@@ -230,9 +231,9 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             if errorCode != 0 {
                 completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: errorDescription))
             } else if recentDatas.isEmpty {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: "Auto upoload: \(items), \(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: "\(Date().formatted())"))
             } else {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, uploadDatas: uploadDatas, isPlaceholder: false, footerText: "Auto upoload: \(items), \(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, uploadDatas: uploadDatas, isPlaceholder: false, footerText: "\(Date().formatted())"))
             }
         }
     }
