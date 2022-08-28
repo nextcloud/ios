@@ -221,7 +221,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: limitUpload, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
                 // image
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize, createPreview: false) ?? UIImage(named: "file")!
+                let image = UIImage(named: "file")!
                 // Upload Data
                 uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier, num: 0))
             }
