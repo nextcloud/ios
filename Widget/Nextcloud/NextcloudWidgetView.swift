@@ -72,7 +72,7 @@ struct NextcloudWidgetView: View {
                     HStack(spacing: 5) {
                         Image(systemName: "arrow.triangle.2.circlepath")
                             .foregroundColor(Color(NCBrandColor.shared.brand))
-                        Text("Uploading...")
+                        Text("Uploading")
                             .font(.system(size: 12))
                             .textCase(.uppercase)
                     }
