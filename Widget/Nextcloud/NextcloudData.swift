@@ -74,8 +74,8 @@ let uploadDatasTest: [UploadData] = [
 
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
-    let limitUploadDatasTest = Int(displaySize.width / (imageSize + spacingImageUpload))
-    let uploadDatasTest = uploadDatasTest.filter({ $0.num < limitUploadDatasTest})
+    let limitUpload = Int(displaySize.width / (imageSize + spacingImageUpload))
+    let uploadDatasTest = uploadDatasTest.filter({ $0.num < limitUpload})
 
     if isPreview {
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
@@ -218,7 +218,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
 
             // Get upload files
             var uploadDatas: [UploadData] = []
-            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: 10, sorted: "sessionTaskIdentifier", ascending: false)
+            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: limitUpload, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
                 // image
                 let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")!
