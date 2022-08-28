@@ -210,7 +210,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
                 // Recent Data
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: true) ?? UIImage(named: "file")!
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: false) ?? UIImage(named: "file")!
                 let recentData = RecentData.init(id: metadata.ocId, image: image, title: metadata.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
@@ -221,7 +221,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: limitUpload, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
                 // image
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: true) ?? UIImage(named: "file")!
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: false) ?? UIImage(named: "file")!
                 // Upload Data
                 uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier, num: 0))
             }
@@ -238,28 +238,3 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
     }
 }
 
-func downloadPreview(metadata: tableMetadata, completion: @escaping (_ image: UIImage?) -> Void) {
-
-    let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-    var etagResource: String?
-    if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
-        etagResource = metadata.etagResource
-    }
-
-    NCCommunication.shared.downloadPreview(
-        fileNamePathOrFileId: fileNamePath,
-        fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-        widthPreview: NCGlobal.shared.sizePreview,
-        heightPreview: NCGlobal.shared.sizePreview,
-        fileNameIconLocalPath: fileNameIconLocalPath,
-        sizeIcon: NCGlobal.shared.sizeIcon,
-        etag: etagResource,
-        queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
-            if errorCode == 0 {
-                NCManageDatabase.shared.setMetadataEtagResource(ocId: metadata.ocId, etagResource: etag)
-            }
-            completion(imageIcon)
-    }
-}
