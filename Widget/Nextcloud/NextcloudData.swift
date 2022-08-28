@@ -202,8 +202,6 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 guard !isLive(file: file, files: files) else { continue }
                 let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: account.account)
                 let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-                var image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, createPreview: false) ?? UIImage(named: "file")!
-                image = image.resizeImage(size: CGSize(width: imageSize*3, height: imageSize*3), isAspectRation: true)!
                 // url: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
                 guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
@@ -212,6 +210,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
                 // Recent Data
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize, createPreview: false) ?? UIImage(named: "file")!
                 let recentData = RecentData.init(id: metadata.ocId, image: image, title: metadata.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
@@ -222,7 +221,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: limitUpload, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
                 // image
-                var image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, createPreview: false) ?? UIImage(named: "file")!
+                var image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize, createPreview: false) ?? UIImage(named: "file")!
                 image = image.resizeImage(size: CGSize(width: imageSize*3, height: imageSize*3), isAspectRation: true)!
 
                 // Upload Data

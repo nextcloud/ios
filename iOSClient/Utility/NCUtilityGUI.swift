@@ -30,32 +30,37 @@ class NCUtilityGUI: NSObject {
         return instance
     }()
 
-    func createFilePreviewImage(metadata: tableMetadata, createPreview: Bool) -> UIImage? {
+    func createFilePreviewImage(metadata: tableMetadata, size: CGFloat? = nil, createPreview: Bool) -> UIImage? {
 
-        var imagePreview: UIImage?
-        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+        autoreleasepool {
+            var imagePreview: UIImage?
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
-        if FileManager().fileExists(atPath: iconImagePath) {
-            imagePreview = UIImage(contentsOfFile: iconImagePath)
-        } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
-            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                do {
-                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                    imagePreview = image
-                } catch { }
+            if FileManager().fileExists(atPath: iconImagePath) {
+                imagePreview = UIImage(contentsOfFile: iconImagePath)
+            } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
+                if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                    do {
+                        try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                        imagePreview = image
+                    } catch { }
+                }
+            } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
+                if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                    do {
+                        try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                        imagePreview = image
+                    } catch { }
+                }
+            } else if !metadata.iconName.isEmpty {
+                imagePreview = UIImage(named: metadata.iconName)
             }
-        } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                do {
-                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                    imagePreview = image
-                } catch { }
+
+            if let image = imagePreview, let size = size  {
+                imagePreview = image.resizeImage(size: CGSize(width: size * 3, height: size * 3), isAspectRation: true)
             }
-        } else if !metadata.iconName.isEmpty {
-            imagePreview = UIImage(named: metadata.iconName)
+            return imagePreview
         }
-
-        return imagePreview
     }
 }
