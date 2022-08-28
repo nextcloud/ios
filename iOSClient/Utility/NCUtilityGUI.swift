@@ -30,7 +30,7 @@ class NCUtilityGUI: NSObject {
         return instance
     }()
 
-    func createFilePreviewImage(metadata: tableMetadata, size: CGFloat? = nil, createPreview: Bool) -> UIImage? {
+    func createFilePreviewImage(metadata: tableMetadata, size: CGFloat, createPreview: Bool) -> UIImage? {
 
         autoreleasepool {
             var imagePreview: UIImage?
@@ -38,28 +38,29 @@ class NCUtilityGUI: NSObject {
             let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
             if FileManager().fileExists(atPath: iconImagePath) {
-                imagePreview = UIImage(contentsOfFile: iconImagePath)
+                if let image = UIImage(contentsOfFile: iconImagePath) {
+                    imagePreview = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true)
+                }
             } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                     do {
                         try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
                         imagePreview = image
                     } catch { }
                 }
             } else if metadata.status >= NCGlobal.shared.metadataStatusNormal && createPreview && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                     do {
                         try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
                         imagePreview = image
                     } catch { }
                 }
             } else if !metadata.iconName.isEmpty {
-                imagePreview = UIImage(named: metadata.iconName)
+                if let image = UIImage(named: metadata.iconName) {
+                    imagePreview = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true)
+                }
             }
 
-            if let image = imagePreview, let size = size  {
-                imagePreview = image.resizeImage(size: CGSize(width: size * 3, height: size * 3), isAspectRation: true)
-            }
             return imagePreview
         }
     }
