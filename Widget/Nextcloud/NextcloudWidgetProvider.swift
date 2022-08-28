@@ -33,13 +33,13 @@ struct NextcloudWidgetProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        getDataEntry(isPreview: context.isPreview) { entry in
+        getDataEntry(isPreview: context.isPreview, size: context.displaySize) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getDataEntry(isPreview: context.isPreview) { entry in
+        getDataEntry(isPreview: context.isPreview, size: context.displaySize) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

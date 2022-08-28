@@ -62,10 +62,12 @@ let uploadDatasTest: [UploadData] = [
     .init(id: "5", image: UIImage(named: "nextcloud")!, task: 0),
     .init(id: "6", image: UIImage(named: "nextcloud")!, task: 0),
     .init(id: "7", image: UIImage(named: "nextcloud")!, task: 0),
-    .init(id: "8", image: UIImage(named: "nextcloud")!, task: 0)
+    .init(id: "8", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "9", image: UIImage(named: "nextcloud")!, task: 0),
+    .init(id: "0", image: UIImage(named: "nextcloud")!, task: 0)
 ]
 
-func getDataEntry(isPreview: Bool, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
+func getDataEntry(isPreview: Bool, size: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
     if isPreview {
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, uploadDatas: uploadDatasTest, isPlaceholder: true, footerText: ""))
