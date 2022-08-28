@@ -35,7 +35,7 @@ struct NextcloudWidgetView: View {
                         .scaledToFit()
                         .frame(width: 18, height: 18)
                         .cornerRadius(4)
-                    Text(NCBrandOptions.shared.brand + "dde")
+                    Text(NCBrandOptions.shared.brand + "")
                         .font(.system(size: 12))
                         .textCase(.uppercase)
                 }
@@ -68,13 +68,10 @@ struct NextcloudWidgetView: View {
                         }
                     }
                     Spacer()
-                        .frame(width: geo.size.width, height: 15.0)
+                        .frame(width: geo.size.width, height: 16.0)
                     HStack(spacing: 5) {
-                        Image("nextcloud")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-                            .cornerRadius(4)
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .foregroundColor(Color(NCBrandColor.shared.brand))
                         Text("Uploading...")
                             .font(.system(size: 12))
                             .textCase(.uppercase)
