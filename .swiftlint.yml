@@ -123,6 +123,7 @@ excluded:
   - iOSClient/Utility/NCStoreReview.swift
   - iOSClient/Utility/NCUtility.swift
   - iOSClient/Utility/NCUtilityFileSystem.swift
+  - iOSClient/Utility/NCUtilityGUI.swift
   - iOSClient/Viewer/NCViewer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift

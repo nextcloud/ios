@@ -174,53 +174,23 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.fileObjectId = metadata.ocId
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
-
         cell.imageItem.image = NCBrandColor.cacheImages.file
         cell.imageItem.backgroundColor = nil
-
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.label
-
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: metadata.account)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText == "" { pathText = "/" }
         cell.labelPath.text = pathText
-
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
-
         cell.progressView.progress = 0.0
-
-        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-
-        if FileManager().fileExists(atPath: iconImagePath) {
-            cell.imageItem.image =  UIImage(contentsOfFile:iconImagePath)
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, FileManager().fileExists(atPath: filePath) {
-            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                do {
-                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                    cell.imageItem.image = image
-                } catch { }
-            }
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, FileManager().fileExists(atPath: filePath) {
-            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                do {
-                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                    cell.imageItem.image = image
-                } catch { }
-            }
-        } else {
-            cell.imageItem.image = UIImage(named: metadata.iconName)
-        }
-
+        cell.imageItem.image = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-
         if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
             cell.progressView.isHidden = false
         } else {
             cell.progressView.isHidden = true
         }
-
         // Write status on Label Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
@@ -263,9 +233,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
-        
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
-
         // Remove last separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
             cell.separator.isHidden = true

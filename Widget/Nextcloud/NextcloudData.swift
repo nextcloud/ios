@@ -192,15 +192,15 @@ func getDataEntry(isPreview: Bool, completion: @escaping (_ entry: NextcloudData
                 guard !isLive(file: file, files: files) else { continue }
                 let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: account.account)
                 let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-                let imagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-                let image = UIImage(contentsOfFile: imagePath) ?? UIImage(named: "file")!
-                // Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")!
+                // url: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
                 guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
                 guard let user = metadata.user.urlEncoded else { continue }
                 let link = metadata.urlBase + "/f/" + metadata.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
+                // Recent Data
                 let recentData = RecentData.init(id: metadata.ocId, image: image, title: metadata.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
@@ -210,29 +210,9 @@ func getDataEntry(isPreview: Bool, completion: @escaping (_ entry: NextcloudData
             var uploadDatas: [UploadData] = []
             let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status == %i || status == %i || status == %i", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading), page: 1, limit: 10, sorted: "sessionTaskIdentifier", ascending: false)
             for metadata in metadatas {
-                let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-                let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                var imagePath = ""
-                if FileManager().fileExists(atPath: iconImagePath) {
-                    imagePath = iconImagePath
-                } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, FileManager().fileExists(atPath: filePath) {
-                    if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                        do {
-                            try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                            imagePath = iconImagePath
-                        } catch { }
-                    }
-                } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, FileManager().fileExists(atPath: filePath) {
-                    if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                        do {
-                            try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                            imagePath = iconImagePath
-                        } catch { }
-                    }
-                } else {
-                    continue
-                }
-                let image = UIImage(contentsOfFile: imagePath) ?? UIImage(named: "file")!
+                // image
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata) ?? UIImage(named: "file")!
+                // Upload Data
                 uploadDatas.append(UploadData(id: metadata.ocId, image: image, task: metadata.sessionTaskIdentifier))
                 if uploadDatas.count == 5 { break}
             }
