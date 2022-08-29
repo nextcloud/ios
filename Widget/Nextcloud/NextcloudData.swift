@@ -32,6 +32,7 @@ struct NextcloudDataEntry: TimelineEntry {
     let date: Date
     let recentDatas: [RecentData]
     let isPlaceholder: Bool
+    let footerImage: String
     let footerText: String
 }
 
@@ -55,11 +56,11 @@ let recentDatasTest: [RecentData] = [
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
     if isPreview {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: ""))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "", footerText: NCBrandOptions.shared.brand + " widget"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     func isLive(file: NCCommunicationFile, files: [NCCommunicationFile]) -> Bool {
@@ -194,14 +195,16 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             }
 
             let fileInUpload = NCManageDatabase.shared.getNumMetadatasInUpload()
+            let footerText = (fileInUpload == 0) ? "last update \(Date().formatted())"  : "\(fileInUpload) files in uploading"
+            let footerImage = (fileInUpload == 0) ? "checkmark.icloud" : "arrow.triangle.2.circlepath"
 
             // Completion
             if errorCode != 0 {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: errorDescription))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: errorDescription))
             } else if recentDatas.isEmpty {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerText: "\(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: footerImage, footerText: footerText))
             } else {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerText: "\(Date().formatted())"))
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: footerImage, footerText: footerText))
             }
         }
     }

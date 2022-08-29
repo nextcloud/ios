@@ -69,6 +69,7 @@ struct NextcloudWidgetView: View {
                     }
                     Spacer()
                         .frame(width: geo.size.width, height: 16.0)
+                    /*
                     HStack(spacing: 5) {
                         Image(systemName: "arrow.triangle.2.circlepath")
                             .foregroundColor(Color(NCBrandColor.shared.brand))
@@ -80,14 +81,21 @@ struct NextcloudWidgetView: View {
                     HStack(spacing: spacingImageUpload) {
                     }
                     .frame(width: geo.size.width, alignment: .center)
+                    */
                 }
                 .padding(.top, 45)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-                Text(entry.footerText)
-                    .font(.caption2)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(.trailing, 10.0)
-                    .padding(.bottom, 5.0)
+                HStack {
+                    Image(systemName: entry.footerImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(Color(NCBrandColor.shared.brand))
+                    Text(entry.footerText)
+                        .font(.caption2)
+                        .padding(.trailing, 10.0)
+                }
+                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height, alignment: .bottomTrailing)
             }
         }
     }
@@ -95,7 +103,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: false, footerText: NCBrandOptions.shared.brand + " widget")
+        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
