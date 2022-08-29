@@ -68,7 +68,7 @@ struct NextcloudWidgetView: View {
                         }
                     }
                     Spacer()
-                        .frame(width: geo.size.width, height: 30.0)
+                        .frame(width: geo.size.width, height: 20.0) // <-----
 
                     HStack(spacing: 0) {
 
