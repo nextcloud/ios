@@ -68,21 +68,47 @@ struct NextcloudWidgetView: View {
                         }
                     }
                     Spacer()
-                        .frame(width: geo.size.width, height: 6.0)
+                        .frame(width: geo.size.width, height: 30.0)
 
-                    HStack(spacing: 1) {
+                    HStack(spacing: 0) {
                         Button(action: {
                                     //Place the functionality
                         }) {
-                            Image(systemName: "trash")
-                                .padding(5)
-                                .background(Color.red)
-                                .font(.system(size: 25))
-                                .foregroundColor(.white)
+                            Image("buttonAddImage")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(NCBrandColor.shared.brandText))
+                                .padding(10)
+                                .background(Color(NCBrandColor.shared.brand))
                                 .clipShape(Circle())
-                        }
+                                .scaledToFit()
+                        }.frame(width: geo.size.width/3, height: 50)
+                        Button(action: {
+                                    //Place the functionality
+                        }) {
+                            Image("buttonAddScan")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(NCBrandColor.shared.brandText))
+                                .padding(10)
+                                .background(Color(NCBrandColor.shared.brand))
+                                .clipShape(Circle())
+                                .scaledToFit()
+                        }.frame(width: geo.size.width/3, height: 50)
+                        Button(action: {
+                                    //Place the functionality
+                        }) {
+                            Image("microphone")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(NCBrandColor.shared.brandText))
+                                .padding(10)
+                                .background(Color(NCBrandColor.shared.brand))
+                                .clipShape(Circle())
+                                .scaledToFit()
+                        }.frame(width: geo.size.width/3, height: 50)
                     }
-                    .frame(width: geo.size.width, height: 40, alignment: .center)
+                    .frame(width: geo.size.width, height: 40)
                 }
                 .padding(.top, 45)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
