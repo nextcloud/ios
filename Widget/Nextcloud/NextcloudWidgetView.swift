@@ -72,7 +72,7 @@ struct NextcloudWidgetView: View {
 
                     HStack(spacing: 0) {
                         Button(action: {
-                                    //Place the functionality
+                            Link(destination: URL(string: "nextcloud://open-action?action=upload-asset")!) { }
                         }) {
                             Image("buttonAddImage")
                                 .resizable()
@@ -84,7 +84,7 @@ struct NextcloudWidgetView: View {
                                 .scaledToFit()
                         }.frame(width: geo.size.width/3, height: 50)
                         Button(action: {
-                                    //Place the functionality
+                            Link(destination: URL(string: "nextcloud://open-action?action=add-scan-document")!) { }
                         }) {
                             Image("buttonAddScan")
                                 .resizable()
@@ -96,7 +96,7 @@ struct NextcloudWidgetView: View {
                                 .scaledToFit()
                         }.frame(width: geo.size.width/3, height: 50)
                         Button(action: {
-                                    //Place the functionality
+                            Link(destination: URL(string: "nextcloud://open-action?action=create-voice-memo")!) { }
                         }) {
                             Image("microphone")
                                 .resizable()
@@ -122,7 +122,7 @@ struct NextcloudWidgetView: View {
                         .font(.caption2)
                         .padding(.trailing, 10.0)
                 }
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height, alignment: .bottomTrailing)
+                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height-3, alignment: .bottomTrailing)
             }
         }
     }
