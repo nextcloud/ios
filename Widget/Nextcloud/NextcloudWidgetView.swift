@@ -30,7 +30,7 @@ struct NextcloudWidgetView: View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
                 HStack(spacing: 5) {
-                    Image("nextcloud")
+                    Image("Icon")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 18, height: 18)
