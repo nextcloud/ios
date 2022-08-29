@@ -67,60 +67,61 @@ struct NextcloudWidgetView: View {
                             }
                         }
                     }
-                    Spacer()
-                        .frame(width: geo.size.width, height: 20.0) // <-----
-
-                    HStack(spacing: 0) {
-
-                        Image("buttonAddImage")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(Color(NCBrandColor.shared.brandText))
-                            .padding(10)
-                            .background(Color(NCBrandColor.shared.brand))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
-                            .widgetURL(URL(string: "nextcloud://open-action?action=upload-asset")!)
-
-                        Image("buttonAddScan")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(Color(NCBrandColor.shared.brandText))
-                            .padding(10)
-                            .background(Color(NCBrandColor.shared.brand))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
-                            .widgetURL(URL(string: "nextcloud://open-action?action=add-scan-document")!)
-
-                        Image("note.text")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(Color(NCBrandColor.shared.brandText))
-                            .padding(10)
-                            .background(Color(NCBrandColor.shared.brand))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
-                            .widgetURL(URL(string: "nextcloud://open-action?action=create-text-document")!)
-
-                        Image("microphone")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(Color(NCBrandColor.shared.brandText))
-                            .padding(10)
-                            .background(Color(NCBrandColor.shared.brand))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
-                            .widgetURL(URL(string: "nextcloud://open-action?action=create-voice-memo")!)
-                    }
-                    .frame(width: geo.size.width, height: 40)
                 }
                 .padding(.top, 45)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+
+                HStack(spacing: 0) {
+
+                    Image("buttonAddImage")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(Color(NCBrandColor.shared.brandText))
+                        .padding(10)
+                        .background(Color(NCBrandColor.shared.brand))
+                        .clipShape(Circle())
+                        .scaledToFit()
+                        .frame(width: geo.size.width/4, height: 50)
+                        .widgetURL(URL(string: "nextcloud://open-action?action=upload-asset")!)
+
+                    Image("buttonAddScan")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(Color(NCBrandColor.shared.brandText))
+                        .padding(10)
+                        .background(Color(NCBrandColor.shared.brand))
+                        .clipShape(Circle())
+                        .scaledToFit()
+                        .frame(width: geo.size.width/4, height: 50)
+                        .widgetURL(URL(string: "nextcloud://open-action?action=add-scan-document")!)
+
+                    Image("note.text")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(Color(NCBrandColor.shared.brandText))
+                        .padding(10)
+                        .background(Color(NCBrandColor.shared.brand))
+                        .clipShape(Circle())
+                        .scaledToFit()
+                        .frame(width: geo.size.width/4, height: 50)
+                        .widgetURL(URL(string: "nextcloud://open-action?action=create-text-document")!)
+
+                    Image("microphone")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(Color(NCBrandColor.shared.brandText))
+                        .padding(10)
+                        .background(Color(NCBrandColor.shared.brand))
+                        .clipShape(Circle())
+                        .scaledToFit()
+                        .frame(width: geo.size.width/4, height: 50)
+                        .widgetURL(URL(string: "nextcloud://open-action?action=create-voice-memo")!)
+                }
+                .frame(width: geo.size.width, height: geo.size.height-30, alignment: .bottomTrailing)
+                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+
                 HStack {
+
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
@@ -138,7 +139,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
