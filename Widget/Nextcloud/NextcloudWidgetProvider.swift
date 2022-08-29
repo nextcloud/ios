@@ -29,7 +29,7 @@ struct NextcloudWidgetProvider: TimelineProvider {
     typealias Entry = NextcloudDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "", footerText: NCBrandOptions.shared.brand + " widget")
+        return Entry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
