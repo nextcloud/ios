@@ -27,7 +27,6 @@ import NCCommunication
 let imageSize:CGFloat = 30
 let spacingImageUpload:CGFloat = 10
 
-
 struct NextcloudDataEntry: TimelineEntry {
     let date: Date
     let recentDatas: [RecentData]

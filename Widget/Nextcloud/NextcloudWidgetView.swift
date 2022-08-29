@@ -71,42 +71,50 @@ struct NextcloudWidgetView: View {
                         .frame(width: geo.size.width, height: 30.0)
 
                     HStack(spacing: 0) {
-                        Button(action: {
-                            Link(destination: URL(string: "nextcloud://open-action?action=upload-asset")!) { }
-                        }) {
-                            Image("buttonAddImage")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(Color(NCBrandColor.shared.brandText))
-                                .padding(10)
-                                .background(Color(NCBrandColor.shared.brand))
-                                .clipShape(Circle())
-                                .scaledToFit()
-                        }.frame(width: geo.size.width/3, height: 50)
-                        Button(action: {
-                            Link(destination: URL(string: "nextcloud://open-action?action=add-scan-document")!) { }
-                        }) {
-                            Image("buttonAddScan")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(Color(NCBrandColor.shared.brandText))
-                                .padding(10)
-                                .background(Color(NCBrandColor.shared.brand))
-                                .clipShape(Circle())
-                                .scaledToFit()
-                        }.frame(width: geo.size.width/3, height: 50)
-                        Button(action: {
-                            Link(destination: URL(string: "nextcloud://open-action?action=create-voice-memo")!) { }
-                        }) {
-                            Image("microphone")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(Color(NCBrandColor.shared.brandText))
-                                .padding(10)
-                                .background(Color(NCBrandColor.shared.brand))
-                                .clipShape(Circle())
-                                .scaledToFit()
-                        }.frame(width: geo.size.width/3, height: 50)
+
+                        Image("buttonAddImage")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(Color(NCBrandColor.shared.brandText))
+                            .padding(10)
+                            .background(Color(NCBrandColor.shared.brand))
+                            .clipShape(Circle())
+                            .scaledToFit()
+                            .frame(width: geo.size.width/4, height: 50)
+                            .widgetURL(URL(string: "nextcloud://open-action?action=upload-asset")!)
+
+                        Image("buttonAddScan")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(Color(NCBrandColor.shared.brandText))
+                            .padding(10)
+                            .background(Color(NCBrandColor.shared.brand))
+                            .clipShape(Circle())
+                            .scaledToFit()
+                            .frame(width: geo.size.width/4, height: 50)
+                            .widgetURL(URL(string: "nextcloud://open-action?action=add-scan-document")!)
+
+                        Image("note.text")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(Color(NCBrandColor.shared.brandText))
+                            .padding(10)
+                            .background(Color(NCBrandColor.shared.brand))
+                            .clipShape(Circle())
+                            .scaledToFit()
+                            .frame(width: geo.size.width/4, height: 50)
+                            .widgetURL(URL(string: "nextcloud://open-action?action=create-text-document")!)
+
+                        Image("microphone")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(Color(NCBrandColor.shared.brandText))
+                            .padding(10)
+                            .background(Color(NCBrandColor.shared.brand))
+                            .clipShape(Circle())
+                            .scaledToFit()
+                            .frame(width: geo.size.width/4, height: 50)
+                            .widgetURL(URL(string: "nextcloud://open-action?action=create-voice-memo")!)
                     }
                     .frame(width: geo.size.width, height: 40)
                 }
@@ -120,9 +128,9 @@ struct NextcloudWidgetView: View {
                         .foregroundColor(Color(NCBrandColor.shared.brand))
                     Text(entry.footerText)
                         .font(.caption2)
-                        .padding(.trailing, 10.0)
+                        .padding(.trailing, 13.0)
                 }
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height-3, alignment: .bottomTrailing)
+                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height-4, alignment: .bottomTrailing)
             }
         }
     }
