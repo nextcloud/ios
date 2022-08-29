@@ -68,20 +68,21 @@ struct NextcloudWidgetView: View {
                         }
                     }
                     Spacer()
-                        .frame(width: geo.size.width, height: 16.0)
-                    /*
-                    HStack(spacing: 5) {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .foregroundColor(Color(NCBrandColor.shared.brand))
-                        Text("Uploading")
-                            .font(.system(size: 12))
-                            .textCase(.uppercase)
+                        .frame(width: geo.size.width, height: 6.0)
+
+                    HStack(spacing: 1) {
+                        Button(action: {
+                                    //Place the functionality
+                        }) {
+                            Image(systemName: "trash")
+                                .padding(5)
+                                .background(Color.red)
+                                .font(.system(size: 25))
+                                .foregroundColor(.white)
+                                .clipShape(Circle())
+                        }
                     }
-                    .padding(.leading, 10)
-                    HStack(spacing: spacingImageUpload) {
-                    }
-                    .frame(width: geo.size.width, alignment: .center)
-                    */
+                    .frame(width: geo.size.width, height: 40, alignment: .center)
                 }
                 .padding(.top, 45)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])

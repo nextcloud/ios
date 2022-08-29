@@ -49,8 +49,7 @@ let recentDatasTest: [RecentData] = [
     .init(id: "2", image: UIImage(named: "AppIcon")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "3", image: UIImage(named: "AppIcon")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "4", image: UIImage(named: "AppIcon")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "5", image: UIImage(named: "AppIcon")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "6", image: UIImage(named: "AppIcon")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
+    .init(id: "5", image: UIImage(named: "AppIcon")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!)
 ]
 
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
@@ -191,7 +190,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: false) ?? UIImage(named: "file")!
                 let recentData = RecentData.init(id: metadata.ocId, image: image, title: metadata.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
-                if recentDatas.count == 6 { break}
+                if recentDatas.count == 5 { break}
             }
 
             let fileInUpload = NCManageDatabase.shared.getNumMetadatasInUpload()
