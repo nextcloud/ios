@@ -159,7 +159,6 @@ class NCService: NSObject {
             if serverVersionMajor > 0 {
                 NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
             }
-            NCCommunicationCommon.shared.setup(webDav: NCUtilityFileSystem.shared.getWebDAV(account: account))
 
             // Theming
             let themingColorNew = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
