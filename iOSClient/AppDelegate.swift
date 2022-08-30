@@ -48,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var activeViewController: UIViewController?
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
+    var isSearchingMode: Bool = false
 
     let listFilesVC = ThreadSafeDictionary<String,NCFiles>()
     let listFavoriteVC = ThreadSafeDictionary<String,NCFavorite>()
@@ -824,7 +825,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if scheme == "nextcloud" && action == "open-file" {
 
-            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+            if !isSearchingMode, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
                 guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }

@@ -88,7 +88,7 @@ class NCFiles: NCCollectionViewCommon {
 
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
         DispatchQueue.global().async {
-            guard !self.isSearching, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
+            guard !self.appDelegate.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
 
             let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
             if self.metadataFolder == nil {
@@ -128,7 +128,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-        guard !isSearching else {
+        guard !appDelegate.isSearchingMode else {
             networkSearch()
             return
         }
