@@ -72,7 +72,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button1.backgroundColor = .clear
         button1.setTitleColor(.systemBlue, for: .normal)
         button1.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
-        button1.layer.borderWidth = 0.3
+        button1.layer.borderWidth = 0.4
         button1.layer.cornerRadius = 3
 
         button2.setImage(nil, for: .normal)
@@ -80,7 +80,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button2.backgroundColor = .clear
         button2.setTitleColor(.systemBlue, for: .normal)
         button2.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
-        button2.layer.borderWidth = 0.3
+        button2.layer.borderWidth = 0.4
         button2.layer.cornerRadius = 3
 
         button3.setImage(nil, for: .normal)
@@ -88,7 +88,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button3.backgroundColor = .clear
         button3.setTitleColor(.systemBlue, for: .normal)
         button3.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
-        button3.layer.borderWidth = 0.3
+        button3.layer.borderWidth = 0.4
         button3.layer.cornerRadius = 3
 
         // Gradient
