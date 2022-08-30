@@ -529,7 +529,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        guard !appDelegate.isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
         dataSource.addMetadata(metadata)
         self.collectionView?.reloadData()
     }
