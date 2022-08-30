@@ -126,7 +126,8 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(forced: Bool = false) {
+        super.reloadDataSourceNetwork(forced: forced)
         guard !isSearching else {
             networkSearch()
             return
