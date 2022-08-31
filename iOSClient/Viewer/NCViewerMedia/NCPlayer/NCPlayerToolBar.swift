@@ -238,20 +238,16 @@ class NCPlayerToolBar: UIView {
             let session = AVAudioSession.sharedInstance()
             for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.headphones {
                 print("headphones connected")
-                DispatchQueue.main.sync {
-                    ncplayer?.playerPlay()
-                    startTimerAutoHide()
-                }
+                ncplayer?.playerPlay()
+                startTimerAutoHide()
                 break
             }
         case .oldDeviceUnavailable:
             if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
                 for output in previousRoute.outputs where output.portType == AVAudioSession.Port.headphones {
                     print("headphones disconnected")
-                    DispatchQueue.main.sync {
-                        ncplayer?.playerPause()
-                        ncplayer?.saveCurrentTime()
-                    }
+                    ncplayer?.playerPause()
+                    ncplayer?.saveCurrentTime()
                     break
                 }
             }
