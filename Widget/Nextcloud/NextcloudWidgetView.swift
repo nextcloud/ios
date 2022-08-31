@@ -117,7 +117,7 @@ struct NextcloudWidgetView: View {
                         .frame(width: geo.size.width/4, height: 50)
                         .widgetURL(URL(string: "nextcloud://open-action?action=create-voice-memo")!)
                 }
-                .frame(width: geo.size.width, height: geo.size.height-30, alignment: .bottomTrailing)
+                .frame(width: geo.size.width, height: geo.size.height-40, alignment: .bottomTrailing)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {

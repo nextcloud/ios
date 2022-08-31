@@ -240,6 +240,9 @@ class NCService: NSObject {
                     NCCommunicationCommon.shared.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NCCommunicationCommon.typeClassFile.document.rawValue, editor: directEditing.editor, iconName: NCCommunicationCommon.typeIconFile.document.rawValue, name: "document")
                 }
             }
+
+            //TODO: TEST API
+            //NCNetworking.shared.getDashboardWidget(urlBase: self.appDelegate.urlBase, username: self.appDelegate.user, password: self.appDelegate.password) { errorCode, errorDescription in }
         }
     }
 

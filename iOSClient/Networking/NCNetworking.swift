@@ -1411,10 +1411,10 @@ import Photos
 
     // MARK: - TEST API
 
-    /*
-    @objc public func getDirectDownload(urlBase: String, username: String, password: String, fileId: String, customUserAgent: String? = nil, completionHandler: @escaping (_ token: String?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+
+    @objc public func getDashboardWidget(urlBase: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
                 
-        let endpoint = "/ocs/v2.php/apps/dav/api/v1/direct"
+        let endpoint = "/ocs/v2.php/apps/dashboard/api/v1/widget-items"
         
         let url:URLConvertible = try! (urlBase + endpoint).asURL() as URLConvertible
         var headers: HTTPHeaders = [.authorization(username: username, password: password)]
@@ -1424,28 +1424,28 @@ import Photos
         //headers.update(.contentType("application/json"))
         headers.update(name: "OCS-APIRequest", value: "true")
                
-        let method = HTTPMethod(rawValue: "POST")
+        let method = HTTPMethod(rawValue: "GET")
 
-        let parameters = [
-            "fileId": fileId,
-        ]
+//        let parameters = [
+//            "fileId": fileId,
+//        ]
         
-        AF.request(url, method: method, parameters: parameters, headers: headers).validate(statusCode: 200..<300).response { (response) in
+        AF.request(url, method: method, parameters: nil, headers: headers).validate(statusCode: 200..<300).response { (response) in
             debugPrint(response)
             
             switch response.result {
             case .failure(let error):
-                completionHandler(nil, 0, "")
+                completionHandler(0, "")
             case .success(let data):
                 if let data = data {
-                    completionHandler("", 0, "")
+                    completionHandler(0, "")
                 } else {
-                    completionHandler(nil, NSURLErrorBadServerResponse, NSLocalizedString("_error_decode_xml_", value: "Invalid response, error decode XML", comment: ""))
+                    completionHandler(NSURLErrorBadServerResponse, NSLocalizedString("_error_decode_xml_", value: "Invalid response, error decode XML", comment: ""))
                 }
             }
         }
     }
-    */
+
 }
 
 extension Array where Element == URLQueryItem {
