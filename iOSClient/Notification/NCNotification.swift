@@ -161,6 +161,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.primary.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
         cell.primary.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
+        cell.more.isEnabled = false
+        cell.more.isHidden = true
+        cell.more.titleLabel?.font = .systemFont(ofSize: 15)
+        cell.more.layer.cornerRadius = 15
+        cell.more.layer.masksToBounds = true
+        cell.more.layer.backgroundColor = NCBrandColor.shared.brandElement.cgColor
+        cell.more.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true
         cell.secondary.titleLabel?.font = .systemFont(ofSize: 15)
@@ -200,6 +208,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         cell.secondary.setTitle(label, for: .normal)
                     }
                 }
+            } else if jsonActions.count >= 3 {
+
+                cell.more.isEnabled = true
+                cell.more.isHidden = false
+                cell.more.setTitle("…", for: .normal)
             }
 
             var buttonWidth = max(cell.primary.intrinsicContentSize.width, cell.secondary.intrinsicContentSize.width)
@@ -268,6 +281,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         } // else: Action not found
     }
 
+    func tapMore(with notification: NCCommunicationNotifications) {
+       toggleMenu(notification: notification)
+    }
+
     // MARK: - Load notification networking
 
     func getNetwokingNotification() {
@@ -304,6 +321,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var remove: UIButton!
     @IBOutlet weak var primary: UIButton!
     @IBOutlet weak var secondary: UIButton!
+    @IBOutlet weak var more: UIButton!
     @IBOutlet weak var avatarLeadingMargin: NSLayoutConstraint!
     @IBOutlet weak var primaryWidth: NSLayoutConstraint!
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
@@ -345,9 +363,15 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         else { return }
         delegate?.tapAction(with: notification, label: label)
     }
+
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+        guard let notification = notification else { return }
+        delegate?.tapMore(with: notification)
+    }
 }
 
 protocol NCNotificationCellDelegate: AnyObject {
     func tapRemove(with notification: NCCommunicationNotifications)
     func tapAction(with notification: NCCommunicationNotifications, label: String)
+    func tapMore(with notification: NCCommunicationNotifications)
 }

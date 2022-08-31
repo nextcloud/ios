@@ -476,6 +476,7 @@
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */; };
+		F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */; };
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 /* End PBXBuildFile section */
 
@@ -1036,6 +1037,7 @@
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
 		F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewer.swift; sourceTree = "<group>"; };
+		F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCNotification+Menu.swift"; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1161,6 +1163,7 @@
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
 				371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */,
 				AF68326927BE65A90010BF0B /* NCMenuAction.swift */,
+				F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */,
 				AF935066276B84E700BD078F /* NCMenu+FloatingPanel.swift */,
 				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */,
@@ -2890,6 +2893,7 @@
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				AF93471B27E2361E002537EE /* NCShareAdvancePermission.swift in Sources */,
 				F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */,
+				F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */,
 				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
 				F7AC1CB028AB94490032D99F /* Array+Extensions.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
@@ -3605,8 +3609,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
-				kind = exactVersion;
-				version = 0.99.8;
+				branch = Dashboard;
+				kind = branch;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {

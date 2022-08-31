@@ -24,6 +24,7 @@
 import UIKit
 import SVGKit
 import NCCommunication
+import SwiftyJSON
 
 class NCService: NSObject {
     @objc static let shared: NCService = {
@@ -242,7 +243,17 @@ class NCService: NSObject {
             }
 
             //TODO: TEST API
-            //NCNetworking.shared.getDashboardWidget(urlBase: self.appDelegate.urlBase, username: self.appDelegate.user, password: self.appDelegate.password) { errorCode, errorDescription in }
+            NCCommunication.shared.getDashboard { request in
+
+            } completion: { dashboardResult, json, errorCode, errorDescription in
+                if let json = json {
+                    for (_, subJson):(String, JSON) in json["ocs"]["data"]["recommendations"] {
+                        print("")
+
+                    }
+                    
+                }
+            }
         }
     }
 
