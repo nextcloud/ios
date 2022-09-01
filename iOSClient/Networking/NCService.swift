@@ -242,18 +242,12 @@ class NCService: NSObject {
                 }
             }
 
-            //TODO: TEST API
+            //TODO: Test API
+            /*
             NCCommunication.shared.getDashboard { request in
-
             } completion: { dashboardResult, json, errorCode, errorDescription in
-                if let json = json {
-                    for (_, subJson):(String, JSON) in json["ocs"]["data"]["recommendations"] {
-                        print("")
-
-                    }
-                    
-                }
             }
+            */
         }
     }
 
