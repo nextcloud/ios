@@ -242,12 +242,21 @@ class NCService: NSObject {
                 }
             }
 
-            //TODO: Test API
-            /*
+            //TODO: Test DASHBOARD
             NCCommunication.shared.getDashboard { request in
-            } completion: { dashboardResult, json, errorCode, errorDescription in
+            } completion: { dashboardResults, json, errorCode, errorDescription in
+                if let dashboardResults = dashboardResults {
+                    for result in dashboardResults {
+                        for entry in result.dashboardEntries ?? [] {
+                            if let url = URL(string: entry.iconUrl) {
+                                NCCommunication.shared.getPreview(url: url) { account, data, errorCode, errorDescription in
+                                    print("")
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            */
         }
     }
 
