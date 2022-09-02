@@ -22,7 +22,7 @@
 //
 
 import WidgetKit
-import NCCommunication
+import NextcloudKit
 
 let imageSize:CGFloat = 30
 let spacingImageUpload:CGFloat = 10
@@ -61,7 +61,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
-    func isLive(file: NCCommunicationFile, files: [NCCommunicationFile]) -> Bool {
+    func isLive(file: NKFile, files: [NKFile]) -> Bool {
 
         if file.ext.lowercased() != "mov" { return false }
         if files.filter({ ($0.fileNameWithoutExt == file.fileNameWithoutExt) && ($0.ext.lowercased() == "jpg") }).first != nil {
@@ -72,16 +72,15 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
 
     // NETWORKING
     let password = CCUtility.getPassword(account.account)!
-    NCCommunicationCommon.shared.setup(
+    NKCommon.shared.setup(
         account: account.account,
         user: account.user,
         userId: account.userId,
         password: password,
         urlBase: account.urlBase,
         userAgent: CCUtility.getUserAgent(),
-        webDav: NCUtilityFileSystem.shared.getWebDAV(account: account.account),
         nextcloudVersion: 0,
-        delegate: NCNetworking.shared)
+        delegate: nil) // NCNetworking.shared
 
     let requestBodyRecent =
     """
@@ -156,38 +155,38 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
     let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
-    NCCommunicationCommon.shared.levelLog = levelLog
+    NKCommon.shared.levelLog = levelLog
     if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-        NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+        NKCommon.shared.pathLog = pathDirectoryGroup
     }
     if isSimulatorOrTestFlight {
-        NCCommunicationCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
     } else {
-        NCCommunicationCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
-    NCCommunicationCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget [Auto upload]")
+    NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget [Auto upload]")
 
     NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
-        NCCommunicationCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
-        NCCommunication.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, errorCode, errorDescription in
+        NKCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
+        NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, error in
 
             // Get recent files
             var recentDatas: [RecentData] = []
             for file in files {
                 guard !file.directory else { continue }
                 guard !isLive(file: file, files: files) else { continue }
-                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: account.account)
-                let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                //let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: account.account)
+                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
                 // url: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
+                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
-                guard let user = metadata.user.urlEncoded else { continue }
-                let link = metadata.urlBase + "/f/" + metadata.fileId
+                guard let user = file.user.urlEncoded else { continue }
+                let link = file.urlBase + "/f/" + file.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
                 // Recent Data
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(metadata: metadata, size: imageSize * 3, createPreview: false) ?? UIImage(named: "file")!
-                let recentData = RecentData.init(id: metadata.ocId, image: image, title: metadata.fileName, subTitle: subTitle, url: url)
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, iconName: file.iconName, status: 0, createPreview: false) ?? UIImage(named: "file")!
+                let recentData = RecentData.init(id: file.ocId, image: UIImage(), title: file.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
             }
@@ -197,8 +196,8 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             let footerImage = (fileInUpload == 0) ? "checkmark.icloud" : "arrow.triangle.2.circlepath"
 
             // Completion
-            if errorCode != 0 {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: errorDescription))
+            if error != .success {
+                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
             } else if recentDatas.isEmpty {
                 completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: footerImage, footerText: footerText))
             } else {
