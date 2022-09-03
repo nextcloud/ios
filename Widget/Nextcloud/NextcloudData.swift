@@ -175,7 +175,6 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             for file in files {
                 guard !file.directory else { continue }
                 guard !isLive(file: file, files: files) else { continue }
-                //let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: account.account)
                 let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
                 // url: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
                 guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
@@ -184,9 +183,16 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 let link = file.urlBase + "/f/" + file.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
-                // Recent Data
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) ?? UIImage(named: "file")!
-                let recentData = RecentData.init(id: file.ocId, image: UIImage(), title: file.fileName, subTitle: subTitle, url: url)
+                // Build Recent Data
+                var imageRecent = UIImage()
+                if let image = NCUtilityGUI.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                    imageRecent = image
+                } else if !file.iconName.isEmpty {
+                    imageRecent = UIImage(named: file.iconName)!
+                } else {
+                    imageRecent = UIImage(named: "file")!
+                }
+                let recentData = RecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
             }
