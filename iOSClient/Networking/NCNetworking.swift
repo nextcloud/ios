@@ -484,7 +484,7 @@ import Photos
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
-                completion(NKError(errorCode: 0, errorDescription:  ""))
+                completion(NKError())
 
             } else {
 
@@ -806,7 +806,7 @@ import Photos
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(NKError(errorCode: 0, errorDescription: ""))
+            completion(NKError())
         }
 
         NextcloudKit.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90) { provider in
@@ -972,14 +972,14 @@ import Photos
             fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         }
         if fileNameFolder.count == 0 {
-            return completion(NKError(errorCode: 0, errorDescription: ""))
+            return completion(NKError())
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
         NextcloudKit.shared.createFolder(fileNameFolderUrl) { account, ocId, _, error in
             guard error == .success else {
                 if error.errorCode == 405 && overwrite {
-                    completion(NKError(errorCode: 0, errorDescription: ""))
+                    completion(NKError())
                 } else {
                     completion(error)
                 }
@@ -1061,7 +1061,7 @@ import Photos
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "serverUrl": metadata.serverUrl, "account": metadata.account, "classFile": metadata.classFile, "onlyLocalCache": true])
             }
-            return completion(NKError(errorCode: 0, errorDescription: ""))
+            return completion(NKError())
         }
 
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
@@ -1248,10 +1248,10 @@ import Photos
             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
-            return completion(NKError(errorCode: 0, errorDescription: ""))
+            return completion(NKError())
         }
         if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView {
-            return completion(NKError(errorCode: 0, errorDescription: ""))
+            return completion(NKError())
         }
 
         let fileNamePath = metadata.serverUrl + "/" + metadata.fileName

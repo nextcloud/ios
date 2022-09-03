@@ -43,7 +43,7 @@ import Alamofire
 
         fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         if fileNameFolder.count == 0 {
-            return completion(NKError(errorCode: 0, errorDescription: ""))
+            return completion(NKError())
         }
         fileNameIdentifier = CCUtility.generateRandomIdentifier()
         fileNameFolderUrl = serverUrl + "/" + fileNameIdentifier
@@ -294,7 +294,7 @@ import Alamofire
                             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "errorCode": error.errorCode, "errorDescription": ""])
-                            completion(NKError(errorCode: 0, errorDescription: ""))
+                            completion(NKError())
 
                         } else if error == .success && ocId != nil {
 
@@ -356,7 +356,7 @@ import Alamofire
         var e2eToken: String?
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return completion(nil, nil, NKError(errorCode: 0, errorDescription: ""))
+            return completion(nil, nil, NKError())
         }
 
         if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
@@ -376,7 +376,7 @@ import Alamofire
         var e2eToken: String?
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return completion(nil, nil, NKError(errorCode: 0, errorDescription: ""))
+            return completion(nil, nil, NKError())
         }
 
         if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {

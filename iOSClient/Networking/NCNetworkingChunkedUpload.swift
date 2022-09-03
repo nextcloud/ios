@@ -37,7 +37,7 @@ extension NCNetworking {
         let fileSizeInGB = Double(metadata.size) / 1e9
         let ocIdTemp = metadata.ocId
         let selector = metadata.sessionSelector
-        var uploadError = NKError(errorCode: 0, errorDescription: "")
+        var uploadError = NKError()
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
@@ -210,7 +210,7 @@ extension NCNetworking {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { _, _, _, error in
 
             if error == .success {
-                completion(NKError(errorCode: 0, errorDescription: ""))
+                completion(NKError())
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 NextcloudKit.shared.createFolder(chunkFolderPath, queue: NKCommon.shared.backgroundQueue) { _, _, _, error in
                     completion(error)

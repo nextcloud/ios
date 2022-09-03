@@ -1118,7 +1118,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
             } else {
-                completion(tableDirectory, nil, nil, nil, NKError(errorCode: 0, errorDescription: ""))
+                completion(tableDirectory, nil, nil, nil, NKError())
             }
         }
     }
