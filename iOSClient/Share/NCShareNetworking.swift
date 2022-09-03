@@ -125,7 +125,7 @@ class NCShareNetworking: NSObject {
             if error == .success {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
                 self.delegate?.getSharees(sharees: nil)
             }
         }

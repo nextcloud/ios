@@ -70,7 +70,7 @@ import NextcloudKit
                         if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() && !CCUtility.getPassword(account).isEmpty && !appDelegate.deletePasswordSession {
                             let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                             let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+                            NCContentPresenter.shared.showError(error: error, priority: .max)
                             CCUtility.setPassword(account, password: nil)
                             appDelegate.deletePasswordSession = true
                         }
@@ -81,7 +81,7 @@ import NextcloudKit
 
             } else {
 
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+                NCContentPresenter.shared.showError(error: error, priority: .max)
 
                 self.checkRemoteUserInProgress = false
             }
@@ -91,7 +91,7 @@ import NextcloudKit
             if UIApplication.shared.applicationState == .active &&  NextcloudKit.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                 let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+                NCContentPresenter.shared.showError(error: error, priority: .max)
                 CCUtility.setPassword(account, password: nil)
             }
 

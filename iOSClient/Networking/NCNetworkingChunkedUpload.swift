@@ -48,7 +48,7 @@ extension NCNetworking {
             } else {
                 NCContentPresenter.shared.dismiss()
                 let error = NKError(errorCode: NCGlobal.shared.errorReadFile, errorDescription: "_err_file_not_found_")
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 return completion(uploadError)
             }
@@ -249,7 +249,7 @@ extension NCNetworking {
             } else {
                 let description = errorDescription + " code: \(error.errorCode)"
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: description)
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)

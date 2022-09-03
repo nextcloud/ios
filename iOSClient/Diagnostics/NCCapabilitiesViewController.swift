@@ -181,7 +181,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             updateCapabilities()
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_capabilities_found_")
-            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, priority: .max)
+            NCContentPresenter.shared.showError(error: error, priority: .max)
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismiss(animated: true, completion: nil)

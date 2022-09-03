@@ -104,7 +104,7 @@ class NCAutoUpload: NSObject {
                     #if !EXTENSION
                     if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                        NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error, priority: .max)
+                        NCContentPresenter.shared.showError(error: error, priority: .max)
                     }
                     #endif
                     return completion(0)

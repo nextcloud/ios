@@ -217,7 +217,7 @@ import Photos
 
         if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
             let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
-            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+            NCContentPresenter.shared.showError(error: error, priority: .max)
         }
     }
     

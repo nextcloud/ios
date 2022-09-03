@@ -214,7 +214,7 @@ class NCPlayer: NSObject {
                             NCContentPresenter.shared.messageNotification(title, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                         } else {
                             let error = NKError(errorCode: NCGlobal.shared.errorGeneric, errorDescription: "_error_something_wrong_")
-                            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                            NCContentPresenter.shared.showError(error: error, priority: .max)
                         }
                     }
                     break

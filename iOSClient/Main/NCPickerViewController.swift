@@ -89,17 +89,17 @@ class NCPhotosPickerViewController: NSObject {
 
         viewController.didExceedMaximumNumberOfSelection = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_limited_dimension_")
-            NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+            NCContentPresenter.shared.showError(error: error)
         }
 
         viewController.handleNoAlbumPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_album_")
-            NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+            NCContentPresenter.shared.showError(error: error)
         }
 
         viewController.handleNoCameraPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_camera_")
-            NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+            NCContentPresenter.shared.showError(error: error)
         }
 
         viewController.configure = configure
@@ -178,7 +178,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_read_file_error_")
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }

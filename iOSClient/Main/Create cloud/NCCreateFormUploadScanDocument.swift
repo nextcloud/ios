@@ -443,7 +443,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             NCActivityIndicator.shared.stop()
 
             let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
-            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+            NCContentPresenter.shared.showError(error: error)
             return
         }
         let fileUrl = URL(fileURLWithPath: fileNameGenerateExport)
@@ -481,7 +481,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             } catch {
                 NCActivityIndicator.shared.stop()
                 let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
         }
@@ -564,7 +564,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
                 NCActivityIndicator.shared.stop()
                 let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -573,7 +573,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             } catch {
                 NCActivityIndicator.shared.stop()
                 let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
         }

@@ -234,7 +234,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                 }
                             } else {
 
-                                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         })
                     }
@@ -289,7 +289,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
                 } else if error != .success {
-                    NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                    NCContentPresenter.shared.showError(error: error)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
@@ -306,7 +306,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
             } else if error != .success {
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }

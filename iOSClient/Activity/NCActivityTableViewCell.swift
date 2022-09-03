@@ -109,7 +109,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_trash_file_not_found_")
-                        NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                        NCContentPresenter.shared.showError(error: error)
                     }
                 }
             }

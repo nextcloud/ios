@@ -381,7 +381,7 @@ class NCShareHeaderView: UIView {
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : NCBrandColor.shared.systemGray,
                     size: 20), for: .normal)
             } else {
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }

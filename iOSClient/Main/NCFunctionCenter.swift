@@ -697,7 +697,7 @@ import Photos
 
             NCNetworking.shared.favoriteMetadata(metadata) { error in
                 if error != .success {
-                    NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }
@@ -705,7 +705,7 @@ import Photos
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
                 if error != .success {
-                    NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }

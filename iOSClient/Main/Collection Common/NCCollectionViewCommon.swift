@@ -1066,7 +1066,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, error in
 
             if error != .success {
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
 
             metadataForSection.unifiedSearchInProgress = false

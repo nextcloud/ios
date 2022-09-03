@@ -117,7 +117,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
                             if error != .success {
-                                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
                     }

@@ -63,12 +63,13 @@ class NCContentPresenter: NSObject {
 
     // MARK: - Message
 
-    @objc func showError(error: NKError) {
+    func showError(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
         messageNotification(
             "_error_",
             error: error,
             delay: NCGlobal.shared.dismissAfterSecond,
-            type: .error)
+            type: .error,
+            priority: priority)
     }
 
     @objc func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType) {

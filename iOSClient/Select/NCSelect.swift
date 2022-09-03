@@ -758,7 +758,7 @@ extension NCSelect {
 
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { _, _, _, _, _, _, error in
             if error != .success {
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)

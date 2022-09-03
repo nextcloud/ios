@@ -94,7 +94,7 @@ class NCLoginWeb: UIViewController {
             loadWebPage(webView: webView!, url: url)
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
-            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+            NCContentPresenter.shared.showError(error: error, priority: .max)
         }
     }
 

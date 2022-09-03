@@ -189,7 +189,7 @@ class NCManageDatabase: NSObject {
                     do {
                         #if !EXTENSION
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_database_corrupt_")
-                        NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, priority: .max)
+                        NCContentPresenter.shared.showError(error: error, priority: .max)
                         #endif
                         NKCommon.shared.writeLog("DATABASE CORRUPT: removed")
                         try FileManager.default.removeItem(at: databaseFileUrlPath)
@@ -213,7 +213,7 @@ class NCManageDatabase: NSObject {
                 do {
                     #if !EXTENSION
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_database_corrupt_")
-                    NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.info, priority: .max)
+                    NCContentPresenter.shared.showError(error: error, priority: .max)
                     #endif
                     NKCommon.shared.writeLog("DATABASE CORRUPT: removed")
                     try FileManager.default.removeItem(at: databaseFileUrlPath)
