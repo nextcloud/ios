@@ -273,7 +273,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     self.reloadFormRow(formRow)
 
                     let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_forbidden_characters_")
-                    NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                    NCContentPresenter.shared.showInfo(error: error)
                 }
             }
 

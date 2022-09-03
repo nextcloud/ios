@@ -222,7 +222,7 @@ extension NCCreateFormUploadConflictDelegate {
 
             switchAlreadyExistingFiles.isOn = true
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_rewite_doc_")
-            NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+            NCContentPresenter.shared.showInfo(error: error)
         }
 
         tableView.reloadData()

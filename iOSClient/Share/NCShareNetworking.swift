@@ -57,7 +57,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares)
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
             self.delegate?.readShareCompleted()
         }
@@ -84,7 +84,7 @@ class NCShareNetworking: NSObject {
                     self.updateShare(option: option)
                 }
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
             self.delegate?.shareCompleted()
         }
@@ -98,7 +98,7 @@ class NCShareNetworking: NSObject {
                 NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }
@@ -112,7 +112,7 @@ class NCShareNetworking: NSObject {
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 self.delegate?.readShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.showError(error: error)
                 self.delegate?.updateShareWithError(idShare: option.idShare)
             }
         }

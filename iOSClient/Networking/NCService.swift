@@ -89,10 +89,10 @@ class NCService: NSObject {
 
             if serverProductName == "owncloud" {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
-                NCContentPresenter.shared.messageNotification("_warning_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, priority: .max)
+                NCContentPresenter.shared.showWarning(error: error, priority: .max)
             } else if versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
-                NCContentPresenter.shared.messageNotification("_warning_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, priority: .max)
+                NCContentPresenter.shared.showWarning(error: error, priority: .max)
             }
         }
     }
@@ -112,7 +112,7 @@ class NCService: NSObject {
             // Update User (+ userProfile.id) & active account & account network
             guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Internal error : account not found on DB")
-                NCContentPresenter.shared.messageNotification("Account", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                NCContentPresenter.shared.showError(error: error, priority: .max)
                 return
             }
 

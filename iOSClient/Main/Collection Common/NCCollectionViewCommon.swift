@@ -1275,7 +1275,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
             let error = NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_goto_settings_for_enable_")
-            NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+            NCContentPresenter.shared.showInfo(error: error)
             return
         }
 
@@ -1304,7 +1304,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _ in }
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
-                NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                NCContentPresenter.shared.showInfo(error: error)
             }
         }
     }

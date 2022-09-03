@@ -72,6 +72,24 @@ class NCContentPresenter: NSObject {
             priority: priority)
     }
 
+    func showInfo(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
+        messageNotification(
+            "_info_",
+            error: error,
+            delay: NCGlobal.shared.dismissAfterSecond,
+            type: .info,
+            priority: priority)
+    }
+
+    func showWarning(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
+        messageNotification(
+            "_warning_",
+            error: error,
+            delay: NCGlobal.shared.dismissAfterSecond,
+            type: .info,
+            priority: priority)
+    }
+
     @objc func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType) {
         messageNotification(title, error: error, delay: delay, type: type, priority: .normal, dropEnqueuedEntries: false)
     }

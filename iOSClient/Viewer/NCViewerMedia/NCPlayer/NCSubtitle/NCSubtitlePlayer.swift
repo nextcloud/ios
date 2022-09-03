@@ -136,7 +136,7 @@ extension NCPlayer {
         }
         if all.count != existing.count {
             let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_subtitle_not_dowloaded_")
-            NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+            NCContentPresenter.shared.showInfo(error: error)
         }
         self.setSubtitleToolbarIcon(subtitleUrls: subtitleUrls)
         self.hideSubtitle()

@@ -625,7 +625,7 @@ import Photos
             let board = UIPasteboard.general
             board.string = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
             let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_copied_path_")
-            NCContentPresenter.shared.messageNotification("", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+            NCContentPresenter.shared.showInfo(error: error)
         }
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { _ in

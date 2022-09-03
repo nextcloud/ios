@@ -68,10 +68,7 @@ import NextcloudKit
 
         if metadata?.livePhoto == true {
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
-            NCContentPresenter.shared.messageNotification(
-                "", error: error,
-                delay: NCGlobal.shared.dismissAfterSecond,
-                type: NCContentPresenter.messageType.info)
+            NCContentPresenter.shared.showInfo(error: error)
         }
     }
 

@@ -196,7 +196,7 @@ class NCMainTabBar: UITabBar {
 
                 if !directory.permissions.contains("CK") {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
-                    NCContentPresenter.shared.messageNotification("_warning_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                    NCContentPresenter.shared.showWarning(error: error)
                     return
                 }
             }

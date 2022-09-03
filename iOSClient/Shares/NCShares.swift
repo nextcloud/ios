@@ -103,7 +103,7 @@ class NCShares: NCCollectionViewCommon {
 
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
-                    NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }

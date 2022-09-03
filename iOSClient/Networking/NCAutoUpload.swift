@@ -62,7 +62,7 @@ class NCAutoUpload: NSObject {
             guard hasPermission else { return }
             #if !EXTENSION
             let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_create_full_upload_")
-            NCContentPresenter.shared.messageNotification("_attention_", error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: .info, priority: .max)
+            NCContentPresenter.shared.showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
             #endif
             self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
