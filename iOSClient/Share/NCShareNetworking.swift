@@ -53,7 +53,7 @@ class NCShareNetworking: NSObject {
                 NCActivityIndicator.shared.stop()
             }
 
-            if error.errorCode == 0, let shares = shares {
+            if error == .success, let shares = shares {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares)
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {

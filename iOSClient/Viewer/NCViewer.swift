@@ -106,7 +106,7 @@ class NCViewer: NSObject {
 
                         NCActivityIndicator.shared.stop()
 
-                        if error.errorCode == 0 && account == self.appDelegate.account && url != nil {
+                        if error == .success && account == self.appDelegate.account && url != nil {
 
                             if let navigationController = viewController.navigationController {
 
@@ -171,7 +171,7 @@ class NCViewer: NSObject {
 
                             NCActivityIndicator.shared.stop()
 
-                            if error.errorCode == 0 && account == self.appDelegate.account && url != nil {
+                            if error == .success && account == self.appDelegate.account && url != nil {
 
                                 if let navigationController = viewController.navigationController {
 

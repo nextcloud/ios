@@ -109,7 +109,7 @@ class NCUtility: NSObject {
 
             NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, error in
 
-                if error.errorCode == 0 && data != nil {
+                if error == .success && data != nil {
 
                     if let image = UIImage(data: data!) {
 

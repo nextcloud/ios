@@ -321,7 +321,7 @@ import XLForm
             } // else: use default
 
             NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { account, url, error in
-                guard error.errorCode == 0, account == self.appDelegate.account, let url = url else {
+                guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
                     return

@@ -254,12 +254,12 @@ import Photos
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
         NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in
-            guard error.errorCode == 0 else {
+            guard error == .success else {
                 completion(0)
                 return
             }
 
-            if error.errorCode == 0 {
+            if error == .success {
                 NCNetworking.shared.writeCertificate(host: host)
                 completion(error.errorCode)
             } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
@@ -352,7 +352,7 @@ import Photos
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 
-            } else if error.errorCode == 0 {
+            } else if error == .success {
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, etag: etag)
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
@@ -782,7 +782,7 @@ import Photos
     @objc func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> ()) {
 
         NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { (account, files, error) in
-            guard error.errorCode == 0 else {
+            guard error == .success else {
                 return completion(nil, error)
             }
 
@@ -1395,7 +1395,7 @@ import Photos
             completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { _, url, error in
-                if error.errorCode == 0 && url != nil {
+                if error == .success && url != nil {
                     if let url = URL(string: url!) {
                         completition(url)
                     } else {

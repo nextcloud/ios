@@ -83,7 +83,7 @@ class NCService: NSObject {
     private func requestServerStatus() {
 
         NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NKCommon.shared.backgroundQueue) { serverProductName, _, versionMajor, _, _, extendedSupport, error in
-            guard error.errorCode == 0, extendedSupport == false else {
+            guard error == .success, extendedSupport == false else {
                 return
             }
 
@@ -101,7 +101,7 @@ class NCService: NSObject {
         guard !appDelegate.account.isEmpty else { return }
 
         NextcloudKit.shared.getUserProfile(queue: NKCommon.shared.backgroundQueue) { account, userProfile, error in
-            guard error.errorCode == 0, account == self.appDelegate.account else {
+            guard error == .success, account == self.appDelegate.account else {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 if error.errorCode == 401 || error.errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, error: error)
@@ -130,7 +130,7 @@ class NCService: NSObject {
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NKCommon.shared.backgroundQueue) { _, _, _, etag, error in
-                guard let etag = etag, error.errorCode == 0 else {
+                guard let etag = etag, error == .success else {
                     if error.errorCode == NCGlobal.shared.errorNotModified {
                         NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
                     }
@@ -148,7 +148,7 @@ class NCService: NSObject {
         guard !appDelegate.account.isEmpty else { return }
 
         NextcloudKit.shared.getCapabilities(queue: NKCommon.shared.backgroundQueue) { account, data, error in
-            guard error.errorCode == 0, let data = data else {
+            guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 if error.errorCode == 401 || error.errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, error: error)
@@ -176,7 +176,7 @@ class NCService: NSObject {
             let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
             if isFilesSharingEnabled {
                 NextcloudKit.shared.readShares(parameters: NKShareParameter(), queue: NKCommon.shared.backgroundQueue) { account, shares, error in
-                    if error.errorCode == 0 {
+                    if error == .success {
                         NCManageDatabase.shared.deleteTableShare(account: account)
                         if shares != nil {
                             NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
@@ -200,7 +200,7 @@ class NCService: NSObject {
             // Text direct editor detail
             if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                 NextcloudKit.shared.NCTextObtainEditorDetails(queue: NKCommon.shared.backgroundQueue) { account, editors, creators, error in
-                    if error.errorCode == 0 && account == self.appDelegate.account {
+                    if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                     }
                 }
@@ -210,7 +210,7 @@ class NCService: NSObject {
             let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
             if isExternalSitesServerEnabled {
                 NextcloudKit.shared.getExternalSite(queue: NKCommon.shared.backgroundQueue) { account, externalSites, error in
-                    if error.errorCode == 0 && account == self.appDelegate.account {
+                    if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.deleteExternalSites(account: account)
                         for externalSite in externalSites {
                             NCManageDatabase.shared.addExternalSites(externalSite, account: account)
@@ -225,7 +225,7 @@ class NCService: NSObject {
             let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
             if userStatus {
                 NextcloudKit.shared.getUserStatus(queue: NKCommon.shared.backgroundQueue) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, error in
-                    if error.errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userId {
+                    if error == .success && account == self.appDelegate.account && userId == self.appDelegate.userId {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                     }
                 }
