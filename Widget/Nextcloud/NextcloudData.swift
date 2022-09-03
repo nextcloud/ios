@@ -80,7 +80,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
         urlBase: account.urlBase,
         userAgent: CCUtility.getUserAgent(),
         nextcloudVersion: 0,
-        delegate: nil) // NCNetworking.shared
+        delegate: NCNetworking.shared)
 
     let requestBodyRecent =
     """
@@ -185,7 +185,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
                 // Recent Data
-                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, iconName: file.iconName, status: 0, createPreview: false) ?? UIImage(named: "file")!
+                let image:UIImage = NCUtilityGUI.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) ?? UIImage(named: "file")!
                 let recentData = RecentData.init(id: file.ocId, image: UIImage(), title: file.fileName, subTitle: subTitle, url: url)
                 recentDatas.append(recentData)
                 if recentDatas.count == 5 { break}
