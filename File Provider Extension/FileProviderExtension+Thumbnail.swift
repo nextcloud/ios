@@ -23,7 +23,7 @@
 
 import UIKit
 import FileProvider
-import NCCommunication
+import NextcloudKit
 
 extension FileProviderExtension {
 
@@ -49,8 +49,8 @@ extension FileProviderExtension {
                    let fileNamePath = fileNamePath.urlEncoded,
                    let url = URL(string: "\(urlBase)/index.php/core/preview.png?file=\(fileNamePath)&x=\(size)&y=\(size)&a=1&mode=cover") {
 
-                    NCCommunication.shared.getPreview(url: url) { _, data, errorCode, _ in
-                        if errorCode == 0 && data != nil {
+                    NextcloudKit.shared.getPreview(url: url) { _, data, error in
+                        if error == .success && data != nil {
                             do {
                                 try data!.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
                             } catch { }

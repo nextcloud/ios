@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import Queuer
 import JGProgressHUD
 import SVGKit
@@ -87,7 +87,7 @@ import Photos
 
             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                 self.openDocumentController(metadata: metadata)
-            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.compress.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue {
+            } else if metadata.classFile == NKCommon.typeClassFile.compress.rawValue || metadata.classFile == NKCommon.typeClassFile.unknow.rawValue {
                 self.openDocumentController(metadata: metadata)
             } else {
                 if let viewController = self.appDelegate.activeViewController {
@@ -180,9 +180,9 @@ import Photos
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, queue: .main) { account, metadata, errorCode, errorDescription in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, queue: .main) { account, metadata, error in
             NCActivityIndicator.shared.stop()
-            if let metadata = metadata, errorCode == 0 {
+            if let metadata = metadata, error == .success {
                 let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
                 let shareViewController = shareNavigationController.topViewController as! NCSharePaging
 
@@ -276,7 +276,7 @@ import Photos
         let printController = UIPrintInteractionController.shared
         let printInfo = UIPrintInfo(dictionary: nil)
         printInfo.jobName = fileNameURL.lastPathComponent
-        printInfo.outputType = metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue ? .photo : .general
+        printInfo.outputType = metadata.classFile == NKCommon.typeClassFile.image.rawValue ? .photo : .general
         printController.printInfo = printInfo
         printController.showsNumberOfCopies = true
 
@@ -315,9 +315,9 @@ import Photos
             guard hasPermission else {
                 return NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
             }
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let image = UIImage(contentsOfFile: fileNamePath) {
+            if metadata.classFile == NKCommon.typeClassFile.image.rawValue, let image = UIImage(contentsOfFile: fileNamePath) {
                 UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
+            } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue, UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
                 UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
             } else {
                 NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorFileNotSaved)
@@ -422,16 +422,16 @@ import Photos
     }
 
     func upload(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
-        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
+        NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
         } progressHandler: { progress in
-        } completionHandler: { account, ocId, etag, _, _, _, errorCode, errorDescription in
-            if errorCode == 0 && etag != nil && ocId != nil {
+        } completionHandler: { account, ocId, etag, _, _, _, error in
+            if error == .success && etag != nil && ocId != nil {
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                 NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
             } else {
-                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
+                NCContentPresenter.shared.showError(description: error.errorDescription, errorCode: error.errorCode)
             }
             completion()
         }
@@ -442,7 +442,7 @@ import Photos
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let results = NCCommunicationCommon.shared.getFileProperties(inUTI: item.key as CFString)
+                let results = NKCommon.shared.getFileProperties(inUTI: item.key as CFString)
                 guard !results.ext.isEmpty,
                       let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
                 else { continue }
@@ -689,23 +689,23 @@ import Photos
 
         let favorite = UIAction(title: titleFavorite, image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
 
-            NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-                if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            NCNetworking.shared.favoriteMetadata(metadata) { error in
+                if error != .success {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
             }
         }
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { errorCode, errorDescription in
-                if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
+                if error != .success {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
             }
         }
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _, _ in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in
             }
         }
 
@@ -747,15 +747,15 @@ import Photos
             children.insert(lockUnlock, at: metadata.lock ? 0 : 1)
         }
 
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue) {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue) {
             children.insert(save, at: 2)
         }
 
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             children.insert(saveAsScan, at: 2)
         }
 
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf") {
+        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf") {
             children.insert(print, at: 2)
         }
 
@@ -763,7 +763,7 @@ import Photos
             children.insert(viewInFolder, at: children.count - 1)
         }
 
-        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
+        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             children.insert(modify, at: children.count - 1)
         }
 

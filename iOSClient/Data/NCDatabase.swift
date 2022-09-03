@@ -24,7 +24,7 @@
 
 import UIKit
 import RealmSwift
-import NCCommunication
+import NextcloudKit
 
 protocol DateCompareable {
     var dateKey: Date { get }
@@ -433,7 +433,7 @@ extension tableMetadata {
     var fileExtension: String { (fileNameView as NSString).pathExtension }
 
     var isPrintable: Bool {
-        classFile == NCCommunicationCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+        classFile == NKCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else

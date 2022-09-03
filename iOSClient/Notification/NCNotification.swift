@@ -23,13 +23,13 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import SwiftyJSON
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var notifications: [NCCommunicationNotifications] = []
+    var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
 
     // MARK: - View Life Cycle
@@ -226,10 +226,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     // MARK: - tap Action
 
-    func tapRemove(with notification: NCCommunicationNotifications) {
+    func tapRemove(with notification: NKNotifications) {
 
-        NCCommunication.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, errorCode, errorDescription) in
-            if errorCode == 0 && account == self.appDelegate.account {
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, error) in
+            if error.errorCode == 0 && account == self.appDelegate.account {
 
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification })  {
@@ -238,15 +238,15 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 self.reloadDatasource()
 
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            } else if error != .success {
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
             } else {
                 print("[Error] The user has been changed during networking process.")
             }
         }
     }
 
-    func tapAction(with notification: NCCommunicationNotifications, label: String) {
+    func tapAction(with notification: NKNotifications, label: String) {
         if notification.app == "spreed",
            let roomToken = notification.objectId.split(separator: "/").first,
            let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(roomToken)"),
@@ -263,17 +263,17 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 return
             }
 
-            NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, error) in
 
-                if errorCode == 0 && account == self.appDelegate.account {
+                if error == .success && account == self.appDelegate.account {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
                     }
 
                     self.reloadDatasource()
 
-                } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                } else if error != .success {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 } else {
                     print("[Error] The user has been changed during networking process.")
                 }
@@ -281,7 +281,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         } // else: Action not found
     }
 
-    func tapMore(with notification: NCCommunicationNotifications) {
+    func tapMore(with notification: NKNotifications) {
        toggleMenu(notification: notification)
     }
 
@@ -289,18 +289,18 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func getNetwokingNotification() {
 
-        NCCommunication.shared.getNotifications { account, notifications, errorCode, _ in
+        NextcloudKit.shared.getNotifications { account, notifications, error in
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error == .success && account == self.appDelegate.account {
 
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
 
                 for notification in sortedListOfNotifications {
-                    if let icon = (notification as! NCCommunicationNotifications).icon {
+                    if let icon = (notification as! NKNotifications).icon {
                         NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, closure: { _ in })
                     }
-                    self.notifications.append(notification as! NCCommunicationNotifications)
+                    self.notifications.append(notification as! NKNotifications)
                 }
 
                 self.reloadDatasource()
@@ -329,7 +329,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     private var user = ""
 
     weak var delegate: NCNotificationCellDelegate?
-    var notification: NCCommunicationNotifications?
+    var notification: NKNotifications?
 
     var fileAvatarImageView: UIImageView? {
         get { return avatar }
@@ -371,7 +371,7 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
 }
 
 protocol NCNotificationCellDelegate: AnyObject {
-    func tapRemove(with notification: NCCommunicationNotifications)
-    func tapAction(with notification: NCCommunicationNotifications, label: String)
-    func tapMore(with notification: NCCommunicationNotifications)
+    func tapRemove(with notification: NKNotifications)
+    func tapAction(with notification: NKNotifications, label: String)
+    func tapMore(with notification: NKNotifications)
 }

@@ -23,11 +23,11 @@
 
 import Foundation
 import SVGKit
-import NCCommunication
+import NextcloudKit
 import UIKit
 
 extension UIViewController {
-    fileprivate func handleProfileAction(_ action: NCCHovercard.Action, for userId: String) {
+    fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String) {
         switch action.appId {
         case "email":
             guard
@@ -63,7 +63,7 @@ extension UIViewController {
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
-        NCCommunication.shared.getHovercard(for: userId) { card, _, _ in
+        NextcloudKit.shared.getHovercard(for: userId) { card, _ in
             guard let card = card else { return }
 
             let personHeader = NCMenuAction(

@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCUtilityGUI: NSObject {
     @objc static let shared: NCUtilityGUI = {
@@ -39,14 +39,14 @@ class NCUtilityGUI: NSObject {
 
             if FileManager().fileExists(atPath: iconImagePath) {
                 imagePreview = UIImage(contentsOfFile: iconImagePath)
-            } else if createPreview && status >= NCGlobal.shared.metadataStatusNormal && classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
+            } else if createPreview && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
                 if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                     do {
                         try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
                         imagePreview = image
                     } catch { }
                 }
-            } else if createPreview && status >= NCGlobal.shared.metadataStatusNormal && classFile == NCCommunicationCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
+            } else if createPreview && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
                 if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
                     do {
                         try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)

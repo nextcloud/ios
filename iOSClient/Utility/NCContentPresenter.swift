@@ -24,6 +24,7 @@
 import SwiftEntryKit
 import UIKit
 import CFNetwork
+import NextcloudKit
 
 class NCContentPresenter: NSObject {
     @objc static let shared: NCContentPresenter = {

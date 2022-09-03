@@ -23,7 +23,7 @@
 
 import UIKit
 import Queuer
-import NCCommunication
+import NextcloudKit
 
 @objc class NCOperationQueue: NSObject {
     @objc public static let shared: NCOperationQueue = {
@@ -220,7 +220,7 @@ import NCCommunication
 
     // MARK: - Unified Search
 
-    func unifiedSearchAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
+    func unifiedSearchAddSection(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NKSearchResult) {
         unifiedSearchQueue.addOperation(NCOperationUnifiedSearch.init(collectionViewCommon: collectionViewCommon, metadatas: metadatas, searchResult: searchResult))
     }
 
@@ -268,9 +268,9 @@ class NCOperationDelete: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { errorCode, errorDescription in
-                if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { error in
+                if error != .success {
+                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
                 self.finish()
             }
@@ -299,16 +299,16 @@ class NCOperationCopyMove: ConcurrentOperation {
             self.finish()
         } else {
             if move {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { errorCode, errorDescription in
-                    if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { error in
+                    if error != .success {
+                        NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                     }
                     self.finish()
                 }
             } else {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { errorCode, errorDescription in
-                    if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { error in
+                    if error != .success {
+                        NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                     }
                     self.finish()
                 }
@@ -344,15 +344,15 @@ class NCOperationSynchronization: ConcurrentOperation {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                 let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
 
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, errorCode, _ in
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, error in
 
-                    if (errorCode == 0) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
+                    if (error == .success) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
 
-                        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, _, errorCode, _ in
+                        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { account, files, _, error in
 
-                            if errorCode == 0 {
+                            if error == .success {
 
-                                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, _, metadatas in
+                                NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, _, metadatas in
 
                                     let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
 
@@ -389,7 +389,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     NCManageDatabase.shared.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, account: metadataFolder.account)
                                 }
 
-                            } else if errorCode == NCGlobal.shared.errorResourceNotFound && self.metadata.directory {
+                            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound && self.metadata.directory {
                                 NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                             }
 
@@ -452,7 +452,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
-            NCCommunication.shared.downloadPreview(
+            NextcloudKit.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePath,
                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                 widthPreview: NCGlobal.shared.sizePreview,
@@ -460,9 +460,9 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                 fileNameIconLocalPath: fileNameIconLocalPath,
                 sizeIcon: NCGlobal.shared.sizeIcon,
                 etag: etagResource,
-                queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, errorCode, _ in
+                queue: NKCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, error in
 
-                    if errorCode == 0, let imageIcon = imageIcon {
+                    if error == .success, let imageIcon = imageIcon {
                         NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                         DispatchQueue.main.async {
                             if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
@@ -511,16 +511,16 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
             self.finish()
         } else {
 
-            NCCommunication.shared.downloadPreview(
+            NextcloudKit.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePathOrFileId,
                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                 widthPreview: 0,
                 heightPreview: 0,
                 etag: nil,
                 useInternalEndpoint: false,
-                queue: NCCommunicationCommon.shared.backgroundQueue) { _, imagePreview, _, _, _, errorCode, _ in
+                queue: NKCommon.shared.backgroundQueue) { _, imagePreview, _, _, _, error in
 
-                    if errorCode == 0, let imagePreview = imagePreview {
+                    if error == .success, let imagePreview = imagePreview {
                         DispatchQueue.main.async {
                             if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
                                 UIView.transition(with: imageView,
@@ -566,9 +566,9 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NCCommunicationCommon.shared.backgroundQueue) { _, imageAvatar, _, etag, errorCode, _ in
+            NextcloudKit.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NKCommon.shared.backgroundQueue) { _, imageAvatar, _, etag, error in
 
-                if errorCode == 0, let imageAvatar = imageAvatar, let etag = etag {
+                if error == .success, let imageAvatar = imageAvatar, let etag = etag {
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
                     DispatchQueue.main.async {
                         if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
@@ -585,7 +585,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                             }
                         }
                     }
-                } else if errorCode == NCGlobal.shared.errorNotModified {
+                } else if error.errorCode == NCGlobal.shared.errorNotModified {
                     NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
                 }
                 self.finish()
@@ -600,9 +600,9 @@ class NCOperationUnifiedSearch: ConcurrentOperation {
 
     var collectionViewCommon: NCCollectionViewCommon
     var metadatas: [tableMetadata]
-    var searchResult: NCCSearchResult
+    var searchResult: NKSearchResult
 
-    init(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NCCSearchResult) {
+    init(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], searchResult: NKSearchResult) {
         self.collectionViewCommon = collectionViewCommon
         self.metadatas = metadatas
         self.searchResult = searchResult

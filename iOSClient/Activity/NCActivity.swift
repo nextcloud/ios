@@ -24,7 +24,7 @@
 
 import UIKit
 import SwiftRichString
-import NCCommunication
+import NextcloudKit
 
 class NCActivity: UIViewController, NCSharePagingContent {
 
@@ -83,12 +83,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NCCommunication.shared.putComments(fileId: metadata.fileId, message: newComment) { _, errorCode, errorDescription in
-                if errorCode == 0 {
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment) { _, error in
+                if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                 }
             }
         }
@@ -262,8 +262,8 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image
                 }
             } else {
-                NCCommunication.shared.downloadContent(serverUrl: activity.icon) { _, data, errorCode, _ in
-                    if errorCode == 0 {
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon) { _, data, error in
+                    if error == .success {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                             self.tableView.reloadData()
@@ -403,11 +403,11 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NCCommunication.shared.getComments(fileId: metadata.fileId) { account, comments, errorCode, errorDescription in
-            if errorCode == 0, let comments = comments {
+        NextcloudKit.shared.getComments(fileId: metadata.fileId) { account, comments, error in
+            if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
-            } else if errorCode != NCGlobal.shared.errorResourceNotFound {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
             }
 
             if let disptachGroup = disptachGroup {
@@ -427,20 +427,20 @@ extension NCActivity {
 
         disptachGroup.enter()
 
-        NCCommunication.shared.getActivity(
+        NextcloudKit.shared.getActivity(
             since: 0,
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, _, activityFirstKnown, activityLastGiven, errorCode, _ in
+            previews: true) { account, _, activityFirstKnown, activityLastGiven, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                guard errorCode == 0,
+                guard error == .success,
                       account == self.appDelegate.account,
                       largestActivityId > resultActivityId
                 else {
-                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    self.hasActivityToLoad = error.errorCode == 304 ? false : self.hasActivityToLoad
                     return
                 }
 
@@ -454,18 +454,18 @@ extension NCActivity {
         var resultActivityId = 0
         disptachGroup.enter()
 
-        NCCommunication.shared.getActivity(
+        NextcloudKit.shared.getActivity(
             since: idActivity,
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, activityFirstKnown, activityLastGiven, errorCode, _ in
+            previews: true) { account, activities, activityFirstKnown, activityLastGiven, error in
                 defer { disptachGroup.leave() }
-                guard errorCode == 0,
+                guard error == .success,
                       account == self.appDelegate.account,
                       !activities.isEmpty
                 else {
-                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    self.hasActivityToLoad = error.errorCode == 304 ? false : self.hasActivityToLoad
                     return
                 }
                 NCManageDatabase.shared.addActivity(activities, account: account)
@@ -514,11 +514,11 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, message != "" else { return }
 
-                        NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { _, errorCode, errorDescription in
-                            if errorCode == 0 {
+                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { _, error in
+                            if error == .success {
                                 self.loadComments()
                             } else {
-                                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                             }
                         }
                     }))
@@ -535,11 +535,11 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
-                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { _, errorCode, errorDescription in
-                        if errorCode == 0 {
+                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { _, error in
+                        if error == .success {
                             self.loadComments()
                         } else {
-                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
                         }
                     }
                 }

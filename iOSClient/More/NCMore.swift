@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import MarqueeLabel
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -33,10 +33,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var progressQuota: UIProgressView!
     @IBOutlet weak var viewQuota: UIView!
 
-    var functionMenu: [NCCommunicationExternalSite] = []
-    var externalSiteMenu: [NCCommunicationExternalSite] = []
-    var settingsMenu: [NCCommunicationExternalSite] = []
-    var quotaMenu: [NCCommunicationExternalSite] = []
+    var functionMenu: [NKExternalSite] = []
+    var externalSiteMenu: [NKExternalSite] = []
+    var settingsMenu: [NKExternalSite] = []
+    var quotaMenu: [NKExternalSite] = []
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -84,7 +84,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     func loadItems() {
 
-        var item = NCCommunicationExternalSite()
+        var item = NKExternalSite()
         var quota: String = ""
 
         // Clear
@@ -96,28 +96,28 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         progressQuota.progressTintColor = NCBrandColor.shared.brandElement
 
         // ITEM : Transfer
-        item = NCCommunicationExternalSite()
+        item = NKExternalSite()
         item.name = "_transfers_"
         item.icon = "arrow.left.arrow.right"
         item.url = "segueTransfers"
         functionMenu.append(item)
 
         // ITEM : Recent
-        item = NCCommunicationExternalSite()
+        item = NKExternalSite()
         item.name = "_recent_"
         item.icon = "recent"
         item.url = "segueRecent"
         functionMenu.append(item)
 
         // ITEM : Notification
-        item = NCCommunicationExternalSite()
+        item = NKExternalSite()
         item.name = "_notification_"
         item.icon = "bell"
         item.url = "segueNotification"
         functionMenu.append(item)
 
         // ITEM : Activity
-        item = NCCommunicationExternalSite()
+        item = NKExternalSite()
         item.name = "_activity_"
         item.icon = "bolt"
         item.url = "segueActivity"
@@ -126,7 +126,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Shares
         let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
         if isFilesSharingEnabled {
-            item = NCCommunicationExternalSite()
+            item = NKExternalSite()
             item.name = "_list_shares_"
             item.icon = "share"
             item.url = "segueShares"
@@ -134,7 +134,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : Offline
-        item = NCCommunicationExternalSite()
+        item = NKExternalSite()
         item.name = "_manage_file_offline_"
         item.icon = "tray.and.arrow.down"
         item.url = "segueOffline"
@@ -142,7 +142,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : Scan
         if #available(iOS 13.0, *) {
-            item = NCCommunicationExternalSite()
+            item = NKExternalSite()
             item.name = "_scanned_images_"
             item.icon = "doc.text.viewfinder"
             item.url = "openStoryboardNCScan"
@@ -153,7 +153,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
 
-            item = NCCommunicationExternalSite()
+            item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"
             item.url = "segueTrash"
@@ -161,7 +161,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : Settings
-        item = NCCommunicationExternalSite()
+        item = NKExternalSite()
         item.name = "_settings_"
         item.icon = "gear"
         item.url = "segueSettings"
@@ -169,7 +169,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM: Test API
         if NCUtility.shared.isSimulator() {
-            item = NCCommunicationExternalSite()
+            item = NKExternalSite()
             item.name = "Test API"
             item.icon = "swift"
             item.url = "test"
@@ -214,7 +214,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
                 for externalSite in externalSites {
                     if (externalSite.name != "" && externalSite.url != ""), let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-                        item = NCCommunicationExternalSite()
+                        item = NKExternalSite()
                         item.name = externalSite.name
                         item.url = urlEncoded
                         item.icon = "network"
@@ -310,7 +310,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        var item = NCCommunicationExternalSite()
+        var item = NKExternalSite()
 
         // change color selection and disclosure indicator
         let selectionColor: UIView = UIView()
@@ -390,7 +390,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        var item = NCCommunicationExternalSite()
+        var item = NKExternalSite()
 
         if indexPath.section == 0 {
             tapImageLogoManageAccount()

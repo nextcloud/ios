@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 public protocol NCAccountRequestDelegate: AnyObject {
     func accountRequestAddAccount()

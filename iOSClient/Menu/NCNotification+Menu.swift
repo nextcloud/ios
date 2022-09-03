@@ -24,11 +24,11 @@
 import UIKit
 import FloatingPanel
 import SwiftyJSON
-import NCCommunication
+import NextcloudKit
 
 extension NCNotification {
 
-    func toggleMenu(notification: NCCommunicationNotifications) {
+    func toggleMenu(notification: NKNotifications) {
 
         var actions = [NCMenuAction]()
 

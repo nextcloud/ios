@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 @objc class NCRichWorkspaceCommon: NSObject {
 
@@ -30,7 +30,7 @@ import NCCommunication
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 
-        if !NCCommunication.shared.isNetworkReachable() {
+        if !NextcloudKit.shared.isNetworkReachable() {
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
             return
         }
@@ -40,11 +40,11 @@ import NCCommunication
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
-        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, errorCode, errorMessage in
+        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, error in
 
             NCActivityIndicator.shared.stop()
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error == .success && account == self.appDelegate.account {
 
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
 
@@ -54,15 +54,15 @@ import NCCommunication
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
 
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
+            } else if error != .success {
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: error.errorCode)
             }
         }
     }
 
     @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 
-        if !NCCommunication.shared.isNetworkReachable() {
+        if !NextcloudKit.shared.isNetworkReachable() {
 
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
             return
@@ -75,11 +75,11 @@ import NCCommunication
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
-                NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, errorCode, errorMessage in
+                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, error in
 
                     NCActivityIndicator.shared.stop()
 
-                    if errorCode == 0 && account == self.appDelegate.account {
+                    if error == .success && account == self.appDelegate.account {
 
                         if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
 
@@ -90,8 +90,8 @@ import NCCommunication
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                         }
 
-                    } else if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: errorCode)
+                    } else if error != .success {
+                        NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: error.errorCode)
                     }
                 }
 

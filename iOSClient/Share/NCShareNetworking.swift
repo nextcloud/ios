@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCShareNetworking: NSObject {
 
@@ -47,17 +47,17 @@ class NCShareNetworking: NSObject {
         }
 
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
-        let parameter = NCCShareParameter(path: filenamePath)
-        NCCommunication.shared.readShares(parameters: parameter) { account, shares, errorCode, errorDescription in
+        let parameter = NKShareParameter(path: filenamePath)
+        NextcloudKit.shared.readShares(parameters: parameter) { account, shares, error in
             if showLoadingIndicator {
                 NCActivityIndicator.shared.stop()
             }
 
-             if errorCode == 0, let shares = shares {
+            if error.errorCode == 0, let shares = shares {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares)
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
             self.delegate?.readShareCompleted()
         }
@@ -74,9 +74,9 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
 
-        NCCommunication.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions) { (account, share, errorCode, errorDescription) in
+        NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions) { (account, share, error) in
             NCActivityIndicator.shared.stop()
-            if errorCode == 0, let share = share {
+            if error == .success, let share = share {
                 option.idShare = share.idShare
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
@@ -84,7 +84,7 @@ class NCShareNetworking: NSObject {
                     self.updateShare(option: option)
                 }
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
             self.delegate?.shareCompleted()
         }
@@ -92,27 +92,27 @@ class NCShareNetworking: NSObject {
 
     func unShare(idShare: Int) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NCCommunication.shared.deleteShare(idShare: idShare) { account, errorCode, errorDescription in
+        NextcloudKit.shared.deleteShare(idShare: idShare) { account, error in
             NCActivityIndicator.shared.stop()
-            if errorCode == 0 {
+            if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
             }
         }
     }
 
     func updateShare(option: NCTableShareable) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NCCommunication.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, errorCode, errorDescription in
+        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, error in
             NCActivityIndicator.shared.stop()
-            if errorCode == 0, let share = share {
+            if error == .success, let share = share {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 self.delegate?.readShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 self.delegate?.updateShareWithError(idShare: option.idShare)
             }
         }
@@ -120,12 +120,12 @@ class NCShareNetworking: NSObject {
 
     func getSharees(searchString: String) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NCCommunication.shared.searchSharees(search: searchString) { _, sharees, errorCode, errorDescription in
+        NextcloudKit.shared.searchSharees(search: searchString) { _, sharees, error in
             NCActivityIndicator.shared.stop()
-            if errorCode == 0 {
+            if error == .success {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
                 self.delegate?.getSharees(sharees: nil)
             }
         }
@@ -137,5 +137,5 @@ protocol NCShareNetworkingDelegate: AnyObject {
     func shareCompleted()
     func unShareCompleted()
     func updateShareWithError(idShare: Int)
-    func getSharees(sharees: [NCCommunicationSharee]?)
+    func getSharees(sharees: [NKSharee]?)
 }

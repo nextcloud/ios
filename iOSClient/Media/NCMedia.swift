@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
@@ -399,7 +399,7 @@ extension NCMedia: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
 
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.livePhoto && livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
@@ -457,12 +457,12 @@ extension NCMedia {
         }
         let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + mediaPath
 
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCCommunicationCommon.typeClassFile.image.rawValue, NCCommunicationCommon.typeClassFile.video.rawValue)
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.typeClassFile.image.rawValue, NKCommon.typeClassFile.video.rawValue)
 
         if filterClassTypeImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCCommunicationCommon.typeClassFile.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.typeClassFile.video.rawValue)
         } else if filterClassTypeVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NCCommunicationCommon.typeClassFile.image.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.typeClassFile.image.rawValue)
         } else {
             predicate = predicateDefault
         }
@@ -529,15 +529,15 @@ extension NCMedia {
         }
         NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .gray)
 
-        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 300) { account, files, errorCode, errorDescription in
+        NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 300) { account, files, error in
 
             self.oldInProgress = false
             NCActivityIndicator.shared.stop()
             self.collectionView.reloadData()
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error == .success && account == self.appDelegate.account {
                 if files.count > 0 {
-                    NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { _, _, metadatas in
+                    NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
@@ -551,8 +551,8 @@ extension NCMedia {
                 } else {
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
-            } else if errorCode != 0 {
-                NCCommunicationCommon.shared.writeLog("Media search old media error code \(errorCode) " + errorDescription)
+            } else if error != .success {
+                NKCommon.shared.writeLog("Media search old media error code \(error.errorCode) " + error.errorDescription)
             }
         }
     }
@@ -608,13 +608,13 @@ extension NCMedia {
 
         reloadDataThenPerform {
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 300) { account, files, errorCode, errorDescription in
+            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 300) { account, files, error in
 
                 self.newInProgress = false
                 self.mediaCommandView?.activityIndicator.stopAnimating()
 
-                if errorCode == 0 && account == self.appDelegate.account && files.count > 0 {
-                    NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
+                if error == .success && account == self.appDelegate.account && files.count > 0 {
+                    NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
@@ -623,10 +623,10 @@ extension NCMedia {
                             self.reloadDataSourceWithCompletion { _ in }
                         }
                     }
-                } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
+                } else if error == .success && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldMedia()
-                } else if errorCode != 0 {
-                    NCCommunicationCommon.shared.writeLog("Media search new media error code \(errorCode) " + errorDescription)
+                } else if error != .success {
+                    NKCommon.shared.writeLog("Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
             }
         }

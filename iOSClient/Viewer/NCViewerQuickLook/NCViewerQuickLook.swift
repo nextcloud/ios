@@ -25,7 +25,7 @@
 
 import UIKit
 import QuickLook
-import NCCommunication
+import NextcloudKit
 
 @objc class NCViewerQuickLook: QLPreviewController {
 

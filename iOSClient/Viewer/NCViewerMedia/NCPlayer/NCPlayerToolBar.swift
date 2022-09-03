@@ -22,7 +22,7 @@
 //
 
 import Foundation
-import NCCommunication
+import NextcloudKit
 import CoreMedia
 import UIKit
 import AVKit
@@ -179,7 +179,7 @@ class NCPlayerToolBar: UIView {
 
         // PIP
         if let pipButton = pipButton {
-            if metadata?.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
+            if metadata?.classFile == NKCommon.typeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
                 pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
                 pipButton.isEnabled = true
             } else {
@@ -280,7 +280,7 @@ class NCPlayerToolBar: UIView {
     public func show(enableTimerAutoHide: Bool = false) {
 
         guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto else { return }
-        if metadata.classFile != NCCommunicationCommon.typeClassFile.video.rawValue && metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if metadata.classFile != NKCommon.typeClassFile.video.rawValue && metadata.classFile != NKCommon.typeClassFile.audio.rawValue { return }
 
 #if MFFFLIB
         if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {

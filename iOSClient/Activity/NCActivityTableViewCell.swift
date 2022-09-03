@@ -22,7 +22,7 @@
 //
 
 import Foundation
-import NCCommunication
+import NextcloudKit
 import FloatingPanel
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
@@ -149,26 +149,26 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 NCActivityIndicator.shared.start(backgroundView: backgroundView)
             }
 
-            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+            NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
             }, taskHandler: { _ in
 
             }, progressHandler: { _ in
 
-            }) { account, _, _, _, _, _, errorCode, _ in
+            }) { account, _, _, _, _, _, error in
 
-                if account == self.appDelegate.account && errorCode == 0 {
+                if account == self.appDelegate.account && error == .success {
 
                     let serverUrl = (serverUrlFileName as NSString).deletingLastPathComponent
                     let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
 
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, errorCode, _ in
+                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, error in
 
                         NCActivityIndicator.shared.stop()
 
                         DispatchQueue.main.async {
-                            if account == self.appDelegate.account, errorCode == 0, let metadata = metadata {
+                            if account == self.appDelegate.account, error == .success, let metadata = metadata {
 
                                 // move from id to oc:id + instanceid (ocId)
                                 let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id

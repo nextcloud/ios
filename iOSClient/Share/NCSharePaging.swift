@@ -24,7 +24,7 @@
 
 import UIKit
 import Parchment
-import NCCommunication
+import NextcloudKit
 import MarqueeLabel
 
 protocol NCSharePagingContent {
@@ -374,14 +374,14 @@ class NCShareHeaderView: UIView {
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-        NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-            if errorCode == 0 {
+        NCNetworking.shared.favoriteMetadata(metadata) { error in
+            if error == .success {
                 self.favorite.setImage(NCUtility.shared.loadImage(
                     named: "star.fill",
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : NCBrandColor.shared.systemGray,
                     size: 20), for: .normal)
             } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
             }
         }
     }

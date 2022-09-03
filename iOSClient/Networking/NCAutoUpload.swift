@@ -23,7 +23,7 @@
 
 import UIKit
 import CoreLocation
-import NCCommunication
+import NextcloudKit
 import Photos
 import Queuer
 
@@ -86,17 +86,17 @@ class NCAutoUpload: NSObject {
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
                 guard let assets = assets, !assets.isEmpty else {
                     #if EXTENSION_WIDGET
-                    NCCommunicationCommon.shared.writeLog("Automatic upload widget, no new assets found [" + log + "]")
+                    NKCommon.shared.writeLog("Automatic upload widget, no new assets found [" + log + "]")
                     #else
-                    NCCommunicationCommon.shared.writeLog("Automatic upload, no new assets found [" + log + "]")
+                    NKCommon.shared.writeLog("Automatic upload, no new assets found [" + log + "]")
                     #endif
                     completion(0)
                     return
                 }
                 #if EXTENSION_WIDGET
-                NCCommunicationCommon.shared.writeLog("Automatic upload widget, new \(assets.count) assets found [" + log + "]")
+                NKCommon.shared.writeLog("Automatic upload widget, new \(assets.count) assets found [" + log + "]")
                 #else
-                NCCommunicationCommon.shared.writeLog("Automatic upload, new \(assets.count) assets found [" + log + "]")
+                NKCommon.shared.writeLog("Automatic upload, new \(assets.count) assets found [" + log + "]")
                 #endif
                 // Create the folder for auto upload & if request the subfolders
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
@@ -129,7 +129,7 @@ class NCAutoUpload: NSObject {
                     }
 
                     if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                        session = NCCommunicationCommon.shared.sessionIdentifierUpload
+                        session = NKCommon.shared.sessionIdentifierUpload
                     } else {
                         if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false {
                             session = NCNetworking.shared.sessionIdentifierBackground
@@ -165,15 +165,15 @@ class NCAutoUpload: NSObject {
                         metadata.sessionSelector = selector
                         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
                         if assetMediaType == PHAssetMediaType.video {
-                            metadata.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+                            metadata.classFile = NKCommon.typeClassFile.video.rawValue
                         } else if assetMediaType == PHAssetMediaType.image {
-                            metadata.classFile = NCCommunicationCommon.typeClassFile.image.rawValue
+                            metadata.classFile = NKCommon.typeClassFile.image.rawValue
                         }
                         if selector == NCGlobal.shared.selectorUploadAutoUpload {
                             #if EXTENSION_WIDGET
-                            NCCommunicationCommon.shared.writeLog("Automatic upload widget added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
+                            NKCommon.shared.writeLog("Automatic upload widget added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
                             #else
-                            NCCommunicationCommon.shared.writeLog("Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
+                            NKCommon.shared.writeLog("Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
                             #endif
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         }
@@ -238,14 +238,14 @@ class NCAutoUpload: NSObject {
                     #else
                     if (metadata.e2eEncrypted || metadata.chunk) { continue }
                     #endif
-                    let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
+                    let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
                     if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
                     guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
                     // Upload 
                     let semaphoreUpload = Semaphore()
                     NCNetworking.shared.upload(metadata: metadata) {
                         numStartUpload += 1
-                    } completion: { errorCode, errorDescription in
+                    } completion: { error in
                         semaphoreUpload.continue()
                     }
                     semaphoreUpload.wait()
@@ -270,9 +270,9 @@ class NCAutoUpload: NSObject {
 
             NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
             #if EXTENSION_WIDGET
-            NCCommunicationCommon.shared.writeLog("Widget align Photo Library \(assets.count)")
+            NKCommon.shared.writeLog("Widget align Photo Library \(assets.count)")
             #else
-            NCCommunicationCommon.shared.writeLog("Align Photo Library \(assets.count)")
+            NKCommon.shared.writeLog("Align Photo Library \(assets.count)")
             #endif
         }
     }

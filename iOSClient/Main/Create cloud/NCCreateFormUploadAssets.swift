@@ -23,7 +23,7 @@
 
 import UIKit
 import Queuer
-import NCCommunication
+import NextcloudKit
 import XLForm
 import Photos
 

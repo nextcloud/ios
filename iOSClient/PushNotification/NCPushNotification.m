@@ -106,13 +106,13 @@
     NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
     NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
     
-    [[NCCommunication shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0) {
+    [[NextcloudKit shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NKError *error) {
+        if (error.errorCode == 0) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent queue:dispatch_get_main_queue() completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
-                if (errorCode == 0) {
+            [[NextcloudKit shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent queue:dispatch_get_main_queue() completionHandler:^(NKError *error) {
+                if (error.errorCode == 0) {
                     
-                    [[NCCommunicationCommon shared] writeLog:@"Subscribed to Push Notification server & proxy successfully"];
+                    [[NKCommon shared] writeLog:@"Subscribed to Push Notification server & proxy successfully"];
 
                     [CCUtility setPushNotificationToken:account token:self.pushKitToken];
                     [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
@@ -132,14 +132,14 @@
     NSString *signature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
     NSString *publicKey = [CCUtility getPushNotificationSubscribingPublicKey:account];
 
-    [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0) {
+    [[NextcloudKit shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NKError *error) {
+        if (error.errorCode == 0) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
             NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
-            [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent queue:dispatch_get_main_queue() completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
-                if (errorCode == 0) {
+            [[NextcloudKit shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent queue:dispatch_get_main_queue() completionHandler:^(NKError *error) {
+                if (error.errorCode == 0) {
                 
-                    [[NCCommunicationCommon shared] writeLog:@"Unsubscribed to Push Notification server & proxy successfully."];
+                    [[NKCommon shared] writeLog:@"Unsubscribed to Push Notification server & proxy successfully."];
                     
                     [CCUtility setPushNotificationPublicKey:account data:nil];
                     [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:nil];
