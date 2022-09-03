@@ -88,7 +88,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
+                    NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                 }
             }
         }
@@ -407,7 +407,7 @@ extension NCActivity {
             if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
             }
 
             if let disptachGroup = disptachGroup {
@@ -518,7 +518,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                             if error == .success {
                                 self.loadComments()
                             } else {
-                                NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
+                                NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                             }
                         }
                     }))
@@ -539,7 +539,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                         if error == .success {
                             self.loadComments()
                         } else {
-                            NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                         }
                     }
                 }

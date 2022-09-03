@@ -67,11 +67,11 @@ import NextcloudKit
         guard isEditingEnabled else { return }
 
         if metadata?.livePhoto == true {
+            let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
             NCContentPresenter.shared.messageNotification(
-                "", description: "_message_disable_overwrite_livephoto_",
+                "", error: error,
                 delay: NCGlobal.shared.dismissAfterSecond,
-                type: NCContentPresenter.messageType.info,
-                errorCode: NCGlobal.shared.errorCharactersForbidden)
+                type: NCContentPresenter.messageType.info)
         }
     }
 

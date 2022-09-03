@@ -61,7 +61,8 @@ class NCAutoUpload: NSObject {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
             #if !EXTENSION
-            NCContentPresenter.shared.messageNotification("_attention_", description: "_create_full_upload_", delay: NCGlobal.shared.dismissAfterSecondLong, type: .info, errorCode: NCGlobal.shared.errorNoError, priority: .max)
+            let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_create_full_upload_")
+            NCContentPresenter.shared.messageNotification("_attention_", error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: .info, priority: .max)
             NCActivityIndicator.shared.start()
             #endif
             self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
@@ -102,7 +103,8 @@ class NCAutoUpload: NSObject {
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
                     #if !EXTENSION
                     if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
+                        NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error, priority: .max)
                     }
                     #endif
                     return completion(0)

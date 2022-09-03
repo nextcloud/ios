@@ -40,7 +40,7 @@ extension UIAlertController {
                 if let completion = completion {
                     completion(error)
                 } else if error != .success {
-                    NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                 } // else: successful, no action
             }
         })

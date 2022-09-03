@@ -88,9 +88,11 @@ class NCService: NSObject {
             }
 
             if serverProductName == "owncloud" {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
+                NCContentPresenter.shared.messageNotification("_warning_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, priority: .max)
             } else if versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
-                NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
+                NCContentPresenter.shared.messageNotification("_warning_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, priority: .max)
             }
         }
     }
@@ -109,7 +111,8 @@ class NCService: NSObject {
 
             // Update User (+ userProfile.id) & active account & account network
             guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
-                NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Internal error : account not found on DB")
+                NCContentPresenter.shared.messageNotification("Account", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 return
             }
 
@@ -180,7 +183,7 @@ class NCService: NSObject {
                         }
                         self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
                     } else {
-                        NCContentPresenter.shared.messageNotification("_share_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
+                        NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                     }
                 }
             }

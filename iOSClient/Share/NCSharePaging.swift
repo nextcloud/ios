@@ -381,13 +381,14 @@ class NCShareHeaderView: UIView {
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : NCBrandColor.shared.systemGray,
                     size: 20), for: .normal)
             } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: error.errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
             }
         }
     }
 
     @objc func longTap(sender: UIGestureRecognizer) {
         UIPasteboard.general.string = path.text
-        NCContentPresenter.shared.messageNotification("", description: "_copied_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
+        let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_copied_path_")
+        NCContentPresenter.shared.messageNotification("", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
     }
 }

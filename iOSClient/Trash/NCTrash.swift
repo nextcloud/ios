@@ -280,7 +280,7 @@ extension NCTrash {
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
 
             guard error == .success, account == self.appDelegate.account, let trashPath = self.getTrashPath() else {
-                NCContentPresenter.shared.showError(description: error.errorDescription, errorCode: error.errorCode)
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -300,7 +300,7 @@ extension NCTrash {
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(description: error.errorDescription, errorCode: error.errorCode)
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -316,7 +316,7 @@ extension NCTrash {
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(description: error.errorDescription, errorCode: error.errorCode)
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -333,7 +333,7 @@ extension NCTrash {
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(description: error.errorDescription, errorCode: error.errorCode)
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 

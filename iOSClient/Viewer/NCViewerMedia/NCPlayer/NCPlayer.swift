@@ -210,9 +210,11 @@ class NCPlayer: NSObject {
                         }
 #endif
                         if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                            NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                            let error = NKError(errorCode: NCGlobal.shared.errorGeneric, errorDescription: description)
+                            NCContentPresenter.shared.messageNotification(title, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                         } else {
-                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                            let error = NKError(errorCode: NCGlobal.shared.errorGeneric, errorDescription: "_error_something_wrong_")
+                            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                         }
                     }
                     break

@@ -23,6 +23,7 @@
 
 import UIKit
 import Photos
+import NextcloudKit
 
 class NCManageAutoUploadFileName: XLFormViewController {
 
@@ -170,7 +171,8 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
                     self.reloadFormRow(formRow)
 
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCharactersForbidden)
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_forbidden_characters_")
+                    NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
                 }
             }
 

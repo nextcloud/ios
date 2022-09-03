@@ -25,6 +25,7 @@
 
 import Foundation
 import AVKit
+import NextcloudKit
 
 extension NCPlayer {
 
@@ -134,7 +135,8 @@ extension NCPlayer {
             }
         }
         if all.count != existing.count {
-            NCContentPresenter.shared.messageNotification("_info_", description: "_subtitle_not_dowloaded_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
+            let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_subtitle_not_dowloaded_")
+            NCContentPresenter.shared.messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
         }
         self.setSubtitleToolbarIcon(subtitleUrls: subtitleUrls)
         self.hideSubtitle()

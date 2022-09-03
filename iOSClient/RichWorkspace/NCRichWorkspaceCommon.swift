@@ -31,7 +31,8 @@ import NextcloudKit
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 
         if !NextcloudKit.shared.isNetworkReachable() {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
+            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
             return
         }
 
@@ -55,7 +56,7 @@ import NextcloudKit
                 }
 
             } else if error != .success {
-                NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: error.errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
             }
         }
     }
@@ -63,8 +64,8 @@ import NextcloudKit
     @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
 
         if !NextcloudKit.shared.isNetworkReachable() {
-
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
+            NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
             return
         }
 
@@ -91,7 +92,7 @@ import NextcloudKit
                         }
 
                     } else if error != .success {
-                        NCContentPresenter.shared.messageNotification("_error_", description: error.errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: error.errorCode)
+                        NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
                     }
                 }
 

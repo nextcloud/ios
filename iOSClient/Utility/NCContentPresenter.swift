@@ -63,35 +63,34 @@ class NCContentPresenter: NSObject {
 
     // MARK: - Message
 
-    @objc func showError(description: String, errorCode: Int = NCGlobal.shared.errorGeneric) {
+    @objc func showError(error: NKError) {
         messageNotification(
-            "_error_", description: description,
+            "_error_",
+            error: error,
             delay: NCGlobal.shared.dismissAfterSecond,
-            type: .error,
-            errorCode: errorCode)
+            type: .error)
     }
 
-    @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
-        messageNotification(title, description: description, delay: delay, type: type, errorCode: errorCode, priority: .normal, dropEnqueuedEntries: false)
+    @objc func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType) {
+        messageNotification(title, error: error, delay: delay, type: type, priority: .normal, dropEnqueuedEntries: false)
     }
 
-    func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
+    func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
 
         // No notification message for:
-        if errorCode == -999 { return }         // Cancelled transfer
-        else if errorCode == 200 { return }     // Transfer stopped
-        else if errorCode == 207 { return }     // WebDAV multistatus
-        else if errorCode == NCGlobal.shared.errorNoError && type == messageType.error { return }
+        if error.errorCode == -999 { return }         // Cancelled transfer
+        else if error.errorCode == 200 { return }     // Transfer stopped
+        else if error.errorCode == 207 { return }     // WebDAV multistatus
+        else if error.errorCode == NCGlobal.shared.errorNoError && type == messageType.error { return }
 
         DispatchQueue.main.async {
-            switch errorCode {
+            switch error.errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
                 self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
             default:
-                guard var description = description else { return }
-                if description.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
-                description = NSLocalizedString(description, comment: "")
+                if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
+                let description = NSLocalizedString(error.errorDescription, comment: "")
                 self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
             }
         }
