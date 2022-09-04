@@ -250,26 +250,26 @@ import Photos
         BIO_free(mem)
     }
 
-    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ errorCode: Int) -> Void) {
+    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
         NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in
             guard error == .success else {
-                completion(0)
+                completion(.success)
                 return
             }
 
             if error == .success {
                 NCNetworking.shared.writeCertificate(host: host)
-                completion(error.errorCode)
+                completion(error)
             } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
                 let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
                     NCNetworking.shared.writeCertificate(host: host)
-                    completion(0)
+                    completion(.success)
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in
-                    completion(error.errorCode)
+                    completion(error)
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
                     if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {

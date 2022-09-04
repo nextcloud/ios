@@ -460,8 +460,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self.window?.rootViewController) { errorCode in
-            if errorCode == 0 {
+        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self.window?.rootViewController) { error in
+            if error == .success {
                 NCPushNotification.shared().registerForRemoteNotifications(withDeviceToken: deviceToken)
             }
         }
