@@ -440,7 +440,7 @@ extension NCActivity {
                       account == self.appDelegate.account,
                       largestActivityId > resultActivityId
                 else {
-                    self.hasActivityToLoad = error.errorCode == 304 ? false : self.hasActivityToLoad
+                    self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
                     return
                 }
 
@@ -465,7 +465,7 @@ extension NCActivity {
                       account == self.appDelegate.account,
                       !activities.isEmpty
                 else {
-                    self.hasActivityToLoad = error.errorCode == 304 ? false : self.hasActivityToLoad
+                    self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
                     return
                 }
                 NCManageDatabase.shared.addActivity(activities, account: account)
