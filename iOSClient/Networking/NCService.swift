@@ -178,12 +178,10 @@ class NCService: NSObject {
                 NextcloudKit.shared.readShares(parameters: NKShareParameter(), queue: NKCommon.shared.backgroundQueue) { account, shares, error in
                     if error == .success {
                         NCManageDatabase.shared.deleteTableShare(account: account)
-                        if shares != nil {
-                            NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
+                        if let shares = shares, !shares.isEmpty {
+                            NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares)
                         }
                         self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_share_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                     }
                 }
             }
