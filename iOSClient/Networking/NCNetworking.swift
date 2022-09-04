@@ -803,12 +803,12 @@ import Photos
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(urlBase: NCUserBaseUrl, literal: String, providers: @escaping ([NKSearchProvider]?) -> Void, update: @escaping (_ id: String, NKSearchResult?, [tableMetadata]?) -> Void, completion: @escaping (_ error: NKError) -> ()) {
+    func unifiedSearchFiles(userBaseUrl: NCUserBaseUrl, literal: String, providers: @escaping (_ accout: String, _ searchProviders: [NKSearchProvider]?) -> Void, update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void, completion: @escaping (_ account: String, _ error: NKError) -> ()) {
 
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(NKError())
+            completion(userBaseUrl.account, NKError())
         }
 
         NextcloudKit.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90) { provider in
@@ -819,9 +819,9 @@ import Photos
             if let request = request {
                 self.requestsUnifiedSearch.append(request)
             }
-        } providers: { allProviders in
-            providers(allProviders)
-        } update: { partialResult, provider, error in
+        } providers: { account, searchProviders in
+            providers(account, searchProviders)
+        } update: { account, partialResult, provider, error in
             guard let partialResult = partialResult else { return }
             var metadatas: [tableMetadata] = []
 
@@ -829,11 +829,11 @@ import Photos
             case "files":
                 partialResult.entries.forEach({ entry in
                     if let fileId = entry.fileId,
-                       let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                       let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", userBaseUrl.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
                         let semaphore = Semaphore()
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: dispatchGroup) { account, metadata, error in
+                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: filePath, dispatchGroup: dispatchGroup) { account, metadata, error in
                             metadatas.append(metadata)
                             semaphore.continue()
                         }
@@ -849,13 +849,13 @@ import Photos
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
                               format: "account == %@ && path == %@ && fileName == %@",
-                              urlBase.userAccount,
-                              "/remote.php/dav/files/" + urlBase.user + dir,
+                              userBaseUrl.userAccount,
+                              "/remote.php/dav/files/" + userBaseUrl.user + dir,
                               filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = Semaphore()
-                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: dispatchGroup) { account, metadata, error in
+                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: dir + filename, dispatchGroup: dispatchGroup) { account, metadata, error in
                             metadatas.append(metadata)
                             semaphore.continue()
                         }
@@ -864,35 +864,35 @@ import Photos
                 })
             default:
                 partialResult.entries.forEach({ entry in
-                    let metadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.id, subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    let metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: userBaseUrl.user, userId: userBaseUrl.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: userBaseUrl.urlBase, urlBase: userBaseUrl.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.id, subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
                     metadatas.append(metadata)
                 })
             }
-            update(provider.id, partialResult, metadatas)
-        } completion: { error in
+            update(account, provider.id, partialResult, metadatas)
+        } completion: { account, error in
             self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()
         }
     }
 
-    func unifiedSearchFilesProvider(urlBase: NCUserBaseUrl, id: String, term: String, limit: Int, cursor: Int, completion: @escaping (NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> ()) {
+    func unifiedSearchFilesProvider(userBaseUrl: NCUserBaseUrl, id: String, term: String, limit: Int, cursor: Int, completion: @escaping (_ account: String, _ searchResult: NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> ()) {
 
         var metadatas: [tableMetadata] = []
 
-        let request = NextcloudKit.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60) { searchResult, error in
+        let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { account, searchResult, error in
             guard let searchResult = searchResult else {
-                completion(nil, metadatas, error)
+                completion(account, nil, metadatas, error)
                 return
             }
 
             switch id {
             case "files":
                 searchResult.entries.forEach({ entry in
-                    if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", urlBase.userAccount, String(fileId))) {
+                    if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", userBaseUrl.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
                         let semaphore = Semaphore()
-                        self.loadMetadata(urlBase: urlBase, filePath: filePath, dispatchGroup: nil) { account, metadata, error in
+                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: filePath, dispatchGroup: nil) { account, metadata, error in
                             metadatas.append(metadata)
                             semaphore.continue()
                         }
@@ -906,11 +906,11 @@ import Photos
                 searchResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", urlBase.userAccount, "/remote.php/dav/files/" + urlBase.user + dir, filename)) {
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", userBaseUrl.userAccount, "/remote.php/dav/files/" + userBaseUrl.user + dir, filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = Semaphore()
-                        self.loadMetadata(urlBase: urlBase, filePath: dir + filename, dispatchGroup: nil) { account, metadata, error in
+                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: dir + filename, dispatchGroup: nil) { account, metadata, error in
                             metadatas.append(metadata)
                             semaphore.continue()
                         }
@@ -919,12 +919,12 @@ import Photos
                 })
             default:
                 searchResult.entries.forEach({ entry in
-                    let newMetadata = NCManageDatabase.shared.createMetadata(account: urlBase.account, user: urlBase.user, userId: urlBase.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: urlBase.urlBase, urlBase: urlBase.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    let newMetadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: userBaseUrl.user, userId: userBaseUrl.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: userBaseUrl.urlBase, urlBase: userBaseUrl.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
                     metadatas.append(newMetadata)
                 })
             }
 
-            completion(searchResult, metadatas, error)
+            completion(account, searchResult, metadatas, error)
         }
         if let request = request {
             requestsUnifiedSearch.append(request)
@@ -938,8 +938,8 @@ import Photos
         requestsUnifiedSearch.removeAll()
     }
 
-    private func loadMetadata(urlBase: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (String, tableMetadata, NKError) -> Void) {
-        let urlPath = urlBase.urlBase + "/remote.php/dav/files/" + urlBase.user + filePath
+    private func loadMetadata(userBaseUrl: NCUserBaseUrl, filePath: String, dispatchGroup: DispatchGroup? = nil, completion: @escaping (String, tableMetadata, NKError) -> Void) {
+        let urlPath = userBaseUrl.urlBase + "/remote.php/dav/files/" + userBaseUrl.user + filePath
         dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath) { account, metadata, error in
             defer { dispatchGroup?.leave() }
@@ -1191,7 +1191,7 @@ import Photos
     // MARK: - Lock Files
 
     @objc func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { error in
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { account, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")

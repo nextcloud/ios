@@ -1012,8 +1012,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
-                self.providers = allProviders
+            NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { account, searchProviders in
+                self.providers = searchProviders
                 self.searchResults = []
                 self.dataSource = NCDataSource(
                     metadatas: [] ,
@@ -1025,10 +1025,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     filterLivePhoto: true,
                     providers: self.providers,
                     searchResults: self.searchResults)
-            } update: { id, searchResult, metadatas in
+            } update: { account, id, searchResult, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0, self.appDelegate.isSearchingMode , let searchResult = searchResult else { return }
                 NCOperationQueue.shared.unifiedSearchAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
-            } completion: { error in
+            } completion: { account, error in
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.collectionView.reloadData()
@@ -1063,7 +1063,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, error in
+        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { account, searchResult, metadatas, error in
 
             if error != .success {
                 NCContentPresenter.shared.showError(error: error)
