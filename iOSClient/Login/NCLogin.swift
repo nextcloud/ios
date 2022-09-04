@@ -335,7 +335,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     func standardLogin(url: String, user: String, password: String, errorCode: Int, errorDescription: String) {
 
-        if errorCode == 0 {
+        if errorCode == NCGlobal.shared.errorNoError {
 
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)

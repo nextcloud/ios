@@ -318,7 +318,7 @@ import Alamofire
 
                         } else {
 
-                            if error.errorCode == 401 || error.errorCode == 403 {
+                            if error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden {
 
                                 #if !EXTENSION
                                 NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, error: error)

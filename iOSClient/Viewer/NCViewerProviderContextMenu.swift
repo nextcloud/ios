@@ -190,7 +190,7 @@ class NCViewerProviderContextMenu: UIViewController {
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
 
-        if errorCode == 0 && metadata.ocId == self.metadata?.ocId {
+        if errorCode == NCGlobal.shared.errorNoError && metadata.ocId == self.metadata?.ocId {
             if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
                 viewImage(metadata: metadata)
             } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
@@ -199,7 +199,7 @@ class NCViewerProviderContextMenu: UIViewController {
                 playSound(metadata: metadata)
             }
         }
-        if errorCode == 0 && metadata.ocId == self.metadataLivePhoto?.ocId {
+        if errorCode == NCGlobal.shared.errorNoError && metadata.ocId == self.metadataLivePhoto?.ocId {
             viewVideo(metadata: metadata)
         }
         if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {

@@ -47,7 +47,7 @@ import NextcloudKit
 
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 
-            if error.errorCode == 401 {
+            if error.errorCode == NCGlobal.shared.errorUnauthorized {
 
                 let token = CCUtility.getPassword(account)!
                 if token == "" {

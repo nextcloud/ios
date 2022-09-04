@@ -371,7 +371,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
     }
 
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String) {
+    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: NKError) {
 
         guard let ocIdTemp = description else { return }
         guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(ocIdTemp) else { return }
@@ -383,7 +383,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
         outstandingOcIdTemp[ocIdTemp] = ocId
 
-        if errorCode == 0 {
+        if error == .success {
 
             // New file
             if ocId != ocIdTemp {

@@ -53,7 +53,7 @@ import Photos
               account == appDelegate.account
         else { return }
 
-        guard errorCode == 0 else {
+        guard errorCode == NCGlobal.shared.errorNoError else {
             // File do not exists on server, remove in local
             if errorCode == NCGlobal.shared.errorResourceNotFound || errorCode == NCGlobal.shared.errorBadServerResponse {
                 do {

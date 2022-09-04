@@ -224,9 +224,12 @@ class NCGlobal: NSObject {
     @objc let errorRequestExplicityCancelled: Int   = 15
     @objc let errorNotModified: Int                 = 304
     @objc let errorBadRequest: Int                  = 400
+    @objc let errorUnauthorized: Int                = 401
+    @objc let errorForbidden: Int                   = 403
     @objc let errorResourceNotFound: Int            = 404
     @objc let errordMethodNotSupported: Int         = 405
     @objc let errorConflict: Int                    = 409
+    @objc let errorPreconditionFailed: Int          = 412
     @objc let errorConnectionLost: Int              = -1005
     @objc let errorBadServerResponse: Int           = -1011
     @objc let errorInternalError: Int               = -99999

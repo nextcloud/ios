@@ -368,7 +368,7 @@ import Photos
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: error.errorDescription, sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusDownloadError)
                 #if !EXTENSION
-                if error.errorCode == 401 || error.errorCode == 403 {
+                if error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, error: error)
                 }
                 #endif
@@ -547,7 +547,7 @@ import Photos
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 
-                } else if error.errorCode == 401 || error.errorCode == 403 {
+                } else if error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden {
 
                     #if !EXTENSION
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account, error: error)
@@ -980,7 +980,7 @@ import Photos
 
         NextcloudKit.shared.createFolder(fileNameFolderUrl) { account, ocId, _, error in
             guard error == .success else {
-                if error.errorCode == 405 && overwrite {
+                if error.errorCode == NCGlobal.shared.errordMethodNotSupported && overwrite {
                     completion(NKError())
                 } else {
                     completion(error)
@@ -1193,7 +1193,7 @@ import Photos
     @objc func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
         NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
-            guard error == .success || error.errorCode == 412 else {
+            guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
                 NCContentPresenter.shared.messageNotification(metadata.fileName, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 return

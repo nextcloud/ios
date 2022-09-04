@@ -103,7 +103,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getUserProfile(queue: NKCommon.shared.backgroundQueue) { account, userProfile, error in
             guard error == .success, account == self.appDelegate.account else {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                if error.errorCode == 401 || error.errorCode == 403 {
+                if error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, error: error)
                 }
                 return
@@ -150,7 +150,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getCapabilities(queue: NKCommon.shared.backgroundQueue) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                if error.errorCode == 401 || error.errorCode == 403 {
+                if error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account, error: error)
                 }
                 return

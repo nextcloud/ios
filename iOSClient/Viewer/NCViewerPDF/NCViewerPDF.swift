@@ -293,7 +293,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         NCActivityIndicator.shared.stop()
 
-        if errorCode == 0 {
+        if errorCode == NCGlobal.shared.errorNoError {
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
             pdfView.document = pdfDocument
             pdfView.layoutDocumentView()
