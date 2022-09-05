@@ -327,15 +327,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
 
                     self.loginButton.isEnabled = true
-                    self.standardLogin(url: urlBase, user: user, password: password, errorCode: error.errorCode, errorDescription: error.errorDescription)
+                    self.standardLogin(url: urlBase, user: user, password: password, error: error)
                 }
             }
         }
     }
 
-    func standardLogin(url: String, user: String, password: String, errorCode: Int, errorDescription: String) {
+    func standardLogin(url: String, user: String, password: String, error: NKError) {
 
-        if errorCode == NCGlobal.shared.errorNoError {
+        if error == .success {
 
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)
@@ -378,7 +378,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
 
-        } else if errorCode == NSURLErrorServerCertificateUntrusted {
+        } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
 
             let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
 
@@ -400,7 +400,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         } else {
 
-            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + errorDescription
+            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + error.errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
