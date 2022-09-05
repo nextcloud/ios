@@ -61,7 +61,7 @@ class NCAutoUpload: NSObject {
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
             #if !EXTENSION
-            let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_create_full_upload_")
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter.shared.showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
             #endif

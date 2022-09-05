@@ -313,7 +313,7 @@ import Photos
         }
     }
     
-    @objc func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true, progressHandler: @escaping (_ progress: Progress) -> Void = { _ in }, completion: @escaping (_ errorCode: Int) -> Void) {
+    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true, progressHandler: @escaping (_ progress: Progress) -> Void = { _ in }, completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -375,7 +375,7 @@ import Photos
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "selector": selector, "error": error])
             }
 
-            DispatchQueue.main.async { completion(error.errorCode) }
+            DispatchQueue.main.async { completion(afError, error) }
         }
     }
 

@@ -240,11 +240,11 @@ class NCViewerMedia: UIViewController {
             if metadata.livePhoto {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
-                    NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                 }
             }
 
-            NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
+            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in
                 let image = getImageMetadata(metadata)
                 if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
                     self.image = image
@@ -534,7 +534,7 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
     func downloadFullResolution() {
         closeDetail()
-        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _ in }
+        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _, _ in }
     }
 }
 

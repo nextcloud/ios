@@ -135,7 +135,7 @@ extension NCPlayer {
             }
         }
         if all.count != existing.count {
-            let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_subtitle_not_dowloaded_")
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_subtitle_not_dowloaded_")
             NCContentPresenter.shared.showInfo(error: error)
         }
         self.setSubtitleToolbarIcon(subtitleUrls: subtitleUrls)

@@ -378,7 +378,7 @@
     [self deselectFormRow:sender];
     
     [[NextcloudKit shared] deleteE2EECertificateWithCustomUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NKError *error) {
-       if (error.errorCode == NCGlobal.shared.errorNoError && [account isEqualToString:appDelegate.account]) {
+       if (error == NKError.success && [account isEqualToString:appDelegate.account]) {
            NKError *error = [[NKError alloc] initWithErrorCode:NCGlobal.shared.errorInternalError errorDescription:@"Success"];
             [[NCContentPresenter shared] messageNotification:@"E2E delete certificate" error:error delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeSuccess];
         } else {
@@ -392,7 +392,7 @@
     [self deselectFormRow:sender];
     
     [[NextcloudKit shared] deleteE2EEPrivateKeyWithCustomUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completionHandler:^(NSString *account, NKError *error) {
-        if (error.errorCode == NCGlobal.shared.errorNoError && [account isEqualToString:appDelegate.account]) {
+        if (error == NKError.success && [account isEqualToString:appDelegate.account]) {
             NKError *error = [[NKError alloc] initWithErrorCode:NCGlobal.shared.errorInternalError errorDescription:@"Success"];
             [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" error:error delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeSuccess];
         } else {

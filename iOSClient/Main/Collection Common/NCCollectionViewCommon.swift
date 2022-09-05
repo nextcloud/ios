@@ -1301,7 +1301,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if CCUtility.fileProviderStorageExists(metadata) {
                 NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable() {
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _ in }
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _, _ in }
             } else {
                 let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
                 NCContentPresenter.shared.showInfo(error: error)

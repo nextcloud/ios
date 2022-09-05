@@ -150,9 +150,9 @@ import Photos
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
             NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadAllFile)
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
+            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
             if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _ in }
+                NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
             }
         }
     }
@@ -203,7 +203,7 @@ import Photos
 
         } else {
 
-            NCNetworking.shared.download(metadata: metadata, selector: selector) { _ in }
+            NCNetworking.shared.download(metadata: metadata, selector: selector) { _, _ in }
         }
     }
 
@@ -232,7 +232,7 @@ import Photos
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: self.appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _ in
+                NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _, _ in
                     if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
                 })
@@ -412,7 +412,7 @@ import Photos
 
             for metadata in downloadMetadatas {
                 parallelizer.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata, selector: "") { _ in completion() }
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in completion() }
                 }
             }
             parallelizer.completeWork {
@@ -620,7 +620,7 @@ import Photos
         let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { _ in
             let board = UIPasteboard.general
             board.string = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
-            let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_copied_path_")
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
             NCContentPresenter.shared.showInfo(error: error)
         }
 

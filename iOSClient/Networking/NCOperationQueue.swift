@@ -245,7 +245,7 @@ class NCOperationDownload: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _ in
+            NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
                 self.finish()
             }
         }

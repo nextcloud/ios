@@ -208,7 +208,7 @@ extension NCViewer {
                         title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                         action: { _ in
-                            NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
+                            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                         }
                     )
                 )

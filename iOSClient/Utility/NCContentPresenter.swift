@@ -100,7 +100,7 @@ class NCContentPresenter: NSObject {
         if error.errorCode == -999 { return }         // Cancelled transfer
         else if error.errorCode == 200 { return }     // Transfer stopped
         else if error.errorCode == 207 { return }     // WebDAV multistatus
-        else if error.errorCode == NCGlobal.shared.errorNoError && type == messageType.error { return }
+        else if error == .success && type == messageType.error { return }
 
         DispatchQueue.main.async {
             switch error.errorCode {

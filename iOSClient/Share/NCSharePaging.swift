@@ -388,7 +388,7 @@ class NCShareHeaderView: UIView {
 
     @objc func longTap(sender: UIGestureRecognizer) {
         UIPasteboard.general.string = path.text
-        let error = NKError(errorCode: NCGlobal.shared.errorNoError, errorDescription: "_copied_path_")
+        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
         NCContentPresenter.shared.showInfo(error: error)
     }
 }
