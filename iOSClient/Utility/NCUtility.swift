@@ -476,7 +476,11 @@ class NCUtility: NSObject {
 
             let options = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
-            options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+            if compatibilityFormat {
+                options.deliveryMode = .opportunistic
+            } else {
+                options.deliveryMode = .highQualityFormat
+            }
             options.isSynchronous = true
             if extensionAsset == "DNG" {
                 options.version = PHImageRequestOptionsVersion.original
