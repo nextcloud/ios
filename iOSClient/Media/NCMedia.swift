@@ -214,8 +214,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let errorCode = userInfo["errorCode"] as? Int,
-              errorCode == NCGlobal.shared.errorNoError,
+              let error = userInfo["error"] as? NKError,
+              error == .success,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }

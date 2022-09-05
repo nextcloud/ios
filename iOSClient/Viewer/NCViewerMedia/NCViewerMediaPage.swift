@@ -249,8 +249,8 @@ class NCViewerMediaPage: UIViewController {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let errorCode = userInfo["errorCode"] as? Int,
-              errorCode == NCGlobal.shared.errorNoError,
+              let error = userInfo["error"] as? NKError,
+              error == .success,
               let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else {

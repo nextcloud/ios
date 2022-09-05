@@ -186,11 +186,11 @@ class NCViewerProviderContextMenu: UIViewController {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let errorCode = userInfo["errorCode"] as? Int,
+              let error = userInfo["error"] as? NKError,
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
 
-        if errorCode == NCGlobal.shared.errorNoError && metadata.ocId == self.metadata?.ocId {
+        if error == .success && metadata.ocId == self.metadata?.ocId {
             if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
                 viewImage(metadata: metadata)
             } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
@@ -199,7 +199,7 @@ class NCViewerProviderContextMenu: UIViewController {
                 playSound(metadata: metadata)
             }
         }
-        if errorCode == NCGlobal.shared.errorNoError && metadata.ocId == self.metadataLivePhoto?.ocId {
+        if error == .success && metadata.ocId == self.metadataLivePhoto?.ocId {
             viewVideo(metadata: metadata)
         }
         if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {

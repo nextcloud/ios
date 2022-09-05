@@ -47,15 +47,14 @@ import Photos
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
-              let errorCode = userInfo["errorCode"] as? Int,
-              let errorDescription = userInfo["errorDescription"] as? String,
+              let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        guard errorCode == NCGlobal.shared.errorNoError else {
+        guard error.errorCode == NCGlobal.shared.errorNoError else {
             // File do not exists on server, remove in local
-            if errorCode == NCGlobal.shared.errorResourceNotFound || errorCode == NCGlobal.shared.errorBadServerResponse {
+            if error.errorCode == NCGlobal.shared.errorResourceNotFound || error.errorCode == NCGlobal.shared.errorBadServerResponse {
                 do {
                     try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
                 } catch { }
@@ -63,7 +62,6 @@ import Photos
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
                 
             } else {
-                let error = NKError(errorCode: errorCode, errorDescription: errorDescription)
                 NCContentPresenter.shared.messageNotification("_download_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             }
             return
@@ -164,14 +162,12 @@ import Photos
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let errorCode = userInfo["errorCode"] as? Int,
-              let errorDescription = userInfo["errorDescription"] as? String,
+              let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        if errorCode != 0, errorCode != -999, errorDescription != "" {
-            let error = NKError(errorCode: errorCode, errorDescription: errorDescription)
+        if error != .success, error.errorCode != -999 {
             NCContentPresenter.shared.messageNotification("_upload_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
         }
     }
@@ -203,7 +199,7 @@ import Photos
 
         if CCUtility.fileProviderStorageExists(metadata) {
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "errorCode": 0, "errorDescription": "", "account": metadata.account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "error": NKError(), "account": metadata.account])
 
         } else {
 

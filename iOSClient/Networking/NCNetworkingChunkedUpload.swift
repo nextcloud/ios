@@ -192,12 +192,12 @@ extension NCNetworking {
                         NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": error.errorCode, "errorDescription": ""])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "error": error])
 
                     } else {
 
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": ocIdTemp, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": error.errorCode, "errorDescription": ""])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": ocIdTemp, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "error": error])
                     }
 
                     completion(error)
@@ -255,6 +255,6 @@ extension NCNetworking {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": metadata.ocId, "errorCode": error.errorCode, "errorDescription": ""])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": metadata.ocId, "error": error])
     }
 }
