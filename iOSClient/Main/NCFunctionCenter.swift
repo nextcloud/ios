@@ -422,24 +422,28 @@ import Photos
         }
     }
 
-    func upload(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
-        NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { _ in
-        } progressHandler: { progress in
-        } completionHandler: { account, ocId, etag, _, _, _, error in
-            if error == .success && etag != nil && ocId != nil {
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
-                NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-            } else {
-                NCContentPresenter.shared.showError(error: error)
-            }
-            completion()
-        }
-    }
-
     func pastePasteboard(serverUrl: String) {
         let parallelizer = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
+
+        func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
+            NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
+                NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
+            } progressHandler: { progress in
+            } completionHandler: { account, ocId, etag, _, _, _, afError, error in
+                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
+                if error == .success && etag != nil && ocId != nil {
+                    let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
+                    NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
+                    NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                } else if afError?.isExplicitlyCancelledError ?? false {
+                    print("cancel")
+                } else {
+                    NCContentPresenter.shared.showError(error: error)
+                }
+                completion()
+            }
+        }
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
@@ -453,7 +457,7 @@ import Photos
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                 do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
                 parallelizer.execute { completion in
-                    self.upload(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
+                    uploadPastePasteboard(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
                 }
             }
         }
