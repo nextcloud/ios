@@ -167,7 +167,7 @@ import Photos
               account == appDelegate.account
         else { return }
 
-        if error != .success, error.errorCode != -999 {
+        if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
             NCContentPresenter.shared.messageNotification("_upload_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
         }
     }

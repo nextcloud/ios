@@ -230,6 +230,7 @@ class NCGlobal: NSObject {
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
     @objc let errorConnectionLost: Int              = -1005
+    @objc let errorNetworkNotAvailable: Int         = -1009
     @objc let errorBadServerResponse: Int           = -1011
     @objc let errorInternalError: Int               = -99999
     @objc let errorFileNotSaved: Int                = -99998

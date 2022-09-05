@@ -97,9 +97,7 @@ class NCContentPresenter: NSObject {
     func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
 
         // No notification message for:
-        if error.errorCode == -999 { return }         // Cancelled transfer
-        else if error.errorCode == 200 { return }     // Transfer stopped
-        else if error.errorCode == 207 { return }     // WebDAV multistatus
+        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return }                                                   // Cancelled transfer
         else if error == .success && type == messageType.error { return }
 
         DispatchQueue.main.async {

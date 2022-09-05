@@ -120,7 +120,7 @@ import Photos
             lastReachability = true
         } else {
             if lastReachability {
-                let error = NKError(errorCode: -1009, errorDescription: "")
+                let error = NKError(errorCode: NCGlobal.shared.errorNetworkNotAvailable, errorDescription: "")
                 NCContentPresenter.shared.messageNotification("_network_not_available_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
             }
             lastReachability = false
