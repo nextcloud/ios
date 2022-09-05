@@ -24,11 +24,7 @@
 import UIKit
 import NextcloudKit
 
-class NCUtilityGUI: NSObject {
-    @objc static let shared: NCUtilityGUI = {
-        let instance = NCUtilityGUI()
-        return instance
-    }()
+class NCUtilityGUI{
 
     func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
 

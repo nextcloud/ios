@@ -185,7 +185,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
                 guard let url = URL(string: urlString) else { continue }
                 // Build Recent Data
                 var imageRecent = UIImage()
-                if let image = NCUtilityGUI.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                if let image = NCUtilityGUI().createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
                 } else if !file.iconName.isEmpty {
                     imageRecent = UIImage(named: file.iconName)!
