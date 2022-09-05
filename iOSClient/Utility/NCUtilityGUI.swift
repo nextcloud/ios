@@ -32,37 +32,30 @@ class NCUtilityGUI: NSObject {
 
     func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
 
-        autoreleasepool {
-            var imagePreview: UIImage?
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
-            let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
+        var imagePreview: UIImage?
+        let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
+        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
 
-            if FileManager().fileExists(atPath: iconImagePath) {
-                imagePreview = UIImage(contentsOfFile: iconImagePath)
-            } else if !createPreviewMedia {
-                return nil
-            } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                    do {
-                        try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                        imagePreview = image
-                    } catch { }
-                }
-            } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-                if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                    do {
-                        try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                        imagePreview = image
-                    } catch { }
-                }
+        if FileManager().fileExists(atPath: iconImagePath) {
+            imagePreview = UIImage(contentsOfFile: iconImagePath)
+        } else if !createPreviewMedia {
+            return nil
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
             }
-//            } else if !iconName.isEmpty {
-//                imagePreview = UIImage(named: iconName)
-//            }
-//            if let image = imagePreview {
-//                imagePreview = image.resizeImage(size: CGSize(width: size, height: size), isAspectRation: true)
-//            }
-            return imagePreview
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
+            }
         }
+
+        return imagePreview
     }
 }
