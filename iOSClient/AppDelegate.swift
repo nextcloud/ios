@@ -843,17 +843,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
                 let queryItems = urlComponents.queryItems
-                guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems) else { return false }
+                guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems), let rootViewController = window?.rootViewController else { return false }
                 
                 switch actionScheme {
                 case "upload-asset":
-                    print("")
+
+                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
+                        if hasPermission {
+                            NCPhotosPickerViewController.init(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                        }
+                    }
+                    
                 case "add-scan-document":
-                    print("")
+                    
+                    if #available(iOS 13.0, *) {
+                        NCCreateScanDocument.shared.openScannerDocument(viewController: rootViewController)
+                    }
+                    
                 case "create-text-document":
-                    print("")
+                    
+                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(), let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account), let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}) else { return false }
+                    
+                    navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+
+                    let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                    viewController.editorId = NCGlobal.shared.editorText
+                    viewController.creatorId = directEditingCreator.identifier
+                    viewController.typeTemplate = NCGlobal.shared.templateDocument
+                    viewController.serverUrl = activeServerUrl
+                    viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
+
+                    rootViewController.present(navigationController, animated: true, completion: nil)
+                    
                 case "create-voice-memo":
-                    print("")
+                    
+                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
+                        if hasPermission {
+                            let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+                            let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
+
+                            viewController.delegate = self
+                            viewController.createRecorder(fileName: fileName)
+                            viewController.modalTransitionStyle = .crossDissolve
+                            viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+
+                            rootViewController.present(viewController, animated: true, completion: nil)
+                        }
+                    }
                 default:
                     print("")
                 }
