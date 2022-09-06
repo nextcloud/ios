@@ -834,7 +834,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var serverUrl: String = ""
         var matchedAccount: tableAccount?
 
-
         /*
          Example:
          nextcloud://open-action?action=create-voice-memo
@@ -842,6 +841,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if scheme == "nextcloud" && action == "open-action" {
 
+            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                let queryItems = urlComponents.queryItems
+                guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems) else { return false }
+                
+                switch actionScheme {
+                case "upload-asset":
+                    print("")
+                case "add-scan-document":
+                    print("")
+                case "create-text-document":
+                    print("")
+                case "create-voice-memo":
+                    print("")
+                default:
+                    print("")
+                }
+            }
         }
 
         /*
