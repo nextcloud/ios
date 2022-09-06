@@ -890,6 +890,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             rootViewController.present(viewController, animated: true, completion: nil)
                         }
                     }
+
                 default:
                     print("")
                 }
