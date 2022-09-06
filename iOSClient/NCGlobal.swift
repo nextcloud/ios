@@ -229,6 +229,7 @@ class NCGlobal: NSObject {
     @objc let errordMethodNotSupported: Int         = 405
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
+    @objc let errorNCUnauthorized: Int              = 997
     @objc let errorConnectionLost: Int              = -1005
     @objc let errorNetworkNotAvailable: Int         = -1009
     @objc let errorBadServerResponse: Int           = -1011
