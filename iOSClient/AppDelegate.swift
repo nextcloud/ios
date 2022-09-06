@@ -23,7 +23,7 @@
 
 import UIKit
 import BackgroundTasks
-import NCCommunication
+import NextcloudKit
 import TOPasscodeViewController
 import LocalAuthentication
 import Firebase
@@ -79,39 +79,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.createDirectoryStandard()
         CCUtility.emptyTemporaryDirectory()
 
-        NCCommunicationCommon.shared.setup(delegate: NCNetworking.shared)
-        NCCommunicationCommon.shared.setup(userAgent: userAgent)
+        NKCommon.shared.setup(delegate: NCNetworking.shared)
+        NKCommon.shared.setup(userAgent: userAgent)
 
         startTimerErrorNetworking()
 
         // LOG
         var levelLog = 0
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+            NKCommon.shared.pathLog = pathDirectoryGroup
         }
 
         if NCBrandOptions.shared.disable_log {
 
-            NCUtilityFileSystem.shared.deleteFile(filePath: NCCommunicationCommon.shared.filenamePathLog)
-            NCUtilityFileSystem.shared.deleteFile(filePath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NCCommunicationCommon.shared.filenameLog)
+            NCUtilityFileSystem.shared.deleteFile(filePath: NKCommon.shared.filenamePathLog)
+            NCUtilityFileSystem.shared.deleteFile(filePath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NKCommon.shared.filenameLog)
 
         } else {
 
             levelLog = CCUtility.getLogLevel()
-            NCCommunicationCommon.shared.levelLog = levelLog
-            NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
+            NKCommon.shared.levelLog = levelLog
+            NKCommon.shared.copyLogToDocumentDirectory = true
             if isSimulatorOrTestFlight {
-                NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
             } else {
-                NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
             }
         }
 
         // LOG Account
         if let account = NCManageDatabase.shared.getActiveAccount() {
-            NCCommunicationCommon.shared.writeLog("Account active \(account.account)")
+            NKCommon.shared.writeLog("Account active \(account.account)")
             if CCUtility.getPassword(account.account).isEmpty {
-                NCCommunicationCommon.shared.writeLog("PASSWORD NOT FOUND for \(account.account)")
+                NKCommon.shared.writeLog("PASSWORD NOT FOUND for \(account.account)")
             }
         }
 
@@ -239,7 +239,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
 
-        NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
+        NKCommon.shared.writeLog("Application will enter in foreground")
 
         // START TIMER UPLOAD PROCESS
         if NCUtility.shared.isSimulator() {
@@ -317,7 +317,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillTerminate(_ application: UIApplication) {
 
         NCNetworking.shared.cancelAllDownloadTransfer()
-        NCCommunicationCommon.shared.writeLog("bye bye")
+        NKCommon.shared.writeLog("bye bye")
     }
 
     // MARK: -
@@ -325,7 +325,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc private func initialize() {
         guard !account.isEmpty else { return }
 
-        NCCommunicationCommon.shared.writeLog("initialize Main")
+        NKCommon.shared.writeLog("initialize Main")
 
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
@@ -359,9 +359,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NCCommunicationCommon.shared.writeLog("Refresh task success submit request \(request)")
+            NKCommon.shared.writeLog("Refresh task success submit request \(request)")
         } catch {
-            NCCommunicationCommon.shared.writeLog("Refresh task failed to submit request: \(error)")
+            NKCommon.shared.writeLog("Refresh task failed to submit request: \(error)")
         }
     }
 
@@ -374,9 +374,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
-            NCCommunicationCommon.shared.writeLog("Background Processing task success submit request \(request)")
+            NKCommon.shared.writeLog("Background Processing task success submit request \(request)")
         } catch {
-            NCCommunicationCommon.shared.writeLog("Background Processing task failed to submit request: \(error)")
+            NKCommon.shared.writeLog("Background Processing task failed to submit request: \(error)")
         }
     }
 
@@ -388,11 +388,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NCCommunicationCommon.shared.writeLog("Start handler refresh task [Auto upload]")
+        NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                NCCommunicationCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
+                NKCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
                 task.setTaskCompleted(success: true)
             }
         }
@@ -406,16 +406,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NCCommunicationCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
+        NKCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
 
-        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, errorCode, _ in
-            NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(errorCode)")
+        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, error in
+            NKCommon.shared.writeLog("Completition listing favorite with error: \(error.errorCode)")
         }
 
         NCService.shared.synchronizeOffline(account: account)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
-            NCCommunicationCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
+            NKCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
             task.setTaskCompleted(success: true)
         }
     }
@@ -429,10 +429,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
+        NKCommon.shared.writeLog("Start perform Fetch [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
+            NKCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
             if items == 0 {
                 completionHandler(UIBackgroundFetchResult.noData)
             } else {
@@ -445,7 +445,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
 
-        NCCommunicationCommon.shared.writeLog("Start handle Events For Background URLSession: \(identifier)")
+        NKCommon.shared.writeLog("Start handle Events For Background URLSession: \(identifier)")
         backgroundSessionCompletionHandler = completionHandler
     }
 
@@ -628,10 +628,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         _ = NCFunctionCenter.shared
 
-        NCCommunicationCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+        NKCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor > 0 {
-            NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
+            NKCommon.shared.setup(nextcloudVersion: serverVersionMajor)
         }
         NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
     }
