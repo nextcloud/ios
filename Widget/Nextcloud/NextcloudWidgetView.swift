@@ -55,14 +55,14 @@ struct NextcloudWidgetView: View {
                                         Text(element.subTitle)
                                             .font(.system(size: CGFloat(10)))
                                             .foregroundColor(Color(white: 0.5))
-                                        Divider()
                                     }
-                                    .padding(.top, 6.0)
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
-                                .frame(height: (geo.size.height-110)/CGFloat(entry.recentDatas.count))
+                                .frame(height: (geo.size.height-120)/CGFloat(entry.recentDatas.count))
                             }
+                            Divider()
+                                .padding(.leading, 45.0)
                         }
                     }
                 }
