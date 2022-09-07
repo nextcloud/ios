@@ -35,14 +35,8 @@ struct NextcloudWidgetProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        if context.isPreview {
-            let num: Int = Int((context.displaySize.height - 150) / 40) - 1
-            let recentDatasPlaceholder = Array(recentDatasTest[0...num])
-            completion(Entry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
-        } else {
-            getDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
-                completion(entry)
-            }
+        getDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
+            completion(entry)
         }
     }
 
