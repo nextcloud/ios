@@ -39,13 +39,16 @@ struct NextcloudWidgetView: View {
                 .padding(.top, 10)
                 VStack(alignment: .leading) {
                     VStack(spacing: 0) {
+                        let recentDatasCount = CGFloat(entry.recentDatas.count)
+                        let heightFrame = (geo.size.height-120) / recentDatasCount
+                        let addSizeIcon = heightFrame / recentDatasCount
                         ForEach(entry.recentDatas, id: \.id) { element in
                             Link(destination: element.url) {
                                 HStack {
                                     Image(uiImage: element.image)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(width: imageSize, height: imageSize)
+                                        .frame(width: imageSize+addSizeIcon, height: imageSize+addSizeIcon)
                                         .clipped()
                                         .cornerRadius(4)
                                     VStack(alignment: .leading) {
@@ -59,7 +62,7 @@ struct NextcloudWidgetView: View {
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
-                                .frame(height: (geo.size.height-120)/CGFloat(entry.recentDatas.count))
+                                .frame(height: heightFrame)
                             }
                             Divider()
                                 .padding(.leading, 45.0)
@@ -80,7 +83,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 45)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=add-scan-document")!, label: {
@@ -92,7 +95,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 45)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=create-text-document")!, label: {
@@ -104,7 +107,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 45)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=create-voice-memo")!, label: {
@@ -116,7 +119,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 45)
                     })
                 }
                 .frame(width: geo.size.width, height: geo.size.height-25, alignment: .bottomTrailing)
@@ -141,7 +144,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let recentDatas = Array(recentDatasTest[0...2])
+        let recentDatas = Array(recentDatasTest[0...4])
         let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
