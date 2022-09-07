@@ -40,7 +40,7 @@ struct NextcloudWidgetView: View {
                 VStack(alignment: .leading) {
                     VStack(spacing: 0) {
                         let recentDatasCount = CGFloat(entry.recentDatas.count)
-                        let heightFrame = (geo.size.height-120) / recentDatasCount
+                        let heightFrame = (geo.size.height - 120) / recentDatasCount
                         let addSizeIcon = heightFrame / recentDatasCount
                         ForEach(entry.recentDatas, id: \.id) { element in
                             Link(destination: element.url) {
@@ -65,7 +65,7 @@ struct NextcloudWidgetView: View {
                                 .frame(height: heightFrame)
                             }
                             Divider()
-                                .padding(.leading, 45.0)
+                                .padding(.leading, 48 + addSizeIcon)
                         }
                     }
                 }
@@ -122,7 +122,7 @@ struct NextcloudWidgetView: View {
                             .frame(width: geo.size.width / 4, height: 50)
                     })
                 }
-                .frame(width: geo.size.width, height: geo.size.height-25, alignment: .bottomTrailing)
+                .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottomTrailing)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
@@ -136,7 +136,7 @@ struct NextcloudWidgetView: View {
                         .font(.caption2)
                         .padding(.trailing, 13.0)
                 }
-                .frame(maxWidth: geo.size.width-5, maxHeight: geo.size.height-2, alignment: .bottomTrailing)
+                .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
     }
@@ -144,7 +144,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let recentDatas = Array(recentDatasTest[0...3])
+        let recentDatas = Array(recentDatasTest[0...4])
         let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
