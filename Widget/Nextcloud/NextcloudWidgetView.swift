@@ -32,12 +32,13 @@ struct NextcloudWidgetView: View {
                 HStack(spacing: 5) {
                     Text(NCBrandOptions.shared.brand)
                         .font(.system(size: 12))
+                        .fontWeight(.bold)
                         .textCase(.uppercase)
                 }
                 .padding(.leading, 10)
                 .padding(.top, 10)
                 VStack(alignment: .leading) {
-                    VStack(spacing: 6) {
+                    VStack(spacing: 0) {
                         ForEach(entry.recentDatas, id: \.id) { element in
                             Link(destination: element.url) {
                                 HStack {
@@ -50,15 +51,17 @@ struct NextcloudWidgetView: View {
                                     VStack(alignment: .leading) {
                                         Text(element.title)
                                             .font(.system(size: 12))
-                                            .fontWeight(.bold)
+                                            .fontWeight(.regular)
                                         Text(element.subTitle)
                                             .font(.system(size: CGFloat(10)))
                                             .foregroundColor(Color(white: 0.5))
                                         Divider()
                                     }
+                                    .padding(.top, 6.0)
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
+                                .frame(height: 40.0)
                             }
                         }
                     }
@@ -138,7 +141,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
