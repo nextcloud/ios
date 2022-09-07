@@ -52,7 +52,9 @@ struct NextcloudWidgetView: View {
                         let addSizeIcon = heightFrame / recentDatasCount
                         
                         ForEach(entry.recentDatas, id: \.id) { element in
+                            
                             Link(destination: element.url) {
+                                
                                 HStack {
                                     Image(uiImage: element.image)
                                         .resizable()
