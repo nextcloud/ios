@@ -35,6 +35,7 @@ struct NextcloudWidgetView: View {
             ZStack(alignment: .topLeading) {
                 
                 HStack(spacing: 5) {
+                    
                     Text(NCBrandOptions.shared.brand)
                         .font(.system(size: 13))
                         .fontWeight(.bold)
