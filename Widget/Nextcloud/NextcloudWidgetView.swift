@@ -31,7 +31,7 @@ struct NextcloudWidgetView: View {
             ZStack(alignment: .topLeading) {
                 HStack(spacing: 5) {
                     Text(NCBrandOptions.shared.brand)
-                        .font(.system(size: 12))
+                        .font(.system(size: 13))
                         .fontWeight(.bold)
                         .textCase(.uppercase)
                 }
@@ -66,7 +66,7 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-                .padding(.top, 40)
+                .padding(.top, 30)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack(spacing: 0) {
@@ -119,7 +119,7 @@ struct NextcloudWidgetView: View {
                             .frame(width: geo.size.width/4, height: 50)
                     })
                 }
-                .frame(width: geo.size.width, height: geo.size.height-40, alignment: .bottomTrailing)
+                .frame(width: geo.size.width, height: geo.size.height-25, alignment: .bottomTrailing)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
