@@ -50,22 +50,27 @@ struct NextcloudWidgetView: View {
                         let recentDatasCount = CGFloat(entry.recentDatas.count)
                         let heightFrame = (geo.size.height - 120) / recentDatasCount
                         let addSizeIcon = heightFrame / recentDatasCount
+                        let spacing = (addSizeIcon - recentDatasCount) / 2
                         
                         ForEach(entry.recentDatas, id: \.id) { element in
                             
                             Link(destination: element.url) {
                                 
                                 HStack {
+                                    
                                     Image(uiImage: element.image)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: imageSize+addSizeIcon, height: imageSize+addSizeIcon)
                                         .clipped()
                                         .cornerRadius(4)
-                                    VStack(alignment: .leading) {
+                                    
+                                    VStack(alignment: .leading, spacing: spacing) {
+                                        
                                         Text(element.title)
                                             .font(.system(size: 12))
                                             .fontWeight(.regular)
+                                        
                                         Text(element.subTitle)
                                             .font(.system(size: CGFloat(10)))
                                             .foregroundColor(Color(white: 0.5))
