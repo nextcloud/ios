@@ -25,10 +25,15 @@ import SwiftUI
 import WidgetKit
 
 struct NextcloudWidgetView: View {
+    
     var entry: NextcloudDataEntry
+    
     var body: some View {
+        
         GeometryReader { geo in
+            
             ZStack(alignment: .topLeading) {
+                
                 HStack(spacing: 5) {
                     Text(NCBrandOptions.shared.brand)
                         .font(.system(size: 13))
@@ -37,8 +42,11 @@ struct NextcloudWidgetView: View {
                 }
                 .padding(.leading, 10)
                 .padding(.top, 10)
+                
                 VStack(alignment: .leading) {
+                    
                     VStack(spacing: 0) {
+                        
                         let recentDatasCount = CGFloat(entry.recentDatas.count)
                         let heightFrame = (geo.size.height - 120) / recentDatasCount
                         let addSizeIcon = heightFrame / recentDatasCount
