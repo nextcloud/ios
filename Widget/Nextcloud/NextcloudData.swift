@@ -164,51 +164,49 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
     } else {
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
-    NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget [Auto upload]")
+    
+    let numRecentDatas: Int = Int((displaySize.height - 150) / 40)
 
-    NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
-        NKCommon.shared.writeLog("Completition \(NCBrandOptions.shared.brand) widget [Auto upload]")
-        NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, error in
+    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, error in
 
-            // Get recent files
-            var recentDatas: [RecentData] = []
-            for file in files {
-                guard !file.directory else { continue }
-                guard !isLive(file: file, files: files) else { continue }
-                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
-                // url: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
-                if path.first == "/" { path = String(path.dropFirst())}
-                guard let user = file.user.urlEncoded else { continue }
-                let link = file.urlBase + "/f/" + file.fileId
-                let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
-                guard let url = URL(string: urlString) else { continue }
-                // Build Recent Data
-                var imageRecent = UIImage()
-                if let image = NCUtilityGUI().createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
-                    imageRecent = image
-                } else if !file.iconName.isEmpty {
-                    imageRecent = UIImage(named: file.iconName)!
-                } else {
-                    imageRecent = UIImage(named: "file")!
-                }
-                let recentData = RecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
-                recentDatas.append(recentData)
-                if recentDatas.count == 5 { break}
-            }
-
-            let fileInUpload = NCManageDatabase.shared.getNumMetadatasInUpload()
-            let footerText = (fileInUpload == 0) ? "last update \(Date().formatted())"  : "\(fileInUpload) files in uploading"
-            let footerImage = (fileInUpload == 0) ? "checkmark.icloud" : "arrow.triangle.2.circlepath"
-
-            // Completion
-            if error != .success {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
-            } else if recentDatas.isEmpty {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: footerImage, footerText: footerText))
+        // Get recent files
+        var recentDatas: [RecentData] = []
+        for file in files {
+            guard !file.directory else { continue }
+            guard !isLive(file: file, files: files) else { continue }
+            let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
+            // url: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+            guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+            if path.first == "/" { path = String(path.dropFirst())}
+            guard let user = file.user.urlEncoded else { continue }
+            let link = file.urlBase + "/f/" + file.fileId
+            let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
+            guard let url = URL(string: urlString) else { continue }
+            // Build Recent Data
+            var imageRecent = UIImage()
+            if let image = NCUtilityGUI().createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                imageRecent = image
+            } else if !file.iconName.isEmpty {
+                imageRecent = UIImage(named: file.iconName)!
             } else {
-                completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: footerImage, footerText: footerText))
+                imageRecent = UIImage(named: "file")!
             }
+            let recentData = RecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
+            recentDatas.append(recentData)
+            if recentDatas.count == numRecentDatas { break}
+        }
+
+        let fileInUpload = NCManageDatabase.shared.getNumMetadatasInUpload()
+        let footerText = (fileInUpload == 0) ? "last update \(Date().formatted())"  : "\(fileInUpload) files in uploading"
+        let footerImage = (fileInUpload == 0) ? "checkmark.icloud" : "arrow.triangle.2.circlepath"
+
+        // Completion
+        if error != .success {
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
+        } else if recentDatas.isEmpty {
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: footerImage, footerText: footerText))
+        } else {
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: footerImage, footerText: footerText))
         }
     }
 }
