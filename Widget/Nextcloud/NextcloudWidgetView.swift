@@ -83,7 +83,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 50)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=add-scan-document")!, label: {
@@ -95,7 +95,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 50)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=create-text-document")!, label: {
@@ -107,7 +107,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 50)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=create-voice-memo")!, label: {
@@ -119,7 +119,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 45)
+                            .frame(width: geo.size.width / 4, height: 50)
                     })
                 }
                 .frame(width: geo.size.width, height: geo.size.height-25, alignment: .bottomTrailing)
@@ -136,7 +136,7 @@ struct NextcloudWidgetView: View {
                         .font(.caption2)
                         .padding(.trailing, 13.0)
                 }
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height-4, alignment: .bottomTrailing)
+                .frame(maxWidth: geo.size.width-5, maxHeight: geo.size.height-2, alignment: .bottomTrailing)
             }
         }
     }
@@ -144,7 +144,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let recentDatas = Array(recentDatasTest[0...4])
+        let recentDatas = Array(recentDatasTest[0...3])
         let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
