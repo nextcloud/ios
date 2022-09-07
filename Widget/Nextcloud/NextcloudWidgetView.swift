@@ -50,6 +50,7 @@ struct NextcloudWidgetView: View {
                         let recentDatasCount = CGFloat(entry.recentDatas.count)
                         let heightFrame = (geo.size.height - 120) / recentDatasCount
                         let addSizeIcon = heightFrame / recentDatasCount
+                        
                         ForEach(entry.recentDatas, id: \.id) { element in
                             Link(destination: element.url) {
                                 HStack {
