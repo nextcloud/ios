@@ -58,7 +58,7 @@ struct NextcloudWidgetView: View {
                                             .fontWeight(.bold)
                                         Text(element.subTitle)
                                             .font(.system(size: CGFloat(10)))
-                                            .foregroundColor(Color(white: 0.4745))
+                                            .foregroundColor(Color(white: 0.5))
                                         Divider()
                                     }
                                     Spacer()
@@ -130,7 +130,7 @@ struct NextcloudWidgetView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
-                        .foregroundColor(Color(NCBrandColor.shared.brand))
+                        .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
