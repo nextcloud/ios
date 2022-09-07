@@ -54,7 +54,7 @@ let recentDatasTest: [RecentData] = [
 
 func getNumberItems(height: CGFloat) -> Int {
     
-    let num: Int = Int((height - 100) / 40)
+    let num: Int = Int((height - 120) / 40)
     return num
 }
 

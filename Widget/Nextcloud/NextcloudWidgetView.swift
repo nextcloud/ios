@@ -66,7 +66,7 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-                .padding(.top, 30)
+                .padding(.top, 35)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack(spacing: 0) {
@@ -80,7 +80,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
+                            .frame(width: geo.size.width/4, height: 45)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=add-scan-document")!, label: {
@@ -92,7 +92,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
+                            .frame(width: geo.size.width/4, height: 45)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=create-text-document")!, label: {
@@ -104,7 +104,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
+                            .frame(width: geo.size.width/4, height: 45)
                     })
 
                     Link(destination: URL(string: "nextcloud://open-action?action=create-voice-memo")!, label: {
@@ -116,7 +116,7 @@ struct NextcloudWidgetView: View {
                             .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width/4, height: 50)
+                            .frame(width: geo.size.width/4, height: 45)
                     })
                 }
                 .frame(width: geo.size.width, height: geo.size.height-25, alignment: .bottomTrailing)
