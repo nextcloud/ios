@@ -51,14 +51,23 @@ let recentDatasTest: [RecentData] = [
     .init(id: "5", image: UIImage(named: "AppIcon")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!)
 ]
 
+func getNumberItems(height: CGFloat) -> Int {
+    
+    let num: Int = Int((height - 150) / 40)
+    return num
+}
+
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
+    let num: Int = Int((displaySize.height - 150) / 40) - 1
+    let recentDatasPlaceholder = Array(recentDatasTest[0...num])
+    
     if isPreview {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     func isLive(file: NKFile, files: [NKFile]) -> Bool {
@@ -165,8 +174,6 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    let numRecentDatas: Int = Int((displaySize.height - 150) / 40)
-
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, error in
 
         // Get recent files
@@ -193,7 +200,8 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             }
             let recentData = RecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
             recentDatas.append(recentData)
-            if recentDatas.count == numRecentDatas { break}
+            let numItems = getNumberItems(height: displaySize.height)
+            if recentDatas.count == numItems { break}
         }
 
         let fileInUpload = NCManageDatabase.shared.getNumMetadatasInUpload()
@@ -202,9 +210,9 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
 
         // Completion
         if error != .success {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if recentDatas.isEmpty {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasTest, isPlaceholder: true, footerImage: footerImage, footerText: footerText))
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: footerImage, footerText: footerText))
         } else {
             completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: footerImage, footerText: footerText))
         }
