@@ -30,11 +30,6 @@ struct NextcloudWidgetView: View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
                 HStack(spacing: 5) {
-                    Image("AppIcon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                        .cornerRadius(5)
                     Text(NCBrandOptions.shared.brand)
                         .font(.system(size: 12))
                         .textCase(.uppercase)
@@ -68,7 +63,7 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-                .padding(.top, 45)
+                .padding(.top, 40)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack(spacing: 0) {
