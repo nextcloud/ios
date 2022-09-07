@@ -148,6 +148,7 @@ struct NextcloudWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
+                    
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
