@@ -153,7 +153,7 @@ struct NextcloudWidgetView: View {
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
         let recentDatas = Array(recentDatasTest[0...4])
-        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
