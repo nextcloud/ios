@@ -44,11 +44,11 @@ struct RecentData: Identifiable, Hashable {
 }
 
 let recentDatasTest: [RecentData] = [
-    .init(id: "1", image: UIImage(named: "AppIcon")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "2", image: UIImage(named: "AppIcon")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "3", image: UIImage(named: "AppIcon")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "4", image: UIImage(named: "AppIcon")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "5", image: UIImage(named: "AppIcon")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!)
+    .init(id: "1", image: UIImage(named: "nextcloud")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "2", image: UIImage(named: "nextcloud")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "3", image: UIImage(named: "nextcloud")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "4", image: UIImage(named: "nextcloud")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "5", image: UIImage(named: "nextcloud")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!)
 ]
 
 func getNumberItems(height: CGFloat) -> Int {

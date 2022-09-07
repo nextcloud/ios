@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "nextcloud-icon29@1x.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
