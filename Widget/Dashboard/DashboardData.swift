@@ -106,9 +106,9 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.pathLog = pathDirectoryGroup
     }
     if isSimulatorOrTestFlight {
-        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
     } else {
-        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard session with level \(levelLog) " + versionNextcloudiOS)
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
     let datas = [DashboardData]()
