@@ -105,7 +105,7 @@ struct ToolbarWidgetView: View {
                         .padding(.trailing, 13.0)
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
-            }
+            }.background(ContainerRelativeShape().fill(Color.init(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)))
         }
     }
 }

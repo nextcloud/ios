@@ -29,9 +29,9 @@ struct NextcloudWidgetBundle: WidgetBundle {
 
     @WidgetBundleBuilder
     var body: some Widget {
-        ToolbarWidget()
-        NextcloudWidget()
         DashboardWidget()
+        NextcloudWidget()
+        ToolbarWidget()
     }
 }
 
@@ -43,7 +43,7 @@ struct DashboardWidget: Widget {
             DashboardWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName("Dashboard")
+        .configurationDisplayName(NCBrandOptions.shared.brand + " Dashboard")
         .description(NSLocalizedString("_description_dashboardwidget_", comment: ""))
     }
 }
@@ -56,7 +56,7 @@ struct NextcloudWidget: Widget {
             NextcloudWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName(NCBrandOptions.shared.brand)
+        .configurationDisplayName(NCBrandOptions.shared.brand + " Widget")
         .description(NSLocalizedString("_description_nextcloudwidget_", comment: ""))
     }
 }
@@ -69,7 +69,7 @@ struct ToolbarWidget: Widget {
             ToolbarWidgetView(entry: entry)
         }
         .supportedFamilies([.systemMedium])
-        .configurationDisplayName("Toolbar")
+        .configurationDisplayName(NCBrandOptions.shared.brand + " Toolbar")
         .description(NSLocalizedString("_description_toolbarwidget_", comment: ""))
     }
 }

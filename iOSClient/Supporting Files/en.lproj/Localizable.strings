@@ -885,6 +885,10 @@
 "_select_color_"            = "Select the color";
 "_change_color_"            = "Change color";
 
+"_description_dashboardwidget_" = "";
+"_description_nextcloudwidget_" = "";
+"_description_toolbarwidget_"   = "";
+
 // Video
 "_select_trace_"            = "Select the trace";
 "_video_processing_"        = "Video processing";

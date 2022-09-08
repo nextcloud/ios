@@ -1383,9 +1383,9 @@
 			isa = PBXGroup;
 			children = (
 				F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */,
-				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F72EA95528B7BAD100C88F0C /* Dashboard */,
 				F72EA95628B7BAE700C88F0C /* Nextcloud */,
+				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
 				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
 			);
