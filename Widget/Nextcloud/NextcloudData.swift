@@ -209,9 +209,9 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
         if error != .success {
             completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if recentDatas.isEmpty {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand))
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         } else {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand))
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         }
     }
 }
