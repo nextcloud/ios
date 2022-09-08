@@ -157,17 +157,17 @@ class NCViewer: NSObject {
 
                     if metadata.url == "" {
 
-                        var customUserAgent: String?
                         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
 
+                        var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {
-                            customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
                         } else {
-                            customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
+                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
                         }
 
                         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                        NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { account, url, error in
+                        NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, options: options) { account, url, error in
 
                             NCActivityIndicator.shared.stop()
 

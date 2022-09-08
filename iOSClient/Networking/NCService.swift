@@ -194,7 +194,8 @@ class NCService: NSObject {
 
             // Text direct editor detail
             if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
-                NextcloudKit.shared.NCTextObtainEditorDetails(queue: NKCommon.shared.backgroundQueue) { account, editors, creators, error in
+                let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+                NextcloudKit.shared.NCTextObtainEditorDetails(options: options) { account, editors, creators, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                     }

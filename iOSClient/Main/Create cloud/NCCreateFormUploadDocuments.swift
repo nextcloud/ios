@@ -311,16 +311,15 @@ import XLForm
         self.navigationItem.rightBarButtonItem?.isEnabled = false
 
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
-
-            var customUserAgent: String?
-
+            
+            var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
-            } // else: use default
-
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { account, url, error in
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+            }
+            
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
@@ -376,14 +375,14 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
 
-            var customUserAgent: String?
+            var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
-            } // else: use default
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+            }
 
-            NextcloudKit.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { account, templates, error in
+            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, error in
 
                 self.indicator.stopAnimating()
 
