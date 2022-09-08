@@ -310,7 +310,9 @@
 		F77BB746289984CA0090FC19 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */; };
 		F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77BB747289985270090FC19 /* UITabBarController+Extension.swift */; };
 		F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */; };
-		F77ED58F28C9CAD000E24ED0 /* Toolbar in Resources */ = {isa = PBXBuildFile; fileRef = F77ED58E28C9CAD000E24ED0 /* Toolbar */; };
+		F77ED59128C9CE9D00E24ED0 /* ToolbarData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77ED59028C9CE9D00E24ED0 /* ToolbarData.swift */; };
+		F77ED59328C9CEA000E24ED0 /* ToolbarWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77ED59228C9CEA000E24ED0 /* ToolbarWidgetProvider.swift */; };
+		F77ED59528C9CEA400E24ED0 /* ToolbarWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77ED59428C9CEA300E24ED0 /* ToolbarWidgetView.swift */; };
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
@@ -856,7 +858,9 @@
 		F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		F77BB747289985270090FC19 /* UITabBarController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Extension.swift"; sourceTree = "<group>"; };
 		F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Extension.swift"; sourceTree = "<group>"; };
-		F77ED58E28C9CAD000E24ED0 /* Toolbar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Toolbar; sourceTree = "<group>"; };
+		F77ED59028C9CE9D00E24ED0 /* ToolbarData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarData.swift; sourceTree = "<group>"; };
+		F77ED59228C9CEA000E24ED0 /* ToolbarWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarWidgetProvider.swift; sourceTree = "<group>"; };
+		F77ED59428C9CEA300E24ED0 /* ToolbarWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarWidgetView.swift; sourceTree = "<group>"; };
 		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
 		F783030E28B4C83F00B84583 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -1379,7 +1383,7 @@
 			isa = PBXGroup;
 			children = (
 				F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */,
-				F77ED58E28C9CAD000E24ED0 /* Toolbar */,
+				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F72EA95528B7BAD100C88F0C /* Dashboard */,
 				F72EA95628B7BAE700C88F0C /* Nextcloud */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
@@ -1497,6 +1501,16 @@
 				F7725A5E251F33BB00D125E0 /* NCFiles.swift */,
 			);
 			path = Files;
+			sourceTree = "<group>";
+		};
+		F77ED59628C9CEEE00E24ED0 /* Toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				F77ED59028C9CE9D00E24ED0 /* ToolbarData.swift */,
+				F77ED59228C9CEA000E24ED0 /* ToolbarWidgetProvider.swift */,
+				F77ED59428C9CEA300E24ED0 /* ToolbarWidgetView.swift */,
+			);
+			path = Toolbar;
 			sourceTree = "<group>";
 		};
 		F78ACD4721903F850088454D /* Cell */ = {
@@ -2432,7 +2446,6 @@
 			files = (
 				F7C7B25128B8B0C400E7115D /* Images.xcassets in Resources */,
 				F7C7B25028B8AD4500E7115D /* Localizable.strings in Resources */,
-				F77ED58F28C9CAD000E24ED0 /* Toolbar in Resources */,
 				F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2677,6 +2690,7 @@
 				F78302F928B4C3E600B84583 /* NCManageDatabase+Account.swift in Sources */,
 				F7E0710128B13BB00001B882 /* DashboardData.swift in Sources */,
 				F783030328B4C4DD00B84583 /* ThreadSafeDictionary.swift in Sources */,
+				F77ED59128C9CE9D00E24ED0 /* ToolbarData.swift in Sources */,
 				F7E03DBD28BB48E4009AFDA1 /* NCUtilityGUI.swift in Sources */,
 				F78302F728B4C3C900B84583 /* NCManageDatabase.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
@@ -2693,7 +2707,9 @@
 				F793E5A528B7698D005E4B02 /* NCNetworkingProcessUpload.swift in Sources */,
 				F78302FC28B4C3F300B84583 /* NCElementsJSON.swift in Sources */,
 				F783030628B4C51E00B84583 /* String+Extensions.swift in Sources */,
+				F77ED59328C9CEA000E24ED0 /* ToolbarWidgetProvider.swift in Sources */,
 				F72A17D828B221E300F3F159 /* DashboardWidgetView.swift in Sources */,
+				F77ED59528C9CEA400E24ED0 /* ToolbarWidgetView.swift in Sources */,
 				F793E59B28B75FB0005E4B02 /* NCAutoUpload.swift in Sources */,
 				F78302FB28B4C3EE00B84583 /* NCManageDatabase+Video.swift in Sources */,
 				F72EA95228B7BA2A00C88F0C /* DashboardWidgetProvider.swift in Sources */,

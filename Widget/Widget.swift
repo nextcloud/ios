@@ -29,6 +29,7 @@ struct NextcloudWidgetBundle: WidgetBundle {
 
     @WidgetBundleBuilder
     var body: some Widget {
+        ToolbarWidget()
         NextcloudWidget()
         DashboardWidget()
     }
@@ -57,5 +58,18 @@ struct NextcloudWidget: Widget {
         .supportedFamilies([.systemLarge])
         .configurationDisplayName(NCBrandOptions.shared.brand)
         .description(NSLocalizedString("_description_nextcloudwidget_", comment: ""))
+    }
+}
+
+struct ToolbarWidget: Widget {
+    let kind: String = "ToolbarWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: ToolbarWidgetProvider()) { entry in
+            ToolbarWidgetView(entry: entry)
+        }
+        .supportedFamilies([.systemMedium])
+        .configurationDisplayName("Toolbar")
+        .description(NSLocalizedString("_description_toolbarwidget_", comment: ""))
     }
 }

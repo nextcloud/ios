@@ -381,4 +381,12 @@ class NCGlobal: NSObject {
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
     let tipNCViewerMediaDetailView                              = "tipncviewermediadetailview"
+    
+    // ACTION
+    //
+    let actionNoAction                                          = URL(string: "nextcloud://open-action?action=no-action")!
+    let actionUploadAsset                                       = URL(string: "nextcloud://open-action?action=upload-asset")!
+    let actionScanDocument                                      = URL(string: "nextcloud://open-action?action=add-scan-document")!
+    let actionTextDocument                                      = URL(string: "nextcloud://open-action?action=create-text-document")!
+    let actionVoiceMemo                                         = URL(string: "nextcloud://open-action?action=create-voice-memo")!
 }

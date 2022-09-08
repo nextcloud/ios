@@ -35,56 +35,61 @@ struct ToolbarWidgetView: View {
             ZStack(alignment: .topLeading) {
                 
                 HStack(spacing: 0) {
+                    
+                    let sizeButton: CGFloat = 65
+                    let colorPlaceholder = Color(white: 0.8)
+                    let brandColor = Color(NCBrandColor.shared.brand)
+                    let brandColorText = Color(NCBrandColor.shared.brandText)
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=upload-asset")!, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionUploadAsset, label: {
                         Image("buttonAddImage")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=add-scan-document")!, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionScanDocument, label: {
                         Image("buttonAddScan")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=create-text-document")!, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionTextDocument, label: {
                         Image("note.text")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=create-voice-memo")!, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionVoiceMemo, label: {
                         Image("microphone")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
                 }
-                .frame(width: geo.size.width, height: geo.size.height - 35, alignment: .bottomTrailing)
+                .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
@@ -107,7 +112,7 @@ struct ToolbarWidgetView: View {
 
 struct ToolbarWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
-        NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemSmall))
+        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        ToolbarWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
