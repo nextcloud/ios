@@ -384,9 +384,17 @@ class NCGlobal: NSObject {
     
     // ACTION
     //
-    let actionNoAction                                          = URL(string: "nextcloud://open-action?action=no-action")!
-    let actionUploadAsset                                       = URL(string: "nextcloud://open-action?action=upload-asset")!
-    let actionScanDocument                                      = URL(string: "nextcloud://open-action?action=add-scan-document")!
-    let actionTextDocument                                      = URL(string: "nextcloud://open-action?action=create-text-document")!
-    let actionVoiceMemo                                         = URL(string: "nextcloud://open-action?action=create-voice-memo")!
+    let actionNoAction                                          = "no-action"
+    let actionUploadAsset                                       = "upload-asset"
+    let actionScanDocument                                      = "add-scan-document"
+    let actionTextDocument                                      = "create-text-document"
+    let actionVoiceMemo                                         = "create-voice-memo"
+    
+    // WIDGET ACTION
+    //
+    let widgetActionNoAction                                    = URL(string: "nextcloud://open-action?action=no-action")!
+    let widgetActionUploadAsset                                 = URL(string: "nextcloud://open-action?action=upload-asset")!
+    let widgetActionScanDocument                                = URL(string: "nextcloud://open-action?action=add-scan-document")!
+    let widgetActionTextDocument                                = URL(string: "nextcloud://open-action?action=create-text-document")!
+    let widgetActionVoiceMemo                                   = URL(string: "nextcloud://open-action?action=create-voice-memo")!
 }

@@ -846,7 +846,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems), let rootViewController = window?.rootViewController else { return false }
                 
                 switch actionScheme {
-                case "upload-asset":
+                case NCGlobal.shared.actionUploadAsset:
 
                     NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
                         if hasPermission {
@@ -854,13 +854,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
                     }
                     
-                case "add-scan-document":
+                case NCGlobal.shared.actionScanDocument:
                     
                     if #available(iOS 13.0, *) {
                         NCCreateScanDocument.shared.openScannerDocument(viewController: rootViewController)
                     }
                     
-                case "create-text-document":
+                case NCGlobal.shared.actionTextDocument:
                     
                     guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(), let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account), let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}) else { return false }
                     
@@ -875,7 +875,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                     rootViewController.present(navigationController, animated: true, completion: nil)
                     
-                case "create-voice-memo":
+                case NCGlobal.shared.actionVoiceMemo:
                     
                     NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
@@ -892,7 +892,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     }
 
                 default:
-                    print("")
+                    print("No action")
                 }
             }
         }

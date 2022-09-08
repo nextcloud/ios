@@ -61,6 +61,8 @@ struct NextcloudWidgetView: View {
                                 
                                 HStack {
                                     
+                                    let subTitleColor = Color(white: 0.5)
+                                    
                                     Image(uiImage: element.image)
                                         .resizable()
                                         .scaledToFill()
@@ -76,7 +78,7 @@ struct NextcloudWidgetView: View {
                                         
                                         Text(element.subTitle)
                                             .font(.system(size: CGFloat(10)))
-                                            .foregroundColor(Color(white: 0.5))
+                                            .foregroundColor(subTitleColor)
                                     }
                                     Spacer()
                                 }
@@ -93,52 +95,57 @@ struct NextcloudWidgetView: View {
 
                 HStack(spacing: 0) {
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=upload-asset")!, label: {
+                    let sizeButton: CGFloat = 50
+                    let placeholderColor = Color(white: 0.8)
+                    let brandColor = Color(NCBrandColor.shared.brand)
+                    let brandTextColor = Color(NCBrandColor.shared.brandText)
+                    
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
                         Image("buttonAddImage")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=add-scan-document")!, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionScanDocument, label: {
                         Image("buttonAddScan")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=create-text-document")!, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionTextDocument, label: {
                         Image("note.text")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: URL(string: "nextcloud://open-action?action=create-voice-memo")!, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionVoiceMemo, label: {
                         Image("microphone")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brandText))
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? Color(white: 0.8) : Color(NCBrandColor.shared.brand))
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: 50)
+                            .frame(width: geo.size.width / 4, height: sizeButton)
                     })
                 }
                 .frame(width: geo.size.width, height: geo.size.height - 35, alignment: .bottomTrailing)
@@ -146,11 +153,14 @@ struct NextcloudWidgetView: View {
 
                 HStack {
 
+                    let placeholderColor = Color(white: 0.2)
+                    let brandColor = Color(NCBrandColor.shared.brand)
+
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
                     
                     Text(entry.footerText)
                         .font(.caption2)

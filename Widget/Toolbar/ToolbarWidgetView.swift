@@ -37,53 +37,53 @@ struct ToolbarWidgetView: View {
                 HStack(spacing: 0) {
                     
                     let sizeButton: CGFloat = 65
-                    let colorPlaceholder = Color(white: 0.8)
+                    let placeholderColor = Color(white: 0.8)
                     let brandColor = Color(NCBrandColor.shared.brand)
-                    let brandColorText = Color(NCBrandColor.shared.brandText)
+                    let brandTextColor = Color(NCBrandColor.shared.brandText)
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionUploadAsset, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
                         Image("buttonAddImage")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionScanDocument, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionScanDocument, label: {
                         Image("buttonAddScan")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionTextDocument, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionTextDocument, label: {
                         Image("note.text")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.actionNoAction : NCGlobal.shared.actionVoiceMemo, label: {
+                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionVoiceMemo, label: {
                         Image("microphone")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? colorPlaceholder : brandColorText)
+                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
-                            .background(entry.isPlaceholder ? colorPlaceholder : brandColor)
+                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -112,7 +112,7 @@ struct ToolbarWidgetView: View {
 
 struct ToolbarWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
         ToolbarWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
