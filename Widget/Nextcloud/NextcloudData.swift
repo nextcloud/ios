@@ -24,8 +24,7 @@
 import WidgetKit
 import NextcloudKit
 
-let imageSize:CGFloat = 30
-let spacingImageUpload:CGFloat = 10
+let nextcloudItems = 4
 
 struct NextcloudDataEntry: TimelineEntry {
     let date: Date
@@ -52,16 +51,9 @@ let recentDatasTest: [RecentData] = [
     .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getNumberItems(height: CGFloat) -> Int {
-    
-    //let num: Int = Int((height - 120) / 40)
-    return 4
-}
-
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
-    let num = getNumberItems(height: displaySize.height) - 1
-    let recentDatasPlaceholder = Array(recentDatasTest[0...num])
+    let recentDatasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
     
     if isPreview {
         return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
@@ -201,8 +193,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             }
             let recentData = RecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
             recentDatas.append(recentData)
-            let numItems = getNumberItems(height: displaySize.height)
-            if recentDatas.count == numItems { break}
+            if recentDatas.count == nextcloudItems { break}
         }
 
         // Completion

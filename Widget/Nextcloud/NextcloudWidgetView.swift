@@ -62,6 +62,7 @@ struct NextcloudWidgetView: View {
                                 HStack {
                                     
                                     let subTitleColor = Color(white: 0.5)
+                                    let imageSize:CGFloat = 30
                                     
                                     Image(uiImage: element.image)
                                         .resizable()

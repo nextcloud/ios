@@ -29,8 +29,7 @@ struct NextcloudWidgetProvider: TimelineProvider {
     typealias Entry = NextcloudDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        let num = getNumberItems(height: context.displaySize.height) - 1
-        let recentDatasPlaceholder = Array(recentDatasTest[0...num])
+        let recentDatasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
         return Entry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
