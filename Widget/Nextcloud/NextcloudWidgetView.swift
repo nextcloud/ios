@@ -34,17 +34,16 @@ struct NextcloudWidgetView: View {
             
             ZStack(alignment: .topLeading) {
                 
-                /*
-                HStack(spacing: 5) {
+                HStack() {
                     
-                    Text(NCBrandOptions.shared.brand)
-                        .font(.system(size: 13))
+                    Text(entry.tile)
+                        .font(.system(size: 12))
                         .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
                         .textCase(.uppercase)
                 }
-                .padding(.leading, 10)
+                .frame(width: geo.size.width)
                 .padding(.top, 10)
-                */
                 
                 VStack(alignment: .leading) {
                     
@@ -91,12 +90,12 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-                .padding(.top, 10)
+                .padding(.top, 40)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack(spacing: 0) {
 
-                    let sizeButton: CGFloat = 50
+                    let sizeButton: CGFloat = 45
                     let placeholderColor = Color(white: 0.8)
                     let brandColor = Color(NCBrandColor.shared.brand)
                     let brandTextColor = Color(NCBrandColor.shared.brandText)
@@ -149,7 +148,7 @@ struct NextcloudWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
                 }
-                .frame(width: geo.size.width, height: geo.size.height - 35, alignment: .bottomTrailing)
+                .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottomTrailing)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
@@ -176,7 +175,7 @@ struct NextcloudWidgetView: View {
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(recentDatasTest[0...3])
-        let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

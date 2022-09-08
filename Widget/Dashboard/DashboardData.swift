@@ -115,6 +115,17 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         
         var datas = [DashboardData]()
         
+        if let dashboardResults = dashboardResults {
+            for dashboardResult in dashboardResults {
+                let application = dashboardResult.application
+                if let entries = dashboardResult.dashboardEntries {
+                    for entry in entries {
+                        
+                    }
+                }
+            }
+        }
+        
         if error != .success {
             completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {

@@ -30,6 +30,7 @@ struct NextcloudDataEntry: TimelineEntry {
     let date: Date
     let datas: [NextcloudRecentData]
     let isPlaceholder: Bool
+    let tile: String
     let footerImage: String
     let footerText: String
 }
@@ -51,16 +52,37 @@ let recentDatasTest: [NextcloudRecentData] = [
     .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
 ]
 
+func getTitleNextcloudWidget() -> String {
+
+    let hour = Calendar.current.component(.hour, from: Date())
+    var good = ""
+
+    switch hour {
+    case 6..<12: good = NSLocalizedString("_good_morning_", value: "Good morning", comment: "")
+    case 12: good = NSLocalizedString("_good_noon_", value: "Good noon", comment: "")
+    case 13..<17: good = NSLocalizedString("_good_afternoon_", value: "Good afternoon", comment: "")
+    case 17..<22: good = NSLocalizedString("_good_evening_", value: "Good evening", comment: "")
+    default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
+    }
+
+    if let account = NCManageDatabase.shared.getActiveAccount() {
+        return good + ", " + account.displayName
+    } else {
+        return good
+    }
+}
+
 func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
     let datasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
+    let title = getTitleNextcloudWidget()
     
     if isPreview {
-        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     func isLive(file: NKFile, files: [NKFile]) -> Bool {
@@ -197,11 +219,11 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         }
 
         if error != .success {
-            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
+            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
-            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         } else {
-            completion(NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+            completion(NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         }
     }
 }

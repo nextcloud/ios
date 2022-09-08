@@ -30,7 +30,8 @@ struct NextcloudWidgetProvider: TimelineProvider {
 
     func placeholder(in context: Context) -> Entry {
         let datasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
-        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let title = getTitleNextcloudWidget()
+        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
