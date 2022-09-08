@@ -41,9 +41,10 @@ struct NextcloudWidgetView: View {
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                         .textCase(.uppercase)
+                        .lineLimit(1)
                 }
-                .frame(width: geo.size.width)
-                .padding(.top, 10)
+                .frame(width: geo.size.width - 20)
+                .padding([.top, .leading, .trailing], 10)
                 
                 VStack(alignment: .leading) {
                     
@@ -90,7 +91,7 @@ struct NextcloudWidgetView: View {
                         }
                     }
                 }
-                .padding(.top, 40)
+                .padding(.top, 30)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack(spacing: 0) {
@@ -175,7 +176,7 @@ struct NextcloudWidgetView: View {
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(recentDatasTest[0...3])
-        let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana detto er ", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
