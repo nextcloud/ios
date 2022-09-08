@@ -111,8 +111,16 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    let datas = [DashboardData]()
-    
-    completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
-    
+    NextcloudKit.shared.getDashboard { account, dashboardResults, json, error in
+        
+        var datas = [DashboardData]()
+        
+        if error != .success {
+            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "xmark.icloud", footerText: error.errorDescription))
+        } else if datas.isEmpty {
+            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        } else {
+            completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        }
+    }
 }

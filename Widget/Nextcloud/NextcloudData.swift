@@ -169,8 +169,8 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
     
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, error in
 
-        // Get recent files
         var datas: [NextcloudRecentData] = []
+        
         for file in files {
             guard !file.directory else { continue }
             guard !isLive(file: file, files: files) else { continue }
@@ -196,7 +196,6 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
             if datas.count == nextcloudItems { break}
         }
 
-        // Completion
         if error != .success {
             completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
