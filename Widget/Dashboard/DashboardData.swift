@@ -52,7 +52,7 @@ let dashboardDatasTest: [DashboardData] = [
     .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getTitleDashboard(account: tableAccount?) -> String {
+func getTitleDashboard() -> String {
 
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
@@ -65,7 +65,7 @@ func getTitleDashboard(account: tableAccount?) -> String {
     default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
     }
 
-    if let account = account {
+    if let account = NCManageDatabase.shared.getActiveAccount() {
         return good + ", " + account.displayName
     } else {
         return good
@@ -77,15 +77,42 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
     
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
+    
+    // NETWORKING
+    let password = CCUtility.getPassword(account.account)!
+    NKCommon.shared.setup(
+        account: account.account,
+        user: account.user,
+        userId: account.userId,
+        password: password,
+        urlBase: account.urlBase,
+        userAgent: CCUtility.getUserAgent(),
+        nextcloudVersion: 0,
+        delegate: NCNetworking.shared)
 
+    // LOG
+    let levelLog = CCUtility.getLogLevel()
+    let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+
+    NKCommon.shared.levelLog = levelLog
+    if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
+        NKCommon.shared.pathLog = pathDirectoryGroup
+    }
+    if isSimulatorOrTestFlight {
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+    } else {
+        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard session with level \(levelLog) " + versionNextcloudiOS)
+    }
+    
     let datas = [DashboardData]()
     
-    completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: getTitleDashboard(account: account), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+    completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     
 }
