@@ -54,8 +54,8 @@ let recentDatasTest: [RecentData] = [
 
 func getNumberItems(height: CGFloat) -> Int {
     
-    let num: Int = Int((height - 120) / 40)
-    return num
+    //let num: Int = Int((height - 120) / 40)
+    return 4
 }
 
 func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
@@ -205,17 +205,13 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             if recentDatas.count == numItems { break}
         }
 
-        let fileInUpload = NCManageDatabase.shared.getNumMetadatasInUpload()
-        let footerText = (fileInUpload == 0) ? "last update \(Date().formatted())"  : "\(fileInUpload) files in uploading"
-        let footerImage = (fileInUpload == 0) ? "checkmark.icloud" : "arrow.triangle.2.circlepath"
-
         // Completion
         if error != .success {
             completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if recentDatas.isEmpty {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: footerImage, footerText: footerText))
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand))
         } else {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: footerImage, footerText: footerText))
+            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand))
         }
     }
 }
