@@ -24,31 +24,35 @@
 import WidgetKit
 import NextcloudKit
 
-struct DashboardData: Identifiable, Codable, Hashable {
-    var id: Int
-    var image: String
+let dashboaardItems = 4
+
+struct DashboardDataEntry: TimelineEntry {
+    let date: Date
+    let datas: [DashboardData]
+    let isPlaceholder: Bool
+    let title: String
+    let footerImage: String
+    let footerText: String
+}
+
+struct DashboardData: Identifiable, Hashable {
+    var id: String
+    var image: UIImage
     var title: String
     var subTitle: String
     var url: URL
 }
 
-struct DashboardDataEntry: TimelineEntry {
-    let date: Date
-    let dashboardDatas: [DashboardData]
-    let isPlaceholder: Bool
-    let title: String
-    let footerText: String
-}
-
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: 0, image: "nextcloud", title: "title 1", subTitle: "subTitle - description 1", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: 1, image: "nextcloud", title: "title 2", subTitle: "subTitle - description 2", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: 2, image: "nextcloud", title: "title 3", subTitle: "subTitle - description 3", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: 3, image: "nextcloud", title: "title 4", subTitle: "subTitle - description 4", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: 4, image: "nextcloud", title: "title 5", subTitle: "subTitle - description 5", url: URL(string: "https://nextcloud.com/")!)
+    .init(id: "1", image: UIImage(named: "nextcloud")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "2", image: UIImage(named: "nextcloud")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "3", image: UIImage(named: "nextcloud")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "4", image: UIImage(named: "nextcloud")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "5", image: UIImage(named: "nextcloud")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!),
+    .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getTitle(account: tableAccount?) -> String {
+func getTitleDashboard(account: tableAccount?) -> String {
 
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
@@ -68,11 +72,20 @@ func getTitle(account: tableAccount?) -> String {
     }
 }
 
-func readDashboardData(completion: @escaping (_ dashboardData: [DashboardData], _ isPlaceholder: Bool, _ title: String, _ footerText: String) -> Void) {
+func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
-    guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(dashboardDatasTest, true, getTitle(account: nil), NSLocalizedString("_no_active_account_", value: "No account found", comment: ""))
+    let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
+    
+    if isPreview {
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
-    completion(dashboardDatasTest, false, getTitle(account: account), "\(Date().formatted())")
+    guard let account = NCManageDatabase.shared.getActiveAccount() else {
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+    }
+
+    let datas = [DashboardData]()
+    
+    completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: getTitleDashboard(account: account), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+    
 }

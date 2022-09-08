@@ -28,13 +28,13 @@ let nextcloudItems = 4
 
 struct NextcloudDataEntry: TimelineEntry {
     let date: Date
-    let recentDatas: [RecentData]
+    let datas: [NextcloudRecentData]
     let isPlaceholder: Bool
     let footerImage: String
     let footerText: String
 }
 
-struct RecentData: Identifiable, Hashable {
+struct NextcloudRecentData: Identifiable, Hashable {
     var id: String
     var image: UIImage
     var title: String
@@ -42,7 +42,7 @@ struct RecentData: Identifiable, Hashable {
     var url: URL
 }
 
-let recentDatasTest: [RecentData] = [
+let recentDatasTest: [NextcloudRecentData] = [
     .init(id: "1", image: UIImage(named: "nextcloud")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "2", image: UIImage(named: "nextcloud")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "3", image: UIImage(named: "nextcloud")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
@@ -51,16 +51,16 @@ let recentDatasTest: [RecentData] = [
     .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
+func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
 
-    let recentDatasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
+    let datasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
     
     if isPreview {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     func isLive(file: NKFile, files: [NKFile]) -> Bool {
@@ -170,7 +170,7 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, error in
 
         // Get recent files
-        var recentDatas: [RecentData] = []
+        var datas: [NextcloudRecentData] = []
         for file in files {
             guard !file.directory else { continue }
             guard !isLive(file: file, files: files) else { continue }
@@ -191,18 +191,18 @@ func getDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_
             } else {
                 imageRecent = UIImage(named: "file")!
             }
-            let recentData = RecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
-            recentDatas.append(recentData)
-            if recentDatas.count == nextcloudItems { break}
+            let recentData = NextcloudRecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
+            datas.append(recentData)
+            if datas.count == nextcloudItems { break}
         }
 
         // Completion
         if error != .success {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
-        } else if recentDatas.isEmpty {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "xmark.icloud", footerText: error.errorDescription))
+        } else if datas.isEmpty {
+            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         } else {
-            completion(NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+            completion(NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         }
     }
 }

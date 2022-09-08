@@ -29,18 +29,18 @@ struct NextcloudWidgetProvider: TimelineProvider {
     typealias Entry = NextcloudDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        let recentDatasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
-        return Entry(date: Date(), recentDatas: recentDatasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let datasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
+        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        getDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
+        getNextcloudDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+        getNextcloudDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

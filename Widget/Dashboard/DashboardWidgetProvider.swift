@@ -29,18 +29,19 @@ struct DashboardWidgetProvider: TimelineProvider {
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: true, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
+        let datasPlaceholder = Array(dashboardDatasTest[0...nextcloudItems - 1])
+        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: "Dasboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        readDashboardData { dashboardDatas, isPlaceholder, title, footerText in
-            completion(Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, footerText: footerText))
+        getDashboardDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
+            completion(entry)
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        readDashboardData { dashboardDatas, isPlaceholder, title, footerText in
-            let timeLine = Timeline(entries: [Entry(date: Date(), dashboardDatas: dashboardDatas, isPlaceholder: isPlaceholder, title: title, footerText: footerText)], policy: .atEnd)
+        getDashboardDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+            let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }
     }

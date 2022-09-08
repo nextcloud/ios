@@ -24,23 +24,6 @@
 import SwiftUI
 import WidgetKit
 
-/*
- @Environment(\.colorScheme) var colorScheme
-
-     var entry: Provider.Entry
-
-     var bgColor: some View {
-         colorScheme == .dark ? Color.red : Color.orange
-     }
-
-     var body: some View {
-         ZStack {
-             bgColor
-             Text(entry.date, style: .time)
-         }
-     }
- */
-
 struct DashboardWidgetView: View {
     var entry: DashboardDataEntry
     var body: some View {
@@ -51,10 +34,10 @@ struct DashboardWidgetView: View {
                     .bold()
                     .fixedSize(horizontal: false, vertical: true)
                 VStack(spacing: 5) {
-                    ForEach(entry.dashboardDatas, id: \.id) { element in
+                    ForEach(entry.datas, id: \.id) { element in
                         Link(destination: element.url) {
                             HStack {
-                                Image(element.image)
+                                Image(uiImage: element.image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 40, height: 40)
@@ -85,7 +68,8 @@ struct DashboardWidgetView: View {
 
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = DashboardDataEntry(date: Date(), dashboardDatas: dashboardDatasTest, isPlaceholder: false, title: getTitle(account: nil), footerText: "Nextcloud Dashboard")
+        let datas = Array(dashboardDatasTest[0...3])
+        let entry = DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: "Dashboard", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

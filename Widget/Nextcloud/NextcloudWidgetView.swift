@@ -50,12 +50,12 @@ struct NextcloudWidgetView: View {
                     
                     VStack(spacing: 0) {
                         
-                        let recentDatasCount = CGFloat(entry.recentDatas.count)
-                        let heightFrame = (geo.size.height - 120) / recentDatasCount
-                        let addSizeIcon = heightFrame / recentDatasCount
-                        let spacing = (addSizeIcon - recentDatasCount) / 2
+                        let datasCount = CGFloat(entry.datas.count)
+                        let heightFrame = (geo.size.height - 120) / datasCount
+                        let addSizeIcon = heightFrame / datasCount
+                        let spacing = (addSizeIcon - datasCount) / 2
                         
-                        ForEach(entry.recentDatas, id: \.id) { element in
+                        ForEach(entry.datas, id: \.id) { element in
                             
                             Link(destination: element.url) {
                                 
@@ -175,8 +175,8 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let recentDatas = Array(recentDatasTest[0...3])
-        let entry = NextcloudDataEntry(date: Date(), recentDatas: recentDatas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let datas = Array(recentDatasTest[0...3])
+        let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
