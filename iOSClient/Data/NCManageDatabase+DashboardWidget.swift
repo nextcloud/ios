@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCManageDatabase {
 
-    func addDasboard(account: String, dashboardWidgets: [NCCDashboardWidget]) {
+    func addDasboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
         
         let realm = try! Realm()
 

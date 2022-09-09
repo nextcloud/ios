@@ -146,6 +146,7 @@ class NCService: NSObject {
             }
 
             self.requestServerCapabilities()
+            self.requestDashboardWidget()
         }
     }
 
@@ -247,12 +248,16 @@ class NCService: NSObject {
                     NKCommon.shared.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.typeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.typeIconFile.document.rawValue, name: "document")
                 }
             }
+        }
+    }
+    
+    private func requestDashboardWidget() {
+        
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-            //Added Dasboard Widget
-            NextcloudKit.shared.getDashboardWidget { account, dashboardWidgets, error in
-                if error == .success, let dashboardWidgets = dashboardWidgets  {
-                    NCManageDatabase.shared.addDasboard(account: account, dashboardWidgets: dashboardWidgets)
-                }
+        NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, error in
+            if error == .success, let dashboardWidgets = dashboardWidgets  {
+                NCManageDatabase.shared.addDasboardWidget(account: account, dashboardWidgets: dashboardWidgets)
             }
         }
     }
