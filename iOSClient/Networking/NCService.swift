@@ -283,6 +283,4 @@ class NCService: NSObject {
             NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorDownloadFile)
         }
     }
-
-    // MARK: - Thirt Part
 }
