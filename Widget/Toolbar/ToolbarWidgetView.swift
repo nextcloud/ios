@@ -25,17 +25,17 @@ import SwiftUI
 import WidgetKit
 
 struct ToolbarWidgetView: View {
-    
+
     var entry: ToolbarDataEntry
-    
+
     var body: some View {
-        
+
         GeometryReader { geo in
-            
+
             ZStack(alignment: .topLeading) {
-                
+
                 HStack(spacing: 0) {
-                    
+
                     let sizeButton: CGFloat = 65
                     let placeholderColor = Color(white: 0.8)
                     let brandColor = Color(NCBrandColor.shared.brand)
@@ -99,13 +99,13 @@ struct ToolbarWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
-                    
+
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
-            }.background(ContainerRelativeShape().fill(Color.init(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)))
+            }.background(ContainerRelativeShape().fill(Color(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)))
         }
     }
 }

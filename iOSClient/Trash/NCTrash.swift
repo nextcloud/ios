@@ -276,7 +276,7 @@ extension NCTrash {
     @objc func loadListingTrash() {
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
-        
+
         NextcloudKit.shared.listingTrash(showHiddenFiles: false, options: options) { account, items, error in
 
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }

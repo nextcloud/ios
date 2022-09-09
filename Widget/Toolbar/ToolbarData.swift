@@ -31,7 +31,7 @@ struct ToolbarDataEntry: TimelineEntry {
 }
 
 func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: ToolbarDataEntry) -> Void) {
-    
+
     if isPreview {
         return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
     }
@@ -42,4 +42,3 @@ func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: Toolba
 
     completion(ToolbarDataEntry(date: Date(), isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
 }
-

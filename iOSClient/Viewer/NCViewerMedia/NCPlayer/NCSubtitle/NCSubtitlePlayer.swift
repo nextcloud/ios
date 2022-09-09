@@ -155,7 +155,7 @@ extension NCPlayer {
         NotificationCenter.default.addObserver(self, selector: #selector(deviceRotated(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
 
-    func loadText(filePath: URL, _ completion:@escaping (_ contents: String?) -> Void) {
+    func loadText(filePath: URL, _ completion: @escaping (_ contents: String?) -> Void) {
         DispatchQueue.global(qos: .background).async {
             guard let data = try? Data(contentsOf: filePath),
                   let encoding = NCUtility.shared.getEncondingDataType(data: data) else {
