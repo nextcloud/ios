@@ -37,27 +37,31 @@ struct DashboardDataEntry: TimelineEntry {
 }
 
 struct DashboardData: Identifiable, Hashable {
-    var id: String
-    var image: UIImage
-    var title: String
-    var subTitle: String
-    var url: URL
+    let id: Int
+    let title: String
+    let subTitle: String
+    let link: URL
+    let icon: UIImage
 }
 
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: "1", image: UIImage(named: "nextcloud")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "2", image: UIImage(named: "nextcloud")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "3", image: UIImage(named: "nextcloud")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "4", image: UIImage(named: "nextcloud")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "5", image: UIImage(named: "nextcloud")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
+    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!),
+    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!)
 ]
 
 func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
-    let title = "Dashboard"
-    let titleImage = UIImage(named: "nextcloud")!
+    var title = "Dashboard"
+    var titleImage = UIImage(named: "nextcloud")!
     
     if isPreview {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
@@ -94,16 +98,29 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    NextcloudKit.shared.getDashboard(widgets: "recommendations") { account, dashboardResults, json, error in
+    title = "recommendations"
+    
+    NextcloudKit.shared.getDashboardWidgetsApplication(title) { account, results, error in
         
         var datas = [DashboardData]()
         
-        if let dashboardResults = dashboardResults {
-            for dashboardResult in dashboardResults {
-                let application = dashboardResult.application
-                if let entries = dashboardResult.dashboardEntries {
+        if let results = results {
+            for result in results {
+                //let application = dashboardResult.application
+                if let entries = result.items {
+                    var counter: Int = 0
                     for entry in entries {
-                        
+                        counter += 1
+                        let title = entry.title ?? ""
+                        let subtitle = entry.subtitle ?? ""
+                        var link = URL(string: "https://")!
+                        if let entryLink = entry.link, let url = URL(string: entryLink){
+                            link = url
+                        }
+                        let iconUrl = entry.iconUrl ?? ""
+                        let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: UIImage(named: "file")!)
+                        datas.append(data)
+                        if datas.count == dashboaardItems { break}
                     }
                 }
             }

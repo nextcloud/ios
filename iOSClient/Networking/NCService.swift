@@ -249,6 +249,9 @@ class NCService: NSObject {
             }
 
             //TODO: Test DASHBOARD
+            NextcloudKit.shared.getDashboardWidget { account, results, error in
+                print("")
+            }
             /*
             if #available(iOS 15.0, *) {
                 let widgets = "recommendations"
