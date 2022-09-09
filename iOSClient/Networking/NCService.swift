@@ -251,19 +251,10 @@ class NCService: NSObject {
             //TODO: Test DASHBOARD
             /*
             if #available(iOS 15.0, *) {
-                NextcloudKit.shared.getDashboard { request in
-                } completion: { dashboardResults, json, errorCode, errorDescription in
-                    if let dashboardResults = dashboardResults {
-                        for result in dashboardResults {
-                            for entry in result.dashboardEntries ?? [] {
-                                if let url = URL(string: entry.iconUrl) {
-                                    NextcloudKit.shared.getPreview(url: url) { account, data, errorCode, errorDescription in
-
-                                    }
-                                }
-                            }
-                        }
-                    }
+                let widgets = "recommendations"
+                //let options = NKRequestOptions(endpoint: "https://e2e.kaminsky.me/ocs/v2.php/apps/dashboard/api/v1/widget-items?widgets%5B%5D=recommendations")
+                NextcloudKit.shared.getDashboard(widgets: widgets) { account, dashboardResults, json, error in
+                    print("")
                 }
             }
             */

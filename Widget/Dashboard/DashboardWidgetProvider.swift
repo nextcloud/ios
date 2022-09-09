@@ -30,7 +30,9 @@ struct DashboardWidgetProvider: TimelineProvider {
 
     func placeholder(in context: Context) -> Entry {
         let datasPlaceholder = Array(dashboardDatasTest[0...nextcloudItems - 1])
-        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let title = "Dashboard"
+        let titleImage = UIImage(named: "nextcloud")!
+        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {

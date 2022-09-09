@@ -30,6 +30,7 @@ struct DashboardDataEntry: TimelineEntry {
     let date: Date
     let datas: [DashboardData]
     let isPlaceholder: Bool
+    let titleImage: UIImage
     let title: String
     let footerImage: String
     let footerText: String
@@ -52,36 +53,18 @@ let dashboardDatasTest: [DashboardData] = [
     .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getTitleDashboard() -> String {
-
-    let hour = Calendar.current.component(.hour, from: Date())
-    var good = ""
-
-    switch hour {
-    case 6..<12: good = NSLocalizedString("_good_morning_", value: "Good morning", comment: "")
-    case 12: good = NSLocalizedString("_good_noon_", value: "Good noon", comment: "")
-    case 13..<17: good = NSLocalizedString("_good_afternoon_", value: "Good afternoon", comment: "")
-    case 17..<22: good = NSLocalizedString("_good_evening_", value: "Good evening", comment: "")
-    default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
-    }
-
-    if let account = NCManageDatabase.shared.getActiveAccount() {
-        return good + ", " + account.displayName
-    } else {
-        return good
-    }
-}
-
 func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
+    let title = "Dashboard"
+    let titleImage = UIImage(named: "nextcloud")!
     
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
     
     // NETWORKING
@@ -111,7 +94,7 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    NextcloudKit.shared.getDashboard { account, dashboardResults, json, error in
+    NextcloudKit.shared.getDashboard(widgets: "recommendations") { account, dashboardResults, json, error in
         
         var datas = [DashboardData]()
         
@@ -127,11 +110,11 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         }
         
         if error != .success {
-            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "xmark.icloud", footerText: error.errorDescription))
+            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
-            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
         } else {
-            completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+            completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
         }
     }
 }
