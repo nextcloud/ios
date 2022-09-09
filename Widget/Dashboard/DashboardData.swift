@@ -24,7 +24,7 @@
 import WidgetKit
 import NextcloudKit
 
-let dashboaardItems = 4
+let dashboaardItems = 6
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
