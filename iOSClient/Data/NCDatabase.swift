@@ -244,6 +244,37 @@ class tableDirectEditingCreators: Object {
     @objc dynamic var templates: Int = 0
 }
 
+class tableDashboardWidget: Object {
+    
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var title = ""
+    @Persisted var order: Int = 0
+    @Persisted var iconClass: String?
+    @Persisted var iconUrl: String?
+    @Persisted var widgetUrl: String?
+    let button = List<tableDashboardWidgetButton>()
+    @Persisted var index = ""
+    
+    override static func primaryKey() -> String {
+        return "index"
+    }
+}
+
+class tableDashboardWidgetButton: Object {
+
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var type = ""
+    @Persisted var text = ""
+    @Persisted var link = ""
+    @Persisted var index = ""
+
+    override static func primaryKey() -> String {
+        return "index"
+    }
+}
+
 class tableDirectEditingEditors: Object {
 
     @objc dynamic var account = ""

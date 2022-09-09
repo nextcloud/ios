@@ -60,6 +60,7 @@ excluded:
   - iOSClient/Data/NCManageDatabase.swift
   - iOSClient/Data/NCManageDatabase+Metadata.swift
   - iOSClient/Data/NCManageDatabase+Video.swift
+  - iOSClient/Data/NCManageDatabase+DashboardWidget.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
   - iOSClient/EmptyView/NCEmptyDataSet.swift
   - iOSClient/Extensions/UIColor+Extensions.swift

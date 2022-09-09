@@ -248,19 +248,12 @@ class NCService: NSObject {
                 }
             }
 
-            //TODO: Test DASHBOARD
-            NextcloudKit.shared.getDashboardWidget { account, results, error in
-                print("")
-            }
-            /*
-            if #available(iOS 15.0, *) {
-                let widgets = "recommendations"
-                //let options = NKRequestOptions(endpoint: "https://e2e.kaminsky.me/ocs/v2.php/apps/dashboard/api/v1/widget-items?widgets%5B%5D=recommendations")
-                NextcloudKit.shared.getDashboard(widgets: widgets) { account, dashboardResults, json, error in
-                    print("")
+            //Added Dasboard Widget
+            NextcloudKit.shared.getDashboardWidget { account, dashboardWidgets, error in
+                if error == .success, let dashboardWidgets = dashboardWidgets  {
+                    NCManageDatabase.shared.addDasboard(account: account, dashboardWidgets: dashboardWidgets)
                 }
             }
-            */
         }
     }
 
