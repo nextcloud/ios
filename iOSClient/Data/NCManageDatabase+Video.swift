@@ -23,7 +23,7 @@
 
 import Foundation
 import RealmSwift
-import NCCommunication
+import NextcloudKit
 
 extension NCManageDatabase {
 
@@ -60,7 +60,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -92,7 +92,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -146,7 +146,7 @@ extension NCManageDatabase {
                 realm.delete(result)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 }

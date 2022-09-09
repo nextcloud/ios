@@ -22,12 +22,12 @@
 //
 
 import UIKit
-import NCCommunication
 import Queuer
+import NextcloudKit
 
 extension NCNetworking {
 
-    internal func uploadChunkedFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
+    internal func uploadChunkedFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ error: NKError) -> Void) {
 
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
@@ -37,34 +37,33 @@ extension NCNetworking {
         let fileSizeInGB = Double(metadata.size) / 1e9
         let ocIdTemp = metadata.ocId
         let selector = metadata.sessionSelector
-
-        var uploadErrorCode: Int = 0
-        var uploadErrorDescription: String = ""
+        var uploadError = NKError()
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
             NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
-            filesNames = NCCommunicationCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
+            filesNames = NKCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
             } else {
                 NCContentPresenter.shared.dismiss()
-                NCContentPresenter.shared.messageNotification("_error_", description: "_err_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorReadFile)
+                let error = NKError(errorCode: NCGlobal.shared.errorReadFile, errorDescription: "_err_file_not_found_")
+                NCContentPresenter.shared.showError(error: error)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                return completion(uploadErrorCode, uploadErrorDescription)
+                return completion(uploadError)
             }
         } else {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         }
 
-        createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { errorCode, errorDescription in
+        createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { error in
 
             NCContentPresenter.shared.dismiss(after: NCGlobal.shared.dismissAfterSecond)
             start()
 
-            guard errorCode == 0 else {
-                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
-                completion(errorCode, errorDescription)
+            guard error == .success else {
+                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, error: error)
+                completion(error)
                 return
             }
 
@@ -82,14 +81,14 @@ extension NCNetworking {
 
                 let semaphore = Semaphore()
 
-                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
+                NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
 
                     self.uploadRequest[fileNameLocalPath] = request
 
                 }, taskHandler: { task in
 
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-                    NCCommunicationCommon.shared.writeLog("Upload chunk: " + fileName)
+                    NKCommon.shared.writeLog("Upload chunk: " + fileName)
 
                 }, progressHandler: { progress in
 
@@ -112,26 +111,25 @@ extension NCNetworking {
                                 "totalBytesExpected": NSNumber(value: totalBytesExpected)])
                     }
 
-                }) { _, _, _, _, _, _, _, errorCode, errorDescription in
+                }) { _, _, _, _, _, _, _, error in
 
                     self.uploadRequest.removeValue(forKey: fileNameLocalPath)
-                    uploadErrorCode = errorCode
-                    uploadErrorDescription = errorDescription
+                    uploadError = error
                     semaphore.continue()
                 }
 
                 semaphore.wait()
 
-                if uploadErrorCode == 0 {
+                if uploadError == .success {
                     NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileName: fileName)
                 } else {
                     break
                 }
             }
 
-            guard uploadErrorCode == 0 else {
-                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: uploadErrorCode, errorDescription: uploadErrorDescription)
-                completion(errorCode, errorDescription)
+            guard uploadError == .success else {
+                self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, error: uploadError)
+                completion(error)
                 return
             }
 
@@ -140,12 +138,12 @@ extension NCNetworking {
             let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
             let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
 
-            var addCustomHeaders: [String: String] = [:]
+            var customHeader: [String: String] = [:]
             let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
             let modificationDate = "\(metadata.date.timeIntervalSince1970)"
 
-            addCustomHeaders["X-OC-CTime"] = creationDate
-            addCustomHeaders["X-OC-MTime"] = modificationDate
+            customHeader["X-OC-CTime"] = creationDate
+            customHeader["X-OC-MTime"] = modificationDate
 
             // Calculate Assemble Timeout
             let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
@@ -153,13 +151,15 @@ extension NCNetworking {
             let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30 min
             let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
 
-            NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, timeout: timeout, queue: DispatchQueue.global(qos: .background)) { _, errorCode, errorDescription in
+            let options = NKRequestOptions(customHeader: customHeader, timeout: timeout, queue: DispatchQueue.global(qos: .background))
+            
+            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, error in
 
-                NCCommunicationCommon.shared.writeLog("Assembling chunk with error code: \(errorCode)")
+                NKCommon.shared.writeLog("Assembling chunk with error code: \(error.errorCode)")
 
-                guard uploadErrorCode == 0 else {
-                    self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, errorCode: errorCode, errorDescription: errorDescription)
-                    completion(errorCode, errorDescription)
+                guard error == .success else {
+                    self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, error: error)
+                    completion(error)
                     return
                 }
 
@@ -173,9 +173,9 @@ extension NCNetworking {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: ocIdTemp)
 
-                self.readFile(serverUrlFileName: serverUrlFileNameDestination) { (_, metadata, _, _) in
+                self.readFile(serverUrlFileName: serverUrlFileNameDestination) { (_, metadata, _) in
 
-                    if errorCode == 0, let metadata = metadata {
+                    if error == .success, let metadata = metadata {
 
                         metadata.assetLocalIdentifier = assetLocalIdentifier
                         metadata.e2eEncrypted = isE2eEncrypted
@@ -194,68 +194,71 @@ extension NCNetworking {
                         NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "error": error])
 
                     } else {
 
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": ocIdTemp, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "errorCode": errorCode, "errorDescription": ""])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": ocIdTemp, "serverUrl": serverUrl, "account": account, "fileName": fileName, "ocIdTemp": ocIdTemp, "error": error])
                     }
 
-                    completion(errorCode, errorDescription)
+                    completion(error)
                 }
             }
         }
     }
 
-    private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
+    private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: NKError) -> Void) {
 
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, errorCode, errorDescription in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, _, _, error in
 
-            if errorCode == 0 {
-                completion(0, "")
-            } else if errorCode == NCGlobal.shared.errorResourceNotFound {
-                NCCommunication.shared.createFolder(chunkFolderPath, queue: NCCommunicationCommon.shared.backgroundQueue) { _, _, _, errorCode, errorDescription in
-                    completion(errorCode, errorDescription)
+            if error == .success {
+                completion(NKError())
+            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                NextcloudKit.shared.createFolder(chunkFolderPath, options: options) { _, _, _, error in
+                    completion(error)
                 }
             } else {
-                completion(errorCode, errorDescription)
+                completion(error)
             }
         }
     }
 
-    private func uploadChunkFileError(metadata: tableMetadata, chunkFolderPath: String, directoryProviderStorageOcId: String, errorCode: Int, errorDescription: String) {
+    private func uploadChunkFileError(metadata: tableMetadata, chunkFolderPath: String, directoryProviderStorageOcId: String, error: NKError) {
 
-        var errorDescription = errorDescription
+        var errorDescription = error.errorDescription
 
-        NCCommunicationCommon.shared.writeLog("Upload chunk error code: \(errorCode)")
+        NKCommon.shared.writeLog("Upload chunk error code: \(error.errorCode)")
 
-        if errorCode == NSURLErrorCancelled || errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
+        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
             // Delete chunk folder
-            NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { _, _, _ in }
+            NextcloudKit.shared.deleteFileOrFolder(chunkFolderPath) { _, _ in }
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
-            NCCommunication.shared.deleteFileOrFolder(chunkFolderPath) { _, _, _ in }
+            NextcloudKit.shared.deleteFileOrFolder(chunkFolderPath) { _, _ in }
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 
         } else {
 
             // NO report for the connection lost
-            if errorCode == NCGlobal.shared.errorConnectionLost {
+            if error.errorCode == NCGlobal.shared.errorConnectionLost {
                 errorDescription = ""
             } else {
-                let description = errorDescription + " code: \(errorCode)"
-                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                let description = errorDescription + " code: \(error.errorCode)"
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: description)
+                NCContentPresenter.shared.showError(error: error)
             }
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: NCGlobal.shared.metadataStatusNormal, status: NCGlobal.shared.metadataStatusUploadError)
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": metadata.ocId, "errorCode": errorCode, "errorDescription": ""])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": metadata.ocId, "error": error])
     }
 }

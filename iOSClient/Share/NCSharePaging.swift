@@ -24,7 +24,7 @@
 
 import UIKit
 import Parchment
-import NCCommunication
+import NextcloudKit
 import MarqueeLabel
 
 protocol NCSharePagingContent {
@@ -322,7 +322,7 @@ class NCSharePagingView: PagingView {
                 headerView.imageView.image = UIImage(named: "file")
             }
         }
-        headerView.path.text = NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: true)
+        headerView.path.text = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
         headerView.path.textColor = NCBrandColor.shared.label
         headerView.path.trailingBuffer = headerView.path.frame.width
         if metadata.favorite {
@@ -374,20 +374,21 @@ class NCShareHeaderView: UIView {
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-        NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-            if errorCode == 0 {
+        NCNetworking.shared.favoriteMetadata(metadata) { error in
+            if error == .success {
                 self.favorite.setImage(NCUtility.shared.loadImage(
                     named: "star.fill",
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : NCBrandColor.shared.systemGray,
                     size: 20), for: .normal)
             } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }
 
     @objc func longTap(sender: UIGestureRecognizer) {
         UIPasteboard.general.string = path.text
-        NCContentPresenter.shared.messageNotification("", description: "_copied_path_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
+        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
+        NCContentPresenter.shared.showInfo(error: error)
     }
 }

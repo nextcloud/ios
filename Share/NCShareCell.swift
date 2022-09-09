@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 protocol NCShareCellDelegate: AnyObject {
     var uploadStarted: Bool { get }
@@ -40,7 +40,7 @@ class NCShareCell: UITableViewCell {
 
     func setup(fileName: String) {
         self.fileName = fileName
-        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+        let resultInternalType = NKCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
 
         backgroundColor = NCBrandColor.shared.systemBackground
         imageCell?.layer.cornerRadius = 6

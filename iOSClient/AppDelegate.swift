@@ -23,10 +23,11 @@
 
 import UIKit
 import BackgroundTasks
-import NCCommunication
+import NextcloudKit
 import TOPasscodeViewController
 import LocalAuthentication
 import Firebase
+import WidgetKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate, NCUserBaseUrl {
@@ -78,39 +79,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.createDirectoryStandard()
         CCUtility.emptyTemporaryDirectory()
 
-        NCCommunicationCommon.shared.setup(delegate: NCNetworking.shared)
-        NCCommunicationCommon.shared.setup(userAgent: userAgent)
+        NKCommon.shared.setup(delegate: NCNetworking.shared)
+        NKCommon.shared.setup(userAgent: userAgent)
 
         startTimerErrorNetworking()
 
         // LOG
         var levelLog = 0
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+            NKCommon.shared.pathLog = pathDirectoryGroup
         }
 
         if NCBrandOptions.shared.disable_log {
 
-            NCUtilityFileSystem.shared.deleteFile(filePath: NCCommunicationCommon.shared.filenamePathLog)
-            NCUtilityFileSystem.shared.deleteFile(filePath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NCCommunicationCommon.shared.filenameLog)
+            NCUtilityFileSystem.shared.deleteFile(filePath: NKCommon.shared.filenamePathLog)
+            NCUtilityFileSystem.shared.deleteFile(filePath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NKCommon.shared.filenameLog)
 
         } else {
 
             levelLog = CCUtility.getLogLevel()
-            NCCommunicationCommon.shared.levelLog = levelLog
-            NCCommunicationCommon.shared.copyLogToDocumentDirectory = true
+            NKCommon.shared.levelLog = levelLog
+            NKCommon.shared.copyLogToDocumentDirectory = true
             if isSimulatorOrTestFlight {
-                NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
             } else {
-                NCCommunicationCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
             }
         }
 
         // LOG Account
         if let account = NCManageDatabase.shared.getActiveAccount() {
-            NCCommunicationCommon.shared.writeLog("Account active \(account.account)")
+            NKCommon.shared.writeLog("Account active \(account.account)")
             if CCUtility.getPassword(account.account).isEmpty {
-                NCCommunicationCommon.shared.writeLog("PASSWORD NOT FOUND for \(account.account)")
+                NKCommon.shared.writeLog("PASSWORD NOT FOUND for \(account.account)")
             }
         }
 
@@ -238,7 +239,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
 
-        NCCommunicationCommon.shared.writeLog("Application will enter in foreground")
+        NKCommon.shared.writeLog("Application will enter in foreground")
 
         // START TIMER UPLOAD PROCESS
         if NCUtility.shared.isSimulator() {
@@ -270,6 +271,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
             showPrivacyProtectionWindow()
+        }
+
+        // Reload Widget
+        if #available(iOS 14.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
         }
 
         // Clear operation queue
@@ -311,7 +317,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillTerminate(_ application: UIApplication) {
 
         NCNetworking.shared.cancelAllDownloadTransfer()
-        NCCommunicationCommon.shared.writeLog("bye bye")
+        NKCommon.shared.writeLog("bye bye")
     }
 
     // MARK: -
@@ -319,7 +325,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc private func initialize() {
         guard !account.isEmpty else { return }
 
-        NCCommunicationCommon.shared.writeLog("initialize Main")
+        NKCommon.shared.writeLog("initialize Main")
 
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
@@ -332,6 +338,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // close detail
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuDetailClose)
+
+        // Reload Widget
+        if #available(iOS 14.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
 
         // Registeration domain File Provider
         // FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
@@ -348,9 +359,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NCCommunicationCommon.shared.writeLog("Refresh task success submit request \(request)")
+            NKCommon.shared.writeLog("Refresh task success submit request \(request)")
         } catch {
-            NCCommunicationCommon.shared.writeLog("Refresh task failed to submit request: \(error)")
+            NKCommon.shared.writeLog("Refresh task failed to submit request: \(error)")
         }
     }
 
@@ -363,9 +374,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
-            NCCommunicationCommon.shared.writeLog("Background Processing task success submit request \(request)")
+            NKCommon.shared.writeLog("Background Processing task success submit request \(request)")
         } catch {
-            NCCommunicationCommon.shared.writeLog("Background Processing task failed to submit request: \(error)")
+            NKCommon.shared.writeLog("Background Processing task failed to submit request: \(error)")
         }
     }
 
@@ -377,11 +388,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NCCommunicationCommon.shared.writeLog("Start handler refresh task [Auto upload]")
+        NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                NCCommunicationCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
+                NKCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
                 task.setTaskCompleted(success: true)
             }
         }
@@ -395,16 +406,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NCCommunicationCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
+        NKCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
 
-        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, errorCode, _ in
-            NCCommunicationCommon.shared.writeLog("Completition listing favorite with error: \(errorCode)")
+        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, error in
+            NKCommon.shared.writeLog("Completition listing favorite with error: \(error.errorCode)")
         }
 
         NCService.shared.synchronizeOffline(account: account)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
-            NCCommunicationCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
+            NKCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
             task.setTaskCompleted(success: true)
         }
     }
@@ -418,10 +429,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NCCommunicationCommon.shared.writeLog("Start perform Fetch [Auto upload]")
+        NKCommon.shared.writeLog("Start perform Fetch [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NCCommunicationCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
+            NKCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
             if items == 0 {
                 completionHandler(UIBackgroundFetchResult.noData)
             } else {
@@ -434,7 +445,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
 
-        NCCommunicationCommon.shared.writeLog("Start handle Events For Background URLSession: \(identifier)")
+        NKCommon.shared.writeLog("Start handle Events For Background URLSession: \(identifier)")
         backgroundSessionCompletionHandler = completionHandler
     }
 
@@ -449,8 +460,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self.window?.rootViewController) { errorCode in
-            if errorCode == 0 {
+        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: self.window?.rootViewController) { error in
+            if error == .success {
                 NCPushNotification.shared().registerForRemoteNotifications(withDeviceToken: deviceToken)
             }
         }
@@ -617,10 +628,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         _ = NCFunctionCenter.shared
 
-        NCCommunicationCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+        NKCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor > 0 {
-            NCCommunicationCommon.shared.setup(nextcloudVersion: serverVersionMajor)
+            NKCommon.shared.setup(nextcloudVersion: serverVersionMajor)
         }
         NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
     }
@@ -823,7 +834,75 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var serverUrl: String = ""
         var matchedAccount: tableAccount?
 
-        if scheme == "nextcloud" && action == "open-file" {
+        /*
+         Example:
+         nextcloud://open-action?action=create-voice-memo
+         */
+
+        if scheme == "nextcloud" && action == "open-action" {
+
+            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                let queryItems = urlComponents.queryItems
+                guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems), let rootViewController = window?.rootViewController else { return false }
+                
+                switch actionScheme {
+                case NCGlobal.shared.actionUploadAsset:
+
+                    NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
+                        if hasPermission {
+                            NCPhotosPickerViewController.init(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                        }
+                    }
+                    
+                case NCGlobal.shared.actionScanDocument:
+                    
+                    if #available(iOS 13.0, *) {
+                        NCCreateScanDocument.shared.openScannerDocument(viewController: rootViewController)
+                    }
+                    
+                case NCGlobal.shared.actionTextDocument:
+                    
+                    guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(), let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account), let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}) else { return false }
+                    
+                    navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+
+                    let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
+                    viewController.editorId = NCGlobal.shared.editorText
+                    viewController.creatorId = directEditingCreator.identifier
+                    viewController.typeTemplate = NCGlobal.shared.templateDocument
+                    viewController.serverUrl = activeServerUrl
+                    viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
+
+                    rootViewController.present(navigationController, animated: true, completion: nil)
+                    
+                case NCGlobal.shared.actionVoiceMemo:
+                    
+                    NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
+                        if hasPermission {
+                            let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+                            let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
+
+                            viewController.delegate = self
+                            viewController.createRecorder(fileName: fileName)
+                            viewController.modalTransitionStyle = .crossDissolve
+                            viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+
+                            rootViewController.present(viewController, animated: true, completion: nil)
+                        }
+                    }
+
+                default:
+                    print("No action")
+                }
+            }
+        }
+
+        /*
+         Example:
+         nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
+         */
+
+        else if scheme == "nextcloud" && action == "open-file" {
 
             if !isSearchingMode, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -880,6 +959,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     }
                 }
             }
+        } else {
+            app.open(url)
         }
 
         return true

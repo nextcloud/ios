@@ -23,7 +23,7 @@
 
 @testable import Nextcloud
 import XCTest
-import NCCommunication
+import NextcloudKit
 
 class SharePermissionTest: XCTestCase {
     override func setUp() {
@@ -35,7 +35,7 @@ class SharePermissionTest: XCTestCase {
     }
 
     func testShareCellPermissionCell() throws {
-        let share = NCTableShareOptions(sharee: NCCommunicationSharee(), metadata: tableMetadata(), password: nil)
+        let share = NCTableShareOptions(sharee: NKSharee(), metadata: tableMetadata(), password: nil)
         let shareConfig = NCShareConfig(parentMetadata: tableMetadata(), share: share)
 
         for row in 0..<shareConfig.permissions.count {
@@ -48,7 +48,7 @@ class SharePermissionTest: XCTestCase {
 
         let meta = tableMetadata()
         meta.sharePermissionsCollaborationServices = 31
-        let fullShare = NCTableShareOptions(sharee: NCCommunicationSharee(), metadata: meta, password: nil)
+        let fullShare = NCTableShareOptions(sharee: NKSharee(), metadata: meta, password: nil)
         let shareFullConfig = NCShareConfig(parentMetadata: meta, share: fullShare)
 
         for row in 0..<shareFullConfig.permissions.count {
@@ -102,7 +102,7 @@ class SharePermissionTest: XCTestCase {
     func testUserShare() throws {
         let meta = tableMetadata()
         meta.directory = false
-        let sharee = NCCommunicationSharee()
+        let sharee = NKSharee()
         let share = NCTableShareOptions(sharee: sharee, metadata: meta, password: nil)
         let fileConfig = NCShareConfig(parentMetadata: meta, share: share)
         XCTAssertEqual(fileConfig.advanced, NCShareDetails.forUser)
@@ -126,7 +126,7 @@ class SharePermissionTest: XCTestCase {
         XCTAssertEqual(fileConfig.permissions as? [NCLinkPermission], NCLinkPermission.forFile)
 
         meta.directory = true
-        let sharee = NCCommunicationSharee()
+        let sharee = NKSharee()
         let folderShare = NCTableShareOptions(sharee: sharee, metadata: meta, password: nil)
         let folderConfig = NCShareConfig(parentMetadata: meta, share: folderShare)
         XCTAssertEqual(folderConfig.resharePermission, meta.sharePermissionsCollaborationServices)

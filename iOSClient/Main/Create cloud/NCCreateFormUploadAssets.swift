@@ -23,7 +23,7 @@
 
 import UIKit
 import Queuer
-import NCCommunication
+import NextcloudKit
 import XLForm
 import Photos
 
@@ -272,7 +272,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
                     self.reloadFormRow(formRow)
 
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCharactersForbidden)
+                    let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_forbidden_characters_")
+                    NCContentPresenter.shared.showInfo(error: error)
                 }
             }
 
@@ -338,7 +339,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
             if autoUploadPath == self.serverUrl {
                 if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                    
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
+                    NCContentPresenter.shared.showError(error: error)
                     return
                 }
             }

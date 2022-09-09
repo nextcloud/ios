@@ -25,7 +25,7 @@
 
 import UIKit
 import FloatingPanel
-import NCCommunication
+import NextcloudKit
 
 extension NCTrash {
     var selectActions: [NCMenuAction] {

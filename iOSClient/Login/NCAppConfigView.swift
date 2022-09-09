@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCAppConfigView: UIViewController {
 
@@ -63,21 +63,24 @@ class NCAppConfigView: UIViewController {
         appDelegate.timerErrorNetworking?.invalidate()
 
         guard let serverUrl = self.serverUrl else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User Default, serverUrl not found")
+            NCContentPresenter.shared.showError(error: error)
             return
         }
         guard let username = self.username else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, username not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User Default, username not found")
+            NCContentPresenter.shared.showError(error: error)
             return
         }
         guard let password = self.password else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, password not found", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User Default, password not found")
+            NCContentPresenter.shared.showError(error: error)
             return
         }
 
-        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { token, errorCode, errorDescription in
+        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { token, error in
             DispatchQueue.main.async {
-                if errorCode == 0 && token != nil {
+                if error == .success && token != nil {
                     let account: String = "\(username) \(serverUrl)"
 
                     // NO account found, clear
@@ -88,7 +91,8 @@ class NCAppConfigView: UIViewController {
                     NCManageDatabase.shared.addAccount(account, urlBase: serverUrl, user: username, password: token!)
 
                     guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "setAccountActive error")
+                        NCContentPresenter.shared.showError(error: error)
                         self.dismiss(animated: true, completion: nil)
                         return
                     }
@@ -98,7 +102,7 @@ class NCAppConfigView: UIViewController {
 
                     self.dismiss(animated: true) {}
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }

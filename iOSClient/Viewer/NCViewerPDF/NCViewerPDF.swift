@@ -24,6 +24,7 @@
 import UIKit
 import PDFKit
 import EasyTipView
+import NextcloudKit
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
@@ -286,14 +287,14 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
               serverUrl == self.metadata.serverUrl,
               let fileName = userInfo["fileName"] as? String,
               fileName == self.metadata.fileName,
-              let errorCode = userInfo["errorCode"] as? Int
+              let error = userInfo["error"] as? NKError
         else {
             return
         }
 
         NCActivityIndicator.shared.stop()
 
-        if errorCode == 0 {
+        if error == .success {
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
             pdfView.document = pdfDocument
             pdfView.layoutDocumentView()

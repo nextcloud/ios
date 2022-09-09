@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCEndToEndMetadata: NSObject {
 
@@ -219,7 +219,7 @@ class NCEndToEndMetadata: NSObject {
                         metadata.fileNameView = encryptedFileAttributes.filename
                         metadata.fileNameWithoutExt = (encryptedFileAttributes.filename as NSString).deletingPathExtension
 
-                        let results = NCCommunicationCommon.shared.getInternalType(fileName: encryptedFileAttributes.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                        let results = NKCommon.shared.getInternalType(fileName: encryptedFileAttributes.filename, mimeType: metadata.contentType, directory: metadata.directory)
 
                         metadata.contentType = results.mimeType
                         metadata.iconName = results.iconName

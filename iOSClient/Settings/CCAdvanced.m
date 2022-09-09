@@ -142,7 +142,7 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_diagnostics_", nil)];
     [form addFormSection:section];
         
-    if ([[NSFileManager defaultManager] fileExistsAtPath:NCCommunicationCommon.shared.filenamePathLog] && NCBrandOptions.shared.disable_log == false) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:NKCommon.shared.filenamePathLog] && NCBrandOptions.shared.disable_log == false) {
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"log" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_view_log_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
@@ -153,7 +153,7 @@
         row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                     
             [self deselectFormRow:sender];
-            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NCCommunicationCommon.shared.filenamePathLog] isEditingEnabled:false metadata:nil];
+            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NKCommon.shared.filenamePathLog] isEditingEnabled:false metadata:nil];
             [self presentViewController:viewerQuickLook animated:YES completion:nil];
         };
         [section addFormRow:row];
@@ -168,15 +168,15 @@
                     
             [self deselectFormRow:sender];
 
-            [[NCCommunicationCommon shared] clearFileLog];
+            [[NKCommon shared] clearFileLog];
             
             NSInteger logLevel = [CCUtility getLogLevel];
             BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
             NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
-                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
+                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
             } else {
-                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
+                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
             }
         };
         [section addFormRow:row];
@@ -359,7 +359,7 @@
         
         NSInteger levelLog = [[rowDescriptor.value valueData] intValue];
         [CCUtility setLogLevel:levelLog];
-        [[NCCommunicationCommon shared] setLevelLog:levelLog];
+        [[NKCommon shared] setLevelLog:levelLog];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"chunk"]) {

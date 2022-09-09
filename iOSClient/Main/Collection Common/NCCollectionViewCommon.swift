@@ -23,7 +23,7 @@
 
 import UIKit
 import Realm
-import NCCommunication
+import NextcloudKit
 import EasyTipView
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCSelectableNavigationView {
@@ -52,8 +52,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var autoUploadDirectory = ""
 
     internal var groupByField = "name"
-    internal var providers: [NCCSearchProvider]?
-    internal var searchResults: [NCCSearchResult]?
+    internal var providers: [NKSearchProvider]?
+    internal var searchResults: [NKSearchResult]?
 
     internal var listLayout: NCListLayout!
     internal var gridLayout: NCGridLayout!
@@ -546,7 +546,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-        if metadata.livePhoto && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue { return }
+        if metadata.livePhoto && metadata.classFile == NKCommon.typeClassFile.video.rawValue { return }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -1012,8 +1012,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            NCNetworking.shared.unifiedSearchFiles(urlBase: appDelegate, literal: literalSearch) { allProviders in
-                self.providers = allProviders
+            NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { account, searchProviders in
+                self.providers = searchProviders
                 self.searchResults = []
                 self.dataSource = NCDataSource(
                     metadatas: [] ,
@@ -1025,21 +1025,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     filterLivePhoto: true,
                     providers: self.providers,
                     searchResults: self.searchResults)
-            } update: { id, searchResult, metadatas in
+            } update: { account, id, searchResult, metadatas in
                 guard let metadatas = metadatas, metadatas.count > 0, self.appDelegate.isSearchingMode , let searchResult = searchResult else { return }
                 NCOperationQueue.shared.unifiedSearchAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
-            } completion: {errorCode, errorDescription in
+            } completion: { account, error in
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.collectionView.reloadData()
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, errorCode, errorDescription in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { metadatas, error in
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
                     self.collectionView.reloadData()
                 }
-                guard let metadatas = metadatas, errorCode == 0, self.appDelegate.isSearchingMode else { return }
+                guard let metadatas = metadatas, error == .success, self.appDelegate.isSearchingMode else { return }
                 self.dataSource = NCDataSource(
                     metadatas: metadatas,
                     account: self.appDelegate.account,
@@ -1063,10 +1063,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(urlBase: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { searchResult, metadatas, errorCode, errorDescription in
+        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { account, searchResult, metadatas, error in
 
-            if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
             }
 
             metadataForSection.unifiedSearchInProgress = false
@@ -1079,13 +1079,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String) -> Void) {
+    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadataFolder, errorCode, errorDescription) in
-            guard errorCode == 0 else {
-                completion(nil, nil, nil, nil, errorCode, errorDescription)
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadataFolder, error) in
+            guard error == .success else {
+                completion(nil, nil, nil, nil, error)
                 return
             }
 
@@ -1093,32 +1093,34 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             }
             if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
-                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, errorCode, errorDescription in
-                    guard errorCode == 0 else {
-                        completion(tableDirectory, nil, nil, nil, errorCode, errorDescription)
+                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, error in
+                    guard error == .success else {
+                        completion(tableDirectory, nil, nil, nil, error)
                         return
                     }
                     self.metadataFolder = metadataFolder
                     // E2EE
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-                        NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, errorCode, errorDescription in
-                            if errorCode == 0, let e2eMetadata = e2eMetadata {
+                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, error in
+                            if error == .success, let e2eMetadata = e2eMetadata {
                                 if NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
                                     self.reloadDataSource()
                                 } else {
-                                    NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata)
+                                    let error = NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_")
+                                    NCContentPresenter.shared.messageNotification("_error_e2ee_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                                 }
-                            } else if errorCode != NCGlobal.shared.errorResourceNotFound {
-                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorDecodeMetadata)
+                            } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
+                                let error = NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_")
+                                NCContentPresenter.shared.messageNotification("_error_e2ee_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                             }
-                            completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                            completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                         }
                     } else {
-                        completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, errorDescription)
+                        completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                     }
                 }
             } else {
-                completion(tableDirectory, nil, nil, nil, 0, "")
+                completion(tableDirectory, nil, nil, nil, NKError())
             }
         }
     }
@@ -1272,7 +1274,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            NCContentPresenter.shared.messageNotification("_info_", description: "_e2e_goto_settings_for_enable_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorE2EENotEnabled)
+            let error = NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_goto_settings_for_enable_")
+            NCContentPresenter.shared.showInfo(error: error)
             return
         }
 
@@ -1284,10 +1287,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
                 var metadatas: [tableMetadata] = []
                 for metadata in metadataSourceForAllSections {
-                    if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+                    if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
                         metadatas.append(metadata)
                     }
                 }
@@ -1297,10 +1300,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if CCUtility.fileProviderStorageExists(metadata) {
                 NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
-            } else if NCCommunication.shared.isNetworkReachable() {
-                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _ in }
+            } else if NextcloudKit.shared.isNetworkReachable() {
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileView) { _, _ in }
             } else {
-                NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorOffline)
+                let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
+                NCContentPresenter.shared.showInfo(error: error)
             }
         }
     }
@@ -1316,7 +1320,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
-        if isEditMode || metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue { return nil }
+        if isEditMode || metadata.classFile == NKCommon.typeClassFile.url.rawValue { return nil }
 
         let identifier = indexPath as NSCopying
         var image: UIImage?
@@ -1356,26 +1360,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Thumbnail
         if !metadata.directory {
             if metadata.name == NCGlobal.shared.appName {
-
-                let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-
-                if FileManager().fileExists(atPath: iconImagePath) {
-                    (cell as! NCCellProtocol).filePreviewImageView?.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else if metadata.status > NCGlobal.shared.metadataStatusNormal && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
-                    if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                        do {
-                            try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                            (cell as! NCCellProtocol).filePreviewImageView?.image = image
-                        } catch { }
-                    }
-                } else if metadata.status > NCGlobal.shared.metadataStatusNormal && metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-                    if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: true), let data = image.jpegData(compressionQuality: 0.5) {
-                        do {
-                            try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
-                            (cell as! NCCellProtocol).filePreviewImageView?.image = image
-                        } catch { }
-                    }
+                    if let image = NCUtilityGUI().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                    (cell as! NCCellProtocol).filePreviewImageView?.image = image
                 } else {
                     NCOperationQueue.shared.downloadThumbnail(metadata: metadata, placeholder: true, cell: cell, view: collectionView)
                 }
@@ -1491,7 +1477,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.text = metadata.fileName
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
             if metadata.name == NCGlobal.shared.appName {
-                cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(metadata: metadata, withFileName: false)
+                cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user)
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
                 cell.titleInfoTrailingFull()
@@ -1626,7 +1612,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // URL
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.url.rawValue {
             cell.fileLocalImage?.image = nil
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)

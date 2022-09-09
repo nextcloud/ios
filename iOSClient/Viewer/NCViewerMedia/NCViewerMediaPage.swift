@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import MediaPlayer
 
 class NCViewerMediaPage: UIViewController {
@@ -204,7 +204,7 @@ class NCViewerMediaPage: UIViewController {
 
         currentScreenMode = mode
 
-        if currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if currentViewController.metadata.classFile == NKCommon.typeClassFile.image.rawValue {
             saveScreenModeImage = mode
         }
 
@@ -249,8 +249,8 @@ class NCViewerMediaPage: UIViewController {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let errorCode = userInfo["errorCode"] as? Int,
-              errorCode == 0,
+              let error = userInfo["error"] as? NKError,
+              error == .success,
               let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else {
@@ -368,7 +368,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         // VIDEO / AUDIO () ()
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in

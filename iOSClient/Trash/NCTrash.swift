@@ -25,7 +25,7 @@
 
 import Realm
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, NCGridCellDelegate {
 
@@ -275,12 +275,14 @@ extension NCTrash {
 
     @objc func loadListingTrash() {
 
-        NCCommunication.shared.listingTrash(showHiddenFiles: false, queue: NCCommunicationCommon.shared.backgroundQueue) { account, items, errorCode, errorDescription in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.listingTrash(showHiddenFiles: false, options: options) { account, items, error in
 
             DispatchQueue.main.async { self.refreshControl.endRefreshing() }
 
-            guard errorCode == 0, account == self.appDelegate.account, let trashPath = self.getTrashPath() else {
-                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
+            guard error == .success, account == self.appDelegate.account, let trashPath = self.getTrashPath() else {
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -297,10 +299,10 @@ extension NCTrash {
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
 
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, errorCode, errorDescription in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, error in
 
-            guard errorCode == 0, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
+            guard error == .success, account == self.appDelegate.account else {
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -313,10 +315,10 @@ extension NCTrash {
 
         let serverUrlFileName = appDelegate.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account) + "/trashbin/" + appDelegate.userId + "/trash"
 
-        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { account, errorCode, errorDescription in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName) { account, error in
 
-            guard errorCode == 0, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
+            guard error == .success, account == self.appDelegate.account else {
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -330,10 +332,10 @@ extension NCTrash {
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
-        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { account, errorCode, errorDescription in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName) { account, error in
 
-            guard errorCode == 0, account == self.appDelegate.account else {
-                NCContentPresenter.shared.showError(description: errorDescription, errorCode: errorCode)
+            guard error == .success, account == self.appDelegate.account else {
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -347,7 +349,7 @@ extension NCTrash {
         let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)!
         let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)!
 
-        NCCommunication.shared.downloadPreview(
+        NextcloudKit.shared.downloadPreview(
             fileNamePathOrFileId: tableTrash.fileId,
             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
             widthPreview: NCGlobal.shared.sizePreview,
@@ -355,8 +357,8 @@ extension NCTrash {
             fileNameIconLocalPath: fileNameIconLocalPath,
             sizeIcon: NCGlobal.shared.sizeIcon,
             etag: nil,
-            endpointTrashbin: true) { account, _, imageIcon, _, _, errorCode, _ in
-                guard errorCode == 0, let imageIcon = imageIcon, account == self.appDelegate.account,
+            endpointTrashbin: true) { account, _, imageIcon, _, _, error in
+                guard error == .success, let imageIcon = imageIcon, account == self.appDelegate.account,
                       let cell = self.collectionView.cellForItem(at: indexPath) else { return }
                 if let cell = cell as? NCTrashListCell {
                     cell.imageItem.image = imageIcon

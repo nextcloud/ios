@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import Vision
 import VisionKit
 import Photos
@@ -441,7 +441,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
             NCActivityIndicator.shared.stop()
-            NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+
+            let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+            NCContentPresenter.shared.showError(error: error)
             return
         }
         let fileUrl = URL(fileURLWithPath: fileNameGenerateExport)
@@ -478,7 +480,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 try textFile.write(to: fileUrl, atomically: true, encoding: .utf8)
             } catch {
                 NCActivityIndicator.shared.stop()
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+                let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
         }
@@ -560,7 +563,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
                 NCActivityIndicator.shared.stop()
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+                let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -568,7 +572,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 try data.write(to: fileUrl, options: .atomic)
             } catch {
                 NCActivityIndicator.shared.stop()
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+                let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
         }

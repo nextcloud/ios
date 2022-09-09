@@ -25,7 +25,7 @@
 
 import UIKit
 import QuickLook
-import NCCommunication
+import NextcloudKit
 
 @objc class NCViewerQuickLook: QLPreviewController {
 
@@ -67,11 +67,8 @@ import NCCommunication
         guard isEditingEnabled else { return }
 
         if metadata?.livePhoto == true {
-            NCContentPresenter.shared.messageNotification(
-                "", description: "_message_disable_overwrite_livephoto_",
-                delay: NCGlobal.shared.dismissAfterSecond,
-                type: NCContentPresenter.messageType.info,
-                errorCode: NCGlobal.shared.errorCharactersForbidden)
+            let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
+            NCContentPresenter.shared.showInfo(error: error)
         }
     }
 

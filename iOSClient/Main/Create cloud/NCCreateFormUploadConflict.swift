@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import Photos
 
 @objc protocol NCCreateFormUploadConflictDelegate {
@@ -221,7 +221,8 @@ extension NCCreateFormUploadConflictDelegate {
             }
 
             switchAlreadyExistingFiles.isOn = true
-            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_rewite_doc_")
+            NCContentPresenter.shared.showInfo(error: error)
         }
 
         tableView.reloadData()
@@ -409,7 +410,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
 
                 do {
-                    if metadataNewFile.classFile ==  NCCommunicationCommon.typeClassFile.image.rawValue {
+                    if metadataNewFile.classFile ==  NKCommon.typeClassFile.image.rawValue {
                         // preserver memory especially for very large files in Share extension
                         if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: filePathNewFile), to: cell.imageNewFile.frame.size) {
                             cell.imageNewFile.image = image

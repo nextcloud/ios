@@ -165,10 +165,12 @@ class NCUtilityFileSystem: NSObject {
         return home
     }
 
-    @objc func getPath(metadata: tableMetadata, withFileName: Bool) -> String {
+    @objc func getPath(path: String, user: String, fileName: String? = nil) -> String {
 
-        var path = metadata.path.replacingOccurrences(of: "/remote.php/dav/files/"+metadata.user, with: "")
-        if withFileName { path += metadata.fileName }
+        var path = path.replacingOccurrences(of: "/remote.php/dav/files/" + user, with: "")
+        if let fileName = fileName {
+            path += fileName
+        }
         return path
     }
 

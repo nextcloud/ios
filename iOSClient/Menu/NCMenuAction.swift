@@ -192,7 +192,7 @@ extension NCMenuAction {
     /// Set (or remove) a file as *available offline*. Downloads the file if not downloaded already
     static func setAvailableOfflineAction(selectedMetadatas: [tableMetadata], isAnyOffline: Bool, viewController: UIViewController, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
-            title: isAnyOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
+            title: isAnyOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "tray.and.arrow.down"),
             action: { _ in
                 if !isAnyOffline, selectedMetadatas.count > 3 {

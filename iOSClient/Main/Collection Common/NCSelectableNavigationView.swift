@@ -22,7 +22,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import NCCommunication
+import NextcloudKit
 import Realm
 import UIKit
 
@@ -106,7 +106,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
             selectedMetadatas.append(metadata)
-            if [NCCommunicationCommon.typeClassFile.image.rawValue, NCCommunicationCommon.typeClassFile.video.rawValue].contains(metadata.classFile) {
+            if [NKCommon.typeClassFile.image.rawValue, NKCommon.typeClassFile.video.rawValue].contains(metadata.classFile) {
                 selectedMediaMetadatas.append(metadata)
             }
             if metadata.directory { isAnyFolder = true }

@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCOffline: NCCollectionViewCommon {
 
@@ -96,8 +96,8 @@ class NCOffline: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
-            if errorCode == 0 {
+        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+            if error == .success {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
                         if NCManageDatabase.shared.isDownloadMetadata(metadata, download: true) {

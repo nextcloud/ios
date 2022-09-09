@@ -41,6 +41,9 @@ excluded:
   - File Provider Extension/FileProviderExtension.swift
   - File Provider Extension/FileProviderUtility.swift
   - Notification Service Extension/NotificationService.swift
+  - Widget/Dashboard/DashboardData.swift
+  - Widget/Nextcloud/NextcloudData.swift
+  - Widget/Nextcloud/NextcloudWidgetView.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift
@@ -122,6 +125,7 @@ excluded:
   - iOSClient/Utility/NCStoreReview.swift
   - iOSClient/Utility/NCUtility.swift
   - iOSClient/Utility/NCUtilityFileSystem.swift
+  - iOSClient/Utility/NCUtilityGUI.swift
   - iOSClient/Viewer/NCViewer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
@@ -132,6 +136,5 @@ excluded:
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
   - iOSClient/Viewer/NCViewerProviderContextMenu.swift
   - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
-
 
 reporter: "xcode"

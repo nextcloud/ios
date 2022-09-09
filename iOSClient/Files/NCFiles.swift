@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCFiles: NCCollectionViewCommon {
 
@@ -135,8 +135,8 @@ class NCFiles: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
-            if errorCode == 0 {
+        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+            if error == .success {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory, NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
                         NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)

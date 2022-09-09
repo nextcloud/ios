@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import NCCommunication
+import NextcloudKit
 import UIKit
 
 extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
@@ -81,14 +81,13 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
         NCBrandColor.shared.createUserColors()
 
         // NETWORKING
-        NCCommunicationCommon.shared.setup(
+        NKCommon.shared.setup(
             account: activeAccount.account,
             user: activeAccount.user,
             userId: activeAccount.userId,
             password: CCUtility.getPassword(activeAccount.account),
             urlBase: activeAccount.urlBase,
             userAgent: CCUtility.getUserAgent(),
-            webDav: NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account),
             nextcloudVersion: 0,
             delegate: NCNetworking.shared)
 
@@ -122,7 +121,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
     func renameFile(named fileName: String) {
         guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
 
-        let resultInternalType = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+        let resultInternalType = NKCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
         vcRename.delegate = self
         vcRename.fileName = fileName
         if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {

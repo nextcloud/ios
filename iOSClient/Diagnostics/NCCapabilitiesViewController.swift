@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionControllerDelegate {
 
@@ -180,7 +180,8 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             capabilitiesText = text
             updateCapabilities()
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_capabilities_found_")
+            NCContentPresenter.shared.showError(error: error, priority: .max)
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismiss(animated: true, completion: nil)
@@ -193,15 +194,15 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
 
     @objc func updateCapabilities() {
 
-        NCCommunication.shared.getCapabilities { account, data, errorCode, _ in
-            if errorCode == 0 && data != nil {
+        NextcloudKit.shared.getCapabilities { account, data, error in
+            if error == .success && data != nil {
                 NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
 
                 // EDITORS
                 let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
-                    NCCommunication.shared.NCTextObtainEditorDetails { account, editors, creators, errorCode, _ in
-                        if errorCode == 0 && account == self.appDelegate.account {
+                    NextcloudKit.shared.NCTextObtainEditorDetails { account, editors, creators, error in
+                        if error == .success && account == self.appDelegate.account {
                             NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                             self.readCapabilities()
                         }

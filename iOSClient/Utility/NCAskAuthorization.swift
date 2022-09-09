@@ -40,7 +40,9 @@ class NCAskAuthorization: NSObject {
         case AVAudioSession.RecordPermission.denied:
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_microphone_", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
+                #if !EXTENSION
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                #endif
                 completion(false)
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
@@ -76,7 +78,9 @@ class NCAskAuthorization: NSObject {
         case PHAuthorizationStatus.denied, PHAuthorizationStatus.limited, PHAuthorizationStatus.restricted:
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_photolibrary_", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
+                #if !EXTENSION
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                #endif
                 completion(false)
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
@@ -90,9 +94,9 @@ class NCAskAuthorization: NSObject {
             isRequesting = true
             PHPhotoLibrary.requestAuthorization { allowed in
                 self.isRequesting = false
-                DispatchQueue.main.async {
-                    (UIApplication.shared.delegate as? AppDelegate)?.hidePrivacyProtectionWindow()
-                }
+                #if !EXTENSION
+                DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.hidePrivacyProtectionWindow() }
+                #endif
                 DispatchQueue.main.async {
                     if allowed == PHAuthorizationStatus.authorized {
                         completion(true)

@@ -23,7 +23,7 @@
 
 import UIKit
 import WebKit
-import NCCommunication
+import NextcloudKit
 import FloatingPanel
 
 class NCLoginWeb: UIViewController {
@@ -93,7 +93,8 @@ class NCLoginWeb: UIViewController {
         if let url = URL(string: urlBase) {
             loadWebPage(webView: webView!, url: url)
         } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError, priority: .max)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
+            NCContentPresenter.shared.showError(error: error, priority: .max)
         }
     }
 
@@ -272,8 +273,8 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                NCCommunication.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, errorCode, _ in
-                    if errorCode == 0 && server != nil && loginName != nil && appPassword != nil {
+                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, error in
+                    if error == .success && server != nil && loginName != nil && appPassword != nil {
                         self.createAccount(server: server!, username: loginName!, password: appPassword!)
                     }
                 }

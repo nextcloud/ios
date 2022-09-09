@@ -23,7 +23,7 @@
 
 import UIKit
 import SVGKit
-import NCCommunication
+import NextcloudKit
 
 extension NCUtility {
     func getImageMetadata(_ metadata: tableMetadata, for size: CGFloat) -> UIImage? {
@@ -32,7 +32,7 @@ extension NCUtility {
             return image
         }
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
             NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
 
@@ -42,9 +42,9 @@ extension NCUtility {
             }
         }
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
             return UIImage(named: "noPreviewVideo")?.image(color: .gray, size: size)
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        } else if metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
             return UIImage(named: "noPreviewAudio")?.image(color: .gray, size: size)
         } else {
             return UIImage(named: "noPreview")?.image(color: .gray, size: size)
@@ -55,7 +55,7 @@ extension NCUtility {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
 
-        if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.typeClassFile.image.rawValue {
 
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!

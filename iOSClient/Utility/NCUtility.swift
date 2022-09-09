@@ -24,7 +24,7 @@
 import UIKit
 import SVGKit
 import KTVHTTPCache
-import NCCommunication
+import NextcloudKit
 import PDFKit
 import Accelerate
 import CoreMedia
@@ -107,9 +107,9 @@ class NCUtility: NSObject {
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
 
-            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, errorCode, _ in
+            NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, error in
 
-                if errorCode == 0 && data != nil {
+                if error == .success && data != nil {
 
                     if let image = UIImage(data: data!) {
 
@@ -379,6 +379,53 @@ class NCUtility: NSObject {
 
     // MARK: -
 
+    func extractFiles(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+
+        let chunckSize = CCUtility.getChunkSize() * 1000000
+        var metadatas: [tableMetadata] = []
+        let metadataSource = tableMetadata.init(value: metadata)
+
+        guard !metadata.isExtractFile else { return  completition([metadataSource]) }
+        guard !metadataSource.assetLocalIdentifier.isEmpty else {
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
+            metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+            let results = NKCommon.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
+            metadataSource.contentType = results.mimeType
+            metadataSource.iconName = results.iconName
+            metadataSource.classFile = results.classFile
+            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadataSource.creationDate = date }
+            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadataSource.date = date }
+            metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
+            metadataSource.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+            metadataSource.isExtractFile = true
+            if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
+                metadatas.append(metadata)
+            }
+            return completition(metadatas)
+        }
+
+        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, returnError in
+            if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
+                metadatas.append(metadata)
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
+            } else {
+                return completition(metadatas)
+            }
+            let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
+            if metadataSource.livePhoto, fetchAssets.count > 0  {
+                NCUtility.shared.createMetadataLivePhotoFromMetadata(metadataSource, asset: fetchAssets.firstObject) { metadata in
+                    if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                        metadatas.append(metadata)
+                    }
+                    completition(metadatas)
+                }
+            } else {
+                completition(metadatas)
+            }
+        }
+    }
+
     func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
 
         var fileNamePath: String?
@@ -429,7 +476,11 @@ class NCUtility: NSObject {
 
             let options = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
-            options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+            if compatibilityFormat {
+                options.deliveryMode = .opportunistic
+            } else {
+                options.deliveryMode = .highQualityFormat
+            }
             options.isSynchronous = true
             if extensionAsset == "DNG" {
                 options.version = PHImageRequestOptionsVersion.original
@@ -510,7 +561,7 @@ class NCUtility: NSObject {
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
-                metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+                metadataLivePhoto.classFile = NKCommon.typeClassFile.video.rawValue
                 metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
@@ -576,9 +627,9 @@ class NCUtility: NSObject {
         let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
 
         if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
-        if classFile != NCCommunicationCommon.typeClassFile.image.rawValue && classFile != NCCommunicationCommon.typeClassFile.video.rawValue { return }
+        if classFile != NKCommon.typeClassFile.image.rawValue && classFile != NKCommon.typeClassFile.video.rawValue { return }
 
-        if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if classFile == NKCommon.typeClassFile.image.rawValue {
 
             originalImage = UIImage(contentsOfFile: fileNamePath)
 
@@ -588,7 +639,7 @@ class NCUtility: NSObject {
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
 
-        } else if classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        } else if classFile == NKCommon.typeClassFile.video.rawValue {
 
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)

@@ -27,7 +27,7 @@ import Foundation
 public class ActionClosure {
 
     public let selector: Selector
-    private let closure : (_ sendersender: Any?) -> Void
+    private let closure: (_ sendersender: Any?) -> Void
 
     init(_ attachObj: AnyObject, closure: @escaping (_ sender: Any?) -> Void) {
         self.closure = closure
@@ -41,7 +41,7 @@ public class ActionClosure {
 }
 
 public extension UIControl {
-    func action(for event: UIControl.Event, _ closure : @escaping (_ object: Any?) -> Void) {
+    func action(for event: UIControl.Event, _ closure: @escaping (_ object: Any?) -> Void) {
         let actionClosure = ActionClosure(self, closure: closure)
         self.addTarget(actionClosure, action: actionClosure.selector, for: event)
     }

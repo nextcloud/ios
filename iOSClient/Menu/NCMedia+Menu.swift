@@ -23,7 +23,7 @@
 
 import UIKit
 import FloatingPanel
-import NCCommunication
+import NextcloudKit
 
 extension NCMedia {
     func tapSelect() {

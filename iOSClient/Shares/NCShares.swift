@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCShares: NCCollectionViewCommon {
 
@@ -82,15 +82,16 @@ class NCShares: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        // Shares network
-        NCCommunication.shared.readShares(parameters: NCCShareParameter(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, shares, errorCode, errorDescription in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, error in
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
             }
 
-            if errorCode == 0 {
+            if error == .success {
 
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if shares != nil {
@@ -103,7 +104,7 @@ class NCShares: NCCollectionViewCommon {
 
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }
