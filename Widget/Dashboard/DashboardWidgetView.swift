@@ -64,14 +64,14 @@ struct DashboardWidgetView: View {
                         
                         ForEach(entry.datas, id: \.id) { element in
                             
-                            Link(destination: element.url) {
+                            Link(destination: element.link) {
                                 
                                 HStack {
                                     
                                     let subTitleColor = Color(white: 0.5)
                                     let imageSize:CGFloat = 30
                                     
-                                    Image(uiImage: element.image)
+                                    Image(uiImage: element.icon)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: imageSize+addSizeIcon, height: imageSize+addSizeIcon)
