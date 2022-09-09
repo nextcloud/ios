@@ -82,7 +82,9 @@ class NCService: NSObject {
 
     private func requestServerStatus() {
 
-        NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, queue: NKCommon.shared.backgroundQueue) { serverProductName, _, versionMajor, _, _, extendedSupport, error in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: options) { serverProductName, _, versionMajor, _, _, extendedSupport, error in
             guard error == .success, extendedSupport == false else {
                 return
             }
@@ -100,7 +102,9 @@ class NCService: NSObject {
     private func requestUserProfile() {
         guard !appDelegate.account.isEmpty else { return }
 
-        NextcloudKit.shared.getUserProfile(queue: NKCommon.shared.backgroundQueue) { account, userProfile, error in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.getUserProfile(options: options) { account, userProfile, error in
             guard error == .success, account == self.appDelegate.account else {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 if error.errorCode == NCGlobal.shared.errorNCUnauthorized || error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden {
@@ -128,8 +132,9 @@ class NCService: NSObject {
             let fileName = tableAccount.userBaseUrl + "-" + self.appDelegate.user + ".png"
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+            let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-            NextcloudKit.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, queue: NKCommon.shared.backgroundQueue) { _, _, _, etag, error in
+            NextcloudKit.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, options: options) { _, _, _, etag, error in
                 guard let etag = etag, error == .success else {
                     if error.errorCode == NCGlobal.shared.errorNotModified {
                         NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
@@ -147,7 +152,9 @@ class NCService: NSObject {
     private func requestServerCapabilities() {
         guard !appDelegate.account.isEmpty else { return }
 
-        NextcloudKit.shared.getCapabilities(queue: NKCommon.shared.backgroundQueue) { account, data, error in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.getCapabilities(options: options) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 return
@@ -172,7 +179,7 @@ class NCService: NSObject {
             // File Sharing
             let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
             if isFilesSharingEnabled {
-                NextcloudKit.shared.readShares(parameters: NKShareParameter(), queue: NKCommon.shared.backgroundQueue) { account, shares, error in
+                NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, error in
                     if error == .success {
                         NCManageDatabase.shared.deleteTableShare(account: account)
                         if let shares = shares, !shares.isEmpty {
@@ -205,7 +212,7 @@ class NCService: NSObject {
             // External file Server
             let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
             if isExternalSitesServerEnabled {
-                NextcloudKit.shared.getExternalSite(queue: NKCommon.shared.backgroundQueue) { account, externalSites, error in
+                NextcloudKit.shared.getExternalSite(options: options) { account, externalSites, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.deleteExternalSites(account: account)
                         for externalSite in externalSites {
@@ -220,7 +227,7 @@ class NCService: NSObject {
             // User Status
             let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
             if userStatus {
-                NextcloudKit.shared.getUserStatus(queue: NKCommon.shared.backgroundQueue) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, error in
+                NextcloudKit.shared.getUserStatus(options: options) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, error in
                     if error == .success && account == self.appDelegate.account && userId == self.appDelegate.userId {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                     }

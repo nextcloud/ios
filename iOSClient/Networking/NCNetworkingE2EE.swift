@@ -51,7 +51,9 @@ import Alamofire
         self.lock(account: account, serverUrl: serverUrl) { directory, e2eToken, error in
             if error == .success && e2eToken != nil && directory != nil {
 
-                NextcloudKit.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token": e2eToken!]) { account, ocId, _, error in
+                let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken!])
+                
+                NextcloudKit.shared.createFolder(fileNameFolderUrl, options: options) { account, ocId, _, error in
                     if error == .success {
                         guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
                             // unlock
@@ -128,8 +130,9 @@ import Alamofire
 
         self.lock(account: metadata.account, serverUrl: metadata.serverUrl) { directory, e2eToken, error in
             if error == .success && e2eToken != nil && directory != nil {
+                
                 let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
-                NCNetworking.shared.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token": e2eToken!]) { error in
+                NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken!]) { error in
 
                     let home = NCUtilityFileSystem.shared.getHomeServer(account: metadata.account)
                     if metadata.serverUrl != home {

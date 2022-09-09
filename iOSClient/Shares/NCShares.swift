@@ -82,8 +82,9 @@ class NCShares: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        // Shares network
-        NextcloudKit.shared.readShares(parameters: NKShareParameter(), queue: NKCommon.shared.backgroundQueue) { account, shares, error in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, error in
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()

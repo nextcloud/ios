@@ -138,12 +138,12 @@ extension NCNetworking {
             let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
             let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
 
-            var addCustomHeaders: [String: String] = [:]
+            var customHeader: [String: String] = [:]
             let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
             let modificationDate = "\(metadata.date.timeIntervalSince1970)"
 
-            addCustomHeaders["X-OC-CTime"] = creationDate
-            addCustomHeaders["X-OC-MTime"] = modificationDate
+            customHeader["X-OC-CTime"] = creationDate
+            customHeader["X-OC-MTime"] = modificationDate
 
             // Calculate Assemble Timeout
             let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
@@ -151,7 +151,9 @@ extension NCNetworking {
             let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30 min
             let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
 
-            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, addCustomHeaders: addCustomHeaders, timeout: timeout, queue: DispatchQueue.global(qos: .background)) { _, error in
+            let options = NKRequestOptions(customHeader: customHeader, timeout: timeout, queue: DispatchQueue.global(qos: .background))
+            
+            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, error in
 
                 NKCommon.shared.writeLog("Assembling chunk with error code: \(error.errorCode)")
 
@@ -208,12 +210,14 @@ extension NCNetworking {
 
     private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: NKError) -> Void) {
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { _, _, _, error in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, _, _, error in
 
             if error == .success {
                 completion(NKError())
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                NextcloudKit.shared.createFolder(chunkFolderPath, queue: NKCommon.shared.backgroundQueue) { _, _, _, error in
+                NextcloudKit.shared.createFolder(chunkFolderPath, options: options) { _, _, _, error in
                     completion(error)
                 }
             } else {

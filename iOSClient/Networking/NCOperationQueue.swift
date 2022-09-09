@@ -348,7 +348,9 @@ class NCOperationSynchronization: ConcurrentOperation {
 
                     if (error == .success) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
 
-                        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { account, files, _, error in
+                        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+                        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
                             if error == .success {
 
@@ -452,6 +454,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
+            let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
             NextcloudKit.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePath,
                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
@@ -460,7 +463,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                 fileNameIconLocalPath: fileNameIconLocalPath,
                 sizeIcon: NCGlobal.shared.sizeIcon,
                 etag: etagResource,
-                queue: NKCommon.shared.backgroundQueue) { _, _, imageIcon, _, etag, error in
+                options: options) { _, _, imageIcon, _, etag, error in
 
                     if error == .success, let imageIcon = imageIcon {
                         NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
@@ -511,6 +514,8 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
             self.finish()
         } else {
 
+            let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
             NextcloudKit.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePathOrFileId,
                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
@@ -518,7 +523,7 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
                 heightPreview: 0,
                 etag: nil,
                 useInternalEndpoint: false,
-                queue: NKCommon.shared.backgroundQueue) { _, imagePreview, _, _, _, error in
+                options: options) { _, imagePreview, _, _, _, error in
 
                     if error == .success, let imagePreview = imagePreview {
                         DispatchQueue.main.async {
@@ -566,7 +571,10 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NextcloudKit.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, queue: NKCommon.shared.backgroundQueue) { _, imageAvatar, _, etag, error in
+            
+            let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+            NextcloudKit.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, options: options) { _, imageAvatar, _, etag, error in
 
                 if error == .success, let imageAvatar = imageAvatar, let etag = etag {
                     NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)

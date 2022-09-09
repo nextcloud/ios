@@ -718,7 +718,9 @@ import Photos
 
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { account, files, _, error in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
             guard error == .success else {
                 completion(account, nil, nil, nil, nil, nil, error)
                 return
@@ -749,7 +751,9 @@ import Photos
 
     @objc func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NKCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, queue: queue) { account, files, _, error in
+        let options = NKRequestOptions(queue: queue)
+
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, options: options) { account, files, _, error in
             guard error == .success, files.count == 1, let file = files.first else {
                 completion(account, nil, error)
                 return
@@ -767,7 +771,9 @@ import Photos
     /// WebDAV search
     @objc func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> ()) {
 
-        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { (account, files, error) in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { (account, files, error) in
             guard error == .success else {
                 return completion(nil, error)
             }
@@ -1071,11 +1077,11 @@ import Photos
             #endif
         } else {
             if metadataLive == nil {
-                self.deleteMetadataPlain(metadata, addCustomHeaders: nil, completion: completion)
+                self.deleteMetadataPlain(metadata, customHeader: nil, completion: completion)
             } else {
-                self.deleteMetadataPlain(metadataLive!, addCustomHeaders: nil) { error in
+                self.deleteMetadataPlain(metadataLive!, customHeader: nil) { error in
                     if error == .success {
-                        self.deleteMetadataPlain(metadata, addCustomHeaders: nil, completion: completion)
+                        self.deleteMetadataPlain(metadata, customHeader: nil, completion: completion)
                     } else {
                         completion(error)
                     }
@@ -1084,7 +1090,7 @@ import Photos
         }
     }
 
-    func deleteMetadataPlain(_ metadata: tableMetadata, addCustomHeaders: [String: String]?, completion: @escaping (_ error: NKError) -> Void) {
+    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]?, completion: @escaping (_ error: NKError) -> Void) {
 
         // verify permission
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
@@ -1093,7 +1099,9 @@ import Photos
         }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: addCustomHeaders) { account, error in
+        let options = NKRequestOptions(customHeader: customHeader)
+        
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName, options: options) { account, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
@@ -1154,7 +1162,10 @@ import Photos
     }
 
     @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NKCommon.shared.backgroundQueue) { account, files, error in
+        
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, error in
             guard error == .success else {
                 completion(account, nil, error)
                 return

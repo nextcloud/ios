@@ -530,7 +530,9 @@ extension NCMedia {
         }
         NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .gray)
 
-        NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 300) { account, files, error in
+        let options = NKRequestOptions(timeout: 300)
+        
+        NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, error in
 
             self.oldInProgress = false
             NCActivityIndicator.shared.stop()
@@ -609,7 +611,9 @@ extension NCMedia {
 
         reloadDataThenPerform {
 
-            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), timeout: 300) { account, files, error in
+            let options = NKRequestOptions(timeout: 300)
+            
+            NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, error in
 
                 self.newInProgress = false
                 self.mediaCommandView?.activityIndicator.stopAnimating()
