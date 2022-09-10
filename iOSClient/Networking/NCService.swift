@@ -281,11 +281,10 @@ class NCService: NSObject {
                         if !FileManager().fileExists(atPath: fileNamePath) {
                             NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
                                 if let svgImage = SVGKImage(data: data)  {
-                                    svgImage.size = CGSize(width: 120, height: 120)
-                                    if var image = svgImage.uiImage {
+                                    svgImage.size = CGSize(width: 125, height: 125)
+                                    if let image = svgImage.uiImage {
                                         do {
-                                            image = image.image(color: .black, size: 120)
-                                            try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                                            try image.imageColor(.black).pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                                         } catch { }
                                     }
                                 }
