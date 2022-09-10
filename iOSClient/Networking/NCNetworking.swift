@@ -1407,41 +1407,25 @@ import Photos
 
     // MARK: - TEST API
 
-    /*
-    @objc public func getDashboardWidget(urlBase: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
+    public func getPreview(url: URL, options: NKRequestOptions = NKRequestOptions(), completion: @escaping (_ data: Data?) -> Void) {
                 
-        let endpoint = "/ocs/v2.php/apps/dashboard/api/v1/widget-items"
+        let headers = NKCommon.shared.getStandardHeaders(options: options)
         
-        let url:URLConvertible = try! (urlBase + endpoint).asURL() as URLConvertible
-        var headers: HTTPHeaders = [.authorization(username: username, password: password)]
-        if customUserAgent != nil {
-            headers.update(.userAgent(customUserAgent!))
-        }
-        //headers.update(.contentType("application/json"))
-        headers.update(name: "OCS-APIRequest", value: "true")
-               
-        let method = HTTPMethod(rawValue: "GET")
-
-//        let parameters = [
-//            "fileId": fileId,
-//        ]
-        
-        AF.request(url, method: method, parameters: nil, headers: headers).validate(statusCode: 200..<300).response { (response) in
+        AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response(queue: NKCommon.shared.backgroundQueue) { (response) in
             debugPrint(response)
             
             switch response.result {
-            case .failure(let error):
-                completionHandler(0, "")
-            case .success(let data):
-                if let data = data {
-                    completionHandler(0, "")
+            case .failure( _):
+                completion(nil)
+            case .success( _):
+                if let data = response.data {
+                    completion(data)
                 } else {
-                    completionHandler(NSURLErrorBadServerResponse, NSLocalizedString("_error_decode_xml_", value: "Invalid response, error decode XML", comment: ""))
+                    completion(nil)
                 }
             }
         }
     }
-    */
 }
 
 extension Array where Element == URLQueryItem {
