@@ -45,6 +45,8 @@ class NCService: NSObject {
         addInternalTypeIdentifier()
         requestServerStatus()
         requestUserProfile()
+        
+        testAPI()
     }
 
     // MARK: -
@@ -277,6 +279,13 @@ class NCService: NSObject {
                 NCManageDatabase.shared.addDasboardWidget(account: account, dashboardWidgets: dashboardWidgets)
             }
         }
+    }
+    
+    // MARK: -
+
+    private func testAPI() {
+        
+        return
     }
 
     // MARK: -
