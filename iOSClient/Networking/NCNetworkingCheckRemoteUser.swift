@@ -64,6 +64,7 @@ class NCNetworkingCheckRemoteUser {
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
                         NCContentPresenter.shared.showError(error: error, priority: .max)
                         CCUtility.setPassword(account, password: nil)
+                        NKCommon.shared.writeLog("Password removed.")
                         appDelegate.deletePasswordSession = true
                     }
                 }

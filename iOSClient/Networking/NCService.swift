@@ -110,9 +110,18 @@ class NCService: NSObject {
 
         NextcloudKit.shared.getUserProfile(options: options) { account, userProfile, data, error in
             guard error == .success, account == self.appDelegate.account else {
-                NCBrandColor.shared.settingThemingColor(account: account)
-                if error.errorCode == NCGlobal.shared.errorNCUnauthorized || error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden {
-                    NCNetworkingCheckRemoteUser().checkRemoteUser(account: account, error: error)
+                
+                // Ops the server has Unauthorized
+                NKCommon.shared.writeLog("The server has response with Unauthorized \(error.errorCode)")
+
+                DispatchQueue.main.async {
+                    if  (UIApplication.shared.applicationState == .active) &&
+                        (NCNetworking.shared.networkReachability != NKCommon.typeReachability.notReachable) &&
+                        (error.errorCode == NCGlobal.shared.errorNCUnauthorized || error.errorCode == NCGlobal.shared.errorUnauthorized || error.errorCode == NCGlobal.shared.errorForbidden) {
+                        
+                        NCBrandColor.shared.settingThemingColor(account: account)
+                        NCNetworkingCheckRemoteUser().checkRemoteUser(account: account, error: error)
+                    }
                 }
                 return
             }
