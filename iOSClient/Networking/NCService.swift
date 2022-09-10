@@ -80,6 +80,8 @@ class NCService: NSObject {
         NKCommon.shared.addInternalTypeIdentifier(typeIdentifier: "com.apple.iwork.keynote.key", classFile: NKCommon.typeClassFile.document.rawValue, editor: NCGlobal.shared.editorQuickLook, iconName: NKCommon.typeIconFile.ppt.rawValue, name: "keynote")
     }
 
+    // MARK: -
+
     private func requestServerStatus() {
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
@@ -98,6 +100,8 @@ class NCService: NSObject {
             }
         }
     }
+
+    // MARK: -
 
     private func requestUserProfile() {
         guard !appDelegate.account.isEmpty else { return }
@@ -149,6 +153,8 @@ class NCService: NSObject {
             self.requestDashboardWidget()
         }
     }
+
+    // MARK: -
 
     private func requestServerCapabilities() {
         guard !appDelegate.account.isEmpty else { return }
@@ -251,6 +257,8 @@ class NCService: NSObject {
         }
     }
     
+    // MARK: -
+
     private func requestDashboardWidget() {
         
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
@@ -261,6 +269,8 @@ class NCService: NSObject {
             }
         }
     }
+
+    // MARK: -
 
     @objc func synchronizeOffline(account: String) {
 
