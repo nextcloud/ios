@@ -588,7 +588,7 @@
 "_password_pdf_error_"          = "Wrong password";
 "_error_download_photobrowser_" = "Error: Unable to download photo";
 "_good_morning_"                = "Good morning";
-"_good_noon_"                   = "Good noon";
+"_good_noon_"                   = "Good day";
 "_good_afternoon_"              = "Good afternoon";
 "_good_evening_"                = "Good evening";
 "_good_night_"                  = "Good night";
@@ -887,7 +887,7 @@
 
 "_description_dashboardwidget_" = "Having the Dashboard always at your fingertips has never been easier.";
 "_description_nextcloudwidget_" = "View your recent files and use the toolbar to speed up your operations.";
-"_description_toolbarwidget_"   = "A the toolbar to speed up your operations.";
+"_description_toolbarwidget_"   = "A toolbar to speed up your operations.";
 
 // Video
 "_select_trace_"            = "Select the trace";
