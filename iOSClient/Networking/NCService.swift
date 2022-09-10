@@ -275,25 +275,20 @@ class NCService: NSObject {
         NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
             if error == .success, let dashboardWidgets = dashboardWidgets  {
                 NCManageDatabase.shared.addDasboardWidget(account: account, dashboardWidgets: dashboardWidgets)
-                if #available(iOS 13.0, *) {
-                    for widget in dashboardWidgets {
-                        if let url = URL(string: widget.iconUrl) {
-                            NextcloudKit.shared.getPreview(url: url) { account, data, error in
-                                print("")
-                            }
-                            /*
-                            Task {
-                                do {
-                                    if let data = try await NCNetworking.shared.getPreview(url:url) {
-                                        if let name = widget.iconClass, let image = UIImage(data: data) {
-                                            print("")
-                                        }
+                for widget in dashboardWidgets {
+                    if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
+                        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                        if !FileManager().fileExists(atPath: fileNamePath) {
+                            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
+                                if let svgImage = SVGKImage(data: data)  {
+                                    svgImage.size = CGSize(width: 120, height: 120)
+                                    if let image = svgImage.uiImage {
+                                        do {
+                                            try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                                        } catch { }
                                     }
-                                } catch {
-                                    print(error)
                                 }
                             }
-                            */
                         }
                     }
                 }
