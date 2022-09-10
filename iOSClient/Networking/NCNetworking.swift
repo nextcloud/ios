@@ -1407,21 +1407,21 @@ import Photos
 
     // MARK: - TEST API
 
-    public func getPreview(url: URL, options: NKRequestOptions = NKRequestOptions(), completion: @escaping (_ data: Data?) -> Void) {
-                
-        let headers = NKCommon.shared.getStandardHeaders(options: options)
-        
-        AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response(queue: NKCommon.shared.backgroundQueue) { (response) in
-            debugPrint(response)
+    @available(iOS 13.0, *)
+    func getPreview(url: URL, options: NKRequestOptions = NKRequestOptions()) async throws -> Data? {
+
+        try await withUnsafeThrowingContinuation { continuation in
             
-            switch response.result {
-            case .failure( _):
-                completion(nil)
-            case .success( _):
-                if let data = response.data {
-                    completion(data)
-                } else {
-                    completion(nil)
+            let headers = NKCommon.shared.getStandardHeaders(options: options)
+            
+            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response(queue: NKCommon.shared.backgroundQueue) { (response) in
+                debugPrint(response)
+                
+                switch response.result {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let data):
+                    continuation.resume(returning: data)
                 }
             }
         }
