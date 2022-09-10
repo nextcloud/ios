@@ -246,6 +246,7 @@ class tableDirectEditingCreators: Object {
 
 class tableDashboardWidget: Object {
     
+    @Persisted(primaryKey: true) var index = ""
     @Persisted var account = ""
     @Persisted var id = ""
     @Persisted var title = ""
@@ -254,25 +255,16 @@ class tableDashboardWidget: Object {
     @Persisted var iconUrl: String?
     @Persisted var widgetUrl: String?
     let button = List<tableDashboardWidgetButton>()
-    @Persisted var index = ""
-    
-    override static func primaryKey() -> String {
-        return "index"
-    }
 }
 
 class tableDashboardWidgetButton: Object {
 
+    @Persisted(primaryKey: true) var index = ""
     @Persisted var account = ""
     @Persisted var id = ""
     @Persisted var type = ""
     @Persisted var text = ""
     @Persisted var link = ""
-    @Persisted var index = ""
-
-    override static func primaryKey() -> String {
-        return "index"
-    }
 }
 
 class tableDirectEditingEditors: Object {
