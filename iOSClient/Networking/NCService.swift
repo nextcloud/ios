@@ -275,6 +275,28 @@ class NCService: NSObject {
         NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
             if error == .success, let dashboardWidgets = dashboardWidgets  {
                 NCManageDatabase.shared.addDasboardWidget(account: account, dashboardWidgets: dashboardWidgets)
+                if #available(iOS 13.0, *) {
+                    for widget in dashboardWidgets {
+                        if let url = URL(string: widget.iconUrl) {
+                            NextcloudKit.shared.getPreview(url: url) { account, data, error in
+                                print("")
+                            }
+                            /*
+                            Task {
+                                do {
+                                    if let data = try await NCNetworking.shared.getPreview(url:url) {
+                                        if let name = widget.iconClass, let image = UIImage(data: data) {
+                                            print("")
+                                        }
+                                    }
+                                } catch {
+                                    print(error)
+                                }
+                            }
+                            */
+                        }
+                    }
+                }
             }
         }
     }
