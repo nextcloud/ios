@@ -48,7 +48,7 @@ class NCShareNetworking: NSObject {
 
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let parameter = NKShareParameter(path: filenamePath)
-        NextcloudKit.shared.readShares(parameters: parameter) { account, shares, error in
+        NextcloudKit.shared.readShares(parameters: parameter) { account, shares, data, error in
             if showLoadingIndicator {
                 NCActivityIndicator.shared.stop()
             }
@@ -74,7 +74,7 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
 
-        NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions) { (account, share, error) in
+        NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions) { (account, share, data, error) in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 option.idShare = share.idShare
@@ -105,7 +105,7 @@ class NCShareNetworking: NSObject {
 
     func updateShare(option: NCTableShareable) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, error in
+        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, data, error in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
@@ -120,7 +120,7 @@ class NCShareNetworking: NSObject {
 
     func getSharees(searchString: String) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NextcloudKit.shared.searchSharees(search: searchString) { _, sharees, error in
+        NextcloudKit.shared.searchSharees(search: searchString) { _, sharees, data, error in
             NCActivityIndicator.shared.stop()
             if error == .success {
                 self.delegate?.getSharees(sharees: sharees)

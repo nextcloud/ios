@@ -140,7 +140,7 @@ class NCRecent: NCCollectionViewCommon {
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, error in
+        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
 
             if error == .success {
                 NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in

@@ -773,7 +773,7 @@ import Photos
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { (account, files, error) in
+        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { (account, files, data, error) in
             guard error == .success else {
                 return completion(nil, error)
             }
@@ -861,7 +861,7 @@ import Photos
                 })
             }
             update(account, provider.id, partialResult, metadatas)
-        } completion: { account, error in
+        } completion: { account, data, error in
             self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()
         }
@@ -871,7 +871,7 @@ import Photos
 
         var metadatas: [tableMetadata] = []
 
-        let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { account, searchResult, error in
+        let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { account, searchResult, data, error in
             guard let searchResult = searchResult else {
                 completion(account, nil, metadatas, error)
                 return
@@ -1165,7 +1165,7 @@ import Photos
         
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, error in
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
             guard error == .success else {
                 completion(account, nil, error)
                 return
@@ -1391,7 +1391,7 @@ import Photos
         if CCUtility.fileProviderStorageExists(metadata) {
             completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
         } else {
-            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { _, url, error in
+            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { account, url, data, error in
                 if error == .success && url != nil {
                     if let url = URL(string: url!) {
                         completition(url)

@@ -100,7 +100,7 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
     
     title = "recommendations"
     
-    NextcloudKit.shared.getDashboardWidgetsApplication(title) { account, results, error in
+    NextcloudKit.shared.getDashboardWidgetsApplication(title) { account, results, data, error in
         
         var datas = [DashboardData]()
         

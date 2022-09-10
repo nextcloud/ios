@@ -215,7 +215,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         loginButton.isEnabled = false
 
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, error in
+        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, _, error in
 
             if error == .success {
 
@@ -223,7 +223,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
 
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, error in
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, data, error in
 
                     self.loginButton.isEnabled = true
 

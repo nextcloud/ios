@@ -189,7 +189,7 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, error in
+    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, data, error in
 
         var datas: [NextcloudRecentData] = []
         
