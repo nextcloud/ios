@@ -102,7 +102,7 @@ class NCViewer: NSObject {
                 if metadata.url == "" {
 
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, error in
+                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, data, error in
 
                         NCActivityIndicator.shared.stop()
 
@@ -167,7 +167,7 @@ class NCViewer: NSObject {
                         }
 
                         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                        NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, options: options) { account, url, error in
+                        NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, options: options) { account, url, data, error in
 
                             NCActivityIndicator.shared.stop()
 

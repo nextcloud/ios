@@ -53,7 +53,7 @@ class NCEndToEndInitialize: NSObject {
 
     func getPublicKey() {
 
-        NextcloudKit.shared.getE2EECertificate { account, certificate, error in
+        NextcloudKit.shared.getE2EECertificate { account, certificate, data, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -80,7 +80,7 @@ class NCEndToEndInitialize: NSObject {
                         return
                     }
 
-                    NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, error in
+                    NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, data, error in
 
                         if error == .success && account == self.appDelegate.account {
 
@@ -130,7 +130,7 @@ class NCEndToEndInitialize: NSObject {
     func getPrivateKeyCipher() {
 
         // Request PrivateKey chiper to Server
-        NextcloudKit.shared.getE2EEPrivateKey { account, privateKeyChiper, error in
+        NextcloudKit.shared.getE2EEPrivateKey { account, privateKeyChiper, data, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -161,7 +161,7 @@ class NCEndToEndInitialize: NSObject {
                     CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase: passphrase)
 
                     // request server publicKey
-                    NextcloudKit.shared.getE2EEPublicKey { account, publicKey, error in
+                    NextcloudKit.shared.getE2EEPublicKey { account, publicKey, data, error in
 
                         if error == .success && account == self.appDelegate.account {
 
@@ -236,7 +236,7 @@ class NCEndToEndInitialize: NSObject {
                         // privateKeyChiper
                         print(privateKeyChiper)
 
-                        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, privateKey, error in
+                        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { account, privateKey, data, error in
 
                             if error == .success && account == self.appDelegate.account {
 
@@ -244,7 +244,7 @@ class NCEndToEndInitialize: NSObject {
                                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
 
                                 // request server publicKey
-                                NextcloudKit.shared.getE2EEPublicKey { account, publicKey, error in
+                                NextcloudKit.shared.getE2EEPublicKey { account, publicKey, data, error in
 
                                     if error == .success && account == self.appDelegate.account {
 

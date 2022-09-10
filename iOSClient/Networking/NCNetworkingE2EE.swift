@@ -58,7 +58,7 @@ import Alamofire
                         guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
                             // unlock
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                                NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _ in }
+                                NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                             }
                             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Error convert ocId"))
                         }
@@ -93,7 +93,7 @@ import Alamofire
                                 self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { e2eToken, error in
                                     // unlock
                                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                                        NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _ in }
+                                        NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                                     }
                                     if error == .success {
                                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: nil)
@@ -104,7 +104,7 @@ import Alamofire
                             } else {
                                 // unlock
                                 if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                                    NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _ in }
+                                    NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                                 }
                                 completion(error)
                             }
@@ -113,7 +113,7 @@ import Alamofire
                     } else {
                         // unlock
                         if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                            NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _ in }
+                            NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                         }
                         completion(error)
                     }
@@ -139,14 +139,14 @@ import Alamofire
                         self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase) { e2eToken, error in
                             // unlock
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                                NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _ in }
+                                NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                             }
                             completion(error)
                         }
                     } else {
                         // unlock
                         if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                            NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _ in }
+                            NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                         }
                         completion(error)
                     }
@@ -185,7 +185,7 @@ import Alamofire
 
                 // unlock
                 if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                    NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _ in }
+                    NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                 }
 
                 completion(error)
@@ -356,7 +356,7 @@ import Alamofire
             e2eToken = tableLock.e2eToken
         }
 
-        NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "POST") { account, e2eToken, error in
+        NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "POST") { account, e2eToken, data, error in
             if error == .success && e2eToken != nil {
                 NCManageDatabase.shared.setE2ETokenLock(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken!)
             }
@@ -376,7 +376,7 @@ import Alamofire
             e2eToken = tableLock.e2eToken
         }
 
-        NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "DELETE") { account, e2eToken, error in
+        NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "DELETE") { account, e2eToken, data, error in
             if error == .success {
                 NCManageDatabase.shared.deteleE2ETokenLock(account: account, serverUrl: serverUrl)
             }
@@ -389,7 +389,7 @@ import Alamofire
         self.lock(account: account, serverUrl: serverUrl) { directory, e2eToken, error in
             if error == .success && e2eToken != nil && directory != nil {
 
-                NextcloudKit.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { account, e2eMetadata, error in
+                NextcloudKit.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { account, e2eMetadata, data, error in
                     var method = "POST"
                     var e2eMetadataNew: String?
 
@@ -418,7 +418,7 @@ import Alamofire
                         method = "DELETE"
                     }
 
-                    NextcloudKit.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: e2eMetadataNew, method: method) { account, _, error in
+                    NextcloudKit.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: e2eMetadataNew, method: method) { account, _, _, error in
 
                         if upload {
                             completion(e2eToken, error)

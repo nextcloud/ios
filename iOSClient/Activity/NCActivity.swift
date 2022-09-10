@@ -403,7 +403,7 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NextcloudKit.shared.getComments(fileId: metadata.fileId) { account, comments, error in
+        NextcloudKit.shared.getComments(fileId: metadata.fileId) { account, comments, data, error in
             if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -432,7 +432,7 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, _, activityFirstKnown, activityLastGiven, error in
+            previews: true) { account, _, activityFirstKnown, activityLastGiven, data, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
@@ -459,7 +459,7 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, activityFirstKnown, activityLastGiven, error in
+            previews: true) { account, activities, activityFirstKnown, activityLastGiven, data, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
                       account == self.appDelegate.account,

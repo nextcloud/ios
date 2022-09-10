@@ -47,7 +47,7 @@ class NCNetworkingCheckRemoteUser {
                 return
             }
 
-            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, error in
+            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, data, error in
 
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 if wipe {

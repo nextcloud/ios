@@ -319,7 +319,7 @@ import XLForm
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
             }
             
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, error in
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, data, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
@@ -343,7 +343,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, error in
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, data, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     NCContentPresenter.shared.showError(error: error)
@@ -382,7 +382,7 @@ import XLForm
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, error in
+            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, data, error in
 
                 self.indicator.stopAnimating()
 
@@ -439,7 +439,7 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, error in
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, data, error in
 
                 self.indicator.stopAnimating()
 

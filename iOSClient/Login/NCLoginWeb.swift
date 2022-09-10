@@ -273,7 +273,7 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, error in
+                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, data, error in
                     if error == .success && server != nil && loginName != nil && appPassword != nil {
                         self.createAccount(server: server!, username: loginName!, password: appPassword!)
                     }
