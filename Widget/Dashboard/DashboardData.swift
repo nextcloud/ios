@@ -59,7 +59,7 @@ func getTitleDashboard() -> String {
 
     switch hour {
     case 6..<12: good = NSLocalizedString("_good_morning_", value: "Good morning", comment: "")
-    case 12: good = NSLocalizedString("_good_noon_", value: "Good noon", comment: "")
+    case 12: good = NSLocalizedString("_good_day_", value: "Good day", comment: "")
     case 13..<17: good = NSLocalizedString("_good_afternoon_", value: "Good afternoon", comment: "")
     case 17..<22: good = NSLocalizedString("_good_evening_", value: "Good evening", comment: "")
     default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
