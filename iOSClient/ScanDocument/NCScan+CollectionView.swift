@@ -46,7 +46,7 @@ extension NCScan: UICollectionViewDataSource {
 
             // 72 DPI
             if imageWidthInPixels > 595 || imageHeightInPixels > 842 {
-                image = image.resizeImage(size: CGSize(width: 595, height: 842), isAspectRation: true) ?? image
+                image = image.resizeImage(size: CGSize(width: 595, height: 842)) ?? image
             }
 
             cell.customImageView?.image = image
@@ -78,7 +78,7 @@ extension NCScan: UICollectionViewDataSource {
 
             // 72 DPI
             if imageWidthInPixels > 595 || imageHeightInPixels > 842 {
-                image = image.resizeImage(size: CGSize(width: 595, height: 842), isAspectRation: true) ?? image
+                image = image.resizeImage(size: CGSize(width: 595, height: 842)) ?? image
             }
 
             cell.customImageView?.image = filter(image: image)

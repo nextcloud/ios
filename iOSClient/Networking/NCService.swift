@@ -277,19 +277,7 @@ class NCService: NSObject {
                 NCManageDatabase.shared.addDasboardWidget(account: account, dashboardWidgets: dashboardWidgets)
                 for widget in dashboardWidgets {
                     if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
-                        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
-                        if !FileManager().fileExists(atPath: fileNamePath) {
-                            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
-                                if let svgImage = SVGKImage(data: data)  {
-                                    svgImage.size = CGSize(width: 125, height: 125)
-                                    if let image = svgImage.uiImage {
-                                        do {
-                                            try image.imageColor(.black).pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                                        } catch { }
-                                    }
-                                }
-                            }
-                        }
+                        NCUtilityGUI().getImageUserData(url: url, fileName: fileName, size: 128)
                     }
                 }
             }
