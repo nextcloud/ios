@@ -1027,9 +1027,10 @@ class NCUtility: NSObject {
         
         let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
         let size = CGSize(width: size, height: size)
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
         
         if !FileManager().fileExists(atPath: fileNamePath) {
-            NextcloudKit.shared.getPreview(url: url) { account, data, error in
+            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
                 guard let data = data else { return completition(nil) }
                 var image: UIImage?
                 if let uiImage = UIImage(data: data) {
