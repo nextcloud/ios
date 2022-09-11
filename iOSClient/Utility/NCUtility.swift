@@ -1031,20 +1031,22 @@ class NCUtility: NSObject {
         
         if !FileManager().fileExists(atPath: fileNamePath) {
             NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
-                guard let data = data else { return completition(nil) }
                 var image: UIImage?
-                if let uiImage = UIImage(data: data) {
-                    image = uiImage.resizeImage(size: size)
-                } else if let svgImage = SVGKImage(data: data) {
-                    svgImage.size = size
-                    image = svgImage.uiImage
-                } else {
-                    print("error")
-                }
-                if let image = image {
-                    do {
-                        try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                    } catch { }
+                if error == .success {
+                    guard let data = data else { return completition(nil) }
+                    if let uiImage = UIImage(data: data) {
+                        image = uiImage.resizeImage(size: size)
+                    } else if let svgImage = SVGKImage(data: data) {
+                        svgImage.size = size
+                        image = svgImage.uiImage
+                    } else {
+                        print("error")
+                    }
+                    if let image = image {
+                        do {
+                            try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                        } catch { }
+                    }
                 }
                 completition(image)
             }
