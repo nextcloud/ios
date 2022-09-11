@@ -1023,7 +1023,7 @@ class NCUtility: NSObject {
         return imagePreview
     }
     
-    func getImageUserData(url: URL, fileName: String, size: CGFloat, completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
+    func getImageUserData(url: URL, fileName: String, size: CGFloat, write: Bool = true,completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
         
         let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
         let size = CGSize(width: size, height: size)
@@ -1042,7 +1042,7 @@ class NCUtility: NSObject {
                     } else {
                         print("error")
                     }
-                    if let image = image {
+                    if let image = image, write {
                         do {
                             try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                         } catch { }
