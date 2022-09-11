@@ -27,7 +27,7 @@ import Accelerate
 
 extension UIImage {
 
-    @objc func resizeImage(size: CGSize, isAspectRation: Bool) -> UIImage? {
+    @objc func resizeImage(size: CGSize, isAspectRation: Bool = true) -> UIImage? {
 
         let originRatio = self.size.width / self.size.height
         let newRatio = size.width / size.height
