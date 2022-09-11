@@ -139,6 +139,7 @@ struct DashboardWidgetView: View {
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
