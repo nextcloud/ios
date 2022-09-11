@@ -60,15 +60,13 @@ let dashboardDatasTest: [DashboardData] = [
 func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
-    var title = "Dashboard"
-    var titleImage = UIImage(named: "nextcloud")!
     
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: UIImage(named: "nextcloud")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: UIImage(named: "nextcloud")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
     
     // NETWORKING
@@ -98,8 +96,19 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    title = "recommendations"
+    let id = "recommendations"
+    let result = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
     
+    let title = result?.title ?? id
+    var titleImage = UIImage()
+
+    if let fileName = result?.iconClass {
+        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+        if let image = UIImage(contentsOfFile: fileNamePath) {
+            titleImage = image.imageColor(NCBrandColor.shared.label)
+        }
+    }
+
     NextcloudKit.shared.getDashboardWidgetsApplication(title) { account, results, data, error in
         
         var datas = [DashboardData]()
