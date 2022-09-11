@@ -27,7 +27,17 @@ import NextcloudKit
 
 extension NCManageDatabase {
 
-    func addDasboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
+    func getDashboardWidget(account: String, id: String) -> tableDashboardWidget? {
+     
+        let realm = try! Realm()
+        guard let result = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else {
+            return nil
+        }
+        
+        return tableDashboardWidget.init(value: result)
+    }
+    
+    func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
         
         let realm = try! Realm()
 
