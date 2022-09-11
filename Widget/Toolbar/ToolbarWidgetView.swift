@@ -102,8 +102,8 @@ struct ToolbarWidgetView: View {
 
                     Text(entry.footerText)
                         .font(.caption2)
-                        .foregroundColor(Color(NCBrandColor.shared.brand))
                         .padding(.trailing, 13.0)
+                        .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }.background(ContainerRelativeShape().fill(Color(.black)))
