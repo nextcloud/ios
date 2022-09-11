@@ -23,6 +23,7 @@
 
 import WidgetKit
 import NextcloudKit
+import Queuer
 
 let dashboaardItems = 6
 
@@ -98,9 +99,10 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
     
     let id = "recommendations"
     let result = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
-    
+    let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
     let title = result?.title ?? id
     var titleImage = UIImage()
+    var fileId = ""
 
     if let fileName = result?.iconClass {
         let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
@@ -109,25 +111,41 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         }
     }
 
-    NextcloudKit.shared.getDashboardWidgetsApplication(title) { account, results, data, error in
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { account, results, data, error in
         
         var datas = [DashboardData]()
         
         if let results = results {
             for result in results {
                 //let application = dashboardResult.application
-                if let entries = result.items {
+                if let items = result.items {
                     var counter: Int = 0
-                    for entry in entries {
+                    for item in items {
                         counter += 1
-                        let title = entry.title ?? ""
-                        let subtitle = entry.subtitle ?? ""
+                        let title = item.title ?? ""
+                        let subtitle = item.subtitle ?? ""
                         var link = URL(string: "https://")!
-                        if let entryLink = entry.link, let url = URL(string: entryLink){
+                        if let entryLink = item.link, let url = URL(string: entryLink){
                             link = url
                         }
-                        let iconUrl = entry.iconUrl ?? ""
-                        let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: UIImage(named: "file")!)
+                        var icon = UIImage(named: "file")!
+                        if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
+                            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                                let queryItems = urlComponents.queryItems
+                                if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
+                                    fileId = item
+                                }
+                            }
+                            let semaphore = Semaphore()
+                            NCUtility.shared.getImageUserData(url: url, fileName: fileId , size: 128, write: false) { image in
+                                if let image = image {
+                                    icon = image
+                                }
+                                semaphore.continue()
+                            }
+                            semaphore.wait()
+                        }
+                        let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon)
                         datas.append(data)
                         if datas.count == dashboaardItems { break}
                     }
