@@ -35,7 +35,7 @@ func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: Toolba
     if isPreview {
         return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
     }
-    
+
     if NCManageDatabase.shared.getActiveAccount() == nil {
         return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
