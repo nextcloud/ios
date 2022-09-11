@@ -117,7 +117,6 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         
         if let results = results {
             for result in results {
-                //let application = dashboardResult.application
                 if let items = result.items {
                     var counter: Int = 0
                     for item in items {
