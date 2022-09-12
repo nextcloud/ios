@@ -1023,35 +1023,38 @@ class NCUtility: NSObject {
         return imagePreview
     }
     
-    func getImageUserData(url: URL, fileName: String, size: CGFloat, write: Bool = true,completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
+    func getImageUserData(url: URL, fileName: String?, size: CGFloat, completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
         
-        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
         let size = CGSize(width: size, height: size)
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
-        
-        if !FileManager().fileExists(atPath: fileNamePath) {
-            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
-                var image: UIImage?
-                if error == .success {
-                    guard let data = data else { return completition(nil) }
-                    if let uiImage = UIImage(data: data) {
-                        image = uiImage.resizeImage(size: size)
-                    } else if let svgImage = SVGKImage(data: data) {
-                        svgImage.size = size
-                        image = svgImage.uiImage
-                    } else {
-                        print("error")
-                    }
-                    if let image = image, write {
-                        do {
-                            try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                        } catch { }
-                    }
-                }
-                completition(image)
+
+        if let fileName = fileName {
+            let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+            if FileManager().fileExists(atPath: fileNamePath) {
+                return completition(UIImage(contentsOfFile: fileNamePath))
             }
-        } else {
-            completition(UIImage(contentsOfFile: fileNamePath))
+        }
+        
+        NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
+            var image: UIImage?
+            if error == .success {
+                guard let data = data else { return completition(nil) }
+                if let uiImage = UIImage(data: data) {
+                    image = uiImage.resizeImage(size: size)
+                } else if let svgImage = SVGKImage(data: data) {
+                    svgImage.size = size
+                    image = svgImage.uiImage
+                } else {
+                    print("error")
+                }
+                if let image = image, let fileName = fileName {
+                    do {
+                        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                        try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                    } catch { }
+                }
+            }
+            completition(image)
         }
     }
 }

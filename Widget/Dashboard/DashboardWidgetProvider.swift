@@ -33,7 +33,7 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
     func placeholder(in context: Context) -> Entry {
         let datasPlaceholder = Array(dashboardDatasTest[0...nextcloudItems - 1])
         let title = "Dashboard"
-        let titleImage = UIImage(named: "nextcloud")!
+        let titleImage = UIImage(named: "widget")!
         return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
