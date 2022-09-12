@@ -1,5 +1,5 @@
 //
-//  NextcloudWidgetProvider.swift
+//  FilesWidgetProvider.swift
 //  Widget
 //
 //  Created by Marino Faggiana on 25/08/22.
@@ -24,24 +24,24 @@
 import WidgetKit
 import SwiftUI
 
-struct NextcloudWidgetProvider: TimelineProvider {
+struct FilesWidgetProvider: TimelineProvider {
 
-    typealias Entry = NextcloudDataEntry
+    typealias Entry = FilesDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        let datasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
-        let title = getTitleNextcloudWidget()
-        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
+        let title = getTitleFilesWidget()
+        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        getNextcloudDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
+        getFilesDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getNextcloudDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+        getFilesDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

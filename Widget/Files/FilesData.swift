@@ -1,5 +1,5 @@
 //
-//  NextcloudData.swift
+//  FilesData.swift
 //  Widget
 //
 //  Created by Marino Faggiana on 25/08/22.
@@ -24,18 +24,18 @@
 import WidgetKit
 import NextcloudKit
 
-let nextcloudItems = 4
+let filesItems = 4
 
-struct NextcloudDataEntry: TimelineEntry {
+struct FilesDataEntry: TimelineEntry {
     let date: Date
-    let datas: [NextcloudRecentData]
+    let datas: [FilesData]
     let isPlaceholder: Bool
     let tile: String
     let footerImage: String
     let footerText: String
 }
 
-struct NextcloudRecentData: Identifiable, Hashable {
+struct FilesData: Identifiable, Hashable {
     var id: String
     var image: UIImage
     var title: String
@@ -43,7 +43,7 @@ struct NextcloudRecentData: Identifiable, Hashable {
     var url: URL
 }
 
-let recentDatasTest: [NextcloudRecentData] = [
+let filesDatasTest: [FilesData] = [
     .init(id: "0", image: UIImage(named: "widget")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "1", image: UIImage(named: "widget")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
     .init(id: "2", image: UIImage(named: "widget")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
@@ -51,7 +51,7 @@ let recentDatasTest: [NextcloudRecentData] = [
     .init(id: "4", image: UIImage(named: "widget")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getTitleNextcloudWidget() -> String {
+func getTitleFilesWidget() -> String {
 
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
@@ -71,17 +71,17 @@ func getTitleNextcloudWidget() -> String {
     }
 }
 
-func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: NextcloudDataEntry) -> Void) {
+func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
-    let datasPlaceholder = Array(recentDatasTest[0...nextcloudItems - 1])
-    let title = getTitleNextcloudWidget()
+    let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
+    let title = getTitleFilesWidget()
     
     if isPreview {
-        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     func isLive(file: NKFile, files: [NKFile]) -> Bool {
@@ -190,7 +190,7 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
     
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, data, error in
 
-        var datas: [NextcloudRecentData] = []
+        var datas: [FilesData] = []
         
         for file in files {
             guard !file.directory else { continue }
@@ -212,22 +212,22 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
             } else {
                 imageRecent = UIImage(named: "file")!
             }
-            let recentData = NextcloudRecentData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
-            datas.append(recentData)
-            if datas.count == nextcloudItems { break}
+            let data = FilesData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
+            datas.append(data)
+            if datas.count == filesItems { break}
         }
 
         if error != .success {
-            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
+            completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
             var footerText = NSLocalizedString("_no_data_available_", comment: "")
             let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
             if serverVersionMajor < NCGlobal.shared.nextcloudVersion25 {
                 footerText = NSLocalizedString("_widget_available_nc25_", comment: "")
             }
-            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
+            completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
         } else {
-            completion(NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
+            completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
         }
     }
 }

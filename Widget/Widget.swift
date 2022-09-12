@@ -30,7 +30,7 @@ struct NextcloudWidgetBundle: WidgetBundle {
     @WidgetBundleBuilder
     var body: some Widget {
         DashboardWidget()
-        NextcloudWidget()
+        FilesWidget()
         ToolbarWidget()
     }
 }
@@ -48,16 +48,16 @@ struct DashboardWidget: Widget {
     }
 }
 
-struct NextcloudWidget: Widget {
-    let kind: String = "NextcloudWidget"
+struct FilesWidget: Widget {
+    let kind: String = "FilesWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: NextcloudWidgetProvider()) { entry in
-            NextcloudWidgetView(entry: entry)
+        StaticConfiguration(kind: kind, provider: FilesWidgetProvider()) { entry in
+            FilesWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName(NCBrandOptions.shared.brand + " Widget")
-        .description(NSLocalizedString("_description_nextcloudwidget_", comment: ""))
+        .configurationDisplayName(NCBrandOptions.shared.brand + " Files")
+        .description(NSLocalizedString("_description_fileswidget_", comment: ""))
     }
 }
 
