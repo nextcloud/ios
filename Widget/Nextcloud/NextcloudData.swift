@@ -221,7 +221,12 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         if error != .success {
             completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
-            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
+            var footerText = NSLocalizedString("_no_data_available_", comment: "")
+            let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+            if serverVersionMajor < NCGlobal.shared.nextcloudVersion25 {
+                footerText = NSLocalizedString("_widget_available_nc25_", comment: "")
+            }
+            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
         } else {
             completion(NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         }

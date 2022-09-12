@@ -270,14 +270,17 @@ class NCService: NSObject {
 
     private func requestDashboardWidget() {
         
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-        NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
-            if error == .success, let dashboardWidgets = dashboardWidgets  {
-                NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
-                for widget in dashboardWidgets {
-                    if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
-                        NCUtility.shared.getImageUserData(url: url, fileName: fileName, size: 128)
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 {
+            NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
+                if error == .success, let dashboardWidgets = dashboardWidgets  {
+                    NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
+                    for widget in dashboardWidgets {
+                        if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
+                            NCUtility.shared.getImageUserData(url: url, fileName: fileName, size: 128)
+                        }
                     }
                 }
             }
