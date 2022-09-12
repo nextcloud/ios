@@ -50,11 +50,6 @@ struct NextcloudWidgetView: View {
                     
                     VStack(spacing: 0) {
                         
-                        let datasCount = CGFloat(entry.datas.count)
-                        let heightFrame = (geo.size.height - 120) / datasCount
-                        let addSizeIcon = heightFrame / datasCount
-                        let spacing = (addSizeIcon - datasCount) / 2
-                        
                         ForEach(entry.datas, id: \.id) { element in
                             
                             Link(destination: element.url) {
@@ -62,16 +57,16 @@ struct NextcloudWidgetView: View {
                                 HStack {
                                     
                                     let subTitleColor = Color(white: 0.5)
-                                    let imageSize:CGFloat = 30
+                                    let imageSize:CGFloat = 35
                                     
                                     Image(uiImage: element.image)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(width: imageSize+addSizeIcon, height: imageSize+addSizeIcon)
+                                        .frame(width: imageSize, height: imageSize)
                                         .clipped()
                                         .cornerRadius(5)
                                     
-                                    VStack(alignment: .leading, spacing: spacing) {
+                                    VStack(alignment: .leading, spacing: 2) {
                                         
                                         Text(element.title)
                                             .font(.system(size: 12))
@@ -84,10 +79,10 @@ struct NextcloudWidgetView: View {
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
-                                .frame(height: heightFrame)
+                                .frame(height: 54)
                             }
                             Divider()
-                                .padding(.leading, 48 + addSizeIcon)
+                                .padding(.leading, 54)
                         }
                     }
                 }
@@ -176,7 +171,7 @@ struct NextcloudWidgetView: View {
 
 struct NextcloudWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(recentDatasTest[0...3])
+        let datas = Array(recentDatasTest[0...nextcloudItems-1])
         let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
