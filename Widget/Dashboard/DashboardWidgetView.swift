@@ -56,12 +56,7 @@ struct DashboardWidgetView: View {
                 VStack(alignment: .leading) {
                     
                     VStack(spacing: 0) {
-                        
-                        let datasCount = CGFloat(entry.datas.count)
-                        let heightFrame = (geo.size.height - 80) / datasCount
-                        let addSizeIcon = heightFrame / datasCount
-                        let spacing = (addSizeIcon - datasCount) / 2
-                        
+                                                
                         ForEach(entry.datas, id: \.id) { element in
                             
                             Link(destination: element.link) {
@@ -69,16 +64,16 @@ struct DashboardWidgetView: View {
                                 HStack {
                                     
                                     let subTitleColor = Color(white: 0.5)
-                                    let imageSize:CGFloat = 30
+                                    let imageSize:CGFloat = 35
                                     
                                     Image(uiImage: element.icon)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(width: imageSize+addSizeIcon, height: imageSize+addSizeIcon)
+                                        .frame(width: imageSize, height: imageSize)
                                         .clipped()
                                         .cornerRadius(5)
 
-                                    VStack(alignment: .leading, spacing: spacing) {
+                                    VStack(alignment: .leading, spacing: 2) {
 
                                         Text(element.title)
                                             .font(.system(size: 12))
@@ -91,10 +86,10 @@ struct DashboardWidgetView: View {
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
-                                .frame(height: heightFrame)
+                                .frame(height: 45)
                             }
                             Divider()
-                                .padding(.leading, 48 + addSizeIcon)
+                                .padding(.leading, 54)
                         }
                     }
                 }
