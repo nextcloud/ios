@@ -884,10 +884,10 @@
 "_copy_passphrase_"         = "Copy passphrase";
 "_select_color_"            = "Select the color";
 "_change_color_"            = "Change color";
-
 "_description_dashboardwidget_" = "Having the Dashboard always at your fingertips has never been easier.";
 "_description_nextcloudwidget_" = "View your recent files and use the toolbar to speed up your operations.";
 "_description_toolbarwidget_"   = "A the toolbar to speed up your operations.";
+"_no_data_available_"       = "no data available";
 
 // Video
 "_select_trace_"            = "Select the trace";

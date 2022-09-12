@@ -163,7 +163,7 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         if error != .success {
             completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
-            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard, " + NSLocalizedString("_no_data_available_", comment: "")))
         } else {
             completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
         }
