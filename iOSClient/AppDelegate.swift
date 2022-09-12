@@ -277,7 +277,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if #available(iOS 14.0, *) {
             WidgetCenter.shared.reloadAllTimelines()
             //WidgetCenter.shared.reloadTimelines(ofKind: "DashboardWidget")
-            //WidgetCenter.shared.reloadTimelines(ofKind: "NextcloudWidget")
         }
 
         // Clear operation queue

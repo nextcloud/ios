@@ -171,9 +171,9 @@
 		F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F72D7EB6263B1207000B3DFC /* MarkdownKit */; };
 		F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */ = {isa = PBXBuildFile; productRef = F72DA9B325F53E4E00B87DB1 /* SwiftRichString */; };
 		F72EA95228B7BA2A00C88F0C /* DashboardWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EA95128B7BA2A00C88F0C /* DashboardWidgetProvider.swift */; };
-		F72EA95428B7BABA00C88F0C /* NextcloudWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EA95328B7BABA00C88F0C /* NextcloudWidgetProvider.swift */; };
-		F72EA95828B7BC4F00C88F0C /* NextcloudData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EA95728B7BC4F00C88F0C /* NextcloudData.swift */; };
-		F72EA95A28B7BD0D00C88F0C /* NextcloudWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EA95928B7BD0D00C88F0C /* NextcloudWidgetView.swift */; };
+		F72EA95428B7BABA00C88F0C /* FilesWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EA95328B7BABA00C88F0C /* FilesWidgetProvider.swift */; };
+		F72EA95828B7BC4F00C88F0C /* FilesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EA95728B7BC4F00C88F0C /* FilesData.swift */; };
+		F72EA95A28B7BD0D00C88F0C /* FilesWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72EA95928B7BD0D00C88F0C /* FilesWidgetView.swift */; };
 		F732D23327CF8AED000B0F1B /* NCPlayerToolBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = F732D23227CF8AED000B0F1B /* NCPlayerToolBar.xib */; };
 		F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F733598025C1C188002ABA72 /* NCAskAuthorization.swift */; };
 		F7346E1228B0EF5B006CE2D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7346E1128B0EF5B006CE2D2 /* WidgetKit.framework */; };
@@ -731,9 +731,9 @@
 		F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerNextcloudText.swift; sourceTree = "<group>"; };
 		F72E0B9C21AD60BC00898D7B /* WeScan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WeScan.framework; path = Carthage/Build/iOS/WeScan.framework; sourceTree = "<group>"; };
 		F72EA95128B7BA2A00C88F0C /* DashboardWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardWidgetProvider.swift; sourceTree = "<group>"; };
-		F72EA95328B7BABA00C88F0C /* NextcloudWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudWidgetProvider.swift; sourceTree = "<group>"; };
-		F72EA95728B7BC4F00C88F0C /* NextcloudData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudData.swift; sourceTree = "<group>"; };
-		F72EA95928B7BD0D00C88F0C /* NextcloudWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudWidgetView.swift; sourceTree = "<group>"; };
+		F72EA95328B7BABA00C88F0C /* FilesWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesWidgetProvider.swift; sourceTree = "<group>"; };
+		F72EA95728B7BC4F00C88F0C /* FilesData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesData.swift; sourceTree = "<group>"; };
+		F72EA95928B7BD0D00C88F0C /* FilesWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesWidgetView.swift; sourceTree = "<group>"; };
 		F7320934201B812F008A0888 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F732093B201B81E4008A0888 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F732D23227CF8AED000B0F1B /* NCPlayerToolBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCPlayerToolBar.xib; sourceTree = "<group>"; };
@@ -1373,14 +1373,14 @@
 			path = Dashboard;
 			sourceTree = "<group>";
 		};
-		F72EA95628B7BAE700C88F0C /* Nextcloud */ = {
+		F72EA95628B7BAE700C88F0C /* Files */ = {
 			isa = PBXGroup;
 			children = (
-				F72EA95728B7BC4F00C88F0C /* NextcloudData.swift */,
-				F72EA95328B7BABA00C88F0C /* NextcloudWidgetProvider.swift */,
-				F72EA95928B7BD0D00C88F0C /* NextcloudWidgetView.swift */,
+				F72EA95728B7BC4F00C88F0C /* FilesData.swift */,
+				F72EA95328B7BABA00C88F0C /* FilesWidgetProvider.swift */,
+				F72EA95928B7BD0D00C88F0C /* FilesWidgetView.swift */,
 			);
-			path = Nextcloud;
+			path = Files;
 			sourceTree = "<group>";
 		};
 		F7346E1428B0EF5B006CE2D2 /* Widget */ = {
@@ -1388,7 +1388,7 @@
 			children = (
 				F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */,
 				F72EA95528B7BAD100C88F0C /* Dashboard */,
-				F72EA95628B7BAE700C88F0C /* Nextcloud */,
+				F72EA95628B7BAE700C88F0C /* Files */,
 				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
 				F71EB73628CA81D1007FAB9D /* Dashboard.intentdefinition */,
@@ -2701,7 +2701,7 @@
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
-				F72EA95A28B7BD0D00C88F0C /* NextcloudWidgetView.swift in Sources */,
+				F72EA95A28B7BD0D00C88F0C /* FilesWidgetView.swift in Sources */,
 				F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */,
 				F793E5A028B7651B005E4B02 /* NCViewCertificateDetails.swift in Sources */,
 				F71EB73728CA81D1007FAB9D /* Dashboard.intentdefinition in Sources */,
@@ -2721,13 +2721,13 @@
 				F72EA95228B7BA2A00C88F0C /* DashboardWidgetProvider.swift in Sources */,
 				F793E5A228B76580005E4B02 /* NCNetworkingChunkedUpload.swift in Sources */,
 				F783031228B4C8EC00B84583 /* CCUtility.m in Sources */,
-				F72EA95828B7BC4F00C88F0C /* NextcloudData.swift in Sources */,
+				F72EA95828B7BC4F00C88F0C /* FilesData.swift in Sources */,
 				F793E59E28B763C2005E4B02 /* NCAskAuthorization.swift in Sources */,
 				F78302FF28B4C45000B84583 /* NCUtilityFileSystem.swift in Sources */,
 				F78302F628B4C3C500B84583 /* NCDatabase.swift in Sources */,
 				F7D68FCD28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F783030128B4C49700B84583 /* UIImage+Extensions.swift in Sources */,
-				F72EA95428B7BABA00C88F0C /* NextcloudWidgetProvider.swift in Sources */,
+				F72EA95428B7BABA00C88F0C /* FilesWidgetProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 //
-//  NextcloudWidgetView.swift
+//  FilesWidgetView.swift
 //  Widget
 //
 //  Created by Marino Faggiana on 25/08/22.
@@ -24,9 +24,9 @@
 import SwiftUI
 import WidgetKit
 
-struct NextcloudWidgetView: View {
+struct FilesWidgetView: View {
     
-    var entry: NextcloudDataEntry
+    var entry: FilesDataEntry
     
     var body: some View {
         
@@ -157,7 +157,7 @@ struct NextcloudWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
-                    
+                
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
@@ -169,10 +169,10 @@ struct NextcloudWidgetView: View {
     }
 }
 
-struct NextcloudWidget_Previews: PreviewProvider {
+struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(recentDatasTest[0...nextcloudItems-1])
-        let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
-        NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
+        let datas = Array(filesDatasTest[0...filesItems-1])
+        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
+        FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
