@@ -65,9 +65,24 @@ let dashboardDatasTest: [DashboardData] = [
     .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil)
 ]
 
-func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
+    var id = "recommendations"
+    switch intent {
+    case .unknown:
+        id = "recommendations"
+    case .notes:
+        id = "notes"
+    case .deck:
+        id = "deck"
+    case .recommendations:
+        id = "recommendations"
+    case .activity:
+        id = "activity"
+    case .user_status:
+        id = "user_status"
+    }
     
     if isPreview {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: UIImage(named: "nextcloud")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
@@ -104,7 +119,6 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    let id = "recommendations"
     let result = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
     let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
     let title = result?.title ?? id

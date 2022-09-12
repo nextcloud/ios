@@ -38,13 +38,13 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
     }
 
     func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {
-        getDashboardDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
+        getDashboardDataEntry(intent: configuration.Applications, isPreview: false, displaySize: context.displaySize) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(for configuration: DashboardIntent, in context: Context, completion: @escaping (Timeline<DashboardDataEntry>) -> Void) {
-        getDashboardDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+        getDashboardDataEntry(intent: configuration.Applications, isPreview: context.isPreview, displaySize: context.displaySize) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

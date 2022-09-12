@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>INEnumDisplayName</key>
-			<string>Applications category</string>
+			<string>Applications</string>
 			<key>INEnumDisplayNameID</key>
 			<string>9yMkyI</string>
 			<key>INEnumGeneratesHeader</key>
@@ -124,7 +124,42 @@
 						<string>recommendations</string>
 					</dict>
 					<key>INIntentParameterName</key>
-					<string>parameter</string>
+					<string>Applications</string>
+					<key>INIntentParameterPromptDialogs</key>
+					<array>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Configuration</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Primary</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>There are ${count} options matching ‘${Applications}’.</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>qZKu0p</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>DisambiguationIntroduction</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>Just to confirm, you wanted ‘${Applications}’?</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>XKkeMc</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Confirmation</string>
+						</dict>
+					</array>
 					<key>INIntentParameterTag</key>
 					<integer>6</integer>
 					<key>INIntentParameterType</key>
