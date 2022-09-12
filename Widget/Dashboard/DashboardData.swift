@@ -53,16 +53,16 @@ struct DashboardDataButton: Hashable {
 }
 
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil),
-    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "nextcloud")!, buttons: nil)
+    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil),
+    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, buttons: nil)
 ]
 
 func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
@@ -85,11 +85,11 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     }
     
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: UIImage(named: "nextcloud")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: UIImage(named: "nextcloud")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
     
     // NETWORKING
@@ -122,8 +122,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     let result = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
     let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
     let title = result?.title ?? id
-    var titleImage = UIImage()
-    var fileId = ""
+    var titleImage = UIImage(named: "widget")!
 
     if let fileName = result?.iconClass {
         let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
@@ -148,16 +147,20 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
                         var link = URL(string: "https://")!
                         if let entryLink = item.link, let url = URL(string: entryLink){ link = url }
                         var icon = UIImage(named: "file")!
-                        
+                        var iconFileName: String?
+
                         if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
                             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
                                 let queryItems = urlComponents.queryItems
                                 if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
-                                    fileId = item
+                                    iconFileName = item
+                                } else {
+                                    let path = (urlComponents.path as NSString)
+                                    iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                 }
                             }
                             let semaphore = Semaphore()
-                            NCUtility.shared.getImageUserData(url: url, fileName: fileId , size: 128, write: false) { image in
+                            NCUtility.shared.getImageUserData(url: url, fileName: iconFileName , size: 128) { image in
                                 if let image = image {
                                     icon = image
                                 }

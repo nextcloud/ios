@@ -122,7 +122,7 @@ struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(dashboardDatasTest[0...dashboaardItems - 1])
         let title = "Dashboard"
-        let titleImage = UIImage(named: "nextcloud")!
+        let titleImage = UIImage(named: "widget")!
         let entry = DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
