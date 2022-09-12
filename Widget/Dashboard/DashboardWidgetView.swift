@@ -101,35 +101,11 @@ struct DashboardWidgetView: View {
                 .padding(.top, 40)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
-                /*
-                HStack(spacing: 0) {
-
-                    let sizeButton: CGFloat = 40
-                    let placeholderColor = Color(white: 0.8)
-                    let brandColor = Color(NCBrandColor.shared.brand)
-                    let brandTextColor = Color(NCBrandColor.shared.brandText)
-                    
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionVoiceMemo, label: {
-                        Image("microphone")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
-                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width, height: sizeButton)
-                    })
-                }
-                .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottomTrailing)
-                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-                */
-                
                 HStack {
 
                     let placeholderColor = Color(white: 0.2)
                     let brandColor = Color(NCBrandColor.shared.brand)
-
+                    
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()

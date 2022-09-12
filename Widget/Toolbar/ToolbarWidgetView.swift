@@ -94,16 +94,19 @@ struct ToolbarWidgetView: View {
 
                 HStack {
 
+                    let placeholderColor = Color(white: 0.2)
+                    let brandColor = Color(NCBrandColor.shared.brand)
+
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
-                        .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }.background(ContainerRelativeShape().fill(Color(.black)))
