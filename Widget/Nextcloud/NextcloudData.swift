@@ -221,7 +221,7 @@ func getNextcloudDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         if error != .success {
             completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
-            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget, " + NSLocalizedString("_no_data_available_", comment: "")))
+            completion(NextcloudDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
         } else {
             completion(NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget"))
         }
