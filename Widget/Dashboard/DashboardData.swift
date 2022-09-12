@@ -127,14 +127,14 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
                 if let items = result.items {
                     var counter: Int = 0
                     for item in items {
+                        
                         counter += 1
                         let title = item.title ?? ""
                         let subtitle = item.subtitle ?? ""
                         var link = URL(string: "https://")!
-                        if let entryLink = item.link, let url = URL(string: entryLink){
-                            link = url
-                        }
+                        if let entryLink = item.link, let url = URL(string: entryLink){ link = url }
                         var icon = UIImage(named: "file")!
+                        
                         if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
                             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
                                 let queryItems = urlComponents.queryItems
@@ -151,6 +151,7 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
                             }
                             semaphore.wait()
                         }
+                        
                         let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon, buttons: nil)
                         datas.append(data)
                         if datas.count == dashboaardItems { break}
