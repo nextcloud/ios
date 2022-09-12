@@ -39,7 +39,7 @@ struct DashboardWidget: Widget {
     let kind: String = "DashboardWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: DashboardWidgetProvider()) { entry in
+        IntentConfiguration(kind: kind, intent: DashboardIntent.self, provider: DashboardWidgetProvider()) { entry in
             DashboardWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])

@@ -23,9 +23,11 @@
 
 import WidgetKit
 import SwiftUI
+import Intents
 
-struct DashboardWidgetProvider: TimelineProvider {
+struct DashboardWidgetProvider: IntentTimelineProvider {
 
+    typealias Intent = DashboardIntent
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
@@ -35,13 +37,13 @@ struct DashboardWidgetProvider: TimelineProvider {
         return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
+    func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {
         getDashboardDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
             completion(entry)
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    func getTimeline(for configuration: DashboardIntent, in context: Context, completion: @escaping (Timeline<DashboardDataEntry>) -> Void) {
         getDashboardDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
