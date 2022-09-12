@@ -79,7 +79,7 @@ struct NextcloudWidgetView: View {
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
-                                .frame(height: 54)
+                                .frame(height: 50)
                             }
                             Divider()
                                 .padding(.leading, 54)
