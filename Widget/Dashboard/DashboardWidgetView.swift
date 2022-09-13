@@ -27,6 +27,8 @@ import WidgetKit
 struct DashboardWidgetView: View {
 
     var entry: DashboardDataEntry
+    let brandColor = Color(NCBrandColor.shared.brand)
+    let brandTextColor = Color(NCBrandColor.shared.brandText)
     
     var body: some View {
         
@@ -40,8 +42,6 @@ struct DashboardWidgetView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: 20, height: 20)
-                        .clipped()
-                        .cornerRadius(5)
                     
                     Text(entry.title)
                         .font(.system(size: 15))
@@ -109,30 +109,24 @@ struct DashboardWidgetView: View {
                     
                     HStack(spacing: 0) {
 
-                        let sizeButton: CGFloat = 45
-                        let placeholderColor = Color(white: 0.8)
                         let brandColor = Color(NCBrandColor.shared.brand)
                         let brandTextColor = Color(NCBrandColor.shared.brandText)
 
                         ForEach(tableButton, id: \.index) { element in
-                            Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
+                            Link(destination: URL(string: element.link)! , label: {
                                 
                                 Text(element.text)
-                                    .fontWeight(.bold)
-                                    .font(.title)
-                                    .padding()
-                                    .background(Color.purple)
-                                    .foregroundColor(.white)
-                                    .padding(10)
-                                    .border(Color.purple, width: 5)
-                                    .cornerRadius(40)
+                                    .font(.system(size: 18))
+                                    .padding(7)
+                                    .background(brandColor)
+                                    .foregroundColor(brandTextColor)
+                                    .border(brandColor, width: 1)
+                                    .cornerRadius(16)
                             })
-                            
+                            .frame(width: geo.size.width / 2)
                         }
                     }
-                    .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottomTrailing)
-                    .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-                    
+                    .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottom)
                 }
                 
                 HStack {

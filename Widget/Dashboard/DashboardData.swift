@@ -26,7 +26,7 @@ import NextcloudKit
 import Queuer
 import RealmSwift
 
-var dashboaardItems = 5
+let dashboaardItems = 5
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
@@ -122,6 +122,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     }
     
     let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
+    let existsButton: Int = tableButton == nil ? 0 : 1
     let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
     let title = tableDashboard?.title ?? id
     var titleImage = UIImage(named: "widget")!
@@ -132,11 +133,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
             titleImage = image.imageColor(NCBrandColor.shared.label)
         }
     }
-    
-    if tableButton?.count ?? 0 > 0 {
-        dashboaardItems -= 1
-    }
-
+        
     NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { account, results, data, error in
         
         var datas = [DashboardData]()
@@ -145,8 +142,8 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
             for result in results {
                 if let items = result.items {
                     var counter: Int = 0
+                    let maxCounter = dashboaardItems - existsButton
                     for item in items {
-                        
                         counter += 1
                         let title = item.title ?? ""
                         let subtitle = item.subtitle ?? ""
@@ -177,7 +174,8 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
                         
                         let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon)
                         datas.append(data)
-                        if datas.count == dashboaardItems { break}
+                        
+                        if datas.count == maxCounter { break }
                     }
                 }
             }
