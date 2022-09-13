@@ -33,7 +33,7 @@ extension NCManageDatabase {
         guard let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else {
             return (nil, nil)
         }
-        let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id)
+        let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id).sorted(byKeyPath: "type", ascending: true)
         
         return (resultDashboard, resultsButton)
     }
