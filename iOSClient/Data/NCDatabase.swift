@@ -254,6 +254,7 @@ class tableDashboardWidget: Object {
     @Persisted var iconClass: String?
     @Persisted var iconUrl: String?
     @Persisted var widgetUrl: String?
+    @Persisted var itemIconsRound: Bool = false
     let button = List<tableDashboardWidgetButton>()
 }
 

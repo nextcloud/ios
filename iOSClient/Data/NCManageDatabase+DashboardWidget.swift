@@ -51,6 +51,7 @@ extension NCManageDatabase {
                     
                     let addObject = tableDashboardWidget()
                     
+                    addObject.index = account + " " + widget.id
                     addObject.account = account
                     addObject.id = widget.id
                     addObject.title = widget.title
@@ -58,7 +59,7 @@ extension NCManageDatabase {
                     addObject.iconClass = widget.iconClass
                     addObject.iconUrl = widget.iconUrl
                     addObject.widgetUrl = widget.widgetUrl
-                    addObject.index = account + " " + widget.id
+                    addObject.itemIconsRound = widget.itemIconsRound
 
                     if let buttons = widget.button {
                         for button in buttons {

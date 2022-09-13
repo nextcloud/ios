@@ -34,6 +34,10 @@ struct ToolbarWidgetView: View {
 
             ZStack(alignment: .topLeading) {
 
+                // Color.init(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)
+                Color(.black)
+                    .ignoresSafeArea()
+            
                 HStack(spacing: 0) {
 
                     let sizeButton: CGFloat = 65
@@ -109,7 +113,7 @@ struct ToolbarWidgetView: View {
                         .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
-            }.background(ContainerRelativeShape().fill(Color(.black)))
+            }
         }
     }
 }
