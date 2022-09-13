@@ -37,7 +37,7 @@ struct ToolbarWidgetView: View {
                 // Color.init(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)
                 Color(.black)
                     .ignoresSafeArea()
-            
+
                 HStack(spacing: 0) {
 
                     let sizeButton: CGFloat = 65
@@ -50,7 +50,7 @@ struct ToolbarWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding()
+                            .padding(17)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
