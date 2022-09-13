@@ -105,6 +105,36 @@ struct DashboardWidgetView: View {
                 .padding(.top, 40)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
+                if let tableButton = entry.tableButton, !tableButton.isEmpty {
+                    
+                    HStack(spacing: 0) {
+
+                        let sizeButton: CGFloat = 45
+                        let placeholderColor = Color(white: 0.8)
+                        let brandColor = Color(NCBrandColor.shared.brand)
+                        let brandTextColor = Color(NCBrandColor.shared.brandText)
+
+                        ForEach(tableButton, id: \.index) { element in
+                            Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
+                                
+                                Text(element.text)
+                                    .fontWeight(.bold)
+                                    .font(.title)
+                                    .padding()
+                                    .background(Color.purple)
+                                    .foregroundColor(.white)
+                                    .padding(10)
+                                    .border(Color.purple, width: 5)
+                                    .cornerRadius(40)
+                            })
+                            
+                        }
+                    }
+                    .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottomTrailing)
+                    .redacted(reason: entry.isPlaceholder ? .placeholder : [])
+                    
+                }
+                
                 HStack {
 
                     let placeholderColor = Color(white: 0.2)
