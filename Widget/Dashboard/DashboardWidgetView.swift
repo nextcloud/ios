@@ -66,12 +66,21 @@ struct DashboardWidgetView: View {
                                     let subTitleColor = Color(white: 0.5)
                                     let imageSize:CGFloat = 35
                                     
-                                    Image(uiImage: element.icon)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: imageSize, height: imageSize)
-                                        .clipped()
-                                        .cornerRadius(5)
+                                    if entry.tableDashboard?.itemIconsRound ?? false {
+                                        Image(uiImage: element.icon)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: imageSize, height: imageSize)
+                                            .clipShape(Circle())
+                                            .overlay(Circle().stroke(Color.yellow, lineWidth: 1))
+                                    } else {
+                                        Image(uiImage: element.icon)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: imageSize, height: imageSize)
+                                            .clipped()
+                                            .cornerRadius(5)
+                                    }
 
                                     VStack(alignment: .leading, spacing: 2) {
 
