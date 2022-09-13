@@ -26,7 +26,7 @@ import NextcloudKit
 import Queuer
 import RealmSwift
 
-let dashboaardItems = 5
+var dashboaardItems = 5
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
@@ -131,6 +131,10 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
         if let image = UIImage(contentsOfFile: fileNamePath) {
             titleImage = image.imageColor(NCBrandColor.shared.label)
         }
+    }
+    
+    if tableButton?.count ?? 0 > 0 {
+        dashboaardItems -= 1
     }
 
     NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { account, results, data, error in
