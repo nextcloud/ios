@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "icons8-scan-24(@1x).png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "icons8-scan-48(@2x).png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "icons8-scan-72(@3x).png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "icons8-riacquisisci-documento-500.svg",
+      "idiom" : "universal"
     }
   ],
   "info" : {
