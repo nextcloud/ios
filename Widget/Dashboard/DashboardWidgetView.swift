@@ -107,7 +107,7 @@ struct DashboardWidgetView: View {
 
                 if let tableButton = entry.tableButton, !tableButton.isEmpty {
                     
-                    HStack(spacing: 0) {
+                    HStack(spacing: 10) {
 
                         let brandColor = Color(NCBrandColor.shared.brand)
                         let brandTextColor = Color(NCBrandColor.shared.brandText)
@@ -123,10 +123,9 @@ struct DashboardWidgetView: View {
                                     .border(brandColor, width: 1)
                                     .cornerRadius(17)
                             })
-                            .frame(width: geo.size.width / CGFloat(tableButton.count))
                         }
                     }
-                    .frame(width: geo.size.width, height: geo.size.height - 28, alignment: .bottom)
+                    .frame(width: geo.size.width - 10, height: geo.size.height - 28, alignment: .bottomTrailing)
                 }
                 
                 HStack {
