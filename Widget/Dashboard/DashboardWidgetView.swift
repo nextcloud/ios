@@ -72,7 +72,7 @@ struct DashboardWidgetView: View {
                                             .scaledToFill()
                                             .frame(width: imageSize, height: imageSize)
                                             .clipShape(Circle())
-                                            .overlay(Circle().stroke(Color.yellow, lineWidth: 1))
+                                            .overlay(Circle().stroke(Color.white, lineWidth: 1))
                                     } else {
                                         Image(uiImage: element.icon)
                                             .resizable()
