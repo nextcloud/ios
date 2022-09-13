@@ -43,7 +43,7 @@ struct DashboardWidget: Widget {
             DashboardWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName(NCBrandOptions.shared.brand + " Dashboard")
+        .configurationDisplayName("Dashboard")
         .description(NSLocalizedString("_description_dashboardwidget_", comment: ""))
     }
 }
@@ -56,7 +56,7 @@ struct FilesWidget: Widget {
             FilesWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName(NCBrandOptions.shared.brand + " Files")
+        .configurationDisplayName("Files")
         .description(NSLocalizedString("_description_fileswidget_", comment: ""))
     }
 }
@@ -69,7 +69,7 @@ struct ToolbarWidget: Widget {
             ToolbarWidgetView(entry: entry)
         }
         .supportedFamilies([.systemMedium])
-        .configurationDisplayName(NCBrandOptions.shared.brand + " Toolbar")
+        .configurationDisplayName("Toolbar")
         .description(NSLocalizedString("_description_toolbarwidget_", comment: ""))
     }
 }
