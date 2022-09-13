@@ -84,7 +84,6 @@ struct ToolbarWidgetView: View {
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionVoiceMemo, label: {
                         Image("microphone")
                             .resizable()
-                            .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
                             .padding(10)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
