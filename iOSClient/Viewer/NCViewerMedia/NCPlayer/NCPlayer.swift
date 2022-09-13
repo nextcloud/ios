@@ -135,7 +135,8 @@ class NCPlayer: NSObject {
             if let player = self.player,
                let playerItem = player.currentItem,
                let object = player.currentItem,
-               playerItem === object {
+               playerItem === object,
+               self.viewController != nil {
 
                 if self.isStartPlayer {
                     return
