@@ -27,14 +27,15 @@ import NextcloudKit
 
 extension NCManageDatabase {
 
-    func getDashboardWidget(account: String, id: String) -> tableDashboardWidget? {
+    func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, Results<tableDashboardWidgetButton>?) {
      
         let realm = try! Realm()
-        guard let result = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else {
-            return nil
+        guard let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else {
+            return (nil, nil)
         }
+        let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id)
         
-        return tableDashboardWidget.init(value: result)
+        return (resultDashboard, resultsButton)
     }
     
     func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
@@ -44,8 +45,11 @@ extension NCManageDatabase {
         do {
             try realm.safeWrite {
                 
-                let result = realm.objects(tableDashboardWidget.self).filter("account == %@", account)
-                realm.delete(result)
+                let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@", account)
+                realm.delete(resultDashboard)
+                
+                let resultDashboardButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@", account)
+                realm.delete(resultDashboardButton)
                 
                 for widget in dashboardWidgets {
                     
