@@ -101,7 +101,7 @@ struct FilesWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(12)
+                            .padding(11)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()

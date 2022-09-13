@@ -50,7 +50,7 @@ struct ToolbarWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(17)
+                            .padding(14)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
