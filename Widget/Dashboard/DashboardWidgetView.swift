@@ -123,7 +123,7 @@ struct DashboardWidgetView: View {
                                     .border(brandColor, width: 1)
                                     .cornerRadius(16)
                             })
-                            .frame(width: geo.size.width / 2)
+                            .frame(width: geo.size.width / CGFloat(tableButton.count))
                         }
                     }
                     .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottom)
