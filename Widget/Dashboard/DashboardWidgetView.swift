@@ -121,12 +121,12 @@ struct DashboardWidgetView: View {
                                     .background(brandColor)
                                     .foregroundColor(brandTextColor)
                                     .border(brandColor, width: 1)
-                                    .cornerRadius(16)
+                                    .cornerRadius(17)
                             })
                             .frame(width: geo.size.width / CGFloat(tableButton.count))
                         }
                     }
-                    .frame(width: geo.size.width, height: geo.size.height - 25, alignment: .bottom)
+                    .frame(width: geo.size.width, height: geo.size.height - 28, alignment: .bottom)
                 }
                 
                 HStack {
