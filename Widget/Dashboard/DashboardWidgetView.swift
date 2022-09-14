@@ -121,7 +121,7 @@ struct DashboardWidgetView: View {
                                     .background(brandColor)
                                     .foregroundColor(brandTextColor)
                                     .border(brandColor, width: 1)
-                                    .cornerRadius(17)
+                                    .cornerRadius(18)
                             })
                         }
                     }
@@ -152,7 +152,7 @@ struct DashboardWidgetView: View {
 
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(dashboardDatasTest[0...5])
+        let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
         let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
