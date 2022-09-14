@@ -95,14 +95,14 @@ struct DashboardWidgetView: View {
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
-                                .frame(height: 45)
+                                .frame(height: 50)
                             }
                             Divider()
                                 .padding(.leading, 54)
                         }
                     }
                 }
-                .padding(.top, 40)
+                .padding(.top, 30)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 if let tableButton = entry.tableButton, !tableButton.isEmpty {
@@ -125,7 +125,7 @@ struct DashboardWidgetView: View {
                             })
                         }
                     }
-                    .frame(width: geo.size.width - 10, height: geo.size.height - 28, alignment: .bottomTrailing)
+                    .frame(width: geo.size.width - 10, height: geo.size.height - 25, alignment: .bottomTrailing)
                 }
                 
                 HStack {
@@ -152,7 +152,7 @@ struct DashboardWidgetView: View {
 
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(dashboardDatasTest[0...dashboaardItems - 1])
+        let datas = Array(dashboardDatasTest[0...5])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
         let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")

@@ -69,7 +69,7 @@ func getTitleFilesWidget() -> String {
     }
 }
 
-func getItems(displaySize: CGSize) -> Int {
+func getFilesItems(displaySize: CGSize) -> Int {
     
     let height = Int((displaySize.height - 100) / 50)
     return height
@@ -77,8 +77,8 @@ func getItems(displaySize: CGSize) -> Int {
 
 func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
-    let items = getItems(displaySize: displaySize)
-    let datasPlaceholder = Array(filesDatasTest[0...items - 1])
+    let filesItems = getFilesItems(displaySize: displaySize)
+    let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     let title = getTitleFilesWidget()
     
     
@@ -220,7 +220,7 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
             }
             let data = FilesData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
             datas.append(data)
-            if datas.count == items { break}
+            if datas.count == filesItems { break}
         }
 
         if error != .success {
