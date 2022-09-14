@@ -1680,7 +1680,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
                 if headerMenuButtonsCommand && !appDelegate.isSearchingMode {
-                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "buttonAddFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
+                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "addFolder"), titleButton2: NSLocalizedString("_folder_", comment: ""), imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
                 }
