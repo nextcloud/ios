@@ -85,7 +85,7 @@ extension AppDelegate {
         if #available(iOS 13.0, *) {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility.shared.loadImage(named: "buttonAddScan"), action: { _ in
+                    title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility.shared.loadImage(named: "scan"), action: { _ in
                         if let viewController = appDelegate.window?.rootViewController {
                             NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
                         }

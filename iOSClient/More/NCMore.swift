@@ -144,7 +144,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if #available(iOS 13.0, *) {
             item = NKExternalSite()
             item.name = "_scanned_images_"
-            item.icon = "buttonAddScan"
+            item.icon = "scan"
             item.url = "openStoryboardNCScan"
             functionMenu.append(item)
         }

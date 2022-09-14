@@ -46,7 +46,7 @@ struct ToolbarWidgetView: View {
                     let brandTextColor = Color(NCBrandColor.shared.brandText)
 
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
-                        Image("buttonAddImage")
+                        Image("addImage")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
@@ -58,7 +58,7 @@ struct ToolbarWidgetView: View {
                     })
 
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionScanDocument, label: {
-                        Image("buttonAddScan")
+                        Image("scan")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
