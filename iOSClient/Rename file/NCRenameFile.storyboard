@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="V0q-CP-xMJ">
-    <device id="retina3_5" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="V0q-CP-xMJ">
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,20 +18,20 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rename" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nZr-nE-ths">
-                                <rect key="frame" x="20" y="15" width="260" height="18"/>
+                                <rect key="frame" x="20" y="62" width="260" height="0.0"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="t26-3S-4T4">
-                                <rect key="frame" x="80" y="48" width="140" height="140"/>
+                                <rect key="frame" x="80" y="77" width="140" height="140"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="140" id="PaU-P7-coi"/>
                                     <constraint firstAttribute="height" constant="140" id="s6R-ay-3Ui"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FOZ-fs-k7i">
-                                <rect key="frame" x="210" y="212.5" width="10" height="21"/>
+                                <rect key="frame" x="210" y="241.66666666666666" width="10" height="20.999999999999972"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="10" id="T5K-dj-AdT"/>
                                 </constraints>
@@ -40,7 +40,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q9G-gl-Fkc">
-                                <rect key="frame" x="220" y="206" width="60" height="34"/>
+                                <rect key="frame" x="220" y="235" width="60" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="60" id="6ga-cj-dYT"/>
                                 </constraints>
@@ -48,7 +48,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ny2-wR-rxo">
-                                <rect key="frame" x="20" y="208" width="190" height="30"/>
+                                <rect key="frame" x="20" y="237" width="190" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="dBg-ka-5gB"/>
                                 </constraints>
@@ -56,21 +56,21 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7CJ-Q0-ABH" userLabel="SeparatorV">
-                                <rect key="frame" x="150" y="253.5" width="0.5" height="56.5"/>
+                                <rect key="frame" x="149.66666666666666" y="282.66666666666669" width="0.66666666666665719" height="27.333333333333314"/>
                                 <color key="backgroundColor" systemColor="systemGray4Color"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="0.5" id="wU1-tA-NZk"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ouH-gK-Guv" userLabel="SeparatorH">
-                                <rect key="frame" x="0.0" y="253" width="300" height="0.5"/>
+                                <rect key="frame" x="0.0" y="282" width="300" height="0.66666666666668561"/>
                                 <color key="backgroundColor" systemColor="systemGray4Color"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="0.5" id="2OQ-Mt-Gnh"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W5y-aT-UlI">
-                                <rect key="frame" x="0.0" y="253.5" width="150" height="56.5"/>
+                                <rect key="frame" x="0.0" y="282.66666666666669" width="150" height="27.333333333333314"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" title="Cancel">
                                     <color key="titleColor" systemColor="systemBlueColor"/>
@@ -80,13 +80,13 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcV-V0-eZB">
-                                <rect key="frame" x="150" y="253.5" width="150" height="56.5"/>
+                                <rect key="frame" x="150" y="282.66666666666669" width="150" height="27.333333333333314"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" title="Rename">
                                     <color key="titleColor" systemColor="systemBlueColor"/>
                                 </state>
                                 <connections>
-                                    <action selector="rename:" destination="V0q-CP-xMJ" eventType="touchUpInside" id="9tx-AQ-q6X"/>
+                                    <action selector="renameFile:" destination="V0q-CP-xMJ" eventType="touchUpInside" id="m9a-mj-q7P"/>
                                 </connections>
                             </button>
                         </subviews>
