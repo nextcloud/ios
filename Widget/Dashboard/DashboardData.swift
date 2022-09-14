@@ -67,8 +67,13 @@ let dashboardDatasTest: [DashboardData] = [
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     
-    let height = Int((displaySize.height - 55) / 50)
-    return withButton ? (height - 1) : height
+    if withButton {
+        let height = Int((displaySize.height - 75) / 50)
+        return height
+    } else {
+        let height = Int((displaySize.height - 55) / 50)
+        return height
+    }
 }
 
 func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
