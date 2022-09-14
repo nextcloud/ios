@@ -34,8 +34,7 @@ struct ToolbarWidgetView: View {
 
             ZStack(alignment: .topLeading) {
 
-                // Color.init(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)
-                Color(.black)
+                Color(.black).opacity(0.9)
                     .ignoresSafeArea()
 
                 HStack(spacing: 0) {
