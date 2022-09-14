@@ -34,6 +34,10 @@ struct ToolbarWidgetView: View {
 
             ZStack(alignment: .topLeading) {
 
+                // Color.init(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)
+                Color(.black)
+                    .ignoresSafeArea()
+
                 HStack(spacing: 0) {
 
                     let sizeButton: CGFloat = 65
@@ -46,7 +50,7 @@ struct ToolbarWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding(14)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -58,7 +62,7 @@ struct ToolbarWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding()
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -70,7 +74,7 @@ struct ToolbarWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding()
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -80,9 +84,8 @@ struct ToolbarWidgetView: View {
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionVoiceMemo, label: {
                         Image("microphone")
                             .resizable()
-                            .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding()
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -94,18 +97,22 @@ struct ToolbarWidgetView: View {
 
                 HStack {
 
+                    let placeholderColor = Color(white: 0.2)
+                    let brandColor = Color(NCBrandColor.shared.brand)
+
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? Color(white: 0.2) : Color(NCBrandColor.shared.brand))
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
-            }.background(ContainerRelativeShape().fill(Color(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)))
+            }
         }
     }
 }

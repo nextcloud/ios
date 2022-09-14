@@ -25,51 +25,137 @@ import SwiftUI
 import WidgetKit
 
 struct DashboardWidgetView: View {
+
     var entry: DashboardDataEntry
+    let brandColor = Color(NCBrandColor.shared.brand)
+    let brandTextColor = Color(NCBrandColor.shared.brandText)
+    
     var body: some View {
-        ZStack(alignment: .top) {
-            VStack {
-                Text(entry.title)
-                    .font(.title3)
-                    .bold()
-                    .fixedSize(horizontal: false, vertical: true)
-                VStack(spacing: 5) {
-                    ForEach(entry.datas, id: \.id) { element in
-                        Link(destination: element.url) {
-                            HStack {
-                                Image(uiImage: element.image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                VStack(alignment: .leading) {
-                                    Text(element.title)
-                                        .font(.headline)
-                                    Text(element.subTitle)
-                                        .font(.subheadline)
-                                        .foregroundColor(Color(white: 0.4745))
+        
+        GeometryReader { geo in
+
+            ZStack(alignment: .topLeading) {
+
+                HStack() {
+                    
+                    Image(uiImage: entry.titleImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 20, height: 20)
+                    
+                    Text(entry.title)
+                        .font(.system(size: 15))
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                        .textCase(.uppercase)
+                        .lineLimit(1)
+                }
+                .frame(width: geo.size.width - 20)
+                .padding([.top, .leading, .trailing], 10)
+                
+                VStack(alignment: .leading) {
+                    
+                    VStack(spacing: 0) {
+                                                
+                        ForEach(entry.datas, id: \.id) { element in
+                            
+                            Link(destination: element.link) {
+                                
+                                HStack {
+                                    
+                                    let subTitleColor = Color(white: 0.5)
+                                    let imageSize:CGFloat = 35
+                                    
+                                    if entry.tableDashboard?.itemIconsRound ?? false {
+                                        Image(uiImage: element.icon)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: imageSize, height: imageSize)
+                                            .clipShape(Circle())
+                                            .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                                    } else {
+                                        Image(uiImage: element.icon)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: imageSize, height: imageSize)
+                                            .clipped()
+                                            .cornerRadius(5)
+                                    }
+
+                                    VStack(alignment: .leading, spacing: 2) {
+
+                                        Text(element.title)
+                                            .font(.system(size: 12))
+                                            .fontWeight(.regular)
+
+                                        Text(element.subTitle)
+                                            .font(.system(size: CGFloat(10)))
+                                            .foregroundColor(subTitleColor)
+                                    }
+                                    Spacer()
                                 }
-                                Spacer()
+                                .padding(.leading, 10)
+                                .frame(height: 45)
                             }
-                            .padding(5)
+                            Divider()
+                                .padding(.leading, 54)
                         }
                     }
                 }
-            }.padding(5)
+                .padding(.top, 40)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
-            Text(entry.footerText)
-                    .font(.caption2)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(.trailing, 10.0)
-                    .padding(.bottom, 5.0)
+
+                if let tableButton = entry.tableButton, !tableButton.isEmpty {
+                    
+                    HStack(spacing: 10) {
+
+                        let brandColor = Color(NCBrandColor.shared.brand)
+                        let brandTextColor = Color(NCBrandColor.shared.brandText)
+
+                        ForEach(tableButton, id: \.index) { element in
+                            Link(destination: URL(string: element.link)! , label: {
+                                
+                                Text(element.text)
+                                    .font(.system(size: 18))
+                                    .padding(7)
+                                    .background(brandColor)
+                                    .foregroundColor(brandTextColor)
+                                    .border(brandColor, width: 1)
+                                    .cornerRadius(17)
+                            })
+                        }
+                    }
+                    .frame(width: geo.size.width - 10, height: geo.size.height - 28, alignment: .bottomTrailing)
+                }
+                
+                HStack {
+
+                    let placeholderColor = Color(white: 0.2)
+                    let brandColor = Color(NCBrandColor.shared.brand)
+                    
+                    Image(systemName: entry.footerImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
+
+                    Text(entry.footerText)
+                        .font(.caption2)
+                        .padding(.trailing, 13.0)
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
+                }
+                .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+            }
         }
     }
 }
 
 struct DashboardWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(dashboardDatasTest[0...3])
-        let entry = DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: "Dashboard", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let datas = Array(dashboardDatasTest[0...dashboaardItems - 1])
+        let title = "Dashboard"
+        let titleImage = UIImage(named: "widget")!
+        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

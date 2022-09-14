@@ -23,67 +23,83 @@
 
 import WidgetKit
 import NextcloudKit
+import Queuer
+import RealmSwift
 
-let dashboaardItems = 4
+let dashboaardItems = 5
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
     let datas: [DashboardData]
+    let tableDashboard: tableDashboardWidget?
+    let tableButton: Results<tableDashboardWidgetButton>?
     let isPlaceholder: Bool
+    let titleImage: UIImage
     let title: String
     let footerImage: String
     let footerText: String
 }
 
 struct DashboardData: Identifiable, Hashable {
-    var id: String
-    var image: UIImage
-    var title: String
-    var subTitle: String
-    var url: URL
+    let id: Int
+    let title: String
+    let subTitle: String
+    let link: URL
+    let icon: UIImage
+}
+
+struct DashboardDataButton: Hashable {
+    let type: String
+    let Text: String
+    let link: String
 }
 
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: "1", image: UIImage(named: "nextcloud")!, title: "title1", subTitle: "subTitle-description1", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "2", image: UIImage(named: "nextcloud")!, title: "title2", subTitle: "subTitle-description2", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "3", image: UIImage(named: "nextcloud")!, title: "title3", subTitle: "subTitle-description3", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "4", image: UIImage(named: "nextcloud")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "5", image: UIImage(named: "nextcloud")!, title: "title5", subTitle: "subTitle-description5", url: URL(string: "https://nextcloud.com/")!),
-    .init(id: "6", image: UIImage(named: "nextcloud")!, title: "title6", subTitle: "subTitle-description6", url: URL(string: "https://nextcloud.com/")!)
+    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
+    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!)
 ]
 
-func getTitleDashboard() -> String {
-
-    let hour = Calendar.current.component(.hour, from: Date())
-    var good = ""
-
-    switch hour {
-    case 6..<12: good = NSLocalizedString("_good_morning_", value: "Good morning", comment: "")
-    case 12: good = NSLocalizedString("_good_noon_", value: "Good noon", comment: "")
-    case 13..<17: good = NSLocalizedString("_good_afternoon_", value: "Good afternoon", comment: "")
-    case 17..<22: good = NSLocalizedString("_good_evening_", value: "Good evening", comment: "")
-    default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
-    }
-
-    if let account = NCManageDatabase.shared.getActiveAccount() {
-        return good + ", " + account.displayName
-    } else {
-        return good
-    }
-}
-
-func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
+    var id = "recommendations"
+    switch intent {
+    case .unknown:
+        id = "recommendations"
+    case .notes:
+        id = "notes"
+    case .deck:
+        id = "deck"
+    case .recommendations:
+        id = "recommendations"
+    case .activity:
+        id = "activity"
+    case .user_status:
+        id = "user_status"
+    }
     
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
     
+    let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+
+    guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
+    }
+        
     // NETWORKING
     let password = CCUtility.getPassword(account.account)!
     NKCommon.shared.setup(
@@ -111,27 +127,72 @@ func getDashboardDataEntry(isPreview: Bool, displaySize: CGSize, completion: @es
         NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    NextcloudKit.shared.getDashboard { account, dashboardResults, json, error in
+    let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
+    let existsButton: Int = tableButton == nil ? 0 : 1
+    let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+    let title = tableDashboard?.title ?? id
+    var titleImage = UIImage(named: "widget")!
+
+    if let fileName = tableDashboard?.iconClass {
+        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+        if let image = UIImage(contentsOfFile: fileNamePath) {
+            titleImage = image.imageColor(NCBrandColor.shared.label)
+        }
+    }
+        
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { account, results, data, error in
         
         var datas = [DashboardData]()
         
-        if let dashboardResults = dashboardResults {
-            for dashboardResult in dashboardResults {
-                let application = dashboardResult.application
-                if let entries = dashboardResult.dashboardEntries {
-                    for entry in entries {
+        if let results = results {
+            for result in results {
+                if let items = result.items {
+                    var counter: Int = 0
+                    let maxCounter = dashboaardItems - existsButton
+                    for item in items {
+                        counter += 1
+                        let title = item.title ?? ""
+                        let subtitle = item.subtitle ?? ""
+                        var link = URL(string: "https://")!
+                        if let entryLink = item.link, let url = URL(string: entryLink){ link = url }
+                        var icon = UIImage(named: "file")!
+                        var iconFileName: String?
+
+                        if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
+                            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                                let queryItems = urlComponents.queryItems
+                                if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
+                                    iconFileName = item
+                                } else {
+                                    let path = (urlComponents.path as NSString)
+                                    iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
+                                }
+                            }
+                            let semaphore = Semaphore()
+                            NCUtility.shared.getImageUserData(url: url, fileName: iconFileName , size: 128) { image in
+                                if let image = image {
+                                    icon = image
+                                }
+                                semaphore.continue()
+                            }
+                            semaphore.wait()
+                        }
                         
+                        let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon)
+                        datas.append(data)
+                        
+                        if datas.count == maxCounter { break }
                     }
                 }
             }
         }
         
         if error != .success {
-            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "xmark.icloud", footerText: error.errorDescription))
+            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
         } else if datas.isEmpty {
-            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
         } else {
-            completion(DashboardDataEntry(date: Date(), datas: datas, isPlaceholder: false, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+            completion(DashboardDataEntry(date: Date(), datas: datas, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
         }
     }
 }

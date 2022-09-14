@@ -106,7 +106,7 @@
     NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
     NSString *proxyServerPath = [NCBrandOptions shared].pushNotificationServerProxy;
     
-    [[NextcloudKit shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completion:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NKError *error) {
+    [[NextcloudKit shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil queue:dispatch_get_main_queue() completion:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSData *data, NKError *error) {
         if (error == NKError.success) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
             [[NextcloudKit shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent queue:dispatch_get_main_queue() completion:^(NKError *error) {

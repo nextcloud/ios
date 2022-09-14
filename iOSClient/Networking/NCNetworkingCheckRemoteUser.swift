@@ -47,7 +47,7 @@ class NCNetworkingCheckRemoteUser {
                 return
             }
 
-            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, error in
+            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token) { account, wipe, data, error in
 
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 if wipe {
@@ -64,6 +64,7 @@ class NCNetworkingCheckRemoteUser {
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
                         NCContentPresenter.shared.showError(error: error, priority: .max)
                         CCUtility.setPassword(account, password: nil)
+                        NKCommon.shared.writeLog("Password removed.")
                         appDelegate.deletePasswordSession = true
                     }
                 }

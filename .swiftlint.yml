@@ -42,8 +42,9 @@ excluded:
   - File Provider Extension/FileProviderUtility.swift
   - Notification Service Extension/NotificationService.swift
   - Widget/Dashboard/DashboardData.swift
-  - Widget/Nextcloud/NextcloudData.swift
-  - Widget/Nextcloud/NextcloudWidgetView.swift
+  - Widget/Dashboard/DashboardWidgetView.swift
+  - Widget/Files/FilesData.swift
+  - Widget/Files/FilesWidgetView.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift
@@ -59,6 +60,7 @@ excluded:
   - iOSClient/Data/NCManageDatabase.swift
   - iOSClient/Data/NCManageDatabase+Metadata.swift
   - iOSClient/Data/NCManageDatabase+Video.swift
+  - iOSClient/Data/NCManageDatabase+DashboardWidget.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
   - iOSClient/EmptyView/NCEmptyDataSet.swift
   - iOSClient/Extensions/UIColor+Extensions.swift

@@ -289,7 +289,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func getNetwokingNotification() {
 
-        NextcloudKit.shared.getNotifications { account, notifications, error in
+        NextcloudKit.shared.getNotifications { account, notifications, data, error in
 
             if error == .success && account == self.appDelegate.account {
 

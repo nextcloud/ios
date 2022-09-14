@@ -633,8 +633,8 @@ class NCUtility: NSObject {
 
             originalImage = UIImage(contentsOfFile: fileNamePath)
 
-            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview), isAspectRation: false)
-            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: false)
+            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview))
+            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon))
 
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
@@ -992,5 +992,69 @@ class NCUtility: NSObject {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailPred.evaluate(with: email)
+    }
+    
+    func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
+
+        var imagePreview: UIImage?
+        let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
+        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
+
+        if FileManager().fileExists(atPath: iconImagePath) {
+            imagePreview = UIImage(contentsOfFile: iconImagePath)
+        } else if !createPreviewMedia {
+            return nil
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
+            }
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
+            }
+        }
+
+        return imagePreview
+    }
+    
+    func getImageUserData(url: URL, fileName: String?, size: CGFloat, completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
+        
+        let size = CGSize(width: size, height: size)
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        if let fileName = fileName {
+            let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+            if FileManager().fileExists(atPath: fileNamePath) {
+                return completition(UIImage(contentsOfFile: fileNamePath))
+            }
+        }
+        
+        NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
+            var image: UIImage?
+            if error == .success {
+                guard let data = data else { return completition(nil) }
+                if let uiImage = UIImage(data: data) {
+                    image = uiImage.resizeImage(size: size)
+                } else if let svgImage = SVGKImage(data: data) {
+                    svgImage.size = size
+                    image = svgImage.uiImage
+                } else {
+                    print("error")
+                }
+                if let image = image, let fileName = fileName {
+                    do {
+                        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                        try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                    } catch { }
+                }
+            }
+            completition(image)
+        }
     }
 }

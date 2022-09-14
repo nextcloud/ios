@@ -1,5 +1,5 @@
 //
-//  NextcloudWidgetView.swift
+//  FilesWidgetView.swift
 //  Widget
 //
 //  Created by Marino Faggiana on 25/08/22.
@@ -24,9 +24,9 @@
 import SwiftUI
 import WidgetKit
 
-struct NextcloudWidgetView: View {
+struct FilesWidgetView: View {
     
-    var entry: NextcloudDataEntry
+    var entry: FilesDataEntry
     
     var body: some View {
         
@@ -50,11 +50,6 @@ struct NextcloudWidgetView: View {
                     
                     VStack(spacing: 0) {
                         
-                        let datasCount = CGFloat(entry.datas.count)
-                        let heightFrame = (geo.size.height - 120) / datasCount
-                        let addSizeIcon = heightFrame / datasCount
-                        let spacing = (addSizeIcon - datasCount) / 2
-                        
                         ForEach(entry.datas, id: \.id) { element in
                             
                             Link(destination: element.url) {
@@ -62,16 +57,16 @@ struct NextcloudWidgetView: View {
                                 HStack {
                                     
                                     let subTitleColor = Color(white: 0.5)
-                                    let imageSize:CGFloat = 30
+                                    let imageSize:CGFloat = 35
                                     
                                     Image(uiImage: element.image)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(width: imageSize+addSizeIcon, height: imageSize+addSizeIcon)
+                                        .frame(width: imageSize, height: imageSize)
                                         .clipped()
                                         .cornerRadius(5)
                                     
-                                    VStack(alignment: .leading, spacing: spacing) {
+                                    VStack(alignment: .leading, spacing: 2) {
                                         
                                         Text(element.title)
                                             .font(.system(size: 12))
@@ -84,10 +79,10 @@ struct NextcloudWidgetView: View {
                                     Spacer()
                                 }
                                 .padding(.leading, 10)
-                                .frame(height: heightFrame)
+                                .frame(height: 50)
                             }
                             Divider()
-                                .padding(.leading, 48 + addSizeIcon)
+                                .padding(.leading, 54)
                         }
                     }
                 }
@@ -106,7 +101,7 @@ struct NextcloudWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding(11)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -118,7 +113,7 @@ struct NextcloudWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding(11)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -130,7 +125,7 @@ struct NextcloudWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding(11)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -142,7 +137,7 @@ struct NextcloudWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(10)
+                            .padding(11)
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -162,10 +157,11 @@ struct NextcloudWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
-                    
+                
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
+                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
@@ -173,10 +169,10 @@ struct NextcloudWidgetView: View {
     }
 }
 
-struct NextcloudWidget_Previews: PreviewProvider {
+struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(recentDatasTest[0...3])
-        let entry = NextcloudDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
-        NextcloudWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
+        let datas = Array(filesDatasTest[0...filesItems-1])
+        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
+        FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

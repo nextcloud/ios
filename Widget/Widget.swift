@@ -30,7 +30,7 @@ struct NextcloudWidgetBundle: WidgetBundle {
     @WidgetBundleBuilder
     var body: some Widget {
         DashboardWidget()
-        NextcloudWidget()
+        FilesWidget()
         ToolbarWidget()
     }
 }
@@ -39,25 +39,25 @@ struct DashboardWidget: Widget {
     let kind: String = "DashboardWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: DashboardWidgetProvider()) { entry in
+        IntentConfiguration(kind: kind, intent: DashboardIntent.self, provider: DashboardWidgetProvider()) { entry in
             DashboardWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName(NCBrandOptions.shared.brand + " Dashboard")
+        .configurationDisplayName("Dashboard")
         .description(NSLocalizedString("_description_dashboardwidget_", comment: ""))
     }
 }
 
-struct NextcloudWidget: Widget {
-    let kind: String = "NextcloudWidget"
+struct FilesWidget: Widget {
+    let kind: String = "FilesWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: NextcloudWidgetProvider()) { entry in
-            NextcloudWidgetView(entry: entry)
+        StaticConfiguration(kind: kind, provider: FilesWidgetProvider()) { entry in
+            FilesWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
-        .configurationDisplayName(NCBrandOptions.shared.brand + " Widget")
-        .description(NSLocalizedString("_description_nextcloudwidget_", comment: ""))
+        .configurationDisplayName("Files")
+        .description(NSLocalizedString("_description_fileswidget_", comment: ""))
     }
 }
 
@@ -69,7 +69,7 @@ struct ToolbarWidget: Widget {
             ToolbarWidgetView(entry: entry)
         }
         .supportedFamilies([.systemMedium])
-        .configurationDisplayName(NCBrandOptions.shared.brand + " Toolbar")
+        .configurationDisplayName("Toolbar")
         .description(NSLocalizedString("_description_toolbarwidget_", comment: ""))
     }
 }

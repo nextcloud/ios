@@ -78,7 +78,7 @@ class NCAppConfigView: UIViewController {
             return
         }
 
-        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { token, error in
+        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, userAgent: nil) { token, data, error in
             DispatchQueue.main.async {
                 if error == .success && token != nil {
                     let account: String = "\(username) \(serverUrl)"

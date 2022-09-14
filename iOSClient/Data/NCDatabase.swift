@@ -244,6 +244,29 @@ class tableDirectEditingCreators: Object {
     @objc dynamic var templates: Int = 0
 }
 
+class tableDashboardWidget: Object {
+    
+    @Persisted(primaryKey: true) var index = ""
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var title = ""
+    @Persisted var order: Int = 0
+    @Persisted var iconClass: String?
+    @Persisted var iconUrl: String?
+    @Persisted var widgetUrl: String?
+    @Persisted var itemIconsRound: Bool = false
+}
+
+class tableDashboardWidgetButton: Object {
+
+    @Persisted(primaryKey: true) var index = ""
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var type = ""
+    @Persisted var text = ""
+    @Persisted var link = ""
+}
+
 class tableDirectEditingEditors: Object {
 
     @objc dynamic var account = ""

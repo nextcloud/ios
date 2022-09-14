@@ -84,7 +84,7 @@ class NCShares: NCCollectionViewCommon {
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, error in
+        NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, data, error in
 
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()

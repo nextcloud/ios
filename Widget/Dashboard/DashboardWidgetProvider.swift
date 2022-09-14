@@ -23,24 +23,28 @@
 
 import WidgetKit
 import SwiftUI
+import Intents
 
-struct DashboardWidgetProvider: TimelineProvider {
+struct DashboardWidgetProvider: IntentTimelineProvider {
 
+    typealias Intent = DashboardIntent
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        let datasPlaceholder = Array(dashboardDatasTest[0...nextcloudItems - 1])
-        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, title: getTitleDashboard(), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
+        let title = "Dashboard"
+        let titleImage = UIImage(named: "widget")!
+        return Entry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        getDashboardDataEntry(isPreview: false, displaySize: context.displaySize) { entry in
+    func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {
+        getDashboardDataEntry(intent: configuration.Applications, isPreview: false, displaySize: context.displaySize) { entry in
             completion(entry)
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getDashboardDataEntry(isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+    func getTimeline(for configuration: DashboardIntent, in context: Context, completion: @escaping (Timeline<DashboardDataEntry>) -> Void) {
+        getDashboardDataEntry(intent: configuration.Applications, isPreview: context.isPreview, displaySize: context.displaySize) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

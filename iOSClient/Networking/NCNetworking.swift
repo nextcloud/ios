@@ -773,7 +773,7 @@ import Photos
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { (account, files, error) in
+        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { (account, files, data, error) in
             guard error == .success else {
                 return completion(nil, error)
             }
@@ -861,7 +861,7 @@ import Photos
                 })
             }
             update(account, provider.id, partialResult, metadatas)
-        } completion: { account, error in
+        } completion: { account, data, error in
             self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()
         }
@@ -871,7 +871,7 @@ import Photos
 
         var metadatas: [tableMetadata] = []
 
-        let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { account, searchResult, error in
+        let request = NextcloudKit.shared.searchProvider(id, account: userBaseUrl.account, term: term, limit: limit, cursor: cursor, timeout: 60) { account, searchResult, data, error in
             guard let searchResult = searchResult else {
                 completion(account, nil, metadatas, error)
                 return
@@ -1165,7 +1165,7 @@ import Photos
         
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, error in
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
             guard error == .success else {
                 completion(account, nil, error)
                 return
@@ -1391,7 +1391,7 @@ import Photos
         if CCUtility.fileProviderStorageExists(metadata) {
             completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
         } else {
-            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { _, url, error in
+            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { account, url, data, error in
                 if error == .success && url != nil {
                     if let url = URL(string: url!) {
                         completition(url)
@@ -1407,41 +1407,25 @@ import Photos
 
     // MARK: - TEST API
 
-    /*
-    @objc public func getDashboardWidget(urlBase: String, username: String, password: String, customUserAgent: String? = nil, completionHandler: @escaping (_ errorCode: Int, _ errorDescription: String) -> Void) {
-                
-        let endpoint = "/ocs/v2.php/apps/dashboard/api/v1/widget-items"
-        
-        let url:URLConvertible = try! (urlBase + endpoint).asURL() as URLConvertible
-        var headers: HTTPHeaders = [.authorization(username: username, password: password)]
-        if customUserAgent != nil {
-            headers.update(.userAgent(customUserAgent!))
-        }
-        //headers.update(.contentType("application/json"))
-        headers.update(name: "OCS-APIRequest", value: "true")
-               
-        let method = HTTPMethod(rawValue: "GET")
+    @available(iOS 13.0, *)
+    func getPreview(url: URL, options: NKRequestOptions = NKRequestOptions()) async throws -> Data? {
 
-//        let parameters = [
-//            "fileId": fileId,
-//        ]
-        
-        AF.request(url, method: method, parameters: nil, headers: headers).validate(statusCode: 200..<300).response { (response) in
-            debugPrint(response)
+        try await withUnsafeThrowingContinuation { continuation in
             
-            switch response.result {
-            case .failure(let error):
-                completionHandler(0, "")
-            case .success(let data):
-                if let data = data {
-                    completionHandler(0, "")
-                } else {
-                    completionHandler(NSURLErrorBadServerResponse, NSLocalizedString("_error_decode_xml_", value: "Invalid response, error decode XML", comment: ""))
+            let headers = NKCommon.shared.getStandardHeaders(options: options)
+            
+            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response(queue: NKCommon.shared.backgroundQueue) { (response) in
+                debugPrint(response)
+                
+                switch response.result {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let data):
+                    continuation.resume(returning: data)
                 }
             }
         }
     }
-    */
 }
 
 extension Array where Element == URLQueryItem {

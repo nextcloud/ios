@@ -276,6 +276,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Reload Widget
         if #available(iOS 14.0, *) {
             WidgetCenter.shared.reloadAllTimelines()
+            //WidgetCenter.shared.reloadTimelines(ofKind: "DashboardWidget")
         }
 
         // Clear operation queue

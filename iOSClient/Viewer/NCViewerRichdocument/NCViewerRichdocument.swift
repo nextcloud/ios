@@ -284,7 +284,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
 
-            NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, error in
+            NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, data, error in
                 if error == .success && account == self.appDelegate.account {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
@@ -301,7 +301,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
 
-        NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, error in
+        NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, data, error in
             if error == .success && account == self.appDelegate.account {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
