@@ -24,8 +24,6 @@
 import WidgetKit
 import NextcloudKit
 
-let filesItems = 4
-
 struct FilesDataEntry: TimelineEntry {
     let date: Date
     let datas: [FilesData]
@@ -71,10 +69,18 @@ func getTitleFilesWidget() -> String {
     }
 }
 
+func getItems(displaySize: CGSize) -> Int {
+    
+    let height = Int((displaySize.height - 100) / 50)
+    return height
+}
+
 func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
-    let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
+    let items = getItems(displaySize: displaySize)
+    let datasPlaceholder = Array(filesDatasTest[0...items - 1])
     let title = getTitleFilesWidget()
+    
     
     if isPreview {
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
@@ -214,7 +220,7 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
             }
             let data = FilesData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
             datas.append(data)
-            if datas.count == filesItems { break}
+            if datas.count == items { break}
         }
 
         if error != .success {
