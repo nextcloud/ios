@@ -53,7 +53,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.separatorColor = NCBrandColor.shared.separator
         tableView.register(UINib(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
 
         // create tap gesture recognizer
@@ -302,20 +301,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         return cont
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-    
-        cell.layer.cornerRadius = 0
-        let rows = tableView.numberOfRows(inSection: indexPath.section)
-        
-        if indexPath.row == 0 {
-            cell.layer.cornerRadius = 20
-            cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-        } else if indexPath.row == rows - 1 {
-            cell.layer.cornerRadius = 20
-            cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
-        }
-    }
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         var item = NKExternalSite()
@@ -390,6 +375,21 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
+            cell.separator.backgroundColor = NCBrandColor.shared.separator
+            cell.separatorHeigth.constant = 0.4
+            
+            cell.layer.cornerRadius = 0
+            let rows = tableView.numberOfRows(inSection: indexPath.section)
+            
+            if indexPath.row == 0 {
+                cell.layer.cornerRadius = 20
+                cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+            } else if indexPath.row == rows - 1 {
+                cell.layer.cornerRadius = 20
+                cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+                cell.separator.backgroundColor = .clear
+            }
+            
             return cell
         }
     }
@@ -473,7 +473,9 @@ class CCCellMore: UITableViewCell {
 
     @IBOutlet weak var labelText: UILabel!
     @IBOutlet weak var imageIcon: UIImageView!
-    
+    @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var separatorHeigth: NSLayoutConstraint!
+
     override var frame: CGRect {
         get {
             return super.frame

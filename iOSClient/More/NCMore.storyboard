@@ -46,11 +46,21 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MPj-WT-PTu">
+                                                    <rect key="frame" x="53" y="49" width="391" height="1"/>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="1" id="9Ku-ZW-4rh"/>
+                                                    </constraints>
+                                                </view>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="MPj-WT-PTu" secondAttribute="trailing" constant="-30" id="3wF-o4-3ul"/>
+                                                <constraint firstAttribute="bottom" secondItem="MPj-WT-PTu" secondAttribute="bottom" id="6tD-Wa-D3O"/>
                                                 <constraint firstItem="E8e-56-e81" firstAttribute="centerY" secondItem="1FG-Yi-cbC" secondAttribute="centerY" id="7hX-BA-LAg"/>
                                                 <constraint firstItem="E8e-56-e81" firstAttribute="leading" secondItem="ybA-XY-jKA" secondAttribute="trailing" constant="20" id="KY9-RM-FdA"/>
                                                 <constraint firstAttribute="leadingMargin" secondItem="ybA-XY-jKA" secondAttribute="leading" id="VBx-FZ-Ld2"/>
+                                                <constraint firstItem="MPj-WT-PTu" firstAttribute="leading" secondItem="1FG-Yi-cbC" secondAttribute="leading" constant="53" id="VvQ-pe-sUS"/>
                                                 <constraint firstItem="ybA-XY-jKA" firstAttribute="centerY" secondItem="1FG-Yi-cbC" secondAttribute="centerY" id="ZLU-lg-ptd"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="E8e-56-e81" secondAttribute="trailing" id="mcH-pH-ru3"/>
                                             </constraints>
@@ -58,6 +68,8 @@
                                         <connections>
                                             <outlet property="imageIcon" destination="ybA-XY-jKA" id="YlP-ic-UyR"/>
                                             <outlet property="labelText" destination="E8e-56-e81" id="LB7-UK-1fa"/>
+                                            <outlet property="separator" destination="MPj-WT-PTu" id="V1s-2h-Ybb"/>
+                                            <outlet property="separatorHeigth" destination="9Ku-ZW-4rh" id="wdU-nc-Llh"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
