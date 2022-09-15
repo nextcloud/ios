@@ -29,6 +29,7 @@ struct FilesWidgetProvider: TimelineProvider {
     typealias Entry = FilesDataEntry
 
     func placeholder(in context: Context) -> Entry {
+        let filesItems = getFilesItems(displaySize: context.displaySize)
         let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
         let title = getTitleFilesWidget()
         return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files")

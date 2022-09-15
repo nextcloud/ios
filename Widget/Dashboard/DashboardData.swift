@@ -26,8 +26,6 @@ import NextcloudKit
 import Queuer
 import RealmSwift
 
-let dashboaardItems = 5
-
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
     let datas: [DashboardData]
@@ -67,9 +65,22 @@ let dashboardDatasTest: [DashboardData] = [
     .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!)
 ]
 
+func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
+    
+    if withButton {
+        let height = Int((displaySize.height - 80) / 50)
+        return height
+    } else {
+        let height = Int((displaySize.height - 55) / 50)
+        return height
+    }
+}
+
 func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
-    let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
+    let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
+    let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
+    
     var id = "recommendations"
     switch intent {
     case .unknown:
@@ -128,7 +139,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     }
     
     let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
-    let existsButton: Int = tableButton == nil ? 0 : 1
+    let existsButton = (tableButton?.isEmpty ?? true) ? false : true
     let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
     let title = tableDashboard?.title ?? id
     var titleImage = UIImage(named: "widget")!
@@ -148,7 +159,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
             for result in results {
                 if let items = result.items {
                     var counter: Int = 0
-                    let maxCounter = dashboaardItems - existsButton
+                    let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: existsButton)
                     for item in items {
                         counter += 1
                         let title = item.title ?? ""
@@ -181,7 +192,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
                         let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon)
                         datas.append(data)
                         
-                        if datas.count == maxCounter { break }
+                        if datas.count == dashboardItems { break }
                     }
                 }
             }

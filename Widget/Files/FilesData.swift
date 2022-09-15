@@ -24,8 +24,6 @@
 import WidgetKit
 import NextcloudKit
 
-let filesItems = 4
-
 struct FilesDataEntry: TimelineEntry {
     let date: Date
     let datas: [FilesData]
@@ -71,10 +69,18 @@ func getTitleFilesWidget() -> String {
     }
 }
 
+func getFilesItems(displaySize: CGSize) -> Int {
+    
+    let height = Int((displaySize.height - 100) / 50)
+    return height
+}
+
 func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
+    let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     let title = getTitleFilesWidget()
+    
     
     if isPreview {
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))

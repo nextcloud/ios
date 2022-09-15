@@ -97,7 +97,7 @@ struct FilesWidgetView: View {
                     let brandTextColor = Color(NCBrandColor.shared.brandText)
                     
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
-                        Image("buttonAddImage")
+                        Image("addImage")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
@@ -109,7 +109,7 @@ struct FilesWidgetView: View {
                     })
 
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionScanDocument, label: {
-                        Image("buttonAddScan")
+                        Image("scan")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
@@ -171,7 +171,7 @@ struct FilesWidgetView: View {
 
 struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(filesDatasTest[0...filesItems-1])
+        let datas = Array(filesDatasTest[0...5])
         let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
         FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }

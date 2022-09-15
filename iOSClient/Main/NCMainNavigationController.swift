@@ -41,6 +41,9 @@ class NCMainNavigationController: UINavigationController {
             appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
             appearance.backgroundColor = NCBrandColor.shared.systemBackground
 
+            appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
+
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.standardAppearance = appearance
 

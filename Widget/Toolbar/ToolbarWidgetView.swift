@@ -34,8 +34,7 @@ struct ToolbarWidgetView: View {
 
             ZStack(alignment: .topLeading) {
 
-                // Color.init(.sRGB, red: 0.89, green: 0.89, blue: 0.89, opacity: 0.75)
-                Color(.black)
+                Color(.black).opacity(0.9)
                     .ignoresSafeArea()
 
                 HStack(spacing: 0) {
@@ -46,11 +45,11 @@ struct ToolbarWidgetView: View {
                     let brandTextColor = Color(NCBrandColor.shared.brandText)
 
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
-                        Image("buttonAddImage")
+                        Image("addImage")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
-                            .padding(14)
+                            .padding()
                             .background(entry.isPlaceholder ? placeholderColor : brandColor)
                             .clipShape(Circle())
                             .scaledToFit()
@@ -58,7 +57,7 @@ struct ToolbarWidgetView: View {
                     })
 
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionScanDocument, label: {
-                        Image("buttonAddScan")
+                        Image("scan")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)

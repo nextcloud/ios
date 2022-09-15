@@ -144,7 +144,6 @@
 		F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */; };
 		F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F719D9DF288D37A300762E33 /* NCColorPicker.storyboard */; };
 		F719D9E2288D396100762E33 /* NCColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F719D9E1288D396100762E33 /* NCColorPicker.swift */; };
-		F71EB73728CA81D1007FAB9D /* Dashboard.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F71EB73628CA81D1007FAB9D /* Dashboard.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */; };
 		F7239871253D86B600257F49 /* NCEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmptyDataSet.swift */; };
@@ -156,7 +155,6 @@
 		F7245927289BB59300474787 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
 		F72685E727C78E490019EF5E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72685E927C78E490019EF5E /* InfoPlist.strings */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
-		F729027128CF503E00180CF4 /* Dashboard.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F71EB73628CA81D1007FAB9D /* Dashboard.intentdefinition */; };
 		F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729289F253B0937009CA4FD /* NCMainNavigationController.swift */; };
 		F72A17D828B221E300F3F159 /* DashboardWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */; };
 		F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */; };
@@ -477,6 +475,8 @@
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */; };
+		F7FABE3628D1DAD00000A325 /* Dashboard.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F7FABE3928D1DAD00000A325 /* Dashboard.intentdefinition */; };
+		F7FABE3728D1DAD00000A325 /* Dashboard.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F7FABE3928D1DAD00000A325 /* Dashboard.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */; };
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 /* End PBXBuildFile section */
@@ -710,7 +710,6 @@
 		F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerMediaDetailView.swift; sourceTree = "<group>"; };
 		F719D9DF288D37A300762E33 /* NCColorPicker.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCColorPicker.storyboard; sourceTree = "<group>"; };
 		F719D9E1288D396100762E33 /* NCColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCColorPicker.swift; sourceTree = "<group>"; };
-		F71EB73628CA81D1007FAB9D /* Dashboard.intentdefinition */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.intentdefinition; path = Dashboard.intentdefinition; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocument.storyboard; sourceTree = "<group>"; };
 		F7239870253D86B600257F49 /* NCEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEmptyDataSet.swift; sourceTree = "<group>"; };
@@ -1042,6 +1041,7 @@
 		F7F67BB81A24D27800EE80DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEndToEndMetadata.swift; sourceTree = "<group>"; };
 		F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewer.swift; sourceTree = "<group>"; };
+		F7FABE3828D1DAD00000A325 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/Dashboard.intentdefinition; sourceTree = "<group>"; };
 		F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCNotification+Menu.swift"; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
@@ -1391,7 +1391,7 @@
 				F72EA95628B7BAE700C88F0C /* Files */,
 				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
-				F71EB73628CA81D1007FAB9D /* Dashboard.intentdefinition */,
+				F7FABE3928D1DAD00000A325 /* Dashboard.intentdefinition */,
 				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
 			);
 			path = Widget;
@@ -2704,7 +2704,7 @@
 				F72EA95A28B7BD0D00C88F0C /* FilesWidgetView.swift in Sources */,
 				F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */,
 				F793E5A028B7651B005E4B02 /* NCViewCertificateDetails.swift in Sources */,
-				F71EB73728CA81D1007FAB9D /* Dashboard.intentdefinition in Sources */,
+				F7FABE3728D1DAD00000A325 /* Dashboard.intentdefinition in Sources */,
 				F793E59F28B764F6005E4B02 /* NCContentPresenter.swift in Sources */,
 				F78302FA28B4C3EA00B84583 /* NCManageDatabase+Metadata.swift in Sources */,
 				F783030728B4C52800B84583 /* UIColor+Extensions.swift in Sources */,
@@ -2931,7 +2931,7 @@
 				F7F4F11027ECDC4A008676F9 /* UIDevice+Extensions.swift in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F70D8D8124A4A9BF000A5756 /* NCNetworkingProcessUpload.swift in Sources */,
-				F729027128CF503E00180CF4 /* Dashboard.intentdefinition in Sources */,
+				F7FABE3628D1DAD00000A325 /* Dashboard.intentdefinition in Sources */,
 				F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareCommentsCell.swift in Sources */,
 				F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */,
@@ -3078,6 +3078,14 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		F7FABE3928D1DAD00000A325 /* Dashboard.intentdefinition */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F7FABE3828D1DAD00000A325 /* Base */,
+			);
+			name = Dashboard.intentdefinition;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -3197,7 +3205,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
@@ -3231,7 +3239,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
@@ -3330,7 +3338,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3393,7 +3401,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

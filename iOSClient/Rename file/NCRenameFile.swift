@@ -142,7 +142,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
         textField.resignFirstResponder()
-        rename(textField)
+        renameFile(textField)
         return true
     }
 
@@ -153,7 +153,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         dismiss(animated: true)
     }
 
-    @IBAction func rename(_ sender: Any) {
+    @IBAction func renameFile(_ sender: Any) {
 
         var fileNameWithoutExtNew = ""
         var extNew = ""

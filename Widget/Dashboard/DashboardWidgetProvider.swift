@@ -31,7 +31,8 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
     typealias Entry = DashboardDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        let datasPlaceholder = Array(dashboardDatasTest[0...dashboaardItems - 1])
+        let dashboardItems = getDashboardItems(displaySize: context.displaySize, withButton: false)
+        let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
         return Entry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")

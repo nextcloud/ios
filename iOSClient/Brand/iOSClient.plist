@@ -44,7 +44,7 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>INIntentsSupported</key>
 	<array>
-		<string>Dashboard</string>
+		<string>DashboardIntent</string>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/>
