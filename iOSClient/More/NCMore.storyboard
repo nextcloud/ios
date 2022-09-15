@@ -90,7 +90,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="NSn-Xf-dwd">
-                                        <rect key="frame" x="35" y="31" width="344" height="4"/>
+                                        <rect key="frame" x="20.5" y="31" width="373" height="4"/>
                                     </progressView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZH2-NQ-RL0">
                                         <rect key="frame" x="35" y="37" width="344" height="20"/>
@@ -106,15 +106,15 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="elX-0f-dn0" secondAttribute="trailing" constant="35" id="BpT-pr-ezO"/>
+                                    <constraint firstItem="NSn-Xf-dwd" firstAttribute="centerX" secondItem="4TU-gr-dbP" secondAttribute="centerX" id="EMe-Yu-FJF"/>
                                     <constraint firstAttribute="trailing" secondItem="ZH2-NQ-RL0" secondAttribute="trailing" constant="35" id="FnW-iy-Zh0"/>
+                                    <constraint firstItem="NSn-Xf-dwd" firstAttribute="width" secondItem="4TU-gr-dbP" secondAttribute="width" multiplier="0.9" id="Fvh-IK-PHn"/>
                                     <constraint firstItem="elX-0f-dn0" firstAttribute="top" secondItem="4TU-gr-dbP" secondAttribute="top" constant="8" id="Glp-6T-8Pn"/>
                                     <constraint firstItem="NSn-Xf-dwd" firstAttribute="top" secondItem="elX-0f-dn0" secondAttribute="bottom" constant="3" id="JWB-v2-iRd"/>
-                                    <constraint firstItem="NSn-Xf-dwd" firstAttribute="leading" secondItem="4TU-gr-dbP" secondAttribute="leading" constant="35" id="LBI-9V-ggV"/>
                                     <constraint firstItem="elX-0f-dn0" firstAttribute="leading" secondItem="4TU-gr-dbP" secondAttribute="leading" constant="35" id="LPV-M7-L8u"/>
                                     <constraint firstItem="ZH2-NQ-RL0" firstAttribute="top" secondItem="NSn-Xf-dwd" secondAttribute="bottom" constant="2" id="NYA-7B-WTf"/>
                                     <constraint firstItem="ZH2-NQ-RL0" firstAttribute="leading" secondItem="4TU-gr-dbP" secondAttribute="leading" constant="35" id="ZpZ-5r-YIp"/>
                                     <constraint firstAttribute="height" constant="66" id="xWW-QX-DBs"/>
-                                    <constraint firstAttribute="trailing" secondItem="NSn-Xf-dwd" secondAttribute="trailing" constant="35" id="ztv-tW-d6s"/>
                                 </constraints>
                             </view>
                         </subviews>
