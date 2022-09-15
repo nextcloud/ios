@@ -357,7 +357,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 }
             }
             
-            cell.layer.cornerRadius = 20
+            cell.layer.cornerRadius = 15
 
             return cell
 
@@ -393,10 +393,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let rows = tableView.numberOfRows(inSection: indexPath.section)
             
             if indexPath.row == 0 {
-                cell.layer.cornerRadius = 20
-                cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+                cell.layer.cornerRadius = 15
+                if indexPath.row != rows - 1 {
+                    cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+                }
             } else if indexPath.row == rows - 1 {
-                cell.layer.cornerRadius = 20
+                cell.layer.cornerRadius = 15
                 cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
                 cell.separator.backgroundColor = .clear
             }
