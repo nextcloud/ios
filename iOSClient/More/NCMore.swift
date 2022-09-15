@@ -69,8 +69,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
-
         loadItems()
+        tableView.reloadData()
     }
 
     // MARK: - NotificationCenter
@@ -223,12 +223,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                         externalSiteMenu.append(item)
                     }
                 }
-                tableView.reloadData()
-            } else {
-                tableView.reloadData()
             }
-        } else {
-            tableView.reloadData()
         }
     }
 
@@ -306,6 +301,20 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         return cont
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    
+        cell.layer.cornerRadius = 0
+        let rows = tableView.numberOfRows(inSection: indexPath.section)
+        
+        if indexPath.row == 0 {
+            cell.layer.cornerRadius = 20
+            cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        } else if indexPath.row == rows - 1 {
+            cell.layer.cornerRadius = 20
+            cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        }
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
@@ -362,7 +371,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             // Menu Normal
             if indexPath.section == 1 {
-
                 item = functionMenu[indexPath.row]
             }
             // Menu External Site
@@ -381,17 +389,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.selectedBackgroundView = selectionColor
             cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
-
-            let numRows = tableView.numberOfRows(inSection: indexPath.section)
-            if indexPath.row == 0 {
-                cell.clipsToBounds = true
-                cell.layer.cornerRadius = 20
-                cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-            } else if indexPath.row == numRows - 1 {
-                cell.clipsToBounds = true
-                cell.layer.cornerRadius = 20
-                cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
-            }
 
             return cell
         }
@@ -476,6 +473,20 @@ class CCCellMore: UITableViewCell {
 
     @IBOutlet weak var labelText: UILabel!
     @IBOutlet weak var imageIcon: UIImageView!
+    
+    override var frame: CGRect {
+        get {
+            return super.frame
+        }
+        set (newFrame) {
+            var frame = newFrame
+            let newWidth = frame.width * 0.90
+            let space = (frame.width - newWidth) / 2
+            frame.size.width = newWidth
+            frame.origin.x += space
+            super.frame = frame
+        }
+    }
 }
 
 class NCMoreUserCell: UITableViewCell {
