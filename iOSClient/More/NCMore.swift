@@ -394,7 +394,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             
             if indexPath.row == 0 {
                 cell.layer.cornerRadius = 15
-                if indexPath.row != rows - 1 {
+                if indexPath.row == rows - 1 {
+                    cell.separator.backgroundColor = .clear
+                } else {
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
                 }
             } else if indexPath.row == rows - 1 {
