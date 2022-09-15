@@ -156,7 +156,7 @@ extension NCPlayer {
     }
 
     func loadText(filePath: URL, _ completion: @escaping (_ contents: String?) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global().async {
             guard let data = try? Data(contentsOf: filePath),
                   let encoding = NCUtility.shared.getEncondingDataType(data: data) else {
                 return

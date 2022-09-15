@@ -70,7 +70,7 @@ class NCNetworkingProcessUpload: NSObject {
         let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter":counterBadge.count])
 
-        NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(qos: .background), completion: { listOcId in
+        NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(), completion: { listOcId in
 
             for sessionSelector in sessionSelectors {
                 if counterUpload < self.maxConcurrentOperationUpload {

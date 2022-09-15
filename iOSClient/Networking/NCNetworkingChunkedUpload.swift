@@ -151,7 +151,7 @@ extension NCNetworking {
             let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30 min
             let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
 
-            let options = NKRequestOptions(customHeader: customHeader, timeout: timeout, queue: DispatchQueue.global(qos: .background))
+            let options = NKRequestOptions(customHeader: customHeader, timeout: timeout, queue: DispatchQueue.global())
             
             NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, error in
 

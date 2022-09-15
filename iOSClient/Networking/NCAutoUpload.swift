@@ -79,7 +79,7 @@ class NCAutoUpload: NSObject {
             return
         }
 
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global().async {
 
             let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
             var metadatas: [tableMetadata] = []
