@@ -347,6 +347,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     }
                 }
             }
+            
+            cell.layer.cornerRadius = 20
 
             return cell
 
@@ -478,7 +480,7 @@ class CCCellMore: UITableViewCell {
 
     override var frame: CGRect {
         get {
-            return super.frame
+            return super.bounds
         }
         set (newFrame) {
             var frame = newFrame
@@ -497,4 +499,18 @@ class NCMoreUserCell: UITableViewCell {
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var status: MarqueeLabel!
+    
+    override var frame: CGRect {
+        get {
+            return super.bounds
+        }
+        set (newFrame) {
+            var frame = newFrame
+            let newWidth = frame.width * 0.90
+            let space = (frame.width - newWidth) / 2
+            frame.size.width = newWidth
+            frame.origin.x += space
+            super.frame = frame
+        }
+    }
 }

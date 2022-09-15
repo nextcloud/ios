@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="50" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="vQk-TA-f9i">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="780"/>
+                                <rect key="frame" x="0.0" y="78" width="414" height="702"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <inset key="separatorInset" minX="56" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
@@ -122,7 +122,7 @@
                         <constraints>
                             <constraint firstItem="4TU-gr-dbP" firstAttribute="leading" secondItem="mlb-3W-jqa" secondAttribute="leading" id="0ym-gy-V6B"/>
                             <constraint firstItem="4TU-gr-dbP" firstAttribute="top" secondItem="vQk-TA-f9i" secondAttribute="bottom" id="1Sw-wB-7sl"/>
-                            <constraint firstItem="vQk-TA-f9i" firstAttribute="top" secondItem="mlb-3W-jqa" secondAttribute="top" id="24K-1h-rR5"/>
+                            <constraint firstItem="vQk-TA-f9i" firstAttribute="top" secondItem="Kgv-Sq-Jzm" secondAttribute="top" constant="30" id="24K-1h-rR5"/>
                             <constraint firstItem="4TU-gr-dbP" firstAttribute="trailing" secondItem="mlb-3W-jqa" secondAttribute="trailing" id="3dZ-nJ-4Cx"/>
                             <constraint firstItem="vQk-TA-f9i" firstAttribute="leading" secondItem="mlb-3W-jqa" secondAttribute="leading" id="Eex-rm-AtS"/>
                             <constraint firstItem="vQk-TA-f9i" firstAttribute="trailing" secondItem="mlb-3W-jqa" secondAttribute="trailing" id="H6v-XK-GnB"/>
