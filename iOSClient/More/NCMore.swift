@@ -358,6 +358,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
             
             cell.layer.cornerRadius = 15
+            cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
 
             return cell
 
@@ -396,6 +397,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 cell.layer.cornerRadius = 15
                 if indexPath.row == rows - 1 {
                     cell.separator.backgroundColor = .clear
+                    cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
                 } else {
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
                 }
