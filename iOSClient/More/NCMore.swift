@@ -253,7 +253,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
-            return 100
+            return 75
         } else {
             return NCGlobal.shared.heightCellSettings
         }
@@ -265,6 +265,15 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             return 3
         } else {
             return 4
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        
+        if section == 0 {
+            return 35
+        } else {
+            return 20
         }
     }
 
