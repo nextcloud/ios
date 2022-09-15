@@ -54,7 +54,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.dataSource = self
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.separatorColor = NCBrandColor.shared.separator
-
         tableView.register(UINib(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
 
         // create tap gesture recognizer
@@ -382,6 +381,17 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.selectedBackgroundView = selectionColor
             cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
+
+            let numRows = tableView.numberOfRows(inSection: indexPath.section)
+            if indexPath.row == 0 {
+                cell.clipsToBounds = true
+                cell.layer.cornerRadius = 20
+                cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+            } else if indexPath.row == numRows - 1 {
+                cell.clipsToBounds = true
+                cell.layer.cornerRadius = 20
+                cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+            }
 
             return cell
         }
