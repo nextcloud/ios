@@ -443,7 +443,9 @@ extension NCViewerMedia {
                 let ratioH = self.imageVideoContainer.frame.height / image.size.height
                 let ratio = ratioW < ratioH ? ratioW : ratioH
                 let imageHeight = image.size.height * ratio
-                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
+                let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
+                let height = max(imageHeight, VideoContainerHeight)
+                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
                 if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
             }
 
