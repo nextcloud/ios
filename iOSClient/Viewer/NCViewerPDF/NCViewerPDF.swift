@@ -71,6 +71,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
         view.backgroundColor = defaultBackgroundColor
 
+        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
 
