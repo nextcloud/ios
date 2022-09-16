@@ -595,7 +595,7 @@ class NCUtility: NSObject {
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval, completion: @escaping (UIImage?) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global().async {
 
             let asset = AVURLAsset(url: url)
             let assetIG = AVAssetImageGenerator(asset: asset)
