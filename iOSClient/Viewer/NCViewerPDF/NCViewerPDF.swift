@@ -86,8 +86,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfView.autoScales = true
         pdfView.displayMode = .singlePageContinuous
         pdfView.displayDirection = .vertical
-        pdfView.maxScaleFactor = 4.0
-        pdfView.minScaleFactor = pdfView.scaleFactorForSizeToFit
+        //pdfView.maxScaleFactor = 4.0
+        //pdfView.minScaleFactor = pdfView.scaleFactorForSizeToFit
         pdfView.usePageViewController(true)
         view.addSubview(pdfView)
 
