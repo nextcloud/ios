@@ -71,7 +71,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
         view.backgroundColor = defaultBackgroundColor
 
-        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
 
@@ -89,6 +88,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfView.displayDirection = .vertical
         pdfView.maxScaleFactor = 4.0
         pdfView.minScaleFactor = pdfView.scaleFactorForSizeToFit
+        pdfView.usePageViewController(true)
         view.addSubview(pdfView)
 
         // PDF THUMBNAIL
