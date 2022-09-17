@@ -519,7 +519,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
                 }
             } else {
                 let alertController = UIAlertController(title: NSLocalizedString("_invalid_page_", comment: ""),
-                                                        message: NSLocalizedString("_the_entered_page_number_doesn't_exist_", comment: ""),
+                                                        message: NSLocalizedString("_the_entered_page_number_does_not_exist_", comment: ""),
                                                         preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: nil))
                 self.present(alertController, animated: true, completion: nil)
