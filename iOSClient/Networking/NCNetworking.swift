@@ -1407,7 +1407,6 @@ import Photos
 
     // MARK: - TEST API
 
-    @available(iOS 13.0, *)
     func getPreview(url: URL, options: NKRequestOptions = NKRequestOptions()) async throws -> Data? {
 
         try await withUnsafeThrowingContinuation { continuation in

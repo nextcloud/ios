@@ -668,21 +668,16 @@ class NCUtility: NSObject {
 
         var image: UIImage?
 
-        if #available(iOS 13.0, *) {
-            // see https://stackoverflow.com/questions/71764255
-            let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
-            if let symbolConfiguration = symbolConfiguration {
-                image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
-            } else {
-                image = UIImage(systemName: sfSymbolName)?.imageColor(color)
-            }
-            if image == nil {
-                image = UIImage(named: imageName)?.image(color: color, size: size)
-            }
+        // see https://stackoverflow.com/questions/71764255
+        let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
+        if let symbolConfiguration = symbolConfiguration {
+            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
         } else {
+            image = UIImage(systemName: sfSymbolName)?.imageColor(color)
+        }
+        if image == nil {
             image = UIImage(named: imageName)?.image(color: color, size: size)
         }
-
         if let image = image {
             return image
         }

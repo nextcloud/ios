@@ -324,7 +324,6 @@ extension NCMedia: UICollectionViewDelegate {
         }
     }
 
-    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
         guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell else { return nil }
@@ -339,7 +338,6 @@ extension NCMedia: UICollectionViewDelegate {
         })
     }
 
-    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         animator.addCompletion {
             if let indexPath = configuration.identifier as? IndexPath {

@@ -25,7 +25,6 @@ import UIKit
 import Photos
 import EasyTipView
 
-@available(iOS 13.0, *)
 class NCScan: UIViewController, NCScanCellCellDelegate {
 
     @IBOutlet weak var collectionViewSource: UICollectionView!
@@ -406,7 +405,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCScan: EasyTipViewDelegate {
 
     // TIP

@@ -27,7 +27,6 @@ import Foundation
 import NextcloudKit
 import DropDown
 
-@available(iOS 13.0, *)
 class NCUserStatus: UIViewController {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
@@ -476,7 +475,6 @@ class NCUserStatus: UIViewController {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCUserStatus: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -501,7 +499,6 @@ extension NCUserStatus: UITextFieldDelegate {
     }
 }
 
-@available(iOS 13.0, *)
 class emojiTextField: UITextField {
 
     // required for iOS 13
@@ -543,7 +540,6 @@ class emojiTextField: UITextField {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCUserStatus: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -577,7 +573,6 @@ extension NCUserStatus: UITableViewDelegate {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCUserStatus: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

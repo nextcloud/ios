@@ -921,7 +921,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
     }
 
-    @available(iOS 13.0, *)
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
@@ -1316,7 +1315,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         navigationController?.pushViewController(viewController, animated: true)
     }
 
-    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
@@ -1341,7 +1339,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         })
     }
 
-    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
 
         animator.addCompletion {

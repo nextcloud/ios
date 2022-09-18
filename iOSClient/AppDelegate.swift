@@ -353,7 +353,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Background Task
 
-    @available(iOS 13.0, *)
     func scheduleAppRefresh() {
 
         let request = BGAppRefreshTaskRequest(identifier: NCGlobal.shared.refreshTask)
@@ -366,7 +365,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    @available(iOS 13.0, *)
     func scheduleBackgroundProcessing() {
 
         let request = BGProcessingTaskRequest(identifier: NCGlobal.shared.processingTask)
@@ -381,7 +379,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    @available(iOS 13.0, *)
     func handleRefreshTask(_ task: BGTask) {
 
         if account == "" {
@@ -399,7 +396,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    @available(iOS 13.0, *)
     func handleProcessingTask(_ task: BGTask) {
 
         if account == "" {

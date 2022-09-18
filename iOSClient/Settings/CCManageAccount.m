@@ -102,19 +102,18 @@
         }
         
         // Set user status
-        if (@available(iOS 13.0, *)) {
-            BOOL userStatus = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:activeAccount.account elements:NCElementsJSON.shared.capabilitiesUserStatusEnabled exists:false];
-            if (userStatus) {
-                row = [XLFormRowDescriptor formRowDescriptorWithTag:@"setUserStatus" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_set_user_status_", nil)];
-                row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
-                [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
-                [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-                [row.cellConfig setObject:[[UIImage imageNamed:@"userStatusAway"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-                [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-                row.action.formSelector = @selector(setUserStatus:);
-                if (accounts.count == 0) row.disabled = @YES;
-                [section addFormRow:row];
-            }
+        
+        BOOL userStatus = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:activeAccount.account elements:NCElementsJSON.shared.capabilitiesUserStatusEnabled exists:false];
+        if (userStatus) {
+            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"setUserStatus" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_set_user_status_", nil)];
+            row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.shared.secondarySystemGroupedBackground;
+            [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[[UIImage imageNamed:@"userStatusAway"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+            [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+            row.action.formSelector = @selector(setUserStatus:);
+            if (accounts.count == 0) row.disabled = @YES;
+            [section addFormRow:row];
         }
         
         if ([NCBrandOptions shared].disable_multiaccount == NO) {
@@ -488,12 +487,8 @@
 {
     [self deselectFormRow:sender];
     
-    if (@available(iOS 13.0, *)) {
-        
-        UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCUserStatus" bundle:nil] instantiateInitialViewController];
-        
-        [self presentViewController:navigationController animated:YES completion:nil];
-    }
+    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCUserStatus" bundle:nil] instantiateInitialViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma mark -

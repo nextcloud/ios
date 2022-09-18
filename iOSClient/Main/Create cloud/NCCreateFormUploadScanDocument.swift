@@ -28,7 +28,6 @@ import VisionKit
 import Photos
 import XLForm
 
-@available(iOS 13.0, *)
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -721,7 +720,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
 }
 
-@available(iOS 13.0, *)
 class NCCreateScanDocument: NSObject, VNDocumentCameraViewControllerDelegate {
     @objc static let shared: NCCreateScanDocument = {
         let instance = NCCreateScanDocument()

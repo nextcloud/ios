@@ -587,7 +587,6 @@ import Photos
 
     // MARK: - Context Menu Configuration
 
-    @available(iOS 13.0, *)
     func contextMenuConfiguration(ocId: String, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool, image: UIImage?) -> UIMenu {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
