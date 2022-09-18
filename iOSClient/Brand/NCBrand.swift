@@ -229,32 +229,12 @@ class NCBrandColor: NSObject {
         }
     }
 
-    @objc public var tertiarySystemBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .tertiarySystemBackground
-            } else {
-                return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-            }
-        }
-    }
-
     @objc public var systemGroupedBackground: UIColor {
         get {
             if #available(iOS 13, *) {
                 return .systemGroupedBackground
             } else {
                 return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var secondarySystemGroupedBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .secondarySystemGroupedBackground
-            } else {
-                return .white
             }
         }
     }

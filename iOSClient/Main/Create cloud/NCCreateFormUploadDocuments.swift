@@ -67,7 +67,7 @@ import XLForm
 
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        tableView.backgroundColor = .secondarySystemGroupedBackground
 
         let cancelButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
@@ -183,7 +183,7 @@ import XLForm
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-        name.textColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        name.textColor = .secondarySystemGroupedBackground
 
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
@@ -192,7 +192,7 @@ import XLForm
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {
-            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+            cell.backgroundColor = .secondarySystemGroupedBackground
             imageSelect.isHidden = true
         }
 

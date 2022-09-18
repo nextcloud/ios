@@ -59,19 +59,19 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        view.backgroundColor = .secondarySystemGroupedBackground
         navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
 
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        collectionViewSource.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        collectionViewSource.backgroundColor = .secondarySystemGroupedBackground
 
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast // default value - .immediate
-        collectionViewDestination.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        collectionViewDestination.backgroundColor = .secondarySystemGroupedBackground
 
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")

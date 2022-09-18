@@ -46,7 +46,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     var password: String = ""
     var fileType = "PDF"
 
-    var cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+    var cellBackgoundColor = UIColor.secondarySystemGroupedBackground
 
     // MARK: - View Life Cycle
 
@@ -72,7 +72,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        cellBackgoundColor = .secondarySystemGroupedBackground
 
         let saveButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton

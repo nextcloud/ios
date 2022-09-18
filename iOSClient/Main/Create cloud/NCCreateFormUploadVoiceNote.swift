@@ -43,7 +43,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     private var audioPlayer: AVAudioPlayer!
     private var timer = Timer()
 
-    var cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+    var cellBackgoundColor = UIColor.secondarySystemGroupedBackground
 
     // MARK: - View Life Cycle
 
@@ -57,7 +57,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        cellBackgoundColor = .secondarySystemGroupedBackground
 
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
 

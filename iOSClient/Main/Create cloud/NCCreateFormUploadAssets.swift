@@ -44,7 +44,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     let targetSizeImagePreview = CGSize(width: 100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    var cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+    var cellBackgoundColor = UIColor.secondarySystemGroupedBackground
 
     // MARK: - View Life Cycle
 
@@ -81,7 +81,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
         view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
         tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        cellBackgoundColor = .secondarySystemGroupedBackground
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
