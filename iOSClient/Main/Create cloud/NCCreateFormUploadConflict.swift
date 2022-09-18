@@ -105,7 +105,7 @@ extension NCCreateFormUploadConflictDelegate {
         buttonCancel.layer.masksToBounds = true
         buttonCancel.layer.borderWidth = 0.5
         buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
-        buttonCancel.backgroundColor = NCBrandColor.shared.systemGray5
+        buttonCancel.backgroundColor = .systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         buttonCancel.setTitleColor(NCBrandColor.shared.label, for: .normal)
 

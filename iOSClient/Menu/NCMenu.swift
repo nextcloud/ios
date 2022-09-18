@@ -72,7 +72,7 @@ class NCMenu: UITableViewController {
         let action = actions[indexPath.row]
         guard action.title != NCMenuAction.seperatorIdentifier else {
             let cell = UITableViewCell()
-            cell.backgroundColor = NCBrandColor.shared.separator
+            cell.backgroundColor = .separator
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)

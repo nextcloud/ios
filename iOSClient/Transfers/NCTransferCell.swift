@@ -96,7 +96,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         longPressedGestureMore.delaysTouchesBegan = true
         buttonMore.addGestureRecognizer(longPressedGestureMore)
 
-        separator.backgroundColor = NCBrandColor.shared.separator
+        separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
         labelTitle.text = ""

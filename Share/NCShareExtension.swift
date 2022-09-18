@@ -89,10 +89,10 @@ class NCShareExtension: UIViewController {
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
         commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        separatorView.backgroundColor = NCBrandColor.shared.separator
+        separatorView.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
-        tableView.separatorColor = NCBrandColor.shared.separator
+        tableView.separatorColor = .separator
         tableView.layer.cornerRadius = 10
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         commandViewHeightConstraint.constant = heightCommandView

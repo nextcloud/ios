@@ -95,7 +95,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.navigationController?.presentationController?.delegate = self
 
         view.backgroundColor = NCBrandColor.shared.systemBackground
-        selectCommandViewSelect?.separatorView.backgroundColor = NCBrandColor.shared.separator
+        selectCommandViewSelect?.separatorView.backgroundColor = .separator
 
         activeAccount = NCManageDatabase.shared.getActiveAccount()
 
@@ -785,7 +785,7 @@ class NCSelectCommandView: UIView {
     override func awakeFromNib() {
 
         separatorHeightConstraint.constant = 0.5
-        separatorView.backgroundColor = NCBrandColor.shared.separator
+        separatorView.backgroundColor = .separator
 
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 

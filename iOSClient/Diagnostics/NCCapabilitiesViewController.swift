@@ -90,73 +90,73 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
 
         statusFileSharing.layer.cornerRadius = 12.5
         statusFileSharing.layer.borderWidth = 0.5
-        statusFileSharing.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusFileSharing.layer.borderColor = UIColor.systemGray.cgColor
         statusFileSharing.layer.masksToBounds = true
         statusFileSharing.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusExternalSite.layer.cornerRadius = 12.5
         statusExternalSite.layer.borderWidth = 0.5
-        statusExternalSite.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusExternalSite.layer.borderColor = UIColor.systemGray.cgColor
         statusExternalSite.layer.masksToBounds = true
         statusExternalSite.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusEndToEndEncryption.layer.cornerRadius = 12.5
         statusEndToEndEncryption.layer.borderWidth = 0.5
-        statusEndToEndEncryption.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusEndToEndEncryption.layer.borderColor = UIColor.systemGray.cgColor
         statusEndToEndEncryption.layer.masksToBounds = true
         statusEndToEndEncryption.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusActivity.layer.cornerRadius = 12.5
         statusActivity.layer.borderWidth = 0.5
-        statusActivity.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusActivity.layer.borderColor = UIColor.systemGray.cgColor
         statusActivity.layer.masksToBounds = true
         statusActivity.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusNotification.layer.cornerRadius = 12.5
         statusNotification.layer.borderWidth = 0.5
-        statusNotification.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusNotification.layer.borderColor = UIColor.systemGray.cgColor
         statusNotification.layer.masksToBounds = true
         statusNotification.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusDeletedFiles.layer.cornerRadius = 12.5
         statusDeletedFiles.layer.borderWidth = 0.5
-        statusDeletedFiles.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusDeletedFiles.layer.borderColor = UIColor.systemGray.cgColor
         statusDeletedFiles.layer.masksToBounds = true
         statusDeletedFiles.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusText.layer.cornerRadius = 12.5
         statusText.layer.borderWidth = 0.5
-        statusText.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusText.layer.borderColor = UIColor.systemGray.cgColor
         statusText.layer.masksToBounds = true
         statusText.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusCollabora.layer.cornerRadius = 12.5
         statusCollabora.layer.borderWidth = 0.5
-        statusCollabora.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusCollabora.layer.borderColor = UIColor.systemGray.cgColor
         statusCollabora.layer.masksToBounds = true
         statusCollabora.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusOnlyOffice.layer.cornerRadius = 12.5
         statusOnlyOffice.layer.borderWidth = 0.5
-        statusOnlyOffice.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusOnlyOffice.layer.borderColor = UIColor.systemGray.cgColor
         statusOnlyOffice.layer.masksToBounds = true
         statusOnlyOffice.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusUserStatus.layer.cornerRadius = 12.5
         statusUserStatus.layer.borderWidth = 0.5
-        statusUserStatus.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusUserStatus.layer.borderColor = UIColor.systemGray.cgColor
         statusUserStatus.layer.masksToBounds = true
         statusUserStatus.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusComments.layer.cornerRadius = 12.5
         statusComments.layer.borderWidth = 0.5
-        statusComments.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusComments.layer.borderColor = UIColor.systemGray.cgColor
         statusComments.layer.masksToBounds = true
         statusComments.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 
         statusLockFile.layer.cornerRadius = 12.5
         statusLockFile.layer.borderWidth = 0.5
-        statusLockFile.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusLockFile.layer.borderColor = UIColor.systemGray.cgColor
         statusLockFile.layer.masksToBounds = true
         statusLockFile.backgroundColor = NCBrandColor.shared.secondarySystemBackground
 

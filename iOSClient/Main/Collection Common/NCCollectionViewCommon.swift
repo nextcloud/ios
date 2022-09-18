@@ -1648,7 +1648,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if appDelegate.isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
-            attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : NCBrandColor.shared.annotationColor], range: longestWordRange)
+            attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
         }
         return cell

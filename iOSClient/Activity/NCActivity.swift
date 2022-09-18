@@ -221,7 +221,7 @@ extension NCActivity: UITableViewDataSource {
         cell.labelUser.textColor = NCBrandColor.shared.label
         // Date
         cell.labelDate.text = CCUtility.dateDiff(comment.creationDateTime as Date)
-        cell.labelDate.textColor = NCBrandColor.shared.systemGray4
+        cell.labelDate.textColor = .systemGray4
         // Message
         cell.labelMessage.text = comment.message
         cell.labelMessage.textColor = NCBrandColor.shared.label

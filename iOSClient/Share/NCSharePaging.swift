@@ -328,7 +328,7 @@ class NCSharePagingView: PagingView {
         if metadata.favorite {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite, size: 20), for: .normal)
         } else {
-            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.systemGray, size: 20), for: .normal)
+            headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
         }
         headerView.info.text = CCUtility.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
         addSubview(headerView)
@@ -378,7 +378,7 @@ class NCShareHeaderView: UIView {
             if error == .success {
                 self.favorite.setImage(NCUtility.shared.loadImage(
                     named: "star.fill",
-                    color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : NCBrandColor.shared.systemGray,
+                    color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : .systemGray,
                     size: 20), for: .normal)
             } else {
                 NCContentPresenter.shared.showError(error: error)

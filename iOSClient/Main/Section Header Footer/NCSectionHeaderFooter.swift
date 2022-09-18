@@ -101,7 +101,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         viewRichWorkspace?.addGestureRecognizer(tap)
 
         viewSeparatorHeightConstraint.constant = 0.5
-        viewSeparator.backgroundColor = NCBrandColor.shared.separator
+        viewSeparator.backgroundColor = .separator
 
         markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
@@ -334,7 +334,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         labelSection.textColor = NCBrandColor.shared.gray
         labelSection.text = ""
 
-        separator.backgroundColor = NCBrandColor.shared.separator
+        separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
         buttonIsHidden(true)

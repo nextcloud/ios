@@ -70,7 +70,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        separator.backgroundColor = NCBrandColor.shared.separator
+        separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
     }
 

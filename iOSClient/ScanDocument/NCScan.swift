@@ -77,7 +77,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         save.title = NSLocalizedString("_save_", comment: "")
 
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
-        labelTitlePDFzone.backgroundColor = NCBrandColor.shared.systemGray6
+        labelTitlePDFzone.backgroundColor = .systemGray6
         labelTitlePDFzone.textColor = NCBrandColor.shared.label
 
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)

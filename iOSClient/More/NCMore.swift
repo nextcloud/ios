@@ -385,7 +385,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
-            cell.separator.backgroundColor = NCBrandColor.shared.separator
+            cell.separator.backgroundColor = .separator
             cell.separatorHeigth.constant = 0.4
             
             cell.layer.cornerRadius = 0
