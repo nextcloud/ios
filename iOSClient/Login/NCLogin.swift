@@ -96,22 +96,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         certificate.isEnabled = false
 
         // navigation
-        if #available(iOS 13.0, *) {
-            let navBarAppearance = UINavigationBarAppearance()
-            navBarAppearance.configureWithTransparentBackground()
-            navBarAppearance.shadowColor = .clear
-            navBarAppearance.shadowImage = UIImage()
-            navBarAppearance.titleTextAttributes = [.foregroundColor: textColor]
-            navBarAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
-            self.navigationController?.navigationBar.standardAppearance = navBarAppearance
-            self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
-        } else {
-            self.navigationController?.navigationBar.isTranslucent = true
-            self.navigationController?.navigationBar.shadowImage = UIImage()
-            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            self.navigationController?.navigationBar.backgroundColor = .clear
-            self.navigationController?.navigationBar.barTintColor = NCBrandColor.shared.customer
-        }
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithTransparentBackground()
+        navBarAppearance.shadowColor = .clear
+        navBarAppearance.shadowImage = UIImage()
+        navBarAppearance.titleTextAttributes = [.foregroundColor: textColor]
+        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
+        self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+        self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
         if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {

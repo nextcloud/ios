@@ -854,10 +854,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapButton3(_ sender: Any) {
 
-        if #available(iOS 13.0, *) {
-            if let viewController = appDelegate.window?.rootViewController {
-                NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
-            }
+        if let viewController = appDelegate.window?.rootViewController {
+            NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
         }
     }
 

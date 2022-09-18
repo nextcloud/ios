@@ -168,15 +168,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // Background task: register
-        if #available(iOS 13.0, *) {
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
-                self.handleRefreshTask(task)
-            }
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
-                self.handleProcessingTask(task)
-            }
-        } else {
-            application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
+            self.handleRefreshTask(task)
+        }
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
+            self.handleProcessingTask(task)
         }
 
         // Intro
@@ -303,10 +299,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             networkingProcessUpload?.stopTimer()
         }
 
-        if #available(iOS 13.0, *) {
-            scheduleAppRefresh()
-            scheduleBackgroundProcessing()
-        }
+        scheduleAppRefresh()
+        scheduleBackgroundProcessing()
 
         // Passcode
         presentPasscode { }
@@ -853,9 +847,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     
                 case NCGlobal.shared.actionScanDocument:
                     
-                    if #available(iOS 13.0, *) {
-                        NCCreateScanDocument.shared.openScannerDocument(viewController: rootViewController)
-                    }
+                    NCCreateScanDocument.shared.openScannerDocument(viewController: rootViewController)
                     
                 case NCGlobal.shared.actionTextDocument:
                     

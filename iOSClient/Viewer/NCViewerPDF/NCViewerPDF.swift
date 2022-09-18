@@ -64,11 +64,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         let pageCount = CGFloat(pdfDocument?.pageCount ?? 0)
-        if #available(iOS 13.0, *) {
-            defaultBackgroundColor = pdfView.backgroundColor
-        } else {
-            defaultBackgroundColor = .lightGray
-        }
+        defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))

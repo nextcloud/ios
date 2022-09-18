@@ -116,11 +116,7 @@ class NCPlayerToolBar: UIView {
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
 
-        if #available(iOS 13.0, *) {
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-        } else {
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, size: 30), for: .normal)
-        }
+        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         playButton.isEnabled = false
 
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
@@ -197,11 +193,7 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime - time)
 
         // BACK
-        if #available(iOS 13.0, *) {
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
-        } else {
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, size: 30), for: .normal)
-        }
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
         backButton.isEnabled = true
 
         // PLAY
@@ -211,19 +203,11 @@ class NCPlayerToolBar: UIView {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
         }
         let namedPlay = ncplayer.isPlay() ? "pause.fill" : "play.fill"
-        if #available(iOS 13.0, *) {
-            playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-        } else {
-            playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, size: 30), for: .normal)
-        }
+        playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         playButton.isEnabled = true
 
         // FORWARD
-        if #available(iOS 13.0, *) {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
-        } else {
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, size: 30), for: .normal)
-        }
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
         forwardButton.isEnabled = true
     }
 

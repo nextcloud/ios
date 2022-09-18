@@ -30,31 +30,20 @@ class NCMainNavigationController: UINavigationController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        if #available(iOS 13.0, *) {
+        let appearance = UINavigationBarAppearance()
 
-            let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
+        appearance.backgroundColor = NCBrandColor.shared.systemBackground
+        appearance.configureWithOpaqueBackground()
+        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
+        appearance.backgroundColor = NCBrandColor.shared.systemBackground
 
-            appearance.configureWithOpaqueBackground()
-            appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
-            appearance.backgroundColor = NCBrandColor.shared.systemBackground
-            appearance.configureWithOpaqueBackground()
-            appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
-            appearance.backgroundColor = NCBrandColor.shared.systemBackground
+        appearance.shadowColor = .clear
+        appearance.shadowImage = UIImage()
 
-            appearance.shadowColor = .clear
-            appearance.shadowImage = UIImage()
-
-            navigationBar.scrollEdgeAppearance = appearance
-            navigationBar.standardAppearance = appearance
-
-        } else {
-
-            navigationBar.barStyle = .default
-            navigationBar.barTintColor = NCBrandColor.shared.systemBackground
-            navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
-            navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
-        }
-
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.standardAppearance = appearance
         navigationBar.tintColor = .systemBlue
     }
 }
