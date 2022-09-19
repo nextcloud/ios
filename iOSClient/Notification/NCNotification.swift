@@ -38,13 +38,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewDidLoad()
 
         title = NSLocalizedString("_notification_", comment: "")
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
 
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
         tableView.allowsSelection = false
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = .systemBackground
 
         // Empty
         let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
@@ -117,7 +117,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
 
         if let image = image {
-            cell.icon.image = image.imageColor(NCBrandColor.shared.brandElement)
+            cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
         } else {
             cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
@@ -147,7 +147,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.date.text = CCUtility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
-        cell.subject.textColor = NCBrandColor.shared.label
+        cell.subject.textColor = .label
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
 
@@ -175,8 +175,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.secondary.layer.cornerRadius = 15
         cell.secondary.layer.masksToBounds = true
         cell.secondary.layer.borderWidth = 1
-        cell.secondary.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
-        cell.secondary.layer.backgroundColor = NCBrandColor.shared.secondarySystemBackground.cgColor
+        cell.secondary.layer.borderColor = UIColor.systemGray.cgColor
+        cell.secondary.layer.backgroundColor = UIColor.secondarySystemBackground.cgColor
         cell.secondary.setTitleColor(.black, for: .normal)
 
         // Action

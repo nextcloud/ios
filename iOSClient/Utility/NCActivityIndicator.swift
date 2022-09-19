@@ -47,7 +47,7 @@ class NCActivityIndicator: NSObject {
             self.activityIndicator = UIActivityIndicatorView(style: style)
             guard let activityIndicator = self.activityIndicator, self.viewBackgroundActivityIndicator == nil else { return }
 
-            activityIndicator.color = NCBrandColor.shared.label
+            activityIndicator.color = .label
             activityIndicator.hidesWhenStopped = true
             activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 

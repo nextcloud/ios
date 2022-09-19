@@ -27,10 +27,8 @@ extension UIApplication {
     var isLandscape: Bool {
         if UIDevice.current.orientation.isValidInterfaceOrientation {
             return UIDevice.current.orientation.isLandscape
-        } else if #available(iOS 13.0, *) {
+        } else  {
             return windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
-        } else {
-            return statusBarOrientation.isLandscape
         }
     }
 }

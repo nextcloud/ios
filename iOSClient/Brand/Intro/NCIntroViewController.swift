@@ -60,20 +60,12 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
             textColorOpponent = .black
         }
 
-        if #available(iOS 13.0, *) {
-            let navBarAppearance = UINavigationBarAppearance()
-            navBarAppearance.configureWithTransparentBackground()
-            navBarAppearance.shadowColor = .clear
-            navBarAppearance.shadowImage = UIImage()
-            self.navigationController?.navigationBar.standardAppearance = navBarAppearance
-            self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
-        } else {
-            self.navigationController?.navigationBar.isTranslucent = true
-            self.navigationController?.navigationBar.shadowImage = UIImage()
-            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            self.navigationController?.navigationBar.backgroundColor = .clear
-            self.navigationController?.navigationBar.barTintColor = NCBrandColor.shared.customer
-        }
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithTransparentBackground()
+        navBarAppearance.shadowColor = .clear
+        navBarAppearance.shadowImage = UIImage()
+        self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+        self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
         pageControl.currentPageIndicatorTintColor = textColor
@@ -108,14 +100,10 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        if #available(iOS 13.0, *) {
-            if traitCollection.userInterfaceStyle == .light {
-                return .lightContent
-            } else {
-                return .darkContent
-            }
-        } else {
+        if traitCollection.userInterfaceStyle == .light {
             return .lightContent
+        } else {
+            return .darkContent
         }
     }
 

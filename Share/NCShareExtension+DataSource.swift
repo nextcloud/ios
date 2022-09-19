@@ -67,7 +67,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.fileObjectId = metadata.ocId
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.shared.label
+        cell.labelTitle.textColor = .label
 
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil

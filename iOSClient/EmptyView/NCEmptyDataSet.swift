@@ -127,6 +127,6 @@ public class NCEmptyView: UIView {
     public override func awakeFromNib() {
         super.awakeFromNib()
 
-        emptyTitle.textColor = NCBrandColor.shared.label
+        emptyTitle.textColor = .label
     }
 }

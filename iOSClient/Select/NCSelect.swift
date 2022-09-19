@@ -94,8 +94,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.presentationController?.delegate = self
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        selectCommandViewSelect?.separatorView.backgroundColor = NCBrandColor.shared.separator
+        view.backgroundColor = .systemBackground
+        selectCommandViewSelect?.separatorView.backgroundColor = .separator
 
         activeAccount = NCManageDatabase.shared.getActiveAccount()
 
@@ -109,7 +109,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.alwaysBounceVertical = true
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = .systemBackground
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
@@ -419,7 +419,7 @@ extension NCSelect: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.shared.label
+            cell.labelTitle.textColor = .label
 
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
@@ -515,7 +515,7 @@ extension NCSelect: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.shared.label
+            cell.labelTitle.textColor = .label
 
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
@@ -613,7 +613,7 @@ extension NCSelect: UICollectionViewDataSource {
                 } else {
                     header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
-                header.labelSection.textColor = NCBrandColor.shared.label
+                header.labelSection.textColor = .label
 
                 return header
 
@@ -785,7 +785,7 @@ class NCSelectCommandView: UIView {
     override func awakeFromNib() {
 
         separatorHeightConstraint.constant = 0.5
-        separatorView.backgroundColor = NCBrandColor.shared.separator
+        separatorView.backgroundColor = .separator
 
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 

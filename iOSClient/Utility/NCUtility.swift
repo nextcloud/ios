@@ -668,21 +668,16 @@ class NCUtility: NSObject {
 
         var image: UIImage?
 
-        if #available(iOS 13.0, *) {
-            // see https://stackoverflow.com/questions/71764255
-            let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
-            if let symbolConfiguration = symbolConfiguration {
-                image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
-            } else {
-                image = UIImage(systemName: sfSymbolName)?.imageColor(color)
-            }
-            if image == nil {
-                image = UIImage(named: imageName)?.image(color: color, size: size)
-            }
+        // see https://stackoverflow.com/questions/71764255
+        let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
+        if let symbolConfiguration = symbolConfiguration {
+            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: .alwaysOriginal)
         } else {
+            image = UIImage(systemName: sfSymbolName)?.withTintColor(color, renderingMode: .alwaysOriginal)
+        }
+        if image == nil {
             image = UIImage(named: imageName)?.image(color: color, size: size)
         }
-
         if let image = image {
             return image
         }
@@ -705,12 +700,9 @@ class NCUtility: NSObject {
     }
 
     func getDefaultUserIcon() -> UIImage {
-        if #available(iOS 13.0, *) {
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
-            return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
-        } else {
-            return NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
-        }
+            
+        let config = UIImage.SymbolConfiguration(pointSize: 30)
+        return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
     }
 
     @objc func createAvatar(image: UIImage, size: CGFloat) -> UIImage {
@@ -854,44 +846,24 @@ class NCUtility: NSObject {
 
     func colorNavigationController(_ navigationController: UINavigationController?, backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?, withoutShadow: Bool) {
 
-        if #available(iOS 13.0, *) {
+        let appearance = UINavigationBarAppearance()
+        appearance.titleTextAttributes = [.foregroundColor: titleColor]
+        appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
 
-            // iOS 14, 15
-            let appearance = UINavigationBarAppearance()
-            appearance.titleTextAttributes = [.foregroundColor: titleColor]
-            appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
-
-            if withoutShadow {
-                appearance.shadowColor = .clear
-                appearance.shadowImage = UIImage()
-            }
-
-            if let tintColor = tintColor {
-                navigationController?.navigationBar.tintColor = tintColor
-            }
-
-            navigationController?.view.backgroundColor = backgroundColor
-            navigationController?.navigationBar.barTintColor = titleColor
-            navigationController?.navigationBar.standardAppearance = appearance
-            navigationController?.navigationBar.compactAppearance = appearance
-            navigationController?.navigationBar.scrollEdgeAppearance = appearance
-
-        } else {
-
-            navigationController?.navigationBar.isTranslucent = true
-            navigationController?.navigationBar.barTintColor = backgroundColor
-
-            if withoutShadow {
-                navigationController?.navigationBar.shadowImage = UIImage()
-                navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            }
-
-            let titleDict: NSDictionary = [NSAttributedString.Key.foregroundColor: titleColor]
-            navigationController?.navigationBar.titleTextAttributes = titleDict as? [NSAttributedString.Key: Any]
-            if let tintColor = tintColor {
-                navigationController?.navigationBar.tintColor = tintColor
-            }
+        if withoutShadow {
+            appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
         }
+
+        if let tintColor = tintColor {
+            navigationController?.navigationBar.tintColor = tintColor
+        }
+
+        navigationController?.view.backgroundColor = backgroundColor
+        navigationController?.navigationBar.barTintColor = titleColor
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
 
     func getEncondingDataType(data: Data) -> String.Encoding? {

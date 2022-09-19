@@ -25,7 +25,6 @@ import UIKit
 import Photos
 import EasyTipView
 
-@available(iOS 13.0, *)
 class NCScan: UIViewController, NCScanCellCellDelegate {
 
     @IBOutlet weak var collectionViewSource: UICollectionView!
@@ -60,33 +59,33 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        view.backgroundColor = .secondarySystemGroupedBackground
         navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
 
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        collectionViewSource.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        collectionViewSource.backgroundColor = .secondarySystemGroupedBackground
 
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast // default value - .immediate
-        collectionViewDestination.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        collectionViewDestination.backgroundColor = .secondarySystemGroupedBackground
 
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
 
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
-        labelTitlePDFzone.backgroundColor = NCBrandColor.shared.systemGray6
-        labelTitlePDFzone.textColor = NCBrandColor.shared.label
+        labelTitlePDFzone.backgroundColor = .systemGray6
+        labelTitlePDFzone.textColor = .label
 
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 0)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
-        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
+        add.setImage(UIImage(named: "plus")?.image(color: .label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(named: "transferDown")?.image(color: .label, size: 25), for: .normal)
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         collectionViewSource.addGestureRecognizer(longPressRecognizer)
@@ -127,8 +126,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        add.setImage(UIImage(named: "plus")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
-        transferDown.setImage(UIImage(named: "transferDown")?.image(color: NCBrandColor.shared.label, size: 25), for: .normal)
+        add.setImage(UIImage(named: "plus")?.image(color: .label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(named: "transferDown")?.image(color: .label, size: 25), for: .normal)
     }
 
     override var canBecomeFirstResponder: Bool { return true }
@@ -406,7 +405,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCScan: EasyTipViewDelegate {
 
     // TIP

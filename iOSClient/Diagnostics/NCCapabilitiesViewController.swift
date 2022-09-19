@@ -86,79 +86,79 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
 
         textView.layer.cornerRadius = 15
         textView.layer.masksToBounds = true
-        textView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        textView.backgroundColor = .secondarySystemBackground
 
         statusFileSharing.layer.cornerRadius = 12.5
         statusFileSharing.layer.borderWidth = 0.5
-        statusFileSharing.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusFileSharing.layer.borderColor = UIColor.systemGray.cgColor
         statusFileSharing.layer.masksToBounds = true
-        statusFileSharing.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusFileSharing.backgroundColor = .secondarySystemBackground
 
         statusExternalSite.layer.cornerRadius = 12.5
         statusExternalSite.layer.borderWidth = 0.5
-        statusExternalSite.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusExternalSite.layer.borderColor = UIColor.systemGray.cgColor
         statusExternalSite.layer.masksToBounds = true
-        statusExternalSite.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusExternalSite.backgroundColor = .secondarySystemBackground
 
         statusEndToEndEncryption.layer.cornerRadius = 12.5
         statusEndToEndEncryption.layer.borderWidth = 0.5
-        statusEndToEndEncryption.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusEndToEndEncryption.layer.borderColor = UIColor.systemGray.cgColor
         statusEndToEndEncryption.layer.masksToBounds = true
-        statusEndToEndEncryption.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusEndToEndEncryption.backgroundColor = .secondarySystemBackground
 
         statusActivity.layer.cornerRadius = 12.5
         statusActivity.layer.borderWidth = 0.5
-        statusActivity.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusActivity.layer.borderColor = UIColor.systemGray.cgColor
         statusActivity.layer.masksToBounds = true
-        statusActivity.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusActivity.backgroundColor = .secondarySystemBackground
 
         statusNotification.layer.cornerRadius = 12.5
         statusNotification.layer.borderWidth = 0.5
-        statusNotification.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusNotification.layer.borderColor = UIColor.systemGray.cgColor
         statusNotification.layer.masksToBounds = true
-        statusNotification.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusNotification.backgroundColor = .secondarySystemBackground
 
         statusDeletedFiles.layer.cornerRadius = 12.5
         statusDeletedFiles.layer.borderWidth = 0.5
-        statusDeletedFiles.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusDeletedFiles.layer.borderColor = UIColor.systemGray.cgColor
         statusDeletedFiles.layer.masksToBounds = true
-        statusDeletedFiles.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusDeletedFiles.backgroundColor = .secondarySystemBackground
 
         statusText.layer.cornerRadius = 12.5
         statusText.layer.borderWidth = 0.5
-        statusText.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusText.layer.borderColor = UIColor.systemGray.cgColor
         statusText.layer.masksToBounds = true
-        statusText.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusText.backgroundColor = .secondarySystemBackground
 
         statusCollabora.layer.cornerRadius = 12.5
         statusCollabora.layer.borderWidth = 0.5
-        statusCollabora.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusCollabora.layer.borderColor = UIColor.systemGray.cgColor
         statusCollabora.layer.masksToBounds = true
-        statusCollabora.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusCollabora.backgroundColor = .secondarySystemBackground
 
         statusOnlyOffice.layer.cornerRadius = 12.5
         statusOnlyOffice.layer.borderWidth = 0.5
-        statusOnlyOffice.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusOnlyOffice.layer.borderColor = UIColor.systemGray.cgColor
         statusOnlyOffice.layer.masksToBounds = true
-        statusOnlyOffice.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusOnlyOffice.backgroundColor = .secondarySystemBackground
 
         statusUserStatus.layer.cornerRadius = 12.5
         statusUserStatus.layer.borderWidth = 0.5
-        statusUserStatus.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusUserStatus.layer.borderColor = UIColor.systemGray.cgColor
         statusUserStatus.layer.masksToBounds = true
-        statusUserStatus.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusUserStatus.backgroundColor = .secondarySystemBackground
 
         statusComments.layer.cornerRadius = 12.5
         statusComments.layer.borderWidth = 0.5
-        statusComments.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusComments.layer.borderColor = UIColor.systemGray.cgColor
         statusComments.layer.masksToBounds = true
-        statusComments.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusComments.backgroundColor = .secondarySystemBackground
 
         statusLockFile.layer.cornerRadius = 12.5
         statusLockFile.layer.borderWidth = 0.5
-        statusLockFile.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
+        statusLockFile.layer.borderColor = UIColor.systemGray.cgColor
         statusLockFile.layer.masksToBounds = true
-        statusLockFile.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        statusLockFile.backgroundColor = .secondarySystemBackground
 
         imageFileSharing.image = UIImage(named: "share")!.image(color: NCBrandColor.shared.gray, size: 50)
         imageExternalSite.image = NCUtility.shared.loadImage(named: "network", color: NCBrandColor.shared.gray)

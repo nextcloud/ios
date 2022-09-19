@@ -153,7 +153,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - Collection View
 
-    @available(iOS 13.0, *)
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         return nil
     }
@@ -177,7 +176,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.imageItem.image = NCBrandColor.cacheImages.file
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.shared.label
+        cell.labelTitle.textColor = .label
         let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: metadata.account)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText == "" { pathText = "/" }

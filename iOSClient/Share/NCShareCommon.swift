@@ -75,27 +75,27 @@ class NCShareCommon: NSObject {
 
         switch shareType {
         case SHARE_TYPE_USER:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeUser")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_GROUP:
-            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeGroup")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_LINK:
-            return UIImage(named: "shareTypeLink")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeLink")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_EMAIL:
-            return UIImage(named: "shareTypeEmail")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeEmail")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_CONTACT:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeUser")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_REMOTE:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeUser")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_CIRCLE:
-            return UIImage(named: "shareTypeCircles")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeCircles")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_GUEST:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeUser")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_REMOTE_GROUP:
-            return UIImage(named: "shareTypeGroup")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeGroup")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         case self.SHARE_TYPE_ROOM:
-            return UIImage(named: "shareTypeRoom")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeRoom")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         default:
-            return UIImage(named: "shareTypeUser")?.imageColor(NCBrandColor.shared.label)
+            return UIImage(named: "shareTypeUser")?.withTintColor(.label, renderingMode: .alwaysOriginal)
         }
     }
 }

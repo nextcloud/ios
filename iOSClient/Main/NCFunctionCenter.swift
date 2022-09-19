@@ -72,13 +72,7 @@ import Photos
         case NCGlobal.shared.selectorLoadFileQuickLook:
             let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
             CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-
-            var editingMode = false
-            if #available(iOS 13.0, *) {
-                editingMode = true
-            }
-
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: editingMode, metadata: metadata)
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: true, metadata: metadata)
             self.appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
 
         case NCGlobal.shared.selectorLoadFileView:
@@ -587,7 +581,6 @@ import Photos
 
     // MARK: - Context Menu Configuration
 
-    @available(iOS 13.0, *)
     func contextMenuConfiguration(ocId: String, viewController: UIViewController, enableDeleteLocal: Bool, enableViewInFolder: Bool, image: UIImage?) -> UIMenu {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {

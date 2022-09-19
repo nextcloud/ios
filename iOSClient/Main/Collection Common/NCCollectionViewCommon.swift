@@ -91,8 +91,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.alwaysBounceVertical = true
 
         // Color
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
+        collectionView.backgroundColor = .systemBackground
         refreshControl.tintColor = .gray
 
         if enableSearchBar {
@@ -854,10 +854,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapButton3(_ sender: Any) {
 
-        if #available(iOS 13.0, *) {
-            if let viewController = appDelegate.window?.rootViewController {
-                NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
-            }
+        if let viewController = appDelegate.window?.rootViewController {
+            NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
         }
     }
 
@@ -921,7 +919,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
     }
 
-    @available(iOS 13.0, *)
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
@@ -1316,7 +1313,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         navigationController?.pushViewController(viewController, animated: true)
     }
 
-    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
@@ -1341,7 +1337,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         })
     }
 
-    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
 
         animator.addCompletion {
@@ -1653,7 +1648,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if appDelegate.isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
-            attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : NCBrandColor.shared.annotationColor], range: longestWordRange)
+            attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
         }
         return cell
@@ -1701,7 +1696,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 } else {
                     header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
-                header.labelSection.textColor = NCBrandColor.shared.label
+                header.labelSection.textColor = .label
 
                 return header
 
@@ -1710,7 +1705,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
 
                 header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-                header.labelSection.textColor = NCBrandColor.shared.label
+                header.labelSection.textColor = .label
 
                 return header
             }

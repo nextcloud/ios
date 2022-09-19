@@ -61,13 +61,13 @@ class NCAccountRequest: UIViewController {
 
         titleLabel.text = NSLocalizedString("_account_select_", comment: "")
 
-        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
+        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: .label), for: .normal)
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
-        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        view.backgroundColor = .secondarySystemBackground
+        tableView.backgroundColor = .secondarySystemBackground
 
         progressView.trackTintColor = .clear
         progressView.progress = 1

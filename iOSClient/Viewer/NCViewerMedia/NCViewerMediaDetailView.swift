@@ -59,7 +59,7 @@ class NCViewerMediaDetailView: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        separator.backgroundColor = NCBrandColor.shared.separator
+        separator.backgroundColor = .separator
         sizeLabel.text = ""
         sizeValue.text = ""
         dateLabel.text = ""

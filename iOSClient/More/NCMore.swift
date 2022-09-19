@@ -48,11 +48,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         super.viewDidLoad()
 
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
 
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.register(UINib(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
 
         // create tap gesture recognizer
@@ -139,13 +139,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Scan
-        if #available(iOS 13.0, *) {
-            item = NKExternalSite()
-            item.name = "_scanned_images_"
-            item.icon = "scan"
-            item.url = "openStoryboardNCScan"
-            functionMenu.append(item)
-        }
+        item = NKExternalSite()
+        item.name = "_scanned_images_"
+        item.icon = "scan"
+        item.url = "openStoryboardNCScan"
+        functionMenu.append(item)
 
         // ITEM : Trash
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -336,10 +334,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 } else {
                     cell.displayName?.text = account.displayName + " (" + account.alias + ")"
                 }
-                cell.displayName.textColor = NCBrandColor.shared.label
+                cell.displayName.textColor = .label
             }
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+            cell.backgroundColor = .secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
             if NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false) {
@@ -347,7 +345,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                     cell.icon.image = status.onlineStatus
                     cell.status.text = status.statusMessage
-                    cell.status.textColor = NCBrandColor.shared.label
+                    cell.status.textColor = .label
                     cell.status.trailingBuffer = cell.status.frame.width
                     if cell.status.labelShouldScroll() {
                         cell.status.tapToScroll = true
@@ -381,13 +379,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             cell.imageIcon?.image = NCUtility.shared.loadImage(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.shared.label
+            cell.labelText.textColor = .label
 
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+            cell.backgroundColor = .secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
-            cell.separator.backgroundColor = NCBrandColor.shared.separator
+            cell.separator.backgroundColor = .separator
             cell.separatorHeigth.constant = 0.4
             
             cell.layer.cornerRadius = 0
@@ -495,7 +493,7 @@ class CCCellMore: UITableViewCell {
 
     override var frame: CGRect {
         get {
-            return super.bounds
+            return super.frame
         }
         set (newFrame) {
             var frame = newFrame
@@ -517,7 +515,7 @@ class NCMoreUserCell: UITableViewCell {
     
     override var frame: CGRect {
         get {
-            return super.bounds
+            return super.frame
         }
         set (newFrame) {
             var frame = newFrame

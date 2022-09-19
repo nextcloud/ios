@@ -56,7 +56,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             selector: #selector(tapAvatarImage))]
 
         labelTitle.text = tableShare.shareWithDisplayname
-        labelTitle.textColor = NCBrandColor.shared.label
+        labelTitle.textColor = .label
         isUserInteractionEnabled = true
         labelQuickStatus.isHidden = false
         imageDownArrow.isHidden = false

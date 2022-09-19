@@ -23,7 +23,6 @@
 
 import Foundation
 
-@available(iOS 13.0, *)
 extension NCScan: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -89,7 +88,6 @@ extension NCScan: UICollectionViewDataSource {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCScan: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
 
@@ -148,7 +146,6 @@ extension NCScan: UICollectionViewDragDelegate {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCScan: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {

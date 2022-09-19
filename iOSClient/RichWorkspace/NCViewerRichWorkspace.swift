@@ -43,7 +43,7 @@ import MarkdownKit
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
         presentationController?.delegate = self
 
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
@@ -52,10 +52,10 @@ import MarkdownKit
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         textView.attributedText = markdownParser.parse(richWorkspaceText)
-        textViewColor = NCBrandColor.shared.label
+        textViewColor = .label
     }
 
     override func viewWillAppear(_ animated: Bool) {

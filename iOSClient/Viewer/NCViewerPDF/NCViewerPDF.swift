@@ -64,14 +64,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         let pageCount = CGFloat(pdfDocument?.pageCount ?? 0)
-        if #available(iOS 13.0, *) {
-            defaultBackgroundColor = pdfView.backgroundColor
-        } else {
-            defaultBackgroundColor = .lightGray
-        }
+        defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
 
         // PDF VIEW
@@ -138,7 +134,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         pageView.translatesAutoresizingMaskIntoConstraints = false
         pageView.layer.cornerRadius = 10
-        pageView.backgroundColor = NCBrandColor.shared.systemBackground.withAlphaComponent(
+        pageView.backgroundColor = .systemBackground.withAlphaComponent(
             UIAccessibility.isReduceTransparencyEnabled ? 1 : 0.5
         )
         view.addSubview(pageView)
@@ -153,7 +149,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
         pageViewLabel.textAlignment = .center
-        pageViewLabel.textColor = NCBrandColor.shared.label
+        pageViewLabel.textColor = .label
         pageView.addSubview(pageViewLabel)
 
         NSLayoutConstraint.activate([
@@ -500,7 +496,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfSelection.pages.forEach { page in
             let highlight = PDFAnnotation(bounds: pdfSelection.bounds(for: page), forType: .highlight, withProperties: nil)
             highlight.endLineStyle = .square
-            highlight.color = NCBrandColor.shared.annotationColor
+            highlight.color = .systemBlue
             page.addAnnotation(highlight)
         }
         if let page = pdfSelection.pages.first {

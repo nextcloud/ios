@@ -51,8 +51,8 @@ class NCMainTabBar: UITabBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
-        barTintColor = NCBrandColor.shared.secondarySystemBackground
-        backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        barTintColor = .secondarySystemBackground
+        backgroundColor = .secondarySystemBackground
 
         changeTheming()
     }
