@@ -490,7 +490,7 @@ class NCUtility: NSObject {
                 if error != nil { return callCompletion(error: true) }
             }
 
-            PHImageManager.default().requestImageData(for: asset, options: options) { data, dataUI, orientation, info in
+            PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, dataUI, orientation, info in
                 guard var data = data else { return callCompletion(error: true) }
                 if compatibilityFormat {
                     guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletion(error: true) }
