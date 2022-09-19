@@ -243,7 +243,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // Initialize Auto upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in }
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
+        }
 
         // Required unsubscribing / subscribing
         NCPushNotification.shared().pushNotification()
@@ -300,7 +302,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         scheduleAppRefresh()
-        scheduleBackgroundProcessing()
+        scheduleAppProcessing()
 
         // Passcode
         presentPasscode { }
@@ -326,7 +328,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared().pushNotification()
 
         // Start Auto Upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in }
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
+        }
 
         // Start services
         NCService.shared.startRequestServicesServer()
@@ -359,7 +363,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func scheduleBackgroundProcessing() {
+    func scheduleAppProcessing() {
 
         let request = BGProcessingTaskRequest(identifier: NCGlobal.shared.processingTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
@@ -375,6 +379,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleRefreshTask(_ task: BGTask) {
 
+        // Schedule a new task.
+        scheduleAppRefresh()
+        
         if account == "" {
             task.setTaskCompleted(success: true)
             return
@@ -382,16 +389,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                NKCommon.shared.writeLog("Completition handler refresh task with [Auto upload]")
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            //DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                NKCommon.shared.writeLog("Completition handler refresh task [Auto upload] with \(items) uploads")
                 task.setTaskCompleted(success: true)
-            }
+            //}
         }
     }
 
     func handleProcessingTask(_ task: BGTask) {
 
+        // Schedule a new task.
+        scheduleAppProcessing()
+        
         if account == "" {
             task.setTaskCompleted(success: true)
             return
