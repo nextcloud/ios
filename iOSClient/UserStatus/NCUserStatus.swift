@@ -501,7 +501,6 @@ extension NCUserStatus: UITextFieldDelegate {
 
 class emojiTextField: UITextField {
 
-    // required for iOS 13
     override var textInputContextIdentifier: String? { "" } // return non-nil to show the Emoji keyboard ¯\_(ツ)_/¯
 
     override var textInputMode: UITextInputMode? {
