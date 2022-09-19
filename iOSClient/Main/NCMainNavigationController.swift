@@ -33,11 +33,11 @@ class NCMainNavigationController: UINavigationController {
         let appearance = UINavigationBarAppearance()
 
         appearance.configureWithOpaqueBackground()
-        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
-        appearance.backgroundColor = NCBrandColor.shared.systemBackground
+        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        appearance.backgroundColor = .systemBackground
         appearance.configureWithOpaqueBackground()
-        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.label]
-        appearance.backgroundColor = NCBrandColor.shared.systemBackground
+        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        appearance.backgroundColor = .systemBackground
 
         appearance.shadowColor = .clear
         appearance.shadowImage = UIImage()

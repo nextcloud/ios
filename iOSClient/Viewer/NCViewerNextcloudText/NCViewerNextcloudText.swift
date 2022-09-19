@@ -44,7 +44,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
 
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView

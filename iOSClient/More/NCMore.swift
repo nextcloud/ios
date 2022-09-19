@@ -48,11 +48,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         super.viewDidLoad()
 
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
 
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.register(UINib(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
 
         // create tap gesture recognizer
@@ -334,7 +334,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 } else {
                     cell.displayName?.text = account.displayName + " (" + account.alias + ")"
                 }
-                cell.displayName.textColor = NCBrandColor.shared.label
+                cell.displayName.textColor = .label
             }
             cell.selectedBackgroundView = selectionColor
             cell.backgroundColor = .secondarySystemGroupedBackground
@@ -345,7 +345,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                     cell.icon.image = status.onlineStatus
                     cell.status.text = status.statusMessage
-                    cell.status.textColor = NCBrandColor.shared.label
+                    cell.status.textColor = .label
                     cell.status.trailingBuffer = cell.status.frame.width
                     if cell.status.labelShouldScroll() {
                         cell.status.tapToScroll = true
@@ -379,7 +379,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             cell.imageIcon?.image = NCUtility.shared.loadImage(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.shared.label
+            cell.labelText.textColor = .label
 
             cell.selectedBackgroundView = selectionColor
             cell.backgroundColor = .secondarySystemGroupedBackground

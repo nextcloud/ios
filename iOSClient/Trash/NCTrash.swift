@@ -53,7 +53,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     override func viewDidLoad() {
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
         // Cell
@@ -65,7 +65,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = .systemBackground
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()

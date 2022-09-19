@@ -65,8 +65,8 @@ import XLForm
 
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
+        collectionView.backgroundColor = .systemGroupedBackground
         tableView.backgroundColor = .secondarySystemGroupedBackground
 
         let cancelButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
@@ -109,7 +109,7 @@ import XLForm
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -124,11 +124,11 @@ import XLForm
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textField.textColor"] = UIColor.label
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -188,7 +188,7 @@ import XLForm
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
-            cell.backgroundColor = NCBrandColor.shared.label
+            cell.backgroundColor = .label
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {

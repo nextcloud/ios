@@ -66,7 +66,7 @@
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[[UIImage imageNamed:@"closeCircle"] imageWithColor:[UIColor redColor] size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [section addFormRow:row];
         
@@ -88,7 +88,7 @@
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[[UIImage imageNamed:@"checkmark.circle.fill"] imageWithColor:[UIColor greenColor] size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [section addFormRow:row];
         
@@ -102,7 +102,7 @@
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[[UIImage imageNamed:@"e2eReadPassphrase"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(readPassphrase:);
         [section addFormRow:row];
@@ -117,7 +117,7 @@
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(removeLocallyEncryption:);
         [section addFormRow:row];
@@ -133,7 +133,7 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"startE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_start_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(startE2E:);
         [section addFormRow:row];   
@@ -149,7 +149,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteCertificate" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete certificate", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deleteCertificate:);
     [section addFormRow:row];
@@ -158,7 +158,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePrivateKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete PrivateKey", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
@@ -176,9 +176,9 @@
     
     self.title = NSLocalizedString(@"_e2e_settings_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    self.view.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
+    self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
     
-    self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
+    self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
         
     // E2EE
     self.endToEndInitialize = [NCEndToEndInitialize new];

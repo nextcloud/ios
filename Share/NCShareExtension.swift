@@ -85,10 +85,10 @@ class NCShareExtension: UIViewController {
 
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.shared.brandText
-        refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
+        refreshControl.backgroundColor = .systemBackground
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
-        commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        commandView.backgroundColor = .secondarySystemBackground
         separatorView.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
@@ -98,14 +98,14 @@ class NCShareExtension: UIViewController {
         commandViewHeightConstraint.constant = heightCommandView
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: NCBrandColor.shared.label)
+        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: .label)
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
 
-        // uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: NCBrandColor.shared.label)
+        // uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: .label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))

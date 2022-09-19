@@ -53,7 +53,7 @@
     if (activeAccount.autoUpload) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
 
     // Auto Upload Directory
@@ -66,7 +66,7 @@
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     [row.cellConfig setObject:[[UIImage imageNamed:@"foldersOnTop"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
     row.action.formSelector = @selector(selectAutomaticUploadFolder);
@@ -83,7 +83,7 @@
     if (activeAccount.autoUploadImage) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
 
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadWWAnPhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
@@ -92,7 +92,7 @@
     if (activeAccount.autoUploadWWAnPhoto) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload Video
@@ -106,7 +106,7 @@
     if (activeAccount.autoUploadVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadWWAnVideo" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_wifi_only_", nil)];
@@ -115,7 +115,7 @@
     if (activeAccount.autoUploadWWAnVideo) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload Full
@@ -130,7 +130,7 @@
     if (activeAccount.autoUploadFull) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload create subfolder
@@ -144,7 +144,7 @@
     if (activeAccount.autoUploadCreateSubfolder) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
     // Auto Upload file name
@@ -155,7 +155,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFileName" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_filenamemask_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.shared.label forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     row.action.viewControllerClass = [NCManageAutoUploadFileName class];
     [section addFormRow:row];
     
@@ -176,9 +176,9 @@
     
     self.title = NSLocalizedString(@"_settings_autoupload_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    self.view.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
+    self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
     
-    self.tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground;
+    self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
     

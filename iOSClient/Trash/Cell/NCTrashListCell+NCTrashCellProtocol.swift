@@ -138,7 +138,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
         self.objectId = tableTrash.fileId
         self.labelTitle.text = tableTrash.trashbinFileName
-        self.labelTitle.textColor = NCBrandColor.shared.label
+        self.labelTitle.textColor = .label
         if self is NCTrashListCell {
             self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date)
         } else {

@@ -55,8 +55,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .systemGroupedBackground
         cellBackgoundColor = .secondarySystemGroupedBackground
 
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
@@ -69,8 +69,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         progressView.progressTintColor = .green
         progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
 
-        labelTimer.textColor = NCBrandColor.shared.label
-        labelDuration.textColor = NCBrandColor.shared.label
+        labelTimer.textColor = .label
+        labelDuration.textColor = .label
 
         initializeForm()
     }
@@ -135,7 +135,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -149,11 +149,11 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textField.textColor"] = UIColor.label
 
         section.addFormRow(row)
 

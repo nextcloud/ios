@@ -72,7 +72,7 @@ class NCMenuPanelController: FloatingPanelController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.surfaceView.backgroundColor = NCBrandColor.shared.systemBackground
+        self.surfaceView.backgroundColor = .systemBackground
         self.isRemovalInteractionEnabled = true
         self.backdropView.dismissalTapGestureRecognizer.isEnabled = true
         self.surfaceView.layer.cornerRadius = 16

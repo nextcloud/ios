@@ -91,8 +91,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.alwaysBounceVertical = true
 
         // Color
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
+        collectionView.backgroundColor = .systemBackground
         refreshControl.tintColor = .gray
 
         if enableSearchBar {
@@ -1696,7 +1696,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 } else {
                     header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
-                header.labelSection.textColor = NCBrandColor.shared.label
+                header.labelSection.textColor = .label
 
                 return header
 
@@ -1705,7 +1705,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
 
                 header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-                header.labelSection.textColor = NCBrandColor.shared.label
+                header.labelSection.textColor = .label
 
                 return header
             }

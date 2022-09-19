@@ -169,10 +169,10 @@ class NCViewerMedia: UIViewController {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
 
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
+            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
-            viewerMediaPage?.view.backgroundColor = NCBrandColor.shared.systemBackground
-            viewerMediaPage?.textColor = NCBrandColor.shared.label
+            viewerMediaPage?.view.backgroundColor = .systemBackground
+            viewerMediaPage?.textColor = .label
             viewerMediaPage?.progressView.isHidden = false
         }
     }

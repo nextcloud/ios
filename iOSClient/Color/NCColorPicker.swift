@@ -41,7 +41,7 @@ class NCColorPicker: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        view.backgroundColor = .secondarySystemBackground
 
         if let metadata = metadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
@@ -50,7 +50,7 @@ class NCColorPicker: UIViewController {
             }
         }
 
-        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: NCBrandColor.shared.label), for: .normal)
+        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: .label), for: .normal)
         titleLabel.text = NSLocalizedString("_select_color_", comment: "")
 
         orangeButton.backgroundColor = .orange
@@ -89,7 +89,7 @@ class NCColorPicker: UIViewController {
         yellowButton.layer.cornerRadius = 5
         yellowButton.layer.masksToBounds = true
 
-        systemBlueButton.backgroundColor = NCBrandColor.shared.systemBlue
+        systemBlueButton.backgroundColor = .systemBlue
         systemBlueButton.layer.cornerRadius = 5
         systemBlueButton.layer.masksToBounds = true
 
@@ -97,7 +97,7 @@ class NCColorPicker: UIViewController {
         systemMintButton.layer.cornerRadius = 5
         systemMintButton.layer.masksToBounds = true
 
-        systemPinkButton.backgroundColor = NCBrandColor.shared.systemPink
+        systemPinkButton.backgroundColor = .systemPink
         systemPinkButton.layer.cornerRadius = 5
         systemPinkButton.layer.masksToBounds = true
 
@@ -106,15 +106,15 @@ class NCColorPicker: UIViewController {
             if let selectedColor = selectedColor {
                 customButton.backgroundColor = selectedColor
             } else {
-                customButton.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+                customButton.backgroundColor = .secondarySystemBackground
             }
         } else {
-            customButton.backgroundColor = NCBrandColor.shared.systemTeal
+            customButton.backgroundColor = .systemTeal
         }
         customButton.layer.cornerRadius = 5
         customButton.layer.masksToBounds = true
 
-        systemIndigoButton.backgroundColor = NCBrandColor.shared.systemIndigo
+        systemIndigoButton.backgroundColor = .systemIndigo
         systemIndigoButton.layer.cornerRadius = 5
         systemIndigoButton.layer.masksToBounds = true
 
@@ -166,11 +166,11 @@ class NCColorPicker: UIViewController {
     }
 
     @IBAction func systemBlueButtonAction(_ sender: AnyObject) {
-        updateColor(hexColor: NCBrandColor.shared.systemBlue.hexString)
+        updateColor(hexColor: UIColor.systemBlue.hexString)
     }
 
     @IBAction func systemIndigoButtonAction(_ sender: AnyObject) {
-        updateColor(hexColor: NCBrandColor.shared.systemIndigo.hexString)
+        updateColor(hexColor: UIColor.systemIndigo.hexString)
     }
 
     @IBAction func systemMintButtonAction(_ sender: AnyObject) {
@@ -178,7 +178,7 @@ class NCColorPicker: UIViewController {
     }
 
     @IBAction func systemPinkButtonAction(_ sender: AnyObject) {
-        updateColor(hexColor: NCBrandColor.shared.systemPink.hexString)
+        updateColor(hexColor: UIColor.systemPink.hexString)
     }
 
     @IBAction func defaultButtonAction(_ sender: AnyObject) {
@@ -196,7 +196,7 @@ class NCColorPicker: UIViewController {
             }
             self.present(picker, animated: true, completion: nil)
         } else {
-            updateColor(hexColor: NCBrandColor.shared.systemTeal.hexString)
+            updateColor(hexColor: UIColor.systemTeal.hexString)
         }
     }
 

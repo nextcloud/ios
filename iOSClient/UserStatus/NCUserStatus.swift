@@ -76,8 +76,8 @@ class NCUserStatus: UIViewController {
 
         self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
+        tableView.backgroundColor = .systemBackground
 
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
@@ -87,7 +87,7 @@ class NCUserStatus: UIViewController {
         let onLine = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
         onlineImage.image = onLine.onlineStatus
         onlineLabel.text = onLine.statusMessage
-        onlineLabel.textColor = NCBrandColor.shared.label
+        onlineLabel.textColor = .label
 
         awayButton.layer.cornerRadius = 10
         awayButton.layer.masksToBounds = true
@@ -95,7 +95,7 @@ class NCUserStatus: UIViewController {
         let away = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
         awayImage.image = away.onlineStatus
         awayLabel.text = away.statusMessage
-        awayLabel.textColor = NCBrandColor.shared.label
+        awayLabel.textColor = .label
 
         dndButton.layer.cornerRadius = 10
         dndButton.layer.masksToBounds = true
@@ -103,7 +103,7 @@ class NCUserStatus: UIViewController {
         let dnd = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
         dndImage.image = dnd.onlineStatus
         dndLabel.text = dnd.statusMessage
-        dndLabel.textColor = NCBrandColor.shared.label
+        dndLabel.textColor = .label
         dndDescrLabel.text = dnd.descriptionMessage
         dndDescrLabel.textColor = .darkGray
 
@@ -113,25 +113,25 @@ class NCUserStatus: UIViewController {
         let invisible = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
         invisibleImage.image = invisible.onlineStatus
         invisibleLabel.text = invisible.statusMessage
-        invisibleLabel.textColor = NCBrandColor.shared.label
+        invisibleLabel.textColor = .label
         invisibleDescrLabel.text = invisible.descriptionMessage
         invisibleDescrLabel.textColor = .darkGray
 
         statusMessageLabel.text = NSLocalizedString("_status_message_", comment: "")
-        statusMessageLabel.textColor = NCBrandColor.shared.label
+        statusMessageLabel.textColor = .label
 
         statusMessageEmojiTextField.delegate = self
         statusMessageEmojiTextField.backgroundColor = .systemGray5
 
         statusMessageTextField.delegate = self
         statusMessageTextField.placeholder = NSLocalizedString("_status_message_placehorder_", comment: "")
-        statusMessageTextField.textColor = NCBrandColor.shared.label
+        statusMessageTextField.textColor = .label
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         clearStatusMessageAfterLabel.text = NSLocalizedString("_clear_status_message_after_", comment: "")
-        clearStatusMessageAfterLabel.textColor = NCBrandColor.shared.label
+        clearStatusMessageAfterLabel.textColor = .label
 
         clearStatusMessageAfterText.layer.cornerRadius = 5
         clearStatusMessageAfterText.layer.masksToBounds = true
@@ -156,7 +156,7 @@ class NCUserStatus: UIViewController {
         clearStatusMessageButton.layer.borderColor = UIColor.darkGray.cgColor
         clearStatusMessageButton.backgroundColor = .systemGray5
         clearStatusMessageButton.setTitle(NSLocalizedString("_clear_status_message_", comment: ""), for: .normal)
-        clearStatusMessageButton.setTitleColor(NCBrandColor.shared.label, for: .normal)
+        clearStatusMessageButton.setTitleColor(.label, for: .normal)
 
         setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true

@@ -67,7 +67,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
 
         // PDF VIEW
@@ -134,7 +134,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         pageView.translatesAutoresizingMaskIntoConstraints = false
         pageView.layer.cornerRadius = 10
-        pageView.backgroundColor = NCBrandColor.shared.systemBackground.withAlphaComponent(
+        pageView.backgroundColor = .systemBackground.withAlphaComponent(
             UIAccessibility.isReduceTransparencyEnabled ? 1 : 0.5
         )
         view.addSubview(pageView)
@@ -149,7 +149,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
         pageViewLabel.textAlignment = .center
-        pageViewLabel.textColor = NCBrandColor.shared.label
+        pageViewLabel.textColor = .label
         pageView.addSubview(pageViewLabel)
 
         NSLayoutConstraint.activate([

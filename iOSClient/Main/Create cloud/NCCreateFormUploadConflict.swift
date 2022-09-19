@@ -79,10 +79,10 @@ extension NCCreateFormUploadConflictDelegate {
         tableView.allowsSelection = false
         tableView.tableFooterView = UIView()
 
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .systemGroupedBackground
+        viewSwitch.backgroundColor = .systemGroupedBackground
+        viewButton.backgroundColor = .systemGroupedBackground
 
         tableView.register(UINib(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
 
@@ -107,7 +107,7 @@ extension NCCreateFormUploadConflictDelegate {
         buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
         buttonCancel.backgroundColor = .systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        buttonCancel.setTitleColor(NCBrandColor.shared.label, for: .normal)
+        buttonCancel.setTitleColor(.label, for: .normal)
 
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
@@ -500,7 +500,7 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
 
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(NCBrandColor.shared.label, for: .normal)
+            buttonContinue.setTitleColor(.label, for: .normal)
         } else {
             buttonContinue.isEnabled = false
             buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)

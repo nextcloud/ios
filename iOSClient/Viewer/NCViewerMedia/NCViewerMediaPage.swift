@@ -51,7 +51,7 @@ class NCViewerMediaPage: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
-    var textColor: UIColor = NCBrandColor.shared.label
+    var textColor: UIColor = .label
     var playCommand: Any?
     var pauseCommand: Any?
     var skipForwardCommand: Any?
@@ -64,7 +64,7 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -187,9 +187,9 @@ class NCViewerMediaPage: UIViewController {
                 currentViewController.playerToolBar?.show(enableTimerAutoHide: enableTimerAutoHide)
             }
 
-            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
-            view.backgroundColor = NCBrandColor.shared.systemBackground
-            textColor = NCBrandColor.shared.label
+            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
+            view.backgroundColor = .systemBackground
+            textColor = .label
 
         } else {
 

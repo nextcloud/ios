@@ -60,13 +60,13 @@ class NCActivity: UIViewController, NCSharePagingContent {
         super.viewDidLoad()
 
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = .systemBackground
 
         if showComments {
             setupComments()
@@ -163,7 +163,7 @@ extension NCActivity: UITableViewDelegate {
 
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = NCBrandColor.shared.label
+        label.textColor = .label
         label.text = CCUtility.getTitleSectionDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -218,13 +218,13 @@ extension NCActivity: UITableViewDataSource {
         NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
-        cell.labelUser.textColor = NCBrandColor.shared.label
+        cell.labelUser.textColor = .label
         // Date
         cell.labelDate.text = CCUtility.dateDiff(comment.creationDateTime as Date)
         cell.labelDate.textColor = .systemGray4
         // Message
         cell.labelMessage.text = comment.message
-        cell.labelMessage.textColor = NCBrandColor.shared.label
+        cell.labelMessage.textColor = .label
         // Button Menu
         if comment.actorId == appDelegate.userId {
             cell.buttonMenu.isHidden = false
@@ -248,7 +248,7 @@ extension NCActivity: UITableViewDataSource {
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10
         cell.didSelectItemEnable = self.didSelectItemEnable
-        cell.subject.textColor = NCBrandColor.shared.label
+        cell.subject.textColor = .label
         cell.viewController = self
 
         // icon

@@ -73,7 +73,7 @@ class NCShareLinkCell: UITableViewCell {
             menuButton.setImage(UIImage(named: menuImageName)?.image(color: .gray, size: 50), for: .normal)
         }
 
-        labelTitle.textColor = NCBrandColor.shared.label
+        labelTitle.textColor = .label
         imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
         copyButton.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
     }

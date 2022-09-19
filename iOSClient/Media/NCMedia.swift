@@ -71,13 +71,13 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
 
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
 
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
-        collectionView.backgroundColor = NCBrandColor.shared.systemBackground
+        collectionView.backgroundColor = .systemBackground
 
         gridLayout = NCGridMediaLayout()
         gridLayout.itemForLine = CGFloat(min(CCUtility.getMediaWidthImage(), 5))
