@@ -171,7 +171,7 @@ struct FilesWidgetView: View {
 
 struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let datas = Array(filesDatasTest[0...5])
+        let datas = Array(filesDatasTest[0...4])
         let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
         FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }

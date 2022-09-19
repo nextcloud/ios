@@ -140,7 +140,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     
     let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true
-    let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+    let options = NKRequestOptions(timeout: 15, queue: NKCommon.shared.backgroundQueue)
     let title = tableDashboard?.title ?? id
     var titleImage = UIImage(named: "widget")!
 
