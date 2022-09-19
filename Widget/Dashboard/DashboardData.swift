@@ -147,7 +147,7 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     if let fileName = tableDashboard?.iconClass {
         let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
         if let image = UIImage(contentsOfFile: fileNamePath) {
-            titleImage = image.imageColor(.label)
+            titleImage = image.withTintColor(.label, renderingMode: .alwaysOriginal)
         }
     }
         

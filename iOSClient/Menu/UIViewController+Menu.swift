@@ -81,7 +81,7 @@ extension UIViewController {
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {
-                    image = svg.uiImage.imageColor(.label)
+                    image = svg.uiImage.withTintColor(.label, renderingMode: .alwaysOriginal)
                 }
                 return NCMenuAction(
                     title: action.title,

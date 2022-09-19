@@ -117,7 +117,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
 
         if let image = image {
-            cell.icon.image = image.imageColor(NCBrandColor.shared.brandElement)
+            cell.icon.image = image.withTintColor(NCBrandColor.shared.brandElement, renderingMode: .alwaysOriginal)
         } else {
             cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.brandElement)
         }
