@@ -44,7 +44,6 @@
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
-                <color key="tintColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="20" id="28X-bj-Yak"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="15" id="DXv-dr-zaw"/>

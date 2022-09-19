@@ -671,9 +671,9 @@ class NCUtility: NSObject {
         // see https://stackoverflow.com/questions/71764255
         let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
         if let symbolConfiguration = symbolConfiguration {
-            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
+            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: .alwaysOriginal)
         } else {
-            image = UIImage(systemName: sfSymbolName)?.imageColor(color)
+            image = UIImage(systemName: sfSymbolName)?.withTintColor(color, renderingMode: .alwaysOriginal)
         }
         if image == nil {
             image = UIImage(named: imageName)?.image(color: color, size: size)

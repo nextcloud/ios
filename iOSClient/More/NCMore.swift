@@ -493,7 +493,7 @@ class CCCellMore: UITableViewCell {
 
     override var frame: CGRect {
         get {
-            return super.bounds
+            return super.frame
         }
         set (newFrame) {
             var frame = newFrame
@@ -515,7 +515,7 @@ class NCMoreUserCell: UITableViewCell {
     
     override var frame: CGRect {
         get {
-            return super.bounds
+            return super.frame
         }
         set (newFrame) {
             var frame = newFrame
