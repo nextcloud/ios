@@ -390,10 +390,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            //DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                NKCommon.shared.writeLog("Completition handler refresh task [Auto upload] with \(items) uploads")
-                task.setTaskCompleted(success: true)
-            //}
+            NKCommon.shared.writeLog("Completition handler refresh task [Auto upload] with \(items) uploads")
+            task.setTaskCompleted(success: true)
         }
     }
 
