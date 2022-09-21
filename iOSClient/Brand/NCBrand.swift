@@ -28,10 +28,10 @@ import UIKit
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
         let instance = NCBrandOptions()
-        // Wrapper AppConfig
+        // wrapper AppConfig
         if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
-            if let disableintro = appconfig[NCGlobal.shared.configuration_disableintro] as? Bool {
-                instance.disable_intro = disableintro
+            if let disableintro = appconfig[NCGlobal.shared.configuration_disableintro] as? String {
+                instance.disable_intro = (disableintro as NSString).boolValue
             }
         }
         return instance
