@@ -399,4 +399,10 @@ class NCGlobal: NSObject {
     let widgetActionScanDocument                                = URL(string: "nextcloud://open-action?action=add-scan-document")!
     let widgetActionTextDocument                                = URL(string: "nextcloud://open-action?action=create-text-document")!
     let widgetActionVoiceMemo                                   = URL(string: "nextcloud://open-action?action=create-voice-memo")!
+    
+    // APPCONFIG
+    let configuration_serverUrl: String                         = "serverUrl"
+    let configuration_username: String                          = "username"
+    let configuration_password: String                          = "password"
+    let configuration_disableintro: String                      = "disableintro"
 }

@@ -23,24 +23,17 @@
 
 import UIKit
 
-// MARK: - Configuration
-
-@objc class NCBrandConfiguration: NSObject {
-    @objc static let shared: NCBrandConfiguration = {
-        let instance = NCBrandConfiguration()
-        return instance
-    }()
-
-    @objc public let configuration_serverUrl: String = "serverUrl"
-    @objc public let configuration_username: String = "username"
-    @objc public let configuration_password: String = "password"
-}
-
 // MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
         let instance = NCBrandOptions()
+        // Wrapper AppConfig
+        if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
+            if let disableintro = appconfig[NCGlobal.shared.configuration_disableintro] as? Bool {
+                instance.disable_intro = disableintro
+            }
+        }
         return instance
     }()
 
@@ -70,7 +63,7 @@ import UIKit
     @objc public var userAgent: String = "Nextcloud-iOS"                                    // Don't touch me !!
 
     // Brand
-    @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
+    @objc public var use_login_web_personalized:        Bool = true                                                // Don't touch me !!
     
     // Options
     @objc public var use_default_auto_upload:           Bool = false
