@@ -401,9 +401,12 @@ class NCGlobal: NSObject {
     let widgetActionVoiceMemo                                   = URL(string: "nextcloud://open-action?action=create-voice-memo")!
     
     // APPCONFIG
+    //
     let configuration_serverUrl: String                         = "serverUrl"
     let configuration_username: String                          = "username"
     let configuration_password: String                          = "password"
     let configuration_apppassword: String                       = "apppassword"
-    let configuration_disableintro: String                      = "disableintro"
+    
+    let configuration_disable_intro: String                     = "disableintro"
+    let configuration_disable_multiaccount: String              = "disablemultiaccount"
 }

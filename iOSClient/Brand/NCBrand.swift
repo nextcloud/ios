@@ -30,8 +30,11 @@ import UIKit
         let instance = NCBrandOptions()
         // wrapper AppConfig
         if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
-            if let disableintro = appconfig[NCGlobal.shared.configuration_disableintro] as? String {
+            if let disableintro = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
                 instance.disable_intro = (disableintro as NSString).boolValue
+            }
+            if let disablemultiaccount = appconfig[NCGlobal.shared.configuration_disable_multiaccount] as? String {
+                instance.disable_multiaccount = (disablemultiaccount as NSString).boolValue
             }
         }
         return instance
