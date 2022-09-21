@@ -404,5 +404,6 @@ class NCGlobal: NSObject {
     let configuration_serverUrl: String                         = "serverUrl"
     let configuration_username: String                          = "username"
     let configuration_password: String                          = "password"
+    let configuration_apppassword: String                       = "apppassword"
     let configuration_disableintro: String                      = "disableintro"
 }

@@ -38,7 +38,8 @@ class NCLoginWeb: UIViewController {
     var configServerUrl: String?
     var configUsername: String?
     var configPassword: String?
-    
+    var configAppPassword: String?
+
     var loginFlowV2Available = false
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
@@ -89,11 +90,18 @@ class NCLoginWeb: UIViewController {
             if let password = serverConfig[NCGlobal.shared.configuration_password] as? String, !password.isEmpty, password.lowercased() != "password" {
                 self.configPassword = password
             }
+            if let apppassword = serverConfig[NCGlobal.shared.configuration_apppassword] as? String, !apppassword.isEmpty, apppassword.lowercased() != "apppassword" {
+                self.configAppPassword = apppassword
+            }
         }
         
         if let serverUrl = configServerUrl {
-            if let username = self.configUsername, let password = configPassword {
-                self.getAppPassword(serverUrl: serverUrl, username: username, password: password)
+            if let username = self.configUsername, let password = configAppPassword {
+                activityIndicator.stopAnimating()
+                createAccount(server: serverUrl, username: username, password: password)
+                return
+            } else if let username = self.configUsername, let password = configPassword {
+                getAppPassword(serverUrl: serverUrl, username: username, password: password)
                 return
             } else {
                 urlBase = serverUrl
@@ -183,6 +191,7 @@ class NCLoginWeb: UIViewController {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
                 NCContentPresenter.shared.showError(error: error)
+                self.dismiss(animated: true, completion: nil)
             }
         }
     }
