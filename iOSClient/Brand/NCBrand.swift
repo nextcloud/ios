@@ -30,8 +30,8 @@ import UIKit
         let instance = NCBrandOptions()
         // wrapper AppConfig
         if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
-            if let brand = appconfig[NCGlobal.shared.configuration_brand] as? String {
-                instance.brand = brand
+            if let str = appconfig[NCGlobal.shared.configuration_brand] as? String {
+                instance.brand = str
             }
             if let str = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
                 instance.disable_intro = (str as NSString).boolValue
@@ -90,7 +90,6 @@ import UIKit
     @objc public var disable_more_external_site:        Bool = false
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
     @objc public var disable_crash_service:             Bool = false
-    @objc public var disable_request_account:           Bool = false
     @objc public var disable_log:                       Bool = false
 
     override init() {
