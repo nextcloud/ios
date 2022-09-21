@@ -45,7 +45,7 @@ class NCAppConfigView: UIViewController {
 
         titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")
 
-        if let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.shared.configuration_bundleId) {
+        if let serverConfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
             serverUrl = serverConfig[NCBrandConfiguration.shared.configuration_serverUrl] as? String
             username = serverConfig[NCBrandConfiguration.shared.configuration_username] as? String
             password = serverConfig[NCBrandConfiguration.shared.configuration_password] as? String
