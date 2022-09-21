@@ -125,8 +125,8 @@ class NCLoginWeb: UIViewController {
         }
 
         // TITLE
-        titleView = urlBase
         if let host = URL(string: urlBase)?.host {
+            titleView = host
             if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
                 titleView = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
             }
