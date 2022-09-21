@@ -73,8 +73,8 @@ import UIKit
     // User Agent
     @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!
 
-    // Brand
-    @objc public var use_login_web_personalized:        Bool = true                                                 // Don't touch me !!
+    // BRAND ONLY
+    @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     
     // Options
     @objc public var use_default_auto_upload:           Bool = false
