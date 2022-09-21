@@ -50,9 +50,25 @@ class NCLoginWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // load AppConfig
+        if let serverConfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
+            if let serverUrl = serverConfig[NCGlobal.shared.configuration_serverUrl] as? String {
+                self.configServerUrl = serverUrl
+            }
+            if let username = serverConfig[NCGlobal.shared.configuration_username] as? String, !username.isEmpty, username.lowercased() != "username" {
+                self.configUsername = username
+            }
+            if let password = serverConfig[NCGlobal.shared.configuration_password] as? String, !password.isEmpty, password.lowercased() != "password" {
+                self.configPassword = password
+            }
+            if let apppassword = serverConfig[NCGlobal.shared.configuration_apppassword] as? String, !apppassword.isEmpty, apppassword.lowercased() != "apppassword" {
+                self.configAppPassword = apppassword
+            }
+        }
+        
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
         
-        if NCBrandOptions.shared.use_login_web_personalized  && accountCount > 0 {
+        if (NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig) && accountCount > 0 {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
         }
 
@@ -79,22 +95,7 @@ class NCLoginWeb: UIViewController {
         
         self.view.addSubview(activityIndicator)
         
-        // load AppConfig
-        if let serverConfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
-            if let serverUrl = serverConfig[NCGlobal.shared.configuration_serverUrl] as? String {
-                self.configServerUrl = serverUrl
-            }
-            if let username = serverConfig[NCGlobal.shared.configuration_username] as? String, !username.isEmpty, username.lowercased() != "username" {
-                self.configUsername = username
-            }
-            if let password = serverConfig[NCGlobal.shared.configuration_password] as? String, !password.isEmpty, password.lowercased() != "password" {
-                self.configPassword = password
-            }
-            if let apppassword = serverConfig[NCGlobal.shared.configuration_apppassword] as? String, !apppassword.isEmpty, apppassword.lowercased() != "apppassword" {
-                self.configAppPassword = apppassword
-            }
-        }
-        
+        // AppConfig
         if let serverUrl = configServerUrl {
             if let username = self.configUsername, let password = configAppPassword {
                 activityIndicator.stopAnimating()

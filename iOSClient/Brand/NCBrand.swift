@@ -28,24 +28,6 @@ import UIKit
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
         let instance = NCBrandOptions()
-        // wrapper AppConfig
-        if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
-            if let str = appconfig[NCGlobal.shared.configuration_brand] as? String {
-                instance.brand = str
-            }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
-                instance.disable_intro = (str as NSString).boolValue
-            }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_multiaccount] as? String {
-                instance.disable_multiaccount = (str as NSString).boolValue
-            }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_crash_service] as? String {
-                instance.disable_crash_service = (str as NSString).boolValue
-            }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_log] as? String {
-                instance.disable_log = (str as NSString).boolValue
-            }
-        }
         return instance
     }()
 
@@ -75,6 +57,7 @@ import UIKit
 
     // BRAND ONLY
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
+    @objc public var use_AppConfig:                     Bool = false                                                // Don't touch me !!
     
     // Options
     @objc public var use_default_auto_upload:           Bool = false
@@ -97,6 +80,27 @@ import UIKit
         if folderBrandAutoUpload != "" {
             folderDefaultAutoUpload = folderBrandAutoUpload
         }
+        
+        // wrapper AppConfig
+        if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
+            
+            if let str = appconfig[NCGlobal.shared.configuration_brand] as? String {
+                brand = str
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
+                disable_intro = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_multiaccount] as? String {
+                disable_multiaccount = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_crash_service] as? String {
+                disable_crash_service = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_log] as? String {
+                disable_log = (str as NSString).boolValue
+            }
+        }
+        
     }
 }
 
