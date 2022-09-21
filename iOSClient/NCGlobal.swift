@@ -402,11 +402,15 @@ class NCGlobal: NSObject {
     
     // APPCONFIG
     //
-    let configuration_serverUrl: String                         = "serverUrl"
-    let configuration_username: String                          = "username"
-    let configuration_password: String                          = "password"
-    let configuration_apppassword: String                       = "apppassword"
+    let configuration_brand                                     = "brand"
+
+    let configuration_serverUrl                                 = "serverUrl"
+    let configuration_username                                  = "username"
+    let configuration_password                                  = "password"
+    let configuration_apppassword                               = "apppassword"
     
-    let configuration_disable_intro: String                     = "disableintro"
-    let configuration_disable_multiaccount: String              = "disablemultiaccount"
+    let configuration_disable_intro                             = "disableintro"
+    let configuration_disable_multiaccount                      = "disablemultiaccount"
+    let configuration_disable_crash_service                     = "disablecrashservice"
+    let configuration_disable_log                               = "disablelog"
 }

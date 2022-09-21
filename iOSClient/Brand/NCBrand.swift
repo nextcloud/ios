@@ -30,31 +30,39 @@ import UIKit
         let instance = NCBrandOptions()
         // wrapper AppConfig
         if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed") {
-            if let disableintro = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
-                instance.disable_intro = (disableintro as NSString).boolValue
+            if let brand = appconfig[NCGlobal.shared.configuration_brand] as? String {
+                instance.brand = brand
             }
-            if let disablemultiaccount = appconfig[NCGlobal.shared.configuration_disable_multiaccount] as? String {
-                instance.disable_multiaccount = (disablemultiaccount as NSString).boolValue
+            if let str = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
+                instance.disable_intro = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_multiaccount] as? String {
+                instance.disable_multiaccount = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_crash_service] as? String {
+                instance.disable_crash_service = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_log] as? String {
+                instance.disable_log = (str as NSString).boolValue
             }
         }
         return instance
     }()
 
     @objc public var brand: String = "Nextcloud"
-    // @objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
     @objc public var textCopyrightNextcloudiOS: String = "Nextcloud Liquid for iOS %@ © 2022"
     @objc public var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     @objc public var loginBaseUrl: String = "https://cloud.nextcloud.com"
     @objc public var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
     @objc public var linkLoginHost: String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
-    @objc public var webLoginAutenticationProtocol: String = "nc://"                                            // example "abc://"
+    @objc public var webLoginAutenticationProtocol: String = "nc://"                                                // example "abc://"
     @objc public var privacy: String = "https://nextcloud.com/privacy"
     @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
 
     // Personalized
-    @objc public var webCloseViewProtocolPersonalized: String = ""                                                 // example "abc://change/plan"      Don't touch me !!
-    @objc public var folderBrandAutoUpload: String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
+    @objc public var webCloseViewProtocolPersonalized: String = ""                                                  // example "abc://change/plan"      Don't touch me !!
+    @objc public var folderBrandAutoUpload: String = ""                                                             // example "_auto_upload_folder_"   Don't touch me !!
 
     // Auto Upload default folder
     @objc public var folderDefaultAutoUpload: String = "Photos"
@@ -63,10 +71,10 @@ import UIKit
     @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
 
     // User Agent
-    @objc public var userAgent: String = "Nextcloud-iOS"                                    // Don't touch me !!
+    @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!
 
     // Brand
-    @objc public var use_login_web_personalized:        Bool = true                                                // Don't touch me !!
+    @objc public var use_login_web_personalized:        Bool = true                                                 // Don't touch me !!
     
     // Options
     @objc public var use_default_auto_upload:           Bool = false
