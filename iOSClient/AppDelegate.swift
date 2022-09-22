@@ -383,8 +383,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleRefreshTask(_ task: BGTask) {
-
-        // Schedule a new task.
         scheduleAppRefresh()
         
         guard !account.isEmpty else {
@@ -401,8 +399,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleProcessingTask(_ task: BGTask) {
-
-        // Schedule a new task.
         scheduleAppProcessing()
         
         guard !account.isEmpty else {
