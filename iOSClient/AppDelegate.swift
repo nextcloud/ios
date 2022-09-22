@@ -350,42 +350,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Background Task
 
+    /*
+    @discussion Schedule a refresh task request to ask that the system launch your app briefly so that you can download data and keep your app's contents up-to-date. The system will fulfill this request intelligently based on system conditions and app usage.
+     */
     func scheduleAppRefresh() {
 
         let request = BGAppRefreshTaskRequest(identifier: NCGlobal.shared.refreshTask)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 60) // Refresh after 6 minutes.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NKCommon.shared.writeLog("Refresh task success submit request \(request)")
+            NKCommon.shared.writeLog("Refresh task success submit request 6 minutes \(request)")
         } catch {
             NKCommon.shared.writeLog("Refresh task failed to submit request: \(error)")
         }
     }
 
+    /*
+     @discussion Schedule a processing task request to ask that the system launch your app when conditions are favorable for battery life to handle deferrable, longer-running processing, such as syncing, database maintenance, or similar tasks. The system will attempt to fulfill this request to the best of its ability within the next two days as long as the user has used your app within the past week.
+     */
     func scheduleAppProcessing() {
 
         let request = BGProcessingTaskRequest(identifier: NCGlobal.shared.processingTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
-        request.requiresNetworkConnectivity = true
+        request.requiresNetworkConnectivity = false
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
-            NKCommon.shared.writeLog("Background Processing task success submit request \(request)")
+            NKCommon.shared.writeLog("Background Processing task success submit request 5 minutes \(request)")
         } catch {
             NKCommon.shared.writeLog("Background Processing task failed to submit request: \(error)")
         }
     }
 
     func handleRefreshTask(_ task: BGTask) {
-
-        // Schedule a new task.
         scheduleAppRefresh()
         
-        if account == "" {
+        guard !account.isEmpty else {
             task.setTaskCompleted(success: true)
             return
         }
-
+        
         NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -395,47 +399,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleProcessingTask(_ task: BGTask) {
-
-        // Schedule a new task.
         scheduleAppProcessing()
         
-        if account == "" {
+        guard !account.isEmpty else {
             task.setTaskCompleted(success: true)
             return
         }
 
-        NKCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
-
-        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, error in
-            NKCommon.shared.writeLog("Completition listing favorite with error: \(error.errorCode)")
-        }
-
-        NCService.shared.synchronizeOffline(account: account)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
-            NKCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
-            task.setTaskCompleted(success: true)
-        }
-    }
-
-    // MARK: - Fetch
-
-    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-
-        if account == "" {
-            completionHandler(UIBackgroundFetchResult.noData)
-            return
-        }
-
-        NKCommon.shared.writeLog("Start perform Fetch [Auto upload]")
-
+        NKCommon.shared.writeLog("Start handler processing task [Auto upload]")
+        
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
-            if items == 0 {
-                completionHandler(UIBackgroundFetchResult.noData)
-            } else {
-                completionHandler(UIBackgroundFetchResult.newData)
-            }
+            NKCommon.shared.writeLog("Completition handler procesing task [Auto upload] with \(items) uploads")
+            task.setTaskCompleted(success: true)
         }
     }
 
@@ -475,7 +450,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
 
-        // [Customers] [AppConfig]
+        // [WEBPersonalized] [AppConfig]
         if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
 
             if activeLoginWeb?.view.window == nil {
