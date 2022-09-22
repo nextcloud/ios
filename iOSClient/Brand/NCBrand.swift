@@ -82,21 +82,21 @@ import UIKit
         }
         
         // wrapper AppConfig
-        if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
+        if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
             
-            if let str = appconfig[NCGlobal.shared.configuration_brand] as? String {
+            if let str = configurationManaged[NCGlobal.shared.configuration_brand] as? String {
                 brand = str
             }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_intro] as? String {
                 disable_intro = (str as NSString).boolValue
             }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_multiaccount] as? String {
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_multiaccount] as? String {
                 disable_multiaccount = (str as NSString).boolValue
             }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_crash_service] as? String {
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_crash_service] as? String {
                 disable_crash_service = (str as NSString).boolValue
             }
-            if let str = appconfig[NCGlobal.shared.configuration_disable_log] as? String {
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_log] as? String {
                 disable_log = (str as NSString).boolValue
             }
         }

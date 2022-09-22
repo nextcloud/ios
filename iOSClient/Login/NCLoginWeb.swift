@@ -53,21 +53,23 @@ class NCLoginWeb: UIViewController {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
 
         // load AppConfig
-        if let serverConfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
-            if let serverUrl = serverConfig[NCGlobal.shared.configuration_serverUrl] as? String {
-                self.configServerUrl = serverUrl
-            }
-            if let username = serverConfig[NCGlobal.shared.configuration_username] as? String, !username.isEmpty, username.lowercased() != "username" {
-                self.configUsername = username
-            }
-            if let password = serverConfig[NCGlobal.shared.configuration_password] as? String, !password.isEmpty, password.lowercased() != "password" {
-                self.configPassword = password
-            }
-            if let apppassword = serverConfig[NCGlobal.shared.configuration_apppassword] as? String, !apppassword.isEmpty, apppassword.lowercased() != "apppassword" {
-                self.configAppPassword = apppassword
+        if (NCBrandOptions.shared.disable_multiaccount == false) || (NCBrandOptions.shared.disable_multiaccount == true && accountCount == 0) {
+            if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
+                if let serverUrl = configurationManaged[NCGlobal.shared.configuration_serverUrl] as? String {
+                    self.configServerUrl = serverUrl
+                }
+                if let username = configurationManaged[NCGlobal.shared.configuration_username] as? String, !username.isEmpty, username.lowercased() != "username" {
+                    self.configUsername = username
+                }
+                if let password = configurationManaged[NCGlobal.shared.configuration_password] as? String, !password.isEmpty, password.lowercased() != "password" {
+                    self.configPassword = password
+                }
+                if let apppassword = configurationManaged[NCGlobal.shared.configuration_apppassword] as? String, !apppassword.isEmpty, apppassword.lowercased() != "apppassword" {
+                    self.configAppPassword = apppassword
+                }
             }
         }
-                
+
         if (NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig) && accountCount > 0 {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
         }
