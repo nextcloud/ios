@@ -23,20 +23,6 @@
 
 import UIKit
 
-// MARK: - Configuration
-
-@objc class NCBrandConfiguration: NSObject {
-    @objc static let shared: NCBrandConfiguration = {
-        let instance = NCBrandConfiguration()
-        return instance
-    }()
-
-    @objc public let configuration_bundleId: String = "it.twsweb.Nextcloud"
-    @objc public let configuration_serverUrl: String = "serverUrl"
-    @objc public let configuration_username: String = "username"
-    @objc public let configuration_password: String = "password"
-}
-
 // MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
@@ -46,20 +32,19 @@ import UIKit
     }()
 
     @objc public var brand: String = "Nextcloud"
-    // @objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
     @objc public var textCopyrightNextcloudiOS: String = "Nextcloud Liquid for iOS %@ © 2022"
     @objc public var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     @objc public var loginBaseUrl: String = "https://cloud.nextcloud.com"
     @objc public var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
     @objc public var linkLoginHost: String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
-    @objc public var webLoginAutenticationProtocol: String = "nc://"                                            // example "abc://"
+    @objc public var webLoginAutenticationProtocol: String = "nc://"                                                // example "abc://"
     @objc public var privacy: String = "https://nextcloud.com/privacy"
     @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
 
     // Personalized
-    @objc public var webCloseViewProtocolPersonalized: String = ""                                                 // example "abc://change/plan"      Don't touch me !!
-    @objc public var folderBrandAutoUpload: String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
+    @objc public var webCloseViewProtocolPersonalized: String = ""                                                  // example "abc://change/plan"      Don't touch me !!
+    @objc public var folderBrandAutoUpload: String = ""                                                             // example "_auto_upload_folder_"   Don't touch me !!
 
     // Auto Upload default folder
     @objc public var folderDefaultAutoUpload: String = "Photos"
@@ -68,16 +53,17 @@ import UIKit
     @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
 
     // User Agent
-    @objc public var userAgent: String = "Nextcloud-iOS"                                    // Don't touch me !!
+    @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!
 
-    // Options
+    // BRAND ONLY
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
+    @objc public var use_AppConfig:                     Bool = false                                                // Don't touch me !!
+    
+    // Options
     @objc public var use_default_auto_upload:           Bool = false
     @objc public var use_themingColor:                  Bool = true
-    //@objc public var use_themingBackground:             Bool = true                                               // Deprecated
     @objc public var use_themingLogo:                   Bool = false
     @objc public var use_storeLocalAutoUploadAll:       Bool = false
-    @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
     @objc public var use_loginflowv2:                   Bool = false                                                // Don't touch me !!
 
     @objc public var disable_intro:                     Bool = false
@@ -87,7 +73,6 @@ import UIKit
     @objc public var disable_more_external_site:        Bool = false
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
     @objc public var disable_crash_service:             Bool = false
-    @objc public var disable_request_account:           Bool = false
     @objc public var disable_log:                       Bool = false
 
     override init() {
@@ -95,6 +80,27 @@ import UIKit
         if folderBrandAutoUpload != "" {
             folderDefaultAutoUpload = folderBrandAutoUpload
         }
+        
+        // wrapper AppConfig
+        if let appconfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
+            
+            if let str = appconfig[NCGlobal.shared.configuration_brand] as? String {
+                brand = str
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_intro] as? String {
+                disable_intro = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_multiaccount] as? String {
+                disable_multiaccount = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_crash_service] as? String {
+                disable_crash_service = (str as NSString).boolValue
+            }
+            if let str = appconfig[NCGlobal.shared.configuration_disable_log] as? String {
+                disable_log = (str as NSString).boolValue
+            }
+        }
+        
     }
 }
 

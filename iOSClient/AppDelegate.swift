@@ -42,7 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var password: String = ""
 
     var deletePasswordSession: Bool = false
-    var activeAppConfigView: NCAppConfigView?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     var activeServerUrl: String = ""
@@ -476,18 +475,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
 
-        // use appConfig [MDM]
-        if NCBrandOptions.shared.use_configuration {
-
-            if activeAppConfigView?.view.window == nil {
-                activeAppConfigView = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCAppConfigView") as? NCAppConfigView
-                showLoginViewController(activeAppConfigView, contextViewController: viewController)
-            }
-            return
-        }
-
-        // only for personalized LoginWeb [customer]
-        if NCBrandOptions.shared.use_login_web_personalized {
+        // [Customers] [AppConfig]
+        if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
 
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
