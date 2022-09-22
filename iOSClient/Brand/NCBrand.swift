@@ -99,6 +99,15 @@ import UIKit
             if let str = configurationManaged[NCGlobal.shared.configuration_disable_log] as? String {
                 disable_log = (str as NSString).boolValue
             }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_manage_account] as? String {
+                disable_manage_account = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_more_external_site] as? String {
+                disable_more_external_site = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_openin_file] as? String {
+                disable_openin_file = (str as NSString).boolValue
+            }
         }
     }
 }
