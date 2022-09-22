@@ -366,7 +366,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let request = BGProcessingTaskRequest(identifier: NCGlobal.shared.processingTask)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
-        request.requiresNetworkConnectivity = true
+        request.requiresNetworkConnectivity = false
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
@@ -404,16 +404,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NKCommon.shared.writeLog("Start handler processing task [Synchronize Favorite & Offline]")
-
-        NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorReadFile) { _, _, error in
-            NKCommon.shared.writeLog("Completition listing favorite with error: \(error.errorCode)")
-        }
-
-        NCService.shared.synchronizeOffline(account: account)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
-            NKCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
+        NKCommon.shared.writeLog("Start handler processing task [Auto upload]")
+        
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("Completition handler procesing task [Auto upload] with \(items) uploads")
             task.setTaskCompleted(success: true)
         }
     }
