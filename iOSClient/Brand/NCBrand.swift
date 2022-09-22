@@ -100,7 +100,6 @@ import UIKit
                 disable_log = (str as NSString).boolValue
             }
         }
-        
     }
 }
 

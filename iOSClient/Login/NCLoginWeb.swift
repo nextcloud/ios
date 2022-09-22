@@ -55,6 +55,7 @@ class NCLoginWeb: UIViewController {
         // load AppConfig
         if (NCBrandOptions.shared.disable_multiaccount == false) || (NCBrandOptions.shared.disable_multiaccount == true && accountCount == 0) {
             if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
+                
                 if let serverUrl = configurationManaged[NCGlobal.shared.configuration_serverUrl] as? String {
                     self.configServerUrl = serverUrl
                 }
