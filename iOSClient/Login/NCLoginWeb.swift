@@ -50,6 +50,8 @@ class NCLoginWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
+
         // load AppConfig
         if let serverConfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
             if let serverUrl = serverConfig[NCGlobal.shared.configuration_serverUrl] as? String {
@@ -65,9 +67,7 @@ class NCLoginWeb: UIViewController {
                 self.configAppPassword = apppassword
             }
         }
-        
-        let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
-        
+                
         if (NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig) && accountCount > 0 {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
         }
