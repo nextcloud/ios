@@ -454,7 +454,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func openLogin(viewController: UIViewController?, selector: Int, openLoginWeb: Bool) {
 
-        // [Customers] [AppConfig]
+        // [WEBPersonalized] [AppConfig]
         if NCBrandOptions.shared.use_login_web_personalized || NCBrandOptions.shared.use_AppConfig {
 
             if activeLoginWeb?.view.window == nil {
