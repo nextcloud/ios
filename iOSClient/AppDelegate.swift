@@ -381,11 +381,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Schedule a new task.
         scheduleAppRefresh()
         
-        if account == "" {
+        guard !account.isEmpty else {
             task.setTaskCompleted(success: true)
             return
         }
-
+        
         NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -399,7 +399,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Schedule a new task.
         scheduleAppProcessing()
         
-        if account == "" {
+        guard !account.isEmpty else {
             task.setTaskCompleted(success: true)
             return
         }
@@ -415,27 +415,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) {
             NKCommon.shared.writeLog("Completition handler processing task [Synchronize Favorite & Offline]")
             task.setTaskCompleted(success: true)
-        }
-    }
-
-    // MARK: - Fetch
-
-    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-
-        if account == "" {
-            completionHandler(UIBackgroundFetchResult.noData)
-            return
-        }
-
-        NKCommon.shared.writeLog("Start perform Fetch [Auto upload]")
-
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("Completition perform Fetch with \(items) uploads [Auto upload]")
-            if items == 0 {
-                completionHandler(UIBackgroundFetchResult.noData)
-            } else {
-                completionHandler(UIBackgroundFetchResult.newData)
-            }
         }
     }
 
