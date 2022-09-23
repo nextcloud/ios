@@ -42,7 +42,7 @@ class NCMoreNavigationController: UINavigationController {
         standardAppearance.shadowImage = UIImage()
 
         let scrollEdgeAppearance = UINavigationBarAppearance()
-        
+
         scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
 
         navigationBar.scrollEdgeAppearance = standardAppearance
