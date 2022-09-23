@@ -1,5 +1,5 @@
 //
-//  NCMainNavigationController.swift
+//  NCMoreNavigationController.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 17/10/2020.
@@ -23,26 +23,30 @@
 
 import UIKit
 
-class NCMainNavigationController: UINavigationController {
+class NCMoreNavigationController: UINavigationController {
 
     // MARK: - View Life Cycle
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        let appearance = UINavigationBarAppearance()
+        let standardAppearance = UINavigationBarAppearance()
 
-        appearance.configureWithOpaqueBackground()
-        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        appearance.configureWithOpaqueBackground()
-        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        appearance.backgroundColor = .systemBackground
+        standardAppearance.configureWithOpaqueBackground()
+        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.configureWithOpaqueBackground()
+        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.backgroundColor = .systemGroupedBackground
 
-        appearance.shadowColor = .clear
-        appearance.shadowImage = UIImage()
+        standardAppearance.shadowColor = .clear
+        standardAppearance.shadowImage = UIImage()
 
-        navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.standardAppearance = appearance
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+        
+        scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
+
+        navigationBar.scrollEdgeAppearance = standardAppearance
+        navigationBar.standardAppearance = scrollEdgeAppearance
         navigationBar.tintColor = .systemBlue
     }
 }
