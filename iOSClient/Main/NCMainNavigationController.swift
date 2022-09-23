@@ -33,15 +33,15 @@ class NCMainNavigationController: UINavigationController {
         navigationBar.tintColor = .systemBlue
 
         let standardAppearance = UINavigationBarAppearance()
+        standardAppearance.configureWithDefaultBackground()
 
-        standardAppearance.configureWithOpaqueBackground()
         standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        standardAppearance.configureWithOpaqueBackground()
         standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        standardAppearance.backgroundColor = .systemGroupedBackground
+        standardAppearance.backgroundColor = NCBrandColor.shared.defaultNavigationBar
         navigationBar.standardAppearance = standardAppearance
 
         let scrollEdgeAppearance = UINavigationBarAppearance()
+        scrollEdgeAppearance.configureWithDefaultBackground()
 
         scrollEdgeAppearance.backgroundColor = .systemBackground
         scrollEdgeAppearance.shadowColor = .clear
