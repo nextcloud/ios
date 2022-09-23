@@ -30,19 +30,22 @@ class NCMainNavigationController: UINavigationController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        let appearance = UINavigationBarAppearance()
-
-        appearance.configureWithOpaqueBackground()
-        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        appearance.configureWithOpaqueBackground()
-        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        appearance.backgroundColor = .systemBackground
-
-        appearance.shadowColor = .clear
-        appearance.shadowImage = UIImage()
-
-        navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.standardAppearance = appearance
         navigationBar.tintColor = .systemBlue
+
+        let standardAppearance = UINavigationBarAppearance()
+
+        standardAppearance.configureWithOpaqueBackground()
+        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.configureWithOpaqueBackground()
+        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.backgroundColor = .systemGroupedBackground
+        navigationBar.standardAppearance = standardAppearance
+
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+
+        scrollEdgeAppearance.backgroundColor = .systemBackground
+        scrollEdgeAppearance.shadowColor = .clear
+        scrollEdgeAppearance.shadowImage = UIImage()
+        navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
     }
 }

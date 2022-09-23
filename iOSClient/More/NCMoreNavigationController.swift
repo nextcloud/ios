@@ -30,23 +30,22 @@ class NCMoreNavigationController: UINavigationController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
+        navigationBar.tintColor = .systemBlue
+
         let standardAppearance = UINavigationBarAppearance()
+        standardAppearance.configureWithDefaultBackground()
 
-        standardAppearance.configureWithOpaqueBackground()
         standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        standardAppearance.configureWithOpaqueBackground()
         standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
-        standardAppearance.backgroundColor = .systemGroupedBackground
-
-        standardAppearance.shadowColor = .clear
-        standardAppearance.shadowImage = UIImage()
+        standardAppearance.backgroundColor = NCBrandColor.shared.defaultNavigationBar
+        navigationBar.standardAppearance = standardAppearance
 
         let scrollEdgeAppearance = UINavigationBarAppearance()
+        scrollEdgeAppearance.configureWithDefaultBackground()
 
         scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
-
-        navigationBar.scrollEdgeAppearance = standardAppearance
-        navigationBar.standardAppearance = scrollEdgeAppearance
-        navigationBar.tintColor = .systemBlue
+        scrollEdgeAppearance.shadowColor = .clear
+        scrollEdgeAppearance.shadowImage = UIImage()
+        navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
     }
 }
