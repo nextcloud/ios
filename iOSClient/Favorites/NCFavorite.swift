@@ -42,6 +42,12 @@ class NCFavorite: NCCollectionViewCommon {
         emptyDescription = "_tutorial_favorite_view_"
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.setFileAppreance()
+    }
+
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource(forced: Bool = true) {

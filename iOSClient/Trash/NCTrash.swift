@@ -85,7 +85,8 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
         appDelegate.activeViewController = self
 
-        self.navigationItem.title = titleCurrentFolder
+        navigationController?.setFileAppreance()
+        navigationItem.title = titleCurrentFolder
 
         layoutForView = NCUtility.shared.getLayoutForView(key: NCGlobal.shared.layoutViewTrash, serverUrl: "", sort: "date", ascending: false, titleButtonHeader: "_sorted_by_date_more_recent_")
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
