@@ -52,6 +52,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.navigationItem.title = titleCurrentFolder
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.setFileAppreance()
+    }
+
     override func setNavigationItem() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
