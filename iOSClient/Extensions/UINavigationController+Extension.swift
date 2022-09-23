@@ -71,4 +71,9 @@ extension UINavigationController {
         scrollEdgeAppearance.shadowImage = UIImage()
         navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
     }
+
+    func setMediaAppreance() {
+
+        setNavigationBarHidden(true, animated: false)
+    }
 }
