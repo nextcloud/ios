@@ -189,12 +189,6 @@ class NCBrandColor: NSObject {
         }
     }
 
-    public var defaultNavigationBar: UIColor {
-        get {
-            return UIColor(red: (247 / 255), green: (247 / 255), blue: (247 / 255), alpha: 1)
-        }
-    }
-
     override init() {
         brand = customer
         brandElement = customer
