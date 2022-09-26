@@ -103,7 +103,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.searchBar.delegate = self
             searchController?.searchBar.autocapitalizationType = .none
             navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = false
+            navigationItem.hidesSearchBarWhenScrolling = true
         }
 
         // Cell

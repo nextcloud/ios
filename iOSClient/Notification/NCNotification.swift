@@ -55,8 +55,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
+        
+        navigationController?.setFileAppreance()
 
-        //
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
     }
 

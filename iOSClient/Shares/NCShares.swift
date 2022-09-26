@@ -42,6 +42,12 @@ class NCShares: NCCollectionViewCommon {
         emptyDescription = "_tutorial_list_shares_view_"
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.setFileAppreance()
+    }
+
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource(forced: Bool = true) {

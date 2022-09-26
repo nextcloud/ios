@@ -52,6 +52,8 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)
+
+        navigationController?.setFileAppreance()
     }
 
     override func viewWillDisappear(_ animated: Bool) {

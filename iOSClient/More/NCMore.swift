@@ -39,7 +39,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var quotaMenu: [NKExternalSite] = []
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
+    let defaultCornerRadius: CGFloat = 10.0
+    
     var tabAccount: tableAccount?
 
     // MARK: - View Life Cycle
@@ -67,6 +68,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        navigationController?.setGroupeAppreance()
+        
         appDelegate.activeViewController = self
         loadItems()
         tableView.reloadData()
@@ -269,7 +272,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         if section == 0 {
-            return 35
+            return 10
         } else {
             return 20
         }
@@ -355,7 +358,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 }
             }
             
-            cell.layer.cornerRadius = 15
+            cell.layer.cornerRadius = defaultCornerRadius
             cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
 
             return cell
@@ -392,7 +395,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let rows = tableView.numberOfRows(inSection: indexPath.section)
             
             if indexPath.row == 0 {
-                cell.layer.cornerRadius = 15
+                cell.layer.cornerRadius = defaultCornerRadius
                 if indexPath.row == rows - 1 {
                     cell.separator.backgroundColor = .clear
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -400,7 +403,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
                 }
             } else if indexPath.row == rows - 1 {
-                cell.layer.cornerRadius = 15
+                cell.layer.cornerRadius = defaultCornerRadius
                 cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
                 cell.separator.backgroundColor = .clear
             }
