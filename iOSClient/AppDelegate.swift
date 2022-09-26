@@ -865,7 +865,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         else if scheme == "nextcloud" && action == "open-file" {
 
-            if !isSearchingMode, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
                 guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
