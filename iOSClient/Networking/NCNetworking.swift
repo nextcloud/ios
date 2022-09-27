@@ -1407,12 +1407,108 @@ import Photos
 
     // MARK: - TEST API
 
-    func getPreview(url: URL, options: NKRequestOptions = NKRequestOptions()) async throws -> Data? {
+    /*
+    func blabla(serverUrl: String, userId: String, account: String) {
+
+        let requestBodyRecent =
+        """
+        <?xml version=\"1.0\"?>
+        <d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+        <d:basicsearch>
+            <d:select>
+                <d:prop>
+                    <d:displayname/>
+                    <d:getcontenttype/>
+                    <d:resourcetype/>
+                    <d:getcontentlength/>
+                    <d:getlastmodified/>
+                    <d:getetag/>
+                    <d:quota-used-bytes/>
+                    <d:quota-available-bytes/>
+                    <permissions xmlns=\"http://owncloud.org/ns\"/>
+                    <id xmlns=\"http://owncloud.org/ns\"/>
+                    <fileid xmlns=\"http://owncloud.org/ns\"/>
+                    <size xmlns=\"http://owncloud.org/ns\"/>
+                    <favorite xmlns=\"http://owncloud.org/ns\"/>
+                    <creation_time xmlns=\"http://nextcloud.org/ns\"/>
+                    <upload_time xmlns=\"http://nextcloud.org/ns\"/>
+                    <is-encrypted xmlns=\"http://nextcloud.org/ns\"/>
+                    <mount-type xmlns=\"http://nextcloud.org/ns\"/>
+                    <owner-id xmlns=\"http://owncloud.org/ns\"/>
+                    <owner-display-name xmlns=\"http://owncloud.org/ns\"/>
+                    <comments-unread xmlns=\"http://owncloud.org/ns\"/>
+                    <has-preview xmlns=\"http://nextcloud.org/ns\"/>
+                    <trashbin-filename xmlns=\"http://nextcloud.org/ns\"/>
+                    <trashbin-original-location xmlns=\"http://nextcloud.org/ns\"/>
+                    <trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>
+                </d:prop>
+            </d:select>
+        <d:from>
+            <d:scope>
+                <d:href>%@</d:href>
+                <d:depth>infinity</d:depth>
+            </d:scope>
+        </d:from>
+        <d:where>
+            <d:lt>
+                <d:prop>
+                    <d:getlastmodified/>
+                </d:prop>
+                <d:literal>%@</d:literal>
+            </d:lt>
+        </d:where>
+        <d:orderby>
+            <d:order>
+                <d:prop>
+                    <d:getlastmodified/>
+                </d:prop>
+                <d:descending/>
+            </d:order>
+        </d:orderby>
+        <d:limit>
+            <d:nresults>50</d:nresults>
+        </d:limit>
+        </d:basicsearch>
+        </d:searchrequest>
+        """
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        let lessDateString = dateFormatter.string(from: Date())
+        let requestBody = String(format: requestBodyRecent, "/files/" + userId, lessDateString)
+
+        NextcloudKit.shared.searchBodyRequest(serverUrl: serverUrl, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { _, files, data, error in
+
+            Task {
+                for file in files {
+                    if file.hasPreview {
+                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account)!
+                        do {
+                            let data = try await self.getPreview(fileNamePath: fileNamePath, urlBase: file.urlBase)
+                            print("AAA")
+                        } catch {
+                            print(error)
+                        }
+                    }
+                }
+                print("END")
+            }
+        }
+    }
+    func getPreview(fileNamePath: String, urlBase: String, options: NKRequestOptions = NKRequestOptions()) async throws -> Data? {
 
         try await withUnsafeThrowingContinuation { continuation in
-            
+
+            guard let fileNamePath = fileNamePath.urlEncoded else {
+                return
+            }
             let headers = NKCommon.shared.getStandardHeaders(options: options)
-            
+            let endpoint = "index.php/core/preview.png?file=\(fileNamePath)&x=512&y=512&a=1&mode=cover"
+            guard let url = NKCommon.shared.createStandardUrl(serverUrl: urlBase, endpoint: endpoint) else {
+                return
+            }
+
             AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).validate(statusCode: 200..<300).response(queue: NKCommon.shared.backgroundQueue) { (response) in
                 debugPrint(response)
                 
@@ -1425,6 +1521,7 @@ import Photos
             }
         }
     }
+    */
 }
 
 extension Array where Element == URLQueryItem {
