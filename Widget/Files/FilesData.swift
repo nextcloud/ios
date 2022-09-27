@@ -271,7 +271,7 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
                 if nkerror == .success {
                     continuation.resume(returning: imageIcon)
                 } else {
-                    continuation.resume(throwing: NSError(domain: "com.nextcloud.error", code: nkerror.errorCode, userInfo: ["description":nkerror.description] ))
+                    continuation.resume(throwing: NSError(domain: NSCocoaErrorDomain, code: nkerror.errorCode, userInfo: [NSLocalizedDescriptionKey:nkerror.description]))
                 }
             }
         }
