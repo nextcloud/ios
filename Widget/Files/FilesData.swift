@@ -228,10 +228,7 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
                     imageRecent = image
                 } else if file.hasPreview {
                     do {
-                        let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
-                        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
-                        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
-                        if let imageIcon = try await downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath) {
+                        if let imageIcon = try await downloadPreview(file: file, account: account.account) {
                             imageRecent = imageIcon
                         }
                     } catch {
@@ -261,12 +258,13 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
     }
 
     // Wrapper
-    @Sendable func downloadPreview(fileNamePathOrFileId: String,
-                                   fileNamePreviewLocalPath: String,
-                                   fileNameIconLocalPath: String,
-                                   options: NKRequestOptions = NKRequestOptions()) async throws -> UIImage? {
+    @Sendable func downloadPreview(file: NKFile, account: String) async throws -> UIImage? {
 
         try await withUnsafeThrowingContinuation { continuation in
+
+            let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
 
             NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, etag: nil) { account, imagePreview, imageIcon, imageOriginal, etag, nkerror in
 
