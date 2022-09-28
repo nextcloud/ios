@@ -248,6 +248,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
                 self.autoUploadInprogress = false
             }
+        } else {
+            NKCommon.shared.writeLog("Auto upload already in progress.")
         }
 
         // Required unsubscribing / subscribing
@@ -337,6 +339,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
                 self.autoUploadInprogress = false
             }
+        } else {
+            NKCommon.shared.writeLog("Auto upload already in progress.")
         }
 
         // Start services
@@ -407,6 +411,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 self.autoUploadInprogress = false
                 task.setTaskCompleted(success: true)
             }
+        } else {
+            NKCommon.shared.writeLog("Auto upload already in progress.")
         }
     }
 
@@ -427,6 +433,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 self.autoUploadInprogress = false
                 task.setTaskCompleted(success: true)
             }
+        } else {
+            NKCommon.shared.writeLog("Auto upload already in progress.")
         }
     }
 
