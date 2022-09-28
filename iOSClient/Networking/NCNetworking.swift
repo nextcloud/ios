@@ -299,6 +299,26 @@ import Photos
         }
     }
 
+    func isInTaskUploadBackground(fileName: String, completion: @escaping (_ exists: Bool) -> Void) {
+
+        let sessions: [URLSession] = [NCNetworking.shared.sessionManagerBackground, NCNetworking.shared.sessionManagerBackgroundWWan]
+
+        for session in sessions {
+            session.getAllTasks(completionHandler: { tasks in
+                for task in tasks {
+                    let url = task.originalRequest?.url
+                    let urlFileName = url?.lastPathComponent
+                    if urlFileName == fileName {
+                        completion(true)
+                    }
+                }
+                if session == sessions.last {
+                    completion(false)
+                }
+            })
+        }
+    }
+
     // MARK: - Download
 
     @objc func cancelDownload(ocId: String, serverUrl: String, fileNameView: String) {
@@ -403,9 +423,15 @@ import Photos
                 }
             }
         } else {
-            uploadFileInBackground(metadata: metadata, start: start) { error in
-                DispatchQueue.main.async {
-                    completion(error)
+            isInTaskUploadBackground(fileName: metadata.fileName) { exists in
+                if !exists {
+                    self.uploadFileInBackground(metadata: metadata, start: start) { error in
+                        DispatchQueue.main.async {
+                            completion(error)
+                        }
+                    }
+                } else {
+                    completion(NKError(errorCode: 0, errorDescription: ""))
                 }
             }
         }

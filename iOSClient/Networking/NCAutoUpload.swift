@@ -86,19 +86,11 @@ class NCAutoUpload: NSObject {
 
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
                 guard let assets = assets, !assets.isEmpty else {
-                    #if EXTENSION_WIDGET
-                    NKCommon.shared.writeLog("Automatic upload widget, no new assets found [" + log + "]")
-                    #else
                     NKCommon.shared.writeLog("Automatic upload, no new assets found [" + log + "]")
-                    #endif
                     completion(0)
                     return
                 }
-                #if EXTENSION_WIDGET
-                NKCommon.shared.writeLog("Automatic upload widget, new \(assets.count) assets found [" + log + "]")
-                #else
                 NKCommon.shared.writeLog("Automatic upload, new \(assets.count) assets found [" + log + "]")
-                #endif
                 // Create the folder for auto upload & if request the subfolders
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
                     #if !EXTENSION
@@ -172,11 +164,7 @@ class NCAutoUpload: NSObject {
                             metadata.classFile = NKCommon.typeClassFile.image.rawValue
                         }
                         if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                            #if EXTENSION_WIDGET
-                            NKCommon.shared.writeLog("Automatic upload widget added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
-                            #else
                             NKCommon.shared.writeLog("Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
-                            #endif
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         }
                         metadatas.append(metadata)
@@ -271,11 +259,7 @@ class NCAutoUpload: NSObject {
             guard let assets = assets else { return }
 
             NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
-            #if EXTENSION_WIDGET
-            NKCommon.shared.writeLog("Widget align Photo Library \(assets.count)")
-            #else
             NKCommon.shared.writeLog("Align Photo Library \(assets.count)")
-            #endif
         }
     }
 
