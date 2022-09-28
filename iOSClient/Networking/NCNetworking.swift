@@ -423,15 +423,9 @@ import Photos
                 }
             }
         } else {
-            isInTaskUploadBackground(fileName: metadata.fileName) { exists in
-                if !exists {
-                    self.uploadFileInBackground(metadata: metadata, start: start) { error in
-                        DispatchQueue.main.async {
-                            completion(error)
-                        }
-                    }
-                } else {
-                    completion(NKError(errorCode: 0, errorDescription: ""))
+            uploadFileInBackground(metadata: metadata, start: start) { error in
+                DispatchQueue.main.async {
+                    completion(error)
                 }
             }
         }
