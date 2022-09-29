@@ -95,7 +95,7 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
-    func isLive(file: NKFile, files: [NKFile]) -> Bool {
+    @Sendable func isLive(file: NKFile, files: [NKFile]) -> Bool {
 
         if file.ext.lowercased() != "mov" { return false }
         if files.filter({ ($0.fileNameWithoutExt == file.fileNameWithoutExt) && ($0.ext.lowercased() == "jpg") }).first != nil {
