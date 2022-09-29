@@ -217,12 +217,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        // TIP
-        if self is NCFiles, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account), let view = self.navigationItem.leftBarButtonItem?.customView {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), NCManageDatabase.shared.getAllAccountOrderAlias().count > 0 {
-                self.tipView?.show(forView: view)
-            }
-        }
+        showTip()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -267,6 +262,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView?.collectionViewLayout.invalidateLayout()
         self.collectionView?.reloadData()
+
+        self.tipView?.dismiss()
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.showTip()
+        }
     }
 
     override var canBecomeFirstResponder: Bool {
@@ -625,6 +625,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // MARK: - Tip
+
+    func showTip() {
+
+        if self is NCFiles, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account, self.serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account), let view = self.navigationItem.leftBarButtonItem?.customView {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest), NCManageDatabase.shared.getAllAccountOrderAlias().count > 0 {
+                self.tipView?.show(forView: view)
             }
         }
     }
