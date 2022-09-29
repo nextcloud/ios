@@ -191,7 +191,6 @@ class NCAutoUpload: NSObject {
 
         var metadatasForUpload: [tableMetadata] = []
         var numStartUpload: Int = 0
-        let maxConcurrentOperationUpload = 5
 
         for metadata in metadatas {
             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
@@ -201,10 +200,8 @@ class NCAutoUpload: NSObject {
         }
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
 
-        // Max file in Uploadading
-
         let metadatasInUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-        let counterUpload = maxConcurrentOperationUpload - metadatasInUpload.count
+        let counterUpload = NCGlobal.shared.maxConcurrentOperationUpload - metadatasInUpload.count
         if counterUpload <= 0 {
             return completion(0)
         }
