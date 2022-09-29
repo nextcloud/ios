@@ -59,12 +59,12 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
     }
 
     func initCell() {
-        imageItem.backgroundColor = UIColor.lightGray
+        imageItem.backgroundColor = .secondarySystemBackground
         imageStatus.image = nil
         imageItem.image = nil
         imageItem.layer.masksToBounds = true
-        imageItem.layer.cornerRadius = 6
-        imageVisualEffect.layer.cornerRadius = 6
+        imageItem.layer.cornerRadius = 3
+        imageVisualEffect.layer.cornerRadius = 3
         imageVisualEffect.clipsToBounds = true
     }
 
