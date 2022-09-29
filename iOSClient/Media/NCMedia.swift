@@ -781,7 +781,7 @@ class NCMediaCommandView: UIView {
 
 class NCGridMediaLayout: UICollectionViewFlowLayout {
 
-    var marginLeftRight: CGFloat = 6
+    var marginLeftRight: CGFloat = 2
     var itemForLine: CGFloat = 3
 
     override init() {
