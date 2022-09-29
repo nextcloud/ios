@@ -216,6 +216,7 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
+        }, completion: { context in
             self.showTip()
         })
     }
