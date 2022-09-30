@@ -151,11 +151,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
 
-        // Process upload
-        if UIApplication.shared.applicationState != .background {
-            networkingProcessUpload = NCNetworkingProcessUpload()
-        }
-
         // Push Notification & display notification
         application.registerForRemoteNotifications()
         UNUserNotificationCenter.current().delegate = self
@@ -218,6 +213,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if account == "" { return }
 
+        // Process upload
+        networkingProcessUpload = NCNetworkingProcessUpload()
         networkingProcessUpload?.verifyUploadZombie()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
