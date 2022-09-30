@@ -24,6 +24,7 @@
 import Foundation
 import NextcloudKit
 import FloatingPanel
+import JGProgressHUD
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
 
@@ -140,10 +141,17 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 }
             }
 
-            NCActivityIndicator.shared.start()
-            NextcloudKit.shared.getFileFromFileId(nil, link: activityPreview.link) { account, file, data, error in
+            let hud = JGProgressHUD()
+            hud.indicatorView = JGProgressHUDRingIndicatorView()
+            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                indicatorView.ringWidth = 1.5
+            }
+            guard let view = appDelegate.window?.rootViewController?.view else { return }
+            hud.show(in: view)
+
+            NextcloudKit.shared.getFileFromFileId(fileId: String(activityPreview.fileId)) { account, file, data, error in
                 if let file = file {
-                    
+
                     let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: file.e2eEncrypted, account: account)
                     NCManageDatabase.shared.addMetadata(metadata)
 
@@ -152,16 +160,19 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
                     }, taskHandler: { _ in
-                    }, progressHandler: { _ in
+                    }, progressHandler: { progress in
+                        hud.progress = Float(progress.fractionCompleted)
                     }) { account, _, _, _, _, _, error in
-                        NCActivityIndicator.shared.stop()
+                        hud.dismiss()
                         if account == self.appDelegate.account && error == .success {
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
                             if let viewController = self.viewController {
                                 NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
                             }
                         }
                     }
                 } else if error != .success {
+                    hud.dismiss()
                     NCContentPresenter.shared.showError(error: error)
                 }
             }
