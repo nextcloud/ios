@@ -212,6 +212,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if !appDelegate.isSearchingMode {
             reloadDataSourceNetwork()
         }
+
+        //FIXME: iPAD PDF landscape mode iOS 16
+        DispatchQueue.main.async {
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
