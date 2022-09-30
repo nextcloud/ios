@@ -223,6 +223,8 @@
     if (passcodeSettingsViewController.view.window != nil) {
         [passcodeSettingsViewController dismissViewControllerAnimated:true completion:nil];
     }
+
+    [[self navigationController] popToRootViewControllerAnimated:false];
 }
 
 #pragma mark -
