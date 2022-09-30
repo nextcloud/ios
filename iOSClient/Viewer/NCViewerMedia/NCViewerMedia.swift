@@ -192,10 +192,7 @@ class NCViewerMedia: UIViewController {
             viewerMediaPage?.clearCommandCenter()
         }
 
-        // TIP
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
-            self.tipView?.show(forView: view)
-        }
+        showTip()
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
@@ -210,7 +207,6 @@ class NCViewerMedia: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
 
         self.tipView?.dismiss()
-
         coordinator.animate(alongsideTransition: { context in
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
@@ -220,7 +216,18 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
-        }) { _ in }
+        }, completion: { context in
+            self.showTip()
+        })
+    }
+
+    // MARK: - Tip
+
+    func showTip() {
+
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
+            self.tipView?.show(forView: view)
+        }
     }
 
     // MARK: - Image

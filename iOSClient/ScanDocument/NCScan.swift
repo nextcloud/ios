@@ -117,11 +117,28 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        // TIP
+        showTip()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        self.tipView?.dismiss()
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.showTip()
+        }
+    }
+
+    // MARK: - Tip
+
+    func showTip() {
+
         if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
             self.tipView?.show(forView: add, withinSuperview: self.view)
         }
     }
+
+    // MARK: -
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)

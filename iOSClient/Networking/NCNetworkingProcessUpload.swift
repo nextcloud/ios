@@ -30,8 +30,6 @@ class NCNetworkingProcessUpload: NSObject {
 
     var timerProcess: Timer?
 
-    let maxConcurrentOperationUpload = 5
-
     override init() {
         super.init()
         startTimer()
@@ -73,9 +71,9 @@ class NCNetworkingProcessUpload: NSObject {
         NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(), completion: { listOcId in
 
             for sessionSelector in sessionSelectors {
-                if counterUpload < self.maxConcurrentOperationUpload {
+                if counterUpload < NCGlobal.shared.maxConcurrentOperationUpload {
 
-                    let limit = self.maxConcurrentOperationUpload - counterUpload
+                    let limit = NCGlobal.shared.maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
                         NKCommon.shared.writeLog("PROCESS-UPLOAD find \(metadatas.count) items")
@@ -103,7 +101,7 @@ class NCNetworkingProcessUpload: NSObject {
                         // Is already in upload E2EE / CHUNK ? exit [ ONLY ONE IN QUEUE ]
                         for metadata in metadatasUpload {
                             if metadata.chunk || metadata.e2eEncrypted {
-                                counterUpload = self.maxConcurrentOperationUpload
+                                counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
                                 continue
                             }
                         }
@@ -125,7 +123,7 @@ class NCNetworkingProcessUpload: NSObject {
                                     NCNetworking.shared.upload(metadata: metadata)
                                 }
                                 if metadata.e2eEncrypted || metadata.chunk {
-                                    counterUpload = self.maxConcurrentOperationUpload
+                                    counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
                                 } else {
                                     counterUpload += 1
                                 }

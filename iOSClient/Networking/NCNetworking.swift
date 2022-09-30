@@ -423,9 +423,18 @@ import Photos
                 }
             }
         } else {
-            uploadFileInBackground(metadata: metadata, start: start) { error in
-                DispatchQueue.main.async {
-                    completion(error)
+            isInTaskUploadBackground(fileName: metadata.fileName) { exists in
+                if exists {
+                    NKCommon.shared.writeLog("[INFO] Upload already in progress.")
+                    DispatchQueue.main.async {
+                        completion(NKError(errorCode: 0, errorDescription: ""))
+                    }
+                } else {
+                    self.uploadFileInBackground(metadata: metadata, start: start) { error in
+                        DispatchQueue.main.async {
+                            completion(error)
+                        }
+                    }
                 }
             }
         }

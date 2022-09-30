@@ -181,6 +181,7 @@
 		F7346E2528B0FEFA006CE2D2 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */; };
 		F7346E2728B0FFF2006CE2D2 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2628B0FFF2006CE2D2 /* Realm */; };
 		F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7346E2828B0FFF2006CE2D2 /* RealmSwift */; };
+		F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F734B06528E75C0100E180D5 /* TLPhotoPicker */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
@@ -277,7 +278,6 @@
 		F76DA963277B760E0082465B /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA962277B760E0082465B /* Queuer */; };
 		F76DA966277B76F30082465B /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA965277B76F30082465B /* UICKeyChainStore */; };
 		F76DA969277B77EA0082465B /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA968277B77EA0082465B /* DropDown */; };
-		F76DA96F277B78AE0082465B /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA96E277B78AE0082465B /* TLPhotoPicker */; };
 		F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F7707689263A896A00A1BA94 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
 		F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
@@ -1162,11 +1162,11 @@
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
+				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F7E572FD278F146C00F8C99E /* OpenSSL.xcframework in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
-				F76DA96F277B78AE0082465B /* TLPhotoPicker in Frameworks */,
 				F76DA966277B76F30082465B /* UICKeyChainStore in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
 				F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */,
@@ -2303,13 +2303,13 @@
 				F76DA962277B760E0082465B /* Queuer */,
 				F76DA965277B76F30082465B /* UICKeyChainStore */,
 				F76DA968277B77EA0082465B /* DropDown */,
-				F76DA96E277B78AE0082465B /* TLPhotoPicker */,
 				F710FC79277B7D0000AA9FBF /* Realm */,
 				F710FC7B277B7D0000AA9FBF /* RealmSwift */,
 				F7BB7E4627A18C56009B9F29 /* Parchment */,
 				F758A01127A7F03E0069468B /* JGProgressHUD */,
 				F753BA92281FD8020015BFB6 /* EasyTipView */,
 				F72AD70C28C24B93006CB92D /* NextcloudKit */,
+				F734B06528E75C0100E180D5 /* TLPhotoPicker */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -2431,12 +2431,12 @@
 				F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */,
 				F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */,
 				F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */,
-				F76DA96D277B78AE0082465B /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 				F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */,
 				F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */,
 				F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */,
 				F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */,
+				F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3403,7 +3403,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -3465,7 +3465,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -3600,6 +3600,14 @@
 				minimumVersion = 3.7.2;
 			};
 		};
+		F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marinofaggiana/TLPhotoPicker";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/huri000/SwiftEntryKit";
@@ -3662,14 +3670,6 @@
 			requirement = {
 				branch = master;
 				kind = branch;
-			};
-		};
-		F76DA96D277B78AE0082465B /* XCRemoteSwiftPackageReference "TLPhotoPicker" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tilltue/TLPhotoPicker";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
 			};
 		};
 		F770768C263A8C3400A1BA94 /* XCRemoteSwiftPackageReference "FloatingPanel" */ = {
@@ -3810,6 +3810,11 @@
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
 		};
+		F734B06528E75C0100E180D5 /* TLPhotoPicker */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */;
+			productName = TLPhotoPicker;
+		};
 		F73ADD1B265546890069EA0D /* SwiftEntryKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
@@ -3879,11 +3884,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA967277B77E90082465B /* XCRemoteSwiftPackageReference "DropDown" */;
 			productName = DropDown;
-		};
-		F76DA96E277B78AE0082465B /* TLPhotoPicker */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F76DA96D277B78AE0082465B /* XCRemoteSwiftPackageReference "TLPhotoPicker" */;
-			productName = TLPhotoPicker;
 		};
 		F770768D263A8C3400A1BA94 /* FloatingPanel */ = {
 			isa = XCSwiftPackageProductDependency;
