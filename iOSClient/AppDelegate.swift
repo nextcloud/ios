@@ -63,8 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var errorITMS90076: Bool = false
 
     private var privacyProtectionWindow: UIWindow?
-    private var autoUploadInprogress: Bool = false
-    
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         let userAgent = CCUtility.getUserAgent() as String
@@ -243,13 +242,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         // Initialize Auto upload
-        if !autoUploadInprogress {
-            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-                NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
-                self.autoUploadInprogress = false
-            }
-        } else {
-            NKCommon.shared.writeLog("Auto upload already in progress.")
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
         }
 
         // Required unsubscribing / subscribing
@@ -333,14 +327,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared().pushNotification()
 
         // Start Auto Upload
-        if !autoUploadInprogress {
-            autoUploadInprogress = true
-            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-                NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
-                self.autoUploadInprogress = false
-            }
-        } else {
-            NKCommon.shared.writeLog("Auto upload already in progress.")
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
         }
 
         // Start services
@@ -403,16 +391,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
-
-        if !autoUploadInprogress {
-            autoUploadInprogress = true
-            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-                NKCommon.shared.writeLog("Completition handler refresh task [Auto upload] with \(items) uploads")
-                self.autoUploadInprogress = false
-                task.setTaskCompleted(success: true)
-            }
-        } else {
-            NKCommon.shared.writeLog("Auto upload already in progress.")
+        
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("Completition handler refresh task [Auto upload] with \(items) uploads")
+            task.setTaskCompleted(success: true)
         }
     }
 
@@ -426,15 +408,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("Start handler processing task [Auto upload]")
 
-        if !autoUploadInprogress {
-            autoUploadInprogress = true
-            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-                NKCommon.shared.writeLog("Completition handler procesing task [Auto upload] with \(items) uploads")
-                self.autoUploadInprogress = false
-                task.setTaskCompleted(success: true)
-            }
-        } else {
-            NKCommon.shared.writeLog("Auto upload already in progress.")
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("Completition handler procesing task [Auto upload] with \(items) uploads")
+            task.setTaskCompleted(success: true)
         }
     }
 
