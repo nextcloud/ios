@@ -146,9 +146,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.reloadDataThenPerform { }
-        }
+        self.collectionView?.collectionViewLayout.invalidateLayout()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
