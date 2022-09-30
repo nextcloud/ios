@@ -152,7 +152,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
 
         // Process upload
-        networkingProcessUpload = NCNetworkingProcessUpload()
+        if UIApplication.shared.applicationState != .background {
+            networkingProcessUpload = NCNetworkingProcessUpload()
+        }
 
         // Push Notification & display notification
         application.registerForRemoteNotifications()
