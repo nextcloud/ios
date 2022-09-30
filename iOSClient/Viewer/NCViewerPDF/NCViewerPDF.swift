@@ -45,6 +45,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private let thumbnailViewWidth: CGFloat = 80
     private let thumbnailPadding: CGFloat = 2
     private let animateDuration: TimeInterval = 0.3
+    private let pageViewtopAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 10 : 30
 
     private var defaultBackgroundColor: UIColor = .clear
 
@@ -133,7 +134,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         view.addSubview(pageView)
 
         NSLayoutConstraint.activate([
-            pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: pageViewtopAnchor),
             pageView.heightAnchor.constraint(equalToConstant: 30),
             pageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 10)
         ])
