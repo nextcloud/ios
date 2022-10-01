@@ -202,6 +202,7 @@ class NCAutoUpload: NSObject {
         }
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
 
+        // Detect maxConcurrentOperationUpload
         let metadatasInUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         let counterUpload = NCGlobal.shared.maxConcurrentOperationUpload - metadatasInUpload.count
         if counterUpload <= 0 {

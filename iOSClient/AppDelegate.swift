@@ -294,8 +294,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
-
-        if account == "" { return }
+        guard !account.isEmpty else { return }
 
         // STOP TIMER UPLOAD PROCESS
         networkingProcessUpload?.stopTimer()
