@@ -151,7 +151,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
 
         // NOT in Background : Start process Upload, Initialize
-        if UIApplication.shared.applicationState != .background {
+        if UIApplication.shared.applicationState == .background {
+            NKCommon.shared.writeLog("Process in background, denied process upload and Inizialize main")
+        } else {
+            NKCommon.shared.writeLog("Starting process upload and Inizialize main")
             networkingProcessUpload = NCNetworkingProcessUpload()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
         }
