@@ -952,6 +952,6 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
-        networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+        networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: { _ in })
     }
 }

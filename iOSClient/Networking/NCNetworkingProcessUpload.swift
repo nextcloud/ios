@@ -35,22 +35,27 @@ class NCNetworkingProcessUpload: NSObject {
         startTimer()
     }
 
-    private func startProcess() {
+    private func startProcess(completion: @escaping (_ items: Int) -> Void) {
         if timerProcess?.isValid ?? false {
-            DispatchQueue.main.async { self.process() }
+            DispatchQueue.main.async {
+                self.process(completion: completion)
+            }
         }
     }
 
     func startTimer() {
         timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
+        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(processTimer), userInfo: nil, repeats: true)
     }
 
     func stopTimer() {
         timerProcess?.invalidate()
     }
 
-    @objc private func process() {
+    @objc private func processTimer() {
+        self.process { _ in }
+    }
+    private func process(completion: @escaping (_ items: Int) -> Void) {
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
 
         stopTimer()
@@ -139,7 +144,7 @@ class NCNetworkingProcessUpload: NSObject {
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
             DispatchQueue.main.async {
-                if (counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented()) {
+                if UIApplication.shared.applicationState == .active && counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented() {
                     self.deleteAssetLocalIdentifiers(account: account.account) {
                         self.startTimer()
                     }
@@ -147,6 +152,8 @@ class NCNetworkingProcessUpload: NSObject {
                     self.startTimer()
                 }
             }
+
+            completion(counterUpload)
         })
     }
 
@@ -180,7 +187,7 @@ class NCNetworkingProcessUpload: NSObject {
 
     // MARK: -
 
-    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false) {
+    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void) {
 
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
@@ -192,7 +199,7 @@ class NCNetworkingProcessUpload: NSObject {
             metadatasForUpload.append(metadata)
         }
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-        startProcess()
+        startProcess(completion: completion)
     }
 
     // MARK: -
