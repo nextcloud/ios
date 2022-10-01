@@ -100,9 +100,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NKCommon.shared.levelLog = levelLog
             NKCommon.shared.copyLogToDocumentDirectory = true
             if isSimulatorOrTestFlight {
-                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight) in \(UIApplication.shared.applicationState)")
             } else {
-                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS)
+                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " in \(UIApplication.shared.applicationState)")
             }
         }
 
@@ -147,9 +147,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Create user color
         NCBrandColor.shared.createUserColors()
 
-        // initialize
+        // Register initialize
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
+
+        // NOT in Background : Start process Upload, Initialize
+        if UIApplication.shared.applicationState != .background {
+            networkingProcessUpload = NCNetworkingProcessUpload()
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
+        }
 
         // Push Notification & display notification
         application.registerForRemoteNotifications()
@@ -213,8 +218,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if account == "" { return }
 
-        // Process upload
-        networkingProcessUpload = NCNetworkingProcessUpload()
         networkingProcessUpload?.verifyUploadZombie()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
