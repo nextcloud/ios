@@ -211,7 +211,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
-            // Privacy
             hidePrivacyProtectionWindow()
         }
 
@@ -226,9 +225,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (attivo solo dopo il background)
     func applicationWillEnterForeground(_ application: UIApplication) {
-
-        if account == "" { return }
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
+        guard !account.isEmpty, let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
         // Account changed ??
         if activeAccount.account != account {
@@ -788,8 +785,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Open URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-
-        if account == "" { return false }
+        guard !account.isEmpty else { return false }
 
         let scheme = url.scheme
         let action = url.host
