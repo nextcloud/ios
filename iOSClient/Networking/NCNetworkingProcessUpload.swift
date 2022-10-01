@@ -51,7 +51,7 @@ class NCNetworkingProcessUpload: NSObject {
     }
 
     @objc private func process() {
-        guard let account = NCManageDatabase.shared.getActiveAccount() else {
+        guard let account = NCManageDatabase.shared.getActiveAccount(), UIApplication.shared.applicationState == .active else {
             return
         }
 

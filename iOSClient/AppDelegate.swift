@@ -241,6 +241,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application will enter in foreground")
 
+        // START TIMER UPLOAD PROCESS
+        networkingProcessUpload?.startTimer()
+
         // Initialize Auto upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
@@ -273,7 +276,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Reload Widget
         if #available(iOS 14.0, *) {
             WidgetCenter.shared.reloadAllTimelines()
-            //WidgetCenter.shared.reloadTimelines(ofKind: "DashboardWidget")
         }
 
         // Clear operation queue
@@ -294,6 +296,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidEnterBackground(_ application: UIApplication) {
 
         if account == "" { return }
+
+        // STOP TIMER UPLOAD PROCESS
+        networkingProcessUpload?.stopTimer()
 
         scheduleAppRefresh()
         scheduleAppProcessing()
@@ -414,6 +419,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
 
         NKCommon.shared.writeLog("[INFO] Start handle Events For Background URLSession: \(identifier)")
+        // Reload Widget
+        if #available(iOS 14.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
         backgroundSessionCompletionHandler = completionHandler
     }
 
