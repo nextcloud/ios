@@ -291,7 +291,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !account.isEmpty else { return }
 
         // STOP TIMER UPLOAD PROCESS
-        networkingProcessUpload = NCNetworkingProcessUpload()
+        networkingProcessUpload?.stopTimer()
 
         scheduleAppRefresh()
         scheduleAppProcessing()
