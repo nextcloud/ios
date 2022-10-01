@@ -166,8 +166,11 @@ class NCAutoUpload: NSObject {
                 }
 
                 self.endForAssetToUpload = true
-
-                (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+                if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
+                    (UIApplication.shared.delegate as? AppDelegate)?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+                } else {
+                    (UIApplication.shared.delegate as? AppDelegate)?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, verifyAlreadyExists: true)
+                }
                 completion(metadatas.count)
             }
         }
