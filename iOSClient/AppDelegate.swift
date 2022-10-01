@@ -208,6 +208,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione entrerà in attivo (sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
 
+        NKCommon.shared.writeLog("[INFO] Application did become active")
+
         self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
@@ -291,6 +293,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
         guard !account.isEmpty else { return }
+
+        NKCommon.shared.writeLog("[INFO] Application did enter in background")
 
         // STOP TIMER UPLOAD PROCESS
         networkingProcessUpload?.stopTimer()
