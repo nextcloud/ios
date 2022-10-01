@@ -227,14 +227,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillEnterForeground(_ application: UIApplication) {
         guard !account.isEmpty, let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
+        NKCommon.shared.writeLog("[INFO] Application will enter in foreground")
+
         // Account changed ??
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
-
-        NKCommon.shared.writeLog("[INFO] Application will enter in foreground")
 
         // START TIMER UPLOAD PROCESS
         networkingProcessUpload?.startTimer()
@@ -261,6 +261,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
         guard !account.isEmpty else { return }
+
+        NKCommon.shared.writeLog("[INFO] Application will resign active")
 
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
