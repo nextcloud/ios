@@ -86,11 +86,11 @@ class NCAutoUpload: NSObject {
 
             self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
                 guard let assets = assets, !assets.isEmpty else {
-                    NKCommon.shared.writeLog("Automatic upload, no new assets found [" + log + "]")
+                    NKCommon.shared.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                     completion(0)
                     return
                 }
-                NKCommon.shared.writeLog("Automatic upload, new \(assets.count) assets found [" + log + "]")
+                NKCommon.shared.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
                 // Create the folder for auto upload & if request the subfolders
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
                     #if !EXTENSION
@@ -164,7 +164,7 @@ class NCAutoUpload: NSObject {
                             metadata.classFile = NKCommon.typeClassFile.image.rawValue
                         }
                         if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                            NKCommon.shared.writeLog("Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
+                            NKCommon.shared.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
                             NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                         }
                         metadatas.append(metadata)
@@ -172,15 +172,17 @@ class NCAutoUpload: NSObject {
                 }
 
                 self.endForAssetToUpload = true
-                // AUTO UPLOAD ALL
-                #if !EXTENSION
+
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
+                    NKCommon.shared.writeLog("[INFO] Start Upload All")
+                    #if !EXTENSION
                     (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
                     completion(metadatas.count)
+                    #endif
+                } else if selector == NCGlobal.shared.selectorUploadAutoUpload {
+                    NKCommon.shared.writeLog("[INFO] Start Upload")
+                    self.createProcessUploads(metadatas: metadatas, completion: completion)
                 }
-                #endif
-                // AUTO UPLOAD
-                self.createProcessUploads(metadatas: metadatas, completion: completion)
             }
         }
     }
@@ -256,7 +258,7 @@ class NCAutoUpload: NSObject {
             guard let assets = assets else { return }
 
             NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
-            NKCommon.shared.writeLog("Align Photo Library \(assets.count)")
+            NKCommon.shared.writeLog("[INFO] Align Photo Library \(assets.count)")
         }
     }
 

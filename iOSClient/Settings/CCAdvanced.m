@@ -174,9 +174,9 @@
             BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
             NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
-                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
+                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
             } else {
-                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
+                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
             }
         };
         [section addFormRow:row];

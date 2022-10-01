@@ -112,7 +112,7 @@ class NCService: NSObject {
             guard error == .success, account == self.appDelegate.account else {
                 
                 // Ops the server has Unauthorized
-                NKCommon.shared.writeLog("The server has response with Unauthorized \(error.errorCode)")
+                NKCommon.shared.writeLog("[ERROR] The server has response with Unauthorized \(error.errorCode)")
 
                 DispatchQueue.main.async {
                     if  (UIApplication.shared.applicationState == .active) &&

@@ -100,9 +100,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NKCommon.shared.levelLog = levelLog
             NKCommon.shared.copyLogToDocumentDirectory = true
             if isSimulatorOrTestFlight {
-                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight) in \(UIApplication.shared.applicationState)")
+                NKCommon.shared.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight) in \(UIApplication.shared.applicationState)")
             } else {
-                NKCommon.shared.writeLog("Start session with level \(levelLog) " + versionNextcloudiOS + " in \(UIApplication.shared.applicationState)")
+                NKCommon.shared.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " in \(UIApplication.shared.applicationState)")
             }
         }
 
@@ -110,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if let account = NCManageDatabase.shared.getActiveAccount() {
             NKCommon.shared.writeLog("Account active \(account.account)")
             if CCUtility.getPassword(account.account).isEmpty {
-                NKCommon.shared.writeLog("PASSWORD NOT FOUND for \(account.account)")
+                NKCommon.shared.writeLog("[ERROR] PASSWORD NOT FOUND for \(account.account)")
             }
         }
 
@@ -152,9 +152,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Start process Upload, Initialize
         if UIApplication.shared.applicationState == .background {
-            NKCommon.shared.writeLog("Process in background, denied process upload and Inizialize main")
+            NKCommon.shared.writeLog("[INFO] Process in background, denied process upload and Inizialize main")
         } else {
-            NKCommon.shared.writeLog("Starting process upload and Inizialize main")
+            NKCommon.shared.writeLog("[INFO] Starting process upload and Inizialize main")
             networkingProcessUpload = NCNetworkingProcessUpload()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
         }
@@ -239,16 +239,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
 
-        NKCommon.shared.writeLog("Application will enter in foreground")
+        NKCommon.shared.writeLog("[INFO] Application will enter in foreground")
 
-        // START TIMER UPLOAD PROCESS
-        if NCUtility.shared.isSimulator() {
-            networkingProcessUpload?.startTimer()
-        }
-        
         // Initialize Auto upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
+            NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
         // Required unsubscribing / subscribing
@@ -300,11 +295,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if account == "" { return }
 
-        // STOP TIMER UPLOAD PROCESS
-        if NCUtility.shared.isSimulator() {
-            networkingProcessUpload?.stopTimer()
-        }
-
         scheduleAppRefresh()
         scheduleAppProcessing()
 
@@ -326,14 +316,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc private func initialize() {
         guard !account.isEmpty else { return }
 
-        NKCommon.shared.writeLog("initialize Main")
+        NKCommon.shared.writeLog("[INFO] initialize Main")
 
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
 
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("Initialize Auto upload with \(items) uploads")
+            NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
         // Start services
@@ -364,9 +354,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 60) // Refresh after 6 minutes.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NKCommon.shared.writeLog("Refresh task success submit request 6 minutes \(request)")
+            NKCommon.shared.writeLog("[SUCCESS] Refresh task success submit request 6 minutes \(request)")
         } catch {
-            NKCommon.shared.writeLog("Refresh task failed to submit request: \(error)")
+            NKCommon.shared.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
     }
 
@@ -381,9 +371,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
-            NKCommon.shared.writeLog("Background Processing task success submit request 5 minutes \(request)")
+            NKCommon.shared.writeLog("[SUCCESS] Background Processing task success submit request 5 minutes \(request)")
         } catch {
-            NKCommon.shared.writeLog("Background Processing task failed to submit request: \(error)")
+            NKCommon.shared.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
         }
     }
 
@@ -395,10 +385,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
         
-        NKCommon.shared.writeLog("Start handler refresh task [Auto upload]")
+        NKCommon.shared.writeLog("[INFO] Start handler refresh task [Auto upload]")
         
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("Completition handler refresh task [Auto upload] with \(items) uploads")
+            NKCommon.shared.writeLog("[INFO] Completition handler refresh task [Auto upload] with \(items) uploads")
             task.setTaskCompleted(success: true)
         }
     }
@@ -411,10 +401,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NKCommon.shared.writeLog("Start handler processing task [Auto upload]")
+        NKCommon.shared.writeLog("[INFO] Start handler processing task [Auto upload]")
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("Completition handler procesing task [Auto upload] with \(items) uploads")
+            NKCommon.shared.writeLog("[INFO] Completition handler procesing task [Auto upload] with \(items) uploads")
             task.setTaskCompleted(success: true)
         }
     }
@@ -423,7 +413,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
 
-        NKCommon.shared.writeLog("Start handle Events For Background URLSession: \(identifier)")
+        NKCommon.shared.writeLog("[INFO] Start handle Events For Background URLSession: \(identifier)")
         backgroundSessionCompletionHandler = completionHandler
     }
 
@@ -678,7 +668,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height+20)
                 popup.backgroundAlpha = 0.8
 
-                UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
+                window?.rootViewController?.present(popup, animated: true)
                 
                 vcAccountRequest.startTimer()
             }

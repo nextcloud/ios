@@ -76,20 +76,20 @@ class NCNetworkingProcessUpload: NSObject {
                     let limit = NCGlobal.shared.maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
-                        NKCommon.shared.writeLog("PROCESS-UPLOAD find \(metadatas.count) items")
+                        NKCommon.shared.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
                     }
 
                     for metadata in metadatas {
 
                         // Different account
                         if account.account != metadata.account {
-                            NKCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView) on account: \(metadata.account), because the actual account is \(account.account).")
+                            NKCommon.shared.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView) on account: \(metadata.account), because the actual account is \(account.account).")
                             continue
                         }
 
                         // Is already in upload background? skipped
                         if listOcId.contains(metadata.ocId) {
-                            NKCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
+                            NKCommon.shared.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                             continue
                         }
 

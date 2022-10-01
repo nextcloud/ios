@@ -194,9 +194,9 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
         NKCommon.shared.pathLog = pathDirectoryGroup
     }
     if isSimulatorOrTestFlight {
-        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        NKCommon.shared.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
     } else {
-        NKCommon.shared.writeLog("Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
+        NKCommon.shared.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
     let options = NKRequestOptions(timeout: 15)

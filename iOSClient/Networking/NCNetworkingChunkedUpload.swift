@@ -88,7 +88,7 @@ extension NCNetworking {
                 }, taskHandler: { task in
 
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-                    NKCommon.shared.writeLog("Upload chunk: " + fileName)
+                    NKCommon.shared.writeLog("[INFO] Upload chunk: " + fileName)
 
                 }, progressHandler: { progress in
 
@@ -155,7 +155,7 @@ extension NCNetworking {
             
             NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, error in
 
-                NKCommon.shared.writeLog("Assembling chunk with error code: \(error.errorCode)")
+                NKCommon.shared.writeLog("[ERROR] Assembling chunk with error code: \(error.errorCode)")
 
                 guard error == .success else {
                     self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, error: error)
@@ -230,7 +230,7 @@ extension NCNetworking {
 
         var errorDescription = error.errorDescription
 
-        NKCommon.shared.writeLog("Upload chunk error code: \(error.errorCode)")
+        NKCommon.shared.writeLog("[ERROR] Upload chunk error code: \(error.errorCode)")
 
         if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
