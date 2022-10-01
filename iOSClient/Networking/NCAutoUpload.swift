@@ -60,15 +60,11 @@ class NCAutoUpload: NSObject {
 
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
-            #if !EXTENSION
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter.shared.showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
-            #endif
             self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
-                #if !EXTENSION
                 NCActivityIndicator.shared.stop()
-                #endif
             }
         }
     }
@@ -93,12 +89,10 @@ class NCAutoUpload: NSObject {
                 NKCommon.shared.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
                 // Create the folder for auto upload & if request the subfolders
                 if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
-                    #if !EXTENSION
                     if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
                         NCContentPresenter.shared.showError(error: error, priority: .max)
                     }
-                    #endif
                     return completion(0)
                 }
 
@@ -173,79 +167,9 @@ class NCAutoUpload: NSObject {
 
                 self.endForAssetToUpload = true
 
-                if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    NKCommon.shared.writeLog("[INFO] Start Upload All")
-                    #if !EXTENSION
-                    (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
-                    completion(metadatas.count)
-                    #endif
-                } else if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                    NKCommon.shared.writeLog("[INFO] Start Upload")
-                    self.createProcessUploads(metadatas: metadatas, completion: completion)
-                }
+                (UIApplication.shared.delegate as! AppDelegate).networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+                completion(metadatas.count)
             }
-        }
-    }
-
-    // MARK: -
-
-    func createProcessUploads(metadatas: [tableMetadata], completion: @escaping (_ items: Int) -> Void) {
-
-        var metadatasForUpload: [tableMetadata] = []
-        var numStartUpload: Int = 0
-
-        for metadata in metadatas {
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
-                continue
-            }
-            metadatasForUpload.append(metadata)
-        }
-        NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-
-        // Detect maxConcurrentOperationUpload
-        let metadatasInUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-        let counterUpload = NCGlobal.shared.maxConcurrentOperationUpload - metadatasInUpload.count
-        if counterUpload <= 0 {
-            return completion(0)
-        }
-
-        // Extract file
-
-        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload), page: 0, limit: counterUpload, sorted: "date", ascending: true)
-
-        for metadata in metadatas {
-
-            let metadata = tableMetadata.init(value: metadata)
-            let semaphore = Semaphore()
-
-            NCUtility.shared.extractFiles(from: metadata) { metadatas in
-                if metadatas.isEmpty {
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                }
-                for metadata in metadatas {
-                    #if !EXTENSION
-                    if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active {  continue }
-                    #else
-                    if (metadata.e2eEncrypted || metadata.chunk) { continue }
-                    #endif
-                    let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
-                    if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
-                    guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
-                    // Upload 
-                    let semaphoreUpload = Semaphore()
-                    NCNetworking.shared.upload(metadata: metadata) {
-                        numStartUpload += 1
-                    } completion: { error in
-                        semaphoreUpload.continue()
-                    }
-                    semaphoreUpload.wait()
-                }
-                semaphore.continue()
-            }
-            semaphore.wait()
-        }
-        DispatchQueue.main.async {
-            completion(numStartUpload)
         }
     }
 

@@ -151,9 +151,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
 
         // Start process Upload, Initialize
-        if UIApplication.shared.applicationState == .background {
-            NKCommon.shared.writeLog("[INFO] Process in background, denied process upload and Inizialize main")
-        } else {
+        if UIApplication.shared.applicationState != .background {
             NKCommon.shared.writeLog("[INFO] Starting process upload and Inizialize main")
             networkingProcessUpload = NCNetworkingProcessUpload()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
@@ -207,7 +205,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Life Cycle
 
-    // L' applicazione entrerà in primo piano (attivo sempre)
+    // L' applicazione entrerà in attivo (sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
 
         self.deletePasswordSession = false
@@ -219,9 +217,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
 
-        if account == "" { return }
-
-        networkingProcessUpload?.verifyUploadZombie()
+        if !account.isEmpty {
+            networkingProcessUpload?.verifyUploadZombie()
+        }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
@@ -265,8 +263,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
-
-        if account == "" { return }
+        guard !account.isEmpty else { return }
 
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
