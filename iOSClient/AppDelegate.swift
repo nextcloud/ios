@@ -223,7 +223,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
 
-    // L' applicazione entrerà in primo piano (attivo solo dopo il background)
+    // L' applicazione entrerà in primo piano (dopo il background)
     func applicationWillEnterForeground(_ application: UIApplication) {
         guard !account.isEmpty, let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
@@ -291,7 +291,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !account.isEmpty else { return }
 
         // STOP TIMER UPLOAD PROCESS
-        networkingProcessUpload?.stopTimer()
+        networkingProcessUpload = NCNetworkingProcessUpload()
 
         scheduleAppRefresh()
         scheduleAppProcessing()
