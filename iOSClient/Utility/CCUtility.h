@@ -180,9 +180,6 @@
 + (BOOL)getRemovePhotoCameraRoll;
 + (void)setRemovePhotoCameraRoll:(BOOL)set;
 
-+ (BOOL)getPresentErrorITMS90076;
-+ (void)setPresentErrorITMS90076:(BOOL)set;
-
 + (BOOL)getPlayerPlay;
 + (void)setPlayerPlay:(BOOL)set;
 
