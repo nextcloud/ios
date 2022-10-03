@@ -25,7 +25,6 @@ import UIKit
 import OpenSSL
 import NextcloudKit
 import Alamofire
-import Queuer
 import Photos
 
 @objc public protocol NCNetworkingDelegate {
@@ -843,10 +842,10 @@ import Photos
                        let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", userBaseUrl.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
-                        let semaphore = Semaphore()
+                        let semaphore = DispatchSemaphore(value: 0)
                         self.loadMetadata(userBaseUrl: userBaseUrl, filePath: filePath, dispatchGroup: dispatchGroup) { account, metadata, error in
                             metadatas.append(metadata)
-                            semaphore.continue()
+                            semaphore.signal()
                         }
                         semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
@@ -865,10 +864,10 @@ import Photos
                               filename)) {
                         metadatas.append(metadata)
                     } else {
-                        let semaphore = Semaphore()
+                        let semaphore = DispatchSemaphore(value: 0)
                         self.loadMetadata(userBaseUrl: userBaseUrl, filePath: dir + filename, dispatchGroup: dispatchGroup) { account, metadata, error in
                             metadatas.append(metadata)
-                            semaphore.continue()
+                            semaphore.signal()
                         }
                         semaphore.wait()
                     }
@@ -902,10 +901,10 @@ import Photos
                     if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", userBaseUrl.userAccount, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
-                        let semaphore = Semaphore()
+                        let semaphore = DispatchSemaphore(value: 0)
                         self.loadMetadata(userBaseUrl: userBaseUrl, filePath: filePath, dispatchGroup: nil) { account, metadata, error in
                             metadatas.append(metadata)
-                            semaphore.continue()
+                            semaphore.signal()
                         }
                         semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
@@ -920,10 +919,10 @@ import Photos
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", userBaseUrl.userAccount, "/remote.php/dav/files/" + userBaseUrl.user + dir, filename)) {
                         metadatas.append(metadata)
                     } else {
-                        let semaphore = Semaphore()
+                        let semaphore = DispatchSemaphore(value: 0)
                         self.loadMetadata(userBaseUrl: userBaseUrl, filePath: dir + filename, dispatchGroup: nil) { account, metadata, error in
                             metadatas.append(metadata)
-                            semaphore.continue()
+                            semaphore.signal()
                         }
                         semaphore.wait()
                     }
@@ -1037,14 +1036,14 @@ import Photos
     private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String) -> Bool {
 
         var result: Bool = false
-        let semaphore = Semaphore()
+        let semaphore = DispatchSemaphore(value: 0)
 
         NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { error in
             if error == .success { result = true }
-            semaphore.continue()
+            semaphore.signal()
         }
+        semaphore.wait()
 
-        if semaphore.wait() == .success { result = true }
         return result
     }
 

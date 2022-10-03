@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import Queuer
 import NextcloudKit
 
 extension NCNetworking {
@@ -79,7 +78,7 @@ extension NCNetworking {
                     size = tableChunk.size - NCUtilityFileSystem.shared.getFileSize(filePath: fileNameChunkLocalPath)
                 }
 
-                let semaphore = Semaphore()
+                let semaphore = DispatchSemaphore(value: 0)
 
                 NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
 
@@ -115,7 +114,7 @@ extension NCNetworking {
 
                     self.uploadRequest.removeValue(forKey: fileNameLocalPath)
                     uploadError = error
-                    semaphore.continue()
+                    semaphore.signal()
                 }
 
                 semaphore.wait()

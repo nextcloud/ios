@@ -24,7 +24,6 @@
 import UIKit
 import NextcloudKit
 import Photos
-import Queuer
 
 class NCNetworkingProcessUpload: NSObject {
 
@@ -110,7 +109,7 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                         }
 
-                        let semaphore = Semaphore()
+                        let semaphore = DispatchSemaphore(value: 0)
                         NCUtility.shared.extractFiles(from: metadata) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -121,7 +120,7 @@ class NCNetworkingProcessUpload: NSObject {
                                 if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
                                 guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
                                 // Upload
-                                let semaphoreUpload = Semaphore()
+                                let semaphoreUpload = DispatchSemaphore(value: 1)
                                 NCNetworking.shared.upload(metadata: metadata) {
                                     if metadata.e2eEncrypted || metadata.chunk {
                                         counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
@@ -129,11 +128,11 @@ class NCNetworkingProcessUpload: NSObject {
                                         counterUpload += 1
                                     }
                                 } completion: { error in
-                                    semaphoreUpload.continue()
+                                    semaphoreUpload.signal()
                                 }
                                 semaphoreUpload.wait()
                             }
-                            semaphore.continue()
+                            semaphore.signal()
                         }
                         semaphore.wait()
                     }
