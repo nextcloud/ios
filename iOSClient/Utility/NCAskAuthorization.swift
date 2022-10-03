@@ -111,4 +111,22 @@ class NCAskAuthorization: NSObject {
             break
         }
     }
+
+    #if !EXTENSION
+    func checkBackgroundRefreshStatus() {
+        switch UIApplication.shared.backgroundRefreshStatus {
+        case .available:
+            print("Background fetch is enabled")
+        case .denied:
+            print("Background fetch is explicitly disabled")
+            // Redirect user to Settings page only once; Respect user's choice is important
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        case .restricted:
+            // Should not redirect user to Settings since he / she cannot toggle the settings
+            print("Background fetch is restricted, e.g. under parental control")
+        default:
+            print("Unknown property")
+        }
+    }
+    #endif
 }
