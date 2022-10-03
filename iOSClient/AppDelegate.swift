@@ -296,7 +296,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application did enter in background")
 
-        // STOP TIMER UPLOAD PROCESS
+        // STOP UPLOAD PROCESS
         networkingProcessUpload?.stopTimer()
 
         scheduleAppRefresh()
