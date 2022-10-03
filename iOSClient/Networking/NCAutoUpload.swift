@@ -176,7 +176,6 @@ class NCAutoUpload: NSObject {
                         self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
                     }
                 }
-                completion(metadatas.count)
             }
         }
     }
