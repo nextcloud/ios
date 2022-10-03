@@ -187,6 +187,7 @@ class NCAutoUpload: NSObject {
 
         var metadatasForUpload: [tableMetadata] = []
         var numStartUpload: Int = 0
+        let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
 
         for metadata in metadatas {
             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil { continue }
@@ -210,8 +211,7 @@ class NCAutoUpload: NSObject {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
                 for metadata in metadatas {
-                    if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active {  continue }
-                    let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
+                    if (metadata.e2eEncrypted || metadata.chunk) {  continue }
                     if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
                     guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
                     // Upload
