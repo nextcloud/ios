@@ -405,35 +405,25 @@ import Photos
         if metadata.e2eEncrypted {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { error in
-                DispatchQueue.main.async {
-                    completion(error)
-                }
+                completion(error)
             }
             #endif
         } else if metadata.chunk {
             uploadChunkedFile(metadata: metadata, start: start) { error in
-                DispatchQueue.main.async {
-                    completion(error)
-                }
+                completion(error)
             }
         } else if metadata.session == NKCommon.shared.sessionIdentifierUpload {
             uploadFile(metadata: metadata, start: start) { error in
-                DispatchQueue.main.async {
-                    completion(error)
-                }
+                completion(error)
             }
         } else {
             isInTaskUploadBackground(fileName: metadata.fileName) { exists in
                 if exists {
                     NKCommon.shared.writeLog("[INFO] Upload already in progress.")
-                    DispatchQueue.main.async {
-                        completion(NKError(errorCode: 0, errorDescription: ""))
-                    }
+                    completion(NKError(errorCode: 0, errorDescription: ""))
                 } else {
                     self.uploadFileInBackground(metadata: metadata, start: start) { error in
-                        DispatchQueue.main.async {
-                            completion(error)
-                        }
+                        completion(error)
                     }
                 }
             }
