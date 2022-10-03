@@ -99,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             levelLog = CCUtility.getLogLevel()
             NKCommon.shared.levelLog = levelLog
             NKCommon.shared.copyLogToDocumentDirectory = true
-            NKCommon.shared.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " in state \(UIApplication.shared.applicationState.rawValue) where (0 active, 1 incative, 2 background).")
+            NKCommon.shared.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " in state \(UIApplication.shared.applicationState.rawValue) where (0 active, 1 inactive, 2 background).")
         }
 
         // LOG Account
