@@ -238,8 +238,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
 
-        // START TIMER UPLOAD PROCESS
-        networkingProcessUpload?.startTimer()
+        // START UPLOAD PROCESS
+        networkingProcessUpload = NCNetworkingProcessUpload()
 
         // Initialize Auto upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
