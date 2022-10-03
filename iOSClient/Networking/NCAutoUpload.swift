@@ -171,7 +171,7 @@ class NCAutoUpload: NSObject {
                     self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
                 } else {
                     if self.applicationState == .background {
-                        self.createProcessAutoUploads(metadatas: metadatas, completion: completion)
+                        self.createBackgroundProcessAutoUpload(metadatas: metadatas, completion: completion)
                     } else {
                         self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
                     }
@@ -183,7 +183,7 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    func createProcessAutoUploads(metadatas: [tableMetadata], completion: @escaping (_ items: Int) -> Void) {
+    func createBackgroundProcessAutoUpload(metadatas: [tableMetadata], completion: @escaping (_ items: Int) -> Void) {
 
         var metadatasForUpload: [tableMetadata] = []
         var numStartUpload: Int = 0
