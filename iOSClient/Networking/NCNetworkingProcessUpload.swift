@@ -118,14 +118,19 @@ class NCNetworkingProcessUpload: NSObject {
                                 if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active {  continue }
                                 let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
                                 if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
-                                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
-                                    NCNetworking.shared.upload(metadata: metadata)
+                                guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
+                                // Upload
+                                let semaphoreUpload = Semaphore()
+                                NCNetworking.shared.upload(metadata: metadata) {
+                                    if metadata.e2eEncrypted || metadata.chunk {
+                                        counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
+                                    } else {
+                                        counterUpload += 1
+                                    }
+                                } completion: { error in
+                                    semaphoreUpload.continue()
                                 }
-                                if metadata.e2eEncrypted || metadata.chunk {
-                                    counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
-                                } else {
-                                    counterUpload += 1
-                                }
+                                semaphoreUpload.wait()
                             }
                             semaphore.continue()
                         }

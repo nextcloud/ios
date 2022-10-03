@@ -176,6 +176,63 @@ class NCAutoUpload: NSObject {
         }
     }
 
+    /*
+    func createProcessUploads(metadatas: [tableMetadata], completion: @escaping (_ items: Int) -> Void) {
+
+        var metadatasForUpload: [tableMetadata] = []
+        var numStartUpload: Int = 0
+
+        for metadata in metadatas {
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
+                continue
+            }
+            metadatasForUpload.append(metadata)
+        }
+        NCManageDatabase.shared.addMetadatas(metadatasForUpload)
+
+        let metadatasInUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
+        let counterUpload = NCGlobal.shared.maxConcurrentOperationUpload - metadatasInUpload.count
+        if counterUpload <= 0 {
+            return completion(0)
+        }
+
+        // Extract file
+
+        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload), page: 0, limit: counterUpload, sorted: "date", ascending: true)
+
+        for metadata in metadatas {
+
+            let metadata = tableMetadata.init(value: metadata)
+            let semaphore = Semaphore()
+
+            NCUtility.shared.extractFiles(from: metadata) { metadatas in
+                if metadatas.isEmpty {
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                }
+                for metadata in metadatas {
+                    if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active {  continue }
+                    let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
+                    if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
+                    guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
+                    // Upload
+                    let semaphoreUpload = Semaphore()
+                    NCNetworking.shared.upload(metadata: metadata) {
+                        numStartUpload += 1
+                    } completion: { error in
+                        semaphoreUpload.continue()
+                    }
+                    semaphoreUpload.wait()
+                }
+                semaphore.continue()
+            }
+            semaphore.wait()
+        }
+        DispatchQueue.main.async {
+            completion(numStartUpload)
+        }
+    }
+    */
+    
     // MARK: -
 
     @objc func alignPhotoLibrary(viewController: UIViewController?) {
