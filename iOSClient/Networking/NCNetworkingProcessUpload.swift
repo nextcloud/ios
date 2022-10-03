@@ -36,30 +36,24 @@ class NCNetworkingProcessUpload: NSObject {
 
     private func startProcess(completion: @escaping (_ items: Int) -> Void) {
         if timerProcess?.isValid ?? false {
-            DispatchQueue.main.async {
-                self.process(completion: completion)
-            }
+            DispatchQueue.main.async { self.processForeground() }
         }
     }
 
     func startTimer() {
         timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(processTimer), userInfo: nil, repeats: true)
+        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(processForeground), userInfo: nil, repeats: true)
     }
 
     func stopTimer() {
         timerProcess?.invalidate()
     }
 
-    @objc private func processTimer() {
-        self.process { _ in }
-    }
-    private func process(completion: @escaping (_ items: Int) -> Void) {
-        guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
+    @objc private func processForeground() {
+        guard let account = NCManageDatabase.shared.getActiveAccount(), UIApplication.shared.applicationState == .active else { return }
 
         stopTimer()
 
-        let applicationState = UIApplication.shared.applicationState
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -115,22 +109,16 @@ class NCNetworkingProcessUpload: NSObject {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
                             for metadata in metadatas {
-                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active {  continue }
                                 let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
                                 if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
-                                guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
-                                // Upload
-                                let semaphoreUpload = DispatchSemaphore(value: 1)
-                                NCNetworking.shared.upload(metadata: metadata) {
-                                    if metadata.e2eEncrypted || metadata.chunk {
-                                        counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
-                                    } else {
-                                        counterUpload += 1
-                                    }
-                                } completion: { error in
-                                    semaphoreUpload.signal()
+                                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
+                                    NCNetworking.shared.upload(metadata: metadata)
                                 }
-                                semaphoreUpload.wait()
+                                if metadata.e2eEncrypted || metadata.chunk {
+                                    counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
+                                } else {
+                                    counterUpload += 1
+                                }
                             }
                             semaphore.signal()
                         }
@@ -157,8 +145,6 @@ class NCNetworkingProcessUpload: NSObject {
                     self.startTimer()
                 }
             }
-
-            completion(counterUpload)
         })
     }
 
