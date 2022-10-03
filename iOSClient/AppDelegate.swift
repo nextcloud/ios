@@ -359,7 +359,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NKCommon.shared.writeLog("[SUCCESS] Refresh task success submit request 6 seconds \(request)")
+            NKCommon.shared.writeLog("[SUCCESS] Refresh task success submit request 60 seconds \(request)")
         } catch {
             NKCommon.shared.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
