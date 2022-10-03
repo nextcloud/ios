@@ -172,7 +172,9 @@ class NCAutoUpload: NSObject {
                 } else {
                     if self.applicationState == .background {
                         self.createProcessAutoUploads(metadatas: metadatas, completion: completion)
-                    } 
+                    } else {
+                        self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
+                    }
                 }
                 completion(metadatas.count)
             }
