@@ -34,7 +34,7 @@ class NCAutoUpload: NSObject {
 
     private var endForAssetToUpload: Bool = false
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
-
+    private let applicationState = UIApplication.shared.applicationState
 
     // MARK: -
 
@@ -170,7 +170,9 @@ class NCAutoUpload: NSObject {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
                 } else {
-                    self.createProcessAutoUploads(metadatas: metadatas, completion: completion)
+                    if self.applicationState == .background {
+                        self.createProcessAutoUploads(metadatas: metadatas, completion: completion)
+                    } 
                 }
                 completion(metadatas.count)
             }
@@ -195,9 +197,7 @@ class NCAutoUpload: NSObject {
         if counterUpload <= 0 { return completion(0) }
 
         // Extract file
-
         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload), page: 0, limit: counterUpload, sorted: "date", ascending: true)
-
         for metadata in metadatas {
 
             let metadata = tableMetadata.init(value: metadata)
