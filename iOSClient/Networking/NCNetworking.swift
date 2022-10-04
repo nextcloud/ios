@@ -169,7 +169,9 @@ import Photos
         #if !EXTENSION
         defer {
             if !isTrusted {
-                (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
+                DispatchQueue.main.async {
+                    (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
+                }
             }
         }
         #endif

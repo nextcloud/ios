@@ -542,33 +542,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               host == currentHost
         else { return }
 
-        DispatchQueue.main.async {
-            let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
-            var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
+        let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
+        var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
 
-            if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
-                title = NSLocalizedString("_connect_server_anyway_", comment: "")
-            }
-
-            let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
-
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
-                NCNetworking.shared.writeCertificate(host: host)
-            }))
-
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in }))
-
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
-                if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                    let viewController = navigationController.topViewController as! NCViewCertificateDetails
-                    viewController.delegate = self
-                    viewController.host = host
-                    self.window?.rootViewController?.present(navigationController, animated: true)
-                }
-            }))
-
-            self.window?.rootViewController?.present(alertController, animated: true)
+        if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
+            title = NSLocalizedString("_connect_server_anyway_", comment: "")
         }
+
+        let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+            NCNetworking.shared.writeCertificate(host: host)
+        }))
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in }))
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+            if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                let viewController = navigationController.topViewController as! NCViewCertificateDetails
+                viewController.delegate = self
+                viewController.host = host
+                self.window?.rootViewController?.present(navigationController, animated: true)
+            }
+        }))
+
+        window?.rootViewController?.present(alertController, animated: true)
     }
 
     func viewCertificateDetailsDismiss(host: String) {
