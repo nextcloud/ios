@@ -168,15 +168,11 @@ import Photos
 
         #if !EXTENSION
         defer {
-            DispatchQueue.main.async {
-                if !isTrusted {
-                    (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
-                }
+            if !isTrusted {
+                (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
             }
         }
         #endif
-        
-        print("SSL host: \(host)")
         
         if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0)  {
             
