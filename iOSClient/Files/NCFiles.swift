@@ -66,17 +66,19 @@ class NCFiles: NCCollectionViewCommon {
 
     // MARK: - NotificationCenter
 
-    override func initialize(_ notification: NSNotification) {
+    override func initialize() {
 
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
         }
-        super.initialize(notification)
+        super.initialize()
 
+        /*
         if let userInfo = notification.userInfo as NSDictionary?, userInfo["atStart"] as? Int == 1 {
             return
         }
+        */
 
         reloadDataSource(forced: false)
         reloadDataSourceNetwork()
