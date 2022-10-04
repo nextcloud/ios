@@ -138,12 +138,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Create user color
         NCBrandColor.shared.createUserColors()
 
-        // Start process Upload
-        if UIApplication.shared.applicationState != .background {
-            NKCommon.shared.writeLog("[INFO] Starting process upload and Inizialize main")
-            networkingProcessUpload = NCNetworkingProcessUpload()
-        }
-
         // Push Notification & display notification
         application.registerForRemoteNotifications()
         UNUserNotificationCenter.current().delegate = self
@@ -221,14 +215,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Account changed ??
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-        }
-
-        // START UPLOAD PROCESS
-        networkingProcessUpload = NCNetworkingProcessUpload()
-
-        // Initialize Auto upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+        } else {
+            // Initialize Auto upload
+            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+                NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+                // START UPLOAD PROCESS
+                DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
+            }
         }
 
         // Required unsubscribing / subscribing
@@ -313,6 +306,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+            DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
         }
 
         // Start services
