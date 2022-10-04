@@ -60,8 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
 
-    var errorITMS90076: Bool = false
-
     private var privacyProtectionWindow: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -99,11 +97,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             levelLog = CCUtility.getLogLevel()
             NKCommon.shared.levelLog = levelLog
             NKCommon.shared.copyLogToDocumentDirectory = true
-            if isSimulatorOrTestFlight {
-                NKCommon.shared.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight) in \(UIApplication.shared.applicationState)")
-            } else {
-                NKCommon.shared.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " in \(UIApplication.shared.applicationState)")
-            }
+            NKCommon.shared.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS + " in state \(UIApplication.shared.applicationState.rawValue) where (0 active, 1 inactive, 2 background).")
         }
 
         // LOG Account
@@ -112,11 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if CCUtility.getPassword(account.account).isEmpty {
                 NKCommon.shared.writeLog("[ERROR] PASSWORD NOT FOUND for \(account.account)")
             }
-        }
-
-        // ITMS-90076: Potential Loss of Keychain Access
-        if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty, NCUtility.shared.getVersionApp(withBuild: false).starts(with: "4.4") {
-            errorITMS90076 = true
         }
 
         // Activate user account
@@ -151,9 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
 
         // Start process Upload, Initialize
-        if UIApplication.shared.applicationState == .background {
-            NKCommon.shared.writeLog("[INFO] Process in background, denied process upload and Inizialize main")
-        } else {
+        if UIApplication.shared.applicationState != .background {
             NKCommon.shared.writeLog("[INFO] Starting process upload and Inizialize main")
             networkingProcessUpload = NCNetworkingProcessUpload()
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
@@ -207,30 +194,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Life Cycle
 
-    // L' applicazione entrerà in primo piano (attivo sempre)
+    // L' applicazione entrerà in attivo (sempre)
     func applicationDidBecomeActive(_ application: UIApplication) {
+
+        NKCommon.shared.writeLog("[INFO] Application did become active")
 
         self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
-            // Privacy
             hidePrivacyProtectionWindow()
         }
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
 
-        if account == "" { return }
-
-        networkingProcessUpload?.verifyUploadZombie()
+        if !account.isEmpty {
+            networkingProcessUpload?.verifyUploadZombie()
+        }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
 
-    // L' applicazione entrerà in primo piano (attivo solo dopo il background)
+    // L' applicazione entrerà in primo piano (dopo il background)
     func applicationWillEnterForeground(_ application: UIApplication) {
+        guard !account.isEmpty, let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
-        if account == "" { return }
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
+        NKCommon.shared.writeLog("[INFO] Application will enter in foreground")
 
         // Account changed ??
         if activeAccount.account != account {
@@ -239,10 +227,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
 
-        NKCommon.shared.writeLog("[INFO] Application will enter in foreground")
-
-        // START TIMER UPLOAD PROCESS
-        networkingProcessUpload?.startTimer()
+        // START UPLOAD PROCESS
+        networkingProcessUpload = NCNetworkingProcessUpload()
 
         // Initialize Auto upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -265,8 +251,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
+        guard !account.isEmpty else { return }
 
-        if account == "" { return }
+        NKCommon.shared.writeLog("[INFO] Application will resign active")
 
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
@@ -294,10 +281,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione è entrata nello sfondo
     func applicationDidEnterBackground(_ application: UIApplication) {
+        guard !account.isEmpty else { return }
 
-        if account == "" { return }
+        NKCommon.shared.writeLog("[INFO] Application did enter in background")
 
-        // STOP TIMER UPLOAD PROCESS
+        // STOP UPLOAD PROCESS
         networkingProcessUpload?.stopTimer()
 
         scheduleAppRefresh()
@@ -352,14 +340,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     /*
     @discussion Schedule a refresh task request to ask that the system launch your app briefly so that you can download data and keep your app's contents up-to-date. The system will fulfill this request intelligently based on system conditions and app usage.
+     < MAX 30 seconds >
      */
     func scheduleAppRefresh() {
 
         let request = BGAppRefreshTaskRequest(identifier: NCGlobal.shared.refreshTask)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 60) // Refresh after 6 minutes.
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
-            NKCommon.shared.writeLog("[SUCCESS] Refresh task success submit request 6 minutes \(request)")
+            NKCommon.shared.writeLog("[SUCCESS] Refresh task success submit request 60 seconds \(request)")
         } catch {
             NKCommon.shared.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
@@ -367,6 +356,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     /*
      @discussion Schedule a processing task request to ask that the system launch your app when conditions are favorable for battery life to handle deferrable, longer-running processing, such as syncing, database maintenance, or similar tasks. The system will attempt to fulfill this request to the best of its ability within the next two days as long as the user has used your app within the past week.
+     < MAX over 1 minute >
      */
     func scheduleAppProcessing() {
 
@@ -792,8 +782,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Open URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-
-        if account == "" { return false }
+        guard !account.isEmpty else { return false }
 
         let scheme = url.scheme
         let action = url.host
@@ -954,6 +943,6 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
-        networkingProcessUpload?.createProcessUploads(metadatas: metadatas)
+        networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: { _ in })
     }
 }

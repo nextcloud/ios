@@ -24,7 +24,6 @@
 import UIKit
 import NextcloudKit
 import Photos
-import Queuer
 
 class NCNetworkingProcessUpload: NSObject {
 
@@ -35,25 +34,23 @@ class NCNetworkingProcessUpload: NSObject {
         startTimer()
     }
 
-    private func startProcess() {
+    private func startProcess(completion: @escaping (_ items: Int) -> Void) {
         if timerProcess?.isValid ?? false {
-            DispatchQueue.main.async { self.process() }
+            DispatchQueue.main.async { self.processForeground() }
         }
     }
 
     func startTimer() {
         timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
+        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(processForeground), userInfo: nil, repeats: true)
     }
 
     func stopTimer() {
         timerProcess?.invalidate()
     }
 
-    @objc private func process() {
-        guard let account = NCManageDatabase.shared.getActiveAccount(), UIApplication.shared.applicationState == .active else {
-            return
-        }
+    @objc private func processForeground() {
+        guard let account = NCManageDatabase.shared.getActiveAccount(), UIApplication.shared.applicationState == .active else { return }
 
         stopTimer()
 
@@ -106,17 +103,12 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                         }
 
-                        let semaphore = Semaphore()
+                        let semaphore = DispatchSemaphore(value: 0)
                         NCUtility.shared.extractFiles(from: metadata) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
                             for metadata in metadatas {
-                                #if !EXTENSION
-                                if (metadata.e2eEncrypted || metadata.chunk) && UIApplication.shared.applicationState != .active {  continue }
-                                #else
-                                if (metadata.e2eEncrypted || metadata.chunk) { continue }
-                                #endif
                                 let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
                                 if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
@@ -128,7 +120,7 @@ class NCNetworkingProcessUpload: NSObject {
                                     counterUpload += 1
                                 }
                             }
-                            semaphore.continue()
+                            semaphore.signal()
                         }
                         semaphore.wait()
                     }
@@ -144,9 +136,8 @@ class NCNetworkingProcessUpload: NSObject {
             }
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-            #if !EXTENSION
             DispatchQueue.main.async {
-                if (counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented()) {
+                if UIApplication.shared.applicationState == .active && counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented() {
                     self.deleteAssetLocalIdentifiers(account: account.account) {
                         self.startTimer()
                     }
@@ -154,11 +145,9 @@ class NCNetworkingProcessUpload: NSObject {
                     self.startTimer()
                 }
             }
-            #endif
         })
     }
 
-    #if !EXTENSION
     private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
 
         if UIApplication.shared.applicationState != .active {
@@ -186,11 +175,10 @@ class NCNetworkingProcessUpload: NSObject {
             }
         })
     }
-    #endif
 
     // MARK: -
 
-    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false) {
+    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void) {
 
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
@@ -202,7 +190,7 @@ class NCNetworkingProcessUpload: NSObject {
             metadatasForUpload.append(metadata)
         }
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-        startProcess()
+        startProcess(completion: completion)
     }
 
     // MARK: -

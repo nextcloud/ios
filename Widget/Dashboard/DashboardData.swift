@@ -23,7 +23,6 @@
 
 import WidgetKit
 import NextcloudKit
-import Queuer
 import RealmSwift
 
 struct DashboardDataEntry: TimelineEntry {
@@ -179,12 +178,12 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
                                     iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                 }
                             }
-                            let semaphore = Semaphore()
+                            let semaphore = DispatchSemaphore(value: 0)
                             NCUtility.shared.getImageUserData(url: url, fileName: iconFileName , size: 128) { image in
                                 if let image = image {
                                     icon = image
                                 }
-                                semaphore.continue()
+                                semaphore.signal()
                             }
                             semaphore.wait()
                         }

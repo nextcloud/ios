@@ -144,16 +144,7 @@ class NCLoginWeb: UIViewController {
         // Stop timer error network
         appDelegate.timerErrorNetworking?.invalidate()
 
-        // ITMS-90076: Potential Loss of Keychain Access
-        if appDelegate.errorITMS90076, !CCUtility.getPresentErrorITMS90076() {
-
-            let message = "\n" + NSLocalizedString("_ITMS-90076_", comment: "")
-            let alertController = UIAlertController(title: titleView, message: message, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-            present(alertController, animated: true, completion: {
-                CCUtility.setPresentErrorITMS90076(true)
-            })
-        } else if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
+        if let account = NCManageDatabase.shared.getActiveAccount(), CCUtility.getPassword(account.account).isEmpty {
 
             let message = "\n" + NSLocalizedString("_password_not_present_", comment: "")
             let alertController = UIAlertController(title: titleView, message: message, preferredStyle: .alert)
