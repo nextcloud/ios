@@ -65,8 +65,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         let userAgent = CCUtility.getUserAgent() as String
-        let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
+
+        // Register initialize
+        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         if !CCUtility.getDisableCrashservice() && !NCBrandOptions.shared.disable_crash_service {
@@ -135,16 +137,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Create user color
         NCBrandColor.shared.createUserColors()
-
-        // Register initialize
-        NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-
-        // Start process Upload, Initialize
-        if UIApplication.shared.applicationState != .background {
-            NKCommon.shared.writeLog("[INFO] Starting process upload and Inizialize main")
-            networkingProcessUpload = NCNetworkingProcessUpload()
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, userInfo:["atStart":1])
-        }
 
         // Push Notification & display notification
         application.registerForRemoteNotifications()
@@ -223,16 +215,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Account changed ??
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
-        }
-
-        // START UPLOAD PROCESS
-        networkingProcessUpload = NCNetworkingProcessUpload()
-
-        // Initialize Auto upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+        } else {
+            // Initialize Auto upload
+            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+                NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+                // START UPLOAD PROCESS
+                DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
+            }
         }
 
         // Required unsubscribing / subscribing
@@ -317,6 +306,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+            DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
         }
 
         // Start services
@@ -544,19 +534,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let certificateHostSavedPath = CCUtility.getDirectoryCerificates()! + "/" + host + ".der"
         var title = NSLocalizedString("_ssl_certificate_changed_", comment: "")
-        
+
         if !FileManager.default.fileExists(atPath: certificateHostSavedPath) {
             title = NSLocalizedString("_connect_server_anyway_", comment: "")
         }
-        
+
         let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
-        
+
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
             NCNetworking.shared.writeCertificate(host: host)
         }))
-        
+
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in }))
-        
+
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
             if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                 let viewController = navigationController.topViewController as! NCViewCertificateDetails
@@ -565,7 +555,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 self.window?.rootViewController?.present(navigationController, animated: true)
             }
         }))
-        
+
         window?.rootViewController?.present(alertController, animated: true)
     }
 
@@ -576,6 +566,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Account
 
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
+
+        let accountBackup = self.account
+        let userIdBackup = self.userId
 
         self.account = account
         self.urlBase = urlBase
@@ -591,6 +584,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NKCommon.shared.setup(nextcloudVersion: serverVersionMajor)
         }
         NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
+
+        DispatchQueue.main.async {
+            if UIApplication.shared.applicationState != .background && (accountBackup != account || userIdBackup != userId) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, second: 0.2)
+            }
+        }
     }
 
     @objc func deleteAccount(_ account: String, wipe: Bool) {
@@ -631,8 +630,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCNetworking.shared.cancelAllTask()
 
             settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
-
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
         }
     }
 
@@ -895,7 +892,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
 
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: fileName)
+                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName)
                         }
 
                     } else {

@@ -460,18 +460,20 @@ import Photos
 
     // MARK: -
 
-    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?) {
+    func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?) {
 
         appDelegate.isSearchingMode = false
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             var topNavigationController: UINavigationController?
             var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: self.appDelegate.account)
-            var mostViewController = UIApplication.shared.keyWindow!.rootViewController!.topMostViewController()
+            guard var mostViewController = self.appDelegate.window?.rootViewController?.topMostViewController() else { return }
 
             if mostViewController.isModal {
                 mostViewController.dismiss(animated: false)
-                mostViewController = UIApplication.shared.keyWindow!.rootViewController!.topMostViewController()
+                if let viewController = self.appDelegate.window?.rootViewController?.topMostViewController() {
+                    mostViewController = viewController
+                }
             }
             mostViewController.navigationController?.popToRootViewController(animated: false)
 
@@ -485,6 +487,7 @@ import Photos
             if pushServerUrl == serverUrl {
                 let viewController = topNavigationController?.topViewController as? NCFiles
                 viewController?.blinkCell(fileName: fileNameBlink)
+                viewController?.openFile(fileName: fileNameOpen)
                 return
             }
             guard let topNavigationController = topNavigationController else { return }
@@ -502,6 +505,7 @@ import Photos
                 viewController.titleCurrentFolder = String(dir)
                 if pushServerUrl == serverUrl {
                     viewController.fileNameBlink = fileNameBlink
+                    viewController.fileNameOpen = fileNameOpen
                 }
                 self.appDelegate.listFilesVC[serverUrl] = viewController
 
@@ -650,7 +654,7 @@ import Photos
         }
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
-            self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName)
+            self.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
         }
 
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in
