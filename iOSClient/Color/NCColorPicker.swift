@@ -101,15 +101,11 @@ class NCColorPicker: UIViewController {
         systemPinkButton.layer.cornerRadius = 5
         systemPinkButton.layer.masksToBounds = true
 
-        if #available(iOS 14.0, *) {
-            customButton.setImage(UIImage(named: "rgb"), for: .normal)
-            if let selectedColor = selectedColor {
-                customButton.backgroundColor = selectedColor
-            } else {
-                customButton.backgroundColor = .secondarySystemBackground
-            }
+        customButton.setImage(UIImage(named: "rgb"), for: .normal)
+        if let selectedColor = selectedColor {
+            customButton.backgroundColor = selectedColor
         } else {
-            customButton.backgroundColor = .systemTeal
+            customButton.backgroundColor = .secondarySystemBackground
         }
         customButton.layer.cornerRadius = 5
         customButton.layer.masksToBounds = true
@@ -187,17 +183,13 @@ class NCColorPicker: UIViewController {
 
     @IBAction func customButtonAction(_ sender: AnyObject) {
 
-        if #available(iOS 14.0, *) {
-            let picker = UIColorPickerViewController()
-            picker.delegate = self
-            picker.supportsAlpha = false
-            if let selectedColor = selectedColor {
-                picker.selectedColor = selectedColor
-            }
-            self.present(picker, animated: true, completion: nil)
-        } else {
-            updateColor(hexColor: UIColor.systemTeal.hexString)
+        let picker = UIColorPickerViewController()
+        picker.delegate = self
+        picker.supportsAlpha = false
+        if let selectedColor = selectedColor {
+            picker.selectedColor = selectedColor
         }
+        self.present(picker, animated: true, completion: nil)
     }
 
     // MARK: -
@@ -214,7 +206,6 @@ class NCColorPicker: UIViewController {
     }
 }
 
-@available(iOS 14.0, *)
 extension NCColorPicker: UIColorPickerViewControllerDelegate {
 
     func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
