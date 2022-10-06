@@ -288,6 +288,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillTerminate(_ application: UIApplication) {
 
         NCNetworking.shared.cancelAllDownloadTransfer()
+
+        let content = UNMutableNotificationContent()
+        content.title = NCBrandOptions.shared.brand
+        content.body = NSLocalizedString("_keep_running_", comment: "")
+        let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.add(req)
+
         NKCommon.shared.writeLog("bye bye")
     }
 
