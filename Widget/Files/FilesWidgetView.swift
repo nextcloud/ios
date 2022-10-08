@@ -91,7 +91,7 @@ struct FilesWidgetView: View {
 
                 HStack(spacing: 0) {
 
-                    let sizeButton: CGFloat = 45
+                    let sizeButton: CGFloat = 40
                     let placeholderColor = Color(white: 0.8)
                     let brandColor = Color(NCBrandColor.shared.brand)
                     let brandTextColor = Color(NCBrandColor.shared.brandText)
