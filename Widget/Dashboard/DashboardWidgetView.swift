@@ -102,7 +102,7 @@ struct DashboardWidgetView: View {
                         }
                     }
                 }
-                .padding(.top, 30)
+                .padding(.top, 35)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 if let tableButton = entry.tableButton, !tableButton.isEmpty {
