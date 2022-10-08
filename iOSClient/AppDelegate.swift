@@ -390,12 +390,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NKCommon.shared.writeLog("[INFO] Start handler processing task [Auto upload]")
+        NKCommon.shared.writeLog("[INFO] Start handler processing task")
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("[INFO] Completition handler procesing task [Auto upload] with \(items) uploads")
-            task.setTaskCompleted(success: true)
-        }
+        // Reload Widget
+        WidgetCenter.shared.reloadAllTimelines()
+
+        task.setTaskCompleted(success: true)
     }
 
     // MARK: - Background Networking Session
