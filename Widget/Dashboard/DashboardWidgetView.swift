@@ -116,7 +116,7 @@ struct DashboardWidgetView: View {
                             Link(destination: URL(string: element.link)! , label: {
                                 
                                 Text(element.text)
-                                    .font(.system(size: 18))
+                                    .font(.system(size: 15))
                                     .padding(7)
                                     .background(brandColor)
                                     .foregroundColor(brandTextColor)
