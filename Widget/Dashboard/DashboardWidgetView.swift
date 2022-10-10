@@ -65,7 +65,11 @@ struct DashboardWidgetView: View {
                                     
                                     let subTitleColor = Color(white: 0.5)
 
-                                    if entry.tableDashboard?.itemIconsRound ?? false {
+                                    if entry.isPlaceholder {
+                                        Circle()
+                                            .fill(Color(white: 0.8))
+                                            .frame(width: 35, height: 35)
+                                    } else if entry.tableDashboard?.itemIconsRound ?? false {
                                         Image(uiImage: element.icon)
                                             .renderingMode(.template)
                                             .resizable()
@@ -157,7 +161,7 @@ struct DashboardWidget_Previews: PreviewProvider {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
