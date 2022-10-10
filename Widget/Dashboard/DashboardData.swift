@@ -79,25 +79,6 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
 
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
-    
-    var id: String = intent?.identifier ?? "activity"
-
-    /*
-    switch intent {
-    case .unknown:
-        id = "recommendations"
-    case .notes:
-        id = "notes"
-    case .deck:
-        id = "deck"
-    case .recommendations:
-        id = "recommendations"
-    case .activity:
-        id = "activity"
-    case .user_status:
-        id = "user_status"
-    }
-    */
 
     if isPreview {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
@@ -106,7 +87,11 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
-    
+
+    guard let id = intent?.identifier else {
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
+    }
+
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
     guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {

@@ -11,23 +11,22 @@ import RealmSwift
 
 class IntentHandler: INExtension, DashboardIntentHandling {
 
-    override func handler(for intent: INIntent) -> Any {
-        // This is the default implementation.  If you want different objects to handle different intents,
-        // you can override this and return the handler you want for that particular intent.
+    func provideApplicationsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Applications>?, Error?) -> Void) {
+
+        var applications: [Applications] = []
 
         guard let account = NCManageDatabase.shared.getActiveAccount() else {
-            return self
+            completion(nil, nil)
+            return
         }
 
+        let results = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account)
+        for result in results {
+            let application = Applications(identifier: result.id, display: result.title)
+            applications.append(application)
+        }
 
-        return self
-    }
-
-    func provideCategoryOptionsCollection(for intent: DashboardIntentHandling, with completion: @escaping (INObjectCollection<Applications>?, Error?) -> Void) {
-
-        let eventCategory = Applications(identifier: "ciao", display: "ciao")
-        let collection = INObjectCollection(items: [eventCategory])
-
+        let collection = INObjectCollection(items: applications)
         completion(collection, nil)
     }
 }
