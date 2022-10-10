@@ -157,7 +157,6 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                         var iconFileName: String?
 
                         if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
-                            var size = CGFloat(NCGlobal.shared.sizeIcon)
                             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                                 let path = (urlComponents.path as NSString)
@@ -168,13 +167,12 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                                     iconFileName = item
                                 } else if pathComponents[1] == "avatar" {
                                     iconFileName = pathComponents[2]
-                                    size = CGFloat(NCGlobal.shared.avatarSize)
                                 } else {
                                     iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                 }
                             }
                             let semaphore = DispatchSemaphore(value: 0)
-                            NCUtility.shared.getImageUserData(url: url, fileName: iconFileName, size: size) { image in
+                            NCUtility.shared.getWidgetImageUserData(url: url, fileName: iconFileName) { image in
                                 if let image = image {
                                     icon = image
                                 }
