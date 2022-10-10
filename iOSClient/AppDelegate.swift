@@ -390,9 +390,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NKCommon.shared.writeLog("[INFO] Start handler processing task")
+        NKCommon.shared.writeLog("[INFO] Start handler processing task [Reload widget]")
 
-        // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
 
         task.setTaskCompleted(success: true)
