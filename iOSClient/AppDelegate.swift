@@ -373,7 +373,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             task.setTaskCompleted(success: true)
             return
         }
-        
+
+        NKCommon.shared.setup(delegate: NCNetworking.shared)
         NKCommon.shared.writeLog("[INFO] Start handler refresh task [Auto upload]")
         
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -390,6 +391,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
+        NKCommon.shared.setup(delegate: NCNetworking.shared)
         NKCommon.shared.writeLog("[INFO] Start handler processing task [Reload widget]")
 
         WidgetCenter.shared.reloadAllTimelines()

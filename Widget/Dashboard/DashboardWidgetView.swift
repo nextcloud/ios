@@ -105,7 +105,7 @@ struct DashboardWidgetView: View {
                 .padding(.top, 35)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
-                if let tableButton = entry.tableButton, !tableButton.isEmpty {
+                if let tableButton = entry.tableButton, !tableButton.isEmpty, !entry.isPlaceholder {
                     
                     HStack(spacing: 10) {
 
