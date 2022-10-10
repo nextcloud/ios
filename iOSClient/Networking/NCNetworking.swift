@@ -111,7 +111,7 @@ import Photos
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.typeReachability) {
 
-#if !EXTENSION
+        #if !EXTENSION
         if typeReachability == NKCommon.typeReachability.reachableCellular || typeReachability == NKCommon.typeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
                 NCService.shared.startRequestServicesServer()
