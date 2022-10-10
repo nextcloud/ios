@@ -168,10 +168,9 @@ import Photos
 
         #if !EXTENSION
         defer {
+            NKCommon.shared.writeLog("[INFO] Check trusted challenge:\(isTrusted)")
             if !isTrusted {
-                DispatchQueue.main.async {
-                    (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
-                }
+                DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
             }
         }
         #endif

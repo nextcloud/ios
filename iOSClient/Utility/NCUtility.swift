@@ -996,7 +996,7 @@ class NCUtility: NSObject {
     }
     
     func getImageUserData(url: URL, fileName: String?, size: CGFloat, completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
-        
+
         let size = CGSize(width: size, height: size)
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 

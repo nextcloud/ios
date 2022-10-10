@@ -277,7 +277,7 @@ class NCService: NSObject {
                 NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
                 for widget in dashboardWidgets {
                     if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
-                        NCUtility.shared.getImageUserData(url: url, fileName: fileName, size: 128)
+                        NCUtility.shared.getImageUserData(url: url, fileName: fileName, size: CGFloat(NCGlobal.shared.sizeIcon))
                     }
                 }
             }
