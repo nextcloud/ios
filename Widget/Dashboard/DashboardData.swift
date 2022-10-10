@@ -75,12 +75,14 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
-func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
     
-    var id = "recommendations"
+    var id: String = intent?.identifier ?? "activity"
+
+    /*
     switch intent {
     case .unknown:
         id = "recommendations"
@@ -95,7 +97,8 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     case .user_status:
         id = "user_status"
     }
-    
+    */
+
     if isPreview {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
