@@ -1,38 +1,8 @@
-"9yMkyI" = "Applications";
-
-"TRaTZg" = "Application";
-
-"XKkeMc-jHprBS" = "Just to confirm, you wanted ‘Notes’?";
-
-"XKkeMc-maQPuV" = "Just to confirm, you wanted ‘Recommendations’?";
-
-"XKkeMc-oMvXKY" = "Just to confirm, you wanted ‘User status’?";
-
-"XKkeMc-roy1t6" = "Just to confirm, you wanted ‘Activity’?";
-
-"XKkeMc-zqY55O" = "Just to confirm, you wanted ‘Deck’?";
+"TRaTZg" = "Widget";
 
 "gpCwrM" = "Dashboard";
 
-"jHprBS" = "Notes";
-
-"maQPuV" = "Recommendations";
-
-"oMvXKY" = "User status";
-
-"qZKu0p-jHprBS" = "There are ${count} options matching ‘Notes’.";
-
-"qZKu0p-maQPuV" = "There are ${count} options matching ‘Recommendations’.";
-
-"qZKu0p-oMvXKY" = "There are ${count} options matching ‘User status’.";
-
-"qZKu0p-roy1t6" = "There are ${count} options matching ‘Activity’.";
-
-"qZKu0p-zqY55O" = "There are ${count} options matching ‘Deck’.";
-
-"roy1t6" = "Activity";
+"l090JH" = "Applications";
 
 "tVvJ9c" = "Dashboard Widget";
-
-"zqY55O" = "Deck";
 

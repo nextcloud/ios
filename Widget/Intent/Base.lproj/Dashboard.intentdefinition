@@ -37,7 +37,7 @@
 					<key>INIntentParameterConfigurable</key>
 					<true/>
 					<key>INIntentParameterDisplayName</key>
-					<string>Application</string>
+					<string>Widget</string>
 					<key>INIntentParameterDisplayNameID</key>
 					<string>TRaTZg</string>
 					<key>INIntentParameterDisplayPriority</key>
