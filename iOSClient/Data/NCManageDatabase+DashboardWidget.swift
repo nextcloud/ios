@@ -41,7 +41,7 @@ extension NCManageDatabase {
     func getDashboardWidgetApplications(account: String) -> Results<tableDashboardWidget> {
 
         let realm = try! Realm()
-        return realm.objects(tableDashboardWidget.self).filter("account == %@", account)
+        return realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(byKeyPath: "title", ascending: true)
     }
     
     func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
