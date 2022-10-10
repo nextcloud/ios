@@ -1417,6 +1417,7 @@
 		F72EA95528B7BAD100C88F0C /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				F70EA92828D4B97C00920635 /* Intent */,
 				F7E0710028B13BB00001B882 /* DashboardData.swift */,
 				F72EA95128B7BA2A00C88F0C /* DashboardWidgetProvider.swift */,
 				F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */,
@@ -1442,7 +1443,6 @@
 				F72EA95628B7BAE700C88F0C /* Files */,
 				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
-				F70EA92828D4B97C00920635 /* Intent */,
 				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
 			);
 			path = Widget;
