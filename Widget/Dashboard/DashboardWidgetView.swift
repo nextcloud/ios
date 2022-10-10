@@ -64,20 +64,22 @@ struct DashboardWidgetView: View {
                                 HStack {
                                     
                                     let subTitleColor = Color(white: 0.5)
-                                    let imageSize:CGFloat = 35
-                                    
+
                                     if entry.tableDashboard?.itemIconsRound ?? false {
                                         Image(uiImage: element.icon)
+                                            .renderingMode(.template)
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(width: imageSize, height: imageSize)
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.white)
+                                            .padding(7)
+                                            .background(Color(.systemGray4))
                                             .clipShape(Circle())
-                                            .overlay(Circle().stroke(Color.white, lineWidth: 1))
                                     } else {
                                         Image(uiImage: element.icon)
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(width: imageSize, height: imageSize)
+                                            .frame(width: 35, height: 35)
                                             .clipped()
                                             .cornerRadius(5)
                                     }
