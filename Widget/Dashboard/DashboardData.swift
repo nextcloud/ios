@@ -43,6 +43,8 @@ struct DashboardData: Identifiable, Hashable {
     let subTitle: String
     let link: URL
     let icon: UIImage
+    let template: Bool
+    let avatar: Bool
 }
 
 struct DashboardDataButton: Hashable {
@@ -52,16 +54,16 @@ struct DashboardDataButton: Hashable {
 }
 
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!),
-    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!)
+    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
+    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false)
 ]
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
@@ -155,6 +157,8 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                         if let entryLink = item.link, let url = URL(string: entryLink){ link = url }
                         var icon = UIImage(named: "file")!
                         var iconFileName: String?
+                        var template: Bool = false
+                        var avatar: Bool = false
 
                         if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
                             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
@@ -163,10 +167,15 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                                 let pathComponents = path.components(separatedBy: "/")
                                 let queryItems = urlComponents.queryItems
 
+                                if (pathComponents.last as? NSString)?.pathExtension.lowercased() == "svg" {
+                                    template = true
+                                }
+
                                 if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
                                     iconFileName = item
                                 } else if pathComponents[1] == "avatar" {
                                     iconFileName = pathComponents[2]
+                                    avatar = true
                                 } else {
                                     iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                 }
@@ -181,7 +190,7 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                             semaphore.wait()
                         }
                         
-                        let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon)
+                        let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon, template: template, avatar: avatar)
                         datas.append(data)
                         
                         if datas.count == dashboardItems { break }

@@ -69,23 +69,42 @@ struct DashboardWidgetView: View {
                                         Circle()
                                             .fill(Color(.systemGray4))
                                             .frame(width: 35, height: 35)
-                                    } else if entry.tableDashboard?.itemIconsRound ?? false {
-                                        Image(uiImage: element.icon)
-                                            .renderingMode(.template)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 20, height: 20)
-                                            .foregroundColor(.white)
-                                            .padding(7)
-                                            .background(Color(.systemGray4))
-                                            .clipShape(Circle())
+                                    } else if element.template {
+                                        if entry.tableDashboard?.itemIconsRound ?? false {
+                                            Image(uiImage: element.icon)
+                                                .renderingMode(.template)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 20, height: 20)
+                                                .foregroundColor(.white)
+                                                .padding(7)
+                                                .background(Color(.systemGray4))
+                                                .clipShape(Circle())
+                                        } else {
+                                            Image(uiImage: element.icon)
+                                                .renderingMode(.template)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 25, height: 25)
+                                                .foregroundColor(Color(.label))
+                                                .clipped()
+                                                .cornerRadius(5)
+                                        }
                                     } else {
-                                        Image(uiImage: element.icon)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 35, height: 35)
-                                            .clipped()
-                                            .cornerRadius(5)
+                                        if entry.tableDashboard?.itemIconsRound ?? false || element.avatar {
+                                            Image(uiImage: element.icon)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 35, height: 35)
+                                                .clipShape(Circle())
+                                        } else {
+                                            Image(uiImage: element.icon)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 35, height: 35)
+                                                .clipped()
+                                                .cornerRadius(5)
+                                        }
                                     }
 
                                     VStack(alignment: .leading, spacing: 2) {
