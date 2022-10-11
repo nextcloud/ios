@@ -77,7 +77,8 @@ struct DashboardWidgetView: View {
                                                 .scaledToFill()
                                                 .frame(width: 20, height: 20)
                                                 .foregroundColor(.white)
-                                                .padding(7)
+                                                .padding(8
+                                                )
                                                 .background(Color(.systemGray4))
                                                 .clipShape(Circle())
                                         } else {
