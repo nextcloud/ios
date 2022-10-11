@@ -111,7 +111,7 @@ import Photos
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.typeReachability) {
 
-#if !EXTENSION
+        #if !EXTENSION
         if typeReachability == NKCommon.typeReachability.reachableCellular || typeReachability == NKCommon.typeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
                 NCService.shared.startRequestServicesServer()
@@ -169,9 +169,7 @@ import Photos
         #if !EXTENSION
         defer {
             if !isTrusted {
-                DispatchQueue.main.async {
-                    (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
-                }
+                DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
             }
         }
         #endif
@@ -545,7 +543,9 @@ import Photos
 
                 NKCommon.shared.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
+
             } else {
+
                 if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -553,10 +553,7 @@ import Photos
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 
                 } else {
-                    if size == 0 {
-                        errorDescription = "File length 0"
-                        NKCommon.shared.writeLog("[ERROR] Upload error 0 length " + serverUrl + "/" + fileName)
-                    }
+                    
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
                 }
@@ -618,9 +615,18 @@ import Photos
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
                 for metadata in metadatas {
-                    if (metadata.e2eEncrypted || metadata.chunk) {  continue }
-                    if (metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi) { continue }
-                    guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else { continue }
+                    if (metadata.e2eEncrypted || metadata.chunk) {
+                        NKCommon.shared.writeLog("[INFO] Autoupload file skipped, E2E:\(metadata.e2eEncrypted) - CHUNK:\(metadata.chunk)")
+                        continue
+                    }
+                    if (metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi) {
+                        NKCommon.shared.writeLog("[INFO] Autoupload file skipped, required WiFi")
+                        continue
+                    }
+                    guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else {
+                        NKCommon.shared.writeLog("[INFO] Autoupload file skipped, file status in upload error")
+                        continue
+                    }
                     // Upload
                     let semaphoreUpload = DispatchSemaphore(value: 1)
                     NCNetworking.shared.upload(metadata: metadata) {

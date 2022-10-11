@@ -40,3 +40,7 @@
 #if defined(EXTENSION_WIDGET)
 #import "Widget-Swift.h"
 #endif
+
+#if defined(EXTENSION_WIDGETDASHBOARDINTENTHANDLER)
+#import "WidgetDashboardIntentHandler-Swift.h"
+#endif

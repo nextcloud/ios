@@ -76,7 +76,7 @@ import Photos
             self.appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
 
         case NCGlobal.shared.selectorLoadFileView:
-            guard UIApplication.shared.applicationState == UIApplication.State.active else { break }
+            guard UIApplication.shared.applicationState == .active else { break }
 
             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                 self.openDocumentController(metadata: metadata)
@@ -90,7 +90,7 @@ import Photos
             }
             
         case NCGlobal.shared.selectorOpenIn:
-            if UIApplication.shared.applicationState == UIApplication.State.active {
+            if UIApplication.shared.applicationState == .active {
                 self.openDocumentController(metadata: metadata)
             }
             

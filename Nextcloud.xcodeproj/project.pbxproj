@@ -127,6 +127,7 @@
 		F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC83277B7D3500AA9FBF /* RealmSwift */; };
 		F710FC86277B7D3F00AA9FBF /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC85277B7D3F00AA9FBF /* Realm */; };
 		F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC87277B7D3F00AA9FBF /* RealmSwift */; };
+		F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9739428F17131002C43E2 /* IntentHandler.swift */; };
 		F7134186259747BA00768D21 /* NCPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F7134185259747BA00768D21 /* NCPushNotification.m */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
@@ -384,6 +385,30 @@
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
 		F7A76DC8256A71CD00119AB3 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
 		F7A76DCD256A71CE00119AB3 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
+		F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72328F1771B008BBE1C /* NextcloudKit */; };
+		F7A8D72628F17728008BBE1C /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72528F17728008BBE1C /* Realm */; };
+		F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72728F17728008BBE1C /* RealmSwift */; };
+		F7A8D72A28F17733008BBE1C /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72928F17733008BBE1C /* SVGKit */; };
+		F7A8D72C28F17742008BBE1C /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72B28F17742008BBE1C /* SwiftEntryKit */; };
+		F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72D28F17764008BBE1C /* UICKeyChainStore */; };
+		F7A8D73428F17E12008BBE1C /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
+		F7A8D73528F17E16008BBE1C /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
+		F7A8D73628F17E1A008BBE1C /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
+		F7A8D73728F17E1E008BBE1C /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
+		F7A8D73828F17E21008BBE1C /* NCManageDatabase+DashboardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */; };
+		F7A8D73928F17E25008BBE1C /* NCManageDatabase+Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61827562A4B0081CEEF /* NCManageDatabase+Metadata.swift */; };
+		F7A8D73A28F17E28008BBE1C /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
+		F7A8D73B28F17E2C008BBE1C /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
+		F7A8D73C28F181BC008BBE1C /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F7A8D73D28F181D3008BBE1C /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
+		F7A8D73E28F181E2008BBE1C /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
+		F7A8D73F28F181EF008BBE1C /* NCGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */; };
+		F7A8D74028F18212008BBE1C /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
+		F7A8D74128F18254008BBE1C /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extensions.swift */; };
+		F7A8D74228F18261008BBE1C /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F7A8D74328F1826F008BBE1C /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */; };
+		F7A8D74428F1827B008BBE1C /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
+		F7A8D74528F1828E008BBE1C /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F7AC1CB028AB94490032D99F /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AC1CAF28AB94490032D99F /* Array+Extensions.swift */; };
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
@@ -408,6 +433,10 @@
 		F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */; };
 		F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C9555221F0C4CA0024296E /* NCActivity.storyboard */; };
 		F7C9555521F0C5470024296E /* NCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9555421F0C5470024296E /* NCActivity.swift */; };
+		F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C9739128F17131002C43E2 /* Intents.framework */; };
+		F7C9739528F17131002C43E2 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9739428F17131002C43E2 /* IntentHandler.swift */; };
+		F7C9739928F17131002C43E2 /* WidgetDashboardIntentHandler.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F7C9739D28F1733B002C43E2 /* Dashboard.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F7FABE3928D1DAD00000A325 /* Dashboard.intentdefinition */; };
 		F7CA212D25F1333300826ABB /* NCAccountRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CA212B25F1333200826ABB /* NCAccountRequest.swift */; };
 		F7CA212E25F1333300826ABB /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CA212C25F1333200826ABB /* NCAccountRequest.storyboard */; };
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
@@ -509,6 +538,13 @@
 			remoteGlobalIDString = F771E3CF20E2392D00AFB62D;
 			remoteInfo = "File Provider Extension";
 		};
+		F7C9739728F17131002C43E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F7C9738F28F17131002C43E2;
+			remoteInfo = WidgetDashboardIntentHandler;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -535,6 +571,7 @@
 				F771E3EB20E2392E00AFB62D /* File Provider Extension.appex in Embed Foundation Extensions */,
 				F749E4E91DC1FB38009BA2FD /* Share.appex in Embed Foundation Extensions */,
 				2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed Foundation Extensions */,
+				F7C9739928F17131002C43E2 /* WidgetDashboardIntentHandler.appex in Embed Foundation Extensions */,
 				F7346E1C28B0EF5E006CE2D2 /* Widget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -672,6 +709,7 @@
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCViewer+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCViewer+Menu.swift"; sourceTree = "<group>"; };
 		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
+		F711D63328F47A66003F43C8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Dashboard.strings; sourceTree = "<group>"; };
 		F7134184259747BA00768D21 /* NCPushNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCPushNotification.h; sourceTree = "<group>"; };
 		F7134185259747BA00768D21 /* NCPushNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCPushNotification.m; sourceTree = "<group>"; };
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
@@ -893,53 +931,12 @@
 		F79BCEEA270B49C800B5B71F /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		F79EDA9F26B004980007D134 /* NCPlayerToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayerToolBar.swift; sourceTree = "<group>"; };
 		F79EDAA126B004980007D134 /* NCPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayer.swift; sourceTree = "<group>"; };
-		F79F6B9D28DC982600CFEFBA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6B9F28DC982800CFEFBA /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BA128DC9AC600CFEFBA /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BA328DC9AC700CFEFBA /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BA528DC9AC800CFEFBA /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BA728DC9AC900CFEFBA /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BA928DC9ACA00CFEFBA /* ka-GE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ka-GE"; path = "ka-GE.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BAB28DC9ACA00CFEFBA /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BAD28DC9ACB00CFEFBA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BAF28DC9ACB00CFEFBA /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BB128DC9ACD00CFEFBA /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BB328DC9ACE00CFEFBA /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BB528DC9ACE00CFEFBA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BB728DC9ACF00CFEFBA /* zh-Hant-TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-TW"; path = "zh-Hant-TW.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BB928DC9ACF00CFEFBA /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BBB28DC9AD000CFEFBA /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BBD28DC9AD000CFEFBA /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BBF28DC9AD200CFEFBA /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BC128DC9AD400CFEFBA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BC328DC9AD500CFEFBA /* es-UY */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-UY"; path = "es-UY.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BC528DC9AD600CFEFBA /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BC728DC9AD700CFEFBA /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BC928DC9AD700CFEFBA /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BCB28DC9AD800CFEFBA /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BCD28DC9AD800CFEFBA /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BCF28DC9AD900CFEFBA /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BD128DC9ADA00CFEFBA /* sr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sr; path = sr.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BD328DC9ADA00CFEFBA /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BD528DC9ADB00CFEFBA /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Dashboard.strings; sourceTree = "<group>"; };
-		F79F6BD728DC9ADC00CFEFBA /* es-CL */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-CL"; path = "es-CL.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BD928DC9ADC00CFEFBA /* es-CO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-CO"; path = "es-CO.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BDB28DC9ADD00CFEFBA /* es-CR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-CR"; path = "es-CR.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BDD28DC9ADE00CFEFBA /* es-DO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-DO"; path = "es-DO.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BDF28DC9ADE00CFEFBA /* es-EC */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-EC"; path = "es-EC.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BE128DC9ADF00CFEFBA /* es-SV */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-SV"; path = "es-SV.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BE328DC9AE000CFEFBA /* es-GT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-GT"; path = "es-GT.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BE528DC9AE100CFEFBA /* es-HN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-HN"; path = "es-HN.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BE728DC9AE200CFEFBA /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BE928DC9AE400CFEFBA /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BEB28DC9AE500CFEFBA /* es-NI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-NI"; path = "es-NI.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BED28DC9AE600CFEFBA /* es-PA */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-PA"; path = "es-PA.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BEF28DC9AE700CFEFBA /* es-PY */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-PY"; path = "es-PY.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BF128DC9AE800CFEFBA /* es-PE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-PE"; path = "es-PE.lproj/Dashboard.strings"; sourceTree = "<group>"; };
-		F79F6BF328DC9AE800CFEFBA /* es-PR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-PR"; path = "es-PR.lproj/Dashboard.strings"; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
+		F7A8D72228F176B6008BBE1C /* WidgetDashboardIntentHandler-Brinding-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WidgetDashboardIntentHandler-Brinding-header.h"; sourceTree = "<group>"; };
+		F7A8D73028F17C44008BBE1C /* WidgetDashboardIntentHandler.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetDashboardIntentHandler.entitlements; sourceTree = "<group>"; };
+		F7A8D73328F17C62008BBE1C /* WidgetDashboardIntentHandler.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = WidgetDashboardIntentHandler.plist; sourceTree = "<group>"; };
 		F7AA41B827C7CF4600494705 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7AA41B927C7CF4B00494705 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F7AA41BA27C7CF5000494705 /* zh-Hant-TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-TW"; path = "zh-Hant-TW.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -1024,6 +1021,9 @@
 		F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLook.swift; sourceTree = "<group>"; };
 		F7C9555221F0C4CA0024296E /* NCActivity.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCActivity.storyboard; sourceTree = "<group>"; };
 		F7C9555421F0C5470024296E /* NCActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivity.swift; sourceTree = "<group>"; };
+		F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetDashboardIntentHandler.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7C9739128F17131002C43E2 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		F7C9739428F17131002C43E2 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		F7CA212B25F1333200826ABB /* NCAccountRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAccountRequest.swift; sourceTree = "<group>"; };
 		F7CA212C25F1333200826ABB /* NCAccountRequest.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCAccountRequest.storyboard; sourceTree = "<group>"; };
 		F7CB68992541676B0050EC94 /* NCMore.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCMore.storyboard; sourceTree = "<group>"; };
@@ -1172,6 +1172,20 @@
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
 				F76DA93F277B75870082465B /* KTVCocoaHTTPServer.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7C9738D28F17131002C43E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7A8D72A28F17733008BBE1C /* SVGKit in Frameworks */,
+				F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */,
+				F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */,
+				F7A8D72C28F17742008BBE1C /* SwiftEntryKit in Frameworks */,
+				F7A8D72628F17728008BBE1C /* Realm in Frameworks */,
+				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
+				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1403,6 +1417,7 @@
 		F72EA95528B7BAD100C88F0C /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				F70EA92828D4B97C00920635 /* Intent */,
 				F7E0710028B13BB00001B882 /* DashboardData.swift */,
 				F72EA95128B7BA2A00C88F0C /* DashboardWidgetProvider.swift */,
 				F72A17D728B221E300F3F159 /* DashboardWidgetView.swift */,
@@ -1428,7 +1443,6 @@
 				F72EA95628B7BAE700C88F0C /* Files */,
 				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
-				F70EA92828D4B97C00920635 /* Intent */,
 				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
 			);
 			path = Widget;
@@ -1811,8 +1825,6 @@
 		F7C742D31E7BD36600D9C973 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F7346E2128B0FBEE006CE2D2 /* Widget.plist */,
-				F783033F28B50B7E00B84583 /* Widget.entitlements */,
 				F771E3FB20E23A8700AFB62D /* File_Provider_Extension.entitlements */,
 				F771E3FC20E23A8800AFB62D /* File_Provider_Extension.plist */,
 				F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */,
@@ -1821,8 +1833,21 @@
 				F728B2BB23E83AD200E12DA0 /* Notification_Service_Extension.plist */,
 				F7C742D01E7BD35B00D9C973 /* Share.entitlements */,
 				F7496B83208F5652004B299C /* Share.plist */,
+				F783033F28B50B7E00B84583 /* Widget.entitlements */,
+				F7346E2128B0FBEE006CE2D2 /* Widget.plist */,
+				F7A8D73028F17C44008BBE1C /* WidgetDashboardIntentHandler.entitlements */,
+				F7A8D73328F17C62008BBE1C /* WidgetDashboardIntentHandler.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F7C9739328F17131002C43E2 /* WidgetDashboardIntentHandler */ = {
+			isa = PBXGroup;
+			children = (
+				F7A8D72228F176B6008BBE1C /* WidgetDashboardIntentHandler-Brinding-header.h */,
+				F7C9739428F17131002C43E2 /* IntentHandler.swift */,
+			);
+			path = WidgetDashboardIntentHandler;
 			sourceTree = "<group>";
 		};
 		F7CA213725F1372B00826ABB /* Account Request */ = {
@@ -1945,12 +1970,14 @@
 				2C33C48023E2C475005F963B /* Notification Service Extension */,
 				AF8ED1FA2757821000B8DBC4 /* NextcloudTests */,
 				F7346E1428B0EF5B006CE2D2 /* Widget */,
+				F7C9739328F17131002C43E2 /* WidgetDashboardIntentHandler */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
 				2C33C47F23E2C475005F963B /* Notification Service Extension.appex */,
 				AF8ED1F92757821000B8DBC4 /* NextcloudTests.xctest */,
 				F7346E1028B0EF5B006CE2D2 /* Widget.appex */,
+				F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2108,6 +2135,7 @@
 				08DC3BD41E64727E00F036D3 /* AdSupport.framework */,
 				F7FC7D551DC1F93800BB2C6A /* libz.tbd */,
 				F7346E1128B0EF5B006CE2D2 /* WidgetKit.framework */,
+				F7C9739128F17131002C43E2 /* Intents.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2275,6 +2303,7 @@
 				F771E3EA20E2392E00AFB62D /* PBXTargetDependency */,
 				2C33C48523E2C475005F963B /* PBXTargetDependency */,
 				F7346E1B28B0EF5E006CE2D2 /* PBXTargetDependency */,
+				F7C9739828F17131002C43E2 /* PBXTargetDependency */,
 			);
 			name = Nextcloud;
 			packageProductDependencies = (
@@ -2302,13 +2331,38 @@
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F7C9738F28F17131002C43E2 /* WidgetDashboardIntentHandler */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F7C9739A28F17132002C43E2 /* Build configuration list for PBXNativeTarget "WidgetDashboardIntentHandler" */;
+			buildPhases = (
+				F7C9738C28F17131002C43E2 /* Sources */,
+				F7C9738D28F17131002C43E2 /* Frameworks */,
+				F7C9738E28F17131002C43E2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WidgetDashboardIntentHandler;
+			packageProductDependencies = (
+				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
+				F7A8D72528F17728008BBE1C /* Realm */,
+				F7A8D72728F17728008BBE1C /* RealmSwift */,
+				F7A8D72928F17733008BBE1C /* SVGKit */,
+				F7A8D72B28F17742008BBE1C /* SwiftEntryKit */,
+				F7A8D72D28F17764008BBE1C /* UICKeyChainStore */,
+			);
+			productName = WidgetDashboardIntentHandler;
+			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		F7F67BA01A24D27800EE80DA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1340;
+				LastSwiftUpdateCheck = 1400;
 				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Marino Faggiana";
 				TargetAttributes = {
@@ -2350,6 +2404,9 @@
 								enabled = 1;
 							};
 						};
+					};
+					F7C9738F28F17131002C43E2 = {
+						CreatedOnToolsVersion = 14.0;
 					};
 				};
 			};
@@ -2431,6 +2488,7 @@
 			targets = (
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
 				F7346E0F28B0EF5B006CE2D2 /* Widget */,
+				F7C9738F28F17131002C43E2 /* WidgetDashboardIntentHandler */,
 				F71459B41D12E3B700CAFEEC /* Share */,
 				F771E3CF20E2392D00AFB62D /* File Provider Extension */,
 				2C33C47E23E2C475005F963B /* Notification Service Extension */,
@@ -2581,6 +2639,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F7C9738E28F17131002C43E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -2714,6 +2779,7 @@
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
+				F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */,
 				F72EA95A28B7BD0D00C88F0C /* FilesWidgetView.swift in Sources */,
 				F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */,
 				F793E5A028B7651B005E4B02 /* NCViewCertificateDetails.swift in Sources */,
@@ -2952,6 +3018,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F7C9738C28F17131002C43E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7A8D73528F17E16008BBE1C /* NCManageDatabase.swift in Sources */,
+				F7A8D74428F1827B008BBE1C /* ThreadSafeDictionary.swift in Sources */,
+				F7C9739528F17131002C43E2 /* IntentHandler.swift in Sources */,
+				F7A8D73D28F181D3008BBE1C /* NCUtilityFileSystem.swift in Sources */,
+				F7A8D74528F1828E008BBE1C /* CCUtility.m in Sources */,
+				F7A8D73F28F181EF008BBE1C /* NCGlobal.swift in Sources */,
+				F7A8D74328F1826F008BBE1C /* String+Extensions.swift in Sources */,
+				F7A8D73728F17E1E008BBE1C /* NCManageDatabase+Account.swift in Sources */,
+				F7A8D73B28F17E2C008BBE1C /* NCElementsJSON.swift in Sources */,
+				F7A8D73C28F181BC008BBE1C /* NCBrand.swift in Sources */,
+				F7A8D74228F18261008BBE1C /* NCUtility.swift in Sources */,
+				F7A8D73A28F17E28008BBE1C /* NCManageDatabase+Video.swift in Sources */,
+				F7C9739D28F1733B002C43E2 /* Dashboard.intentdefinition in Sources */,
+				F7A8D73828F17E21008BBE1C /* NCManageDatabase+DashboardWidget.swift in Sources */,
+				F7A8D73928F17E25008BBE1C /* NCManageDatabase+Metadata.swift in Sources */,
+				F7A8D74128F18254008BBE1C /* UIColor+Extensions.swift in Sources */,
+				F7A8D73428F17E12008BBE1C /* NCDatabase.swift in Sources */,
+				F7A8D74028F18212008BBE1C /* UIImage+Extensions.swift in Sources */,
+				F7A8D73628F17E1A008BBE1C /* NCManageDatabase+Activity.swift in Sources */,
+				F7A8D73E28F181E2008BBE1C /* NCUserBaseUrl.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -2979,6 +3072,11 @@
 			isa = PBXTargetDependency;
 			target = F771E3CF20E2392D00AFB62D /* File Provider Extension */;
 			targetProxy = F771E3E920E2392E00AFB62D /* PBXContainerItemProxy */;
+		};
+		F7C9739828F17131002C43E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F7C9738F28F17131002C43E2 /* WidgetDashboardIntentHandler */;
+			targetProxy = F7C9739728F17131002C43E2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3091,50 +3189,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				F7FABE3828D1DAD00000A325 /* Base */,
-				F79F6B9D28DC982600CFEFBA /* en */,
-				F79F6B9F28DC982800CFEFBA /* it */,
-				F79F6BA128DC9AC600CFEFBA /* ja-JP */,
-				F79F6BA328DC9AC700CFEFBA /* is */,
-				F79F6BA528DC9AC800CFEFBA /* hu */,
-				F79F6BA728DC9AC900CFEFBA /* de */,
-				F79F6BA928DC9ACA00CFEFBA /* ka-GE */,
-				F79F6BAB28DC9ACA00CFEFBA /* gl */,
-				F79F6BAD28DC9ACB00CFEFBA /* fr */,
-				F79F6BAF28DC9ACB00CFEFBA /* en-GB */,
-				F79F6BB128DC9ACD00CFEFBA /* eu */,
-				F79F6BB328DC9ACE00CFEFBA /* ca */,
-				F79F6BB528DC9ACE00CFEFBA /* zh-Hans */,
-				F79F6BB728DC9ACF00CFEFBA /* zh-Hant-TW */,
-				F79F6BB928DC9ACF00CFEFBA /* cs-CZ */,
-				F79F6BBB28DC9AD000CFEFBA /* da */,
-				F79F6BBD28DC9AD000CFEFBA /* nl */,
-				F79F6BBF28DC9AD200CFEFBA /* tr */,
-				F79F6BC128DC9AD400CFEFBA /* sv */,
-				F79F6BC328DC9AD500CFEFBA /* es-UY */,
-				F79F6BC528DC9AD600CFEFBA /* ko */,
-				F79F6BC728DC9AD700CFEFBA /* nb-NO */,
-				F79F6BC928DC9AD700CFEFBA /* pl */,
-				F79F6BCB28DC9AD800CFEFBA /* pt-BR */,
-				F79F6BCD28DC9AD800CFEFBA /* pt-PT */,
-				F79F6BCF28DC9AD900CFEFBA /* ru */,
-				F79F6BD128DC9ADA00CFEFBA /* sr */,
-				F79F6BD328DC9ADA00CFEFBA /* sk-SK */,
-				F79F6BD528DC9ADB00CFEFBA /* es */,
-				F79F6BD728DC9ADC00CFEFBA /* es-CL */,
-				F79F6BD928DC9ADC00CFEFBA /* es-CO */,
-				F79F6BDB28DC9ADD00CFEFBA /* es-CR */,
-				F79F6BDD28DC9ADE00CFEFBA /* es-DO */,
-				F79F6BDF28DC9ADE00CFEFBA /* es-EC */,
-				F79F6BE128DC9ADF00CFEFBA /* es-SV */,
-				F79F6BE328DC9AE000CFEFBA /* es-GT */,
-				F79F6BE528DC9AE100CFEFBA /* es-HN */,
-				F79F6BE728DC9AE200CFEFBA /* es-419 */,
-				F79F6BE928DC9AE400CFEFBA /* es-MX */,
-				F79F6BEB28DC9AE500CFEFBA /* es-NI */,
-				F79F6BED28DC9AE600CFEFBA /* es-PA */,
-				F79F6BEF28DC9AE700CFEFBA /* es-PY */,
-				F79F6BF128DC9AE800CFEFBA /* es-PE */,
-				F79F6BF328DC9AE800CFEFBA /* es-PR */,
+				F711D63328F47A66003F43C8 /* en */,
 			);
 			name = Dashboard.intentdefinition;
 			sourceTree = "<group>";
@@ -3239,15 +3294,12 @@
 		F7346E1D28B0EF5E006CE2D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Widget.entitlements";
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
@@ -3256,28 +3308,22 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGET";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Widget/Widget-Brinding-header.h";
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		F7346E1E28B0EF5E006CE2D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Widget.entitlements";
@@ -3289,17 +3335,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGET";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Widget/Widget-Brinding-header.h";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -3362,6 +3404,76 @@
 			};
 			name = Release;
 		};
+		F7C9739B28F17132002C43E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand//WidgetDashboardIntentHandler.entitlements";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					EXTENSION,
+					EXTENSION_WIDGETDASHBOARDINTENTHANDLER,
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/WidgetDashboardIntentHandler.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WidgetDashboardIntentHandler;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.WidgetDashboardIntentHandler;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGETDASHBOARDINTENTHANDLER";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/WidgetDashboardIntentHandler/WidgetDashboardIntentHandler-Brinding-header.h";
+			};
+			name = Debug;
+		};
+		F7C9739C28F17132002C43E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand//WidgetDashboardIntentHandler.entitlements";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					EXTENSION,
+					EXTENSION_WIDGETDASHBOARDINTENTHANDLER,
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/WidgetDashboardIntentHandler.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WidgetDashboardIntentHandler;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.WidgetDashboardIntentHandler;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_WIDGETDASHBOARDINTENTHANDLER";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/WidgetDashboardIntentHandler/WidgetDashboardIntentHandler-Brinding-header.h";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		F7F67BC91A24D27800EE80DA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3406,6 +3518,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3466,6 +3579,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3538,6 +3652,15 @@
 			buildConfigurations = (
 				F77B0F9B1D118A16002130FE /* Debug */,
 				F77B0F9C1D118A16002130FE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F7C9739A28F17132002C43E2 /* Build configuration list for PBXNativeTarget "WidgetDashboardIntentHandler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F7C9739B28F17132002C43E2 /* Debug */,
+				F7C9739C28F17132002C43E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -3895,6 +4018,36 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
 			productName = MarkdownKit;
+		};
+		F7A8D72328F1771B008BBE1C /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
+		};
+		F7A8D72528F17728008BBE1C /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		F7A8D72728F17728008BBE1C /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		F7A8D72928F17733008BBE1C /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		F7A8D72B28F17742008BBE1C /* SwiftEntryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
+			productName = SwiftEntryKit;
+		};
+		F7A8D72D28F17764008BBE1C /* UICKeyChainStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
+			productName = UICKeyChainStore;
 		};
 		F7BB7E4627A18C56009B9F29 /* Parchment */ = {
 			isa = XCSwiftPackageProductDependency;

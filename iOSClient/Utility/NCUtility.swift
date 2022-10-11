@@ -995,9 +995,9 @@ class NCUtility: NSObject {
         return imagePreview
     }
     
-    func getImageUserData(url: URL, fileName: String?, size: CGFloat, completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
-        
-        let size = CGSize(width: size, height: size)
+    func getWidgetImageUserData(url: URL, fileName: String?, completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
+
+        let size = CGSize(width: 256, height: 256)
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
         if let fileName = fileName {

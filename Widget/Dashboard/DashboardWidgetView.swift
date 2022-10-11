@@ -64,20 +64,26 @@ struct DashboardWidgetView: View {
                                 HStack {
                                     
                                     let subTitleColor = Color(white: 0.5)
-                                    let imageSize:CGFloat = 35
-                                    
-                                    if entry.tableDashboard?.itemIconsRound ?? false {
+
+                                    if entry.isPlaceholder {
+                                        Circle()
+                                            .fill(Color(.systemGray4))
+                                            .frame(width: 35, height: 35)
+                                    } else if entry.tableDashboard?.itemIconsRound ?? false {
                                         Image(uiImage: element.icon)
+                                            .renderingMode(.template)
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(width: imageSize, height: imageSize)
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.white)
+                                            .padding(7)
+                                            .background(Color(.systemGray4))
                                             .clipShape(Circle())
-                                            .overlay(Circle().stroke(Color.white, lineWidth: 1))
                                     } else {
                                         Image(uiImage: element.icon)
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(width: imageSize, height: imageSize)
+                                            .frame(width: 35, height: 35)
                                             .clipped()
                                             .cornerRadius(5)
                                     }
@@ -102,10 +108,10 @@ struct DashboardWidgetView: View {
                         }
                     }
                 }
-                .padding(.top, 30)
+                .padding(.top, 35)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
-                if let tableButton = entry.tableButton, !tableButton.isEmpty {
+                if let tableButton = entry.tableButton, !tableButton.isEmpty, !entry.isPlaceholder {
                     
                     HStack(spacing: 10) {
 
@@ -116,7 +122,7 @@ struct DashboardWidgetView: View {
                             Link(destination: URL(string: element.link)! , label: {
                                 
                                 Text(element.text)
-                                    .font(.system(size: 18))
+                                    .font(.system(size: 15))
                                     .padding(7)
                                     .background(brandColor)
                                     .foregroundColor(brandTextColor)
@@ -155,7 +161,7 @@ struct DashboardWidget_Previews: PreviewProvider {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

@@ -67,35 +67,19 @@ let dashboardDatasTest: [DashboardData] = [
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     
     if withButton {
-        let height = Int((displaySize.height - 80) / 50)
+        let height = Int((displaySize.height - 85) / 50)
         return height
     } else {
-        let height = Int((displaySize.height - 55) / 50)
+        let height = Int((displaySize.height - 60) / 50)
         return height
     }
 }
 
-func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
-    
-    var id = "recommendations"
-    switch intent {
-    case .unknown:
-        id = "recommendations"
-    case .notes:
-        id = "notes"
-    case .deck:
-        id = "deck"
-    case .recommendations:
-        id = "recommendations"
-    case .activity:
-        id = "activity"
-    case .user_status:
-        id = "user_status"
-    }
-    
+
     if isPreview {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
@@ -103,7 +87,11 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
-    
+
+    guard let id = intent?.identifier else {
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
+    }
+
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
     guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
@@ -170,16 +158,21 @@ func getDashboardDataEntry(intent: Applications, isPreview: Bool, displaySize: C
 
                         if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
                             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+
+                                let path = (urlComponents.path as NSString)
+                                let pathComponents = path.components(separatedBy: "/")
                                 let queryItems = urlComponents.queryItems
+
                                 if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
                                     iconFileName = item
+                                } else if pathComponents[1] == "avatar" {
+                                    iconFileName = pathComponents[2]
                                 } else {
-                                    let path = (urlComponents.path as NSString)
                                     iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                 }
                             }
                             let semaphore = DispatchSemaphore(value: 0)
-                            NCUtility.shared.getImageUserData(url: url, fileName: iconFileName , size: 128) { image in
+                            NCUtility.shared.getWidgetImageUserData(url: url, fileName: iconFileName) { image in
                                 if let image = image {
                                     icon = image
                                 }
