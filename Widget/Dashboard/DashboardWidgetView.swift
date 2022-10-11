@@ -67,7 +67,7 @@ struct DashboardWidgetView: View {
 
                                     if entry.isPlaceholder {
                                         Circle()
-                                            .fill(Color(white: 0.8))
+                                            .fill(Color(.systemGray4))
                                             .frame(width: 35, height: 35)
                                     } else if entry.tableDashboard?.itemIconsRound ?? false {
                                         Image(uiImage: element.icon)
