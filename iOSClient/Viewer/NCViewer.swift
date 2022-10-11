@@ -47,6 +47,21 @@ class NCViewer: NSObject {
         // URL
         if metadata.classFile == NKCommon.typeClassFile.url.rawValue {
 
+            // nextcloudtalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
+            if metadata.name == NCGlobal.shared.talkName {
+                let pathComponents = metadata.url.components(separatedBy: "/")
+                if pathComponents.contains("call") {
+                    let talkComponents = pathComponents.last?.components(separatedBy: "#")
+                    if let roomToken = talkComponents?.first {
+                        let urlString = "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(roomToken)"
+                        if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                            return
+                        }
+                    }
+                }
+            }
+
             if let url = URL(string: metadata.url) {
                 UIApplication.shared.open(url)
             }
