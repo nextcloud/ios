@@ -37,6 +37,7 @@ struct DashboardWidgetView: View {
                 HStack() {
                     
                     Image(uiImage: entry.titleImage)
+                        .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 20, height: 20)
@@ -85,7 +86,6 @@ struct DashboardWidgetView: View {
                                                 .resizable()
                                                 .scaledToFill()
                                                 .frame(width: 25, height: 25)
-                                                .foregroundColor(Color(.label))
                                                 .clipped()
                                                 .cornerRadius(5)
                                         }
