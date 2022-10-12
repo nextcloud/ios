@@ -26,7 +26,17 @@ class IntentHandler: INExtension, DashboardIntentHandling {
             applications.append(application)
         }
 
-        let collection = INObjectCollection(items: applications)
-        completion(collection, nil)
+        completion(INObjectCollection(items: applications), nil)
+    }
+
+    func defaultApplications(for intent: DashboardIntent) -> Applications? {
+
+        guard let account = NCManageDatabase.shared.getActiveAccount() else {
+            return nil
+        }
+        if let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first {
+            return Applications(identifier: result.id, display: result.title)
+        }
+        return nil
     }
 }

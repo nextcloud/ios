@@ -91,8 +91,9 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
 
-    // Default widget: recommendations
-    let id: String = intent?.identifier ?? "recommendations"
+    // Default widget
+    let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
+    let id: String = intent?.identifier ?? (result?.id ?? "recommendations")
 
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
