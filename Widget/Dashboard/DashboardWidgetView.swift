@@ -27,8 +27,6 @@ import WidgetKit
 struct DashboardWidgetView: View {
 
     var entry: DashboardDataEntry
-    let brandColor = Color(NCBrandColor.shared.brand)
-    let brandTextColor = Color(NCBrandColor.shared.brandText)
     
     var body: some View {
         
@@ -156,19 +154,16 @@ struct DashboardWidgetView: View {
                 
                 HStack {
 
-                    let placeholderColor = Color(white: 0.2)
-                    let brandColor = Color(NCBrandColor.shared.brand)
-                    
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
-                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
@@ -181,7 +176,7 @@ struct DashboardWidget_Previews: PreviewProvider {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
