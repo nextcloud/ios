@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCManageDatabase {
 
-    func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, Results<tableDashboardWidgetButton>?) {
+    func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, [tableDashboardWidgetButton]?) {
      
         let realm = try! Realm()
         guard let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else {
@@ -35,13 +35,15 @@ extension NCManageDatabase {
         }
         let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id).sorted(byKeyPath: "type", ascending: true)
         
-        return (resultDashboard, resultsButton)
+        return (tableDashboardWidget.init(value: resultDashboard), Array(resultsButton.map { tableDashboardWidgetButton.init(value: $0) }))
     }
 
-    func getDashboardWidgetApplications(account: String) -> Results<tableDashboardWidget> {
+    func getDashboardWidgetApplications(account: String) -> [tableDashboardWidget] {
 
         let realm = try! Realm()
-        return realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(byKeyPath: "title", ascending: true)
+        let results = realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(byKeyPath: "title", ascending: true)
+
+        return Array(results.map { tableDashboardWidget.init(value: $0) })
     }
     
     func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
