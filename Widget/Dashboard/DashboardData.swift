@@ -29,7 +29,7 @@ struct DashboardDataEntry: TimelineEntry {
     let date: Date
     let datas: [DashboardData]
     let tableDashboard: tableDashboardWidget?
-    let tableButton: Results<tableDashboardWidgetButton>?
+    let tableButton: [tableDashboardWidgetButton]?
     let isPlaceholder: Bool
     let titleImage: UIImage
     let title: String
@@ -172,8 +172,8 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
 
                                 if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
                                     iconFileName = item
-                                } else if pathComponents[1] == "avatar" {
-                                    iconFileName = pathComponents[2]
+                                } else if pathComponents.contains("avatar") {
+                                    iconFileName = pathComponents[pathComponents.count-2]
                                     avatar = true
                                 } else {
                                     iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension

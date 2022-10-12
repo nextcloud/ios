@@ -100,6 +100,7 @@ class NCGlobal: NSObject {
     // Name
     //
     @objc let appName                               = "files"
+    @objc let talkName                              = "talk-message"
     
     // Nextcloud version
     //
