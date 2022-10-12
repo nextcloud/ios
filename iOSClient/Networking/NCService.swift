@@ -273,11 +273,18 @@ class NCService: NSObject {
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
         
         NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
-            if error == .success, let dashboardWidgets = dashboardWidgets  {
-                NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
-                for widget in dashboardWidgets {
-                    if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
-                        NCUtility.shared.getWidgetImageUserData(url: url, fileName: fileName)
+            Task {
+                if error == .success, let dashboardWidgets = dashboardWidgets  {
+                    NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
+                    for widget in dashboardWidgets {
+                        if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
+                            do {
+                                let (_, data) = try await NextcloudKit.shared.getPreview(url: url)
+                                NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
+                            } catch {
+                                print(error)
+                            }
+                        }
                     }
                 }
             }

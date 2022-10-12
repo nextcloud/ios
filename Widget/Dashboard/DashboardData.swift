@@ -24,6 +24,7 @@
 import WidgetKit
 import NextcloudKit
 import RealmSwift
+import SVGKit
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
@@ -130,80 +131,91 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true
     let options = NKRequestOptions(timeout: 15, queue: NKCommon.shared.backgroundQueue)
     let title = tableDashboard?.title ?? id
-    var titleImage = UIImage(named: "widget")!
 
+    var imagetmp = UIImage(named: "widget")!
     if let fileName = tableDashboard?.iconClass {
         let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
         if let image = UIImage(contentsOfFile: fileNamePath) {
-            titleImage = image.withTintColor(.label, renderingMode: .alwaysOriginal)
+            imagetmp = image.withTintColor(.label, renderingMode: .alwaysOriginal)
         }
     }
+    let titleImage = imagetmp
         
     NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { account, results, data, error in
-        
-        var datas = [DashboardData]()
-        
-        if let results = results {
-            for result in results {
-                if let items = result.items {
-                    var counter: Int = 0
-                    let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: existsButton)
-                    for item in items {
-                        counter += 1
-                        let title = item.title ?? ""
-                        let subtitle = item.subtitle ?? ""
-                        var link = URL(string: "https://")!
-                        if let entryLink = item.link, let url = URL(string: entryLink){ link = url }
-                        var icon = UIImage(named: "file")!
-                        var iconFileName: String?
-                        var template: Bool = false
-                        var avatar: Bool = false
 
-                        if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
-                            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+        Task {
+            var datas = [DashboardData]()
 
-                                let path = (urlComponents.path as NSString)
-                                let pathComponents = path.components(separatedBy: "/")
-                                let queryItems = urlComponents.queryItems
+            if let results = results {
+                for result in results {
+                    if let items = result.items {
+                        var counter: Int = 0
+                        let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: existsButton)
+                        for item in items {
+                            counter += 1
+                            let title = item.title ?? ""
+                            let subtitle = item.subtitle ?? ""
+                            var link = URL(string: "https://")!
+                            if let entryLink = item.link, let url = URL(string: entryLink){ link = url }
+                            var icon = UIImage(named: "file")!
+                            var iconFileName: String?
+                            var template: Bool = false
+                            var avatar: Bool = false
 
-                                if (pathComponents.last as? NSString)?.pathExtension.lowercased() == "svg" {
-                                    template = true
+                            if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
+                                if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+
+                                    let path = (urlComponents.path as NSString)
+                                    let pathComponents = path.components(separatedBy: "/")
+                                    let queryItems = urlComponents.queryItems
+
+                                    if (pathComponents.last as? NSString)?.pathExtension.lowercased() == "svg" {
+                                        template = true
+                                    }
+
+                                    if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
+                                        iconFileName = item
+                                    } else if pathComponents.contains("avatar") {
+                                        iconFileName = pathComponents[pathComponents.count-2]
+                                        avatar = true
+                                    } else {
+                                        iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
+                                    }
                                 }
 
-                                if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
-                                    iconFileName = item
-                                } else if pathComponents.contains("avatar") {
-                                    iconFileName = pathComponents[pathComponents.count-2]
-                                    avatar = true
-                                } else {
-                                    iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
+                                do {
+                                    if let fileName = iconFileName {
+                                        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                                        if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
+                                            icon = image
+                                        } else {
+                                            let (_, data) = try await NextcloudKit.shared.getPreview(url: url)
+                                            if let image = NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
+                                                icon = image
+                                            }
+                                        }
+                                    }
+                                } catch {
+                                    print(error)
                                 }
                             }
-                            let semaphore = DispatchSemaphore(value: 0)
-                            NCUtility.shared.getWidgetImageUserData(url: url, fileName: iconFileName) { image in
-                                if let image = image {
-                                    icon = image
-                                }
-                                semaphore.signal()
-                            }
-                            semaphore.wait()
+
+                            let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon, template: template, avatar: avatar)
+                            datas.append(data)
+
+                            if datas.count == dashboardItems { break }
                         }
-                        
-                        let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon, template: template, avatar: avatar)
-                        datas.append(data)
-                        
-                        if datas.count == dashboardItems { break }
                     }
                 }
             }
-        }
-        
-        if error != .success {
-            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
-        } else if datas.isEmpty {
-            completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
-        } else {
-            completion(DashboardDataEntry(date: Date(), datas: datas, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+
+            if error != .success {
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
+            } else if datas.isEmpty {
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
+            } else {
+                completion(DashboardDataEntry(date: Date(), datas: datas, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+            }
         }
     }
 }

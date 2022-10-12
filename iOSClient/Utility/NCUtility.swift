@@ -994,39 +994,27 @@ class NCUtility: NSObject {
 
         return imagePreview
     }
-    
-    func getWidgetImageUserData(url: URL, fileName: String?, completition: @escaping (_ image: UIImage?) -> () = { _ in }) {
 
-        let size = CGSize(width: 256, height: 256)
-        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+    @discardableResult
+    func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) -> UIImage? {
 
-        if let fileName = fileName {
-            let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
-            if FileManager().fileExists(atPath: fileNamePath) {
-                return completition(UIImage(contentsOfFile: fileNamePath))
-            }
+        guard let data = data else { return nil }
+        var returnImage: UIImage?
+
+        if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
+            returnImage = image
+        } else if let image = SVGKImage(data: data) {
+            image.size = size
+            returnImage = image.uiImage
+        } else {
+            print("error")
         }
-        
-        NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
-            var image: UIImage?
-            if error == .success {
-                guard let data = data else { return completition(nil) }
-                if let uiImage = UIImage(data: data) {
-                    image = uiImage.resizeImage(size: size)
-                } else if let svgImage = SVGKImage(data: data) {
-                    svgImage.size = size
-                    image = svgImage.uiImage
-                } else {
-                    print("error")
-                }
-                if let image = image, let fileName = fileName {
-                    do {
-                        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
-                        try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                    } catch { }
-                }
-            }
-            completition(image)
+        if let fileName = fileNameToWrite, let image = returnImage {
+            do {
+                let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+            } catch { }
         }
+        return returnImage
     }
 }
