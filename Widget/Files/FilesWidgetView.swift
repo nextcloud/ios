@@ -92,17 +92,14 @@ struct FilesWidgetView: View {
                 HStack(spacing: 0) {
 
                     let sizeButton: CGFloat = 40
-                    let placeholderColor = Color(white: 0.8)
-                    let brandColor = Color(NCBrandColor.shared.brand)
-                    let brandTextColor = Color(NCBrandColor.shared.brandText)
-                    
+
                     Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
                         Image("addImage")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
-                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -112,9 +109,9 @@ struct FilesWidgetView: View {
                         Image("scan")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
-                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -124,9 +121,9 @@ struct FilesWidgetView: View {
                         Image("note.text")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
-                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -136,9 +133,9 @@ struct FilesWidgetView: View {
                         Image("microphone")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? placeholderColor : brandTextColor)
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
                             .padding(11)
-                            .background(entry.isPlaceholder ? placeholderColor : brandColor)
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -149,19 +146,16 @@ struct FilesWidgetView: View {
 
                 HStack {
 
-                    let placeholderColor = Color(white: 0.2)
-                    let brandColor = Color(NCBrandColor.shared.brand)
-
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                 
                     Text(entry.footerText)
                         .font(.caption2)
                         .padding(.trailing, 13.0)
-                        .foregroundColor(entry.isPlaceholder ? placeholderColor : brandColor)
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                 }
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
