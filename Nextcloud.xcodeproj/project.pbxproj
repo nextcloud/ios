@@ -1490,7 +1490,7 @@
 				F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */,
 				F72EA95528B7BAD100C88F0C /* Dashboard */,
 				F72EA95628B7BAE700C88F0C /* Files */,
-				F76DEE9A28F808BC0041B1C9 /* LockScreen */,
+				F76DEE9A28F808BC0041B1C9 /* Lockscreen */,
 				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
 				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
@@ -1584,14 +1584,14 @@
 			path = NCViewerPDF;
 			sourceTree = "<group>";
 		};
-		F76DEE9A28F808BC0041B1C9 /* LockScreen */ = {
+		F76DEE9A28F808BC0041B1C9 /* Lockscreen */ = {
 			isa = PBXGroup;
 			children = (
 				F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */,
 				F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */,
 				F76DEE9628F808AF0041B1C9 /* LockscreenWidgetView.swift */,
 			);
-			path = LockScreen;
+			path = Lockscreen;
 			sourceTree = "<group>";
 		};
 		F771E3D120E2392D00AFB62D /* File Provider Extension */ = {

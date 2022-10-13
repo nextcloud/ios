@@ -29,7 +29,7 @@ struct LockscreenWidgetProvider: TimelineProvider {
     typealias Entry = LockscreenData
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), isPlaceholder: true, displayName: "", quotaRelative: 0, quotaUsed: "", quotaTotal: "")
+        return Entry(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {

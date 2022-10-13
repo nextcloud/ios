@@ -45,6 +45,8 @@ excluded:
   - Widget/Dashboard/DashboardWidgetView.swift
   - Widget/Files/FilesData.swift
   - Widget/Files/FilesWidgetView.swift
+  - Widget/Lockscreen/LockscreenData.swift
+  - Widget/Lockscreen/LockscreenWidgetView.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift

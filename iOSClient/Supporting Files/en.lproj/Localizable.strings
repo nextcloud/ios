@@ -891,6 +891,7 @@
 "_no_data_available_"       = "No data available";
 "_widget_available_nc25_"   = "Widget only available starting with Nextcloud 25";
 "_keep_running_"            = "Keep the app running for a better user experience";
+"_recent_activity_"         = "Recent activity";
 
 // Video
 "_select_trace_"            = "Select the trace";
