@@ -29,8 +29,8 @@ import SVGKit
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
     let datas: [DashboardData]
-    let tableDashboard: tableDashboardWidget?
-    let tableButton: [tableDashboardWidgetButton]?
+    let dashboard: tableDashboardWidget?
+    let buttons: [tableDashboardWidgetButton]?
     let isPlaceholder: Bool
     let titleImage: UIImage
     let title: String
@@ -84,11 +84,11 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
 
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
     guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
 
     // Default widget
@@ -98,7 +98,7 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
     guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: nil, tableButton: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
     }
         
     // NETWORKING
@@ -146,10 +146,12 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
 
         Task {
             var datas = [DashboardData]()
+            var numberItems = 0
 
             if let results = results {
                 for result in results {
                     if let items = result.items {
+                        numberItems = result.items?.count ?? 0
                         var counter: Int = 0
                         let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: existsButton)
                         for item in items {
@@ -157,7 +159,7 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                             let title = item.title ?? ""
                             let subtitle = item.subtitle ?? ""
                             var link = URL(string: "https://")!
-                            if let entryLink = item.link, let url = URL(string: entryLink){ link = url }
+                            if let entryLink = item.link, let url = URL(string: entryLink) { link = url }
                             var icon = UIImage(named: "file")!
                             var iconFileName: String?
                             var template: Bool = false
@@ -210,12 +212,17 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                 }
             }
 
+            var buttons = tableButton
+            if numberItems == datas.count, let tableButton = tableButton, tableButton.contains(where: { $0.type == "more"}) {
+                buttons = tableButton.filter(({ $0.type != "more" }))
+            }
+
             if error != .success {
-                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
             } else if datas.isEmpty {
-                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
             } else {
-                completion(DashboardDataEntry(date: Date(), datas: datas, tableDashboard: tableDashboard, tableButton: tableButton, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
             }
         }
     }
