@@ -39,6 +39,7 @@ struct LockscreenWidgetView: View {
                 currentValueLabel: { Text(entry.quotaUsed) }
             )
             .gaugeStyle(.accessoryCircular)
+            .redacted(reason: entry.isPlaceholder ? .placeholder : [])
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 3) {
@@ -53,7 +54,9 @@ struct LockscreenWidgetView: View {
                 Text(entry.activity)
                     .font(.system(size: 10))
                     .fontWeight(.light)
-            }.widgetURL(entry.link)
+            }
+            .widgetURL(entry.link)
+            .redacted(reason: entry.isPlaceholder ? .placeholder : [])
         default:
             Text("Not implemented")
         }
@@ -63,7 +66,7 @@ struct LockscreenWidgetView: View {
 @available(iOSApplicationExtension 16.0, *)
 struct LockscreenWidgetView_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = LockscreenData(date: Date(), isPlaceholder: true, activity: "Alba Mayoral changed Marketing/Regional Marketing/Agenda Meetings/Q4 2022/OCTOBER/13.11 Afrah Kahlid.md", link: URL(string: "https://")!, quotaRelative: 0.5, quotaUsed: "22 GB", quotaTotal: "50 GB")
+        let entry = LockscreenData(date: Date(), isPlaceholder: false, activity: "Alba Mayoral changed Marketing/Regional Marketing/Agenda Meetings/Q4 2022/OCTOBER/13.11 Afrah Kahlid.md", link: URL(string: "https://")!, quotaRelative: 0.5, quotaUsed: "22 GB", quotaTotal: "50 GB")
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryRectangular)).previewDisplayName("Rectangular")
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryCircular)).previewDisplayName("Circular")
     }
