@@ -48,10 +48,10 @@ struct LockscreenWidgetView: View {
                         .scaledToFill()
                         .frame(width: 12, height: 12)
                     Text(NSLocalizedString("_recent_activity_", comment: ""))
-                        .font(.system(size: 11)).bold()
+                        .font(.system(size: 13)).bold()
                 }
                 Text(entry.activity)
-                    .font(.system(size: 9))
+                    .font(.system(size: 10))
                     .fontWeight(.light)
             }.widgetURL(entry.link)
         default:

@@ -84,7 +84,7 @@ struct LockscreenWidget: Widget {
                 LockscreenWidgetView(entry: entry)
             }
             .supportedFamilies([.accessoryRectangular, .accessoryCircular])
-            .configurationDisplayName("Lockscreen")
+            .configurationDisplayName(NSLocalizedString("_title_lockscreenwidget_", comment: ""))
             .description(NSLocalizedString("_description_lockscreenwidget_", comment: ""))
         } else {
             return EmptyWidgetConfiguration()
