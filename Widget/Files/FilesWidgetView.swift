@@ -55,14 +55,11 @@ struct FilesWidgetView: View {
                             Link(destination: element.url) {
                                 
                                 HStack {
-                                    
-                                    let subTitleColor = Color(white: 0.5)
-                                    let imageSize:CGFloat = 35
-                                    
+
                                     Image(uiImage: element.image)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(width: imageSize, height: imageSize)
+                                        .frame(width: 35, height: 35)
                                         .clipped()
                                         .cornerRadius(5)
                                     
@@ -74,7 +71,7 @@ struct FilesWidgetView: View {
                                         
                                         Text(element.subTitle)
                                             .font(.system(size: CGFloat(10)))
-                                            .foregroundColor(subTitleColor)
+                                            .foregroundColor(Color(.systemGray))
                                     }
                                     Spacer()
                                 }

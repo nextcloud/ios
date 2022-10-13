@@ -279,6 +279,9 @@
 		F76DA963277B760E0082465B /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA962277B760E0082465B /* Queuer */; };
 		F76DA966277B76F30082465B /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA965277B76F30082465B /* UICKeyChainStore */; };
 		F76DA969277B77EA0082465B /* DropDown in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA968277B77EA0082465B /* DropDown */; };
+		F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */; };
+		F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */; };
+		F76DEE9928F808AF0041B1C9 /* LockscreenWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76DEE9628F808AF0041B1C9 /* LockscreenWidgetView.swift */; };
 		F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F7707689263A896A00A1BA94 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
 		F770768A263A8A2500A1BA94 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
@@ -848,6 +851,9 @@
 		F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerPDFSearch.swift; sourceTree = "<group>"; };
 		F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerPDFSearchCell.xib; sourceTree = "<group>"; };
 		F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCViewerPDF.storyboard; sourceTree = "<group>"; };
+		F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LockscreenData.swift; sourceTree = "<group>"; };
+		F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LockscreenWidgetProvider.swift; sourceTree = "<group>"; };
+		F76DEE9628F808AF0041B1C9 /* LockscreenWidgetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LockscreenWidgetView.swift; sourceTree = "<group>"; };
 		F76E71E42244DF6900690001 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Zip.framework; path = Carthage/Build/iOS/Zip.framework; sourceTree = "<group>"; };
 		F76FDEAA24859C3D0095B6C2 /* Queuer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Queuer.framework; path = Carthage/Build/iOS/Queuer.framework; sourceTree = "<group>"; };
 		F771E3D020E2392D00AFB62D /* File Provider Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1484,6 +1490,7 @@
 				F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */,
 				F72EA95528B7BAD100C88F0C /* Dashboard */,
 				F72EA95628B7BAE700C88F0C /* Files */,
+				F76DEE9A28F808BC0041B1C9 /* Lockscreen */,
 				F77ED59628C9CEEE00E24ED0 /* Toolbar */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
 				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
@@ -1575,6 +1582,16 @@
 				F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */,
 			);
 			path = NCViewerPDF;
+			sourceTree = "<group>";
+		};
+		F76DEE9A28F808BC0041B1C9 /* Lockscreen */ = {
+			isa = PBXGroup;
+			children = (
+				F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */,
+				F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */,
+				F76DEE9628F808AF0041B1C9 /* LockscreenWidgetView.swift */,
+			);
+			path = Lockscreen;
 			sourceTree = "<group>";
 		};
 		F771E3D120E2392D00AFB62D /* File Provider Extension */ = {
@@ -2814,6 +2831,7 @@
 			files = (
 				F78302FD28B4C42B00B84583 /* NCUserBaseUrl.swift in Sources */,
 				F793E5A128B76541005E4B02 /* NotificationCenter+MainThread.swift in Sources */,
+				F76DEE9928F808AF0041B1C9 /* LockscreenWidgetView.swift in Sources */,
 				F78302F928B4C3E600B84583 /* NCManageDatabase+Account.swift in Sources */,
 				F7E0710128B13BB00001B882 /* DashboardData.swift in Sources */,
 				F783030328B4C4DD00B84583 /* ThreadSafeDictionary.swift in Sources */,
@@ -2823,11 +2841,13 @@
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
 				F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */,
+				F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */,
 				F72EA95A28B7BD0D00C88F0C /* FilesWidgetView.swift in Sources */,
 				F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */,
 				F793E5A028B7651B005E4B02 /* NCViewCertificateDetails.swift in Sources */,
 				F7FABE3728D1DAD00000A325 /* Dashboard.intentdefinition in Sources */,
 				F793E59F28B764F6005E4B02 /* NCContentPresenter.swift in Sources */,
+				F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */,
 				F78302FA28B4C3EA00B84583 /* NCManageDatabase+Metadata.swift in Sources */,
 				F783030728B4C52800B84583 /* UIColor+Extensions.swift in Sources */,
 				F783030028B4C45800B84583 /* NCGlobal.swift in Sources */,

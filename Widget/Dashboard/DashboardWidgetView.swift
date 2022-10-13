@@ -69,7 +69,7 @@ struct DashboardWidgetView: View {
                                             .fill(Color(.systemGray4))
                                             .frame(width: 35, height: 35)
                                     } else if element.template {
-                                        if entry.tableDashboard?.itemIconsRound ?? false {
+                                        if entry.dashboard?.itemIconsRound ?? false {
                                             Image(uiImage: element.icon)
                                                 .renderingMode(.template)
                                                 .resizable()
@@ -90,7 +90,7 @@ struct DashboardWidgetView: View {
                                                 .cornerRadius(5)
                                         }
                                     } else {
-                                        if entry.tableDashboard?.itemIconsRound ?? false || element.avatar {
+                                        if entry.dashboard?.itemIconsRound ?? false || element.avatar {
                                             Image(uiImage: element.icon)
                                                 .resizable()
                                                 .scaledToFill()
@@ -129,14 +129,14 @@ struct DashboardWidgetView: View {
                 .padding(.top, 35)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
-                if let tableButton = entry.tableButton, !tableButton.isEmpty, !entry.isPlaceholder {
-                    
+                if let buttons = entry.buttons, !buttons.isEmpty, !entry.isPlaceholder {
+
                     HStack(spacing: 10) {
 
                         let brandColor = Color(NCBrandColor.shared.brand)
                         let brandTextColor = Color(NCBrandColor.shared.brandText)
 
-                        ForEach(tableButton, id: \.index) { element in
+                        ForEach(buttons, id: \.index) { element in
                             Link(destination: URL(string: element.link)! , label: {
                                 
                                 Text(element.text)
@@ -176,7 +176,7 @@ struct DashboardWidget_Previews: PreviewProvider {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, tableDashboard: nil, tableButton: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

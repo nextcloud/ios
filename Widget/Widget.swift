@@ -32,6 +32,7 @@ struct NextcloudWidgetBundle: WidgetBundle {
         DashboardWidget()
         FilesWidget()
         ToolbarWidget()
+        LockscreenWidget()
     }
 }
 
@@ -71,5 +72,22 @@ struct ToolbarWidget: Widget {
         .supportedFamilies([.systemMedium])
         .configurationDisplayName("Toolbar")
         .description(NSLocalizedString("_description_toolbarwidget_", comment: ""))
+    }
+}
+
+struct LockscreenWidget: Widget {
+    let kind: String = "LockscreenWidget"
+
+    var body: some WidgetConfiguration {
+        if #available(iOSApplicationExtension 16.0, *) {
+            return StaticConfiguration(kind: kind, provider: LockscreenWidgetProvider()) { entry in
+                LockscreenWidgetView(entry: entry)
+            }
+            .supportedFamilies([.accessoryRectangular, .accessoryCircular])
+            .configurationDisplayName(NSLocalizedString("_title_lockscreenwidget_", comment: ""))
+            .description(NSLocalizedString("_description_lockscreenwidget_", comment: ""))
+        } else {
+            return EmptyWidgetConfiguration()
+        }
     }
 }
