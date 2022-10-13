@@ -41,12 +41,14 @@ excluded:
   - File Provider Extension/FileProviderExtension.swift
   - File Provider Extension/FileProviderUtility.swift
   - Notification Service Extension/NotificationService.swift
+  - Widget/Widget.swift
   - Widget/Dashboard/DashboardData.swift
   - Widget/Dashboard/DashboardWidgetView.swift
   - Widget/Files/FilesData.swift
   - Widget/Files/FilesWidgetView.swift
   - Widget/Lockscreen/LockscreenData.swift
   - Widget/Lockscreen/LockscreenWidgetView.swift
+  - Widget/Lockscreen/LockscreenWidgetProvider.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift
