@@ -41,19 +41,21 @@ struct LockscreenWidgetView: View {
             .gaugeStyle(.accessoryCircular)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
         case .accessoryRectangular:
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 3) {
+            VStack(alignment: .leading, spacing: 1) {
+                HStack(spacing: 1) {
                     Image("activity")
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 12, height: 12)
+                        .foregroundColor(.gray)
+                        .frame(width: 11, height: 11)
                     Text(NSLocalizedString("_recent_activity_", comment: ""))
-                        .font(.system(size: 13)).bold()
+                        .font(.system(size: 11))
+                        .fontWeight(.heavy)
+                        .foregroundColor(.gray)
                 }
                 Text(entry.activity)
-                    .font(.system(size: 10))
-                    .fontWeight(.light)
+                    .font(.system(size: 12)).bold()
             }
             .widgetURL(entry.link)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
@@ -66,7 +68,7 @@ struct LockscreenWidgetView: View {
 @available(iOSApplicationExtension 16.0, *)
 struct LockscreenWidgetView_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = LockscreenData(date: Date(), isPlaceholder: false, activity: "Alba Mayoral changed Marketing/Regional Marketing/Agenda Meetings/Q4 2022/OCTOBER/13.11 Afrah Kahlid.md", link: URL(string: "https://")!, quotaRelative: 0.5, quotaUsed: "22 GB", quotaTotal: "50 GB")
+        let entry = LockscreenData(date: Date(), isPlaceholder: false, activity: "Alba Mayoral changed Marketing / Regional Marketing / Agenda Meetings / Q4 2022 / OCTOBER / 13.11 Afrah Kahlid.md", link: URL(string: "https://")!, quotaRelative: 0.5, quotaUsed: "22 GB", quotaTotal: "50 GB")
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryRectangular)).previewDisplayName("Rectangular")
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryCircular)).previewDisplayName("Circular")
     }
