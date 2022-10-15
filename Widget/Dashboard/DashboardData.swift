@@ -184,21 +184,16 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                                         iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                     }
                                 }
-
-                                do {
-                                    if let fileName = iconFileName {
-                                        let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
-                                        if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
+                                if let fileName = iconFileName {
+                                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                                    if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
+                                        icon = image
+                                    } else {
+                                        let (_, data, _) = await NCNetworking.shared.getPreview(url: url)
+                                        if let image = NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
                                             icon = image
-                                        } else {
-                                            let (_, data) = try await NextcloudKit.shared.getPreview(url: url)
-                                            if let image = NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
-                                                icon = image
-                                            }
                                         }
                                     }
-                                } catch {
-                                    print(error)
                                 }
                             }
 

@@ -227,6 +227,14 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
                 if let image = NCUtility.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
                 } else if file.hasPreview {
+                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
+                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
+                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                    let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
+                    if let image = imageIcon {
+                        imageRecent = image
+                    }
+                    /*
                     do {
                         let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
                         let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
@@ -238,6 +246,7 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
                     } catch {
                         print(error)
                     }
+                    */
                 }
 
                 // DATA
