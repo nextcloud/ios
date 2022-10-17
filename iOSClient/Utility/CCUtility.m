@@ -1131,7 +1131,7 @@
     unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
 
     if (isFolderEncrypted == true) {
-        if (fileNameSize == metadata.size && fileNameViewSize > 0) {
+        if ((fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0) {
             return true;
         } else {
             return false;
