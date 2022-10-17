@@ -115,12 +115,15 @@ extension NCManageDatabase {
         // Live Photo "DETECT"
         if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             var classFile = metadata.classFile
+            var fileNameView = metadata.fileNameView
             if classFile == NKCommon.typeClassFile.image.rawValue {
                 classFile = NKCommon.typeClassFile.video.rawValue
+                fileNameView = (fileNameView as NSString).deletingPathExtension + ".mov"
             } else {
                 classFile = NKCommon.typeClassFile.image.rawValue
+                fileNameView = (fileNameView as NSString).deletingPathExtension + ".jpg"
             }
-            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)) != nil {
+            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView =[c] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileNameView, metadata.ocId, classFile)) != nil {
                 metadata.livePhoto = true
             }
         }
