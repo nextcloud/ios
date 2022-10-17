@@ -1462,7 +1462,7 @@ import Photos
         }
     }
 
-    // MARK: - NextcloudKit convert completion handlers into async functions
+    // MARK: - [NextcloudKit wrapper] convert completion handlers into async functions
 
     func getPreview(url: URL,
                     options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
@@ -1488,6 +1488,16 @@ import Photos
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: sizeIcon, etag: etag, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
                 continuation.resume(returning: (account: account, imagePreview: imagePreview, imageIcon: imageIcon, imageOriginal: imageOriginal, etag: etag, error: error))
+            }
+        })
+    }
+
+    func createFolder(_ serverUrlFileName: String,
+                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: NSDate?, error: NKError) {
+
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.createFolder(serverUrlFileName, options: options) { account, ocId, date, error in
+                continuation.resume(returning: (account: account, ocId:ocId, date:date, error:error))
             }
         })
     }
