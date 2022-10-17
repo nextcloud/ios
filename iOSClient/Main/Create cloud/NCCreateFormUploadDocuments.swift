@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import XLForm
 
 // MARK: -
@@ -44,8 +44,8 @@ import XLForm
     var fileName = ""
     var fileNameExtension = ""
     var titleForm = ""
-    var listOfTemplate: [NCCommunicationEditorTemplates] = []
-    var selectTemplate: NCCommunicationEditorTemplates?
+    var listOfTemplate: [NKEditorTemplates] = []
+    var selectTemplate: NKEditorTemplates?
 
     // Layout
     let numItems = 2
@@ -65,9 +65,9 @@ import XLForm
 
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        collectionView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
+        collectionView.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .secondarySystemGroupedBackground
 
         let cancelButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         let saveButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
@@ -109,7 +109,7 @@ import XLForm
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -124,11 +124,11 @@ import XLForm
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textField.textColor"] = UIColor.label
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -183,16 +183,16 @@ import XLForm
         // name
         let name = cell.viewWithTag(200) as! UILabel
         name.text = template.name
-        name.textColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        name.textColor = .secondarySystemGroupedBackground
 
         // select
         let imageSelect = cell.viewWithTag(300) as! UIImageView
         if selectTemplate != nil && selectTemplate?.name == template.name {
-            cell.backgroundColor = NCBrandColor.shared.label
+            cell.backgroundColor = .label
             imageSelect.image = UIImage(named: "plus100")
             imageSelect.isHidden = false
         } else {
-            cell.backgroundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+            cell.backgroundColor = .secondarySystemGroupedBackground
             imageSelect.isHidden = true
         }
 
@@ -263,7 +263,7 @@ import XLForm
             //Trim whitespaces after checks above
             fileNameForm = (fileNameForm as! String).trimmingCharacters(in: .whitespacesAndNewlines)
 
-            let result = NCCommunicationCommon.shared.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
+            let result = NKCommon.shared.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
             if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).count == 0 {
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
@@ -311,23 +311,22 @@ import XLForm
         self.navigationItem.rightBarButtonItem?.isEnabled = false
 
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
-
-            var customUserAgent: String?
-
+            
+            var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
-            } // else: use default
-
-            NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
-                guard errorCode == 0, account == self.appDelegate.account, let url = url else {
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+            }
+            
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, data, error in
+                guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.showError(error: error)
                     return
                 }
 
-                var results = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+                var results = NKCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
                 //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
                 if results.mimeType.isEmpty {
                     results.mimeType = "text/x-markdown"
@@ -344,10 +343,10 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, errorCode, errorDescription in
-                guard errorCode == 0, account == self.appDelegate.account, let url = url else {
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, data, error in
+                guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.showError(error: error)
                     return
                 }
 
@@ -376,22 +375,22 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
 
-            var customUserAgent: String?
+            var options = NKRequestOptions()
             if self.editorId == NCGlobal.shared.editorOnlyoffice {
-                customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {
-                customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
-            } // else: use default
+                options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
+            }
 
-            NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { account, templates, errorCode, _ in
+            NextcloudKit.shared.NCTextGetListOfTemplates(options: options) { account, templates, data, error in
 
                 self.indicator.stopAnimating()
 
-                if errorCode == 0 && account == self.appDelegate.account {
+                if error == .success && account == self.appDelegate.account {
 
                     for template in templates {
 
-                        let temp = NCCommunicationEditorTemplates()
+                        let temp = NKEditorTemplates()
 
                         temp.identifier = template.identifier
                         temp.ext = template.ext
@@ -411,7 +410,7 @@ import XLForm
 
                 if self.listOfTemplate.count == 0 {
 
-                    let temp = NCCommunicationEditorTemplates()
+                    let temp = NKEditorTemplates()
 
                     temp.identifier = ""
                     if self.editorId == NCGlobal.shared.editorText {
@@ -440,15 +439,15 @@ import XLForm
 
         if self.editorId == NCGlobal.shared.editorCollabora {
 
-            NCCommunication.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, errorCode, _ in
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { account, templates, data, error in
 
                 self.indicator.stopAnimating()
 
-                if errorCode == 0 && account == self.appDelegate.account {
+                if error == .success && account == self.appDelegate.account {
 
                     for template in templates! {
 
-                        let temp = NCCommunicationEditorTemplates()
+                        let temp = NKEditorTemplates()
 
                         temp.identifier = "\(template.templateId)"
                         temp.delete = template.delete
@@ -470,7 +469,7 @@ import XLForm
 
                 if self.listOfTemplate.count == 0 {
 
-                    let temp = NCCommunicationEditorTemplates()
+                    let temp = NKEditorTemplates()
 
                     temp.identifier = ""
                     if self.typeTemplate == NCGlobal.shared.templateDocument {
@@ -499,18 +498,18 @@ import XLForm
 
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + name + ".png"
 
-        NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+        NextcloudKit.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
         }, taskHandler: { _ in
 
         }, progressHandler: { _ in
 
-        }) { account, _, _, _, _, _, errorCode, _ in
+        }) { account, _, _, _, _, _, error in
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error == .success && account == self.appDelegate.account {
                 self.collectionView.reloadItems(at: [indexPath])
-            } else if errorCode != 0 {
-                print("\(errorCode)")
+            } else if error != .success {
+                print("\(error.errorCode)")
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }

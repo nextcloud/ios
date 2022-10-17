@@ -24,10 +24,9 @@
 
 import UIKit
 import Foundation
-import NCCommunication
+import NextcloudKit
 import DropDown
 
-@available(iOS 13.0, *)
 class NCUserStatus: UIViewController {
 
     @IBOutlet weak var buttonCancel: UIBarButtonItem!
@@ -63,7 +62,7 @@ class NCUserStatus: UIViewController {
     @IBOutlet weak var clearStatusMessageButton: UIButton!
     @IBOutlet weak var setStatusMessageButton: UIButton!
 
-    private var statusPredefinedStatuses: [NCCommunicationUserStatus] = []
+    private var statusPredefinedStatuses: [NKUserStatus] = []
 
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
 
@@ -77,62 +76,62 @@ class NCUserStatus: UIViewController {
 
         self.navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
+        tableView.backgroundColor = .systemBackground
 
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
-        onlineButton.backgroundColor = NCBrandColor.shared.systemGray5
+        onlineButton.backgroundColor = .systemGray5
         let onLine = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
         onlineImage.image = onLine.onlineStatus
         onlineLabel.text = onLine.statusMessage
-        onlineLabel.textColor = NCBrandColor.shared.label
+        onlineLabel.textColor = .label
 
         awayButton.layer.cornerRadius = 10
         awayButton.layer.masksToBounds = true
-        awayButton.backgroundColor = NCBrandColor.shared.systemGray5
+        awayButton.backgroundColor = .systemGray5
         let away = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
         awayImage.image = away.onlineStatus
         awayLabel.text = away.statusMessage
-        awayLabel.textColor = NCBrandColor.shared.label
+        awayLabel.textColor = .label
 
         dndButton.layer.cornerRadius = 10
         dndButton.layer.masksToBounds = true
-        dndButton.backgroundColor = NCBrandColor.shared.systemGray5
+        dndButton.backgroundColor = .systemGray5
         let dnd = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
         dndImage.image = dnd.onlineStatus
         dndLabel.text = dnd.statusMessage
-        dndLabel.textColor = NCBrandColor.shared.label
+        dndLabel.textColor = .label
         dndDescrLabel.text = dnd.descriptionMessage
         dndDescrLabel.textColor = .darkGray
 
         invisibleButton.layer.cornerRadius = 10
         invisibleButton.layer.masksToBounds = true
-        invisibleButton.backgroundColor = NCBrandColor.shared.systemGray5
+        invisibleButton.backgroundColor = .systemGray5
         let invisible = NCUtility.shared.getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
         invisibleImage.image = invisible.onlineStatus
         invisibleLabel.text = invisible.statusMessage
-        invisibleLabel.textColor = NCBrandColor.shared.label
+        invisibleLabel.textColor = .label
         invisibleDescrLabel.text = invisible.descriptionMessage
         invisibleDescrLabel.textColor = .darkGray
 
         statusMessageLabel.text = NSLocalizedString("_status_message_", comment: "")
-        statusMessageLabel.textColor = NCBrandColor.shared.label
+        statusMessageLabel.textColor = .label
 
         statusMessageEmojiTextField.delegate = self
-        statusMessageEmojiTextField.backgroundColor = NCBrandColor.shared.systemGray5
+        statusMessageEmojiTextField.backgroundColor = .systemGray5
 
         statusMessageTextField.delegate = self
         statusMessageTextField.placeholder = NSLocalizedString("_status_message_placehorder_", comment: "")
-        statusMessageTextField.textColor = NCBrandColor.shared.label
+        statusMessageTextField.textColor = .label
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         clearStatusMessageAfterLabel.text = NSLocalizedString("_clear_status_message_after_", comment: "")
-        clearStatusMessageAfterLabel.textColor = NCBrandColor.shared.label
+        clearStatusMessageAfterLabel.textColor = .label
 
         clearStatusMessageAfterText.layer.cornerRadius = 5
         clearStatusMessageAfterText.layer.masksToBounds = true
@@ -155,9 +154,9 @@ class NCUserStatus: UIViewController {
         clearStatusMessageButton.layer.masksToBounds = true
         clearStatusMessageButton.layer.borderWidth = 0.5
         clearStatusMessageButton.layer.borderColor = UIColor.darkGray.cgColor
-        clearStatusMessageButton.backgroundColor = NCBrandColor.shared.systemGray5
+        clearStatusMessageButton.backgroundColor = .systemGray5
         clearStatusMessageButton.setTitle(NSLocalizedString("_clear_status_message_", comment: ""), for: .normal)
-        clearStatusMessageButton.setTitleColor(NCBrandColor.shared.label, for: .normal)
+        clearStatusMessageButton.setTitleColor(.label, for: .normal)
 
         setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true
@@ -171,20 +170,20 @@ class NCUserStatus: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NCCommunication.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, errorCode, _ in
+        NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, data, error in
 
-            if errorCode == 0 {
+            if error == .success {
 
                 NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
             }
         }
     }
 
-    func dismissIfError(_ errorCode: Int, errorDescription: String) {
-        if errorCode != 0 && errorCode != NCGlobal.shared.errorResourceNotFound {
+    func dismissIfError(_ error: NKError) {
+        if error != .success && error.errorCode != NCGlobal.shared.errorResourceNotFound {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.dismiss(animated: true) {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }
@@ -207,8 +206,8 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NCCommunication.shared.setUserStatus(status: "online") { _, errorCode, errorDescription in
-            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        NextcloudKit.shared.setUserStatus(status: "online") { _, error in
+            self.dismissIfError(error)
         }
     }
 
@@ -223,8 +222,8 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NCCommunication.shared.setUserStatus(status: "away") { _, errorCode, errorDescription in
-            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        NextcloudKit.shared.setUserStatus(status: "away") { _, error in
+            self.dismissIfError(error)
         }
     }
 
@@ -239,8 +238,8 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NCCommunication.shared.setUserStatus(status: "dnd") { _, errorCode, errorDescription in
-            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        NextcloudKit.shared.setUserStatus(status: "dnd") { _, error in
+            self.dismissIfError(error)
         }
     }
 
@@ -255,8 +254,8 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
 
-        NCCommunication.shared.setUserStatus(status: "invisible") { _, errorCode, errorDescription in
-            self.dismissIfError(errorCode, errorDescription: errorDescription)
+        NextcloudKit.shared.setUserStatus(status: "invisible") { _, error in
+            self.dismissIfError(error)
         }
     }
 
@@ -308,10 +307,10 @@ class NCUserStatus: UIViewController {
 
     @IBAction func actionClearStatusMessage(_ sender: UIButton) {
 
-        NCCommunication.shared.clearMessage { _, errorCode, errorDescription in
+        NextcloudKit.shared.clearMessage { _, error in
 
-            if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
             }
 
             self.dismiss(animated: true)
@@ -322,10 +321,10 @@ class NCUserStatus: UIViewController {
 
         guard let message = statusMessageTextField.text else { return }
 
-        NCCommunication.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp) { _, errorCode, errorDescription in
+        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp) { _, error in
 
-            if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
             }
 
             self.dismiss(animated: true)
@@ -336,9 +335,9 @@ class NCUserStatus: UIViewController {
 
     func getStatus() {
 
-        NCCommunication.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, errorCode, errorDescription in
+        NextcloudKit.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, data, error in
 
-            if errorCode == 0 || errorCode == NCGlobal.shared.errorResourceNotFound {
+            if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
                 if icon != nil {
                     self.statusMessageEmojiTextField.text = icon
@@ -369,9 +368,9 @@ class NCUserStatus: UIViewController {
                     print("No status")
                 }
 
-                NCCommunication.shared.getUserStatusPredefinedStatuses { _, userStatuses, errorCode, errorDescription in
+                NextcloudKit.shared.getUserStatusPredefinedStatuses { _, userStatuses, data, error in
 
-                    if errorCode == 0 {
+                    if error == .success {
 
                         if let userStatuses = userStatuses {
                             self.statusPredefinedStatuses = userStatuses
@@ -380,12 +379,12 @@ class NCUserStatus: UIViewController {
                         self.tableView.reloadData()
                     }
 
-                    self.dismissIfError(errorCode, errorDescription: errorDescription)
+                    self.dismissIfError(error)
                 }
 
             }
 
-            self.dismissIfError(errorCode, errorDescription: errorDescription)
+            self.dismissIfError(error)
         }
     }
 
@@ -476,7 +475,6 @@ class NCUserStatus: UIViewController {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCUserStatus: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -501,10 +499,8 @@ extension NCUserStatus: UITextFieldDelegate {
     }
 }
 
-@available(iOS 13.0, *)
 class emojiTextField: UITextField {
 
-    // required for iOS 13
     override var textInputContextIdentifier: String? { "" } // return non-nil to show the Emoji keyboard ¯\_(ツ)_/¯
 
     override var textInputMode: UITextInputMode? {
@@ -543,7 +539,6 @@ class emojiTextField: UITextField {
     }
 }
 
-@available(iOS 13.0, *)
 extension NCUserStatus: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -557,11 +552,11 @@ extension NCUserStatus: UITableViewDelegate {
 
         if let messageId = status.id {
 
-            NCCommunication.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0) { _, errorCode, errorDescription in
+            NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0) { _, error in
 
                 cell.isSelected = false
 
-                if errorCode == 0 {
+                if error == .success {
 
                     let clearAtTimestampString = self.getPredefinedClearStatusText(clearAt: status.clearAt, clearAtTime: status.clearAtTime, clearAtType: status.clearAtType)
 
@@ -571,13 +566,12 @@ extension NCUserStatus: UITableViewDelegate {
                     self.clearAtTimestamp = self.getClearAt(clearAtTimestampString)
                 }
 
-                self.dismissIfError(errorCode, errorDescription: errorDescription)
+                self.dismissIfError(error)
             }
         }
     }
 }
 
-@available(iOS 13.0, *)
 extension NCUserStatus: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

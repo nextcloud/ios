@@ -38,7 +38,7 @@ class NCActivityIndicator: NSObject {
         start(backgroundView: backgroundView, style: style)
     }
 
-    func start(backgroundView: UIView? = nil, bottom: CGFloat? = nil, top: CGFloat? = nil, style: UIActivityIndicatorView.Style = .whiteLarge) {
+    func start(backgroundView: UIView? = nil, bottom: CGFloat? = nil, top: CGFloat? = nil, style: UIActivityIndicatorView.Style = .large) {
 
         if self.activityIndicator != nil { stop() }
 
@@ -47,7 +47,7 @@ class NCActivityIndicator: NSObject {
             self.activityIndicator = UIActivityIndicatorView(style: style)
             guard let activityIndicator = self.activityIndicator, self.viewBackgroundActivityIndicator == nil else { return }
 
-            activityIndicator.color = NCBrandColor.shared.label
+            activityIndicator.color = .label
             activityIndicator.hidesWhenStopped = true
             activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 

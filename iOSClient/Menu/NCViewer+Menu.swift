@@ -23,7 +23,7 @@
 
 import UIKit
 import FloatingPanel
-import NCCommunication
+import NextcloudKit
 
 extension NCViewer {
 
@@ -48,9 +48,9 @@ extension NCViewer {
                     title: titleFavorite,
                     icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                     action: { _ in
-                        NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-                            if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCNetworking.shared.favoriteMetadata(metadata) { error in
+                            if error != .success {
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
                     }
@@ -90,7 +90,7 @@ extension NCViewer {
         //
         // PRINT
         //
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -106,7 +106,7 @@ extension NCViewer {
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
 #if MFFFLIB
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
             
             actions.append(
                 NCMenuAction(
@@ -125,25 +125,23 @@ extension NCViewer {
         //
         // SAVE IMAGE / VIDEO
         //
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
         }
 
         //
         // SAVE AS SCAN
         //
-        if #available(iOS 13.0, *) {
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_save_as_scan_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
-                        action: { _ in
-                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
-                        }
-                    )
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_save_as_scan_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
+                    action: { _ in
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
+                    }
                 )
-            }
+            )
         }
 
         //
@@ -192,7 +190,7 @@ extension NCViewer {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
                     action: { menuAction in
-                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName)
+                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
                     }
                 )
             )
@@ -202,13 +200,13 @@ extension NCViewer {
         // DOWNLOAD IMAGE MAX RESOLUTION
         //
         if metadata.session == "" {
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "" {
+            if metadata.classFile == NKCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "" {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
                         action: { _ in
-                            NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
+                            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                         }
                     )
                 )
@@ -243,18 +241,16 @@ extension NCViewer {
         //
         // MODIFY
         //
-        if #available(iOS 13.0, *) {
-            if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_modify_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
-                        action: { _ in
-                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-                        }
-                    )
+        if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_modify_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
+                    action: { _ in
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                    }
                 )
-            }
+            )
         }
 
         //

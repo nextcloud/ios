@@ -23,7 +23,7 @@
 
 import UIKit
 import FileProvider
-import NCCommunication
+import NextcloudKit
 
 class FileProviderItem: NSObject, NSFileProviderItem {
 
@@ -43,7 +43,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     var typeIdentifier: String {
-        let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
+        let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
         return results.typeIdentifier
     }
 

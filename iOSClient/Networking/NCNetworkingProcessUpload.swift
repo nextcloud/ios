@@ -22,43 +22,38 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import Photos
-import Queuer
 
 class NCNetworkingProcessUpload: NSObject {
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var timerProcess: Timer?
-
-    let maxConcurrentOperationUpload = 5
 
     override init() {
         super.init()
         startTimer()
     }
 
-    private func startProcess() {
+    private func startProcess(completion: @escaping (_ items: Int) -> Void) {
         if timerProcess?.isValid ?? false {
-            DispatchQueue.main.async { self.process() }
+            DispatchQueue.main.async { self.processForeground() }
         }
     }
 
     func startTimer() {
         timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
+        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(processForeground), userInfo: nil, repeats: true)
     }
 
     func stopTimer() {
         timerProcess?.invalidate()
     }
 
-    @objc private func process() {
-        guard !appDelegate.account.isEmpty else { return }
+    @objc private func processForeground() {
+        guard let account = NCManageDatabase.shared.getActiveAccount(), UIApplication.shared.applicationState == .active else { return }
 
         stopTimer()
 
-        let applicationState = UIApplication.shared.applicationState
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -70,28 +65,28 @@ class NCNetworkingProcessUpload: NSObject {
         let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter":counterBadge.count])
 
-        NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(qos: .background), completion: { listOcId in
+        NCNetworking.shared.getOcIdInBackgroundSession(queue: DispatchQueue.global(), completion: { listOcId in
 
             for sessionSelector in sessionSelectors {
-                if counterUpload < self.maxConcurrentOperationUpload {
+                if counterUpload < NCGlobal.shared.maxConcurrentOperationUpload {
 
-                    let limit = self.maxConcurrentOperationUpload - counterUpload
+                    let limit = NCGlobal.shared.maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
-                        NCCommunicationCommon.shared.writeLog("PROCESS-UPLOAD find \(metadatas.count) items")
+                        NKCommon.shared.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
                     }
 
                     for metadata in metadatas {
 
                         // Different account
-                        if self.appDelegate.account != metadata.account {
-                            NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView) on account: \(metadata.account), because the actual account is \(self.appDelegate.account).")
+                        if account.account != metadata.account {
+                            NKCommon.shared.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView) on account: \(metadata.account), because the actual account is \(account.account).")
                             continue
                         }
 
                         // Is already in upload background? skipped
                         if listOcId.contains(metadata.ocId) {
-                            NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
+                            NKCommon.shared.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                             continue
                         }
 
@@ -103,30 +98,29 @@ class NCNetworkingProcessUpload: NSObject {
                         // Is already in upload E2EE / CHUNK ? exit [ ONLY ONE IN QUEUE ]
                         for metadata in metadatasUpload {
                             if metadata.chunk || metadata.e2eEncrypted {
-                                counterUpload = self.maxConcurrentOperationUpload
+                                counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
                                 continue
                             }
                         }
 
-                        let semaphore = Semaphore()
-                        self.extractFiles(from: metadata) { metadatas in
+                        let semaphore = DispatchSemaphore(value: 0)
+                        NCUtility.shared.extractFiles(from: metadata) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
                             for metadata in metadatas {
-                                if (metadata.e2eEncrypted || metadata.chunk) && applicationState != .active {  continue }
-                                let isWiFi = NCNetworking.shared.networkReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi
+                                let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
                                 if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
                                 }
                                 if metadata.e2eEncrypted || metadata.chunk {
-                                    counterUpload = self.maxConcurrentOperationUpload
+                                    counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
                                 } else {
                                     counterUpload += 1
                                 }
                             }
-                            semaphore.continue()
+                            semaphore.signal()
                         }
                         semaphore.wait()
                     }
@@ -143,8 +137,8 @@ class NCNetworkingProcessUpload: NSObject {
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
             DispatchQueue.main.async {
-                if (counterUpload == 0 && !self.appDelegate.isPasscodePresented()) {
-                    self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
+                if UIApplication.shared.applicationState == .active && counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented() {
+                    self.deleteAssetLocalIdentifiers(account: account.account) {
                         self.startTimer()
                     }
                 } else {
@@ -184,56 +178,7 @@ class NCNetworkingProcessUpload: NSObject {
 
     // MARK: -
 
-    func extractFiles(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-
-        let chunckSize = CCUtility.getChunkSize() * 1000000
-        var metadatas: [tableMetadata] = []
-        let metadataSource = tableMetadata.init(value: metadata)
-
-        guard !metadata.isExtractFile else { return  completition([metadataSource]) }
-        guard !metadataSource.assetLocalIdentifier.isEmpty else {
-            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
-            metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-            let results = NCCommunicationCommon.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
-            metadataSource.contentType = results.mimeType
-            metadataSource.iconName = results.iconName
-            metadataSource.classFile = results.classFile
-            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadataSource.creationDate = date }
-            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadataSource.date = date }
-            metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
-            metadataSource.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-            metadataSource.isExtractFile = true
-            if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
-                metadatas.append(metadata)
-            }
-            return completition(metadatas)
-        }
-
-        NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, returnError in
-            if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
-                metadatas.append(metadata)
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
-            } else {
-                return completition(metadatas)
-            }
-            let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
-            if metadataSource.livePhoto, fetchAssets.count > 0  {
-                NCUtility.shared.createMetadataLivePhotoFromMetadata(metadataSource, asset: fetchAssets.firstObject) { metadata in
-                    if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
-                        metadatas.append(metadata)
-                    }
-                    completition(metadatas)
-                }
-            } else {
-                completition(metadatas)
-            }
-        }
-    }
-
-    // MARK: -
-
-    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false) {
+    @objc func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void) {
 
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
@@ -245,7 +190,7 @@ class NCNetworkingProcessUpload: NSObject {
             metadatasForUpload.append(metadata)
         }
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-        startProcess()
+        startProcess(completion: completion)
     }
 
     // MARK: -
@@ -255,7 +200,7 @@ class NCNetworkingProcessUpload: NSObject {
         var session: URLSession?
 
         // remove leaning upload share extension
-        let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NCCommunicationCommon.shared.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
+        let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NKCommon.shared.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
         for metadata in metadatasUploadShareExtension {
             let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -307,7 +252,7 @@ class NCNetworkingProcessUpload: NSObject {
         }
 
         // metadataStatusUploading OR metadataStatusInUpload (FOREGROUND)
-        let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d OR status == %d)", NCCommunicationCommon.shared.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusInUpload))
+        let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d OR status == %d)", NKCommon.shared.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusInUpload))
         for metadata in metadatasUploading {
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
@@ -316,7 +261,7 @@ class NCNetworkingProcessUpload: NSObject {
         }
 
         // download
-        let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@", NCCommunicationCommon.shared.sessionIdentifierDownload))
+        let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@", NKCommon.shared.sessionIdentifierDownload))
         for metadata in metadatasDownload {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
         }

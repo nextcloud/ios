@@ -25,6 +25,7 @@
 
 import Foundation
 import AVKit
+import NextcloudKit
 
 extension NCPlayer {
 
@@ -134,7 +135,8 @@ extension NCPlayer {
             }
         }
         if all.count != existing.count {
-            NCContentPresenter.shared.messageNotification("_info_", description: "_subtitle_not_dowloaded_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorNoError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_subtitle_not_dowloaded_")
+            NCContentPresenter.shared.showInfo(error: error)
         }
         self.setSubtitleToolbarIcon(subtitleUrls: subtitleUrls)
         self.hideSubtitle()
@@ -153,8 +155,8 @@ extension NCPlayer {
         NotificationCenter.default.addObserver(self, selector: #selector(deviceRotated(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
 
-    func loadText(filePath: URL, _ completion:@escaping (_ contents: String?) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+    func loadText(filePath: URL, _ completion: @escaping (_ contents: String?) -> Void) {
+        DispatchQueue.global().async {
             guard let data = try? Data(contentsOf: filePath),
                   let encoding = NCUtility.shared.getEncondingDataType(data: data) else {
                 return

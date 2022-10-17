@@ -56,8 +56,13 @@ class ParallelWorker {
             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
             hud.tapOnHUDViewBlock = { hud in
                 self.isCancelled = true
-                // Cancel all download
-                NCNetworking.shared.cancelAllDownloadTransfer()
+                // Cancel all download / upload
+                for uploadRequest in NCNetworking.shared.uploadRequest {
+                    uploadRequest.value.cancel()
+                }
+                for downloadRequest in NCNetworking.shared.downloadRequest {
+                    downloadRequest.value.cancel()
+                }
                 hud.dismiss()
             }
             self.hud = hud

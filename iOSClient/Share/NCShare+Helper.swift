@@ -22,10 +22,10 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 extension tableShare: NCTableShareable { }
-extension NCCommunicationShare: NCTableShareable { }
+extension NKShare: NCTableShareable { }
 
 protocol NCTableShareable: AnyObject {
     var shareType: Int { get set }
@@ -83,7 +83,7 @@ class NCTableShareOptions: NCTableShareable {
         }
     }
 
-    convenience init(sharee: NCCommunicationSharee, metadata: tableMetadata, password: String?) {
+    convenience init(sharee: NKSharee, metadata: tableMetadata, password: String?) {
         self.init(shareType: sharee.shareType, metadata: metadata, password: password)
         self.shareWith = sharee.shareWith
     }

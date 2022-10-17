@@ -23,12 +23,12 @@
 
 import Foundation
 import RealmSwift
-import NCCommunication
+import NextcloudKit
 import SwiftyJSON
 
 extension NCManageDatabase {
     
-    @objc func addActivity(_ activities: [NCCommunicationActivity], account: String) {
+    @objc func addActivity(_ activities: [NKActivity], account: String) {
 
         let realm = try! Realm()
 
@@ -114,7 +114,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -186,7 +186,7 @@ extension NCManageDatabase {
                 realm.add(newRecentActivity, update: .all)
             }
         } catch {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -199,7 +199,7 @@ extension NCManageDatabase {
     // MARK: -
     // MARK: Table Comments
 
-    @objc func addComments(_ comments: [NCCommunicationComments], account: String, objectId: String) {
+    @objc func addComments(_ comments: [NKComments], account: String, objectId: String) {
 
         let realm = try! Realm()
 
@@ -230,7 +230,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 

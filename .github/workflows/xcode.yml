@@ -55,3 +55,14 @@ jobs:
         xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
       env:
           SCHEME: Notification Service Extension
+    - name: Build iOS Widget
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: Widget
+    - name: Build iOS Widget Dashboard IntentHandler
+      run: |
+        xcodebuild build -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+      env:
+          SCHEME: WidgetDashboardIntentHandler
+          

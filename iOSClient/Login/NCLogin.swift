@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
@@ -96,22 +96,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         certificate.isEnabled = false
 
         // navigation
-        if #available(iOS 13.0, *) {
-            let navBarAppearance = UINavigationBarAppearance()
-            navBarAppearance.configureWithTransparentBackground()
-            navBarAppearance.shadowColor = .clear
-            navBarAppearance.shadowImage = UIImage()
-            navBarAppearance.titleTextAttributes = [.foregroundColor: textColor]
-            navBarAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
-            self.navigationController?.navigationBar.standardAppearance = navBarAppearance
-            self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
-        } else {
-            self.navigationController?.navigationBar.isTranslucent = true
-            self.navigationController?.navigationBar.shadowImage = UIImage()
-            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            self.navigationController?.navigationBar.backgroundColor = .clear
-            self.navigationController?.navigationBar.barTintColor = NCBrandColor.shared.customer
-        }
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithTransparentBackground()
+        navBarAppearance.shadowColor = .clear
+        navBarAppearance.shadowImage = UIImage()
+        navBarAppearance.titleTextAttributes = [.foregroundColor: textColor]
+        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
+        self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+        self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
         if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {
@@ -215,20 +207,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         loginButton.isEnabled = false
 
-        NCCommunication.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, errorCode, errorDescription in
+        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, _, error in
 
-            if errorCode == 0 {
+            if error == .success {
 
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
 
-                NCCommunication.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, errorCode, _ in
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, data, error in
 
                     self.loginButton.isEnabled = true
 
                     // Login Flow V2
-                    if errorCode == 0 && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
+                    if error == .success && NCBrandOptions.shared.use_loginflowv2 && token != nil && endpoint != nil && login != nil {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
@@ -266,7 +258,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 self.loginButton.isEnabled = true
 
-                if errorCode == NSURLErrorServerCertificateUntrusted {
+                if error.errorCode == NSURLErrorServerCertificateUntrusted {
 
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
 
@@ -292,7 +284,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 } else {
 
-                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: errorDescription, preferredStyle: .alert)
+                    let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
 
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
@@ -324,18 +316,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 loginButton.isEnabled = false
 
-                NCCommunication.shared.checkServer(serverUrl: serverUrl) { errorCode, errorDescription in
+                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
 
                     self.loginButton.isEnabled = true
-                    self.standardLogin(url: urlBase, user: user, password: password, errorCode: errorCode, errorDescription: errorDescription)
+                    self.standardLogin(url: urlBase, user: user, password: password, error: error)
                 }
             }
         }
     }
 
-    func standardLogin(url: String, user: String, password: String, errorCode: Int, errorDescription: String) {
+    func standardLogin(url: String, user: String, password: String, error: NKError) {
 
-        if errorCode == 0 {
+        if error == .success {
 
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)
@@ -355,30 +347,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             }
 
             if CCUtility.getIntro() {
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                 self.dismiss(animated: true)
-
             } else {
-
                 CCUtility.setIntro(true)
-
                 if self.presentingViewController == nil {
-
                     let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
                     viewController?.modalPresentationStyle = .fullScreen
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                     self.appDelegate.window?.rootViewController = viewController
                     self.appDelegate.window?.makeKey()
-
                 } else {
-
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize)
                     self.dismiss(animated: true)
                 }
             }
 
-        } else if errorCode == NSURLErrorServerCertificateUntrusted {
+        } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
 
             let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
 
@@ -400,7 +382,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         } else {
 
-            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + errorDescription
+            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + error.errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))

@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import SVGKit
 import CloudKit
 
@@ -68,10 +68,8 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         tableView.rowHeight = UITableView.automaticDimension
         self.setNavigationTitle()
         self.navigationItem.hidesBackButton = true
-        if #available(iOS 13.0, *) {
-            // disbale pull to dimiss
-            isModalInPresentation = true
-        }
+        // disbale pull to dimiss
+        isModalInPresentation = true
     }
 
     override func viewWillLayoutSubviews() {

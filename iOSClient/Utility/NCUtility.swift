@@ -24,7 +24,7 @@
 import UIKit
 import SVGKit
 import KTVHTTPCache
-import NCCommunication
+import NextcloudKit
 import PDFKit
 import Accelerate
 import CoreMedia
@@ -107,9 +107,9 @@ class NCUtility: NSObject {
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
 
-            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, errorCode, _ in
+            NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, error in
 
-                if errorCode == 0 && data != nil {
+                if error == .success && data != nil {
 
                     if let image = UIImage(data: data!) {
 
@@ -379,6 +379,53 @@ class NCUtility: NSObject {
 
     // MARK: -
 
+    func extractFiles(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+
+        let chunckSize = CCUtility.getChunkSize() * 1000000
+        var metadatas: [tableMetadata] = []
+        let metadataSource = tableMetadata.init(value: metadata)
+
+        guard !metadata.isExtractFile else { return  completition([metadataSource]) }
+        guard !metadataSource.assetLocalIdentifier.isEmpty else {
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
+            metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
+            let results = NKCommon.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
+            metadataSource.contentType = results.mimeType
+            metadataSource.iconName = results.iconName
+            metadataSource.classFile = results.classFile
+            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadataSource.creationDate = date }
+            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadataSource.date = date }
+            metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
+            metadataSource.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+            metadataSource.isExtractFile = true
+            if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
+                metadatas.append(metadata)
+            }
+            return completition(metadatas)
+        }
+
+        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, returnError in
+            if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
+                metadatas.append(metadata)
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
+            } else {
+                return completition(metadatas)
+            }
+            let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
+            if metadataSource.livePhoto, fetchAssets.count > 0  {
+                NCUtility.shared.createMetadataLivePhotoFromMetadata(metadataSource, asset: fetchAssets.firstObject) { metadata in
+                    if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                        metadatas.append(metadata)
+                    }
+                    completition(metadatas)
+                }
+            } else {
+                completition(metadatas)
+            }
+        }
+    }
+
     func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
 
         var fileNamePath: String?
@@ -429,7 +476,11 @@ class NCUtility: NSObject {
 
             let options = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
-            options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+            if compatibilityFormat {
+                options.deliveryMode = .opportunistic
+            } else {
+                options.deliveryMode = .highQualityFormat
+            }
             options.isSynchronous = true
             if extensionAsset == "DNG" {
                 options.version = PHImageRequestOptionsVersion.original
@@ -439,7 +490,7 @@ class NCUtility: NSObject {
                 if error != nil { return callCompletion(error: true) }
             }
 
-            PHImageManager.default().requestImageData(for: asset, options: options) { data, dataUI, orientation, info in
+            PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, dataUI, orientation, info in
                 guard var data = data else { return callCompletion(error: true) }
                 if compatibilityFormat {
                     guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletion(error: true) }
@@ -510,7 +561,7 @@ class NCUtility: NSObject {
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
-                metadataLivePhoto.classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+                metadataLivePhoto.classFile = NKCommon.typeClassFile.video.rawValue
                 metadataLivePhoto.e2eEncrypted = metadata.e2eEncrypted
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
@@ -544,7 +595,7 @@ class NCUtility: NSObject {
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval, completion: @escaping (UIImage?) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global().async {
 
             let asset = AVURLAsset(url: url)
             let assetIG = AVAssetImageGenerator(asset: asset)
@@ -576,19 +627,19 @@ class NCUtility: NSObject {
         let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
 
         if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
-        if classFile != NCCommunicationCommon.typeClassFile.image.rawValue && classFile != NCCommunicationCommon.typeClassFile.video.rawValue { return }
+        if classFile != NKCommon.typeClassFile.image.rawValue && classFile != NKCommon.typeClassFile.video.rawValue { return }
 
-        if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if classFile == NKCommon.typeClassFile.image.rawValue {
 
             originalImage = UIImage(contentsOfFile: fileNamePath)
 
-            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview), isAspectRation: false)
-            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon), isAspectRation: false)
+            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview))
+            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon))
 
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
 
-        } else if classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        } else if classFile == NKCommon.typeClassFile.video.rawValue {
 
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
@@ -617,21 +668,16 @@ class NCUtility: NSObject {
 
         var image: UIImage?
 
-        if #available(iOS 13.0, *) {
-            // see https://stackoverflow.com/questions/71764255
-            let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
-            if let symbolConfiguration = symbolConfiguration {
-                image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.imageColor(color)
-            } else {
-                image = UIImage(systemName: sfSymbolName)?.imageColor(color)
-            }
-            if image == nil {
-                image = UIImage(named: imageName)?.image(color: color, size: size)
-            }
+        // see https://stackoverflow.com/questions/71764255
+        let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
+        if let symbolConfiguration = symbolConfiguration {
+            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: .alwaysOriginal)
         } else {
+            image = UIImage(systemName: sfSymbolName)?.withTintColor(color, renderingMode: .alwaysOriginal)
+        }
+        if image == nil {
             image = UIImage(named: imageName)?.image(color: color, size: size)
         }
-
         if let image = image {
             return image
         }
@@ -654,12 +700,9 @@ class NCUtility: NSObject {
     }
 
     func getDefaultUserIcon() -> UIImage {
-        if #available(iOS 13.0, *) {
-            let config = UIImage.SymbolConfiguration(pointSize: 30)
-            return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
-        } else {
-            return NCUtility.shared.loadImage(named: "person.crop.circle", size: 30)
-        }
+            
+        let config = UIImage.SymbolConfiguration(pointSize: 30)
+        return NCUtility.shared.loadImage(named: "person.crop.circle", symbolConfiguration: config)
     }
 
     @objc func createAvatar(image: UIImage, size: CGFloat) -> UIImage {
@@ -803,44 +846,24 @@ class NCUtility: NSObject {
 
     func colorNavigationController(_ navigationController: UINavigationController?, backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?, withoutShadow: Bool) {
 
-        if #available(iOS 13.0, *) {
+        let appearance = UINavigationBarAppearance()
+        appearance.titleTextAttributes = [.foregroundColor: titleColor]
+        appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
 
-            // iOS 14, 15
-            let appearance = UINavigationBarAppearance()
-            appearance.titleTextAttributes = [.foregroundColor: titleColor]
-            appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
-
-            if withoutShadow {
-                appearance.shadowColor = .clear
-                appearance.shadowImage = UIImage()
-            }
-
-            if let tintColor = tintColor {
-                navigationController?.navigationBar.tintColor = tintColor
-            }
-
-            navigationController?.view.backgroundColor = backgroundColor
-            navigationController?.navigationBar.barTintColor = titleColor
-            navigationController?.navigationBar.standardAppearance = appearance
-            navigationController?.navigationBar.compactAppearance = appearance
-            navigationController?.navigationBar.scrollEdgeAppearance = appearance
-
-        } else {
-
-            navigationController?.navigationBar.isTranslucent = true
-            navigationController?.navigationBar.barTintColor = backgroundColor
-
-            if withoutShadow {
-                navigationController?.navigationBar.shadowImage = UIImage()
-                navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            }
-
-            let titleDict: NSDictionary = [NSAttributedString.Key.foregroundColor: titleColor]
-            navigationController?.navigationBar.titleTextAttributes = titleDict as? [NSAttributedString.Key: Any]
-            if let tintColor = tintColor {
-                navigationController?.navigationBar.tintColor = tintColor
-            }
+        if withoutShadow {
+            appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
         }
+
+        if let tintColor = tintColor {
+            navigationController?.navigationBar.tintColor = tintColor
+        }
+
+        navigationController?.view.backgroundColor = backgroundColor
+        navigationController?.navigationBar.barTintColor = titleColor
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
 
     func getEncondingDataType(data: Data) -> String.Encoding? {
@@ -941,5 +964,57 @@ class NCUtility: NSObject {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailPred.evaluate(with: email)
+    }
+    
+    func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
+
+        var imagePreview: UIImage?
+        let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
+        let iconImagePath = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
+
+        if FileManager().fileExists(atPath: iconImagePath) {
+            imagePreview = UIImage(contentsOfFile: iconImagePath)
+        } else if !createPreviewMedia {
+            return nil
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
+            }
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
+            if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
+                    imagePreview = image
+                } catch { }
+            }
+        }
+
+        return imagePreview
+    }
+
+    @discardableResult
+    func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) -> UIImage? {
+
+        guard let data = data else { return nil }
+        var returnImage: UIImage?
+
+        if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
+            returnImage = image
+        } else if let image = SVGKImage(data: data) {
+            image.size = size
+            returnImage = image.uiImage
+        } else {
+            print("error")
+        }
+        if let fileName = fileNameToWrite, let image = returnImage {
+            do {
+                let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+            } catch { }
+        }
+        return returnImage
     }
 }

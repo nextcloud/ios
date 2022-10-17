@@ -41,6 +41,14 @@ excluded:
   - File Provider Extension/FileProviderExtension.swift
   - File Provider Extension/FileProviderUtility.swift
   - Notification Service Extension/NotificationService.swift
+  - Widget/Widget.swift
+  - Widget/Dashboard/DashboardData.swift
+  - Widget/Dashboard/DashboardWidgetView.swift
+  - Widget/Files/FilesData.swift
+  - Widget/Files/FilesWidgetView.swift
+  - Widget/Lockscreen/LockscreenData.swift
+  - Widget/Lockscreen/LockscreenWidgetView.swift
+  - Widget/Lockscreen/LockscreenWidgetProvider.swift
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift
@@ -56,6 +64,7 @@ excluded:
   - iOSClient/Data/NCManageDatabase.swift
   - iOSClient/Data/NCManageDatabase+Metadata.swift
   - iOSClient/Data/NCManageDatabase+Video.swift
+  - iOSClient/Data/NCManageDatabase+DashboardWidget.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
   - iOSClient/EmptyView/NCEmptyDataSet.swift
   - iOSClient/Extensions/UIColor+Extensions.swift
@@ -122,6 +131,7 @@ excluded:
   - iOSClient/Utility/NCStoreReview.swift
   - iOSClient/Utility/NCUtility.swift
   - iOSClient/Utility/NCUtilityFileSystem.swift
+  - iOSClient/Utility/NCUtilityGUI.swift
   - iOSClient/Viewer/NCViewer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
   - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
@@ -132,6 +142,5 @@ excluded:
   - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
   - iOSClient/Viewer/NCViewerProviderContextMenu.swift
   - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
-
 
 reporter: "xcode"

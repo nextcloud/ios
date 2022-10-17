@@ -22,12 +22,13 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCFiles: NCCollectionViewCommon {
 
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
+    internal var fileNameOpen: String?
 
     // MARK: - View Life Cycle
 
@@ -52,27 +53,32 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)
+
+        navigationController?.setFileAppreance()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         fileNameBlink = nil
+        fileNameOpen = nil
     }
 
     // MARK: - NotificationCenter
 
-    override func initialize(_ notification: NSNotification) {
+    override func initialize() {
 
         if isRoot {
             serverUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
             titleCurrentFolder = getNavigationTitle()
         }
-        super.initialize(notification)
+        super.initialize()
 
+        /*
         if let userInfo = notification.userInfo as NSDictionary?, userInfo["atStart"] as? Int == 1 {
             return
         }
+        */
 
         reloadDataSource(forced: false)
         reloadDataSourceNetwork()
@@ -99,7 +105,7 @@ class NCFiles: NCCollectionViewCommon {
             self.richWorkspaceText = directory?.richWorkspace
 
             // FORCED false: test the directory.etag
-            if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil {
+            if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
                 return
             }
 
@@ -120,7 +126,9 @@ class NCFiles: NCCollectionViewCommon {
                 self.collectionView.reloadData()
                 if !self.dataSource.metadatas.isEmpty {
                     self.blinkCell(fileName: self.fileNameBlink)
+                    self.openFile(fileName: self.fileNameOpen)
                     self.fileNameBlink = nil
+                    self.fileNameOpen = nil
                 }
             }
         }
@@ -135,12 +143,10 @@ class NCFiles: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
-            if errorCode == 0 {
-                for metadata in metadatas ?? [] {
-                    if !metadata.directory, NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                        NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                    }
+        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+            if error == .success {
+                for metadata in metadatas ?? [] where !metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
+                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                 }
             }
 
@@ -162,7 +168,7 @@ class NCFiles: NCCollectionViewCommon {
         if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, fileName)) {
             let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     UIView.animate(withDuration: 0.3) {
                         self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
                     } completion: { _ in
@@ -173,6 +179,18 @@ class NCFiles: NCCollectionViewCommon {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    func openFile(fileName: String?) {
+
+        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, fileName)) {
+            let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+            if let indexPath = indexPath {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.collectionView(self.collectionView, didSelectItemAt: indexPath)
                 }
             }
         }

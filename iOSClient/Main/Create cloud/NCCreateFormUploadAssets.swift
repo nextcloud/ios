@@ -23,7 +23,7 @@
 
 import UIKit
 import Queuer
-import NCCommunication
+import NextcloudKit
 import XLForm
 import Photos
 
@@ -44,7 +44,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     let targetSizeImagePreview = CGSize(width: 100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    var cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+    var cellBackgoundColor = UIColor.secondarySystemGroupedBackground
 
     // MARK: - View Life Cycle
 
@@ -79,9 +79,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
         self.title = NSLocalizedString("_upload_photos_videos_", comment: "")
 
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .systemGroupedBackground
+        cellBackgoundColor = .secondarySystemGroupedBackground
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
@@ -126,7 +126,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.cellConfig["imageView.image"] = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -136,7 +136,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -151,7 +151,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.hidden = "$\("useFolderAutoUpload") == 0"
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -167,7 +167,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -179,7 +179,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -197,11 +197,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textField.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -214,7 +214,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
         row.cellConfig["textView.backgroundColor"] = cellBackgoundColor
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
-        row.cellConfig["textView.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textView.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -272,7 +272,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
                     self.reloadFormRow(formRow)
 
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCharactersForbidden)
+                    let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_forbidden_characters_")
+                    NCContentPresenter.shared.showInfo(error: error)
                 }
             }
 
@@ -338,7 +339,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
             if autoUploadPath == self.serverUrl {
                 if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                    
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
+                    NCContentPresenter.shared.showError(error: error)
                     return
                 }
             }
@@ -398,7 +401,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
             } else {
 
-                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict)
+                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
             }
 
             DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }

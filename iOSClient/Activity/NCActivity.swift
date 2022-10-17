@@ -24,7 +24,7 @@
 
 import UIKit
 import SwiftRichString
-import NCCommunication
+import NextcloudKit
 
 class NCActivity: UIViewController, NCSharePagingContent {
 
@@ -60,13 +60,13 @@ class NCActivity: UIViewController, NCSharePagingContent {
         super.viewDidLoad()
 
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = .systemBackground
 
         if showComments {
             setupComments()
@@ -83,12 +83,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NCCommunication.shared.putComments(fileId: metadata.fileId, message: newComment) { _, errorCode, errorDescription in
-                if errorCode == 0 {
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment) { _, error in
+                if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
                 } else {
-                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }
@@ -96,7 +96,11 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         appDelegate.activeViewController = self
+
+        navigationController?.setFileAppreance()
+
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
         initialize()
     }
@@ -163,7 +167,7 @@ extension NCActivity: UITableViewDelegate {
 
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = NCBrandColor.shared.label
+        label.textColor = .label
         label.text = CCUtility.getTitleSectionDate(sectionDates[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -218,13 +222,13 @@ extension NCActivity: UITableViewDataSource {
         NCOperationQueue.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView, cellImageView: cell.fileAvatarImageView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
-        cell.labelUser.textColor = NCBrandColor.shared.label
+        cell.labelUser.textColor = .label
         // Date
         cell.labelDate.text = CCUtility.dateDiff(comment.creationDateTime as Date)
-        cell.labelDate.textColor = NCBrandColor.shared.systemGray4
+        cell.labelDate.textColor = .systemGray4
         // Message
         cell.labelMessage.text = comment.message
-        cell.labelMessage.textColor = NCBrandColor.shared.label
+        cell.labelMessage.textColor = .label
         // Button Menu
         if comment.actorId == appDelegate.userId {
             cell.buttonMenu.isHidden = false
@@ -248,7 +252,7 @@ extension NCActivity: UITableViewDataSource {
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10
         cell.didSelectItemEnable = self.didSelectItemEnable
-        cell.subject.textColor = NCBrandColor.shared.label
+        cell.subject.textColor = .label
         cell.viewController = self
 
         // icon
@@ -262,8 +266,8 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image
                 }
             } else {
-                NCCommunication.shared.downloadContent(serverUrl: activity.icon) { _, data, errorCode, _ in
-                    if errorCode == 0 {
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon) { _, data, error in
+                    if error == .success {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                             self.tableView.reloadData()
@@ -356,7 +360,7 @@ extension NCActivity {
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
             bottom = -mainTabBar.getHight()
         }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .gray)
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
@@ -403,11 +407,11 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NCCommunication.shared.getComments(fileId: metadata.fileId) { account, comments, errorCode, errorDescription in
-            if errorCode == 0, let comments = comments {
+        NextcloudKit.shared.getComments(fileId: metadata.fileId) { account, comments, data, error in
+            if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
-            } else if errorCode != NCGlobal.shared.errorResourceNotFound {
-                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
+                NCContentPresenter.shared.showError(error: error)
             }
 
             if let disptachGroup = disptachGroup {
@@ -427,20 +431,20 @@ extension NCActivity {
 
         disptachGroup.enter()
 
-        NCCommunication.shared.getActivity(
+        NextcloudKit.shared.getActivity(
             since: 0,
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { account, _, activityFirstKnown, activityLastGiven, errorCode, _ in
+            previews: true) { account, _, activityFirstKnown, activityLastGiven, data, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                guard errorCode == 0,
+                guard error == .success,
                       account == self.appDelegate.account,
                       largestActivityId > resultActivityId
                 else {
-                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
                     return
                 }
 
@@ -454,18 +458,18 @@ extension NCActivity {
         var resultActivityId = 0
         disptachGroup.enter()
 
-        NCCommunication.shared.getActivity(
+        NextcloudKit.shared.getActivity(
             since: idActivity,
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { account, activities, activityFirstKnown, activityLastGiven, errorCode, _ in
+            previews: true) { account, activities, activityFirstKnown, activityLastGiven, data, error in
                 defer { disptachGroup.leave() }
-                guard errorCode == 0,
+                guard error == .success,
                       account == self.appDelegate.account,
                       !activities.isEmpty
                 else {
-                    self.hasActivityToLoad = errorCode == 304 ? false : self.hasActivityToLoad
+                    self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
                     return
                 }
                 NCManageDatabase.shared.addActivity(activities, account: account)
@@ -514,11 +518,11 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, message != "" else { return }
 
-                        NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { _, errorCode, errorDescription in
-                            if errorCode == 0 {
+                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { _, error in
+                            if error == .success {
                                 self.loadComments()
                             } else {
-                                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
                     }))
@@ -535,11 +539,11 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
-                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { _, errorCode, errorDescription in
-                        if errorCode == 0 {
+                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { _, error in
+                        if error == .success {
                             self.loadComments()
                         } else {
-                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.showError(error: error)
                         }
                     }
                 }

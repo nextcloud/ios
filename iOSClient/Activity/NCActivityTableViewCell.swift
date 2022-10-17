@@ -22,8 +22,9 @@
 //
 
 import Foundation
-import NCCommunication
+import NextcloudKit
 import FloatingPanel
+import JGProgressHUD
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
 
@@ -108,7 +109,8 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                         viewController.trashPath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
+                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_trash_file_not_found_")
+                        NCContentPresenter.shared.showError(error: error)
                     }
                 }
             }
@@ -139,54 +141,39 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 }
             }
 
-            var pathComponents = activityPreview.link.components(separatedBy: "?")
-            pathComponents = pathComponents[1].components(separatedBy: "&")
-            var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = NCUtilityFileSystem.shared.getHomeServer(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
-
-            if let backgroundView = appDelegate.window?.rootViewController?.view {
-                NCActivityIndicator.shared.start(backgroundView: backgroundView)
+            let hud = JGProgressHUD()
+            hud.indicatorView = JGProgressHUDRingIndicatorView()
+            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                indicatorView.ringWidth = 1.5
             }
+            guard let view = appDelegate.window?.rootViewController?.view else { return }
+            hud.show(in: view)
 
-            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+            NextcloudKit.shared.getFileFromFileId(fileId: String(activityPreview.fileId)) { account, file, data, error in
+                if let file = file {
 
-            }, taskHandler: { _ in
+                    let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: file.e2eEncrypted, account: account)
+                    NCManageDatabase.shared.addMetadata(metadata)
 
-            }, progressHandler: { _ in
+                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
-            }) { account, _, _, _, _, _, errorCode, _ in
-
-                if account == self.appDelegate.account && errorCode == 0 {
-
-                    let serverUrl = (serverUrlFileName as NSString).deletingLastPathComponent
-                    let fileName = (serverUrlFileName as NSString).lastPathComponent
-                    let serverUrlFileName = serverUrl + "/" + fileName
-
-                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, errorCode, _ in
-
-                        NCActivityIndicator.shared.stop()
-
-                        DispatchQueue.main.async {
-                            if account == self.appDelegate.account, errorCode == 0, let metadata = metadata {
-
-                                // move from id to oc:id + instanceid (ocId)
-                                let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
-                                let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata.ocId
-
-                                CCUtility.moveFile(atPath: atPath, toPath: toPath)
-
-                                NCManageDatabase.shared.addMetadata(metadata)
-                                if let viewController = self.viewController {
-                                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
-                                }
+                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+                    }, taskHandler: { _ in
+                    }, progressHandler: { progress in
+                        hud.progress = Float(progress.fractionCompleted)
+                    }) { account, _, _, _, _, _, error in
+                        hud.dismiss()
+                        if account == self.appDelegate.account && error == .success {
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            if let viewController = self.viewController {
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
                             }
                         }
                     }
-
-                } else {
-
-                    NCActivityIndicator.shared.stop()
+                } else if error != .success {
+                    hud.dismiss()
+                    NCContentPresenter.shared.showError(error: error)
                 }
             }
         }

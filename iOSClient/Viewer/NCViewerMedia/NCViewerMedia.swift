@@ -23,7 +23,7 @@
 
 import UIKit
 import SVGKit
-import NCCommunication
+import NextcloudKit
 import EasyTipView
 import SwiftUI
 
@@ -97,7 +97,7 @@ class NCViewerMedia: UIViewController {
             statusLabel.text = ""
         }
         
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
@@ -147,7 +147,7 @@ class NCViewerMedia: UIViewController {
         viewerMediaPage?.navigationController?.navigationBar.prefersLargeTitles = false
         viewerMediaPage?.navigationItem.title = metadata.fileNameView
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
             viewerMediaPage.currentScreenMode = viewerMediaPage.saveScreenModeImage
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
                 viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
@@ -169,10 +169,10 @@ class NCViewerMedia: UIViewController {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
 
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
+            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
-            viewerMediaPage?.view.backgroundColor = NCBrandColor.shared.systemBackground
-            viewerMediaPage?.textColor = NCBrandColor.shared.label
+            viewerMediaPage?.view.backgroundColor = .systemBackground
+            viewerMediaPage?.textColor = .label
             viewerMediaPage?.progressView.isHidden = false
         }
     }
@@ -180,22 +180,19 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
 
             if let ncplayer = self.ncplayer {
                 ncplayer.openAVPlayer()
                 self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
             
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        } else if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
 
             viewerMediaPage?.clearCommandCenter()
         }
 
-        // TIP
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
-            self.tipView?.show(forView: view)
-        }
+        showTip()
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
@@ -210,7 +207,6 @@ class NCViewerMedia: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
 
         self.tipView?.dismiss()
-
         coordinator.animate(alongsideTransition: { context in
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
@@ -220,7 +216,18 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
-        }) { _ in }
+        }, completion: { context in
+            self.showTip()
+        })
+    }
+
+    // MARK: - Tip
+
+    func showTip() {
+
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
+            self.tipView?.show(forView: view)
+        }
     }
 
     // MARK: - Image
@@ -235,16 +242,16 @@ class NCViewerMedia: UIViewController {
     func loadImage(metadata: tableMetadata) {
 
         // Download image
-        if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.session == "" {
+        if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.session == "" {
 
             if metadata.livePhoto {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
-                    NCNetworking.shared.download(metadata: metadata, selector: "") { _ in }
+                    NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                 }
             }
 
-            NCNetworking.shared.download(metadata: metadata, selector: "") { _ in
+            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in
                 let image = getImageMetadata(metadata)
                 if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
                     self.image = image
@@ -266,7 +273,7 @@ class NCViewerMedia: UIViewController {
                 return image
             }
 
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
+            if metadata.classFile == NKCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
                 NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
             }
 
@@ -276,9 +283,9 @@ class NCViewerMedia: UIViewController {
                 }
             }
 
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+            if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
                 return UIImage(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
-            } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+            } else if metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
                 return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             } else {
                 return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
@@ -290,7 +297,7 @@ class NCViewerMedia: UIViewController {
             let ext = CCUtility.getExtension(metadata.fileNameView)
             var image: UIImage?
 
-            if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+            if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.typeClassFile.image.rawValue {
 
                 let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
                 let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -332,7 +339,7 @@ class NCViewerMedia: UIViewController {
 
         if detailView.isShow() { return }
         // NO ZOOM for Audio
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if metadata.classFile == NKCommon.typeClassFile.audio.rawValue { return }
 
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
@@ -443,7 +450,9 @@ extension NCViewerMedia {
                 let ratioH = self.imageVideoContainer.frame.height / image.size.height
                 let ratio = ratioW < ratioH ? ratioW : ratioH
                 let imageHeight = image.size.height * ratio
-                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - imageHeight) / 2) + self.view.safeAreaInsets.bottom
+                let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
+                let height = max(imageHeight, VideoContainerHeight)
+                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
                 if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
             }
 
@@ -474,7 +483,7 @@ extension NCViewerMedia {
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue && !metadata.livePhoto && ncplayer?.player?.timeControlStatus == .paused {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue && !metadata.livePhoto && ncplayer?.player?.timeControlStatus == .paused {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
         }
     }
@@ -534,7 +543,7 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
     func downloadFullResolution() {
         closeDetail()
-        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _ in }
+        NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _, _ in }
     }
 }
 

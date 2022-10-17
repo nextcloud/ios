@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCFavorite: NCCollectionViewCommon {
 
@@ -40,6 +40,12 @@ class NCFavorite: NCCollectionViewCommon {
         emptyImage = UIImage(named: "star.fill")?.image(color: NCBrandColor.shared.yellowFavorite, size: UIScreen.main.bounds.width)
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.setFileAppreance()
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -82,9 +88,9 @@ class NCFavorite: NCCollectionViewCommon {
 
         if serverUrl.isEmpty {
 
-            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { _, _, errorCode, errorDescription in
-                if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { _, _, error in
+                if error != .success {
+                    NCContentPresenter.shared.showError(error: error)
                 }
 
                 DispatchQueue.main.async {
@@ -96,8 +102,8 @@ class NCFavorite: NCCollectionViewCommon {
 
         } else {
 
-            networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, errorCode, _ in
-                if errorCode == 0 {
+            networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+                if error == .success {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
                             if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {

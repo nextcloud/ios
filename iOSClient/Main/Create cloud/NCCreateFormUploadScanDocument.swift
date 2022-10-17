@@ -22,13 +22,12 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import Vision
 import VisionKit
 import Photos
 import XLForm
 
-@available(iOS 13.0, *)
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -47,7 +46,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     var password: String = ""
     var fileType = "PDF"
 
-    var cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+    var cellBackgoundColor = UIColor.secondarySystemGroupedBackground
 
     // MARK: - View Life Cycle
 
@@ -71,14 +70,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         self.title = NSLocalizedString("_save_settings_", comment: "")
 
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        cellBackgoundColor = NCBrandColor.shared.secondarySystemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .systemGroupedBackground
+        cellBackgoundColor = .secondarySystemGroupedBackground
 
         let saveButton: UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
 
-        NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
+        NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
@@ -118,7 +117,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -140,7 +139,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -153,11 +152,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textField.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -173,7 +172,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row.cellConfig["imageView.image"] = UIImage(named: "textRecognition")!.image(color: NCBrandColor.shared.brandElement, size: 25)
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -193,7 +192,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         row.cellConfig["tintColor"] = NCBrandColor.shared.brandElement
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -202,11 +201,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textLabel.textColor"] = UIColor.label
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.shared.label
+        row.cellConfig["textField.textColor"] = UIColor.label
 
         section.addFormRow(row)
 
@@ -441,7 +440,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
             NCActivityIndicator.shared.stop()
-            NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+
+            let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+            NCContentPresenter.shared.showError(error: error)
             return
         }
         let fileUrl = URL(fileURLWithPath: fileNameGenerateExport)
@@ -478,7 +479,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 try textFile.write(to: fileUrl, atomically: true, encoding: .utf8)
             } catch {
                 NCActivityIndicator.shared.stop()
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+                let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
         }
@@ -560,7 +562,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
                 NCActivityIndicator.shared.stop()
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+                let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
 
@@ -568,7 +571,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 try data.write(to: fileUrl, options: .atomic)
             } catch {
                 NCActivityIndicator.shared.stop()
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorCreationFile)
+                let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
+                NCContentPresenter.shared.showError(error: error)
                 return
             }
         }
@@ -576,7 +580,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         NCActivityIndicator.shared.stop()
 
-        appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadata])
+        appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadata], completion: { _ in })
 
         // Request delete all image scanned
         let alertController = UIAlertController(title: "", message: NSLocalizedString("_delete_all_scanned_images_", comment: ""), preferredStyle: .alert)
@@ -716,7 +720,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
 }
 
-@available(iOS 13.0, *)
 class NCCreateScanDocument: NSObject, VNDocumentCameraViewControllerDelegate {
     @objc static let shared: NCCreateScanDocument = {
         let instance = NCCreateScanDocument()

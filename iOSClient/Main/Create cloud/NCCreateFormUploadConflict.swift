@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import Photos
 
 @objc protocol NCCreateFormUploadConflictDelegate {
@@ -79,10 +79,10 @@ extension NCCreateFormUploadConflictDelegate {
         tableView.allowsSelection = false
         tableView.tableFooterView = UIView()
 
-        view.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        tableView.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        viewSwitch.backgroundColor = NCBrandColor.shared.systemGroupedBackground
-        viewButton.backgroundColor = NCBrandColor.shared.systemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .systemGroupedBackground
+        viewSwitch.backgroundColor = .systemGroupedBackground
+        viewButton.backgroundColor = .systemGroupedBackground
 
         tableView.register(UINib(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
 
@@ -105,9 +105,9 @@ extension NCCreateFormUploadConflictDelegate {
         buttonCancel.layer.masksToBounds = true
         buttonCancel.layer.borderWidth = 0.5
         buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
-        buttonCancel.backgroundColor = NCBrandColor.shared.systemGray5
+        buttonCancel.backgroundColor = .systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        buttonCancel.setTitleColor(NCBrandColor.shared.label, for: .normal)
+        buttonCancel.setTitleColor(.label, for: .normal)
 
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
@@ -221,7 +221,8 @@ extension NCCreateFormUploadConflictDelegate {
             }
 
             switchAlreadyExistingFiles.isOn = true
-            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_rewite_doc_")
+            NCContentPresenter.shared.showInfo(error: error)
         }
 
         tableView.reloadData()
@@ -409,7 +410,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
 
                 do {
-                    if metadataNewFile.classFile ==  NCCommunicationCommon.typeClassFile.image.rawValue {
+                    if metadataNewFile.classFile ==  NKCommon.typeClassFile.image.rawValue {
                         // preserver memory especially for very large files in Share extension
                         if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: filePathNewFile), to: cell.imageNewFile.frame.size) {
                             cell.imageNewFile.image = image
@@ -499,7 +500,7 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
 
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(NCBrandColor.shared.label, for: .normal)
+            buttonContinue.setTitleColor(.label, for: .normal)
         } else {
             buttonContinue.isEnabled = false
             buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)

@@ -723,17 +723,6 @@
     [UICKeyChainStore setString:sSet forKey:@"removePhotoCameraRoll" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getPresentErrorITMS90076
-{
-    return [[UICKeyChainStore stringForKey:@"errorITMS90076" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setPresentErrorITMS90076:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"errorITMS90076" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getPlayerPlay
 {
     return [[UICKeyChainStore stringForKey:@"playerPlay" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
@@ -1044,14 +1033,6 @@
     [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appDatabaseNextcloud]];
     [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appScan]];
     [CCUtility addSkipBackupAttributeToItemAtURL:[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:NCGlobal.shared.appUserData]];
-
-    #ifdef DEBUG
-    NSLog(@"[LOG] Copy DB on Documents directory");
-    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:[[NCGlobal shared] appDatabaseNextcloud]] path]];
-    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
-    [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
-    [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
-    #endif
 }
 
 + (NSURL *)getDirectoryGroup

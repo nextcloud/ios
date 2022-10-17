@@ -22,7 +22,7 @@
 
 import UIKit
 import DropDown
-import NCCommunication
+import NextcloudKit
 
 class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
@@ -56,7 +56,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             selector: #selector(tapAvatarImage))]
 
         labelTitle.text = tableShare.shareWithDisplayname
-        labelTitle.textColor = NCBrandColor.shared.label
+        labelTitle.textColor = .label
         isUserInteractionEnabled = true
         labelQuickStatus.isHidden = false
         imageDownArrow.isHidden = false
@@ -141,7 +141,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         set { user = newValue ?? "" }
     }
 
-    func setupCell(sharee: NCCommunicationSharee, baseUrl: NCUserBaseUrl) {
+    func setupCell(sharee: NKSharee, baseUrl: NCUserBaseUrl) {
         imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
@@ -163,17 +163,17 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-            NCCommunication.shared.downloadAvatar(
+            NextcloudKit.shared.downloadAvatar(
                 user: sharee.shareWith,
                 fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag) { _, imageAvatar, _, etag, errorCode, _ in
+                etag: etag) { _, imageAvatar, _, etag, error in
 
-                    if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
+                    if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.imageItem.image = imageAvatar
-                    } else if errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
+                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
                         self.imageItem.image = imageAvatar
                     }
                 }

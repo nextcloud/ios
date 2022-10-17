@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import MarkdownKit
 
 @objc class NCViewerRichWorkspace: UIViewController, UIAdaptivePresentationControllerDelegate {
@@ -43,7 +43,7 @@ import MarkdownKit
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
         presentationController?.delegate = self
 
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
@@ -52,18 +52,18 @@ import MarkdownKit
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.label)
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         textView.attributedText = markdownParser.parse(richWorkspaceText)
-        textViewColor = NCBrandColor.shared.label
+        textViewColor = .label
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadata, errorCode, errorDescription) in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadata, error) in
 
-            if errorCode == 0 && account == self.appDelegate.account {
+            if error == .success && account == self.appDelegate.account {
                 guard let metadata = metadata else { return }
                 NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                 if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {

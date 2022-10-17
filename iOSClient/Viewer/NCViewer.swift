@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import QuickLook
 
 class NCViewer: NSObject {
@@ -42,10 +42,25 @@ class NCViewer: NSObject {
         self.metadatas = metadatas
 
         var editor = editor
-        var xxxxxxx = NCCommunicationCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
+        var xxxxxxx = NKCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
 
         // URL
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.url.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.url.rawValue {
+
+            // nextcloudtalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
+            if metadata.name == NCGlobal.shared.talkName {
+                let pathComponents = metadata.url.components(separatedBy: "/")
+                if pathComponents.contains("call") {
+                    let talkComponents = pathComponents.last?.components(separatedBy: "#")
+                    if let roomToken = talkComponents?.first {
+                        let urlString = "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(roomToken)"
+                        if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                            return
+                        }
+                    }
+                }
+            }
 
             if let url = URL(string: metadata.url) {
                 UIApplication.shared.open(url)
@@ -54,7 +69,7 @@ class NCViewer: NSObject {
         }
 
         // IMAGE AUDIO VIDEO
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue {
 
             if let navigationController = viewController.navigationController {
 
@@ -75,7 +90,7 @@ class NCViewer: NSObject {
         }
 
         // DOCUMENTS
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.document.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.document.rawValue {
 
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
@@ -97,16 +112,16 @@ class NCViewer: NSObject {
             let availableRichDocument = NCUtility.shared.isRichDocument(metadata)
 
             // RichDocument: Collabora
-            if (isRichDocument || (availableRichDocument && editors.count == 0)) && NCCommunication.shared.isNetworkReachable() {
+            if (isRichDocument || (availableRichDocument && editors.count == 0)) && NextcloudKit.shared.isNetworkReachable() {
 
                 if metadata.url == "" {
 
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, errorCode, errorDescription in
+                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, data, error in
 
                         NCActivityIndicator.shared.stop()
 
-                        if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                        if error == .success && account == self.appDelegate.account && url != nil {
 
                             if let navigationController = viewController.navigationController {
 
@@ -119,9 +134,9 @@ class NCViewer: NSObject {
                                 navigationController.pushViewController(viewController, animated: true)
                             }
 
-                        } else if errorCode != 0 {
+                        } else if error != .success {
 
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.showError(error: error)
                         }
                     }
 
@@ -143,7 +158,7 @@ class NCViewer: NSObject {
             }
 
             // DirectEditing: Nextcloud Text - OnlyOffice
-            if editors.count > 0 && NCCommunication.shared.isNetworkReachable() {
+            if editors.count > 0 && NextcloudKit.shared.isNetworkReachable() {
 
                 if editor == "" {
                     if editors.contains(NCGlobal.shared.editorText) {
@@ -157,21 +172,21 @@ class NCViewer: NSObject {
 
                     if metadata.url == "" {
 
-                        var customUserAgent: String?
                         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
 
+                        var options = NKRequestOptions()
                         if editor == NCGlobal.shared.editorOnlyoffice {
-                            customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentOnlyOffice())
                         } else {
-                            customUserAgent = NCUtility.shared.getCustomUserAgentNCText()
+                            options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
                         }
 
                         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                        NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { account, url, errorCode, errorMessage in
+                        NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, options: options) { account, url, data, error in
 
                             NCActivityIndicator.shared.stop()
 
-                            if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                            if error == .success && account == self.appDelegate.account && url != nil {
 
                                 if let navigationController = viewController.navigationController {
 
@@ -185,9 +200,9 @@ class NCViewer: NSObject {
                                     navigationController.pushViewController(viewController, animated: true)
                                 }
 
-                            } else if errorCode != 0 {
+                            } else if error != .success {
 
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
 
@@ -207,8 +222,8 @@ class NCViewer: NSObject {
                     }
 
                 } else {
-
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorInternalError)
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_editor_unknown_")
+                    NCContentPresenter.shared.showError(error: error)
                 }
 
                 return
@@ -236,17 +251,17 @@ extension NCViewer: NCSelectDelegate {
         if let serverUrl = serverUrl {
             let metadata = items[0] as! tableMetadata
             if move {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { errorCode, errorDescription in
-                    if errorCode != 0 {
+                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { error in
+                    if error != .success {
 
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.showError(error: error)
                     }
                 }
             } else if copy {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { errorCode, errorDescription in
-                    if errorCode != 0 {
+                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { error in
+                    if error != .success {
 
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCContentPresenter.shared.showError(error: error)
                     }
                 }
             }

@@ -134,13 +134,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGestureMore.delaysTouchesBegan = true
         buttonMore.addGestureRecognizer(longPressedGestureMore)
 
-        separator.backgroundColor = NCBrandColor.shared.separator
+        separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
         labelTitle.text = ""
         labelInfo.text = ""
-        labelTitle.textColor = NCBrandColor.shared.label
-        labelInfo.textColor = NCBrandColor.shared.systemGray
+        labelTitle.textColor = .label
+        labelInfo.textColor = .systemGray
     }
 
     override func prepareForReuse() {

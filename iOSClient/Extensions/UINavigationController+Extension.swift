@@ -29,4 +29,51 @@ extension UINavigationController {
     override func topMostViewController() -> UIViewController {
         return self.visibleViewController!.topMostViewController()
     }
+
+    func setFileAppreance() {
+
+        navigationBar.tintColor = .systemBlue
+
+        let standardAppearance = UINavigationBarAppearance()
+        standardAppearance.configureWithDefaultBackground()
+
+        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.backgroundColor = .systemGray6
+        navigationBar.standardAppearance = standardAppearance
+
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+        scrollEdgeAppearance.configureWithDefaultBackground()
+
+        scrollEdgeAppearance.backgroundColor = .systemBackground
+        scrollEdgeAppearance.shadowColor = .clear
+        scrollEdgeAppearance.shadowImage = UIImage()
+        navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
+    }
+
+    func setGroupeAppreance() {
+
+        navigationBar.tintColor = .systemBlue
+
+        let standardAppearance = UINavigationBarAppearance()
+        standardAppearance.configureWithDefaultBackground()
+
+        standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.label]
+        standardAppearance.backgroundColor = .systemGray6
+        navigationBar.standardAppearance = standardAppearance
+
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+        scrollEdgeAppearance.configureWithDefaultBackground()
+
+        scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
+        scrollEdgeAppearance.shadowColor = .clear
+        scrollEdgeAppearance.shadowImage = UIImage()
+        navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
+    }
+
+    func setMediaAppreance() {
+
+        setNavigationBarHidden(true, animated: false)
+    }
 }

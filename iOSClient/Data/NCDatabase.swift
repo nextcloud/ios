@@ -24,7 +24,7 @@
 
 import UIKit
 import RealmSwift
-import NCCommunication
+import NextcloudKit
 
 protocol DateCompareable {
     var dateKey: Date { get }
@@ -244,6 +244,29 @@ class tableDirectEditingCreators: Object {
     @objc dynamic var templates: Int = 0
 }
 
+class tableDashboardWidget: Object {
+    
+    @Persisted(primaryKey: true) var index = ""
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var title = ""
+    @Persisted var order: Int = 0
+    @Persisted var iconClass: String?
+    @Persisted var iconUrl: String?
+    @Persisted var widgetUrl: String?
+    @Persisted var itemIconsRound: Bool = false
+}
+
+class tableDashboardWidgetButton: Object {
+
+    @Persisted(primaryKey: true) var index = ""
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var type = ""
+    @Persisted var text = ""
+    @Persisted var link = ""
+}
+
 class tableDirectEditingEditors: Object {
 
     @objc dynamic var account = ""
@@ -433,7 +456,7 @@ extension tableMetadata {
     var fileExtension: String { (fileNameView as NSString).pathExtension }
 
     var isPrintable: Bool {
-        classFile == NCCommunicationCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+        classFile == NKCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else

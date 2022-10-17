@@ -23,7 +23,7 @@
 
 import Foundation
 import RealmSwift
-import NCCommunication
+import NextcloudKit
 
 extension NCManageDatabase {
 
@@ -31,7 +31,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: metadata)
     }
 
-    @objc func convertNCFileToMetadata(_ file: NCCommunicationFile, isEncrypted: Bool, account: String) -> tableMetadata {
+    @objc func convertNCFileToMetadata(_ file: NKFile, isEncrypted: Bool, account: String) -> tableMetadata {
 
         let metadata = tableMetadata()
 
@@ -89,8 +89,8 @@ extension NCManageDatabase {
         metadata.size = file.size
         metadata.classFile = file.classFile
         //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
-        if (metadata.contentType == "text/markdown" || metadata.contentType == "text/x-markdown") && metadata.classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue {
-            metadata.classFile = NCCommunicationCommon.typeClassFile.document.rawValue
+        if (metadata.contentType == "text/markdown" || metadata.contentType == "text/x-markdown") && metadata.classFile == NKCommon.typeClassFile.unknow.rawValue {
+            metadata.classFile = NKCommon.typeClassFile.document.rawValue
         }
         if let date = file.uploadDate {
             metadata.uploadDate = date
@@ -105,7 +105,7 @@ extension NCManageDatabase {
         if isEncrypted || metadata.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
+                let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile
@@ -113,12 +113,12 @@ extension NCManageDatabase {
         }
 
         // Live Photo "DETECT"
-        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
+        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             var classFile = metadata.classFile
-            if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-                classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+            if classFile == NKCommon.typeClassFile.image.rawValue {
+                classFile = NKCommon.typeClassFile.video.rawValue
             } else {
-                classFile = NCCommunicationCommon.typeClassFile.image.rawValue
+                classFile = NKCommon.typeClassFile.image.rawValue
             }
             if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)) != nil {
                 metadata.livePhoto = true
@@ -128,7 +128,7 @@ extension NCManageDatabase {
         return metadata
     }
 
-    @objc func convertNCCommunicationFilesToMetadatas(_ files: [NCCommunicationFile], useMetadataFolder: Bool, account: String, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
+    @objc func convertNKFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, account: String, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
 
         var counter: Int = 0
         var isEncrypted: Bool = false
@@ -172,18 +172,18 @@ extension NCManageDatabase {
             if let iconName = iconName {
                 metadata.iconName = iconName
             } else {
-                metadata.iconName = NCCommunicationCommon.typeIconFile.url.rawValue
+                metadata.iconName = NKCommon.typeIconFile.url.rawValue
             }
-            metadata.classFile = NCCommunicationCommon.typeClassFile.url.rawValue
+            metadata.classFile = NKCommon.typeClassFile.url.rawValue
         } else {
-            let (mimeType, classFile, iconName, _, _, _) = NCCommunicationCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+            let (mimeType, classFile, iconName, _, _, _) = NKCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
             metadata.contentType = mimeType
             metadata.iconName = iconName
             metadata.classFile = classFile
             //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
-            if classFile == NCCommunicationCommon.typeClassFile.unknow.rawValue && (mimeType == "text/x-markdown" || mimeType == "text/markdown") {
-                metadata.iconName = NCCommunicationCommon.typeIconFile.txt.rawValue
-                metadata.classFile = NCCommunicationCommon.typeClassFile.document.rawValue
+            if classFile == NKCommon.typeClassFile.unknow.rawValue && (mimeType == "text/x-markdown" || mimeType == "text/markdown") {
+                metadata.iconName = NKCommon.typeIconFile.txt.rawValue
+                metadata.classFile = NKCommon.typeClassFile.document.rawValue
             }
         }
         if let iconUrl = iconUrl {
@@ -232,7 +232,7 @@ extension NCManageDatabase {
                 realm.add(metadata, update: .all)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
             return nil
         }
         return returnMetadata
@@ -249,7 +249,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -263,7 +263,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -278,7 +278,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -294,7 +294,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -305,7 +305,7 @@ extension NCManageDatabase {
         do {
             try realm.safeWrite {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    let resultsType = NCCommunicationCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
+                    let resultsType = NKCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
                     if result.directory {
@@ -321,7 +321,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -390,7 +390,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
 
         for ocId in ocIdsUdate {
@@ -436,7 +436,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -452,7 +452,7 @@ extension NCManageDatabase {
                 result?.status = status
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
 
         if let result = result {
@@ -474,7 +474,7 @@ extension NCManageDatabase {
                 result?.etagResource = etagResource
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -488,7 +488,7 @@ extension NCManageDatabase {
                 result?.favorite = favorite
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -507,7 +507,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -521,7 +521,7 @@ extension NCManageDatabase {
                 result?.e2eEncrypted = encrypted
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -535,7 +535,7 @@ extension NCManageDatabase {
                 result?.fileNameView = newFileNameView
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -579,7 +579,7 @@ extension NCManageDatabase {
 
         // For Live Photo
         var fileNameImages: [String] = []
-        let filtered = results.filter { $0.classFile.contains(NCCommunicationCommon.typeClassFile.image.rawValue) }
+        let filtered = results.filter { $0.classFile.contains(NKCommon.typeClassFile.image.rawValue) }
         filtered.forEach { print($0)
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
             fileNameImages.append(fileName)
@@ -713,7 +713,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -729,7 +729,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -761,7 +761,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -776,10 +776,10 @@ extension NCManageDatabase {
             return nil
         }
 
-        if classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
-            classFile = NCCommunicationCommon.typeClassFile.video.rawValue
+        if classFile == NKCommon.typeClassFile.image.rawValue {
+            classFile = NKCommon.typeClassFile.video.rawValue
         } else {
-            classFile = NCCommunicationCommon.typeClassFile.image.rawValue
+            classFile = NKCommon.typeClassFile.image.rawValue
         }
 
         guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)).first else {
@@ -859,5 +859,14 @@ extension NCManageDatabase {
             }
         }
         return(Array(results.map { tableMetadata.init(value: $0) }), Array(metadatas.map { tableMetadata.init(value: $0) }))
+    }
+
+    func getNumMetadatasInUpload() -> Int {
+
+        let realm = try! Realm()
+
+        let num = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status == %i || status == %i",  NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
+
+        return num
     }
 }

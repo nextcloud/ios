@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import MediaPlayer
 
 class NCViewerMediaPage: UIViewController {
@@ -51,7 +51,7 @@ class NCViewerMediaPage: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
-    var textColor: UIColor = NCBrandColor.shared.label
+    var textColor: UIColor = .label
     var playCommand: Any?
     var pauseCommand: Any?
     var skipForwardCommand: Any?
@@ -64,7 +64,7 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: NCBrandColor.shared.label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -187,9 +187,9 @@ class NCViewerMediaPage: UIViewController {
                 currentViewController.playerToolBar?.show(enableTimerAutoHide: enableTimerAutoHide)
             }
 
-            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: NCBrandColor.shared.systemBackground, titleColor: NCBrandColor.shared.label, tintColor: nil, withoutShadow: false)
-            view.backgroundColor = NCBrandColor.shared.systemBackground
-            textColor = NCBrandColor.shared.label
+            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
+            view.backgroundColor = .systemBackground
+            textColor = .label
 
         } else {
 
@@ -204,7 +204,7 @@ class NCViewerMediaPage: UIViewController {
 
         currentScreenMode = mode
 
-        if currentViewController.metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if currentViewController.metadata.classFile == NKCommon.typeClassFile.image.rawValue {
             saveScreenModeImage = mode
         }
 
@@ -249,8 +249,8 @@ class NCViewerMediaPage: UIViewController {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let errorCode = userInfo["errorCode"] as? Int,
-              errorCode == 0,
+              let error = userInfo["error"] as? NKError,
+              error == .success,
               let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else {
@@ -368,7 +368,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         // VIDEO / AUDIO () ()
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in

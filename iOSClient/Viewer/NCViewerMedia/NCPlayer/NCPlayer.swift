@@ -22,7 +22,7 @@
 //
 
 import Foundation
-import NCCommunication
+import NextcloudKit
 import UIKit
 import AVFoundation
 import MediaPlayer
@@ -121,7 +121,7 @@ class NCPlayer: NSObject {
 
         if metadata.livePhoto {
             player?.isMuted = false
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        } else if metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
             player?.isMuted = CCUtility.getAudioMute()
         } else {
             player?.isMuted = CCUtility.getAudioMute()
@@ -174,7 +174,7 @@ class NCPlayer: NSObject {
                     self.videoLayer!.frame = self.imageVideoContainer?.bounds ?? .zero
                     self.videoLayer!.videoGravity = .resizeAspect
 
-                    if self.metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+                    if self.metadata.classFile == NKCommon.typeClassFile.video.rawValue {
                         self.imageVideoContainer?.layer.addSublayer(self.videoLayer!)
                         self.imageVideoContainer?.playerLayer = self.videoLayer
                         self.imageVideoContainer?.metadata = self.metadata
@@ -211,9 +211,11 @@ class NCPlayer: NSObject {
                         }
 #endif
                         if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                            NCContentPresenter.shared.messageNotification(title, description: description, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: description)
+                            NCContentPresenter.shared.messageNotification(title, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                         } else {
-                            NCContentPresenter.shared.messageNotification("_error_", description: "_error_something_wrong_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCGlobal.shared.errorGeneric, priority: .max)
+                            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
+                            NCContentPresenter.shared.showError(error: error, priority: .max)
                         }
                     }
                     break
@@ -315,7 +317,7 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue, let playerToolBar = self.playerToolBar {
+        if metadata.classFile == NKCommon.typeClassFile.video.rawValue, let playerToolBar = self.playerToolBar {
             if !playerToolBar.isPictureInPictureActive() {
                 playerPause()
             }
@@ -364,7 +366,7 @@ class NCPlayer: NSObject {
 
     func saveTime(_ time: CMTime) {
 
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue { return }
+        if metadata.classFile == NKCommon.typeClassFile.audio.rawValue { return }
 
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
         generatorImagePreview()
@@ -379,7 +381,7 @@ class NCPlayer: NSObject {
 
     @objc func generatorImagePreview() {
 
-        guard let time = player?.currentTime(), !metadata.livePhoto, metadata.classFile != NCCommunicationCommon.typeClassFile.audio.rawValue  else { return }
+        guard let time = player?.currentTime(), !metadata.livePhoto, metadata.classFile != NKCommon.typeClassFile.audio.rawValue  else { return }
 
         var image: UIImage?
 
@@ -433,14 +435,14 @@ class NCPlayer: NSObject {
             downloadRequest?.cancel()
         }
 
-        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
+        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
             downloadRequest = request
         } taskHandler: { task in
             // task
         } progressHandler: { progress in
             hud.progress = Float(progress.fractionCompleted)
-        } completionHandler: { _, _, _, _, _, error, _, _ in
-            if error == nil {
+        } completionHandler: { _, _, _, _, _, afError, error in
+            if afError == nil {
                 NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
                 let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
                 if let url = urlVideo.url {

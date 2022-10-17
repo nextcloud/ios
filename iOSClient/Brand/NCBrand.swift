@@ -23,20 +23,6 @@
 
 import UIKit
 
-// MARK: - Configuration
-
-@objc class NCBrandConfiguration: NSObject {
-    @objc static let shared: NCBrandConfiguration = {
-        let instance = NCBrandConfiguration()
-        return instance
-    }()
-
-    @objc public let configuration_bundleId: String = "it.twsweb.Nextcloud"
-    @objc public let configuration_serverUrl: String = "serverUrl"
-    @objc public let configuration_username: String = "username"
-    @objc public let configuration_password: String = "password"
-}
-
 // MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
@@ -46,20 +32,19 @@ import UIKit
     }()
 
     @objc public var brand: String = "Nextcloud"
-    // @objc public var mailMe:                            String = "ios@nextcloud.com"                              // Deprecated
     @objc public var textCopyrightNextcloudiOS: String = "Nextcloud Liquid for iOS %@ © 2022"
     @objc public var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     @objc public var loginBaseUrl: String = "https://cloud.nextcloud.com"
     @objc public var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
     @objc public var linkLoginHost: String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
-    @objc public var webLoginAutenticationProtocol: String = "nc://"                                            // example "abc://"
+    @objc public var webLoginAutenticationProtocol: String = "nc://"                                                // example "abc://"
     @objc public var privacy: String = "https://nextcloud.com/privacy"
     @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
 
     // Personalized
-    @objc public var webCloseViewProtocolPersonalized: String = ""                                                 // example "abc://change/plan"      Don't touch me !!
-    @objc public var folderBrandAutoUpload: String = ""                                                 // example "_auto_upload_folder_"   Don't touch me !!
+    @objc public var webCloseViewProtocolPersonalized: String = ""                                                  // example "abc://change/plan"      Don't touch me !!
+    @objc public var folderBrandAutoUpload: String = ""                                                             // example "_auto_upload_folder_"   Don't touch me !!
 
     // Auto Upload default folder
     @objc public var folderDefaultAutoUpload: String = "Photos"
@@ -68,16 +53,17 @@ import UIKit
     @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
 
     // User Agent
-    @objc public var userAgent: String = "Nextcloud-iOS"                                    // Don't touch me !!
+    @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!
 
-    // Options
+    // BRAND ONLY
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
+    @objc public var use_AppConfig:                     Bool = false                                                // Don't touch me !!
+    
+    // Options
     @objc public var use_default_auto_upload:           Bool = false
     @objc public var use_themingColor:                  Bool = true
-    //@objc public var use_themingBackground:             Bool = true                                               // Deprecated
     @objc public var use_themingLogo:                   Bool = false
     @objc public var use_storeLocalAutoUploadAll:       Bool = false
-    @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
     @objc public var use_loginflowv2:                   Bool = false                                                // Don't touch me !!
 
     @objc public var disable_intro:                     Bool = false
@@ -87,13 +73,41 @@ import UIKit
     @objc public var disable_more_external_site:        Bool = false
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
     @objc public var disable_crash_service:             Bool = false
-    @objc public var disable_request_account:           Bool = false
     @objc public var disable_log:                       Bool = false
 
     override init() {
 
         if folderBrandAutoUpload != "" {
             folderDefaultAutoUpload = folderBrandAutoUpload
+        }
+        
+        // wrapper AppConfig
+        if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
+            
+            if let str = configurationManaged[NCGlobal.shared.configuration_brand] as? String {
+                brand = str
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_intro] as? String {
+                disable_intro = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_multiaccount] as? String {
+                disable_multiaccount = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_crash_service] as? String {
+                disable_crash_service = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_log] as? String {
+                disable_log = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_manage_account] as? String {
+                disable_manage_account = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_more_external_site] as? String {
+                disable_more_external_site = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_disable_openin_file] as? String {
+                disable_openin_file = (str as NSString).boolValue
+            }
         }
     }
 }
@@ -146,11 +160,11 @@ class NCBrandColor: NSObject {
     }
 
     // Color
-    @objc public let customer: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    @objc public let customer: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)     // BLU NC : #0082c9
     @objc public var customerText: UIColor = .white
 
-    @objc public var brand: UIColor                                                                                 // don't touch me
-    @objc public var brandElement: UIColor                                                                                 // don't touch me
+    @objc public var brand: UIColor                                                                                     // don't touch me
+    @objc public var brandElement: UIColor                                                                              // don't touch me
     @objc public var brandText: UIColor                                                                                 // don't touch me
 
     @objc public let nextcloud: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
@@ -163,225 +177,15 @@ class NCBrandColor: NSObject {
     public var themingColorElement: String = ""
     public var themingColorText: String = ""
 
-    @objc public var annotationColor: UIColor {
-        get {
-            return .systemBlue
-        }
-    }
-
-    @objc public var systemBlue: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemBlue
-            } else {
-                return UIColor(red: 0.0, green: 122.0 / 255.0, blue: 1.0, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemIndigo: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemIndigo
-            } else {
-                return UIColor(red: 88.0 / 255.0, green: 86.0 / 255.0, blue: 214.0 / 255.0, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemPink: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemPink
-            } else {
-                return UIColor(red: 1.0, green: 45.0 / 255.0, blue: 85.0 / 255.0, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemTeal: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemTeal
-            } else {
-                return UIColor(red: 90.0 / 255.0, green: 200.0 / 255.0, blue: 250.0 / 255.0, alpha: 1.0)
-            }
-        }
-    }
-
     @objc public var systemMint: UIColor {
         get {
             return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
         }
     }
 
-    @objc public var systemBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemBackground
-            } else {
-                return .white
-            }
-        }
-    }
-
-    @objc public var secondarySystemBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .secondarySystemBackground
-            } else {
-                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var tertiarySystemBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .tertiarySystemBackground
-            } else {
-                return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemGroupedBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemGroupedBackground
-            } else {
-                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var secondarySystemGroupedBackground: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .secondarySystemGroupedBackground
-            } else {
-                return .white
-            }
-        }
-    }
-
-    @objc public var label: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .label
-            } else {
-                return .black
-            }
-        }
-    }
-
-    @objc public var secondaryLabel: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .secondaryLabel
-            } else {
-                return UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 0.6)
-            }
-        }
-    }
-
-    @objc public var separator: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .separator
-            } else {
-                return UIColor(red: 0.89, green: 0.89, blue: 0.89, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var opaqueSeparator: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .opaqueSeparator
-            } else {
-                return UIColor(red: 0.78, green: 0.78, blue: 0.78, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemGray: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemGray
-            } else {
-                return UIColor(red: 0.56, green: 0.56, blue: 0.58, alpha: 1.0)
-            }
-        }
-    }
-
     @objc public var systemGray1: UIColor {
         get {
-            if #available(iOS 13, *) {
-                return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
-            } else {
-                return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemGray2: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemGray2
-            } else {
-                return UIColor(red: 0.68, green: 0.68, blue: 0.7, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemGray3: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemGray3
-            } else {
-                return UIColor(red: 0.78, green: 0.78, blue: 0.8, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemGray4: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemGray4
-            } else {
-                return UIColor(red: 0.82, green: 0.82, blue: 0.84, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemGray5: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemGray5
-            } else {
-                return UIColor(red: 0.9, green: 0.9, blue: 0.92, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemGray6: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemGray6
-            } else {
-                return UIColor(red: 0.95, green: 0.95, blue: 0.97, alpha: 1.0)
-            }
-        }
-    }
-
-    @objc public var systemFill: UIColor {
-        get {
-            if #available(iOS 13, *) {
-                return .systemFill
-            } else {
-                return UIColor(red: 120/255, green: 120/255, blue: 120/255, alpha: 1.0)
-            }
+            return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
         }
     }
 
@@ -407,7 +211,7 @@ class NCBrandColor: NSObject {
 
         cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
         cacheImages.comment = UIImage(named: "comment")!.image(color: gray, size: 50)
-        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: label)
+        cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: .label)
         cacheImages.offlineFlag = UIImage(named: "offlineFlag")!
         cacheImages.local = UIImage(named: "local")!
 

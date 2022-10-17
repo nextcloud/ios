@@ -27,7 +27,7 @@
 
 import UIKit
 import FloatingPanel
-import NCCommunication
+import NextcloudKit
 import Queuer
 
 extension NCCollectionViewCommon {
@@ -115,9 +115,9 @@ extension NCCollectionViewCommon {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
                     action: { _ in
-                        NCNetworking.shared.favoriteMetadata(metadata) { errorCode, errorDescription in
-                            if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        NCNetworking.shared.favoriteMetadata(metadata) { error in
+                            if error != .success {
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
                     }
@@ -166,7 +166,7 @@ extension NCCollectionViewCommon {
         //
         // OPEN with external editor
         //
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument)) {
+        if metadata.classFile == NKCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument)) {
 
             var editor = ""
             var title = ""
@@ -212,25 +212,23 @@ extension NCCollectionViewCommon {
         //
         // SAVE
         //
-        if (metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue {
+        if (metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.classFile == NKCommon.typeClassFile.video.rawValue {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
         }
 
         //
         // SAVE AS SCAN
         //
-        if #available(iOS 13.0, *) {
-            if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_save_as_scan_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
-                        action: { _ in
-                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
-                        }
-                    )
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_save_as_scan_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
+                    action: { _ in
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
+                    }
                 )
-            }
+            )
         }
 
         //
@@ -274,18 +272,16 @@ extension NCCollectionViewCommon {
         //
         // MODIFY
         //
-        if #available(iOS 13.0, *) {
-            if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue) {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_modify_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
-                        action: { menuAction in
-                            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-                        }
-                    )
+        if !isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_modify_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
+                    action: { menuAction in
+                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                    }
                 )
-            }
+            )
         }
 
         //
@@ -322,15 +318,15 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     action: { _ in
-                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, errorCode, errorDescription in
-                            if errorCode == 0 {
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, error in
+                            if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
                         }
                     }
@@ -347,15 +343,15 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     action: { _ in
-                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, errorCode, errorDescription in
-                            if errorCode == 0 {
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, error in
+                            if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: NCGlobal.shared.dismissAfterSecond, type: .error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
                         }
                     }

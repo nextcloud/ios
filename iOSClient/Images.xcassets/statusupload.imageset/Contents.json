@@ -1,23 +1,26 @@
 {
   "images" : [
     {
+      "filename" : "statusupload.png",
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "statusupload.png"
+      "scale" : "1x"
     },
     {
+      "filename" : "statusupload@2x.png",
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "statusupload@2x.png"
+      "scale" : "2x"
     },
     {
+      "filename" : "statusupload@3x.png",
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "statusupload@3x.png"
+      "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
   }
 }

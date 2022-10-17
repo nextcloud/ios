@@ -23,7 +23,7 @@
 
 import UIKit
 import MapKit
-import NCCommunication
+import NextcloudKit
 
 typealias NCImageMetadata = (latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?)
 
@@ -59,7 +59,7 @@ class NCViewerMediaDetailView: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        separator.backgroundColor = NCBrandColor.shared.separator
+        separator.backgroundColor = .separator
         sizeLabel.text = ""
         sizeValue.text = ""
         dateLabel.text = ""
@@ -141,12 +141,12 @@ class NCViewerMediaDetailView: UIView {
         dateValue.textColor = textColor
 
         // Dimension / Duration
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue {
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
             if let image = image {
                 dimLabel.text = NSLocalizedString("_resolution_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
-        } else if metadata.classFile == NCCommunicationCommon.typeClassFile.video.rawValue || metadata.classFile == NCCommunicationCommon.typeClassFile.audio.rawValue {
+        } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
             if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: metadata) {
                 self.dimLabel.text = NSLocalizedString("_duration_", comment: "")
                 self.dimValue.text = NCUtility.shared.stringFromTime(durationTime)
@@ -162,7 +162,7 @@ class NCViewerMediaDetailView: UIView {
         }
 
         // Message
-        if metadata.classFile == NCCommunicationCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
             messageButton.isHidden = false
         } else {

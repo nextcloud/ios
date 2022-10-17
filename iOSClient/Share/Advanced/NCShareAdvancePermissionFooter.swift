@@ -41,8 +41,8 @@ class NCShareAdvancePermissionFooter: UIView {
         buttonCancel.layer.cornerRadius = 25
         buttonCancel.layer.masksToBounds = true
         buttonCancel.layer.borderWidth = 1
-        buttonCancel.layer.borderColor = NCBrandColor.shared.systemGray.cgColor
-        buttonCancel.backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        buttonCancel.layer.borderColor = UIColor.systemGray.cgColor
+        buttonCancel.backgroundColor = .secondarySystemBackground
         buttonCancel.addTarget(self, action: #selector(cancelClicked), for: .touchUpInside)
         buttonCancel.setTitleColor(.black, for: .normal)
 

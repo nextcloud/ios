@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class fileProviderData: NSObject {
     static let shared: fileProviderData = {
@@ -77,11 +77,11 @@ class fileProviderData: NSObject {
 
         // LOG
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+            NKCommon.shared.pathLog = pathDirectoryGroup
             let levelLog = CCUtility.getLogLevel()
-            NCCommunicationCommon.shared.levelLog = levelLog
+            NKCommon.shared.levelLog = levelLog
             let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility.shared.getVersionApp()) as String
-            NCCommunicationCommon.shared.writeLog("Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
+            NKCommon.shared.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
         }
 
         // NO DOMAIN -> Set default account
@@ -89,7 +89,6 @@ class fileProviderData: NSObject {
 
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
             let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: activeAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-            let webDav = NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account)
 
             account = activeAccount.account
             user = activeAccount.user
@@ -97,7 +96,7 @@ class fileProviderData: NSObject {
             accountUrlBase = activeAccount.urlBase
             homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account)
 
-            NCCommunicationCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+            NKCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
             return tableAccount.init(value: activeAccount)
@@ -114,7 +113,6 @@ class fileProviderData: NSObject {
             if accountDomain == domain!.identifier.rawValue {
 
                 let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: activeAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                let webDav = NCUtilityFileSystem.shared.getWebDAV(account: activeAccount.account)
 
                 account = activeAccount.account
                 user = activeAccount.user
@@ -122,7 +120,7 @@ class fileProviderData: NSObject {
                 accountUrlBase = activeAccount.urlBase
                 homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account)
 
-                NCCommunicationCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+                NKCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
                 return tableAccount.init(value: activeAccount)

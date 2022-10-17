@@ -587,6 +587,11 @@
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
 "_password_pdf_error_"          = "Wrong password";
 "_error_download_photobrowser_" = "Error: Unable to download photo";
+"_good_morning_"                = "Good morning";
+"_good_day_"                    = "Good day";
+"_good_afternoon_"              = "Good afternoon";
+"_good_evening_"                = "Good evening";
+"_good_night_"                  = "Good night";
 
 // MARK: Share
 
@@ -858,7 +863,7 @@
 "_page_"                    = "Page";
 "_this_document_has_%@_pages_"              = "This document has %@ pages";
 "_invalid_page_"                            = "Invalid Page";
-"_the_entered_page_number_doesn't_exist_"   = "The entered page number doesn't exist";
+"_the_entered_page_number_does_not_exist_"   = "The entered page number does not exist";
 "_error_something_wrong_"   = "Something went wrong";
 "_resolution_"              = "Resolution";
 "_try_download_full_resolution_"            = "For more detail try to download the image in full resolution";
@@ -877,8 +882,18 @@
 "_ITMS-90076_"              = "Due to a change in the Nextcloud application identifier, the settings and password for accessing your cloud are reset, so please re-enter your account data and check your Settings. We are sorry about that.";
 "_password_not_present_"    = "Please re-insert your credentials.";
 "_copy_passphrase_"         = "Copy passphrase";
+"_ok_copy_passphrase_"      = "OK and copy passphrase";
 "_select_color_"            = "Select the color";
 "_change_color_"            = "Change color";
+"_description_dashboardwidget_" = "Having the Dashboard always at your fingertips has never been easier.";
+"_description_fileswidget_" = "View your recent files and use the toolbar to speed up your operations.";
+"_description_toolbarwidget_"   = "A toolbar to speed up your operations.";
+"_no_data_available_"       = "No data available";
+"_widget_available_nc25_"   = "Widget only available starting with Nextcloud 25";
+"_keep_running_"            = "Keep the app running for a better user experience";
+"_recent_activity_"         = "Recent activity";
+"_title_lockscreenwidget_"  = "Status";
+"_description_lockscreenwidget_" = "Keep an eye on available space and recent activity";
 
 // Video
 "_select_trace_"            = "Select the trace";

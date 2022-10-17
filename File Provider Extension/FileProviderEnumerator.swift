@@ -23,7 +23,7 @@
 
 import UIKit
 import FileProvider
-import NCCommunication
+import NextcloudKit
 
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
@@ -203,15 +203,15 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             directoryEtag = tableDirectory.etag
         }
 
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, errorCode, _ in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, error in
 
             if directoryEtag != files.first?.etag {
 
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, errorCode, _ in
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { account, files, _, error in
 
-                    if errorCode == 0 {
+                    if error == .success {
                         DispatchQueue.global().async {
-                            NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { _, metadatasFolder, metadatas in
+                            NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: true, account: account) { _, metadatasFolder, metadatas in
                                 let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
                                 NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                                 for metadata in metadatasFolder {

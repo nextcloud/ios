@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NextcloudKit
 
 class NCMainTabBar: UITabBar {
 
@@ -50,8 +51,8 @@ class NCMainTabBar: UITabBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
-        barTintColor = NCBrandColor.shared.secondarySystemBackground
-        backgroundColor = NCBrandColor.shared.secondarySystemBackground
+        barTintColor = .secondarySystemBackground
+        backgroundColor = .secondarySystemBackground
 
         changeTheming()
     }
@@ -194,7 +195,8 @@ class NCMainTabBar: UITabBar {
             if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.appDelegate.activeServerUrl)) {
 
                 if !directory.permissions.contains("CK") {
-                    NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCGlobal.shared.errorInternalError)
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
+                    NCContentPresenter.shared.showWarning(error: error)
                     return
                 }
             }

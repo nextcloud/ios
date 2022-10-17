@@ -21,28 +21,26 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// App bridge swift
-//
-// change 
-// from   : Nextcloud-Swift.h
-// to     : brand-Swift.h
-//
 #if !defined(EXTENSION)
 #import "Nextcloud-Swift.h"
 #endif
 
-// Nextcloud Share
 #if defined(EXTENSION_SHARE)
 #import "Share-Swift.h"
 #endif
 
-// Nextcloud File Provider Extension
 #if defined(EXTENSION_FILE_PROVIDER_EXTENSION)
 #import "File_Provider_Extension-Swift.h"
 #endif
 
-// Nextcloud Notification Service Extension
 #if defined(EXTENSION_NOTIFICATION_SERVICE)
 #import "Notification_Service_Extension-Swift.h"
+#endif
+
+#if defined(EXTENSION_WIDGET)
+#import "Widget-Swift.h"
+#endif
+
+#if defined(EXTENSION_WIDGETDASHBOARDINTENTHANDLER)
+#import "WidgetDashboardIntentHandler-Swift.h"
 #endif

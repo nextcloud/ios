@@ -26,7 +26,7 @@
 import UIKit
 import Parchment
 import DropDown
-import NCCommunication
+import NextcloudKit
 import MarqueeLabel
 
 class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent {
@@ -64,7 +64,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
 
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 10
@@ -74,7 +74,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = .systemBackground
 
         tableView.register(UINib(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
         tableView.register(UINib(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
@@ -136,7 +136,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             sharedWithYouByNoteImage.image = NCUtility.shared.loadImage(named: "note.text", color: .gray)
             sharedWithYouByNote.isHidden = false
             sharedWithYouByNote.text = metadata.note
-            sharedWithYouByNote.textColor = NCBrandColor.shared.label
+            sharedWithYouByNote.textColor = .label
             sharedWithYouByNote.trailingBuffer = sharedWithYouByNote.frame.width
         } else {
             sharedWithYouByNoteImage.isHidden = true
@@ -149,16 +149,16 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-            NCCommunication.shared.downloadAvatar(
+            NextcloudKit.shared.downloadAvatar(
                 user: metadata.ownerId,
                 fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag) { _, imageAvatar, _, etag, errorCode, _ in
-                    if errorCode == 0, let etag = etag, let imageAvatar = imageAvatar {
+                etag: etag) { _, imageAvatar, _, etag, error in
+                    if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar
-                    } else if errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
+                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
                         self.sharedWithYouByImage.image = imageAvatar
                     }
                 }
@@ -216,14 +216,14 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         self.reloadData()
     }
 
-    func getSharees(sharees: [NCCommunicationSharee]?) {
+    func getSharees(sharees: [NKSharee]?) {
 
         guard let sharees = sharees, let appDelegate = appDelegate else { return }
 
         dropDown = DropDown()
         let appearance = DropDown.appearance()
 
-        appearance.backgroundColor = NCBrandColor.shared.systemBackground
+        appearance.backgroundColor = .systemBackground
         appearance.cornerRadius = 10
         appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
         appearance.shadowOpacity = 0.9

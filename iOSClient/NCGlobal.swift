@@ -100,6 +100,7 @@ class NCGlobal: NSObject {
     // Name
     //
     @objc let appName                               = "files"
+    @objc let talkName                              = "talk-message"
     
     // Nextcloud version
     //
@@ -109,11 +110,13 @@ class NCGlobal: NSObject {
     let nextcloudVersion18: Int                     =  18
     let nextcloudVersion20: Int                     =  20
     let nextcloudVersion23: Int                     =  23
+    let nextcloudVersion24: Int                     =  24
+    let nextcloudVersion25: Int                     =  25
 
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 237
+    let databaseSchemaVersion: UInt64               = 246
 
     // Intro selector
     //
@@ -220,14 +223,18 @@ class NCGlobal: NSObject {
 
     // Error
     //
-    @objc let errorNoError: Int                     = 0
     @objc let errorRequestExplicityCancelled: Int   = 15
     @objc let errorNotModified: Int                 = 304
     @objc let errorBadRequest: Int                  = 400
+    @objc let errorUnauthorized: Int                = 401
+    @objc let errorForbidden: Int                   = 403
     @objc let errorResourceNotFound: Int            = 404
     @objc let errordMethodNotSupported: Int         = 405
     @objc let errorConflict: Int                    = 409
+    @objc let errorPreconditionFailed: Int          = 412
+    @objc let errorNCUnauthorized: Int              = 997
     @objc let errorConnectionLost: Int              = -1005
+    @objc let errorNetworkNotAvailable: Int         = -1009
     @objc let errorBadServerResponse: Int           = -1011
     @objc let errorInternalError: Int               = -99999
     @objc let errorFileNotSaved: Int                = -99998
@@ -237,7 +244,6 @@ class NCGlobal: NSObject {
     @objc let errorCharactersForbidden: Int         = -99993
     @objc let errorCreationFile: Int                = -99992
     @objc let errorReadFile: Int                    = -99991
-    @objc let errorGeneric: Int                     = -99990
 
     // Constants to identify the different permissions of a file
     //
@@ -317,6 +323,10 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
+    // Upload Operation Background
+    //
+    let maxConcurrentOperationUpload                = 10
+
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
@@ -339,11 +349,11 @@ class NCGlobal: NSObject {
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
     let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, serverUrl, account
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, serverUrl, account, selector, errorCode, errorDescription
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, serverUrl, account, selector, error
     let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, serverUrl, account
 
     let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
-    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, errorCode, errorDescription
+    @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
@@ -378,4 +388,37 @@ class NCGlobal: NSObject {
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
     let tipNCViewerMediaDetailView                              = "tipncviewermediadetailview"
+    
+    // ACTION
+    //
+    let actionNoAction                                          = "no-action"
+    let actionUploadAsset                                       = "upload-asset"
+    let actionScanDocument                                      = "add-scan-document"
+    let actionTextDocument                                      = "create-text-document"
+    let actionVoiceMemo                                         = "create-voice-memo"
+    
+    // WIDGET ACTION
+    //
+    let widgetActionNoAction                                    = URL(string: "nextcloud://open-action?action=no-action")!
+    let widgetActionUploadAsset                                 = URL(string: "nextcloud://open-action?action=upload-asset")!
+    let widgetActionScanDocument                                = URL(string: "nextcloud://open-action?action=add-scan-document")!
+    let widgetActionTextDocument                                = URL(string: "nextcloud://open-action?action=create-text-document")!
+    let widgetActionVoiceMemo                                   = URL(string: "nextcloud://open-action?action=create-voice-memo")!
+    
+    // APPCONFIG
+    //
+    let configuration_brand                                     = "brand"
+
+    let configuration_serverUrl                                 = "serverUrl"
+    let configuration_username                                  = "username"
+    let configuration_password                                  = "password"
+    let configuration_apppassword                               = "apppassword"
+    
+    let configuration_disable_intro                             = "disable_intro"
+    let configuration_disable_multiaccount                      = "disable_multiaccount"
+    let configuration_disable_crash_service                     = "disable_crash_service"
+    let configuration_disable_log                               = "disable_log"
+    let configuration_disable_manage_account                    = "disable_manage_account"
+    let configuration_disable_more_external_site                = "disable_more_external_site"
+    let configuration_disable_openin_file                       = "disable_openin_file"
 }

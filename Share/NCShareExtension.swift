@@ -24,7 +24,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 import JGProgressHUD
 
 enum NCShareExtensionError: Error {
@@ -85,27 +85,27 @@ class NCShareExtension: UIViewController {
 
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.shared.brandText
-        refreshControl.backgroundColor = NCBrandColor.shared.systemBackground
+        refreshControl.backgroundColor = .systemBackground
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
-        commandView.backgroundColor = NCBrandColor.shared.secondarySystemBackground
-        separatorView.backgroundColor = NCBrandColor.shared.separator
+        commandView.backgroundColor = .secondarySystemBackground
+        separatorView.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
-        tableView.separatorColor = NCBrandColor.shared.separator
+        tableView.separatorColor = .separator
         tableView.layer.cornerRadius = 10
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         commandViewHeightConstraint.constant = heightCommandView
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: NCBrandColor.shared.label)
+        createFolderImage.image = NCUtility.shared.loadImage(named: "folder.badge.plus", color: .label)
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
 
-        // uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: NCBrandColor.shared.label)
+        // uploadImage.image = NCUtility.shared.loadImage(named: "square.and.arrow.up", color: .label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))
@@ -116,14 +116,14 @@ class NCShareExtension: UIViewController {
         let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
-        NCCommunicationCommon.shared.levelLog = levelLog
+        NKCommon.shared.levelLog = levelLog
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NCCommunicationCommon.shared.pathLog = pathDirectoryGroup
+            NKCommon.shared.pathLog = pathDirectoryGroup
         }
         if isSimulatorOrTestFlight {
-            NCCommunicationCommon.shared.writeLog("Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+            NKCommon.shared.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {
-            NCCommunicationCommon.shared.writeLog("Start Share session with level \(levelLog) " + versionNextcloudiOS)
+            NKCommon.shared.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
         }
 
         // Colors
@@ -283,9 +283,9 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder() {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount) { errorCode, errorDescription in
-            guard errorCode != 0 else { return }
-            self.showAlert(title: "_error_createsubfolders_upload_", description: errorDescription)
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount) { error in
+            guard error != .success else { return }
+            self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
         }
         self.present(alertController, animated: true)
     }
@@ -312,7 +312,7 @@ extension NCShareExtension {
                 ocId: ocId,
                 serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "",
                 contentType: "")
-            metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+            metadata.session = NKCommon.shared.sessionIdentifierUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
@@ -339,7 +339,7 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
         let metadata = uploadMetadata[counterUploaded]
-        let results = NCCommunicationCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
+        let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
@@ -352,8 +352,8 @@ extension NCShareExtension {
         hud.progress = 0
         hud.show(in: self.view)
 
-        NCNetworking.shared.upload(metadata: metadata) { } completion: { errorCode, _ in
-            if errorCode != 0 {
+        NCNetworking.shared.upload(metadata: metadata) { } completion: { error in
+            if error != .success {
                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)

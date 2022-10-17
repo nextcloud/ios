@@ -70,7 +70,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        separator.backgroundColor = NCBrandColor.shared.separator
+        separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
     }
 
@@ -138,7 +138,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
         self.objectId = tableTrash.fileId
         self.labelTitle.text = tableTrash.trashbinFileName
-        self.labelTitle.textColor = NCBrandColor.shared.label
+        self.labelTitle.textColor = .label
         if self is NCTrashListCell {
             self.labelInfo?.text = CCUtility.dateDiff(tableTrash.date as Date)
         } else {

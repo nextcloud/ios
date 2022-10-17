@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NCCommunication
+import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
 
@@ -40,6 +40,12 @@ class NCRecent: NCCollectionViewCommon {
         emptyImage = UIImage(named: "recent")?.image(color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.setFileAppreance()
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -138,10 +144,12 @@ class NCRecent: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        NCCommunication.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), queue: NCCommunicationCommon.shared.backgroundQueue) { account, files, errorCode, _ in
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
-            if errorCode == 0 {
-                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in
+        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
+
+            if error == .success {
+                NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in
 
                     // Update sub directories
                     for metadata in metadatasFolder {

@@ -73,9 +73,7 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
 
             if message.body as? String == "close" {
 
-                if #available(iOS 13.0, *) {
-                    self.presentationController?.delegate?.presentationControllerWillDismiss?(self.presentationController!)
-                }
+                self.presentationController?.delegate?.presentationControllerWillDismiss?(self.presentationController!)
 
                 dismiss(animated: true) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView, userInfo: nil)
