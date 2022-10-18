@@ -271,6 +271,11 @@ class NCViewerMediaPage: UIViewController {
               let ocId = userInfo["ocId"] as? String
         else { return }
 
+        // Stop media
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
+        }
+        
         let metadatas = self.metadatas.filter { $0.ocId != ocId }
         if self.metadatas.count == metadatas.count { return }
         self.metadatas = metadatas
@@ -288,6 +293,11 @@ class NCViewerMediaPage: UIViewController {
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
 
+        // Stop media
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
+        }
+
         metadatas[index] = metadata
         if index == currentIndex {
             navigationItem.title = metadata.fileNameView
@@ -301,6 +311,11 @@ class NCViewerMediaPage: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String
         else { return }
+
+        // Stop media
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
+        }
 
         if metadatas.firstIndex(where: {$0.ocId == ocId}) != nil {
             deleteFile(notification)

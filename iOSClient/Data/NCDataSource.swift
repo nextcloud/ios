@@ -114,7 +114,7 @@ class NCDataSource: NSObject {
         // get all Section
         for metadata in self.metadatas {
             // skipped livePhoto
-            if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
+            if filterLivePhoto && metadata.livePhoto && (metadata.fileNameView as NSString).pathExtension.lowercased() == "mov" {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
@@ -521,7 +521,7 @@ class NCMetadataForSection: NSObject {
             }
 
             // skipped livePhoto
-            if filterLivePhoto && metadata.livePhoto && metadata.ext == "mov" {
+            if filterLivePhoto && metadata.livePhoto && (metadata.fileNameView as NSString).pathExtension.lowercased() == "mov" {
                 continue
             }
 

@@ -695,15 +695,7 @@
 
 + (BOOL)getPrivacyScreenEnabled
 {
-    NSString *valueString = [UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain];
-    
-    // Default TRUE
-    if (valueString == nil) {
-        [self setPrivacyScreenEnabled:YES];
-        return true;
-    }
-    
-    return [valueString boolValue];
+    return [[UICKeyChainStore stringForKey:@"privacyScreen" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
 + (void)setPrivacyScreenEnabled:(BOOL)set
@@ -1139,7 +1131,7 @@
     unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
 
     if (isFolderEncrypted == true) {
-        if (fileNameSize == metadata.size && fileNameViewSize > 0) {
+        if ((fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0) {
             return true;
         } else {
             return false;
