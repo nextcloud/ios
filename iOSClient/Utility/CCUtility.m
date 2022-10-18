@@ -1356,7 +1356,11 @@
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            serverUrl = [[NCUtilityFileSystem shared] deletingLastPathComponentWithAccount:account serverUrl:serverUrl];
+            NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
+            NSString* path = [[NCUtilityFileSystem shared] deleteLastPathWithServerUrlPath:serverUrl home:home];
+            if (path != nil) {
+                serverUrl = path;
+            }
             directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         

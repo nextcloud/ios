@@ -680,7 +680,9 @@ extension NCManageDatabase {
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: account, serverUrl: serverUrl)
+            if let path = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrl) {
+                serverUrl = path
+            }
         }
 
         guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
