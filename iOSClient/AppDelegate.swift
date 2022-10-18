@@ -868,14 +868,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
                     let urlBase = URL(string: activeAccount.urlBase)
-                    let user = activeAccount.user
-                    if linkScheme.contains(urlBase?.host ?? "") && userScheme == user {
+                    if linkScheme.contains(urlBase?.host ?? "") && userScheme == activeAccount.userId {
                         matchedAccount = activeAccount
                     } else {
                         let accounts = NCManageDatabase.shared.getAllAccount()
                         for account in accounts {
-                            guard let accountURL = URL(string: account.urlBase) else { return false }
-                            if linkScheme.contains(accountURL.host ?? "") && userScheme == account.user {
+                            let urlBase = URL(string: account.urlBase)
+                            if linkScheme.contains(urlBase?.host ?? "") && userScheme == account.userId {
                                 changeAccount(account.account)
                                 matchedAccount = account
                                 break
