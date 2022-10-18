@@ -182,6 +182,26 @@ class NCUtilityFileSystem: NSObject {
         return serverUrl
     }
 
+    func deleteLastPath(serverUrlPath: String, home: String? = nil) -> String? {
+
+        var returnString: String?
+
+        if home == serverUrlPath {
+            return serverUrlPath
+        }
+        
+        if let serverUrlPath = serverUrlPath.urlEncoded, let url = URL(string: serverUrlPath) {
+            if let path = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
+                if path.last == "/" {
+                    returnString = String(path.dropLast())
+                } else {
+                    returnString = path
+                }
+            }
+        }
+        return returnString
+    }
+
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
 
         var resultFileName = fileName
