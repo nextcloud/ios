@@ -1377,60 +1377,67 @@ class NCManageDatabase: NSObject {
     @objc func addShare(urlBase: String, account: String, shares: [NKShare]) {
 
         let realm = try! Realm()
-        realm.beginWrite()
-
-        for share in shares {
-
-            let addObject = tableShare()
-            let fullPath = NCUtilityFileSystem.shared.getHomeServer(account: account) + share.path
-            let serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: account, serverUrl: fullPath)
-            let fileName = NSString(string: fullPath).lastPathComponent
-
-            addObject.account = account
-            addObject.fileName = fileName
-            addObject.serverUrl = serverUrl
-
-            addObject.canEdit = share.canEdit
-            addObject.canDelete = share.canDelete
-            addObject.date = share.date
-            addObject.displaynameFileOwner = share.displaynameFileOwner
-            addObject.displaynameOwner = share.displaynameOwner
-            addObject.expirationDate =  share.expirationDate
-            addObject.fileParent = share.fileParent
-            addObject.fileSource = share.fileSource
-            addObject.fileTarget = share.fileTarget
-            addObject.hideDownload = share.hideDownload
-            addObject.idShare = share.idShare
-            addObject.itemSource = share.itemSource
-            addObject.itemType = share.itemType
-            addObject.label = share.label
-            addObject.mailSend = share.mailSend
-            addObject.mimeType = share.mimeType
-            addObject.note = share.note
-            addObject.parent = share.parent
-            addObject.password = share.password
-            addObject.path = share.path
-            addObject.permissions = share.permissions
-            addObject.sendPasswordByTalk = share.sendPasswordByTalk
-            addObject.shareType = share.shareType
-            addObject.shareWith = share.shareWith
-            addObject.shareWithDisplayname = share.shareWithDisplayname
-            addObject.storage = share.storage
-            addObject.storageId = share.storageId
-            addObject.token = share.token
-            addObject.uidOwner = share.uidOwner
-            addObject.uidFileOwner = share.uidFileOwner
-            addObject.url = share.url
-            addObject.userClearAt = share.userClearAt
-            addObject.userIcon = share.userIcon
-            addObject.userMessage = share.userMessage
-            addObject.userStatus = share.userStatus
-
-            realm.add(addObject, update: .all)
-        }
+        let home = NCUtilityFileSystem.shared.getHomeServer(account: account)
 
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+
+                let results = realm.objects(tableShare.self).filter("account == %@", account)
+                realm.delete(results)
+
+                for share in shares {
+
+                    let serverUrlPath = home + share.path
+                    guard let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else {
+                        continue
+                    }
+                    let fileName = NSString(string: serverUrlPath).lastPathComponent
+
+                    let object = tableShare()
+
+                    object.account = account
+                    object.fileName = fileName
+                    object.serverUrl = serverUrl
+
+                    object.canEdit = share.canEdit
+                    object.canDelete = share.canDelete
+                    object.date = share.date
+                    object.displaynameFileOwner = share.displaynameFileOwner
+                    object.displaynameOwner = share.displaynameOwner
+                    object.expirationDate =  share.expirationDate
+                    object.fileParent = share.fileParent
+                    object.fileSource = share.fileSource
+                    object.fileTarget = share.fileTarget
+                    object.hideDownload = share.hideDownload
+                    object.idShare = share.idShare
+                    object.itemSource = share.itemSource
+                    object.itemType = share.itemType
+                    object.label = share.label
+                    object.mailSend = share.mailSend
+                    object.mimeType = share.mimeType
+                    object.note = share.note
+                    object.parent = share.parent
+                    object.password = share.password
+                    object.path = share.path
+                    object.permissions = share.permissions
+                    object.sendPasswordByTalk = share.sendPasswordByTalk
+                    object.shareType = share.shareType
+                    object.shareWith = share.shareWith
+                    object.shareWithDisplayname = share.shareWithDisplayname
+                    object.storage = share.storage
+                    object.storageId = share.storageId
+                    object.token = share.token
+                    object.uidOwner = share.uidOwner
+                    object.uidFileOwner = share.uidFileOwner
+                    object.url = share.url
+                    object.userClearAt = share.userClearAt
+                    object.userIcon = share.userIcon
+                    object.userMessage = share.userMessage
+                    object.userStatus = share.userStatus
+
+                    realm.add(object)
+                }
+            }
         } catch let error {
             NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
