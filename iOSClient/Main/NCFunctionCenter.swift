@@ -573,7 +573,9 @@ import Photos
             listViewController.insert(vc, at: 0)
 
             if serverUrl != homeUrl {
-                serverUrl = NCUtilityFileSystem.shared.deletingLastPathComponent(account: appDelegate.account, serverUrl: serverUrl)
+                if let path = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrl) {
+                    serverUrl = path
+                }
             } else {
                 break
             }
