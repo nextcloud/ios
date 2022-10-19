@@ -1435,7 +1435,7 @@ class NCManageDatabase: NSObject {
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
 
-                    realm.add(object)
+                    realm.add(object, update: .all)
                 }
             }
         } catch let error {
