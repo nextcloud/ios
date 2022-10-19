@@ -1491,16 +1491,6 @@ import Photos
             }
         })
     }
-
-    func createFolder(_ serverUrlFileName: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: NSDate?, error: NKError) {
-
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.createFolder(serverUrlFileName, options: options) { account, ocId, date, error in
-                continuation.resume(returning: (account: account, ocId:ocId, date:date, error:error))
-            }
-        })
-    }
 }
 
 extension Array where Element == URLQueryItem {
