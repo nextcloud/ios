@@ -279,7 +279,7 @@ class NCService: NSObject {
                     NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
                     for widget in dashboardWidgets {
                         if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
-                            let (_, data, error) = await NCNetworking.shared.getPreview(url: url)
+                            let (_, data, error) = await NextcloudKit.shared.getPreview(url: url)
                             if error == .success {
                                 NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
                             }
