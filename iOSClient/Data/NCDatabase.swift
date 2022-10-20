@@ -519,10 +519,6 @@ class tableShare: Object {
     @objc dynamic var userIcon = ""
     @objc dynamic var userMessage = ""
     @objc dynamic var userStatus = ""
-
-    override static func primaryKey() -> String {
-        return "idShare"
-    }
 }
 
 class tableTag: Object {
