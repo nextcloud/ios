@@ -185,7 +185,6 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                                         imageAvatar = true
                                     } else if pathComponents.contains("getCalendarDotSvg") {
                                         imageColorized = true
-                                        imageTemplate = true
                                     } else {
                                         iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                     }
