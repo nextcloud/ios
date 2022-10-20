@@ -399,13 +399,17 @@ import Photos
 
         if metadata.e2eEncrypted {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
-            NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { error in
-                completion(error)
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { error in
+                    completion(error)
+                }
             }
             #endif
         } else if metadata.chunk {
-            uploadChunkedFile(metadata: metadata, start: start) { error in
-                completion(error)
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                self.uploadChunkedFile(metadata: metadata, start: start) { error in
+                    completion(error)
+                }
             }
         } else if metadata.session == NKCommon.shared.sessionIdentifierUpload {
             uploadFile(metadata: metadata, start: start) { error in
@@ -506,7 +510,6 @@ import Photos
                 return
             }
             let ocIdTemp = metadata.ocId
-            var errorDescription = error.errorDescription
             let selector = metadata.sessionSelector
 
             if error == .success, let ocId = ocId, size == metadata.size {
@@ -554,7 +557,7 @@ import Photos
 
                 } else {
                     
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: error.errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
                 }
             }

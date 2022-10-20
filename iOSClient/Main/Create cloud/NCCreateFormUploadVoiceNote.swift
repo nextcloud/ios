@@ -233,13 +233,15 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
 
-            guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
-            conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
-            conflictViewController.serverUrl = serverUrl
-            conflictViewController.metadatasUploadInConflict = [metadataForUpload]
-            conflictViewController.delegate = self
+            guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+            
+            conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+            conflict.serverUrl = serverUrl
+            conflict.metadatasUploadInConflict = [metadataForUpload]
+            conflict.delegate = self
+            conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase)
 
-            self.present(conflictViewController, animated: true, completion: nil)
+            self.present(conflict, animated: true, completion: nil)
 
         } else {
 
