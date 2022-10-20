@@ -399,24 +399,20 @@ import Photos
 
         if metadata.e2eEncrypted {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
-            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { error in
-                    completion(error)
-                }
+            NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { error in
+                completion(error)
             }
             #endif
         } else if metadata.chunk {
-            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                self.uploadChunkedFile(metadata: metadata, start: start) { error in
-                    completion(error)
-                }
+            uploadChunkedFile(metadata: metadata, start: start) { error in
+                completion(error)
             }
         } else if metadata.session == NKCommon.shared.sessionIdentifierUpload {
             uploadFile(metadata: metadata, start: start) { error in
                 completion(error)
             }
         } else {
-            self.uploadFileInBackground(metadata: metadata, start: start) { error in
+            uploadFileInBackground(metadata: metadata, start: start) { error in
                 completion(error)
             }
         }

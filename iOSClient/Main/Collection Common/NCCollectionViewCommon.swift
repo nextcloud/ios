@@ -554,7 +554,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        // do not exists metadata ?
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+            reloadDataSource()
+            return
+        }
+        
         if metadata.livePhoto && metadata.classFile == NKCommon.typeClassFile.video.rawValue { return }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
         if let indexPath = indexPath {
