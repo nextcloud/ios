@@ -133,9 +133,11 @@ class tableActivity: Object, DateCompareable {
 }
 
 class tableActivityLatestId: Object {
+
     @objc dynamic var account = ""
     @objc dynamic var activityFirstKnown: Int = 0
     @objc dynamic var activityLastGiven: Int = 0
+
     override static func primaryKey() -> String {
         return "account"
     }
@@ -504,6 +506,7 @@ class tableShare: Object {
     @objc dynamic var password: String = ""
     @objc dynamic var path = ""
     @objc dynamic var permissions: Int = 0
+    @objc dynamic var primaryKey = ""
     @objc dynamic var sendPasswordByTalk: Bool = false
     @objc dynamic var serverUrl = ""
     @objc dynamic var shareType: Int = 0
@@ -519,6 +522,10 @@ class tableShare: Object {
     @objc dynamic var userIcon = ""
     @objc dynamic var userMessage = ""
     @objc dynamic var userStatus = ""
+
+    override static func primaryKey() -> String {
+        return "primaryKey"
+    }
 }
 
 class tableTag: Object {

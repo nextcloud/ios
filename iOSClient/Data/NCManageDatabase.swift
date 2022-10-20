@@ -164,7 +164,7 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
 
-                    if oldSchemaVersion < 250 {
+                    if oldSchemaVersion < 252 {
                         migration.deleteData(forType: tableActivity.className())
                         migration.deleteData(forType: tableActivityLatestId.className())
                         migration.deleteData(forType: tableActivityPreview.className())
@@ -1382,9 +1382,6 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
 
-                let results = realm.objects(tableShare.self).filter("account == %@", account)
-                realm.delete(results)
-
                 for share in shares {
 
                     let serverUrlPath = home + share.path
@@ -1420,6 +1417,7 @@ class NCManageDatabase: NSObject {
                     object.password = share.password
                     object.path = share.path
                     object.permissions = share.permissions
+                    object.primaryKey = account + " " + String(share.idShare)
                     object.sendPasswordByTalk = share.sendPasswordByTalk
                     object.shareType = share.shareType
                     object.shareWith = share.shareWith
@@ -1435,7 +1433,7 @@ class NCManageDatabase: NSObject {
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
 
-                    realm.add(object)
+                    realm.add(object, update: .all)
                 }
             }
         } catch let error {
