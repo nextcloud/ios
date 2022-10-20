@@ -68,6 +68,12 @@ struct DashboardWidgetView: View {
                                         Circle()
                                             .fill(Color(.systemGray4))
                                             .frame(width: 35, height: 35)
+                                    } else if let color = element.imageColor {
+                                        Image(uiImage: element.icon)
+                                            .renderingMode(.template)
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(Color(color))
                                     } else if element.template {
                                         if entry.dashboard?.itemIconsRound ?? false {
                                             Image(uiImage: element.icon)
@@ -76,8 +82,7 @@ struct DashboardWidgetView: View {
                                                 .scaledToFill()
                                                 .frame(width: 20, height: 20)
                                                 .foregroundColor(.white)
-                                                .padding(8
-                                                )
+                                                .padding(8)
                                                 .background(Color(.systemGray4))
                                                 .clipShape(Circle())
                                         } else {
