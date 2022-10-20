@@ -481,7 +481,8 @@ class tablePhotoLibrary: Object {
     }
 }
 
-class tableShare: Object {
+typealias tableShare = tableShareV2
+class tableShareV2: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var canEdit: Bool = false
