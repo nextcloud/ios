@@ -95,8 +95,8 @@ import Alamofire
                                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                                         NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
                                     }
-                                    if error == .success {
-                                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: nil)
+                                    if error == .success, let ocId = ocId {
+                                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
                                     }
                                     completion(error)
                                 }
