@@ -412,7 +412,7 @@ import Photos
                 completion(error)
             }
         } else {
-            self.uploadFileInBackground(metadata: metadata, start: start) { error in
+            uploadFileInBackground(metadata: metadata, start: start) { error in
                 completion(error)
             }
         }
@@ -506,7 +506,6 @@ import Photos
                 return
             }
             let ocIdTemp = metadata.ocId
-            var errorDescription = error.errorDescription
             let selector = metadata.sessionSelector
 
             if error == .success, let ocId = ocId, size == metadata.size {
@@ -554,7 +553,7 @@ import Photos
 
                 } else {
                     
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: error.errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
                 }
             }
@@ -594,7 +593,7 @@ import Photos
         }
     }
 
-    func createUploadProcessAutoUpload(completion: @escaping (_ items: Int) -> Void) {
+    func createUploadProcessAutoUploadInBackground(completion: @escaping (_ items: Int) -> Void) {
 
         var numStartUpload: Int = 0
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
@@ -1045,7 +1044,7 @@ import Photos
                         NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
                     }
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "e2ee": false])
                     }
                 }
                 completion(error)
@@ -1488,16 +1487,6 @@ import Photos
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: sizeIcon, etag: etag, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
                 continuation.resume(returning: (account: account, imagePreview: imagePreview, imageIcon: imageIcon, imageOriginal: imageOriginal, etag: etag, error: error))
-            }
-        })
-    }
-
-    func createFolder(_ serverUrlFileName: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: NSDate?, error: NKError) {
-
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.createFolder(serverUrlFileName, options: options) { account, ocId, date, error in
-                continuation.resume(returning: (account: account, ocId:ocId, date:date, error:error))
             }
         })
     }

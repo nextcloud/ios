@@ -272,14 +272,16 @@ import XLForm
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
-                guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
-                conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
-                conflictViewController.alwaysNewFileNameNumber = true
-                conflictViewController.serverUrl = serverUrl
-                conflictViewController.metadatasUploadInConflict = [metadataForUpload]
-                conflictViewController.delegate = self
+                guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
 
-                self.present(conflictViewController, animated: true, completion: nil)
+                conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+                conflict.alwaysNewFileNameNumber = true
+                conflict.serverUrl = serverUrl
+                conflict.metadatasUploadInConflict = [metadataForUpload]
+                conflict.delegate = self
+                conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase)
+
+                self.present(conflict, animated: true, completion: nil)
 
             } else {
 

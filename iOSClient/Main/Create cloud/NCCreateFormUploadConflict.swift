@@ -57,6 +57,7 @@ extension NCCreateFormUploadConflictDelegate {
     @objc weak var delegate: NCCreateFormUploadConflictDelegate?
     @objc var alwaysNewFileNameNumber: Bool = false
     @objc var textLabelDetailNewFile: String?
+    @objc var isE2EE: Bool = false
 
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
@@ -148,15 +149,17 @@ extension NCCreateFormUploadConflictDelegate {
         let conflictAlert = UIAlertController(title: tile, message: "", preferredStyle: .alert)
 
         // REPLACE
-        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
+        if !isE2EE {
+            conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
 
-            for metadata in self.metadatasUploadInConflict {
-                self.metadatasNOConflict.append(metadata)
-            }
+                for metadata in self.metadatasUploadInConflict {
+                    self.metadatasNOConflict.append(metadata)
+                }
 
-            self.buttonContinueTouch(action)
-        }))
-
+                self.buttonContinueTouch(action)
+            }))
+        }
+        
         // KEEP BOTH
         conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { action in
 
@@ -174,10 +177,12 @@ extension NCCreateFormUploadConflictDelegate {
             }
         }))
 
-        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
-            self.blurView.removeFromSuperview()
-        }))
-
+        if !isE2EE {
+            conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
+                self.blurView.removeFromSuperview()
+            }))
+        }
+        
         self.present(conflictAlert, animated: true, completion: nil)
     }
 

@@ -165,9 +165,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
 
                     if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+
                         conflict.delegate = appDelegate
                         conflict.serverUrl = serverUrl
                         conflict.metadatasUploadInConflict = [metadataForUpload]
+                        conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase)
 
                         appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }

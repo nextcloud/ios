@@ -34,22 +34,22 @@ class NCNetworkingProcessUpload: NSObject {
         startTimer()
     }
 
-    private func startProcess(completion: @escaping (_ items: Int) -> Void) {
+    private func startProcess() {
         if timerProcess?.isValid ?? false {
-            DispatchQueue.main.async { self.processForeground() }
+            DispatchQueue.main.async { self.process() }
         }
     }
 
     func startTimer() {
         timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(processForeground), userInfo: nil, repeats: true)
+        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
 
     func stopTimer() {
         timerProcess?.invalidate()
     }
 
-    @objc private func processForeground() {
+    @objc private func process() {
         
         guard let account = NCManageDatabase.shared.getActiveAccount(), UIApplication.shared.applicationState == .active else { return }
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -183,7 +183,8 @@ class NCNetworkingProcessUpload: NSObject {
             metadatasForUpload.append(metadata)
         }
         NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-        startProcess(completion: completion)
+        startProcess()
+        completion(metadatasForUpload.count)
     }
 
     // MARK: -

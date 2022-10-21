@@ -46,6 +46,7 @@ struct DashboardData: Identifiable, Hashable {
     let icon: UIImage
     let template: Bool
     let avatar: Bool
+    let imageColor: UIColor?
 }
 
 struct DashboardDataButton: Hashable {
@@ -55,16 +56,16 @@ struct DashboardDataButton: Hashable {
 }
 
 let dashboardDatasTest: [DashboardData] = [
-    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false),
-    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false)
+    .init(id: 0, title: "title0", subTitle: "subTitle-description0", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 1, title: "title1", subTitle: "subTitle-description1", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 2, title: "title2", subTitle: "subTitle-description2", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 3, title: "title3", subTitle: "subTitle-description3", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 4, title: "title4", subTitle: "subTitle-description4", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 5, title: "title5", subTitle: "subTitle-description5", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 6, title: "title6", subTitle: "subTitle-description6", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 7, title: "title7", subTitle: "subTitle-description7", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 8, title: "title8", subTitle: "subTitle-description8", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil),
+    .init(id: 9, title: "title9", subTitle: "subTitle-description9", link: URL(string: "https://nextcloud.com/")!, icon: UIImage(named: "widget")!, template: true, avatar: false, imageColor: nil)
 ]
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
@@ -161,8 +162,11 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                             if let entryLink = item.link, let url = URL(string: entryLink) { link = url }
                             var icon = UIImage(named: "file")!
                             var iconFileName: String?
-                            var template: Bool = false
-                            var avatar: Bool = false
+
+                            var imageTemplate: Bool = false
+                            var imageAvatar: Bool = false
+                            var imageColorized: Bool = false
+                            var imageColor: UIColor?
 
                             if let iconUrl = item.iconUrl, let url = URL(string: iconUrl) {
                                 if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
@@ -172,24 +176,31 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                                     let queryItems = urlComponents.queryItems
 
                                     if (pathComponents.last as? NSString)?.pathExtension.lowercased() == "svg" {
-                                        template = true
+                                        imageTemplate = true
                                     }
-
                                     if let item = CCUtility.value(forKey: "fileId", fromQueryItems: queryItems) {
                                         iconFileName = item
                                     } else if pathComponents.contains("avatar") {
                                         iconFileName = pathComponents[pathComponents.count-2]
-                                        avatar = true
+                                        imageAvatar = true
+                                    } else if pathComponents.contains("getCalendarDotSvg") {
+                                        imageColorized = true
                                     } else {
                                         iconFileName = ((path.lastPathComponent) as NSString).deletingPathExtension
                                     }
                                 }
-                                if let fileName = iconFileName {
+                                // Color
+                                if imageColorized, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                                    let path = (urlComponents.path as NSString)
+                                    let colorString = ((path.lastPathComponent) as NSString).deletingPathExtension
+                                    imageColor = UIColor(hex: colorString)
+                                    icon = UIImage(systemName: "circle.fill")!
+                                } else if let fileName = iconFileName {
                                     let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
-                                        let (_, data, _) = await NCNetworking.shared.getPreview(url: url)
+                                        let (_, data, _) = await NextcloudKit.shared.getPreview(url: url)
                                         if let image = NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
                                             icon = image
                                         }
@@ -197,7 +208,7 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                                 }
                             }
 
-                            let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon, template: template, avatar: avatar)
+                            let data = DashboardData(id: counter, title: title, subTitle: subtitle, link: link, icon: icon, template: imageTemplate, avatar: imageAvatar, imageColor: imageColor)
                             datas.append(data)
 
                             if datas.count == dashboardItems { break }

@@ -203,6 +203,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             networkingProcessUpload?.verifyUploadZombie()
         }
 
+        // Start Auto Upload
+        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+            NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+            DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
+        }
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
 
@@ -215,13 +221,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Account changed ??
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-        } else {
-            // Initialize Auto upload
-            NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-                NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
-                // START UPLOAD PROCESS
-                DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
-            }
         }
 
         // Required unsubscribing / subscribing
@@ -308,12 +307,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
-
-        // Start Auto Upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
-            DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
-        }
 
         // Start services
         NCService.shared.startRequestServicesServer()
