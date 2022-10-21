@@ -117,7 +117,7 @@ extension NCMenuAction {
         var fileList = ""
         for (ix, metadata) in selectedMetadatas.enumerated() {
             guard ix < 3 else { fileList += "\n - ..."; break }
-            fileList += "\n - " + metadata.fileName
+            fileList += "\n - " + metadata.fileNameView
         }
 
         return NCMenuAction(

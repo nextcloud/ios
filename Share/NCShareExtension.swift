@@ -329,6 +329,7 @@ extension NCShareExtension {
             conflict.serverUrl = self.serverUrl
             conflict.metadatasUploadInConflict = conflicts
             conflict.delegate = self
+            conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: activeAccount.account, urlBase: activeAccount.urlBase)
             self.present(conflict, animated: true, completion: nil)
         } else {
             upload()

@@ -168,7 +168,7 @@ class NCAutoUpload: NSObject {
             }
 
             self.endForAssetToUpload = true
-            if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
+            if selector == NCGlobal.shared.selectorUploadAutoUploadAll || self.applicationState == .active {
                 self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
             } else {
                 var metadatasForUpload: [tableMetadata] = []
@@ -177,7 +177,7 @@ class NCAutoUpload: NSObject {
                     metadatasForUpload.append(metadata)
                 }
                 NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-                NCNetworking.shared.createUploadProcessAutoUpload(completion: completion)
+                NCNetworking.shared.createUploadProcessAutoUploadInBackground(completion: completion)
             }
         }
     }

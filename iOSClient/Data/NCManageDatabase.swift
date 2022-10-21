@@ -86,90 +86,12 @@ class NCManageDatabase: NSObject {
 
                 migrationBlock: { migration, oldSchemaVersion in
 
-                    if oldSchemaVersion < 61 {
-                        migration.deleteData(forType: tableShare.className())
-                    }
-
-                    if oldSchemaVersion < 74 {
-                        migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
-                            newObject!["ocId"] = oldObject!["fileID"]
-                        }
-                        migration.enumerateObjects(ofType: tableTrash.className()) { oldObject, newObject in
-                            newObject!["fileId"] = oldObject!["fileID"]
-                        }
-                        migration.enumerateObjects(ofType: tableTag.className()) { oldObject, newObject in
-                            newObject!["ocId"] = oldObject!["fileID"]
-                        }
-                        migration.enumerateObjects(ofType: tableE2eEncryptionLock.className()) { oldObject, newObject in
-                            newObject!["ocId"] = oldObject!["fileID"]
-                        }
-                    }
-
-                    if oldSchemaVersion < 87 {
-                        migration.deleteData(forType: tableActivity.className())
-                        migration.deleteData(forType: tableActivityPreview.className())
-                        migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableExternalSites.className())
-                        migration.deleteData(forType: tableGPS.className())
-                        migration.deleteData(forType: tableTag.className())
-                    }
-
-                    if oldSchemaVersion < 120 {
-                        migration.deleteData(forType: tableCapabilities.className())
-                        migration.deleteData(forType: tableComments.className())
-                    }
-
-                    if oldSchemaVersion < 134 {
-                        migration.deleteData(forType: tableDirectEditingCreators.className())
-                        migration.deleteData(forType: tableDirectEditingEditors.className())
-                        migration.deleteData(forType: tableExternalSites.className())
-                    }
-
-                    if oldSchemaVersion < 141 {
-                        migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                            newObject!["urlBase"] = oldObject!["url"]
-                        }
-                    }
-
-                    if oldSchemaVersion < 162 {
-                        migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                            newObject!["userId"] = oldObject!["userID"]
-                            migration.deleteData(forType: tableMetadata.className())
-                        }
-                    }
-
-                    if oldSchemaVersion < 212 {
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableE2eEncryption.className())
-                        migration.deleteData(forType: tableE2eEncryptionLock.className())
-                        migration.deleteData(forType: tableMetadata.className())
-                        migration.deleteData(forType: tableShare.className())
-                        migration.deleteData(forType: tableTrash.className())
-                        migration.deleteData(forType: tableVideo.className())
-                        // Delete OLD avatar image
-                        if var pathUrl = CCUtility.getDirectoryGroup() {
-                            pathUrl.appendPathComponent(NCGlobal.shared.appUserData)
-                            do {
-                                let fileURLs = try FileManager.default.contentsOfDirectory(at: pathUrl, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-                                for fileURL in fileURLs {
-                                    try FileManager.default.removeItem(at: fileURL)
-                                }
-                            } catch { }
-                        }
-                    }
-
-                    if oldSchemaVersion < 227 {
-                        migration.deleteData(forType: tableMetadata.className())
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableTrash.className())
-                    }
-
-                    if oldSchemaVersion < 250 {
+                    if oldSchemaVersion < 254 {
                         migration.deleteData(forType: tableActivity.className())
                         migration.deleteData(forType: tableActivityLatestId.className())
                         migration.deleteData(forType: tableActivityPreview.className())
                         migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableShare.className())
+                        migration.deleteData(forType: tableMetadata.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -1382,9 +1304,6 @@ class NCManageDatabase: NSObject {
         do {
             try realm.safeWrite {
 
-                let results = realm.objects(tableShare.self).filter("account == %@", account)
-                realm.delete(results)
-
                 for share in shares {
 
                     let serverUrlPath = home + share.path
@@ -1420,6 +1339,7 @@ class NCManageDatabase: NSObject {
                     object.password = share.password
                     object.path = share.path
                     object.permissions = share.permissions
+                    object.primaryKey = account + " " + String(share.idShare)
                     object.sendPasswordByTalk = share.sendPasswordByTalk
                     object.shareType = share.shareType
                     object.shareWith = share.shareWith
@@ -1435,7 +1355,7 @@ class NCManageDatabase: NSObject {
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
 
-                    realm.add(object)
+                    realm.add(object, update: .all)
                 }
             }
         } catch let error {

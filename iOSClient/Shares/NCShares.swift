@@ -98,10 +98,9 @@ class NCShares: NCCollectionViewCommon {
             }
 
             if error == .success {
+                NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
                     NCManageDatabase.shared.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares)
-                } else {
-                    NCManageDatabase.shared.deleteTableShare(account: account)
                 }
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
                 self.reloadDataSource()

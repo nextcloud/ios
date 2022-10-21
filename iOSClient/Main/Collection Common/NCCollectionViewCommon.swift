@@ -434,11 +434,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+              let e2ee = userInfo["e2ee"] as? Bool
         else { return }
 
-        reloadDataSource()
-        pushMetadata(metadata)
+        if e2ee {
+            reloadDataSourceNetwork(forced: true)
+        } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)  {
+            reloadDataSource()
+            pushMetadata(metadata)
+        }
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
@@ -550,7 +554,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        // do not exists metadata ?
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+            reloadDataSource()
+            return
+        }
+        
         if metadata.livePhoto && metadata.classFile == NKCommon.typeClassFile.video.rawValue { return }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
         if let indexPath = indexPath {

@@ -230,23 +230,10 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
                     let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
                     let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
                     let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
-                    let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
+                    let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
                     if let image = imageIcon {
                         imageRecent = image
                     }
-                    /*
-                    do {
-                        let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
-                        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
-                        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
-                        let (_, _, imageIcon, _, _) = try await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
-                        if let image = imageIcon {
-                            imageRecent = image
-                        }
-                    } catch {
-                        print(error)
-                    }
-                    */
                 }
 
                 // DATA
