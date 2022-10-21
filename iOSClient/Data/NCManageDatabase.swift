@@ -86,12 +86,12 @@ class NCManageDatabase: NSObject {
 
                 migrationBlock: { migration, oldSchemaVersion in
 
-                    if oldSchemaVersion < 253 {
+                    if oldSchemaVersion < 254 {
                         migration.deleteData(forType: tableActivity.className())
                         migration.deleteData(forType: tableActivityLatestId.className())
                         migration.deleteData(forType: tableActivityPreview.className())
                         migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableShare.className())
+                        migration.deleteData(forType: tableMetadata.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in

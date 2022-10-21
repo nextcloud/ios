@@ -593,7 +593,7 @@ import Photos
         }
     }
 
-    func createUploadProcessAutoUpload(completion: @escaping (_ items: Int) -> Void) {
+    func createUploadProcessAutoUploadInBackground(completion: @escaping (_ items: Int) -> Void) {
 
         var numStartUpload: Int = 0
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
