@@ -54,6 +54,7 @@ class NCNetworkingProcessUpload: NSObject {
         guard let account = NCManageDatabase.shared.getActiveAccount(), UIApplication.shared.applicationState == .active else { return }
         let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         if metadatasUpload.filter({ $0.chunk || $0.e2eEncrypted }).count > 0 { return }
+        let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
 
         stopTimer()
 
@@ -104,14 +105,16 @@ class NCNetworkingProcessUpload: NSObject {
                         }
                         for metadata in metadatas {
 
-                            let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
-                            if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
+                            if !isWiFi && metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
+                                continue
+                            }
 
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata)
                             }
 
                             if metadata.e2eEncrypted || metadata.chunk {
+                                // Only one
                                 counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
                                 break
                             } else {
