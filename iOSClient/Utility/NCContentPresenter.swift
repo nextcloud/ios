@@ -97,7 +97,7 @@ class NCContentPresenter: NSObject {
     func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
 
         // No notification message for:
-        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return }                                                   // Cancelled transfer
+        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled || error.errorCode == 423 { return }
         else if error == .success && type == messageType.error { return }
 
         DispatchQueue.main.async {
