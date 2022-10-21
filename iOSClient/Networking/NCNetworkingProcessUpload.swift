@@ -102,14 +102,18 @@ class NCNetworkingProcessUpload: NSObject {
                         if metadatas.isEmpty {
                             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         }
-                        for metadata in metadatas where counterUpload < NCGlobal.shared.maxConcurrentOperationUpload {
+                        for metadata in metadatas {
+
                             let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
                             if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi { continue }
+
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata)
                             }
+
                             if metadata.e2eEncrypted || metadata.chunk {
                                 counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
+                                break
                             } else {
                                 counterUpload += 1
                             }
