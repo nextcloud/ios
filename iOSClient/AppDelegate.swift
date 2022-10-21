@@ -59,6 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var networkingProcessUpload: NCNetworkingProcessUpload?
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
+    var timerProcess: Timer?
 
     private var privacyProtectionWindow: UIWindow?
 
