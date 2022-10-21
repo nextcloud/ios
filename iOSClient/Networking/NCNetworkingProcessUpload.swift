@@ -27,7 +27,7 @@ import Photos
 
 class NCNetworkingProcessUpload: NSObject {
 
-    var timerProcess: Timer?
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     override init() {
         super.init()
@@ -35,18 +35,18 @@ class NCNetworkingProcessUpload: NSObject {
     }
 
     private func startProcess() {
-        if timerProcess?.isValid ?? false {
+        if appDelegate?.timerProcess?.isValid ?? false {
             DispatchQueue.main.async { self.process() }
         }
     }
 
     func startTimer() {
-        timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
+        appDelegate?.timerProcess?.invalidate()
+        appDelegate?.timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
 
     func stopTimer() {
-        timerProcess?.invalidate()
+        appDelegate?.timerProcess?.invalidate()
     }
 
     @objc private func process() {
@@ -137,7 +137,7 @@ class NCNetworkingProcessUpload: NSObject {
              
             // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
             DispatchQueue.main.async {
-                if UIApplication.shared.applicationState == .active && counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented() {
+                if counterUpload == 0 && !(UIApplication.shared.delegate as! AppDelegate).isPasscodePresented() {
                     self.deleteAssetLocalIdentifiers(account: account.account) {
                         self.startTimer()
                     }
