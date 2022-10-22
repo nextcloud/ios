@@ -34,7 +34,7 @@ class NCAutoUpload: NSObject {
 
     private var endForAssetToUpload: Bool = false
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
-    private let applicationState = UIApplication.shared.applicationState
+    private var applicationState = UIApplication.shared.applicationState
 
     // MARK: -
 
@@ -43,6 +43,7 @@ class NCAutoUpload: NSObject {
             completion(0)
             return
         }
+        applicationState = UIApplication.shared.applicationState
 
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else {
@@ -59,6 +60,8 @@ class NCAutoUpload: NSObject {
     }
 
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
+
+        applicationState = UIApplication.shared.applicationState
 
         NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission else { return }
@@ -169,8 +172,10 @@ class NCAutoUpload: NSObject {
 
             self.endForAssetToUpload = true
             if selector == NCGlobal.shared.selectorUploadAutoUploadAll || self.applicationState == .active {
+                NKCommon.shared.writeLog("[INFO] Start createProcessUploads")
                 self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
             } else {
+                NKCommon.shared.writeLog("[INFO] Start createUploadProcessAutoUploadInBackground")
                 var metadatasForUpload: [tableMetadata] = []
                 for metadata in metadatas {
                     if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil { continue }
