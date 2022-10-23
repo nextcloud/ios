@@ -86,11 +86,12 @@ class NCManageDatabase: NSObject {
 
                 migrationBlock: { migration, oldSchemaVersion in
 
-                    if oldSchemaVersion < 254 {
+                    if oldSchemaVersion < 255 {
                         migration.deleteData(forType: tableActivity.className())
                         migration.deleteData(forType: tableActivityLatestId.className())
                         migration.deleteData(forType: tableActivityPreview.className())
                         migration.deleteData(forType: tableActivitySubjectRich.className())
+                        migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableMetadata.className())
                     }
 
