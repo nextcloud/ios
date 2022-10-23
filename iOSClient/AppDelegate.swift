@@ -567,8 +567,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
 
-        let accountBackup = self.account
-        let userIdBackup = self.userId
+        let accountTestBackup = self.account + "/" + self.userId
+        let accountTest = account +  "/" + userId
 
         self.account = account
         self.urlBase = urlBase
@@ -586,7 +586,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
 
         DispatchQueue.main.async {
-            if UIApplication.shared.applicationState != .background && (accountBackup != account || userIdBackup != userId) {
+            if UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, second: 0.2)
             }
         }
