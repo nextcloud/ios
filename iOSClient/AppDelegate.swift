@@ -387,11 +387,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NKCommon.shared.setup(delegate: NCNetworking.shared)
-        NKCommon.shared.writeLog("[INFO] Processing task [Reload widget]")
-
-        WidgetCenter.shared.reloadAllTimelines()
-
+        NKCommon.shared.writeLog("[INFO] Processing task")
         task.setTaskCompleted(success: true)
     }
 
