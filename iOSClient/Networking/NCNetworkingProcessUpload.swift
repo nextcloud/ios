@@ -46,13 +46,15 @@ class NCNetworkingProcessUpload: NSObject {
         process { _ in }
     }
 
-    private func process(completition: @escaping (_ items: Int) -> Void) {
+    func process(completition: @escaping (_ items: Int) -> Void) {
 
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
 
         stopTimer()
 
+        let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
+        var maxConcurrentOperationUpload = 10
 
         queue.async {
 
@@ -71,15 +73,15 @@ class NCNetworkingProcessUpload: NSObject {
 
             NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
 
-                for sessionSelector in sessionSelectors where counterUpload < NCGlobal.shared.maxConcurrentOperationUpload {
+                for sessionSelector in sessionSelectors where counterUpload < maxConcurrentOperationUpload {
 
-                    let limit = NCGlobal.shared.maxConcurrentOperationUpload - counterUpload
+                    let limit = maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
                         NKCommon.shared.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
                     }
 
-                    for metadata in metadatas where counterUpload < NCGlobal.shared.maxConcurrentOperationUpload {
+                    for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
 
                         // Different account
                         if account.account != metadata.account {
@@ -108,21 +110,24 @@ class NCNetworkingProcessUpload: NSObject {
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
-                            for metadata in metadatas {
+                            for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
 
+                                // NO WiFi
                                 if !isWiFi && metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
+                                    continue
+                                }
+
+                                // NO E2EE, CHUCK in background
+                                if applicationState != .active && (metadata.e2eEncrypted || metadata.chunk) {
                                     continue
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
+                                    if metadata.e2eEncrypted || metadata.chunk {
+                                        maxConcurrentOperationUpload = 1
+                                    }
                                     counterUpload += 1
-                                }
-
-                                if metadata.e2eEncrypted || metadata.chunk {
-                                    // Only one
-                                    counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
-                                    break
                                 }
                             }
                             semaphore.signal()
@@ -141,7 +146,6 @@ class NCNetworkingProcessUpload: NSObject {
 
                 // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
                 DispatchQueue.main.async {
-                    let applicationState = UIApplication.shared.applicationState
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
                     if applicationState == .active && counterUpload == 0 && !appDelegate.isPasscodePresented() {

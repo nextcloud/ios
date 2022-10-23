@@ -370,11 +370,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NKCommon.shared.writeLog("[INFO] Start handler refresh task [Auto upload]")
         
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("[INFO] Completition handler refresh task [Auto upload] with \(items) uploads")
-            if items == 0 {
-                
+            NKCommon.shared.writeLog("[INFO] Auto upload with \(items) uploads")
+            NCNetworkingProcessUpload.shared.process { items in
+                NKCommon.shared.writeLog("[INFO] Upload process with \(items) uploads")
+                task.setTaskCompleted(success: true)
             }
-            task.setTaskCompleted(success: true)
         }
     }
 

@@ -323,10 +323,6 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
-    // Upload Operation Background
-    //
-    let maxConcurrentOperationUpload                = 10
-
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
