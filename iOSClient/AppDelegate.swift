@@ -205,8 +205,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
-            NCNetworkingProcessUpload.shared.startTimer()
         }
+
+        // START UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.startTimer()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
