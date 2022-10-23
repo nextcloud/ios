@@ -56,10 +56,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
-    var networkingProcessUpload: NCNetworkingProcessUpload?
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
-    var timerProcess: Timer?
 
     private var privacyProtectionWindow: UIWindow?
 
@@ -201,13 +199,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCSettingsBundleHelper.setVersionAndBuildNumber()
 
         if !account.isEmpty {
-            networkingProcessUpload?.verifyUploadZombie()
+            NCNetworkingProcessUpload.shared.verifyUploadZombie()
         }
 
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
-            DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
+            NCNetworkingProcessUpload.shared.startTimer()
         }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
@@ -273,7 +271,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NKCommon.shared.writeLog("[INFO] Application did enter in background")
 
         // STOP UPLOAD PROCESS
-        networkingProcessUpload?.stopTimer()
+        NCNetworkingProcessUpload.shared.stopTimer()
 
         scheduleAppRefresh()
         scheduleAppProcessing()
@@ -373,6 +371,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Completition handler refresh task [Auto upload] with \(items) uploads")
+            if items == 0 {
+                
+            }
             task.setTaskCompleted(success: true)
         }
     }
@@ -936,6 +937,6 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
-        networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: { _ in })
+        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas) { _ in }
     }
 }

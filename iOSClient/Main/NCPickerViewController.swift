@@ -175,7 +175,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     }
 
                 } else {
-                    appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
+                    NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
                 }
 
             } else {
