@@ -35,7 +35,7 @@ class NCNetworkingProcessUpload: NSObject {
 
     func startTimer() {
         timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(processTimer), userInfo: nil, repeats: true)
+        timerProcess = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(processTimer), userInfo: nil, repeats: true)
     }
 
     func stopTimer() {
@@ -50,11 +50,9 @@ class NCNetworkingProcessUpload: NSObject {
 
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
 
-        let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-        if metadatasUpload.filter({ $0.chunk || $0.e2eEncrypted }).count > 0 { return }
-
         stopTimer()
 
+        let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
         var counterUpload: Int = 0
         let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
@@ -91,6 +89,11 @@ class NCNetworkingProcessUpload: NSObject {
                         continue
                     }
 
+                    // Chunk or E2EE ... only one ? skipped
+                    if metadatasUpload.filter({ $0.chunk || $0.e2eEncrypted }).count > 0 {
+                        continue
+                    }
+
                     // Session Extension ? skipped
                     if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundExtension {
                         continue
@@ -109,14 +112,13 @@ class NCNetworkingProcessUpload: NSObject {
 
                             if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                 NCNetworking.shared.upload(metadata: metadata)
+                                counterUpload += 1
                             }
 
                             if metadata.e2eEncrypted || metadata.chunk {
                                 // Only one
                                 counterUpload = NCGlobal.shared.maxConcurrentOperationUpload
                                 break
-                            } else {
-                                counterUpload += 1
                             }
                         }
                         semaphore.signal()
