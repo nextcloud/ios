@@ -249,6 +249,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             showPrivacyProtectionWindow()
         }
 
+        // STOP UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.stopTimer()
+
         // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
 
@@ -271,9 +274,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !account.isEmpty else { return }
 
         NKCommon.shared.writeLog("[INFO] Application did enter in background")
-
-        // STOP UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.stopTimer()
 
         scheduleAppRefresh()
         scheduleAppProcessing()
