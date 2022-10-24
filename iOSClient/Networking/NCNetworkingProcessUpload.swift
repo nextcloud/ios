@@ -34,12 +34,16 @@ class NCNetworkingProcessUpload: NSObject {
     var timerProcess: Timer?
 
     func startTimer() {
-        timerProcess?.invalidate()
-        timerProcess = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(processTimer), userInfo: nil, repeats: true)
+        DispatchQueue.main.async {
+            self.timerProcess?.invalidate()
+            self.timerProcess = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.processTimer), userInfo: nil, repeats: true)
+        }
     }
 
     func stopTimer() {
-        timerProcess?.invalidate()
+        DispatchQueue.main.async {
+            self.timerProcess?.invalidate()
+        }
     }
 
     @objc func processTimer() {
@@ -52,6 +56,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         stopTimer()
 
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = 10
@@ -145,48 +150,42 @@ class NCNetworkingProcessUpload: NSObject {
                 }
 
                 // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-                DispatchQueue.main.async {
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-                    if applicationState == .active && counterUpload == 0 && !appDelegate.isPasscodePresented() {
-                        self.deleteAssetLocalIdentifiers(account: account.account) {
-                            self.startTimer()
-                        }
-                    } else if applicationState == .active {
+                if applicationState == .active && counterUpload == 0 && !appDelegate.isPasscodePresented() {
+                    self.deleteAssetLocalIdentifiers(account: account.account) {
                         self.startTimer()
                     }
-                    completition(counterUpload)
+                } else if applicationState == .active {
+                    self.startTimer()
                 }
+                completition(counterUpload)
             })
         }
     }
 
     private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
 
-        if UIApplication.shared.applicationState != .active {
-            completition()
-            return
-        }
-        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
-        if !metadatasSessionUpload.isEmpty {
-            completition()
-            return
-        }
-        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
-        if localIdentifiers.isEmpty {
-            completition()
-            return
-        }
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
-
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
-        }, completionHandler: { _, _ in
-            DispatchQueue.main.async {
-                NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+        DispatchQueue.main.async {
+            let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
+            if !metadatasSessionUpload.isEmpty {
                 completition()
+                return
             }
-        })
+            let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
+            if localIdentifiers.isEmpty {
+                completition()
+                return
+            }
+            let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+            }, completionHandler: { _, _ in
+                DispatchQueue.main.async {
+                    NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+                    completition()
+                }
+            })
+        }
     }
 
     // MARK: -
