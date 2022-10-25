@@ -36,7 +36,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let addObject = tableAccount()
 
                 addObject.account = account
@@ -68,7 +68,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 realm.add(account, update: .all)
             }
         } catch let error {
@@ -81,7 +81,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableAccount.self).filter("account == %@", account)
 
                 realm.delete(result)
@@ -198,7 +198,7 @@ extension NCManageDatabase {
         var accountReturn = tableAccount()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let results = realm.objects(tableAccount.self)
                 for result in results {
@@ -223,7 +223,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                     result.password = "********"
@@ -239,7 +239,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
                     if (tableAccount().objectSchema.properties.contains { $0.name == property }) {
                         result[property] = state
@@ -256,7 +256,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
                     if let fileName = fileName {
                         result.autoUploadFileName = fileName
@@ -275,7 +275,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
                     if let serverUrl = serverUrl {
                         result.autoUploadDirectory = serverUrl
@@ -300,7 +300,7 @@ extension NCManageDatabase {
                 return nil
             }
 
-            try realm.safeWrite {
+            try realm.write {
 
                 guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
@@ -350,7 +350,7 @@ extension NCManageDatabase {
                 return nil
             }
 
-            try realm.safeWrite {
+            try realm.write {
 
                 guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
                     return
@@ -377,7 +377,7 @@ extension NCManageDatabase {
 
         let realm = try! Realm()
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                     result.mediaPath = path
                 }
@@ -391,7 +391,7 @@ extension NCManageDatabase {
 
         let realm = try! Realm()
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                     result.userStatusClearAt = userStatusClearAt
                     result.userStatusIcon = userStatusIcon
@@ -413,7 +413,7 @@ extension NCManageDatabase {
         let alias = alias?.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
                     if let alias = alias {
                         result.alias = alias

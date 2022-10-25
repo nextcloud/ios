@@ -204,7 +204,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
                 realm.delete(results)
