@@ -582,7 +582,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         NCActivityIndicator.shared.stop()
 
-        appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: [metadata], completion: { _ in })
+        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
 
         // Request delete all image scanned
         let alertController = UIAlertController(title: "", message: NSLocalizedString("_delete_all_scanned_images_", comment: ""), preferredStyle: .alert)

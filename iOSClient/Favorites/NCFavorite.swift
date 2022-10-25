@@ -103,13 +103,9 @@ class NCFavorite: NCCollectionViewCommon {
         } else {
 
             networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
-                if error == .success {
-                    for metadata in metadatas ?? [] {
-                        if !metadata.directory {
-                            if NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                            }
-                        }
+                if error == .success, let metadatas = metadatas {
+                    for metadata in metadatas where (!metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false)) {
+                        NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
                     }
                 }
 

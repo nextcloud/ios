@@ -56,10 +56,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
-    var networkingProcessUpload: NCNetworkingProcessUpload?
     var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
-    var timerProcess: Timer?
 
     private var privacyProtectionWindow: UIWindow?
 
@@ -201,14 +199,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCSettingsBundleHelper.setVersionAndBuildNumber()
 
         if !account.isEmpty {
-            networkingProcessUpload?.verifyUploadZombie()
+            NCNetworkingProcessUpload.shared.verifyUploadZombie()
         }
 
         // Start Auto Upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
-            DispatchQueue.main.async { self.networkingProcessUpload = NCNetworkingProcessUpload() }
         }
+
+        // START UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.startTimer()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
@@ -249,6 +249,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             showPrivacyProtectionWindow()
         }
 
+        // STOP UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.stopTimer()
+
         // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
 
@@ -271,9 +274,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !account.isEmpty else { return }
 
         NKCommon.shared.writeLog("[INFO] Application did enter in background")
-
-        // STOP UPLOAD PROCESS
-        networkingProcessUpload?.stopTimer()
 
         scheduleAppRefresh()
         scheduleAppProcessing()
@@ -369,11 +369,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NKCommon.shared.setup(delegate: NCNetworking.shared)
-        NKCommon.shared.writeLog("[INFO] Start handler refresh task [Auto upload]")
-        
+
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
-            NKCommon.shared.writeLog("[INFO] Completition handler refresh task [Auto upload] with \(items) uploads")
-            task.setTaskCompleted(success: true)
+            NKCommon.shared.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
+            NCNetworkingProcessUpload.shared.process { items in
+                NKCommon.shared.writeLog("[INFO] Refresh task upload process with \(items) uploads")
+                task.setTaskCompleted(success: true)
+            }
         }
     }
 
@@ -385,11 +387,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NKCommon.shared.setup(delegate: NCNetworking.shared)
-        NKCommon.shared.writeLog("[INFO] Start handler processing task [Reload widget]")
-
-        WidgetCenter.shared.reloadAllTimelines()
-
+        NKCommon.shared.writeLog("[INFO] Processing task")
         task.setTaskCompleted(success: true)
     }
 
@@ -406,7 +404,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Push Notifications
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler(UNNotificationPresentationOptions.alert)
+        completionHandler([.list, .banner, .sound])
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
@@ -564,8 +562,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
 
-        let accountBackup = self.account
-        let userIdBackup = self.userId
+        let accountTestBackup = self.account + "/" + self.userId
+        let accountTest = account +  "/" + userId
 
         self.account = account
         self.urlBase = urlBase
@@ -583,7 +581,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
 
         DispatchQueue.main.async {
-            if UIApplication.shared.applicationState != .background && (accountBackup != account || userIdBackup != userId) {
+            if UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, second: 0.2)
             }
         }
@@ -936,6 +934,6 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas, !metadatas.isEmpty else { return }
-        networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: { _ in })
+        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas) { _ in }
     }
 }

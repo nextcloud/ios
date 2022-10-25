@@ -171,19 +171,9 @@ class NCAutoUpload: NSObject {
             }
 
             self.endForAssetToUpload = true
-            if selector == NCGlobal.shared.selectorUploadAutoUploadAll || self.applicationState == .active {
-                NKCommon.shared.writeLog("[INFO] Start createProcessUploads")
-                self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
-            } else {
-                NKCommon.shared.writeLog("[INFO] Start createUploadProcessAutoUploadInBackground")
-                var metadatasForUpload: [tableMetadata] = []
-                for metadata in metadatas {
-                    if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil { continue }
-                    metadatasForUpload.append(metadata)
-                }
-                NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-                NCNetworking.shared.createUploadProcessAutoUploadInBackground(completion: completion)
-            }
+
+            NKCommon.shared.writeLog("[INFO] Start createProcessUploads")
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: completion)
         }
     }
 
