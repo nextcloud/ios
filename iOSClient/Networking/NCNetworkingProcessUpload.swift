@@ -58,6 +58,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let applicationState = UIApplication.shared.applicationState
+        let isPasscodePresented = appDelegate.isPasscodePresented()
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = 10
 
@@ -150,7 +151,7 @@ class NCNetworkingProcessUpload: NSObject {
                 }
 
                 // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-                if applicationState == .active && counterUpload == 0 && !appDelegate.isPasscodePresented() {
+                if applicationState == .active && counterUpload == 0 && !isPasscodePresented {
                     self.deleteAssetLocalIdentifiers(account: account.account) {
                         self.startTimer()
                     }

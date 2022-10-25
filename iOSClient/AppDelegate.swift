@@ -713,12 +713,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               let passcodeViewController = privacyProtectionWindow?.rootViewController?.presentedViewController as? TOPasscodeViewController
         else { return }
 
-        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
-            if success {
-                DispatchQueue.main.async {
-                    passcodeViewController.dismiss(animated: true) {
-                        self.hidePrivacyProtectionWindow()
-                        self.requestAccount()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+                if success {
+                    DispatchQueue.main.async {
+                        passcodeViewController.dismiss(animated: true) {
+                            self.hidePrivacyProtectionWindow()
+                            self.requestAccount()
+                        }
                     }
                 }
             }
