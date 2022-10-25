@@ -173,16 +173,13 @@ import Photos
             }
         }
         #endif
-        
-        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0)  {
-            
+
+        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
            
-            var secresult = SecTrustResultType.invalid
-            let status = SecTrustEvaluate(serverTrust, &secresult)
-            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
-            
+            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)            
             let certificateCopyData = SecCertificateCopyData(certificate)
             let data = CFDataGetBytePtr(certificateCopyData);
             let size = CFDataGetLength(certificateCopyData);
@@ -192,7 +189,7 @@ import Photos
             
             if isServerTrusted {
                 isTrusted = true
-            } else if status == errSecSuccess, let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
+            } else if let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
                 isTrusted = true
             } else {
                 isTrusted = false
