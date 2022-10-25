@@ -157,7 +157,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 var results: Results<Object>
 
                 if let account = account {
@@ -252,7 +252,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 // Add new
                 let addObject = tableAvatar()
@@ -285,7 +285,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let results = realm.objects(tableAvatar.self)
                 for result in results {
@@ -306,7 +306,7 @@ class NCManageDatabase: NSObject {
         var image: UIImage?
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
                     if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
                         result.loaded = true
@@ -347,7 +347,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let addObject = tableCapabilities()
 
                 addObject.account = account
@@ -480,7 +480,7 @@ class NCManageDatabase: NSObject {
         var size: Int64 = 0
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 for fileName in fileNames {
 
@@ -518,7 +518,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName))
                 realm.delete(result)
@@ -533,7 +533,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
                 realm.delete(result)
@@ -551,7 +551,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
                 realm.delete(resultsCreators)
@@ -650,7 +650,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 var addObject = tableDirectory()
                 let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
 
@@ -694,7 +694,7 @@ class NCManageDatabase: NSObject {
 
         // Delete table Dirrectory
         do {
-            try realm.safeWrite {
+            try realm.write {
                 realm.delete(results)
             }
         } catch let error {
@@ -707,7 +707,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
                     return
@@ -770,7 +770,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
                 result?.serverUrl = serverUrl
             }
@@ -784,7 +784,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.offline = offline
             }
@@ -800,7 +800,7 @@ class NCManageDatabase: NSObject {
         var result: tableDirectory?
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.richWorkspace = richWorkspace
             }
@@ -822,7 +822,7 @@ class NCManageDatabase: NSObject {
         var result: tableDirectory?
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.colorFolder = colorFolder
             }
@@ -845,7 +845,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 realm.add(e2e, update: .all)
             }
         } catch let error {
@@ -858,7 +858,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let results = realm.objects(tableE2eEncryption.self).filter(predicate)
                 realm.delete(results)
@@ -948,7 +948,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let addObject = tableE2eEncryptionLock()
 
                 addObject.account = account
@@ -968,7 +968,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first {
                     realm.delete(result)
                 }
@@ -986,7 +986,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let addObject = tableExternalSites()
 
                 addObject.account = account
@@ -1009,7 +1009,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let results = realm.objects(tableExternalSites.self).filter("account == %@", account)
                 realm.delete(results)
             }
@@ -1087,7 +1087,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
 
@@ -1111,7 +1111,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let addObject = tableLocalFile()
 
@@ -1135,7 +1135,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let results = realm.objects(tableLocalFile.self).filter(predicate)
                 realm.delete(results)
             }
@@ -1149,7 +1149,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
                 if let fileName = fileName {
                     result?.fileName = fileName
@@ -1168,7 +1168,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first {
                     result.exifDate = exifDate
                     result.exifLatitude = exifLatitude
@@ -1215,7 +1215,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
                 result?.offline = offline
             }
@@ -1233,7 +1233,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 var creationDateString = ""
 
@@ -1303,7 +1303,7 @@ class NCManageDatabase: NSObject {
         let home = NCUtilityFileSystem.shared.getHomeServer(account: account)
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 for share in shares {
 
@@ -1461,7 +1461,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 // Add new
                 let addObject = tableTag()
@@ -1534,7 +1534,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let addObject = tableTip()
                 addObject.tipName = tipName
                 realm.add(addObject, update: .all)
@@ -1552,7 +1552,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 for trash in items {
                     let object = tableTrash()
 
@@ -1585,7 +1585,7 @@ class NCManageDatabase: NSObject {
         var predicate = NSPredicate()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 if filePath == nil {
                     predicate = NSPredicate(format: "account == %@", account)
@@ -1607,7 +1607,7 @@ class NCManageDatabase: NSObject {
         var predicate = NSPredicate()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 if fileId == nil {
                     predicate = NSPredicate(format: "account == %@", account)
@@ -1653,7 +1653,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let results = realm.objects(tableUserStatus.self).filter("account == %@ AND predefined == %@", account, predefined)
                 realm.delete(results)
@@ -1678,18 +1678,6 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-}
-
-// MARK: -
-
-extension Realm {
-    public func safeWrite(_ block: (() throws -> Void)) throws {
-        if isInWriteTransaction {
-            try block()
-        } else {
-            try write(block)
         }
     }
 }

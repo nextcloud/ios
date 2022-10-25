@@ -27,7 +27,7 @@ extension UIApplication {
     var isLandscape: Bool {
         if UIDevice.current.orientation.isValidInterfaceOrientation {
             return UIDevice.current.orientation.isLandscape
-        } else  {
+        } else {
             return windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
         }
     }
