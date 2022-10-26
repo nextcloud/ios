@@ -18,8 +18,7 @@ class IntentHandler: INExtension, DashboardIntentHandling {
         var applications: [Applications] = []
 
         guard let account = NCManageDatabase.shared.getActiveAccount() else {
-            completion(nil, nil)
-            return
+            return completion(nil, nil)
         }
 
         let results = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account)
@@ -47,9 +46,14 @@ class IntentHandler: INExtension, DashboardIntentHandling {
     func provideAccountsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
 
         var accounts: [Accounts] = []
-        accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
-
         let results = NCManageDatabase.shared.getAllAccount()
+
+        if results.isEmpty {
+            return completion(nil, nil)
+        } else if results.count == 1 {
+            accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
+            return completion(INObjectCollection(items: accounts), nil)
+        }
         for result in results {
             let display = (result.alias.isEmpty) ? result.account : result.alias
             let account = Accounts(identifier: result.account, display: display)
