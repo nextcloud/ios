@@ -18,6 +18,7 @@
 			<key>IntentsSupported</key>
 			<array>
 				<string>DashboardIntent</string>
+				<string>IntentIntent</string>
 			</array>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>

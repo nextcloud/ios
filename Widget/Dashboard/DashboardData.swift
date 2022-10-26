@@ -80,22 +80,30 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
-func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(intent: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
+    var account: tableAccount?
 
     if isPreview {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
-    guard let account = NCManageDatabase.shared.getActiveAccount() else {
+    let accountIdentifier: String = intent?.Accounts?.identifier ?? "active"
+    if accountIdentifier == "active" {
+        account = NCManageDatabase.shared.getActiveAccount()
+    } else {
+        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+    }
+
+    guard let account = account else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
 
     // Default widget
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
-    let id: String = intent?.identifier ?? (result?.id ?? "recommendations")
+    let id: String = intent?.Applications?.identifier ?? (result?.id ?? "recommendations")
 
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
     guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
