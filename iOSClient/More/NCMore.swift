@@ -167,6 +167,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         settingsMenu.append(item)
 
         // ITEM: Test API
+        /*
         if NCUtility.shared.isSimulator() {
             item = NKExternalSite()
             item.name = "Test API"
@@ -174,7 +175,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             item.url = "test"
             settingsMenu.append(item)
         }
-
+        */
+        
         if quotaMenu.count > 0 {
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name

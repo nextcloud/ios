@@ -11,13 +11,14 @@ import RealmSwift
 
 class IntentHandler: INExtension, DashboardIntentHandling {
 
+    // Application
+
     func provideApplicationsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Applications>?, Error?) -> Void) {
 
         var applications: [Applications] = []
 
         guard let account = NCManageDatabase.shared.getActiveAccount() else {
-            completion(nil, nil)
-            return
+            return completion(nil, nil)
         }
 
         let results = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account)
@@ -38,5 +39,36 @@ class IntentHandler: INExtension, DashboardIntentHandling {
             return Applications(identifier: result.id, display: result.title)
         }
         return nil
+    }
+
+    // Account
+
+    func provideAccountsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
+
+        var accounts: [Accounts] = []
+        let results = NCManageDatabase.shared.getAllAccount()
+
+        if results.isEmpty {
+            return completion(nil, nil)
+        } else if results.count == 1 {
+            accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
+            return completion(INObjectCollection(items: accounts), nil)
+        }
+        for result in results {
+            let display = (result.alias.isEmpty) ? result.account : result.alias
+            let account = Accounts(identifier: result.account, display: display)
+            accounts.append(account)
+        }
+
+        completion(INObjectCollection(items: accounts), nil)
+    }
+
+    func defaultAccounts(for intent: DashboardIntent) -> Accounts? {
+
+        if NCManageDatabase.shared.getActiveAccount() == nil {
+            return nil
+        } else {
+            return Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
+        }
     }
 }

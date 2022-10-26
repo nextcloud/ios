@@ -78,6 +78,7 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>DashboardIntent</string>
+		<string>IntentIntent</string>
 	</array>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
