@@ -152,7 +152,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     }
     let titleImage = imagetmp
         
-    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { account, results, data, error in
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { _, results, data, error in
 
         Task {
             var datas = [DashboardData]()
@@ -232,12 +232,15 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                 buttons = tableButton.filter(({ $0.type != "more" }))
             }
 
+            let alias = (account.alias.isEmpty) ? "" : (" (" + account.alias + ")")
+            let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") +  " " + account.displayName + alias
+
             if error != .success {
                 completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
             } else if datas.isEmpty {
-                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: footerText))
             } else {
-                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
     }
