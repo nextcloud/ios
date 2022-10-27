@@ -52,8 +52,16 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
     func provideApplicationsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Applications>?, Error?) -> Void) {
 
         var applications: [Applications] = []
+        var account: tableAccount?
 
-        guard let account = NCManageDatabase.shared.getActiveAccount() else {
+        let accountIdentifier: String = intent.accounts?.identifier ?? "active"
+        if accountIdentifier == "active" {
+            account = NCManageDatabase.shared.getActiveAccount()
+        } else {
+            account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+        }
+
+        guard let account = account else {
             return completion(nil, nil)
         }
 

@@ -43,7 +43,7 @@
 					<key>INIntentParameterDisplayPriority</key>
 					<integer>1</integer>
 					<key>INIntentParameterName</key>
-					<string>Accounts</string>
+					<string>accounts</string>
 					<key>INIntentParameterObjectType</key>
 					<string>Accounts</string>
 					<key>INIntentParameterObjectTypeNamespace</key>
@@ -66,7 +66,7 @@
 							<key>INIntentParameterPromptDialogCustom</key>
 							<true/>
 							<key>INIntentParameterPromptDialogFormatString</key>
-							<string>There are ${count} options matching ‘${Accounts}’.</string>
+							<string>There are ${count} options matching ‘${accounts}’.</string>
 							<key>INIntentParameterPromptDialogFormatStringID</key>
 							<string>ObH8NN</string>
 							<key>INIntentParameterPromptDialogType</key>
@@ -76,7 +76,7 @@
 							<key>INIntentParameterPromptDialogCustom</key>
 							<true/>
 							<key>INIntentParameterPromptDialogFormatString</key>
-							<string>Just to confirm, you wanted ‘${Accounts}’?</string>
+							<string>Just to confirm, you wanted ‘${accounts}’?</string>
 							<key>INIntentParameterPromptDialogFormatStringID</key>
 							<string>q5lvSu</string>
 							<key>INIntentParameterPromptDialogType</key>
@@ -143,7 +143,7 @@
 					<key>INIntentParameterDisplayPriority</key>
 					<integer>1</integer>
 					<key>INIntentParameterName</key>
-					<string>Accounts</string>
+					<string>accounts</string>
 					<key>INIntentParameterObjectType</key>
 					<string>Accounts</string>
 					<key>INIntentParameterObjectTypeNamespace</key>
@@ -166,7 +166,7 @@
 							<key>INIntentParameterPromptDialogCustom</key>
 							<true/>
 							<key>INIntentParameterPromptDialogFormatString</key>
-							<string>There are ${count} options matching ‘${Accounts}’.</string>
+							<string>There are ${count} options matching ‘${accounts}’.</string>
 							<key>INIntentParameterPromptDialogFormatStringID</key>
 							<string>296XDb</string>
 							<key>INIntentParameterPromptDialogType</key>
@@ -176,7 +176,7 @@
 							<key>INIntentParameterPromptDialogCustom</key>
 							<true/>
 							<key>INIntentParameterPromptDialogFormatString</key>
-							<string>Just to confirm, you wanted ‘${Accounts}’?</string>
+							<string>Just to confirm, you wanted ‘${accounts}’?</string>
 							<key>INIntentParameterPromptDialogFormatStringID</key>
 							<string>TVGjNQ</string>
 							<key>INIntentParameterPromptDialogType</key>
@@ -200,7 +200,7 @@
 					<key>INIntentParameterDisplayPriority</key>
 					<integer>2</integer>
 					<key>INIntentParameterName</key>
-					<string>Applications</string>
+					<string>applications</string>
 					<key>INIntentParameterObjectType</key>
 					<string>Applications</string>
 					<key>INIntentParameterObjectTypeNamespace</key>
@@ -223,7 +223,7 @@
 							<key>INIntentParameterPromptDialogCustom</key>
 							<true/>
 							<key>INIntentParameterPromptDialogFormatString</key>
-							<string>There are ${count} options matching ‘${Applications}’.</string>
+							<string>There are ${count} options matching ‘${applications}’.</string>
 							<key>INIntentParameterPromptDialogFormatStringID</key>
 							<string>XjFf0X</string>
 							<key>INIntentParameterPromptDialogType</key>
@@ -233,7 +233,7 @@
 							<key>INIntentParameterPromptDialogCustom</key>
 							<true/>
 							<key>INIntentParameterPromptDialogFormatString</key>
-							<string>Just to confirm, you wanted ‘${Applications}’?</string>
+							<string>Just to confirm, you wanted ‘${applications}’?</string>
 							<key>INIntentParameterPromptDialogFormatStringID</key>
 							<string>Am6y6p</string>
 							<key>INIntentParameterPromptDialogType</key>

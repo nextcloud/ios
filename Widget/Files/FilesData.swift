@@ -91,7 +91,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: getTitleFilesWidget(account: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
-    let accountIdentifier: String = configuration?.Accounts?.identifier ?? "active"
+    let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
     if accountIdentifier == "active" {
         account = NCManageDatabase.shared.getActiveAccount()
     } else {

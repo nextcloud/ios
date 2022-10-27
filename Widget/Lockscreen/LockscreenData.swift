@@ -42,7 +42,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, comp
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: ""))
     }
 
-    let accountIdentifier: String = configuration?.Accounts?.identifier ?? "active"
+    let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
     if accountIdentifier == "active" {
         account = NCManageDatabase.shared.getActiveAccount()
     } else {
