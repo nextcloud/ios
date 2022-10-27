@@ -907,7 +907,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func getMatchedAccount(userId: String, url: String) -> tableAccount? {
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-
             let urlBase = URL(string: activeAccount.urlBase)
             if url.contains(urlBase?.host ?? "") && userId == activeAccount.userId {
                return activeAccount
