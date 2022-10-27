@@ -20,7 +20,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
         var accounts: [Accounts] = []
         let results = NCManageDatabase.shared.getAllAccount()
 
-        accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
+        accounts.append(Accounts(identifier: "active", display: "Active account"))
 
         if results.isEmpty {
             return completion(nil, nil)
@@ -41,7 +41,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
         if NCManageDatabase.shared.getActiveAccount() == nil {
             return nil
         } else {
-            return Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
+            return Accounts(identifier: "active", display: "Active account")
         }
     }
 
@@ -92,7 +92,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
         var accounts: [Accounts] = []
         let results = NCManageDatabase.shared.getAllAccount()
 
-        accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
+        accounts.append(Accounts(identifier: "active", display: "Active account"))
 
         if results.isEmpty {
             return completion(nil, nil)
@@ -113,7 +113,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
         if NCManageDatabase.shared.getActiveAccount() == nil {
             return nil
         } else {
-            return Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
+            return Accounts(identifier: "active", display: "Active account")
         }
     }
 }

@@ -896,7 +896,6 @@
 "_description_lockscreenwidget_" = "Keep an eye on available space and recent activity";
 "_no_items_"                = "No items";
 "_check_back_late_"         = "Check back late";
-"_account_active_"          = "Account active";
 
 // Video
 "_select_trace_"            = "Select the trace";
