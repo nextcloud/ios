@@ -218,28 +218,30 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
             for file in files {
                 guard !file.directory else { continue }
                 guard !isLive(file: file, files: files) else { continue }
+                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account.account, urlBase: file.urlBase)
+                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account.account)
 
                 // SUBTITLE
-                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
+                let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
                 // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
-                guard let user = file.user.urlEncoded else { continue }
-                let link = file.urlBase + "/f/" + file.fileId
+                guard let user = metadata.user.urlEncoded else { continue }
+                let link = metadata.urlBase + "/f/" + metadata.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                if !file.iconName.isEmpty {
-                    imageRecent = UIImage(named: file.iconName)!
+                if !metadata.iconName.isEmpty {
+                    imageRecent = UIImage(named: metadata.iconName)!
                 }
-                if let image = NCUtility.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                if let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileName, classFile: metadata.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
-                } else if file.hasPreview {
-                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
-                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
-                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                } else if metadata.hasPreview {
+                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: account.account)!
+                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
                     if let image = imageIcon {
                         imageRecent = image
@@ -247,7 +249,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 }
 
                 // DATA
-                let data = FilesData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
+                let data = FilesData.init(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)
                 datas.append(data)
                 if datas.count == filesItems { break}
             }
