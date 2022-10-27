@@ -77,9 +77,8 @@
 	<string>Photo library access is required to upload your photos and videos to your cloud.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
+		<string>AccountIntent</string>
 		<string>DashboardIntent</string>
-		<string>IntentIntent</string>
-		<string>LockscreenIntent</string>
 	</array>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>

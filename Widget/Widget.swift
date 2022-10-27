@@ -54,7 +54,7 @@ struct FilesWidget: Widget {
     let kind: String = "FilesWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: FilesWidgetProvider()) { entry in
+        IntentConfiguration(kind: kind, intent: AccountIntent.self, provider: FilesWidgetProvider()) { entry in
             FilesWidgetView(entry: entry)
         }
         .supportedFamilies([.systemLarge])
@@ -81,7 +81,7 @@ struct LockscreenWidget: Widget {
 
     var body: some WidgetConfiguration {
         if #available(iOSApplicationExtension 16.0, *) {
-            return IntentConfiguration(kind: kind, intent: LockscreenIntent.self, provider: LockscreenWidgetProvider()) { entry in
+            return IntentConfiguration(kind: kind, intent: AccountIntent.self, provider: LockscreenWidgetProvider()) { entry in
                 LockscreenWidgetView(entry: entry)
             }
             .supportedFamilies([.accessoryRectangular, .accessoryCircular])

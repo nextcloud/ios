@@ -34,7 +34,7 @@ struct LockscreenData: TimelineEntry {
     let quotaTotal: String
 }
 
-func getLockscreenDataEntry(configuration: LockscreenIntent?, isPreview: Bool, completion: @escaping (_ entry: LockscreenData) -> Void) {
+func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, completion: @escaping (_ entry: LockscreenData) -> Void) {
 
     var account: tableAccount?
 

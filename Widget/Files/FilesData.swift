@@ -22,6 +22,7 @@
 //
 
 import WidgetKit
+import Intents
 import NextcloudKit
 
 struct FilesDataEntry: TimelineEntry {
@@ -54,7 +55,7 @@ let filesDatasTest: [FilesData] = [
     .init(id: "9", image: UIImage(named: "widget")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getTitleFilesWidget() -> String {
+func getTitleFilesWidget(account: tableAccount?) -> String {
 
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
@@ -67,7 +68,7 @@ func getTitleFilesWidget() -> String {
     default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
     }
 
-    if let account = NCManageDatabase.shared.getActiveAccount() {
+    if let account = account {
         return good + ", " + account.displayName
     } else {
         return good
@@ -80,19 +81,25 @@ func getFilesItems(displaySize: CGSize) -> Int {
     return height
 }
 
-func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
+func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
-    let title = getTitleFilesWidget()
-    
-    
+    var account: tableAccount?
+
     if isPreview {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: getTitleFilesWidget(account: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
-    guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+    let accountIdentifier: String = configuration?.Accounts?.identifier ?? "active"
+    if accountIdentifier == "active" {
+        account = NCManageDatabase.shared.getActiveAccount()
+    } else {
+        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+    }
+
+    guard let account = account else {
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: getTitleFilesWidget(account: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     @Sendable func isLive(file: NKFile, files: [NKFile]) -> Bool {
@@ -204,6 +211,7 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
         Task {
             var datas: [FilesData] = []
             var imageRecent = UIImage(named: "file")!
+            let title = getTitleFilesWidget(account: account)
 
             for file in files {
                 guard !file.directory else { continue }

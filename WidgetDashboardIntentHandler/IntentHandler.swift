@@ -9,18 +9,18 @@
 import Intents
 import RealmSwift
 
-class IntentHandler: INExtension, DashboardIntentHandling, LockscreenIntentHandling {
+class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling {
 
-    // MARK: - Lockscreen
+    // MARK: - Account
 
     // Account
 
-    func provideAccountsOptionsCollection(for intent: LockscreenIntent, with completion: @escaping (INObjectCollection<AccountsLockscreen>?, Error?) -> Void) {
+    func provideAccountsOptionsCollection(for intent: AccountIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
 
-        var accounts: [AccountsLockscreen] = []
+        var accounts: [Accounts] = []
         let results = NCManageDatabase.shared.getAllAccount()
 
-        accounts.append(AccountsLockscreen(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
+        accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
 
         if results.isEmpty {
             return completion(nil, nil)
@@ -29,19 +29,19 @@ class IntentHandler: INExtension, DashboardIntentHandling, LockscreenIntentHandl
         }
         for result in results {
             let display = (result.alias.isEmpty) ? result.account : result.alias
-            let account = AccountsLockscreen(identifier: result.account, display: display)
+            let account = Accounts(identifier: result.account, display: display)
             accounts.append(account)
         }
 
         completion(INObjectCollection(items: accounts), nil)
     }
 
-    func defaultAccounts(for intent: LockscreenIntent) -> AccountsLockscreen? {
+    func defaultAccounts(for intent: AccountIntent) -> Accounts? {
 
         if NCManageDatabase.shared.getActiveAccount() == nil {
             return nil
         } else {
-            return AccountsLockscreen(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
+            return Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
         }
     }
 
@@ -79,12 +79,12 @@ class IntentHandler: INExtension, DashboardIntentHandling, LockscreenIntentHandl
 
     // Account
 
-    func provideAccountsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<AccountsDashboard>?, Error?) -> Void) {
+    func provideAccountsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
 
-        var accounts: [AccountsDashboard] = []
+        var accounts: [Accounts] = []
         let results = NCManageDatabase.shared.getAllAccount()
 
-        accounts.append(AccountsDashboard(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
+        accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
 
         if results.isEmpty {
             return completion(nil, nil)
@@ -93,19 +93,19 @@ class IntentHandler: INExtension, DashboardIntentHandling, LockscreenIntentHandl
         }
         for result in results {
             let display = (result.alias.isEmpty) ? result.account : result.alias
-            let account = AccountsDashboard(identifier: result.account, display: display)
+            let account = Accounts(identifier: result.account, display: display)
             accounts.append(account)
         }
 
         completion(INObjectCollection(items: accounts), nil)
     }
 
-    func defaultAccounts(for intent: DashboardIntent) -> AccountsDashboard? {
+    func defaultAccounts(for intent: DashboardIntent) -> Accounts? {
 
         if NCManageDatabase.shared.getActiveAccount() == nil {
             return nil
         } else {
-            return AccountsDashboard(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
+            return Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
         }
     }
 }

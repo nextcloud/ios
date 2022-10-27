@@ -17,9 +17,8 @@
 			<array/>
 			<key>IntentsSupported</key>
 			<array>
+				<string>AccountIntent</string>
 				<string>DashboardIntent</string>
-				<string>IntentIntent</string>
-				<string>LockscreenIntent</string>
 			</array>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
