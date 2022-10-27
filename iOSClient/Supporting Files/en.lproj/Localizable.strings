@@ -111,6 +111,7 @@
 "_force_start_"             = "Force the start";
 "_purchase_"                = "Purchase";
 "_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@";
+"_account_not_exists_"      = "The account %@ of %@ does not exist";
 "_error_parameter_schema_"  = "Wrong parameters, impossible to continue";
 "_comments_"                = "Comments";
 "_sharing_"                 = "Sharing";

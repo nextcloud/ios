@@ -782,19 +782,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let action = url.host
         var fileName: String = ""
         var serverUrl: String = ""
-        var matchedAccount: tableAccount?
 
         /*
          Example:
-         nextcloud://open-action?action=create-voice-memo&url=https://cloud.nextcloud.com&user=marinofaggiana
+         nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
         if scheme == "nextcloud" && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+
                 let queryItems = urlComponents.queryItems
                 guard let actionScheme = CCUtility.value(forKey: "action", fromQueryItems: queryItems), let rootViewController = window?.rootViewController else { return false }
-                
+                guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
+                guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
+                if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
+                    let message = String(format: NSLocalizedString("_account_not_exists_", comment: ""), userScheme, urlScheme)
+
+                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+
+                    window?.rootViewController?.present(alertController, animated: true, completion: { })
+
+                    return false
+                }
+
+
                 switch actionScheme {
                 case NCGlobal.shared.actionUploadAsset:
 
@@ -858,52 +871,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
                 guard let pathScheme = CCUtility.value(forKey: "path", fromQueryItems: queryItems) else { return false }
                 guard let linkScheme = CCUtility.value(forKey: "link", fromQueryItems: queryItems) else { return false }
+                guard let matchedAccount = getMatchedAccount(userId: userScheme, url: linkScheme) else {
+                    guard let domain = URL(string: linkScheme)?.host else { return true }
+                    fileName = (pathScheme as NSString).lastPathComponent
+                    let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
 
-                if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
-                    let urlBase = URL(string: activeAccount.urlBase)
-                    if linkScheme.contains(urlBase?.host ?? "") && userScheme == activeAccount.userId {
-                        matchedAccount = activeAccount
-                    } else {
-                        let accounts = NCManageDatabase.shared.getAllAccount()
-                        for account in accounts {
-                            let urlBase = URL(string: account.urlBase)
-                            if linkScheme.contains(urlBase?.host ?? "") && userScheme == account.userId {
-                                changeAccount(account.account)
-                                matchedAccount = account
-                                break
-                            }
-                        }
-                    }
+                    window?.rootViewController?.present(alertController, animated: true, completion: { })
 
-                    if matchedAccount != nil {
+                    return false
+                }
 
-                        let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: self.account) + "/files/" + self.userId
-                        if pathScheme.contains("/") {
-                            fileName = (pathScheme as NSString).lastPathComponent
-                            serverUrl = matchedAccount!.urlBase + "/" + webDAV + "/" + (pathScheme as NSString).deletingLastPathComponent
-                        } else {
-                            fileName = pathScheme
-                            serverUrl = matchedAccount!.urlBase + "/" + webDAV
-                        }
+                let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: self.account) + "/files/" + self.userId
+                if pathScheme.contains("/") {
+                    fileName = (pathScheme as NSString).lastPathComponent
+                    serverUrl = matchedAccount.urlBase + "/" + webDAV + "/" + (pathScheme as NSString).deletingLastPathComponent
+                } else {
+                    fileName = pathScheme
+                    serverUrl = matchedAccount.urlBase + "/" + webDAV
+                }
 
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName)
-                        }
-
-                    } else {
-
-                        guard let domain = URL(string: linkScheme)?.host else { return true }
-                        fileName = (pathScheme as NSString).lastPathComponent
-                        let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
-
-                        let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-
-                        window?.rootViewController?.present(alertController, animated: true, completion: { })
-
-                        return false
-                    }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName)
                 }
             }
         } else {
@@ -911,6 +902,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         return true
+    }
+
+    func getMatchedAccount(userId: String, url: String) -> tableAccount? {
+
+        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+
+            let urlBase = URL(string: activeAccount.urlBase)
+            if url.contains(urlBase?.host ?? "") && userId == activeAccount.userId {
+               return activeAccount
+            } else {
+                let accounts = NCManageDatabase.shared.getAllAccount()
+                for account in accounts {
+                    let urlBase = URL(string: account.urlBase)
+                    if url.contains(urlBase?.host ?? "") && userId == account.userId {
+                        changeAccount(account.account)
+                        return account
+                    }
+                }
+            }
+        }
+        return nil
     }
 }
 
