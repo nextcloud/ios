@@ -38,7 +38,22 @@ struct FilesWidgetView: View {
         let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
 
         GeometryReader { geo in
-            
+
+            if entry.isEmpty {
+                VStack(alignment: .center) {
+                    Image(systemName: "checkmark")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
+                    Text(NSLocalizedString("_no_items_", comment: ""))
+                        .font(.system(size: 25))
+                        .padding()
+                    Text(NSLocalizedString("_check_back_late_", comment: ""))
+                        .font(.system(size: 15))
+                }
+                .frame(width: geo.size.width, height: geo.size.height)
+            }
+
             ZStack(alignment: .topLeading) {
                 
                 HStack() {
@@ -52,46 +67,48 @@ struct FilesWidgetView: View {
                 }
                 .frame(width: geo.size.width - 20)
                 .padding([.top, .leading, .trailing], 10)
-                
-                VStack(alignment: .leading) {
-                    
-                    VStack(spacing: 0) {
-                        
-                        ForEach(entry.datas, id: \.id) { element in
-                            
-                            Link(destination: element.url) {
-                                
-                                HStack {
 
-                                    Image(uiImage: element.image)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 35, height: 35)
-                                        .clipped()
-                                        .cornerRadius(5)
-                                    
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        
-                                        Text(element.title)
-                                            .font(.system(size: 12))
-                                            .fontWeight(.regular)
-                                        
-                                        Text(element.subTitle)
-                                            .font(.system(size: CGFloat(10)))
-                                            .foregroundColor(Color(.systemGray))
+                if !entry.isEmpty {
+                    VStack(alignment: .leading) {
+
+                        VStack(spacing: 0) {
+
+                            ForEach(entry.datas, id: \.id) { element in
+
+                                Link(destination: element.url) {
+
+                                    HStack {
+
+                                        Image(uiImage: element.image)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 35, height: 35)
+                                            .clipped()
+                                            .cornerRadius(5)
+
+                                        VStack(alignment: .leading, spacing: 2) {
+
+                                            Text(element.title)
+                                                .font(.system(size: 12))
+                                                .fontWeight(.regular)
+
+                                            Text(element.subTitle)
+                                                .font(.system(size: CGFloat(10)))
+                                                .foregroundColor(Color(.systemGray))
+                                        }
+                                        Spacer()
                                     }
-                                    Spacer()
+                                    .padding(.leading, 10)
+                                    .frame(height: 50)
                                 }
-                                .padding(.leading, 10)
-                                .frame(height: 50)
+                                Divider()
+                                    .padding(.leading, 54)
                             }
-                            Divider()
-                                .padding(.leading, 54)
                         }
                     }
+                    .padding(.top, 30)
+                    .redacted(reason: entry.isPlaceholder ? .placeholder : [])
                 }
-                .padding(.top, 30)
-                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack(spacing: 0) {
 
@@ -170,7 +187,7 @@ struct FilesWidgetView: View {
 struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(filesDatasTest[0...4])
-        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, userId: "", url: "", tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
+        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: true, userId: "", url: "", tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
         FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
