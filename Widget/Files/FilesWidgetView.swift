@@ -27,9 +27,16 @@ import WidgetKit
 struct FilesWidgetView: View {
     
     var entry: FilesDataEntry
-    
+
     var body: some View {
-        
+
+        let parameterLink = "&user=\(entry.userId)&url=\(entry.url)"
+        let linkNoAction: URL = URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink)! : URL(string: NCGlobal.shared.widgetActionNoAction)!
+        let linkActionUploadAsset: URL = URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink)! : URL(string: NCGlobal.shared.widgetActionUploadAsset)!
+        let linkActionScanDocument: URL = URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionScanDocument)!
+        let linkActionTextDocument: URL = URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionTextDocument)!
+        let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
+
         GeometryReader { geo in
             
             ZStack(alignment: .topLeading) {
@@ -90,7 +97,7 @@ struct FilesWidgetView: View {
 
                     let sizeButton: CGFloat = 40
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
                         Image("addImage")
                             .resizable()
                             .renderingMode(.template)
@@ -102,7 +109,7 @@ struct FilesWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionScanDocument, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
                         Image("scan")
                             .resizable()
                             .renderingMode(.template)
@@ -114,7 +121,7 @@ struct FilesWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionTextDocument, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
                         Image("note.text")
                             .resizable()
                             .renderingMode(.template)
@@ -126,7 +133,7 @@ struct FilesWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionVoiceMemo, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
                         Image("microphone")
                             .resizable()
                             .renderingMode(.template)
@@ -163,7 +170,7 @@ struct FilesWidgetView: View {
 struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(filesDatasTest[0...4])
-        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
+        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, userId: "", url: "", tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
         FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

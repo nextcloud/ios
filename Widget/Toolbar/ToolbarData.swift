@@ -26,19 +26,29 @@ import WidgetKit
 struct ToolbarDataEntry: TimelineEntry {
     let date: Date
     let isPlaceholder: Bool
+    let userId: String
+    let url: String
     let footerImage: String
     let footerText: String
 }
 
 func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: ToolbarDataEntry) -> Void) {
 
+    var userId = ""
+    var url = ""
+
+    if let account = NCManageDatabase.shared.getActiveAccount() {
+        userId = account.userId
+        url = account.urlBase
+    }
+
     if isPreview {
-        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
+        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
     }
 
     if NCManageDatabase.shared.getActiveAccount() == nil {
-        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
-    completion(ToolbarDataEntry(date: Date(), isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
+    completion(ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: userId, url: url, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
 }

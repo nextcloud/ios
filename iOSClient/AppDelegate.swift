@@ -786,7 +786,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /*
          Example:
-         nextcloud://open-action?action=create-voice-memo
+         nextcloud://open-action?action=create-voice-memo&url=https://cloud.nextcloud.com&user=marinofaggiana
          */
 
         if scheme == "nextcloud" && action == "open-action" {
