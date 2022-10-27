@@ -19,6 +19,7 @@
 			<array>
 				<string>DashboardIntent</string>
 				<string>IntentIntent</string>
+				<string>LockscreenIntent</string>
 			</array>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>

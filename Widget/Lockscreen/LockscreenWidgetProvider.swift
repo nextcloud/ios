@@ -23,23 +23,26 @@
 
 import WidgetKit
 import SwiftUI
+import Intents
 
-struct LockscreenWidgetProvider: TimelineProvider {
+struct LockscreenWidgetProvider: IntentTimelineProvider {
 
     typealias Entry = LockscreenData
+    typealias Intent = LockscreenIntent
+
 
     func placeholder(in context: Context) -> Entry {
         return Entry(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "")
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        getLockscreenDataEntry(isPreview: false) { entry in
+    func getSnapshot(for configuration: LockscreenIntent, in context: Context, completion: @escaping (Entry) -> Void) {
+        getLockscreenDataEntry(configuration: configuration, isPreview: false) { entry in
             completion(entry)
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getLockscreenDataEntry(isPreview: context.isPreview) { entry in
+    func getTimeline(for configuration: LockscreenIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+        getLockscreenDataEntry(configuration: configuration, isPreview: context.isPreview) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

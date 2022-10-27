@@ -22,6 +22,7 @@
 //
 
 import WidgetKit
+import Intents
 import SwiftUI
 
 @main
@@ -80,7 +81,7 @@ struct LockscreenWidget: Widget {
 
     var body: some WidgetConfiguration {
         if #available(iOSApplicationExtension 16.0, *) {
-            return StaticConfiguration(kind: kind, provider: LockscreenWidgetProvider()) { entry in
+            return IntentConfiguration(kind: kind, intent: LockscreenIntent.self, provider: LockscreenWidgetProvider()) { entry in
                 LockscreenWidgetView(entry: entry)
             }
             .supportedFamilies([.accessoryRectangular, .accessoryCircular])

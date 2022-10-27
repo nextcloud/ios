@@ -241,6 +241,9 @@
 		F75B0ABD244C4DBB00E58DCA /* NCFunctionCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCFunctionCenter.swift */; };
 		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
 		F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */; };
+		F75DD75C290AAD5C002EB562 /* Lockscreen.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD75B290AAD5C002EB562 /* Lockscreen.intentdefinition */; };
+		F75DD75D290AAD5F002EB562 /* Lockscreen.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD75B290AAD5C002EB562 /* Lockscreen.intentdefinition */; };
+		F75DD75E290AAD60002EB562 /* Lockscreen.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD75B290AAD5C002EB562 /* Lockscreen.intentdefinition */; };
 		F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BC25BF0EC1002B72C2 /* SVGKit */; };
 		F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BE25BF0EC8002B72C2 /* SVGKit */; };
 		F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57C025BF0ECD002B72C2 /* SVGKit */; };
@@ -871,6 +874,7 @@
 		F75B923D1ECAE55E00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRichWorkspaceCommon.swift; sourceTree = "<group>"; };
 		F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCTrash+Menu.swift"; sourceTree = "<group>"; };
+		F75DD75B290AAD5C002EB562 /* Lockscreen.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Lockscreen.intentdefinition; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		F760329D252F0F8E0015A421 /* NCTransferCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NCTransferCell.swift; path = iOSClient/Transfers/NCTransferCell.swift; sourceTree = SOURCE_ROOT; };
@@ -1551,6 +1555,14 @@
 			path = ScanDocument;
 			sourceTree = "<group>";
 		};
+		F75DD75F290AAF6B002EB562 /* Intent */ = {
+			isa = PBXGroup;
+			children = (
+				F75DD75B290AAD5C002EB562 /* Lockscreen.intentdefinition */,
+			);
+			path = Intent;
+			sourceTree = "<group>";
+		};
 		F7603298252F0E550015A421 /* Collection Common */ = {
 			isa = PBXGroup;
 			children = (
@@ -1587,6 +1599,7 @@
 		F76DEE9A28F808BC0041B1C9 /* Lockscreen */ = {
 			isa = PBXGroup;
 			children = (
+				F75DD75F290AAF6B002EB562 /* Intent */,
 				F76DEE9428F808AF0041B1C9 /* LockscreenData.swift */,
 				F76DEE9528F808AF0041B1C9 /* LockscreenWidgetProvider.swift */,
 				F76DEE9628F808AF0041B1C9 /* LockscreenWidgetView.swift */,
@@ -2850,6 +2863,7 @@
 				F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */,
 				F78302FA28B4C3EA00B84583 /* NCManageDatabase+Metadata.swift in Sources */,
 				F783030728B4C52800B84583 /* UIColor+Extensions.swift in Sources */,
+				F75DD75C290AAD5C002EB562 /* Lockscreen.intentdefinition in Sources */,
 				F783030028B4C45800B84583 /* NCGlobal.swift in Sources */,
 				F793E59D28B761E7005E4B02 /* NCNetworking.swift in Sources */,
 				F78302FC28B4C3F300B84583 /* NCElementsJSON.swift in Sources */,
@@ -2930,6 +2944,7 @@
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
+				F75DD75D290AAD5F002EB562 /* Lockscreen.intentdefinition in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
 				F7245924289BB50C00474787 /* ThreadSafeDictionary.swift in Sources */,
 				F73F537F1E929C8500F8678D /* NCMore.swift in Sources */,
@@ -3089,6 +3104,7 @@
 				F7A8D74428F1827B008BBE1C /* ThreadSafeDictionary.swift in Sources */,
 				F7C9739528F17131002C43E2 /* IntentHandler.swift in Sources */,
 				F7A8D73D28F181D3008BBE1C /* NCUtilityFileSystem.swift in Sources */,
+				F75DD75E290AAD60002EB562 /* Lockscreen.intentdefinition in Sources */,
 				F7A8D74528F1828E008BBE1C /* CCUtility.m in Sources */,
 				F7A8D73F28F181EF008BBE1C /* NCGlobal.swift in Sources */,
 				F7A8D74328F1826F008BBE1C /* String+Extensions.swift in Sources */,

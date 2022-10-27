@@ -22,6 +22,7 @@
 //
 
 import WidgetKit
+import Intents
 import NextcloudKit
 import RealmSwift
 import SVGKit
@@ -80,7 +81,7 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
-func getDashboardDataEntry(intent: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
@@ -90,7 +91,7 @@ func getDashboardDataEntry(intent: DashboardIntent?, isPreview: Bool, displaySiz
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
-    let accountIdentifier: String = intent?.Accounts?.identifier ?? "active"
+    let accountIdentifier: String = configuration?.Accounts?.identifier ?? "active"
     if accountIdentifier == "active" {
         account = NCManageDatabase.shared.getActiveAccount()
     } else {
@@ -103,7 +104,7 @@ func getDashboardDataEntry(intent: DashboardIntent?, isPreview: Bool, displaySiz
 
     // Default widget
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
-    let id: String = intent?.Applications?.identifier ?? (result?.id ?? "recommendations")
+    let id: String = configuration?.Applications?.identifier ?? (result?.id ?? "recommendations")
 
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
     guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
