@@ -9,15 +9,59 @@
 import Intents
 import RealmSwift
 
-class IntentHandler: INExtension, DashboardIntentHandling {
+class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling {
+
+    // MARK: - Account
+
+    // Account
+
+    func provideAccountsOptionsCollection(for intent: AccountIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
+
+        var accounts: [Accounts] = []
+        let results = NCManageDatabase.shared.getAllAccount()
+
+        accounts.append(Accounts(identifier: "active", display: "Active account"))
+
+        if results.isEmpty {
+            return completion(nil, nil)
+        } else if results.count == 1 {
+            return completion(INObjectCollection(items: accounts), nil)
+        }
+        for result in results {
+            let display = (result.alias.isEmpty) ? result.account : result.alias
+            let account = Accounts(identifier: result.account, display: display)
+            accounts.append(account)
+        }
+
+        completion(INObjectCollection(items: accounts), nil)
+    }
+
+    func defaultAccounts(for intent: AccountIntent) -> Accounts? {
+
+        if NCManageDatabase.shared.getActiveAccount() == nil {
+            return nil
+        } else {
+            return Accounts(identifier: "active", display: "Active account")
+        }
+    }
+
+    // MARK: - Dashboard
 
     // Application
 
     func provideApplicationsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Applications>?, Error?) -> Void) {
 
         var applications: [Applications] = []
+        var account: tableAccount?
 
-        guard let account = NCManageDatabase.shared.getActiveAccount() else {
+        let accountIdentifier: String = intent.accounts?.identifier ?? "active"
+        if accountIdentifier == "active" {
+            account = NCManageDatabase.shared.getActiveAccount()
+        } else {
+            account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+        }
+
+        guard let account = account else {
             return completion(nil, nil)
         }
 
@@ -48,10 +92,11 @@ class IntentHandler: INExtension, DashboardIntentHandling {
         var accounts: [Accounts] = []
         let results = NCManageDatabase.shared.getAllAccount()
 
+        accounts.append(Accounts(identifier: "active", display: "Active account"))
+
         if results.isEmpty {
             return completion(nil, nil)
         } else if results.count == 1 {
-            accounts.append(Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: "")))
             return completion(INObjectCollection(items: accounts), nil)
         }
         for result in results {
@@ -68,7 +113,7 @@ class IntentHandler: INExtension, DashboardIntentHandling {
         if NCManageDatabase.shared.getActiveAccount() == nil {
             return nil
         } else {
-            return Accounts(identifier: "active", display: NSLocalizedString("_account_active_", comment: ""))
+            return Accounts(identifier: "active", display: "Active account")
         }
     }
 }

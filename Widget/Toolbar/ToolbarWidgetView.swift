@@ -30,6 +30,13 @@ struct ToolbarWidgetView: View {
 
     var body: some View {
 
+        let parameterLink = "&user=\(entry.userId)&url=\(entry.url)"
+        let linkNoAction: URL = URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink)! : URL(string: NCGlobal.shared.widgetActionNoAction)!
+        let linkActionUploadAsset: URL = URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink)! : URL(string: NCGlobal.shared.widgetActionUploadAsset)!
+        let linkActionScanDocument: URL = URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionScanDocument)!
+        let linkActionTextDocument: URL = URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionTextDocument)!
+        let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
+
         GeometryReader { geo in
 
             ZStack(alignment: .topLeading) {
@@ -41,7 +48,7 @@ struct ToolbarWidgetView: View {
 
                     let sizeButton: CGFloat = 65
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionUploadAsset, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
                         Image("addImage")
                             .resizable()
                             .renderingMode(.template)
@@ -53,7 +60,7 @@ struct ToolbarWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionScanDocument, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
                         Image("scan")
                             .resizable()
                             .renderingMode(.template)
@@ -65,7 +72,7 @@ struct ToolbarWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionTextDocument, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
                         Image("note.text")
                             .resizable()
                             .renderingMode(.template)
@@ -77,7 +84,7 @@ struct ToolbarWidgetView: View {
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
-                    Link(destination: entry.isPlaceholder ? NCGlobal.shared.widgetActionNoAction : NCGlobal.shared.widgetActionVoiceMemo, label: {
+                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
                         Image("microphone")
                             .resizable()
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
@@ -112,7 +119,7 @@ struct ToolbarWidgetView: View {
 
 struct ToolbarWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "",  footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
         ToolbarWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }

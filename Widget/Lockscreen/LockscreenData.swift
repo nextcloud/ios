@@ -34,13 +34,22 @@ struct LockscreenData: TimelineEntry {
     let quotaTotal: String
 }
 
-func getLockscreenDataEntry(isPreview: Bool, completion: @escaping (_ entry: LockscreenData) -> Void) {
+func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, completion: @escaping (_ entry: LockscreenData) -> Void) {
+
+    var account: tableAccount?
 
     if isPreview {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: ""))
     }
 
-    guard let account = NCManageDatabase.shared.getActiveAccount() else {
+    let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
+    if accountIdentifier == "active" {
+        account = NCManageDatabase.shared.getActiveAccount()
+    } else {
+        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+    }
+
+    guard let account = account else {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: ""))
     }
 

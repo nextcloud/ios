@@ -7,7 +7,7 @@
 	<key>INIntentDefinitionModelVersion</key>
 	<string>1.2</string>
 	<key>INIntentDefinitionNamespace</key>
-	<string>88xZPY</string>
+	<string>4HSdD3</string>
 	<key>INIntentDefinitionSystemVersion</key>
 	<string>22A380</string>
 	<key>INIntentDefinitionToolsBuildVersion</key>
@@ -20,17 +20,17 @@
 			<key>INIntentCategory</key>
 			<string>information</string>
 			<key>INIntentDescription</key>
-			<string>Dashboard Widget</string>
+			<string>Account</string>
 			<key>INIntentDescriptionID</key>
-			<string>tVvJ9c</string>
+			<string>VfbA9C</string>
 			<key>INIntentEligibleForWidgets</key>
 			<true/>
 			<key>INIntentIneligibleForSuggestions</key>
 			<true/>
 			<key>INIntentLastParameterTag</key>
-			<integer>9</integer>
+			<integer>2</integer>
 			<key>INIntentName</key>
-			<string>Dashboard</string>
+			<string>Account</string>
 			<key>INIntentParameters</key>
 			<array>
 				<dict>
@@ -39,15 +39,15 @@
 					<key>INIntentParameterDisplayName</key>
 					<string>Account</string>
 					<key>INIntentParameterDisplayNameID</key>
-					<string>jHO1Mn</string>
+					<string>13zjVT</string>
 					<key>INIntentParameterDisplayPriority</key>
 					<integer>1</integer>
 					<key>INIntentParameterName</key>
-					<string>Accounts</string>
+					<string>accounts</string>
 					<key>INIntentParameterObjectType</key>
 					<string>Accounts</string>
 					<key>INIntentParameterObjectTypeNamespace</key>
-					<string>88xZPY</string>
+					<string>4HSdD3</string>
 					<key>INIntentParameterPromptDialogs</key>
 					<array>
 						<dict>
@@ -62,48 +62,31 @@
 							<key>INIntentParameterPromptDialogType</key>
 							<string>Primary</string>
 						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>There are ${count} options matching ‘${accounts}’.</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>ObH8NN</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>DisambiguationIntroduction</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>Just to confirm, you wanted ‘${accounts}’?</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>q5lvSu</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Confirmation</string>
+						</dict>
 					</array>
 					<key>INIntentParameterSupportsDynamicEnumeration</key>
 					<true/>
 					<key>INIntentParameterTag</key>
-					<integer>9</integer>
-					<key>INIntentParameterType</key>
-					<string>Object</string>
-				</dict>
-				<dict>
-					<key>INIntentParameterConfigurable</key>
-					<true/>
-					<key>INIntentParameterDisplayName</key>
-					<string>Widget</string>
-					<key>INIntentParameterDisplayNameID</key>
-					<string>TRaTZg</string>
-					<key>INIntentParameterDisplayPriority</key>
 					<integer>2</integer>
-					<key>INIntentParameterName</key>
-					<string>Applications</string>
-					<key>INIntentParameterObjectType</key>
-					<string>Applications</string>
-					<key>INIntentParameterObjectTypeNamespace</key>
-					<string>88xZPY</string>
-					<key>INIntentParameterPromptDialogs</key>
-					<array>
-						<dict>
-							<key>INIntentParameterPromptDialogCustom</key>
-							<true/>
-							<key>INIntentParameterPromptDialogType</key>
-							<string>Configuration</string>
-						</dict>
-						<dict>
-							<key>INIntentParameterPromptDialogCustom</key>
-							<true/>
-							<key>INIntentParameterPromptDialogType</key>
-							<string>Primary</string>
-						</dict>
-					</array>
-					<key>INIntentParameterSupportsDynamicEnumeration</key>
-					<true/>
-					<key>INIntentParameterTag</key>
-					<integer>7</integer>
 					<key>INIntentParameterType</key>
 					<string>Object</string>
 				</dict>
@@ -123,13 +106,168 @@
 						<string>failure</string>
 					</dict>
 				</array>
-				<key>INIntentResponseLastParameterTag</key>
-				<integer>1</integer>
+			</dict>
+			<key>INIntentTitle</key>
+			<string>Account</string>
+			<key>INIntentTitleID</key>
+			<string>V3exc2</string>
+			<key>INIntentType</key>
+			<string>Custom</string>
+			<key>INIntentVerb</key>
+			<string>View</string>
+		</dict>
+		<dict>
+			<key>INIntentCategory</key>
+			<string>information</string>
+			<key>INIntentDescription</key>
+			<string>Dashboard Widget</string>
+			<key>INIntentDescriptionID</key>
+			<string>ZgvlYN</string>
+			<key>INIntentEligibleForWidgets</key>
+			<true/>
+			<key>INIntentIneligibleForSuggestions</key>
+			<true/>
+			<key>INIntentLastParameterTag</key>
+			<integer>4</integer>
+			<key>INIntentName</key>
+			<string>Dashboard</string>
+			<key>INIntentParameters</key>
+			<array>
+				<dict>
+					<key>INIntentParameterConfigurable</key>
+					<true/>
+					<key>INIntentParameterDisplayName</key>
+					<string>Account</string>
+					<key>INIntentParameterDisplayNameID</key>
+					<string>DN8Bxl</string>
+					<key>INIntentParameterDisplayPriority</key>
+					<integer>1</integer>
+					<key>INIntentParameterName</key>
+					<string>accounts</string>
+					<key>INIntentParameterObjectType</key>
+					<string>Accounts</string>
+					<key>INIntentParameterObjectTypeNamespace</key>
+					<string>4HSdD3</string>
+					<key>INIntentParameterPromptDialogs</key>
+					<array>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Configuration</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Primary</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>There are ${count} options matching ‘${accounts}’.</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>296XDb</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>DisambiguationIntroduction</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>Just to confirm, you wanted ‘${accounts}’?</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>TVGjNQ</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Confirmation</string>
+						</dict>
+					</array>
+					<key>INIntentParameterSupportsDynamicEnumeration</key>
+					<true/>
+					<key>INIntentParameterTag</key>
+					<integer>2</integer>
+					<key>INIntentParameterType</key>
+					<string>Object</string>
+				</dict>
+				<dict>
+					<key>INIntentParameterConfigurable</key>
+					<true/>
+					<key>INIntentParameterDisplayName</key>
+					<string>Widget</string>
+					<key>INIntentParameterDisplayNameID</key>
+					<string>LIw8E9</string>
+					<key>INIntentParameterDisplayPriority</key>
+					<integer>2</integer>
+					<key>INIntentParameterName</key>
+					<string>applications</string>
+					<key>INIntentParameterObjectType</key>
+					<string>Applications</string>
+					<key>INIntentParameterObjectTypeNamespace</key>
+					<string>4HSdD3</string>
+					<key>INIntentParameterPromptDialogs</key>
+					<array>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Configuration</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Primary</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>There are ${count} options matching ‘${applications}’.</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>XjFf0X</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>DisambiguationIntroduction</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>Just to confirm, you wanted ‘${applications}’?</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>Am6y6p</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Confirmation</string>
+						</dict>
+					</array>
+					<key>INIntentParameterSupportsDynamicEnumeration</key>
+					<true/>
+					<key>INIntentParameterTag</key>
+					<integer>4</integer>
+					<key>INIntentParameterType</key>
+					<string>Object</string>
+				</dict>
+			</array>
+			<key>INIntentResponse</key>
+			<dict>
+				<key>INIntentResponseCodes</key>
+				<array>
+					<dict>
+						<key>INIntentResponseCodeName</key>
+						<string>success</string>
+						<key>INIntentResponseCodeSuccess</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>INIntentResponseCodeName</key>
+						<string>failure</string>
+					</dict>
+				</array>
 			</dict>
 			<key>INIntentTitle</key>
 			<string>Dashboard</string>
 			<key>INIntentTitleID</key>
-			<string>gpCwrM</string>
+			<string>NO1rJU</string>
 			<key>INIntentType</key>
 			<string>Custom</string>
 			<key>INIntentVerb</key>
@@ -140,13 +278,13 @@
 	<array>
 		<dict>
 			<key>INTypeDisplayName</key>
-			<string>Applications</string>
+			<string>Accounts</string>
 			<key>INTypeDisplayNameID</key>
-			<string>l090JH</string>
+			<string>tAlZ1R</string>
 			<key>INTypeLastPropertyTag</key>
 			<integer>99</integer>
 			<key>INTypeName</key>
-			<string>Applications</string>
+			<string>Accounts</string>
 			<key>INTypeProperties</key>
 			<array>
 				<dict>
@@ -203,13 +341,13 @@
 		</dict>
 		<dict>
 			<key>INTypeDisplayName</key>
-			<string>Accounts</string>
+			<string>Applications</string>
 			<key>INTypeDisplayNameID</key>
-			<string>dLCeWT</string>
+			<string>CAIVXf</string>
 			<key>INTypeLastPropertyTag</key>
 			<integer>99</integer>
 			<key>INTypeName</key>
-			<string>Accounts</string>
+			<string>Applications</string>
 			<key>INTypeProperties</key>
 			<array>
 				<dict>

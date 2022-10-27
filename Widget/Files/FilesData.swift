@@ -22,12 +22,16 @@
 //
 
 import WidgetKit
+import Intents
 import NextcloudKit
 
 struct FilesDataEntry: TimelineEntry {
     let date: Date
     let datas: [FilesData]
     let isPlaceholder: Bool
+    let isEmpty: Bool
+    let userId: String
+    let url: String
     let tile: String
     let footerImage: String
     let footerText: String
@@ -54,7 +58,7 @@ let filesDatasTest: [FilesData] = [
     .init(id: "9", image: UIImage(named: "widget")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getTitleFilesWidget() -> String {
+func getTitleFilesWidget(account: tableAccount?) -> String {
 
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
@@ -67,7 +71,7 @@ func getTitleFilesWidget() -> String {
     default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
     }
 
-    if let account = NCManageDatabase.shared.getActiveAccount() {
+    if let account = account {
         return good + ", " + account.displayName
     } else {
         return good
@@ -80,19 +84,25 @@ func getFilesItems(displaySize: CGSize) -> Int {
     return height
 }
 
-func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
+func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
 
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
-    let title = getTitleFilesWidget()
-    
-    
+    var account: tableAccount?
+
     if isPreview {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
-    guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+    let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
+    if accountIdentifier == "active" {
+        account = NCManageDatabase.shared.getActiveAccount()
+    } else {
+        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+    }
+
+    guard let account = account else {
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     @Sendable func isLive(file: NKFile, files: [NKFile]) -> Bool {
@@ -204,32 +214,35 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
         Task {
             var datas: [FilesData] = []
             var imageRecent = UIImage(named: "file")!
+            let title = getTitleFilesWidget(account: account)
 
             for file in files {
                 guard !file.directory else { continue }
                 guard !isLive(file: file, files: files) else { continue }
+                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account.account, urlBase: file.urlBase)
+                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account.account)
 
                 // SUBTITLE
-                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
+                let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
                 // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
+                guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
-                guard let user = file.user.urlEncoded else { continue }
-                let link = file.urlBase + "/f/" + file.fileId
+                guard let user = metadata.user.urlEncoded else { continue }
+                let link = metadata.urlBase + "/f/" + metadata.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                if !file.iconName.isEmpty {
-                    imageRecent = UIImage(named: file.iconName)!
+                if !metadata.iconName.isEmpty {
+                    imageRecent = UIImage(named: metadata.iconName)!
                 }
-                if let image = NCUtility.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
+                if let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileName, classFile: metadata.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
-                } else if file.hasPreview {
-                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
-                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
-                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
+                } else if metadata.hasPreview {
+                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: account.account)!
+                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
                     if let image = imageIcon {
                         imageRecent = image
@@ -237,22 +250,18 @@ func getFilesDataEntry(isPreview: Bool, displaySize: CGSize, completion: @escapi
                 }
 
                 // DATA
-                let data = FilesData.init(id: file.ocId, image: imageRecent, title: file.fileName, subTitle: subTitle, url: url)
+                let data = FilesData.init(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)
                 datas.append(data)
                 if datas.count == filesItems { break}
             }
 
+            let alias = (account.alias.isEmpty) ? "" : (" (" + account.alias + ")")
+            let footerText = "Files " + NSLocalizedString("_of_", comment: "") +  " " + account.displayName + alias
+
             if error != .success {
-                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
-            } else if datas.isEmpty {
-                var footerText = NSLocalizedString("_no_data_available_", comment: "")
-                let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                if serverVersionMajor < NCGlobal.shared.nextcloudVersion25 {
-                    footerText = NSLocalizedString("_widget_available_nc25_", comment: "")
-                }
-                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
+                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: account.userId, url: account.urlBase, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
             } else {
-                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, tile: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
+                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
     }

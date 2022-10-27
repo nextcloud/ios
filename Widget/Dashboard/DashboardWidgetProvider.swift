@@ -22,8 +22,8 @@
 //
 
 import WidgetKit
-import SwiftUI
 import Intents
+import SwiftUI
 
 struct DashboardWidgetProvider: IntentTimelineProvider {
 
@@ -39,13 +39,13 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
     }
 
     func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {
-        getDashboardDataEntry(intent: configuration, isPreview: false, displaySize: context.displaySize) { entry in
+        getDashboardDataEntry(configuration: configuration, isPreview: false, displaySize: context.displaySize) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(for configuration: DashboardIntent, in context: Context, completion: @escaping (Timeline<DashboardDataEntry>) -> Void) {
-        getDashboardDataEntry(intent: configuration, isPreview: context.isPreview, displaySize: context.displaySize) { entry in
+        getDashboardDataEntry(configuration: configuration, isPreview: context.isPreview, displaySize: context.displaySize) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

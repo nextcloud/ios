@@ -111,6 +111,7 @@
 "_force_start_"             = "Force the start";
 "_purchase_"                = "Purchase";
 "_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@";
+"_account_not_exists_"      = "The account %@ of %@ does not exist";
 "_error_parameter_schema_"  = "Wrong parameters, impossible to continue";
 "_comments_"                = "Comments";
 "_sharing_"                 = "Sharing";
@@ -896,7 +897,6 @@
 "_description_lockscreenwidget_" = "Keep an eye on available space and recent activity";
 "_no_items_"                = "No items";
 "_check_back_late_"         = "Check back late";
-"_account_active_"          = "Account active";
 
 // Video
 "_select_trace_"            = "Select the trace";
