@@ -206,12 +206,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
             for file in files {
 
-                // IMPORTANT:  +++ FIX BUG +++
-                file.user = account.user
-                file.userId = account.userId
-                file.urlBase = account.urlBase
-                // ---------------------------
-
                 guard !file.directory else { continue }
                 guard !isLive(file: file, files: files) else { continue }
 
