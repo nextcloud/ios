@@ -119,7 +119,7 @@ struct ToolbarWidgetView: View {
 
 struct ToolbarWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "",  footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
         ToolbarWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }

@@ -138,25 +138,13 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 <d:resourcetype/>
                 <d:getcontentlength/>
                 <d:getlastmodified/>
-                <d:getetag/>
-                <d:quota-used-bytes/>
-                <d:quota-available-bytes/>
-                <permissions xmlns=\"http://owncloud.org/ns\"/>
                 <id xmlns=\"http://owncloud.org/ns\"/>
                 <fileid xmlns=\"http://owncloud.org/ns\"/>
                 <size xmlns=\"http://owncloud.org/ns\"/>
-                <favorite xmlns=\"http://owncloud.org/ns\"/>
                 <creation_time xmlns=\"http://nextcloud.org/ns\"/>
                 <upload_time xmlns=\"http://nextcloud.org/ns\"/>
                 <is-encrypted xmlns=\"http://nextcloud.org/ns\"/>
-                <mount-type xmlns=\"http://nextcloud.org/ns\"/>
-                <owner-id xmlns=\"http://owncloud.org/ns\"/>
-                <owner-display-name xmlns=\"http://owncloud.org/ns\"/>
-                <comments-unread xmlns=\"http://owncloud.org/ns\"/>
                 <has-preview xmlns=\"http://nextcloud.org/ns\"/>
-                <trashbin-filename xmlns=\"http://nextcloud.org/ns\"/>
-                <trashbin-original-location xmlns=\"http://nextcloud.org/ns\"/>
-                <trashbin-deletion-time xmlns=\"http://nextcloud.org/ns\"/>
             </d:prop>
         </d:select>
     <d:from>
@@ -217,37 +205,46 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
             let title = getTitleFilesWidget(account: account)
 
             for file in files {
+
+                // IMPORTANT:  +++ FIX BUG +++
+                file.user = account.user
+                file.userId = account.userId
+                file.urlBase = account.urlBase
+                // ---------------------------
+
                 guard !file.directory else { continue }
                 guard !isLive(file: file, files: files) else { continue }
-                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account.account, urlBase: file.urlBase)
-                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account.account)
 
                 // SUBTITLE
-                let subTitle = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+                let subTitle = CCUtility.dateDiff(file.date as Date) + " · " + CCUtility.transformedSize(file.size)
 
                 // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
-                guard var path = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName).urlEncoded else { continue }
+                guard var path = NCUtilityFileSystem.shared.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
                 if path.first == "/" { path = String(path.dropFirst())}
-                guard let user = metadata.user.urlEncoded else { continue }
-                let link = metadata.urlBase + "/f/" + metadata.fileId
+                guard let user = file.user.urlEncoded else { continue }
+                let link = file.urlBase + "/f/" + file.fileId
                 let urlString = "nextcloud://open-file?path=\(path)&user=\(user)&link=\(link)"
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                if !metadata.iconName.isEmpty {
-                    imageRecent = UIImage(named: metadata.iconName)!
+                if !file.iconName.isEmpty {
+                    imageRecent = UIImage(named: file.iconName)!
                 }
-                if let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileName, classFile: metadata.classFile, status: 0, createPreviewMedia: false) {
+                if let image = NCUtility.shared.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
                     imageRecent = image
-                } else if metadata.hasPreview {
-                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: account.account)!
-                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+                } else if file.hasPreview {
+                    let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, account: account.account)!
+                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
+                    let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
                     let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
                     if let image = imageIcon {
                         imageRecent = image
                     }
                 }
+
+                //
+                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account.account, urlBase: file.urlBase)
+                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account.account)
 
                 // DATA
                 let data = FilesData.init(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)
