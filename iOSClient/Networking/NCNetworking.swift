@@ -1012,9 +1012,9 @@ import Photos
         var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
 
         if useSubFolder && result {
-            for dateSubFolder in CCUtility.createNameSubFolder(assets) {
-                let fileName = (dateSubFolder as! NSString).lastPathComponent
-                let serverUrl = ((autoUploadPath + "/" + (dateSubFolder as! String)) as NSString).deletingLastPathComponent
+            for dateSubFolder in createNameSubFolder(assets: assets) {
+                let fileName = (dateSubFolder as NSString).lastPathComponent
+                let serverUrl = ((autoUploadPath + "/" + dateSubFolder) as NSString).deletingLastPathComponent
                 result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
                 if !result { break }
             }
@@ -1035,6 +1035,26 @@ import Photos
         semaphore.wait()
 
         return result
+    }
+
+    func createNameSubFolder(assets: [PHAsset]) -> [String] {
+
+        var datesSubFolder: [String] = []
+        let dateFormatter = DateFormatter()
+
+        for asset in assets {
+            var date = Date()
+            if let assetDate = asset.creationDate {
+                date = assetDate
+            }
+            dateFormatter.dateFormat = "yyyy"
+            let year = dateFormatter.string(from: date)
+            dateFormatter.dateFormat = "MM"
+            let month = dateFormatter.string(from: date)
+            datesSubFolder.append("\(year)/\(month)")
+        }
+
+        return datesSubFolder
     }
 
     // MARK: - WebDav Delete

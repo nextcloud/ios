@@ -234,7 +234,6 @@
 
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account;
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account;
-+ (NSArray *)createNameSubFolder:(NSArray *)assets;
 
 + (NSString *)getDirectoryScan;
 

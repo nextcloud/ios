@@ -1267,30 +1267,6 @@
     return fileName;
 }
 
-+ (NSArray *)createNameSubFolder:(NSArray *)assets
-{
-    NSMutableOrderedSet *datesSubFolder = [NSMutableOrderedSet new];
-    
-    for (PHAsset *asset in assets) {
-        
-        NSDate *assetDate = asset.creationDate;
-        
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy"];
-        NSString *yearString = [formatter stringFromDate:assetDate];
-        if (yearString)
-            [datesSubFolder addObject:yearString];
-        
-        [formatter setDateFormat:@"MM"];
-        NSString *monthString = [formatter stringFromDate:assetDate];
-        monthString = [NSString stringWithFormat:@"%@/%@", yearString, monthString];
-        if (monthString)
-            [datesSubFolder addObject:monthString];
-    }
-    
-    return (NSArray *)datesSubFolder;
-}
-
 + (NSString *)getMimeType:(NSString *)fileNameView
 {
     CFStringRef fileUTI = nil;
