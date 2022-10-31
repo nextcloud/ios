@@ -1054,7 +1054,7 @@ import Photos
             datesSubFolder.append("\(year)/\(month)")
         }
 
-        return datesSubFolder
+        return Array(Set(datesSubFolder))
     }
 
     // MARK: - WebDav Delete
