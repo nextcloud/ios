@@ -1531,9 +1531,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderExternal
             } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderAutomaticUpload
-                if cell is NCListCell {
-                    cell.fileTitleLabel?.text = (cell.fileTitleLabel?.text ?? "") + " - " + NSLocalizedString("_auto_upload_folder_", comment: "")
-                }
             } else {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folder
             }
