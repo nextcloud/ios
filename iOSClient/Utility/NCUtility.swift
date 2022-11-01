@@ -393,8 +393,12 @@ class NCUtility: NSObject {
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
-            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadataSource.creationDate = date }
-            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadataSource.date = date }
+            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) {
+                metadataSource.creationDate = date
+            }
+            if let date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) {
+                metadataSource.date = date
+            }
             metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
             metadataSource.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
             metadataSource.isExtractFile = true
