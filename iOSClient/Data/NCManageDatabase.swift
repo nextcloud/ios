@@ -1235,10 +1235,9 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
 
-                var creationDateString = ""
-
                 for asset in assets {
 
+                    var creationDateString = ""
                     let addObject = tablePhotoLibrary()
 
                     addObject.account = account
