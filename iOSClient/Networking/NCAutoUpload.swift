@@ -108,17 +108,14 @@ class NCAutoUpload: NSObject {
                 var livePhoto = false
                 var session: String = ""
                 let dateFormatter = DateFormatter()
-                var date = Date()
-                if let assetDate = asset.creationDate {
-                    date = assetDate
-                }
+                let assetDate = asset.creationDate ?? Date()
                 dateFormatter.dateFormat = "yyyy"
-                let year = dateFormatter.string(from: date)
+                let year = dateFormatter.string(from: assetDate)
                 dateFormatter.dateFormat = "MM"
-                let month = dateFormatter.string(from: date)
+                let month = dateFormatter.string(from: assetDate)
                 let assetMediaType = asset.mediaType
                 var serverUrl: String = ""
-                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: date, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
+                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
 
                 if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
                     livePhoto = true
@@ -231,11 +228,13 @@ class NCAutoUpload: NSObject {
             if selector == NCGlobal.shared.selectorUploadAutoUpload {
                 let idAssets = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)
                 assets.enumerateObjects { asset, _, _ in
+                    var creationDateString = ""
                     if let creationDate = asset.creationDate {
-                        let idAsset = account.account + asset.localIdentifier + String(describing: creationDate)
-                        if !(idAssets?.contains(idAsset) ?? false) {
-                            newAssets.append(asset)
-                        }
+                        creationDateString = String(describing: creationDate)
+                    }
+                    let idAsset = account.account + asset.localIdentifier + creationDateString
+                    if !(idAssets?.contains(idAsset) ?? false) {
+                        newAssets.append(asset)
                     }
                 }
             } else {

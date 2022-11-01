@@ -1043,10 +1043,7 @@ import Photos
         let dateFormatter = DateFormatter()
 
         for asset in assets {
-            var date = Date()
-            if let assetDate = asset.creationDate {
-                date = assetDate
-            }
+            let date = asset.creationDate ?? Date()
             dateFormatter.dateFormat = "yyyy"
             let year = dateFormatter.string(from: date)
             dateFormatter.dateFormat = "MM"

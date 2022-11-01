@@ -455,6 +455,9 @@ class NCUtility: NSObject {
             return callCompletion(error: true)
         }
 
+        let creationDate = asset.creationDate ?? Date()
+        let modificationDate = asset.modificationDate ?? Date()
+
         if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
@@ -468,7 +471,8 @@ class NCUtility: NSObject {
         } else {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         }
-        guard let fileNamePath = fileNamePath, let creationDate = asset.creationDate, let modificationDate = asset.modificationDate else {
+
+        guard let fileNamePath = fileNamePath else {
             return callCompletion(error: true)
         }
 

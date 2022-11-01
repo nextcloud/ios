@@ -1244,19 +1244,14 @@ class NCManageDatabase: NSObject {
                     addObject.account = account
                     addObject.assetLocalIdentifier = asset.localIdentifier
                     addObject.mediaType = asset.mediaType.rawValue
-
                     if let creationDate = asset.creationDate {
                         addObject.creationDate = creationDate as NSDate
                         creationDateString = String(describing: creationDate)
-                    } else {
-                        creationDateString = ""
                     }
-
                     if let modificationDate = asset.modificationDate {
                         addObject.modificationDate = modificationDate as NSDate
                     }
-
-                    addObject.idAsset = "\(account)\(asset.localIdentifier)\(creationDateString)"
+                    addObject.idAsset = account + asset.localIdentifier + creationDateString
 
                     realm.add(addObject, update: .all)
                 }
