@@ -152,17 +152,8 @@ class NCUtilityFileSystem: NSObject {
 
     // MARK: - 
 
-    @objc func getWebDAV(account: String) -> String {
-        // return NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
-        return "remote.php/dav"
-    }
-
-    @objc func getHomeServer(account: String) -> String {
-        var home = self.getWebDAV(account: account)
-        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
-            home = tableAccount.urlBase + "/" + self.getWebDAV(account: account) + "/files/" + tableAccount.userId
-        }
-        return home
+    @objc func getHomeServer(urlBase: String, userId: String) -> String {
+        return urlBase + "/remote.php/dav/files/" + userId
     }
 
     @objc func getPath(path: String, user: String, fileName: String? = nil) -> String {

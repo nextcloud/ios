@@ -146,7 +146,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isEncrypted = key
             } else {
-                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase)
+                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
                 listServerUrl[file.serverUrl] = isEncrypted
             }
 
@@ -664,14 +664,14 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    @objc func getMetadataFolder(account: String, urlBase: String, serverUrl: String) -> tableMetadata? {
+    @objc func getMetadataFolder(account: String, urlBase: String, userId: String, serverUrl: String) -> tableMetadata? {
 
         let realm = try! Realm()
         realm.refresh()
         var serverUrl = serverUrl
         var fileName = ""
 
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."

@@ -185,10 +185,11 @@ struct DashboardWidgetView: View {
 
                     Text(entry.footerText)
                         .font(.caption2)
-                        .padding(.trailing, 13.0)
+                        .lineLimit(1)
                         .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brand))
                 }
-                .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+                .padding(.horizontal, 15.0)
+                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
     }

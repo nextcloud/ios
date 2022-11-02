@@ -1235,28 +1235,22 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
 
-                var creationDateString = ""
-
                 for asset in assets {
 
+                    var creationDateString = ""
                     let addObject = tablePhotoLibrary()
 
                     addObject.account = account
                     addObject.assetLocalIdentifier = asset.localIdentifier
                     addObject.mediaType = asset.mediaType.rawValue
-
                     if let creationDate = asset.creationDate {
                         addObject.creationDate = creationDate as NSDate
                         creationDateString = String(describing: creationDate)
-                    } else {
-                        creationDateString = ""
                     }
-
                     if let modificationDate = asset.modificationDate {
                         addObject.modificationDate = modificationDate as NSDate
                     }
-
-                    addObject.idAsset = "\(account)\(asset.localIdentifier)\(creationDateString)"
+                    addObject.idAsset = account + asset.localIdentifier + creationDateString
 
                     realm.add(addObject, update: .all)
                 }
@@ -1297,10 +1291,10 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Share
 
-    @objc func addShare(urlBase: String, account: String, shares: [NKShare]) {
+    @objc func addShare(account: String, urlBase: String, userId: String, shares: [NKShare]) {
 
         let realm = try! Realm()
-        let home = NCUtilityFileSystem.shared.getHomeServer(account: account)
+        let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
 
         do {
             try realm.write {

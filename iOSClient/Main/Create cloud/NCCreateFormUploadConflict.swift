@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import Photos
+import JGProgressHUD
 
 @objc protocol NCCreateFormUploadConflictDelegate {
     @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
@@ -315,7 +316,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             cell.backgroundColor = tableView.backgroundColor
 
-            let metadataNewFile = metadatasUploadInConflict[indexPath.row]
+            let metadataNewFile =  tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
@@ -390,7 +391,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
 
                     // PREVIEW
-                    NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false) { metadata, fileNamePath, error in
+                    NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { metadata, fileNamePath, error in
                         if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {

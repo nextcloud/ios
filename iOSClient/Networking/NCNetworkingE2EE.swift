@@ -33,7 +33,7 @@ import Alamofire
 
     // MARK: - WebDav Create Folder
 
-    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, completion: @escaping (_ error: NKError) -> Void) {
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var fileNameFolderUrl = ""
@@ -90,7 +90,7 @@ import Alamofire
 
                                 NCManageDatabase.shared.addE2eEncryption(object)
 
-                                self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { e2eToken, error in
+                                self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId) { e2eToken, error in
                                     // unlock
                                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                                         NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
@@ -134,9 +134,9 @@ import Alamofire
                 let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
                 NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken!]) { error in
 
-                    let home = NCUtilityFileSystem.shared.getHomeServer(account: metadata.account)
+                    let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
                     if metadata.serverUrl != home {
-                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase) { e2eToken, error in
+                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase, userId: metadata.userId) { e2eToken, error in
                             // unlock
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
                                 NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { _, _, _, _ in }
@@ -168,7 +168,7 @@ import Alamofire
 
         } else {
 
-            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: metadata.urlBase) { e2eToken, error in
+            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: metadata.urlBase, userId: metadata.userId) { e2eToken, error in
 
                 if error == .success {
                     NCManageDatabase.shared.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
@@ -260,7 +260,7 @@ import Alamofire
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_e2ee_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
-        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: metadata.urlBase, upload: true) { e2eToken, error in
+        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: metadata.urlBase, userId: metadata.userId, upload: true) { e2eToken, error in
 
             start()
 
@@ -384,7 +384,7 @@ import Alamofire
         }
     }
 
-    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption: NSPredicate?, urlBase: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ error: NKError) -> Void) {
+    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption: NSPredicate?, urlBase: String, userId: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ error: NKError) -> Void) {
 
         self.lock(account: account, serverUrl: serverUrl) { directory, e2eToken, error in
             if error == .success && e2eToken != nil && directory != nil {
@@ -394,7 +394,7 @@ import Alamofire
                     var e2eMetadataNew: String?
 
                     if error == .success && e2eMetadata != nil {
-                        if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase) {
+                        if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId) {
                             return completion(e2eToken, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: "")))
                         }
                         method = "PUT"
@@ -402,7 +402,7 @@ import Alamofire
 
                     // Rename
                     if fileNameRename != nil && fileNameNewRename != nil {
-                        NCManageDatabase.shared.renameFileE2eEncryption(serverUrl: serverUrl, fileNameIdentifier: fileNameRename!, newFileName: fileNameNewRename!, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNewRename!, serverUrl: serverUrl, urlBase: urlBase, account: account))
+                        NCManageDatabase.shared.renameFileE2eEncryption(serverUrl: serverUrl, fileNameIdentifier: fileNameRename!, newFileName: fileNameNewRename!, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNewRename!, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account))
                     }
 
                     // Delete

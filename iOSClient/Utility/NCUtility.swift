@@ -30,6 +30,7 @@ import Accelerate
 import CoreMedia
 import Queuer
 import Photos
+import JGProgressHUD
 
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
@@ -379,7 +380,7 @@ class NCUtility: NSObject {
 
     // MARK: -
 
-    func extractFiles(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    func extractFiles(from metadata: tableMetadata, viewController: UIViewController?, hud: JGProgressHUD, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var metadatas: [tableMetadata] = []
@@ -393,10 +394,14 @@ class NCUtility: NSObject {
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
-            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) { metadataSource.creationDate = date }
-            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) { metadataSource.date = date }
+            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: filePath) {
+                metadataSource.creationDate = date
+            }
+            if let date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) {
+                metadataSource.date = date
+            }
             metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
-            metadataSource.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+            metadataSource.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
@@ -404,7 +409,7 @@ class NCUtility: NSObject {
             return completition(metadatas)
         }
 
-        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, returnError in
+        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, returnError in
             if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
                 metadatas.append(metadata)
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -426,21 +431,21 @@ class NCUtility: NSObject {
         }
     }
 
-    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, viewController: UIViewController?, hud: JGProgressHUD, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
 
         var fileNamePath: String?
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
 
-        func callCompletion(error: Bool) {
+        func callCompletionWithError(_ error: Bool = true) {
             if error {
                 completion(nil, nil, true)
             } else {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
-                    metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+                    metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
@@ -451,9 +456,10 @@ class NCUtility: NSObject {
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else {
-            return callCompletion(error: true)
-        }
+        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else { return callCompletionWithError() }
+
+        let creationDate = asset.creationDate ?? Date()
+        let modificationDate = asset.modificationDate ?? Date()
 
         if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
@@ -468,9 +474,8 @@ class NCUtility: NSObject {
         } else {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         }
-        guard let fileNamePath = fileNamePath, let creationDate = asset.creationDate, let modificationDate = asset.modificationDate else {
-            return callCompletion(error: true)
-        }
+
+        guard let fileNamePath = fileNamePath else { return callCompletionWithError() }
 
         if asset.mediaType == PHAssetMediaType.image {
 
@@ -487,25 +492,23 @@ class NCUtility: NSObject {
             }
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return callCompletion(error: true) }
+                if error != nil { return callCompletionWithError() }
             }
 
             PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, dataUI, orientation, info in
-                guard var data = data else { return callCompletion(error: true) }
+                guard var data = data else { return callCompletionWithError() }
                 if compatibilityFormat {
-                    guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletion(error: true) }
+                    guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
                     data = dataJPEG
                 }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                } catch {
-                    return callCompletion(error: true)
-                }
+                } catch { return callCompletionWithError() }
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                return callCompletion(error: false)
+                return callCompletionWithError(false)
             }
 
         } else if asset.mediaType == PHAssetMediaType.video {
@@ -515,24 +518,52 @@ class NCUtility: NSObject {
             options.version = PHVideoRequestOptionsVersion.current
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return callCompletion(error: true) }
+                if error != nil { return callCompletionWithError() }
             }
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
-                guard let asset = asset as? AVURLAsset else { return callCompletion(error: true) }
-                NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
-                do {
-                    try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
-                } catch {
-                    return callCompletion(error: true)
+                if let asset = asset as? AVURLAsset {
+                    NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                    do {
+                        try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
+                        metadata.creationDate = creationDate as NSDate
+                        metadata.date = modificationDate as NSDate
+                        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                        return callCompletionWithError(false)
+                    } catch { return callCompletionWithError() }
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality), let viewController = viewController {
+                    DispatchQueue.main.async {
+                        hud.indicatorView = JGProgressHUDRingIndicatorView()
+                        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                            indicatorView.ringWidth = 1.5
+                        }
+                        hud.textLabel.text = NSLocalizedString("_exporting_video_", comment: "")
+                        hud.show(in: viewController.view)
+                        hud.tapOnHUDViewBlock = { hud in
+                            exporter.cancelExport()
+                        }
+                    }
+                    exporter.outputURL = URL(fileURLWithPath: fileNamePath)
+                    exporter.outputFileType = AVFileType.mp4
+                    exporter.shouldOptimizeForNetworkUse = true
+                    exporter.exportAsynchronously {
+                        DispatchQueue.main.async { hud.dismiss() }
+                        if exporter.status == .completed {
+                            metadata.creationDate = creationDate as NSDate
+                            metadata.date = modificationDate as NSDate
+                            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                            return callCompletionWithError(false)
+                        } else { return callCompletionWithError() }
+                    }
+                    while exporter.status == AVAssetExportSession.Status.exporting || exporter.status == AVAssetExportSession.Status.waiting {
+                        hud.progress = exporter.progress
+                    }
+                } else {
+                    return callCompletionWithError()
                 }
-                metadata.creationDate = creationDate as NSDate
-                metadata.date = modificationDate as NSDate
-                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                return callCompletion(error: false)
             }
         } else {
-            return callCompletion(error: true)
+            return callCompletionWithError()
         }
     }
 
@@ -543,7 +574,7 @@ class NCUtility: NSObject {
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
         let chunckSize = CCUtility.getChunkSize() * 1000000
-        let e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!

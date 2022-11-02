@@ -767,7 +767,7 @@ import Photos
                 return
             }
 
-            let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase)
+            let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
             let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
 
             completion(account, metadata, error)
@@ -952,14 +952,14 @@ import Photos
 
     // MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ error: NKError) -> Void) {
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase, userId: userId)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if isDirectoryEncrypted {
             #if !EXTENSION
-            NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, completion: completion)
+            NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, completion: completion)
             #endif
         } else {
             createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, completion: completion)
@@ -1004,18 +1004,18 @@ import Photos
         }
     }
 
-    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
+    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String) -> Bool {
 
-        let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
+        let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
         let fileName =  NCManageDatabase.shared.getAccountAutoUploadFileName()
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, account: account)
-        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
+        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
 
         if useSubFolder && result {
             for dateSubFolder in createNameSubFolder(assets: assets) {
                 let fileName = (dateSubFolder as NSString).lastPathComponent
                 let serverUrl = ((autoUploadPath + "/" + dateSubFolder) as NSString).deletingLastPathComponent
-                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
+                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
                 if !result { break }
             }
         }
@@ -1023,12 +1023,12 @@ import Photos
         return result
     }
 
-    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String) -> Bool {
+    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
 
         var result: Bool = false
         let semaphore = DispatchSemaphore(value: 0)
 
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { error in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
             if error == .success { result = true }
             semaphore.signal()
         }
@@ -1043,10 +1043,7 @@ import Photos
         let dateFormatter = DateFormatter()
 
         for asset in assets {
-            var date = Date()
-            if let assetDate = asset.creationDate {
-                date = assetDate
-            }
+            let date = asset.creationDate ?? Date()
             dateFormatter.dateFormat = "yyyy"
             let year = dateFormatter.string(from: date)
             dateFormatter.dateFormat = "MM"
@@ -1054,7 +1051,7 @@ import Photos
             datesSubFolder.append("\(year)/\(month)")
         }
 
-        return datesSubFolder
+        return Array(Set(datesSubFolder))
     }
 
     // MARK: - WebDav Delete
@@ -1086,7 +1083,7 @@ import Photos
             return completion(NKError())
         }
 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
         if isDirectoryEncrypted {
@@ -1171,7 +1168,7 @@ import Photos
 
     private func favoriteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
 
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
 
@@ -1235,7 +1232,7 @@ import Photos
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"

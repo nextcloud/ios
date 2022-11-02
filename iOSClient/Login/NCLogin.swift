@@ -311,8 +311,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: appDelegate.account)
-                let serverUrl = urlBase + "/" + webDAV
+                let serverUrl = urlBase + "/" + NCGlobal.shared.dav
 
                 loginButton.isEnabled = false
 

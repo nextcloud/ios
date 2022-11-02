@@ -428,9 +428,9 @@ class NCPlayer: NSObject {
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
         }
-        hud.show(in: view)
         hud.textLabel.text = NSLocalizedString(metadata.fileNameView, comment: "")
         hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+        hud.show(in: view)
         hud.tapOnHUDViewBlock = { hud in
             downloadRequest?.cancel()
         }

@@ -101,7 +101,12 @@ class NCGlobal: NSObject {
     //
     @objc let appName                               = "files"
     @objc let talkName                              = "talk-message"
-    
+
+    // DAV -
+    //
+    @objc let dav                                   = "remote.php/dav"
+    @objc let davfiles                              = "remote.php/dav/files/"
+
     // Nextcloud version
     //
     let nextcloudVersion12: Int                     =  12

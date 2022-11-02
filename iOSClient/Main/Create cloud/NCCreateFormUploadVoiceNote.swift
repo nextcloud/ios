@@ -91,7 +91,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
     public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             titleServerUrl = "/"
         } else {
             titleServerUrl = (serverUrl as NSString).lastPathComponent
@@ -196,7 +196,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
             self.serverUrl = serverUrl!
 
-            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
+            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
                 self.titleServerUrl = "/"
             } else {
                 self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
@@ -239,7 +239,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             conflict.serverUrl = serverUrl
             conflict.metadatasUploadInConflict = [metadataForUpload]
             conflict.delegate = self
-            conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase)
+            conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
             self.present(conflict, animated: true, completion: nil)
 

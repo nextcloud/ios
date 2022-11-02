@@ -51,9 +51,9 @@ class ParallelWorker {
 
         DispatchQueue.main.async {
             let hud = JGProgressHUD()
-            hud.show(in: hudView)
             hud.textLabel.text = NSLocalizedString(self.titleKey, comment: "")
             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+            hud.show(in: hudView)
             hud.tapOnHUDViewBlock = { hud in
                 self.isCancelled = true
                 // Cancel all download / upload
