@@ -107,8 +107,10 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                         if let title = item.title {  activity = title }
                         if let itemLink = item.link, let url = URL(string: itemLink) { link = url }
                     }
+                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: activity, link: link, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
+                } else {
+                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
                 }
-                completion(LockscreenData(date: Date(), isPlaceholder: false, activity: activity, link: link, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
             }
         }
     }

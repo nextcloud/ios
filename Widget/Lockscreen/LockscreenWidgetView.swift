@@ -66,8 +66,16 @@ struct LockscreenWidgetView: View {
                         .fontWeight(.heavy)
                         .foregroundColor(.gray)
                 }
-                Text(entry.activity)
-                    .font(.system(size: 12)).bold()
+                if entry.error {
+                    VStack(spacing: 1) {
+                        Image(systemName: "xmark.icloud")
+                            .font(.system(size: 25.0))
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }.padding(8)
+                } else {
+                    Text(entry.activity)
+                        .font(.system(size: 12)).bold()
+                }
             }
             .widgetURL(entry.link)
             .redacted(reason: entry.isPlaceholder ? .placeholder : [])
