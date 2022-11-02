@@ -559,11 +559,11 @@ class NCUtility: NSObject {
                         hud.progress = exporter.progress
                     }
                 } else {
-                    callCompletionWithError()
+                    return callCompletionWithError()
                 }
             }
         } else {
-            callCompletionWithError()
+            return callCompletionWithError()
         }
     }
 
