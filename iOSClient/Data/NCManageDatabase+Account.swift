@@ -161,7 +161,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getAccountAutoUploadDirectory(urlBase: String, account: String) -> String {
+    @objc func getAccountAutoUploadDirectory(urlBase: String, userId: String, account: String) -> String {
 
         let realm = try! Realm()
 
@@ -172,19 +172,19 @@ extension NCManageDatabase {
         if result.autoUploadDirectory.count > 0 {
             // FIX change webdav -> /dav/files/
             if result.autoUploadDirectory.contains("/webdav") {
-                return NCUtilityFileSystem.shared.getHomeServer(account: account)
+                return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
             } else {
                 return result.autoUploadDirectory
             }
         } else {
-            return NCUtilityFileSystem.shared.getHomeServer(account: account)
+            return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
         }
     }
 
-    @objc func getAccountAutoUploadPath(urlBase: String, account: String) -> String {
+    @objc func getAccountAutoUploadPath(urlBase: String, userId: String, account: String) -> String {
 
         let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
 
         let folderPhotos = CCUtility.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)!
 
@@ -270,7 +270,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String, account: String) {
+    @objc func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String, userId: String, account: String) {
 
         let realm = try! Realm()
 
@@ -280,7 +280,7 @@ extension NCManageDatabase {
                     if let serverUrl = serverUrl {
                         result.autoUploadDirectory = serverUrl
                     } else {
-                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
+                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
                     }
                 }
             }

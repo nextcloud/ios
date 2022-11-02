@@ -218,7 +218,7 @@ class NCShareExtension: UIViewController {
                 self.reloadDatasource(withLoadFolder: true)
 
                 var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-                if NCUtilityFileSystem.shared.getHomeServer(account: self.activeAccount.account) == self.serverUrl {
+                if NCUtilityFileSystem.shared.getHomeServer(urlBase: self.activeAccount.urlBase, userId: self.activeAccount.userId) == self.serverUrl {
                     navigationTitle = NCBrandOptions.shared.brand
                 }
                 self.setNavigationBar(navigationTitle: navigationTitle)
@@ -229,7 +229,7 @@ class NCShareExtension: UIViewController {
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
 
             var title = "  "
             if let userAlias = activeAccount?.alias, !userAlias.isEmpty {
@@ -250,7 +250,7 @@ class NCShareExtension: UIViewController {
             }
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
-        if serverUrl != NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account) {
+        if serverUrl != NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
             let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             space.width = 20
             navItems.append(contentsOf: [UIBarButtonItem(customView: backButton), space])
@@ -329,7 +329,7 @@ extension NCShareExtension {
             conflict.serverUrl = self.serverUrl
             conflict.metadatasUploadInConflict = conflicts
             conflict.delegate = self
-            conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: activeAccount.account, urlBase: activeAccount.urlBase)
+            conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: activeAccount.account, urlBase: activeAccount.urlBase, userId: activeAccount.userId)
             self.present(conflict, animated: true, completion: nil)
         } else {
             upload()
@@ -345,7 +345,7 @@ extension NCShareExtension {
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
         // E2EE
-        metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: activeAccount.userId)
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 

@@ -189,7 +189,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         }
 
         homeImage.image = UIImage(named: "home")!.image(color: NCBrandColor.shared.gray, size: 50)
-        homeServer.text = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) + "/"
+        homeServer.text = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + "/"
     }
 
     @objc func updateCapabilities() {

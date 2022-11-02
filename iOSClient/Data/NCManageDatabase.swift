@@ -1291,10 +1291,10 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Share
 
-    @objc func addShare(urlBase: String, account: String, shares: [NKShare]) {
+    @objc func addShare(account: String, urlBase: String, userId: String, shares: [NKShare]) {
 
         let realm = try! Realm()
-        let home = NCUtilityFileSystem.shared.getHomeServer(account: account)
+        let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
 
         do {
             try realm.write {

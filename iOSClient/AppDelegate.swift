@@ -884,13 +884,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     return false
                 }
 
-                let webDAV = NCUtilityFileSystem.shared.getWebDAV(account: self.account) + "/files/" + self.userId
+                let davFiles = NCGlobal.shared.davfiles + self.userId
                 if pathScheme.contains("/") {
                     fileName = (pathScheme as NSString).lastPathComponent
-                    serverUrl = matchedAccount.urlBase + "/" + webDAV + "/" + (pathScheme as NSString).deletingLastPathComponent
+                    serverUrl = matchedAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
                 } else {
                     fileName = pathScheme
-                    serverUrl = matchedAccount.urlBase + "/" + webDAV
+                    serverUrl = matchedAccount.urlBase + "/" + davFiles
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

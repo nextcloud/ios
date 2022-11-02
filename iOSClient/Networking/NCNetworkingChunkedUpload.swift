@@ -30,7 +30,7 @@ extension NCNetworking {
 
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
-        let chunkFolderPath = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/uploads/" + metadata.userId + "/" + chunkFolder
+        let chunkFolderPath = metadata.urlBase + "/" + NCGlobal.shared.dav + "/uploads/" + metadata.userId + "/" + chunkFolder
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let chunkSize = CCUtility.getChunkSize()
         let fileSizeInGB = Double(metadata.size) / 1e9
@@ -134,8 +134,8 @@ extension NCNetworking {
 
             // Assembling the chunks
             let serverUrlFileNameSource = chunkFolderPath + "/.file"
-            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCUtilityFileSystem.shared.getWebDAV(account: metadata.account) + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
+            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+            let serverUrlFileNameDestination = metadata.urlBase + "/" + NCGlobal.shared.davfiles + metadata.userId + pathServerUrl + "/" + metadata.fileName
 
             var customHeader: [String: String] = [:]
             let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
