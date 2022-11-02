@@ -896,7 +896,7 @@
 "_title_lockscreenwidget_"  = "Status";
 "_description_lockscreenwidget_" = "Keep an eye on available space and recent activity";
 "_no_items_"                = "No items";
-"_check_back_late_"         = "Check back late";
+"_check_back_later_"        = "Check back later";
 "_exporting_video_"         = "Exporting video … Tap to cancel …";
 
 // Video

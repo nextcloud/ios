@@ -48,7 +48,7 @@ struct FilesWidgetView: View {
                     Text(NSLocalizedString("_no_items_", comment: ""))
                         .font(.system(size: 25))
                         .padding()
-                    Text(NSLocalizedString("_check_back_late_", comment: ""))
+                    Text(NSLocalizedString("_check_back_later_", comment: ""))
                         .font(.system(size: 15))
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
