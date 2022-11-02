@@ -438,7 +438,7 @@ class NCUtility: NSObject {
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
 
-        func callCompletion(error: Bool) {
+        func callCompletionWithError(_ error: Bool = true) {
             if error {
                 completion(nil, nil, true)
             } else {
@@ -456,7 +456,7 @@ class NCUtility: NSObject {
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else { return callCompletion(error: true) }
+        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else { return callCompletionWithError() }
 
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
@@ -475,7 +475,7 @@ class NCUtility: NSObject {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         }
 
-        guard let fileNamePath = fileNamePath else { return callCompletion(error: true) }
+        guard let fileNamePath = fileNamePath else { return callCompletionWithError() }
 
         if asset.mediaType == PHAssetMediaType.image {
 
@@ -492,23 +492,23 @@ class NCUtility: NSObject {
             }
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return callCompletion(error: true) }
+                if error != nil { return callCompletionWithError() }
             }
 
             PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, dataUI, orientation, info in
-                guard var data = data else { return callCompletion(error: true) }
+                guard var data = data else { return callCompletionWithError() }
                 if compatibilityFormat {
-                    guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletion(error: true) }
+                    guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
                     data = dataJPEG
                 }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                } catch { return callCompletion(error: true) }
+                } catch { return callCompletionWithError() }
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                return callCompletion(error: false)
+                return callCompletionWithError(false)
             }
 
         } else if asset.mediaType == PHAssetMediaType.video {
@@ -518,7 +518,7 @@ class NCUtility: NSObject {
             options.version = PHVideoRequestOptionsVersion.current
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return callCompletion(error: true) }
+                if error != nil { return callCompletionWithError() }
             }
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
@@ -529,8 +529,8 @@ class NCUtility: NSObject {
                         metadata.creationDate = creationDate as NSDate
                         metadata.date = modificationDate as NSDate
                         metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                        return callCompletion(error: false)
-                    } catch { return callCompletion(error: true) }
+                        return callCompletionWithError(false)
+                    } catch { return callCompletionWithError() }
                 } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality), let viewController = viewController {
                     DispatchQueue.main.async {
                         hud.indicatorView = JGProgressHUDRingIndicatorView()
@@ -552,18 +552,18 @@ class NCUtility: NSObject {
                             metadata.creationDate = creationDate as NSDate
                             metadata.date = modificationDate as NSDate
                             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                            return callCompletion(error: false)
-                        } else { return callCompletion(error: true) }
+                            return callCompletionWithError(false)
+                        } else { return callCompletionWithError() }
                     }
                     while exporter.status == AVAssetExportSession.Status.exporting || exporter.status == AVAssetExportSession.Status.waiting {
                         hud.progress = exporter.progress
                     }
                 } else {
-                    callCompletion(error: true)
+                    callCompletionWithError()
                 }
             }
         } else {
-            callCompletion(error: true)
+            callCompletionWithError()
         }
     }
 
