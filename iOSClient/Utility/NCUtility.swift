@@ -437,11 +437,10 @@ class NCUtility: NSObject {
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
-        var returnWithError: Bool = true
 
-        defer {
-            if returnWithError {
-                completion(nil, nil, returnWithError)
+        func callCompletion(error: Bool) {
+            if error {
+                completion(nil, nil, true)
             } else {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
@@ -452,12 +451,12 @@ class NCUtility: NSObject {
                         metadataReturn = metadata
                     }
                 }
-                completion(metadataReturn, fileNamePath, returnWithError)
+                completion(metadataReturn, fileNamePath, error)
             }
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else { return }
+        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else { return callCompletion(error: true) }
 
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
@@ -476,7 +475,7 @@ class NCUtility: NSObject {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         }
 
-        guard let fileNamePath = fileNamePath else { return }
+        guard let fileNamePath = fileNamePath else { return callCompletion(error: true) }
 
         if asset.mediaType == PHAssetMediaType.image {
 
@@ -493,23 +492,23 @@ class NCUtility: NSObject {
             }
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return }
+                if error != nil { return callCompletion(error: true) }
             }
 
             PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, dataUI, orientation, info in
-                guard var data = data else { return }
+                guard var data = data else { return callCompletion(error: true) }
                 if compatibilityFormat {
-                    guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return }
+                    guard let ciImage = CIImage.init(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletion(error: true) }
                     data = dataJPEG
                 }
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                } catch { return }
+                } catch { return callCompletion(error: true) }
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                return returnWithError = false
+                return callCompletion(error: false)
             }
 
         } else if asset.mediaType == PHAssetMediaType.video {
@@ -519,7 +518,7 @@ class NCUtility: NSObject {
             options.version = PHVideoRequestOptionsVersion.current
             options.progressHandler = { (progress, error, stop, info) in
                 print(progress)
-                if error != nil { return }
+                if error != nil { return callCompletion(error: true) }
             }
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
@@ -530,20 +529,18 @@ class NCUtility: NSObject {
                         metadata.creationDate = creationDate as NSDate
                         metadata.date = modificationDate as NSDate
                         metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                        return returnWithError = false
-                    } catch { return }
-                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) {
-                    if let viewController = viewController {
-                        DispatchQueue.main.async {
-                            hud.indicatorView = JGProgressHUDRingIndicatorView()
-                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                                indicatorView.ringWidth = 1.5
-                            }
-                            hud.textLabel.text = NSLocalizedString("_exporting_video_", comment: "")
-                            hud.show(in: viewController.view)
-                            hud.tapOnHUDViewBlock = { hud in
-                                exporter.cancelExport()
-                            }
+                        return callCompletion(error: false)
+                    } catch { return callCompletion(error: true) }
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality), let viewController = viewController {
+                    DispatchQueue.main.async {
+                        hud.indicatorView = JGProgressHUDRingIndicatorView()
+                        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                            indicatorView.ringWidth = 1.5
+                        }
+                        hud.textLabel.text = NSLocalizedString("_exporting_video_", comment: "")
+                        hud.show(in: viewController.view)
+                        hud.tapOnHUDViewBlock = { hud in
+                            exporter.cancelExport()
                         }
                     }
                     exporter.outputURL = URL(fileURLWithPath: fileNamePath)
@@ -555,14 +552,18 @@ class NCUtility: NSObject {
                             metadata.creationDate = creationDate as NSDate
                             metadata.date = modificationDate as NSDate
                             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                            return returnWithError = false
-                        } else { return }
+                            return callCompletion(error: false)
+                        } else { return callCompletion(error: true) }
                     }
                     while exporter.status == AVAssetExportSession.Status.exporting || exporter.status == AVAssetExportSession.Status.waiting {
                         hud.progress = exporter.progress
                     }
+                } else {
+                    callCompletion(error: true)
                 }
             }
+        } else {
+            callCompletion(error: true)
         }
     }
 
