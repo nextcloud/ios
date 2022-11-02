@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import Photos
+import JGProgressHUD
 
 class NCNetworkingProcessUpload: NSObject {
     public static let shared: NCNetworkingProcessUpload = {
@@ -62,6 +63,7 @@ class NCNetworkingProcessUpload: NSObject {
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = 10
         let viewController = appDelegate.window?.rootViewController
+        let hud = JGProgressHUD()
 
         queue.async {
 
@@ -113,7 +115,7 @@ class NCNetworkingProcessUpload: NSObject {
                         }
 
                         let semaphore = DispatchSemaphore(value: 0)
-                        NCUtility.shared.extractFiles(from: metadata, viewController: viewController) { metadatas in
+                        NCUtility.shared.extractFiles(from: metadata, viewController: viewController, hud: hud) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }

@@ -380,7 +380,7 @@ class NCUtility: NSObject {
 
     // MARK: -
 
-    func extractFiles(from metadata: tableMetadata, viewController: UIViewController? ,completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    func extractFiles(from metadata: tableMetadata, viewController: UIViewController?, hud: JGProgressHUD, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var metadatas: [tableMetadata] = []
@@ -409,7 +409,7 @@ class NCUtility: NSObject {
             return completition(metadatas)
         }
 
-        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController) { metadata, fileNamePath, returnError in
+        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, returnError in
             if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
                 metadatas.append(metadata)
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -431,13 +431,12 @@ class NCUtility: NSObject {
         }
     }
 
-    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, viewController: UIViewController?, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, viewController: UIViewController?, hud: JGProgressHUD, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
 
         var fileNamePath: String?
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
-        let hud = JGProgressHUD()
 
         func callCompletion(error: Bool) {
             if error {
