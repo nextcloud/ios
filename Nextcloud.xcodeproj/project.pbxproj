@@ -361,6 +361,10 @@
 		F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */; };
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */; };
+		F78D0C7F2912722100D706AB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F78D0C7E2912722100D706AB /* JGProgressHUD */; };
+		F78D0C812912723900D706AB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F78D0C802912723900D706AB /* JGProgressHUD */; };
+		F78D0C832912724F00D706AB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F78D0C822912724F00D706AB /* JGProgressHUD */; };
+		F78D0C852912725600D706AB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F78D0C842912725600D706AB /* JGProgressHUD */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
@@ -1139,6 +1143,7 @@
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
 				F710FC86277B7D3F00AA9FBF /* Realm in Frameworks */,
 				F7EBCDD3277B821700A4EF67 /* UICKeyChainStore in Frameworks */,
+				F78D0C852912725600D706AB /* JGProgressHUD in Frameworks */,
 				F75E57C325BF0ED2002B72C2 /* SVGKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1177,6 +1182,7 @@
 				F7346E2728B0FFF2006CE2D2 /* Realm in Frameworks */,
 				F7346E2928B0FFF2006CE2D2 /* RealmSwift in Frameworks */,
 				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
+				F78D0C832912724F00D706AB /* JGProgressHUD in Frameworks */,
 				F7346E1228B0EF5B006CE2D2 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1186,6 +1192,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7EBCDD1277B820D00A4EF67 /* UICKeyChainStore in Frameworks */,
+				F78D0C7F2912722100D706AB /* JGProgressHUD in Frameworks */,
 				F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */,
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
 				F710FC82277B7D3500AA9FBF /* Realm in Frameworks */,
@@ -1232,6 +1239,7 @@
 				F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */,
 				F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */,
 				F7A8D72C28F17742008BBE1C /* SwiftEntryKit in Frameworks */,
+				F78D0C812912723900D706AB /* JGProgressHUD in Frameworks */,
 				F7A8D72628F17728008BBE1C /* Realm in Frameworks */,
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
@@ -2245,6 +2253,7 @@
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
 				F7EBCDD2277B821700A4EF67 /* UICKeyChainStore */,
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
+				F78D0C842912725600D706AB /* JGProgressHUD */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -2315,6 +2324,7 @@
 				F783030428B4C50600B84583 /* SVGKit */,
 				F783030C28B4C59A00B84583 /* SwiftEntryKit */,
 				F783034328B5142B00B84583 /* NextcloudKit */,
+				F78D0C822912724F00D706AB /* JGProgressHUD */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -2340,6 +2350,7 @@
 				F710FC83277B7D3500AA9FBF /* RealmSwift */,
 				F7EBCDD0277B820D00A4EF67 /* UICKeyChainStore */,
 				F72AD71228C24BCC006CB92D /* NextcloudKit */,
+				F78D0C7E2912722100D706AB /* JGProgressHUD */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -2411,6 +2422,7 @@
 				F7A8D72928F17733008BBE1C /* SVGKit */,
 				F7A8D72B28F17742008BBE1C /* SwiftEntryKit */,
 				F7A8D72D28F17764008BBE1C /* UICKeyChainStore */,
+				F78D0C802912723900D706AB /* JGProgressHUD */,
 			);
 			productName = WidgetDashboardIntentHandler;
 			productReference = F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */;
@@ -4124,6 +4136,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
 			productName = MarkdownKit;
+		};
+		F78D0C7E2912722100D706AB /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
+		};
+		F78D0C802912723900D706AB /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
+		};
+		F78D0C822912724F00D706AB /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
+		};
+		F78D0C842912725600D706AB /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
 		};
 		F7A8D72328F1771B008BBE1C /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;

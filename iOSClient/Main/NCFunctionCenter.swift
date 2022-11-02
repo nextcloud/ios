@@ -352,9 +352,9 @@ import Photos
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
         }
-        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
         hud.textLabel.text = NSLocalizedString("_saving_", comment: "")
-        
+        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
+
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             
             hud.progress = Float(progress)

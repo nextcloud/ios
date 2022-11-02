@@ -112,7 +112,7 @@ class NCNetworkingProcessUpload: NSObject {
                         }
 
                         let semaphore = DispatchSemaphore(value: 0)
-                        NCUtility.shared.extractFiles(from: metadata) { metadatas in
+                        NCUtility.shared.extractFiles(from: metadata, viewController: appDelegate.window?.rootViewController) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }

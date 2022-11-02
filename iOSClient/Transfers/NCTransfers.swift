@@ -135,7 +135,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard let metadata = metadataTemp else { return }
         guard appDelegate.account == metadata.account else { return }
 
-        NCUtility.shared.extractFiles(from: metadata) { metadatas in
+        NCUtility.shared.extractFiles(from: metadata, viewController: self) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                     NCNetworking.shared.upload(metadata: metadata)

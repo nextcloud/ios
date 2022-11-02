@@ -390,7 +390,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
 
                     // PREVIEW
-                    NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false) { metadata, fileNamePath, error in
+                    NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self) { metadata, fileNamePath, error in
                         if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {

@@ -30,6 +30,7 @@ import Accelerate
 import CoreMedia
 import Queuer
 import Photos
+import JGProgressHUD
 
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
@@ -379,7 +380,7 @@ class NCUtility: NSObject {
 
     // MARK: -
 
-    func extractFiles(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+    func extractFiles(from metadata: tableMetadata, viewController: UIViewController? ,completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var metadatas: [tableMetadata] = []
@@ -408,7 +409,7 @@ class NCUtility: NSObject {
             return completition(metadatas)
         }
 
-        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, returnError in
+        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController) { metadata, fileNamePath, returnError in
             if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
                 metadatas.append(metadata)
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -430,12 +431,13 @@ class NCUtility: NSObject {
         }
     }
 
-    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, viewController: UIViewController?, completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> ()) {
 
         var fileNamePath: String?
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
+        let hud = JGProgressHUD()
 
         func callCompletion(error: Bool) {
             if error {
@@ -538,11 +540,25 @@ class NCUtility: NSObject {
                     } catch {
                         return callCompletion(error: true)
                     }
-                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) {
+                    if let viewController = viewController {
+                        DispatchQueue.main.async {
+                            hud.indicatorView = JGProgressHUDRingIndicatorView()
+                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                                indicatorView.ringWidth = 1.5
+                            }
+                            hud.textLabel.text = NSLocalizedString("_exporting_video_", comment: "")
+                            hud.show(in: viewController.view)
+                            hud.tapOnHUDViewBlock = { hud in
+                                exporter.cancelExport()
+                            }
+                        }
+                    }
                     exporter.outputURL = URL(fileURLWithPath: fileNamePath)
                     exporter.outputFileType = AVFileType.mp4
                     exporter.shouldOptimizeForNetworkUse = true
                     exporter.exportAsynchronously {
+                        DispatchQueue.main.async { hud.dismiss() }
                         if exporter.status == .completed {
                             metadata.creationDate = creationDate as NSDate
                             metadata.date = modificationDate as NSDate
@@ -551,6 +567,9 @@ class NCUtility: NSObject {
                         } else {
                             return callCompletion(error: true)
                         }
+                    }
+                    while exporter.status == AVAssetExportSession.Status.exporting || exporter.status == AVAssetExportSession.Status.waiting {
+                        hud.progress = exporter.progress
                     }
                 } else {
                     return callCompletion(error: true)
