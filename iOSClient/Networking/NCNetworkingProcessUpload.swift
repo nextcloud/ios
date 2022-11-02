@@ -61,6 +61,7 @@ class NCNetworkingProcessUpload: NSObject {
         let isPasscodePresented = appDelegate.isPasscodePresented()
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = 10
+        var viewController = appDelegate.window?.rootViewController
 
         queue.async {
 
@@ -112,7 +113,7 @@ class NCNetworkingProcessUpload: NSObject {
                         }
 
                         let semaphore = DispatchSemaphore(value: 0)
-                        NCUtility.shared.extractFiles(from: metadata, viewController: appDelegate.window?.rootViewController) { metadatas in
+                        NCUtility.shared.extractFiles(from: metadata, viewController: viewController) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
