@@ -527,17 +527,34 @@ class NCUtility: NSObject {
             }
 
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
-                guard let asset = asset as? AVURLAsset else { return callCompletion(error: true) }
-                NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
-                do {
-                    try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
-                } catch {
+                if let asset = asset as? AVURLAsset {
+                    NCUtilityFileSystem.shared.deleteFile(filePath: fileNamePath)
+                    do {
+                        try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
+                        metadata.creationDate = creationDate as NSDate
+                        metadata.date = modificationDate as NSDate
+                        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                        return callCompletion(error: false)
+                    } catch {
+                        return callCompletion(error: true)
+                    }
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
+                    exporter.outputURL = URL(fileURLWithPath: fileNamePath)
+                    exporter.outputFileType = AVFileType.mp4
+                    exporter.shouldOptimizeForNetworkUse = true
+                    exporter.exportAsynchronously {
+                        if exporter.status == .completed {
+                            metadata.creationDate = creationDate as NSDate
+                            metadata.date = modificationDate as NSDate
+                            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                            return callCompletion(error: false)
+                        } else {
+                            return callCompletion(error: true)
+                        }
+                    }
+                } else {
                     return callCompletion(error: true)
                 }
-                metadata.creationDate = creationDate as NSDate
-                metadata.date = modificationDate as NSDate
-                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-                return callCompletion(error: false)
             }
         } else {
             return callCompletion(error: true)

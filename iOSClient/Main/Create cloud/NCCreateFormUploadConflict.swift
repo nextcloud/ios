@@ -315,7 +315,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             cell.backgroundColor = tableView.backgroundColor
 
-            let metadataNewFile = metadatasUploadInConflict[indexPath.row]
+            let metadataNewFile =  tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
