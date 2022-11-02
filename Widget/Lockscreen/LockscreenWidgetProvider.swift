@@ -31,17 +31,17 @@ struct LockscreenWidgetProvider: IntentTimelineProvider {
     typealias Intent = AccountIntent
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "")
+        return Entry(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false)
     }
 
     func getSnapshot(for configuration: AccountIntent, in context: Context, completion: @escaping (Entry) -> Void) {
-        getLockscreenDataEntry(configuration: configuration, isPreview: false) { entry in
+        getLockscreenDataEntry(configuration: configuration, isPreview: false, family: context.family) { entry in
             completion(entry)
         }
     }
 
     func getTimeline(for configuration: AccountIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        getLockscreenDataEntry(configuration: configuration, isPreview: context.isPreview) { entry in
+        getLockscreenDataEntry(configuration: configuration, isPreview: context.isPreview, family: context.family) { entry in
             let timeLine = Timeline(entries: [entry], policy: .atEnd)
             completion(timeLine)
         }

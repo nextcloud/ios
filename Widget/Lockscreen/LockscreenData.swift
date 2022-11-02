@@ -32,14 +32,17 @@ struct LockscreenData: TimelineEntry {
     let quotaRelative: Float
     let quotaUsed: String
     let quotaTotal: String
+    let error: Bool
 }
 
-func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, completion: @escaping (_ entry: LockscreenData) -> Void) {
+func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
 
     var account: tableAccount?
+    var quotaRelative: Float = 0
+    let options = NKRequestOptions(timeout: 15, queue: NKCommon.shared.backgroundQueue)
 
     if isPreview {
-        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: ""))
+        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
@@ -50,55 +53,63 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, comp
     }
 
     guard let account = account else {
-        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: ""))
-    }
-
-    var quotaRelative: Float = 0
-    if account.quotaRelative > 0 {
-        quotaRelative = Float(account.quotaRelative) / 100
-    }
-    let quotaUsed: String = CCUtility.transformedSize(account.quotaUsed)
-    var quotaTotal: String = ""
-
-    switch account.quotaTotal {
-    case -1:
-        quotaTotal = ""
-    case -2:
-        quotaTotal = ""
-    case -3:
-        quotaTotal = ""
-    default:
-        quotaTotal = CCUtility.transformedSize(account.quotaTotal)
+        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-    if serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 {
+    if serverVersionMajor < NCGlobal.shared.nextcloudVersion25 {
+        completion(LockscreenData(date: Date(), isPlaceholder: false, activity: NSLocalizedString("_widget_available_nc25_", comment: ""), link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
+    }
 
-        // NETWORKING
-        let password = CCUtility.getPassword(account.account)!
-        NKCommon.shared.setup(
-            account: account.account,
-            user: account.user,
-            userId: account.userId,
-            password: password,
-            urlBase: account.urlBase,
-            userAgent: CCUtility.getUserAgent(),
-            nextcloudVersion: 0,
-            delegate: NCNetworking.shared)
+    // NETWORKING
+    let password = CCUtility.getPassword(account.account)!
+    NKCommon.shared.setup(
+        account: account.account,
+        user: account.user,
+        userId: account.userId,
+        password: password,
+        urlBase: account.urlBase,
+        userAgent: CCUtility.getUserAgent(),
+        nextcloudVersion: 0,
+        delegate: NCNetworking.shared)
 
-        let options = NKRequestOptions(timeout: 15, queue: NKCommon.shared.backgroundQueue)
-        NextcloudKit.shared.getDashboardWidgetsApplication("activity", options: options) { _, results, _, error in
-            var activity: String = NSLocalizedString("_no_data_available_", comment: "")
-            var link = URL(string: "https://")!
-            if error == .success, let result = results?.first {
-                if let item = result.items?.first {
-                    if let title = item.title {  activity = title }
-                    if let itemLink = item.link, let url = URL(string: itemLink) { link = url }
+    if #available(iOSApplicationExtension 16.0, *) {
+        if family == .accessoryCircular {
+            NextcloudKit.shared.getUserProfile(options: options) { _, userProfile, _, error in
+                if error == .success, let userProfile = userProfile, let account = NCManageDatabase.shared.setAccountUserProfile(userProfile) {
+                    if account.quotaRelative > 0 {
+                        quotaRelative = Float(account.quotaRelative) / 100
+                    }
+                    let quotaUsed: String = CCUtility.transformedSize(account.quotaUsed)
+                    var quotaTotal: String = ""
+
+                    switch account.quotaTotal {
+                    case -1:
+                        quotaTotal = ""
+                    case -2:
+                        quotaTotal = ""
+                    case -3:
+                        quotaTotal = ""
+                    default:
+                        quotaTotal = CCUtility.transformedSize(account.quotaTotal)
+                    }
+                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal, error: false))
+                } else {
+                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
                 }
             }
-            completion(LockscreenData(date: Date(), isPlaceholder: false, activity: activity, link: link, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal))
+        } else if family == .accessoryRectangular {
+            NextcloudKit.shared.getDashboardWidgetsApplication("activity", options: options) { _, results, _, error in
+                var activity: String = NSLocalizedString("_no_data_available_", comment: "")
+                var link = URL(string: "https://")!
+                if error == .success, let result = results?.first {
+                    if let item = result.items?.first {
+                        if let title = item.title {  activity = title }
+                        if let itemLink = item.link, let url = URL(string: itemLink) { link = url }
+                    }
+                }
+                completion(LockscreenData(date: Date(), isPlaceholder: false, activity: activity, link: link, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
+            }
         }
-    } else {
-        completion(LockscreenData(date: Date(), isPlaceholder: false, activity: NSLocalizedString("_widget_available_nc25_", comment: ""), link: URL(string: "https://")!, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal))
     }
 }
