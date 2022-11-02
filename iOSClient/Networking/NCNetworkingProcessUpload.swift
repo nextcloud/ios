@@ -61,7 +61,7 @@ class NCNetworkingProcessUpload: NSObject {
         let isPasscodePresented = appDelegate.isPasscodePresented()
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = 10
-        var viewController = appDelegate.window?.rootViewController
+        let viewController = appDelegate.window?.rootViewController
 
         queue.async {
 
