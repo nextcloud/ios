@@ -56,7 +56,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
-    var shares: [tableShare] = []
     var timerErrorNetworking: Timer?
 
     private var privacyProtectionWindow: UIWindow?
