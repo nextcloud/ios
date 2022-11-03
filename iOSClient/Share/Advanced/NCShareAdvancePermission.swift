@@ -157,6 +157,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         case .expirationDate:
             let cell = tableView.cellForRow(at: indexPath) as? NCShareDateCell
             cell?.textField.becomeFirstResponder()
+            cell?.checkMaximumDate(account: metadata.account)
         case .password:
             guard share.password.isEmpty else {
                 share.password = ""

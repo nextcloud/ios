@@ -264,11 +264,16 @@ class NCShareDateCell: UITableViewCell {
     let textField = UITextField()
 
     var onReload: (() -> Void)?
+    
+    var shareType: Int
 
     init(share: NCTableShareable) {
+        self.shareType = share.shareType
+        
         super.init(style: .value1, reuseIdentifier: "shareExpDate")
         picker.datePickerMode = .date
         picker.minimumDate = Date()
+        
         if #available(iOS 13.4, *) {
             picker.preferredDatePickerStyle = .wheels
         }
@@ -300,5 +305,52 @@ class NCShareDateCell: UITableViewCell {
 
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func checkMaximumDate(account: String) {
+        let defaultExpDays = defaultExpirationDays(account: account)
+        
+        if defaultExpDays > 0 && isExpireDateEnforced(account: account) {
+            let enforcedInSecs = TimeInterval(defaultExpDays * 24 * 60 * 60);
+            self.picker.maximumDate = Date().advanced(by: enforcedInSecs)
+        }
+    }
+    
+    private func isExpireDateEnforced(account: String) -> Bool {
+        switch self.shareType {
+        case NCShareCommon.shared.SHARE_TYPE_LINK,
+            NCShareCommon.shared.SHARE_TYPE_EMAIL,
+            NCShareCommon.shared.SHARE_TYPE_GUEST:
+            return NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubExpireDateEnforced, exists: false)
+        case NCShareCommon.shared.SHARE_TYPE_USER,
+            NCShareCommon.shared.SHARE_TYPE_GROUP,
+            NCShareCommon.shared.SHARE_TYPE_CIRCLE,
+            NCShareCommon.shared.SHARE_TYPE_ROOM:
+            return NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingInternalExpireDateEnforced, exists: false)
+        case NCShareCommon.shared.SHARE_TYPE_REMOTE,
+            NCShareCommon.shared.SHARE_TYPE_REMOTE_GROUP:
+            return NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingRemoteExpireDateEnforced, exists: false)
+        default:
+            return false
+        }
+    }
+    
+    private func defaultExpirationDays(account: String) -> Int {
+        switch self.shareType {
+        case NCShareCommon.shared.SHARE_TYPE_LINK,
+            NCShareCommon.shared.SHARE_TYPE_EMAIL,
+            NCShareCommon.shared.SHARE_TYPE_GUEST:
+            return NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubExpireDateDays)
+        case NCShareCommon.shared.SHARE_TYPE_USER,
+            NCShareCommon.shared.SHARE_TYPE_GROUP,
+            NCShareCommon.shared.SHARE_TYPE_CIRCLE,
+            NCShareCommon.shared.SHARE_TYPE_ROOM:
+            return NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingInternalExpireDateDays)
+        case NCShareCommon.shared.SHARE_TYPE_REMOTE,
+            NCShareCommon.shared.SHARE_TYPE_REMOTE_GROUP:
+            return NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingRemoteExpireDateDays)
+        default:
+            return 0
+        }
     }
 }
