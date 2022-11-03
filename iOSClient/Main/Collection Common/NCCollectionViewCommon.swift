@@ -88,6 +88,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.navigationController?.presentationController?.delegate = self
 
+        // CollectionView & layout
+        listLayout = NCListLayout()
+        gridLayout = NCGridLayout()
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
         collectionView.alwaysBounceVertical = true
 
         // Color
@@ -117,9 +127,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
-
-        listLayout = NCListLayout()
-        gridLayout = NCGridLayout()
 
         // Refresh Control
         collectionView.addSubview(refreshControl)
