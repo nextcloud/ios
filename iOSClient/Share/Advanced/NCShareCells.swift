@@ -262,21 +262,16 @@ class NCShareToggleCell: UITableViewCell {
 class NCShareDateCell: UITableViewCell {
     let picker = UIDatePicker()
     let textField = UITextField()
-
-    var onReload: (() -> Void)?
-    
     var shareType: Int
+    var onReload: (() -> Void)?
 
     init(share: NCTableShareable) {
         self.shareType = share.shareType
-        
         super.init(style: .value1, reuseIdentifier: "shareExpDate")
+
         picker.datePickerMode = .date
         picker.minimumDate = Date()
-        
-        if #available(iOS 13.4, *) {
-            picker.preferredDatePickerStyle = .wheels
-        }
+        picker.preferredDatePickerStyle = .wheels
         picker.action(for: .valueChanged) { datePicker in
             guard let datePicker = datePicker as? UIDatePicker else { return }
             self.detailTextLabel?.text = DateFormatter.shareExpDate.string(from: datePicker.date)
@@ -306,16 +301,15 @@ class NCShareDateCell: UITableViewCell {
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func checkMaximumDate(account: String) {
         let defaultExpDays = defaultExpirationDays(account: account)
-        
         if defaultExpDays > 0 && isExpireDateEnforced(account: account) {
-            let enforcedInSecs = TimeInterval(defaultExpDays * 24 * 60 * 60);
+            let enforcedInSecs = TimeInterval(defaultExpDays * 24 * 60 * 60)
             self.picker.maximumDate = Date().advanced(by: enforcedInSecs)
         }
     }
-    
+
     private func isExpireDateEnforced(account: String) -> Bool {
         switch self.shareType {
         case NCShareCommon.shared.SHARE_TYPE_LINK,
@@ -334,7 +328,7 @@ class NCShareDateCell: UITableViewCell {
             return false
         }
     }
-    
+
     private func defaultExpirationDays(account: String) -> Int {
         switch self.shareType {
         case NCShareCommon.shared.SHARE_TYPE_LINK,
