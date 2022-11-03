@@ -1125,7 +1125,7 @@
 {
     NSString *fileNameViewPath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
     NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
-    BOOL isFolderEncrypted = [self isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account urlBase:metadata.urlBase];
+    BOOL isFolderEncrypted = [self isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account urlBase:metadata.urlBase userId:metadata.userId];
 
     unsigned long long fileNameViewSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNameViewPath error:nil] fileSize];
     unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
@@ -1246,49 +1246,25 @@
     [[NSFileManager defaultManager] createDirectoryAtPath:atPath withIntermediateDirectories:true attributes:nil error:nil];
 }
 
-+ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
++ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account
 {
-    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
+    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
     NSString *path = [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""];
     return path;
 }
                                        
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase userId:(NSString *)userId account:(NSString *)account
 {
     if (metadataFileName == nil || serverUrl == nil || urlBase == nil) {
         return @"";
     }
     
-    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
+    NSString *homeServer = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
     NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
     
     return fileName;
-}
-
-+ (NSArray *)createNameSubFolder:(NSArray *)assets
-{
-    NSMutableOrderedSet *datesSubFolder = [NSMutableOrderedSet new];
-    
-    for (PHAsset *asset in assets) {
-        
-        NSDate *assetDate = asset.creationDate;
-        
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy"];
-        NSString *yearString = [formatter stringFromDate:assetDate];
-        if (yearString)
-            [datesSubFolder addObject:yearString];
-        
-        [formatter setDateFormat:@"MM"];
-        NSString *monthString = [formatter stringFromDate:assetDate];
-        monthString = [NSString stringWithFormat:@"%@/%@", yearString, monthString];
-        if (monthString)
-            [datesSubFolder addObject:monthString];
-    }
-    
-    return (NSArray *)datesSubFolder;
 }
 
 + (NSString *)getMimeType:(NSString *)fileNameView
@@ -1336,9 +1312,9 @@
     return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
 }
 
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase userId:(NSString *)userId
 {
-    NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
+    NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
         
     if (e2eEncrypted) {
     
@@ -1356,7 +1332,7 @@
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithAccount:account];
+            NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
             NSString* path = [[NCUtilityFileSystem shared] deleteLastPathWithServerUrlPath:serverUrl home:home];
             if (path != nil) {
                 serverUrl = path;

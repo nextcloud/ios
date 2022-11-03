@@ -27,14 +27,12 @@ class NCShareNetworking: NSObject {
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    var urlBase: String
     weak var delegate: NCShareNetworkingDelegate?
     var view: UIView
     var metadata: tableMetadata
 
-    init(metadata: tableMetadata, urlBase: String, view: UIView, delegate: NCShareNetworkingDelegate?) {
+    init(metadata: tableMetadata, view: UIView, delegate: NCShareNetworkingDelegate?) {
         self.metadata = metadata
-        self.urlBase = urlBase
         self.view = view
         self.delegate = delegate
 
@@ -46,7 +44,7 @@ class NCShareNetworking: NSObject {
             NCActivityIndicator.shared.start(backgroundView: view)
         }
 
-        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
+        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
         let parameter = NKShareParameter(path: filenamePath)
         NextcloudKit.shared.readShares(parameters: parameter) { account, shares, data, error in
             if showLoadingIndicator {
@@ -54,7 +52,7 @@ class NCShareNetworking: NSObject {
             }
 
             if error == .success, let shares = shares {
-                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: shares)
+                NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: shares)
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
                 NCContentPresenter.shared.showError(error: error)
@@ -72,13 +70,13 @@ class NCShareNetworking: NSObject {
         // https://github.com/nextcloud/ios-communication-library/pull/104
 
         NCActivityIndicator.shared.start(backgroundView: view)
-        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
+        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
 
         NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions) { (account, share, data, error) in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 option.idShare = share.idShare
-                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
+                NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: [share])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 if option.hasChanges(comparedTo: share) {
                     self.updateShare(option: option)
@@ -108,7 +106,7 @@ class NCShareNetworking: NSObject {
         NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, data, error in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
-                NCManageDatabase.shared.addShare(urlBase: self.urlBase, account: self.metadata.account, shares: [share])
+                NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: [share])
                 self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 self.delegate?.readShareCompleted()
             } else {

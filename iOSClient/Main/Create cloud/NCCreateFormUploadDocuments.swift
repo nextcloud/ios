@@ -57,7 +57,7 @@ import XLForm
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -218,7 +218,7 @@ import XLForm
         }
 
         self.serverUrl = serverUrl
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer( account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -279,13 +279,13 @@ import XLForm
                 conflict.serverUrl = serverUrl
                 conflict.metadatasUploadInConflict = [metadataForUpload]
                 conflict.delegate = self
-                conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase)
+                conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
                 self.present(conflict, animated: true, completion: nil)
 
             } else {
 
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
                 createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
             }
         }
@@ -302,7 +302,7 @@ import XLForm
         } else {
 
             let fileName = metadatas![0].fileName
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
 
             createDocument(fileNamePath: fileNamePath, fileName: fileName)
         }

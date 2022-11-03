@@ -17,6 +17,7 @@
 			<array/>
 			<key>IntentsSupported</key>
 			<array>
+				<string>AccountIntent</string>
 				<string>DashboardIntent</string>
 			</array>
 		</dict>

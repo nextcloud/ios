@@ -52,7 +52,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 
                 let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@", account)
                 realm.delete(resultDashboard)

@@ -153,7 +153,8 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         }
         metadataForUpload.size = size
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-        (UIApplication.shared.delegate as? AppDelegate)?.networkingProcessUpload?.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
+
+        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload]) { _ in }
     }
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {

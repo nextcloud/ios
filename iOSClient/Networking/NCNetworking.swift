@@ -173,16 +173,13 @@ import Photos
             }
         }
         #endif
-        
-        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0)  {
-            
+
+        if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
            
-            var secresult = SecTrustResultType.invalid
-            let status = SecTrustEvaluate(serverTrust, &secresult)
-            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)
-            
+            let isServerTrusted = SecTrustEvaluateWithError(serverTrust, nil)            
             let certificateCopyData = SecCertificateCopyData(certificate)
             let data = CFDataGetBytePtr(certificateCopyData);
             let size = CFDataGetLength(certificateCopyData);
@@ -192,7 +189,7 @@ import Photos
             
             if isServerTrusted {
                 isTrusted = true
-            } else if status == errSecSuccess, let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
+            } else if let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
                 isTrusted = true
             } else {
                 isTrusted = false
@@ -558,6 +555,10 @@ import Photos
                 }
             }
 
+            // Update Badge
+            let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter":counterBadge.count])
+
             self.uploadMetadataInBackground.removeValue(forKey: fileName + serverUrl)
             self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
         }
@@ -593,55 +594,6 @@ import Photos
         }
     }
 
-    func createUploadProcessAutoUploadInBackground(completion: @escaping (_ items: Int) -> Void) {
-
-        var numStartUpload: Int = 0
-        let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
-
-        let metadatasInUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-        let counterUpload = NCGlobal.shared.maxConcurrentOperationUpload - metadatasInUpload.count
-        if counterUpload <= 0 { return completion(0) }
-
-        // Extract file
-        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload), page: 0, limit: counterUpload, sorted: "date", ascending: true)
-        for metadata in metadatas {
-
-            let metadata = tableMetadata.init(value: metadata)
-            let semaphore = DispatchSemaphore(value: 0)
-
-            NCUtility.shared.extractFiles(from: metadata) { metadatas in
-                if metadatas.isEmpty {
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                }
-                for metadata in metadatas {
-                    if (metadata.e2eEncrypted || metadata.chunk) {
-                        NKCommon.shared.writeLog("[INFO] Autoupload file skipped, E2E:\(metadata.e2eEncrypted) - CHUNK:\(metadata.chunk)")
-                        continue
-                    }
-                    if (metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan && !isWiFi) {
-                        NKCommon.shared.writeLog("[INFO] Autoupload file skipped, required WiFi")
-                        continue
-                    }
-                    guard let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) else {
-                        NKCommon.shared.writeLog("[INFO] Autoupload file skipped, file status in upload error")
-                        continue
-                    }
-                    // Upload
-                    let semaphoreUpload = DispatchSemaphore(value: 1)
-                    NCNetworking.shared.upload(metadata: metadata) {
-                        numStartUpload += 1
-                    } completion: { error in
-                        semaphoreUpload.signal()
-                    }
-                    semaphoreUpload.wait()
-                }
-                semaphore.signal()
-            }
-            semaphore.wait()
-        }
-        completion(numStartUpload)
-    }
-    
     func getOcIdInBackgroundSession(queue: DispatchQueue = .main, completion: @escaping (_ listOcId: [String]) -> Void) {
 
         var listOcId: [String] = []
@@ -815,7 +767,7 @@ import Photos
                 return
             }
 
-            let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase)
+            let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
             let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
 
             completion(account, metadata, error)
@@ -1000,14 +952,14 @@ import Photos
 
     // MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ error: NKError) -> Void) {
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase, userId: userId)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if isDirectoryEncrypted {
             #if !EXTENSION
-            NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, completion: completion)
+            NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, completion: completion)
             #endif
         } else {
             createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, completion: completion)
@@ -1052,18 +1004,18 @@ import Photos
         }
     }
 
-    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
+    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String) -> Bool {
 
-        let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
+        let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
         let fileName =  NCManageDatabase.shared.getAccountAutoUploadFileName()
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, account: account)
-        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
+        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
 
         if useSubFolder && result {
-            for dateSubFolder in CCUtility.createNameSubFolder(assets) {
-                let fileName = (dateSubFolder as! NSString).lastPathComponent
-                let serverUrl = ((autoUploadPath + "/" + (dateSubFolder as! String)) as NSString).deletingLastPathComponent
-                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
+            for dateSubFolder in createNameSubFolder(assets: assets) {
+                let fileName = (dateSubFolder as NSString).lastPathComponent
+                let serverUrl = ((autoUploadPath + "/" + dateSubFolder) as NSString).deletingLastPathComponent
+                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
                 if !result { break }
             }
         }
@@ -1071,18 +1023,35 @@ import Photos
         return result
     }
 
-    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String) -> Bool {
+    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
 
         var result: Bool = false
         let semaphore = DispatchSemaphore(value: 0)
 
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { error in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
             if error == .success { result = true }
             semaphore.signal()
         }
         semaphore.wait()
 
         return result
+    }
+
+    func createNameSubFolder(assets: [PHAsset]) -> [String] {
+
+        var datesSubFolder: [String] = []
+        let dateFormatter = DateFormatter()
+
+        for asset in assets {
+            let date = asset.creationDate ?? Date()
+            dateFormatter.dateFormat = "yyyy"
+            let year = dateFormatter.string(from: date)
+            dateFormatter.dateFormat = "MM"
+            let month = dateFormatter.string(from: date)
+            datesSubFolder.append("\(year)/\(month)")
+        }
+
+        return Array(Set(datesSubFolder))
     }
 
     // MARK: - WebDav Delete
@@ -1114,7 +1083,7 @@ import Photos
             return completion(NKError())
         }
 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
         if isDirectoryEncrypted {
@@ -1199,7 +1168,7 @@ import Photos
 
     private func favoriteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
 
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
 
@@ -1263,7 +1232,7 @@ import Photos
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"

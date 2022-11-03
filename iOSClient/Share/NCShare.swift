@@ -87,7 +87,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         reloadData()
 
-        networking = NCShareNetworking(metadata: metadata, urlBase: appDelegate.urlBase, view: self.view, delegate: self)
+        networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self)
         if sharingEnabled {
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.indexPage == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)

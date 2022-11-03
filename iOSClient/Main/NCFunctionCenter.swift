@@ -352,9 +352,9 @@ import Photos
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
         }
-        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
         hud.textLabel.text = NSLocalizedString("_saving_", comment: "")
-        
+        hud.show(in: (appDelegate.window?.rootViewController?.view)!)
+
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             
             hud.progress = Float(progress)
@@ -466,7 +466,7 @@ import Photos
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             var topNavigationController: UINavigationController?
-            var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: self.appDelegate.account)
+            var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
             guard var mostViewController = self.appDelegate.window?.rootViewController?.topMostViewController() else { return }
 
             if mostViewController.isModal {
@@ -545,7 +545,7 @@ import Photos
             copyItems.append(item)
         }
 
-        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account)
+        let homeUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         var serverUrl = copyItems[0].serverUrl
 
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
@@ -594,7 +594,7 @@ import Photos
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
             return UIMenu()
         }
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")

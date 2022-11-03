@@ -186,17 +186,13 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     @IBAction func transferDown(sender: UIButton) {
 
-        for fileName in itemsSource {
+        for fileName in itemsSource where !itemsDestination.contains(fileName) {
 
-            if !itemsDestination.contains(fileName) {
+            let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
+            guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
-                let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
-
-                guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
-
-                imagesDestination.append(image)
-                itemsDestination.append(fileName)
-            }
+            imagesDestination.append(image)
+            itemsDestination.append(fileName)
         }
 
         // Save button

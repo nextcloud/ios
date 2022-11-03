@@ -146,7 +146,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isEncrypted = key
             } else {
-                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase)
+                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
                 listServerUrl[file.serverUrl] = isEncrypted
             }
 
@@ -231,7 +231,7 @@ extension NCManageDatabase {
         let returnMetadata = tableMetadata.init(value: metadata)
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 realm.add(metadata, update: .all)
             }
         } catch let error {
@@ -246,7 +246,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 for metadata in metadatas {
                     realm.add(metadata, update: .all)
                 }
@@ -261,7 +261,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
                 realm.delete(results)
             }
@@ -275,7 +275,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     result.serverUrl = serverUrlTo
                 }
@@ -290,7 +290,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let results = realm.objects(tableMetadata.self).filter("ocId == %@", ocId)
                 for result in results {
                     result.serverUrl = serverUrl
@@ -306,7 +306,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     let resultsType = NKCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
@@ -338,10 +338,8 @@ extension NCManageDatabase {
         var metadatasUpdate: [tableMetadata] = []
         var metadatasLocalUpdate: [tableMetadata] = []
 
-        realm.refresh()
-
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 // DELETE
                 for metadataResult in metadatasResult {
@@ -414,10 +412,9 @@ extension NCManageDatabase {
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
 
         let realm = try! Realm()
-        realm.refresh()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 if let session = session {
                     result?.session = session
@@ -450,7 +447,7 @@ extension NCManageDatabase {
         var result: tableMetadata?
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.status = status
             }
@@ -472,7 +469,7 @@ extension NCManageDatabase {
         guard let etagResource = etagResource else { return }
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.etagResource = etagResource
             }
@@ -486,7 +483,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.favorite = favorite
             }
@@ -500,7 +497,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND favorite == true", account)
                 for result in results {
                     result.favorite = false
@@ -519,7 +516,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.e2eEncrypted = encrypted
             }
@@ -533,7 +530,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first
                 result?.fileNameView = newFileNameView
             }
@@ -667,14 +664,14 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    @objc func getMetadataFolder(account: String, urlBase: String, serverUrl: String) -> tableMetadata? {
+    @objc func getMetadataFolder(account: String, urlBase: String, userId: String, serverUrl: String) -> tableMetadata? {
 
         let realm = try! Realm()
         realm.refresh()
         var serverUrl = serverUrl
         var fileName = ""
 
-        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(account: account)
+        let serverUrlHome = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
@@ -712,7 +709,7 @@ extension NCManageDatabase {
         realm.refresh()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
 
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
                 realm.delete(results)
@@ -727,7 +724,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND fileId == %@", account, fileId)
                 for result in results {
                     result.commentsUnread = false
@@ -758,7 +755,7 @@ extension NCManageDatabase {
         let realm = try! Realm()
 
         do {
-            try realm.safeWrite {
+            try realm.write {
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier IN %@", account, assetLocalIdentifiers)
                 for result in results {
                     result.assetLocalIdentifier = ""
@@ -774,8 +771,6 @@ extension NCManageDatabase {
 
         let realm = try! Realm()
         var classFile = metadata.classFile
-
-        realm.refresh()
 
         if !metadata.livePhoto || !CCUtility.getLivePhoto() {
             return nil

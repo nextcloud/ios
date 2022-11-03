@@ -22,6 +22,7 @@
 //
 
 import WidgetKit
+import Intents
 import NextcloudKit
 import RealmSwift
 import SVGKit
@@ -32,6 +33,7 @@ struct DashboardDataEntry: TimelineEntry {
     let dashboard: tableDashboardWidget?
     let buttons: [tableDashboardWidgetButton]?
     let isPlaceholder: Bool
+    let isEmpty: Bool
     let titleImage: UIImage
     let title: String
     let footerImage: String
@@ -79,26 +81,34 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
-func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
+func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
+    var account: tableAccount?
 
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
-    guard let account = NCManageDatabase.shared.getActiveAccount() else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
+    let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
+    if accountIdentifier == "active" {
+        account = NCManageDatabase.shared.getActiveAccount()
+    } else {
+        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+    }
+
+    guard let account = account else {
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
 
     // Default widget
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
-    let id: String = intent?.identifier ?? (result?.id ?? "recommendations")
+    let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
     guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
     }
         
     // NETWORKING
@@ -142,7 +152,7 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
     }
     let titleImage = imagetmp
         
-    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { account, results, data, error in
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { _, results, data, error in
 
         Task {
             var datas = [DashboardData]()
@@ -222,12 +232,13 @@ func getDashboardDataEntry(intent: Applications?, isPreview: Bool, displaySize: 
                 buttons = tableButton.filter(({ $0.type != "more" }))
             }
 
+            let alias = (account.alias.isEmpty) ? "" : (" (" + account.alias + ")")
+            let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") +  " " + account.displayName + alias
+
             if error != .success {
-                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
-            } else if datas.isEmpty {
-                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NSLocalizedString("_no_data_available_", comment: "")))
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
             } else {
-                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: datas.isEmpty, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
     }

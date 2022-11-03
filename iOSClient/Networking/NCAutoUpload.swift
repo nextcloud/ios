@@ -82,7 +82,7 @@ class NCAutoUpload: NSObject {
             return
         }
 
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, account: account.account)
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
         var metadatas: [tableMetadata] = []
 
         self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
@@ -93,7 +93,7 @@ class NCAutoUpload: NSObject {
             }
             NKCommon.shared.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
-            if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase) {
+            if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
                     NCContentPresenter.shared.showError(error: error, priority: .max)
@@ -107,15 +107,15 @@ class NCAutoUpload: NSObject {
 
                 var livePhoto = false
                 var session: String = ""
-                guard let assetDate = asset.creationDate else { continue }
+                let dateFormatter = DateFormatter()
+                let assetDate = asset.creationDate ?? Date()
+                dateFormatter.dateFormat = "yyyy"
+                let year = dateFormatter.string(from: assetDate)
+                dateFormatter.dateFormat = "MM"
+                let month = dateFormatter.string(from: assetDate)
                 let assetMediaType = asset.mediaType
                 var serverUrl: String = ""
                 let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy"
-                let yearString = formatter.string(from: assetDate)
-                formatter.dateFormat = "MM"
-                let monthString = formatter.string(from: assetDate)
 
                 if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
                     livePhoto = true
@@ -136,7 +136,7 @@ class NCAutoUpload: NSObject {
                 }
 
                 if account.autoUploadCreateSubfolder {
-                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                    serverUrl = autoUploadPath + "/" + year + "/" + month
                 } else {
                     serverUrl = autoUploadPath
                 }
@@ -144,9 +144,11 @@ class NCAutoUpload: NSObject {
                 // MOST COMPATIBLE SEARCH --> HEIC --> JPG
                 var fileNameSearchMetadata = fileName
                 let ext = (fileNameSearchMetadata as NSString).pathExtension.uppercased()
+
                 if ext == "HEIC" && CCUtility.getFormatCompatibility() {
                     fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
                 }
+                
                 if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account.account, serverUrl, fileNameSearchMetadata)) != nil {
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
@@ -171,19 +173,9 @@ class NCAutoUpload: NSObject {
             }
 
             self.endForAssetToUpload = true
-            if selector == NCGlobal.shared.selectorUploadAutoUploadAll || self.applicationState == .active {
-                NKCommon.shared.writeLog("[INFO] Start createProcessUploads")
-                self.appDelegate?.networkingProcessUpload?.createProcessUploads(metadatas: metadatas, completion: completion)
-            } else {
-                NKCommon.shared.writeLog("[INFO] Start createUploadProcessAutoUploadInBackground")
-                var metadatasForUpload: [tableMetadata] = []
-                for metadata in metadatas {
-                    if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil { continue }
-                    metadatasForUpload.append(metadata)
-                }
-                NCManageDatabase.shared.addMetadatas(metadatasForUpload)
-                NCNetworking.shared.createUploadProcessAutoUploadInBackground(completion: completion)
-            }
+
+            NKCommon.shared.writeLog("[INFO] Start createProcessUploads")
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: completion)
         }
     }
 
@@ -234,13 +226,14 @@ class NCAutoUpload: NSObject {
             let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection.firstObject!, options: fetchOptions)
 
             if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                var creationDate = ""
-                var idAsset = ""
-                let idsAsset = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)
+                let idAssets = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: account.autoUploadImage, video: account.autoUploadVideo, account: account.account)
                 assets.enumerateObjects { asset, _, _ in
-                    if asset.creationDate != nil { creationDate = String(describing: asset.creationDate!) }
-                    idAsset = account.account + asset.localIdentifier + creationDate
-                    if !(idsAsset?.contains(idAsset) ?? false) {
+                    var creationDateString = ""
+                    if let creationDate = asset.creationDate {
+                        creationDateString = String(describing: creationDate)
+                    }
+                    let idAsset = account.account + asset.localIdentifier + creationDateString
+                    if !(idAssets?.contains(idAsset) ?? false) {
                         newAssets.append(asset)
                     }
                 }

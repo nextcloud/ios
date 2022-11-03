@@ -94,7 +94,7 @@ class fileProviderData: NSObject {
             user = activeAccount.user
             userId = activeAccount.userId
             accountUrlBase = activeAccount.urlBase
-            homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account)
+            homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
             NKCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
@@ -118,7 +118,7 @@ class fileProviderData: NSObject {
                 user = activeAccount.user
                 userId = activeAccount.userId
                 accountUrlBase = activeAccount.urlBase
-                homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(account: activeAccount.account)
+                homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
                 NKCommon.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), urlBase: activeAccount.urlBase, userAgent: CCUtility.getUserAgent(), nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate

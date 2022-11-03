@@ -282,7 +282,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         if serverUrl != nil && metadata != nil {
 
-            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
+            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
 
             NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, data, error in
                 if error == .success && account == self.appDelegate.account {
@@ -299,7 +299,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
 
-        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
+        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: metadata!.account)!
 
         NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, data, error in
             if error == .success && account == self.appDelegate.account {

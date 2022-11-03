@@ -52,7 +52,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
         self.init()
 
-        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
             titleServerUrl = "/"
         } else {
             if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
@@ -304,7 +304,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
             self.serverUrl = serverUrl!
 
-            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(account: appDelegate.account) {
+            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
                 self.titleServerUrl = "/"
             } else {
                 if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl)) {
@@ -330,15 +330,15 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             var useSubFolder: Bool = false
             var metadatasNOConflict: [tableMetadata] = []
             var metadatasUploadInConflict: [tableMetadata] = []
-            let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
+            let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, account: self.appDelegate.account)
 
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
-                self.serverUrl = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
+                self.serverUrl = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, account: self.appDelegate.account)
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
 
             if autoUploadPath == self.serverUrl {
-                if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
+                if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId) {
                     
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
                     NCContentPresenter.shared.showError(error: error)
@@ -350,8 +350,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
                 var serverUrl = self.serverUrl
                 var livePhoto: Bool = false
-                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)!
-                let assetDate = asset.creationDate ?? Date()
+                let creationDate = asset.creationDate ?? Date()
+                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: creationDate, fileType: asset.mediaType, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)!
 
                 if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
                     livePhoto = true
@@ -360,9 +360,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 if useSubFolder {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy"
-                    let yearString = dateFormatter.string(from: assetDate)
+                    let yearString = dateFormatter.string(from: creationDate)
                     dateFormatter.dateFormat = "MM"
-                    let monthString = dateFormatter.string(from: assetDate)
+                    let monthString = dateFormatter.string(from: creationDate)
                     serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
                 }
 
@@ -394,15 +394,14 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                         conflict.metadatasNOConflict = metadatasNOConflict
                         conflict.metadatasUploadInConflict = metadatasUploadInConflict
                         conflict.delegate = self.appDelegate
-                        conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase)
+                        conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
 
                         self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }
                 }
 
             } else {
-
-                self.appDelegate.networkingProcessUpload?.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
+                NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
             }
 
             DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }
@@ -420,6 +419,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
         var returnString: String = ""
         let asset = assets[0]
+        let creationDate = asset.creationDate ?? Date()
 
         if CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal) {
 
@@ -435,18 +435,18 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 CCUtility.setFileNameMask(valueRename, key: NCGlobal.shared.keyFileNameMask)
                 self.form.delegate = self
 
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: creationDate, fileType: asset.mediaType, keyFileName: NCGlobal.shared.keyFileNameMask, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)
 
             } else {
 
                 CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)
             }
 
         } else {
 
             CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-            returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)
+            returnString = CCUtility.createFileName(asset.value(forKey: "filename") as! String?, fileDate: creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: NCGlobal.shared.keyFileNameType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal, forcedNewFileName: false)
         }
 
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + returnString

@@ -101,7 +101,12 @@ class NCGlobal: NSObject {
     //
     @objc let appName                               = "files"
     @objc let talkName                              = "talk-message"
-    
+
+    // DAV -
+    //
+    @objc let dav                                   = "remote.php/dav"
+    @objc let davfiles                              = "remote.php/dav/files/"
+
     // Nextcloud version
     //
     let nextcloudVersion12: Int                     =  12
@@ -323,10 +328,6 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
-    // Upload Operation Background
-    //
-    let maxConcurrentOperationUpload                = 10
-
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
@@ -399,11 +400,11 @@ class NCGlobal: NSObject {
     
     // WIDGET ACTION
     //
-    let widgetActionNoAction                                    = URL(string: "nextcloud://open-action?action=no-action")!
-    let widgetActionUploadAsset                                 = URL(string: "nextcloud://open-action?action=upload-asset")!
-    let widgetActionScanDocument                                = URL(string: "nextcloud://open-action?action=add-scan-document")!
-    let widgetActionTextDocument                                = URL(string: "nextcloud://open-action?action=create-text-document")!
-    let widgetActionVoiceMemo                                   = URL(string: "nextcloud://open-action?action=create-voice-memo")!
+    let widgetActionNoAction                                    = "nextcloud://open-action?action=no-action"
+    let widgetActionUploadAsset                                 = "nextcloud://open-action?action=upload-asset"
+    let widgetActionScanDocument                                = "nextcloud://open-action?action=add-scan-document"
+    let widgetActionTextDocument                                = "nextcloud://open-action?action=create-text-document"
+    let widgetActionVoiceMemo                                   = "nextcloud://open-action?action=create-voice-memo"
     
     // APPCONFIG
     //
