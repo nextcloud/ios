@@ -207,9 +207,8 @@ import Photos
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
         let certificateToPath = directoryCertificate + "/" + host + ".der"
 
-        if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
-            let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
-            NCContentPresenter.shared.showError(error: error, priority: .max)
+        if !NCUtilityFileSystem.shared.copyFile(atPath: certificateAtPath, toPath: certificateToPath) {
+            NKCommon.shared.writeLog("[ERROR] Write certificare error")
         }
     }
     
@@ -221,7 +220,7 @@ import Photos
         let x509cert = d2i_X509_bio(mem, nil)
 
         if x509cert == nil {
-            print("[LOG] OpenSSL couldn't parse X509 Certificate")
+            NKCommon.shared.writeLog("[ERROR] OpenSSL couldn't parse X509 Certificate")
         } else {
             // save details
             if FileManager.default.fileExists(atPath: certNamePathTXT) {
