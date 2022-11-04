@@ -36,6 +36,7 @@ class NCNetworkingProcessUpload: NSObject {
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
+    private var pauseProcess: Bool = false
 
     func observeTableMetadata() {
         let realm = try! Realm()
@@ -85,7 +86,7 @@ class NCNetworkingProcessUpload: NSObject {
 
     func start(completition: @escaping (_ items: Int) -> Void) {
 
-        if appDelegate.account.isEmpty { return completition(0) }
+        if appDelegate.account.isEmpty || pauseProcess { return completition(0) }
 
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
@@ -192,11 +193,13 @@ class NCNetworkingProcessUpload: NSObject {
         if localIdentifiers.isEmpty { return }
 
         let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+        self.pauseProcess = true
 
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
         }, completionHandler: { _, _ in
             NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
+            self.pauseProcess = false
         })
     }
 
