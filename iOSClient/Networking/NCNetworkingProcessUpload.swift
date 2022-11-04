@@ -33,6 +33,7 @@ class NCNetworkingProcessUpload: NSObject {
         return instance
     }()
 
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var notificationToken: NotificationToken?
     private var timerProcess: Timer?
 
@@ -65,7 +66,7 @@ class NCNetworkingProcessUpload: NSObject {
     func startTimer() {
         DispatchQueue.main.async {
             self.timerProcess?.invalidate()
-            self.timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.processTimer), userInfo: nil, repeats: true)
+            self.timerProcess = Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(self.processTimer), userInfo: nil, repeats: true)
         }
     }
 
@@ -79,9 +80,7 @@ class NCNetworkingProcessUpload: NSObject {
 
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return completition(0) }
 
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let applicationState = UIApplication.shared.applicationState
-        let isPasscodePresented = appDelegate.isPasscodePresented()
         let queue = DispatchQueue.global()
         var maxConcurrentOperationUpload = 10
         let viewController = appDelegate.window?.rootViewController
@@ -164,53 +163,41 @@ class NCNetworkingProcessUpload: NSObject {
                         semaphore.wait()
                     }
                 }
-
-                // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-                if applicationState == .active && counterUpload == 0 && !isPasscodePresented {
-                    self.deleteAssetLocalIdentifiers(account: account.account) {
-                        completition(counterUpload)
-                    }
-                } else {
-                    completition(counterUpload)
-                }
+                completition(counterUpload)
             })
         }
     }
 
     @objc private func processTimer() {
-        if notificationToken != nil {
-            // No upload available ? --> Retry Upload in Error
-            let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploadError))
-            for metadata in metadatas {
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
-            }
+        if notificationToken == nil { return }
+
+        // No upload available ? --> Retry Upload in Error
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploadError))
+        for metadata in metadatas {
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+        }
+
+        // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
+        if metadatas.isEmpty && !appDelegate.isPasscodePresented() {
+            deleteAssetLocalIdentifiers()
         }
     }
 
-    private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
+    private func deleteAssetLocalIdentifiers() {
 
-        DispatchQueue.main.async {
-            let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
-            if !metadatasSessionUpload.isEmpty {
-                completition()
-                return
-            }
-            let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
-            if localIdentifiers.isEmpty {
-                completition()
-                return
-            }
-            let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", appDelegate.account, "upload"))
+        if !metadatasSessionUpload.isEmpty { return }
 
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
-            }, completionHandler: { _, _ in
-                DispatchQueue.main.async {
-                    NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
-                    completition()
-                }
-            })
-        }
+        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: appDelegate.account)
+        if localIdentifiers.isEmpty { return }
+
+        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+        }, completionHandler: { _, _ in
+            NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
+        })
     }
 
     // MARK: -
