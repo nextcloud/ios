@@ -49,7 +49,7 @@ class NCNetworkingProcessUpload: NSObject {
                 if (deletions.count > 0 || insertions.count > 0 || modifications.count > 0) {
                     self?.invalidateObserveTableMetadata()
                     self?.start(completition: { items in
-                        print("[LOG] PROCESS-UPLOAD \(items)")
+                        print("[LOG] PROCESS-UPLOAD-OBSERVE \(items)")
                         DispatchQueue.main.async {
                             self?.observeTableMetadata()
                         }
@@ -82,7 +82,7 @@ class NCNetworkingProcessUpload: NSObject {
     @objc private func processTimer() {
         if notificationToken == nil { return }
         start { items in
-            print("[LOG] PROCESS-UPLOAD \(items)")
+            print("[LOG] PROCESS-UPLOAD-TIMER \(items)")
         }
     }
 
@@ -187,6 +187,8 @@ class NCNetworkingProcessUpload: NSObject {
                     } else {
                         self.pauseProcess = false
                     }
+                } else {
+                    self.pauseProcess = false
                 }
 
                 completition(counterUpload)
