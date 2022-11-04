@@ -129,11 +129,8 @@ import Photos
     }
 
     func authenticationChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-
-        if checkTrustedChallenge(session, didReceive: challenge) {
-            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
-        } else {
-            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        DispatchQueue.global().async {
+            self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
     }
 
@@ -158,21 +155,13 @@ import Photos
 
     // MARK: - Pinning check
 
-    private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
+    private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
 
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let host = challenge.protectionSpace.host
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
-
-        #if !EXTENSION
-        defer {
-            if !isTrusted {
-                DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
-            }
-        }
-        #endif
 
         if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
 
@@ -197,8 +186,15 @@ import Photos
         } else {
             isTrusted = false
         }
-        
-        return isTrusted
+
+        if isTrusted {
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+        } else {
+            #if !EXTENSION
+            DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
+            #endif
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        }
     }
 
     func writeCertificate(host: String) {
