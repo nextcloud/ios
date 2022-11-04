@@ -34,6 +34,7 @@ class NCNetworkingProcessUpload: NSObject {
     }()
 
     private var notificationToken: NotificationToken?
+    private var timerProcess: Timer?
 
     func observeTableMetadata() {
         let realm = try! Realm()
@@ -58,6 +59,20 @@ class NCNetworkingProcessUpload: NSObject {
 
     func invalidateObserveTableMetadata() {
         notificationToken?.invalidate()
+        notificationToken = nil
+    }
+
+    func startTimer() {
+        DispatchQueue.main.async {
+            self.timerProcess?.invalidate()
+            self.timerProcess = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.processTimer), userInfo: nil, repeats: true)
+        }
+    }
+
+    func stopTimer() {
+        DispatchQueue.main.async {
+            self.timerProcess?.invalidate()
+        }
     }
 
     func start(completition: @escaping (_ items: Int) -> Void) {
@@ -150,14 +165,6 @@ class NCNetworkingProcessUpload: NSObject {
                     }
                 }
 
-                // No upload available ? --> Retry Upload in Error
-                if counterUpload == 0 {
-                    let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploadError))
-                    for metadata in metadatas {
-                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
-                    }
-                }
-
                 // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
                 if applicationState == .active && counterUpload == 0 && !isPasscodePresented {
                     self.deleteAssetLocalIdentifiers(account: account.account) {
@@ -167,6 +174,16 @@ class NCNetworkingProcessUpload: NSObject {
                     completition(counterUpload)
                 }
             })
+        }
+    }
+
+    @objc private func processTimer() {
+        if notificationToken != nil {
+            // No upload available ? --> Retry Upload in Error
+            let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploadError))
+            for metadata in metadatas {
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NCNetworking.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+            }
         }
     }
 

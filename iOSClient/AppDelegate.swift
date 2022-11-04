@@ -189,8 +189,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application did become active")
 
-        // START OBSERVE UPLOAD PROCESS
+        // START OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.observeTableMetadata()
+        NCNetworkingProcessUpload.shared.startTimer()
 
         self.deletePasswordSession = false
 
@@ -243,8 +244,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application will resign active")
 
-        // STOP OBSERVE UPLOAD PROCESS
+        // STOP OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
+        NCNetworkingProcessUpload.shared.stopTimer()
 
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
