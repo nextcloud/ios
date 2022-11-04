@@ -189,6 +189,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application did become active")
 
+        // START OBSERVE UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.observeTableMetadata()
+
         self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
@@ -205,9 +208,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
-
-        // START UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.startTimer()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
@@ -243,13 +243,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application will resign active")
 
+        // STOP OBSERVE UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
+
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
             showPrivacyProtectionWindow()
         }
-
-        // STOP UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.stopTimer()
 
         // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
@@ -371,7 +371,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
-            NCNetworkingProcessUpload.shared.process { items in
+            NCNetworkingProcessUpload.shared.start { items in
                 NKCommon.shared.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
             }

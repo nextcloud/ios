@@ -25,6 +25,7 @@ import UIKit
 import NextcloudKit
 import Photos
 import JGProgressHUD
+import RealmSwift
 
 class NCNetworkingProcessUpload: NSObject {
     public static let shared: NCNetworkingProcessUpload = {
@@ -32,30 +33,36 @@ class NCNetworkingProcessUpload: NSObject {
         return instance
     }()
 
-    var timerProcess: Timer?
+    private var notificationToken: NotificationToken?
 
-    func startTimer() {
-        DispatchQueue.main.async {
-            self.timerProcess?.invalidate()
-            self.timerProcess = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.processTimer), userInfo: nil, repeats: true)
+    func observeTableMetadata() {
+        let realm = try! Realm()
+        let results = realm.objects(tableMetadata.self)
+        notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
+            switch changes {
+            case .initial:
+                print("Initial")
+            case .update(_, _, let insertions, let modifications):
+                if (insertions.count > 0 || modifications.count > 0) {
+                    self?.invalidateObserveTableMetadata()
+                    self?.start(completition: { items in
+                        print("[LOG] PROCESS-UPLOAD \(items)")
+                        DispatchQueue.main.async {  self?.observeTableMetadata() }
+                    })
+                }
+            case .error(let error):
+                NKCommon.shared.writeLog("[ERROR] Could not write to TableMetadata: \(error)")
+            }
         }
     }
 
-    func stopTimer() {
-        DispatchQueue.main.async {
-            self.timerProcess?.invalidate()
-        }
+    func invalidateObserveTableMetadata() {
+        notificationToken?.invalidate()
     }
 
-    @objc func processTimer() {
-        process { _ in }
-    }
+    func start(completition: @escaping (_ items: Int) -> Void) {
 
-    func process(completition: @escaping (_ items: Int) -> Void) {
-
-        guard let account = NCManageDatabase.shared.getActiveAccount() else { return }
-
-        stopTimer()
+        guard let account = NCManageDatabase.shared.getActiveAccount() else { return completition(0) }
 
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let applicationState = UIApplication.shared.applicationState
@@ -73,8 +80,6 @@ class NCNetworkingProcessUpload: NSObject {
             let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
 
             counterUpload = metadatasUpload.count
-
-            print("[LOG] PROCESS-UPLOAD \(counterUpload)")
 
             // Update Badge
             let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d OR status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -156,12 +161,11 @@ class NCNetworkingProcessUpload: NSObject {
                 // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
                 if applicationState == .active && counterUpload == 0 && !isPasscodePresented {
                     self.deleteAssetLocalIdentifiers(account: account.account) {
-                        self.startTimer()
+                        completition(counterUpload)
                     }
-                } else if applicationState == .active {
-                    self.startTimer()
+                } else {
+                    completition(counterUpload)
                 }
-                completition(counterUpload)
             })
         }
     }
