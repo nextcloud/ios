@@ -90,6 +90,8 @@ class NCNetworkingProcessUpload: NSObject {
 
         if appDelegate.account.isEmpty || pauseProcess {
             return completition(0)
+        } else {
+            pauseProcess = true
         }
 
         let applicationState = UIApplication.shared.applicationState
@@ -179,7 +181,11 @@ class NCNetworkingProcessUpload: NSObject {
 
                     // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
                     if applicationState == .active && metadatas.isEmpty && !self.appDelegate.isPasscodePresented() {
-                        self.deleteAssetLocalIdentifiers()
+                        self.deleteAssetLocalIdentifiers {
+                            self.pauseProcess = false
+                        }
+                    } else {
+                        self.pauseProcess = false
                     }
                 }
 
@@ -188,22 +194,21 @@ class NCNetworkingProcessUpload: NSObject {
         }
     }
 
-    private func deleteAssetLocalIdentifiers() {
+    private func deleteAssetLocalIdentifiers(completition: @escaping () -> Void) {
 
         let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", appDelegate.account, "upload"))
-        if !metadatasSessionUpload.isEmpty { return }
+        if !metadatasSessionUpload.isEmpty { return completition() }
 
         let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: appDelegate.account)
-        if localIdentifiers.isEmpty { return }
+        if localIdentifiers.isEmpty { return completition() }
 
         let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
-        self.pauseProcess = true
 
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
         }, completionHandler: { _, _ in
             NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
-            self.pauseProcess = false
+            completition()
         })
     }
 
