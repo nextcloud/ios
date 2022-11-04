@@ -37,13 +37,13 @@ class NCNetworkingProcessUpload: NSObject {
 
     func observeTableMetadata() {
         let realm = try! Realm()
-        let results = realm.objects(tableMetadata.self)
+        let results = realm.objects(tableMetadata.self).filter("session != '' || sessionError != ''")
         notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
             switch changes {
             case .initial:
                 print("Initial")
-            case .update(_, _, let insertions, let modifications):
-                if (insertions.count > 0 || modifications.count > 0) {
+            case .update(_, let deletions, let insertions, let modifications):
+                if (deletions.count > 0 || insertions.count > 0 || modifications.count > 0) {
                     self?.invalidateObserveTableMetadata()
                     self?.start(completition: { items in
                         print("[LOG] PROCESS-UPLOAD \(items)")
