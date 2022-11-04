@@ -285,22 +285,6 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func addMetadataServerUrl(ocId: String, serverUrl: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                let results = realm.objects(tableMetadata.self).filter("ocId == %@", ocId)
-                for result in results {
-                    result.serverUrl = serverUrl
-                }
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
     @objc func renameMetadata(fileNameTo: String, ocId: String) {
 
         let realm = try! Realm()

@@ -27,10 +27,6 @@ import NextcloudKit
 
 extension NCManageDatabase {
 
-    @objc func copyObject(account: tableAccount) -> tableAccount {
-        return tableAccount.init(value: account)
-    }
-
     @objc func addAccount(_ account: String, urlBase: String, user: String, password: String) {
 
         let realm = try! Realm()
