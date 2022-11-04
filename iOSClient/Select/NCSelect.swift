@@ -80,8 +80,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
 
-    private var shares: [tableShare]?
-
     private var backgroundImageView = UIImageView()
 
     private var activeAccount: tableAccount!
@@ -185,8 +183,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
 
         loadDatasource(withLoadFolder: true)
-
-        shares = NCManageDatabase.shared.getTableShares(account: activeAccount.account, serverUrl: serverUrl)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
