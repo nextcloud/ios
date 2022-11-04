@@ -80,7 +80,6 @@ class NCNetworkingProcessUpload: NSObject {
     }
 
     @objc private func processTimer() {
-        if notificationToken == nil { return }
         start { items in
             print("[LOG] PROCESS-UPLOAD-TIMER \(items)")
         }
