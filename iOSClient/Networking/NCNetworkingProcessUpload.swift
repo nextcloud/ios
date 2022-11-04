@@ -50,7 +50,9 @@ class NCNetworkingProcessUpload: NSObject {
                     self?.invalidateObserveTableMetadata()
                     self?.start(completition: { items in
                         print("[LOG] PROCESS-UPLOAD \(items)")
-                        DispatchQueue.main.async {  self?.observeTableMetadata() }
+                        DispatchQueue.main.async {
+                            self?.observeTableMetadata()
+                        }
                     })
                 }
             case .error(let error):
@@ -86,7 +88,9 @@ class NCNetworkingProcessUpload: NSObject {
 
     func start(completition: @escaping (_ items: Int) -> Void) {
 
-        if appDelegate.account.isEmpty || pauseProcess { return completition(0) }
+        if appDelegate.account.isEmpty || pauseProcess {
+            return completition(0)
+        }
 
         let applicationState = UIApplication.shared.applicationState
         let queue = DispatchQueue.global()
