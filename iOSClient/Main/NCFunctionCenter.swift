@@ -462,7 +462,7 @@ import Photos
 
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?) {
 
-        appDelegate.isSearchingMode = false
+        //appDelegate.isSearchingMode = false
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             var topNavigationController: UINavigationController?
