@@ -39,7 +39,6 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
 
     var account: tableAccount?
     var quotaRelative: Float = 0
-    let options = NKRequestOptions(timeout: 15, queue: NKCommon.shared.backgroundQueue)
 
     if isPreview {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
@@ -73,6 +72,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
         nextcloudVersion: 0,
         delegate: NCNetworking.shared)
 
+    let options = NKRequestOptions(timeout: 90, queue: NKCommon.shared.backgroundQueue)
     if #available(iOSApplicationExtension 16.0, *) {
         if family == .accessoryCircular {
             NextcloudKit.shared.getUserProfile(options: options) { _, userProfile, _, error in
