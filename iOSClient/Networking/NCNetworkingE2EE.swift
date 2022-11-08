@@ -33,81 +33,6 @@ import Alamofire
 
     // MARK: - WebDav Create Folder
 
-    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) async -> (NKError) {
-
-        var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
-        var fileNameFolderUrl = ""
-        var fileNameIdentifier = ""
-        var key: NSString?
-        var initializationVector: NSString?
-
-        fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
-        if fileNameFolder.count == 0 {
-            return NKError()
-        }
-        fileNameIdentifier = CCUtility.generateRandomIdentifier()
-        fileNameFolderUrl = serverUrl + "/" + fileNameIdentifier
-
-        let lockResults = await lock(account: account, serverUrl: serverUrl)
-        if lockResults.error == .success, let e2eToken = lockResults.e2eToken {
-            let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
-            let createFolderResults = await NextcloudKit.shared.createFolder(fileNameFolderUrl, options: options)
-            if createFolderResults.error == .success {
-                guard let fileId = NCUtility.shared.ocIdToFileId(ocId: createFolderResults.ocId) else {
-                    // unlock
-                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                        _ = await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                    }
-                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Error convert ocId")
-                }
-                let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
-                if markE2EEFolderResults.error == .success {
-                    let object = tableE2eEncryption()
-                    NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
-                    object.account = account
-                    object.authenticationTag = nil
-                    object.fileName = fileNameFolder
-                    object.fileNameIdentifier = fileNameIdentifier
-                    object.fileNamePath = ""
-                    object.key = key! as String
-                    object.initializationVector = initializationVector! as String
-                    if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-                        object.metadataKey = result.metadataKey
-                        object.metadataKeyIndex = result.metadataKeyIndex
-                    } else {
-                        object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
-                        object.metadataKeyIndex = 0
-                    }
-                    object.mimeType = "httpd/unix-directory"
-                    object.serverUrl = serverUrl
-                    object.version = 1
-                    NCManageDatabase.shared.addE2eEncryption(object)
-
-                    let sendE2EMetadataResults = await sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId)
-                    // unlock
-                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                        _ = await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                    }
-                    if sendE2EMetadataResults.error == .success, let ocId = createFolderResults.ocId {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
-                    }
-                    return sendE2EMetadataResults.error
-
-                } else {
-                    // unlock
-                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                        _ = await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                    }
-                    return markE2EEFolderResults.error
-                }
-            } else {
-                return createFolderResults.error
-            }
-        } else {
-            return lockResults.error
-        }
-    }
-
     func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
@@ -199,6 +124,80 @@ import Alamofire
         }
     }
 
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) async -> (NKError) {
+
+        var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
+        var fileNameFolderUrl = ""
+        var fileNameIdentifier = ""
+        var key: NSString?
+        var initializationVector: NSString?
+
+        fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
+        if fileNameFolder.count == 0 {
+            return NKError()
+        }
+        fileNameIdentifier = CCUtility.generateRandomIdentifier()
+        fileNameFolderUrl = serverUrl + "/" + fileNameIdentifier
+
+        let lockResults = await lock(account: account, serverUrl: serverUrl)
+        if lockResults.error == .success, let e2eToken = lockResults.e2eToken {
+            let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
+            let createFolderResults = await NextcloudKit.shared.createFolder(fileNameFolderUrl, options: options)
+            if createFolderResults.error == .success {
+                guard let fileId = NCUtility.shared.ocIdToFileId(ocId: createFolderResults.ocId) else {
+                    // unlock
+                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+                        await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+                    }
+                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Error convert ocId")
+                }
+                let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
+                if markE2EEFolderResults.error == .success {
+                    let object = tableE2eEncryption()
+                    NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
+                    object.account = account
+                    object.authenticationTag = nil
+                    object.fileName = fileNameFolder
+                    object.fileNameIdentifier = fileNameIdentifier
+                    object.fileNamePath = ""
+                    object.key = key! as String
+                    object.initializationVector = initializationVector! as String
+                    if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+                        object.metadataKey = result.metadataKey
+                        object.metadataKeyIndex = result.metadataKeyIndex
+                    } else {
+                        object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
+                        object.metadataKeyIndex = 0
+                    }
+                    object.mimeType = "httpd/unix-directory"
+                    object.serverUrl = serverUrl
+                    object.version = 1
+                    NCManageDatabase.shared.addE2eEncryption(object)
+
+                    let sendE2EMetadataResults = await sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId)
+                    // unlock
+                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+                        await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+                    }
+                    if sendE2EMetadataResults.error == .success, let ocId = createFolderResults.ocId {
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
+                    }
+                    return sendE2EMetadataResults.error
+
+                } else {
+                    // unlock
+                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+                        await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+                    }
+                    return markE2EEFolderResults.error
+                }
+            } else {
+                return createFolderResults.error
+            }
+        } else {
+            return lockResults.error
+        }
+    }
 
     // MARK: - WebDav Delete
 
@@ -230,6 +229,34 @@ import Alamofire
             } else {
                 completion(error)
             }
+        }
+    }
+
+    func deleteMetadata(_ metadata: tableMetadata) async -> (NKError) {
+
+        let lockResults = await lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        if lockResults.error == .success, let e2eToken = lockResults.e2eToken {
+            let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
+            let errorDeleteMetadataPlain = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
+            let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
+            if metadata.serverUrl != home {
+                let sendE2EMetadataResults = await sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase, userId: metadata.userId)
+                // unlock
+                if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
+                    await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+                }
+                return sendE2EMetadataResults.error
+
+            } else {
+                // unlock
+                if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
+                    await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+                }
+                return errorDeleteMetadataPlain
+            }
+
+        } else {
+            return lockResults.error
         }
     }
 
@@ -266,6 +293,31 @@ import Alamofire
 
                 completion(error)
             }
+        }
+    }
+
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) async -> (NKError) {
+
+        // verify if exists the new fileName
+        if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_already_exists_")
+        } else {
+            let sendE2EMetadataResults = await sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: metadata.urlBase, userId: metadata.userId)
+            if sendE2EMetadataResults.error == .success {
+                NCManageDatabase.shared.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
+                // Move file system
+                let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+                do {
+                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                } catch { }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
+            }
+            // unlock
+            if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
+                await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+            }
+            return sendE2EMetadataResults.error
         }
     }
 
