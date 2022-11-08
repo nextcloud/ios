@@ -1151,6 +1151,15 @@ import Photos
         }
     }
 
+    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]?) async -> (NKError) {
+
+        await withUnsafeContinuation({ continuation in
+            self.deleteMetadataPlain(metadata, customHeader: customHeader) { error in
+                continuation.resume(returning: error)
+            }
+        })
+    }
+
     // MARK: - WebDav Favorite
 
     @objc func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
