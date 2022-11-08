@@ -462,8 +462,6 @@ import Photos
 
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?) {
 
-        appDelegate.isSearchingMode = false
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             var topNavigationController: UINavigationController?
             var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)

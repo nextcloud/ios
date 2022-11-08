@@ -197,7 +197,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         NKCommon.shared.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    let options = NKRequestOptions(timeout: 15)
+    let options = NKRequestOptions(timeout: 90, queue: NKCommon.shared.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
@@ -230,7 +230,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     let fileNamePathOrFileId = CCUtility.returnFileNamePath(fromFileName: file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: account.account)!
                     let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)!
                     let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)!
-                    let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon)
+                    let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: NCGlobal.shared.sizePreview, heightPreview: NCGlobal.shared.sizePreview, fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, options: options)
                     if let image = imageIcon {
                         imageRecent = image
                     }

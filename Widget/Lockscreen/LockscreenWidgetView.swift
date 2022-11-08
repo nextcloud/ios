@@ -46,8 +46,13 @@ struct LockscreenWidgetView: View {
             } else {
                 Gauge(
                     value: entry.quotaRelative,
-                    label: { Text("  " + entry.quotaTotal + "  ") },
-                    currentValueLabel: { Text(entry.quotaUsed) }
+                    label: {
+                        Text(" " + entry.quotaTotal + " ")
+                            .font(.system(size: 8.0))
+                    },
+                    currentValueLabel: {
+                        Text(entry.quotaUsed)
+                    }
                 )
                 .gaugeStyle(.accessoryCircular)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
@@ -88,7 +93,7 @@ struct LockscreenWidgetView: View {
 @available(iOSApplicationExtension 16.0, *)
 struct LockscreenWidgetView_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = LockscreenData(date: Date(), isPlaceholder: false, activity: "Alba Mayoral changed Marketing / Regional Marketing / Agenda Meetings / Q4 2022 / OCTOBER / 13.11 Afrah Kahlid.md", link: URL(string: "https://")!, quotaRelative: 0.5, quotaUsed: "22 GB", quotaTotal: "50 GB", error: true)
+        let entry = LockscreenData(date: Date(), isPlaceholder: false, activity: "Alba Mayoral changed Marketing / Regional Marketing / Agenda Meetings / Q4 2022 / OCTOBER / 13.11 Afrah Kahlid.md", link: URL(string: "https://")!, quotaRelative: 0.5, quotaUsed: "999 GB", quotaTotal: "999 GB", error: false)
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryRectangular)).previewDisplayName("Rectangular")
         LockscreenWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .accessoryCircular)).previewDisplayName("Circular")
     }

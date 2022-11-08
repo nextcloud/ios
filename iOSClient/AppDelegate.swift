@@ -48,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var activeViewController: UIViewController?
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
-    var isSearchingMode: Bool = false
 
     let listFilesVC = ThreadSafeDictionary<String,NCFiles>()
     let listFavoriteVC = ThreadSafeDictionary<String,NCFavorite>()
@@ -189,6 +188,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application did become active")
 
+        // START OBSERVE/TIMER UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.observeTableMetadata()
+        NCNetworkingProcessUpload.shared.startTimer()
+
         self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
@@ -205,9 +208,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
-
-        // START UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.startTimer()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
@@ -243,13 +243,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application will resign active")
 
+        // STOP OBSERVE/TIMER UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
+        NCNetworkingProcessUpload.shared.stopTimer()
+
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
             showPrivacyProtectionWindow()
         }
-
-        // STOP UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.stopTimer()
 
         // Reload Widget
         WidgetCenter.shared.reloadAllTimelines()
@@ -371,7 +372,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
-            NCNetworkingProcessUpload.shared.process { items in
+            NCNetworkingProcessUpload.shared.start { items in
                 NKCommon.shared.writeLog("[INFO] Refresh task upload process with \(items) uploads")
                 task.setTaskCompleted(success: true)
             }
@@ -864,7 +865,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         else if scheme == "nextcloud" && action == "open-file" {
 
-            if !isSearchingMode, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+            if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
                 let queryItems = urlComponents.queryItems
                 guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
