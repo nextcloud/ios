@@ -400,7 +400,7 @@ import Photos
                 completion(error)
             }
         } else if metadata.session == NKCommon.shared.sessionIdentifierUpload {
-            uploadFile(metadata: metadata, start: start) { error in
+            uploadFile(metadata: metadata, start: start) { account, ocId, etag, date, size, allHeaderFields, afError, error in
                 completion(error)
             }
         } else {
@@ -410,7 +410,7 @@ import Photos
         }
     }
 
-    private func uploadFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ error: NKError) -> Void) {
+    private func uploadFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -442,13 +442,13 @@ import Photos
                     "totalBytes": NSNumber(value: progress.totalUnitCount),
                     "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
 
-        }) { _, ocId, etag, date, size, _, _, error in
+        }) { account, ocId, etag, date, size, allHeaderFields, afError, error in
 
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
             if let uploadTask = uploadTask {
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, error: error)
             }
-            completion(error)
+            completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
         }
     }
 
