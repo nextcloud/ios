@@ -109,6 +109,7 @@ import Foundation
                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                         await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
                     }
+                    
                     return markE2EEFolderResults.error
                 }
             } else {
