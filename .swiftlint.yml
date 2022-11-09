@@ -103,7 +103,8 @@ excluded:
   - iOSClient/Networking/NCNetworking.swift
   - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift
   - iOSClient/Networking/NCNetworkingChunkedUpload.swift
-  - iOSClient/Networking/NCNetworkingE2EE.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EE.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EEUpload.swift
   - iOSClient/Networking/NCNetworkingProcessUpload.swift
   - iOSClient/Networking/NCOperationQueue.swift
   - iOSClient/Networking/NCService.swift
