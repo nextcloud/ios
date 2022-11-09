@@ -193,31 +193,6 @@ import Alamofire
         }
     }
 
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) async -> (NKError) {
-
-        // verify if exists the new fileName
-        if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_already_exists_")
-        } else {
-            let sendE2EMetadataResults = await sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: metadata.urlBase, userId: metadata.userId)
-            if sendE2EMetadataResults.error == .success {
-                NCManageDatabase.shared.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
-                // Move file system
-                let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
-                let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
-                do {
-                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                } catch { }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
-            }
-            // unlock
-            if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-            }
-            return sendE2EMetadataResults.error
-        }
-    }
-
     // MARK: - Upload
 
     func upload(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ error: NKError) -> Void) {
