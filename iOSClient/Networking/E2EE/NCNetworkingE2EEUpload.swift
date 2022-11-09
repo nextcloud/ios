@@ -125,7 +125,6 @@ import Foundation
             } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in
 
                 NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-                let metadata = tableMetadata.init(value: metadata)
 
                 if afError?.isExplicitlyCancelledError ?? false {
 
