@@ -46,7 +46,7 @@ import Foundation
         }
 
         // Create metadata for upload
-        metadata.fileName = filename //CCUtility.generateRandomIdentifier()!
+        metadata.fileName = filename
         metadata.e2eEncrypted = true
         metadata.session = NKCommon.shared.sessionIdentifierUpload
         metadata.sessionError = ""
