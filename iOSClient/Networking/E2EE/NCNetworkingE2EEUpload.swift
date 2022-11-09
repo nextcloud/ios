@@ -34,6 +34,7 @@ import Foundation
 
     func upload(metadata: tableMetadata, filename: String) async -> (NKError) {
 
+        var metadata = tableMetadata.init(value: metadata)
         let ocIdTemp = metadata.ocId
         let errorCreateEncrypted = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_create_encrypted_")
 
@@ -44,8 +45,7 @@ import Foundation
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "E2E Error file too big")
         }
 
-        // Update metadata
-        var metadata = tableMetadata.init(value: metadata)
+        // Create metadata for upload
         metadata.fileName = filename //CCUtility.generateRandomIdentifier()!
         metadata.e2eEncrypted = true
         metadata.session = NKCommon.shared.sessionIdentifierUpload
@@ -53,7 +53,7 @@ import Foundation
         guard let result = NCManageDatabase.shared.addMetadata(metadata) else { return errorCreateEncrypted }
         metadata = result
 
-        // Send E2E metadata
+        // Send e2e metadata
         let results = await createE2Ee(metadata: metadata)
         guard let e2eToken = results.e2eToken, results.error == .success else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
