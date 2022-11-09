@@ -32,7 +32,7 @@ import Foundation
         return instance
     }()
 
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) async -> (NKError) {
+    func rename(metadata: tableMetadata, fileNameNew: String) async -> (NKError) {
 
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {

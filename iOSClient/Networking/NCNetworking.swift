@@ -391,7 +391,10 @@ import Photos
 
         if metadata.e2eEncrypted {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
-            NCNetworkingE2EE.shared.upload(metadata: metadata, start: start) { error in
+            Task {
+                let fineName = CCUtility.generateRandomIdentifier()!
+                start()
+                let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, filename: fineName)
                 completion(error)
             }
             #endif
@@ -1249,15 +1252,18 @@ import Photos
 
         if isDirectoryEncrypted {
             #if !EXTENSION
-            if metadataLive == nil {
-                NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, completion: completion)
-            } else {
-                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive) { error in
+            Task {
+                if let metadataLive = metadataLive {
+                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadataLive, fileNameNew: fileNameNew)
                     if error == .success {
-                        NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, completion: completion)
+                        let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew)
+                        completion(error)
                     } else {
                         completion(error)
                     }
+                } else {
+                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew)
+                    completion(error)
                 }
             }
             #endif
