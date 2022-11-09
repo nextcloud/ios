@@ -34,12 +34,19 @@ import Foundation
 
     func delete(metadata: tableMetadata) async -> (NKError) {
 
+        // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+
         if lockResults.error == .success, let e2eToken = lockResults.e2eToken {
+
             let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
             let errorDeleteMetadataPlain = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
             let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
+            var error = errorDeleteMetadataPlain
+
             if metadata.serverUrl != home {
+
+                // Send metadata
                 let sendE2EMetadataResults = await
                     NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account,
                                                             serverUrl: metadata.serverUrl,
@@ -48,19 +55,16 @@ import Foundation
                                                             deleteE2eEncryption: deleteE2eEncryption,
                                                             urlBase: metadata.urlBase,
                                                             userId: metadata.userId)
-                // unlock
-                if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                    await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                }
-                return sendE2EMetadataResults.error
 
-            } else {
-                // unlock
-                if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                    await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                }
-                return errorDeleteMetadataPlain
+                error = sendE2EMetadataResults.error
             }
+
+            // Unlock
+            if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
+                await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+            }
+
+            return error
 
         } else {
             return lockResults.error
