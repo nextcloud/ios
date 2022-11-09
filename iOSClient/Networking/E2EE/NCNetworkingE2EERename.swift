@@ -36,8 +36,12 @@ import Foundation
 
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
+
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_already_exists_")
+
         } else {
+
+            // Lock & Send metadata
             let sendE2EMetadataResults = await
             NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account,
                             serverUrl: metadata.serverUrl,
@@ -61,7 +65,7 @@ import Foundation
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
             }
 
-            // unlock
+            // Unlock
             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
                 await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
             }
