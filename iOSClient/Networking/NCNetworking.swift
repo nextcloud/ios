@@ -955,7 +955,7 @@ import Photos
         if isDirectoryEncrypted {
             #if !EXTENSION
             Task {
-                let error = await NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+                let error = await NCNetworkingE2EECreateFolder.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
                 completion(error)
             }
             #endif
