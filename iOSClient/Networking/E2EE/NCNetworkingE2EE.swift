@@ -478,7 +478,9 @@ import Alamofire
 
     func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption: NSPredicate?, urlBase: String, userId: String, upload: Bool = false) async -> (e2eToken: String?, error: NKError) {
 
+        // Lock
         let lockResults = await lock(account: account, serverUrl: serverUrl)
+
         if lockResults.error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
             let getE2EEMetadataResults = await  NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
 
@@ -509,6 +511,7 @@ import Alamofire
                 method = "DELETE"
             }
 
+            // send metadata
             let putE2EEMetadataResults =  await NextcloudKit.shared.putE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: method)
             if upload {
                 return (e2eToken, putE2EEMetadataResults.error)

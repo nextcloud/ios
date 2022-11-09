@@ -47,10 +47,14 @@ import Foundation
         fileNameIdentifier = CCUtility.generateRandomIdentifier()
         fileNameFolderUrl = serverUrl + "/" + fileNameIdentifier
 
+        // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
+
         if lockResults.error == .success, let e2eToken = lockResults.e2eToken {
+
             let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
             let createFolderResults = await NextcloudKit.shared.createFolder(fileNameFolderUrl, options: options)
+
             if createFolderResults.error == .success {
                 guard let fileId = NCUtility.shared.ocIdToFileId(ocId: createFolderResults.ocId) else {
                     // unlock
@@ -59,7 +63,10 @@ import Foundation
                     }
                     return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Error convert ocId")
                 }
+
+                // Mark folder as E2EE
                 let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
+
                 if markE2EEFolderResults.error == .success {
                     let object = tableE2eEncryption()
                     NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
@@ -82,18 +89,23 @@ import Foundation
                     object.version = 1
                     NCManageDatabase.shared.addE2eEncryption(object)
 
+                    // Send metadata
                     let sendE2EMetadataResults = await NCNetworkingE2EE.shared.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId)
-                    // unlock
+
+                    // Unlock
                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                         await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
                     }
+
                     if sendE2EMetadataResults.error == .success, let ocId = createFolderResults.ocId {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
                     }
+
                     return sendE2EMetadataResults.error
 
                 } else {
-                    // unlock
+
+                    // Unlock
                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                         await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
                     }
