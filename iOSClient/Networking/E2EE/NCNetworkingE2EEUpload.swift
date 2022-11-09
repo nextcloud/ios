@@ -35,7 +35,6 @@ import Foundation
     func upload(metadata: tableMetadata, filename: String) async -> (NKError) {
 
         let ocIdTemp = metadata.ocId
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let errorCreateEncrypted = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_create_encrypted_")
 
         // Verify max size
