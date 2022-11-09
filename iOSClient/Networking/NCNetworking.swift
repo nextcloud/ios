@@ -1086,15 +1086,18 @@ import Photos
 
         if isDirectoryEncrypted {
             #if !EXTENSION
-            if metadataLive == nil {
-                NCNetworkingE2EE.shared.deleteMetadata(metadata, completion: completion)
-            } else {
-                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!) { error in
+            Task {
+                if let metadataLive = metadataLive {
+                    let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
                     if error == .success {
-                        NCNetworkingE2EE.shared.deleteMetadata(metadata, completion: completion)
+                        let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                        completion(error)
                     } else {
                         completion(error)
                     }
+                } else {
+                    let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                    completion(error)
                 }
             }
             #endif
