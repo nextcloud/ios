@@ -157,34 +157,6 @@ import Alamofire
         }
     }
 
-    func deleteMetadata(_ metadata: tableMetadata) async -> (NKError) {
-
-        let lockResults = await lock(account: metadata.account, serverUrl: metadata.serverUrl)
-        if lockResults.error == .success, let e2eToken = lockResults.e2eToken {
-            let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
-            let errorDeleteMetadataPlain = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
-            let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
-            if metadata.serverUrl != home {
-                let sendE2EMetadataResults = await sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: metadata.urlBase, userId: metadata.userId)
-                // unlock
-                if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                    await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                }
-                return sendE2EMetadataResults.error
-
-            } else {
-                // unlock
-                if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                    await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                }
-                return errorDeleteMetadataPlain
-            }
-
-        } else {
-            return lockResults.error
-        }
-    }
-
     // MARK: - WebDav Rename
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ error: NKError) -> Void) {
