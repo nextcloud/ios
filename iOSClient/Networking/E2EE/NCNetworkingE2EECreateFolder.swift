@@ -37,8 +37,6 @@ import Foundation
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var fileNameFolderUrl = ""
         var fileNameIdentifier = ""
-        var key: NSString?
-        var initializationVector: NSString?
 
         fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         if fileNameFolder.isEmpty {
@@ -68,29 +66,8 @@ import Foundation
                 let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
 
                 if markE2EEFolderResults.error == .success {
-                    let object = tableE2eEncryption()
-                    NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
-                    object.account = account
-                    object.authenticationTag = nil
-                    object.fileName = fileNameFolder
-                    object.fileNameIdentifier = fileNameIdentifier
-                    object.fileNamePath = ""
-                    object.key = key! as String
-                    object.initializationVector = initializationVector! as String
-                    if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-                        object.metadataKey = result.metadataKey
-                        object.metadataKeyIndex = result.metadataKeyIndex
-                    } else {
-                        object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
-                        object.metadataKeyIndex = 0
-                    }
-                    object.mimeType = "httpd/unix-directory"
-                    object.serverUrl = serverUrl
-                    object.version = 1
-                    NCManageDatabase.shared.addE2eEncryption(object)
 
-                    // Send metadata
-                    let sendE2EMetadataResults = await NCNetworkingE2EE.shared.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId)
+                    let sendE2EMetadataResults = await createE2Ee(account: account, fileNameFolder: fileNameFolder, fileNameIdentifier: fileNameIdentifier, serverUrl: serverUrl, urlBase: urlBase, userId: userId)
 
                     // Unlock
                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
@@ -109,7 +86,7 @@ import Foundation
                     if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                         await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
                     }
-                    
+
                     return markE2EEFolderResults.error
                 }
             } else {
@@ -118,5 +95,35 @@ import Foundation
         } else {
             return lockResults.error
         }
+    }
+
+    private func createE2Ee(account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String, urlBase: String, userId: String) async -> (e2eToken: String?, error: NKError) {
+
+        var key: NSString?
+        var initializationVector: NSString?
+        let object = tableE2eEncryption()
+
+        NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
+        object.account = account
+        object.authenticationTag = nil
+        object.fileName = fileNameFolder
+        object.fileNameIdentifier = fileNameIdentifier
+        object.fileNamePath = ""
+        object.key = key! as String
+        object.initializationVector = initializationVector! as String
+        if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+            object.metadataKey = result.metadataKey
+            object.metadataKeyIndex = result.metadataKeyIndex
+        } else {
+            object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
+            object.metadataKeyIndex = 0
+        }
+        object.mimeType = "httpd/unix-directory"
+        object.serverUrl = serverUrl
+        object.version = 1
+        NCManageDatabase.shared.addE2eEncryption(object)
+
+        // Send metadata
+        return await NCNetworkingE2EE.shared.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId)
     }
 }
