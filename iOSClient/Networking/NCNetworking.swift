@@ -1007,22 +1007,10 @@ import Photos
 
     func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String) -> Bool {
 
+        let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+        let fileName =  NCManageDatabase.shared.getAccountAutoUploadFileName()
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
-        let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
-        let fileNameBase =  NCManageDatabase.shared.getAccountAutoUploadFileName()
-
-        func createFolder(fileName: String, serverUrl: String) -> Bool {
-            var result: Bool = false
-            let semaphore = DispatchSemaphore(value: 0)
-            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
-                if error == .success { result = true }
-                semaphore.signal()
-            }
-            semaphore.wait()
-            return result
-        }
-
-        var result = createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
+        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
 
         if useSubFolder && result {
             for dateSubFolder in createNameSubFolder(assets: assets) {
@@ -1031,13 +1019,27 @@ import Photos
                 guard let month = yearMonth.last else { break }
                 let serverUrlYear = autoUploadPath
                 let serverUrlMonth = autoUploadPath + "/" + year
-                result = createFolder(fileName: String(year), serverUrl: serverUrlYear)
+                result = createFolderWithSemaphore(fileName: String(year), serverUrl: serverUrlYear, account: account, urlBase: urlBase, userId: userId)
                 if result {
-                    result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
+                    result = createFolderWithSemaphore(fileName: String(month), serverUrl: serverUrlMonth, account: account, urlBase: urlBase, userId: userId)
                 }
                 if !result { break }
             }
         }
+
+        return result
+    }
+
+    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
+
+        var result: Bool = false
+        let semaphore = DispatchSemaphore(value: 0)
+
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
+            if error == .success { result = true }
+            semaphore.signal()
+        }
+        semaphore.wait()
 
         return result
     }
