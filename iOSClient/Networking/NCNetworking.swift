@@ -1001,16 +1001,34 @@ import Photos
 
     func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String) -> Bool {
 
-        let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
-        let fileName =  NCManageDatabase.shared.getAccountAutoUploadFileName()
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
-        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+        let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+        let fileNameBase =  NCManageDatabase.shared.getAccountAutoUploadFileName()
+
+        func createFolder(fileName: String, serverUrl: String) -> Bool {
+            var result: Bool = false
+            let semaphore = DispatchSemaphore(value: 0)
+            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
+                if error == .success { result = true }
+                semaphore.signal()
+            }
+            semaphore.wait()
+            return result
+        }
+
+        var result = createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
 
         if useSubFolder && result {
             for dateSubFolder in createNameSubFolder(assets: assets) {
-                let fileName = (dateSubFolder as NSString).lastPathComponent
-                let serverUrl = ((autoUploadPath + "/" + dateSubFolder) as NSString).deletingLastPathComponent
-                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+                let yearMonth = dateSubFolder.split(separator: "/")
+                guard let year = yearMonth.first else { break }
+                guard let month = yearMonth.last else { break }
+                let serverUrlYear = autoUploadPath
+                let serverUrlMonth = autoUploadPath + "/" + year
+                result = createFolder(fileName: String(year), serverUrl: serverUrlYear)
+                if result {
+                    result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
+                }
                 if !result { break }
             }
         }
