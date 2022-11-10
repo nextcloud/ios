@@ -1036,20 +1036,6 @@ import Photos
         return result
     }
 
-    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
-
-        var result: Bool = false
-        let semaphore = DispatchSemaphore(value: 0)
-
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
-            if error == .success { result = true }
-            semaphore.signal()
-        }
-        semaphore.wait()
-
-        return result
-    }
-
     func createNameSubFolder(assets: [PHAsset]) -> [String] {
 
         var datesSubFolder: [String] = []
