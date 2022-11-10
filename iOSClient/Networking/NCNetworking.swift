@@ -977,9 +977,9 @@ import Photos
         if fileNameFolder.count == 0 {
             return completion(NKError())
         }
-        let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+        let serverUrlFileName = serverUrl + "/" + fileNameFolder
 
-        NextcloudKit.shared.createFolder(fileNameFolderUrl) { account, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { account, ocId, _, error in
             guard error == .success else {
                 if error.errorCode == NCGlobal.shared.errordMethodNotSupported && overwrite {
                     completion(NKError())
@@ -989,12 +989,12 @@ import Photos
                 return
             }
 
-            self.readFile(serverUrlFileName: fileNameFolderUrl) { (account, metadataFolder, error) in
+            self.readFile(serverUrlFileName: serverUrlFileName) { (account, metadataFolder, error) in
 
                 if error == .success {
                     if let metadata = metadataFolder {
                         NCManageDatabase.shared.addMetadata(metadata)
-                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
+                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: account)
                     }
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "e2ee": false])
@@ -1134,7 +1134,7 @@ import Photos
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
         
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName, options: options) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options) { account, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
