@@ -1022,10 +1022,27 @@ import Photos
             return result
         }
 
+        func createNameSubFolder() -> [String] {
+
+            var datesSubFolder: [String] = []
+            let dateFormatter = DateFormatter()
+
+            for asset in assets {
+                let date = asset.creationDate ?? Date()
+                dateFormatter.dateFormat = "yyyy"
+                let year = dateFormatter.string(from: date)
+                dateFormatter.dateFormat = "MM"
+                let month = dateFormatter.string(from: date)
+                datesSubFolder.append("\(year)/\(month)")
+            }
+
+            return Array(Set(datesSubFolder))
+        }
+
         var result = createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
 
         if useSubFolder && result {
-            for dateSubFolder in createNameSubFolder(assets: assets) {
+            for dateSubFolder in createNameSubFolder() {
                 let yearMonth = dateSubFolder.split(separator: "/")
                 guard let year = yearMonth.first else { break }
                 guard let month = yearMonth.last else { break }
@@ -1040,23 +1057,6 @@ import Photos
         }
 
         return result
-    }
-
-    func createNameSubFolder(assets: [PHAsset]) -> [String] {
-
-        var datesSubFolder: [String] = []
-        let dateFormatter = DateFormatter()
-
-        for asset in assets {
-            let date = asset.creationDate ?? Date()
-            dateFormatter.dateFormat = "yyyy"
-            let year = dateFormatter.string(from: date)
-            dateFormatter.dateFormat = "MM"
-            let month = dateFormatter.string(from: date)
-            datesSubFolder.append("\(year)/\(month)")
-        }
-
-        return Array(Set(datesSubFolder))
     }
 
     // MARK: - WebDav Delete
