@@ -1014,9 +1014,15 @@ import Photos
 
         if useSubFolder && result {
             for dateSubFolder in createNameSubFolder(assets: assets) {
-                let fileName = (dateSubFolder as NSString).lastPathComponent
-                let serverUrl = ((autoUploadPath + "/" + dateSubFolder) as NSString).deletingLastPathComponent
-                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+                let yearMonth = dateSubFolder.split(separator: "/")
+                guard let year = yearMonth.first else { break }
+                guard let month = yearMonth.last else { break }
+                let serverUrlYear = autoUploadPath
+                let serverUrlMonth = autoUploadPath + "/" + year
+                result = createFolderWithSemaphore(fileName: String(year), serverUrl: serverUrlYear, account: account, urlBase: urlBase, userId: userId)
+                if result {
+                    result = createFolderWithSemaphore(fileName: String(month), serverUrl: serverUrlMonth, account: account, urlBase: urlBase, userId: userId)
+                }
                 if !result { break }
             }
         }
