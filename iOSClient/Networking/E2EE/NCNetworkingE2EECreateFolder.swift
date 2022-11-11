@@ -136,20 +136,15 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let readFileOrFolderResults = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
         if readFileOrFolderResults.error == .success, let file = readFileOrFolderResults.files.first {
 
-            let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: readFileOrFolderResults.account)
-            NCManageDatabase.shared.addMetadata(metadata)
-
-            NCManageDatabase.shared.addDirectory(encrypted: false, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
-
-            let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: false)
+            let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: file.fileId, delete: false)
             if markE2EEFolderResults.error != .success { return markE2EEFolderResults.error }
 
+            guard let metadata = NCManageDatabase.shared.addMetadata(NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: true, account: readFileOrFolderResults.account)) else {
+                return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_internal_generic_error_")
+            }
+            NCManageDatabase.shared.addDirectory(encrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
-
-            NCManageDatabase.shared.setDirectory(serverUrl: serverUrlFileName, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
-
-            NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
-
+            
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": serverUrlFileName])
 
             return markE2EEFolderResults.error
