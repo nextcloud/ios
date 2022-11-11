@@ -817,12 +817,12 @@ extension NCManageDatabase {
         return false
     }
 
-    func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {
+    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {
 
         // verify exists conflict
-        let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
-        let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
-        var fileNameConflict = fileName
+        let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
+        let fileNameWithoutExtension = (fileNameView as NSString).deletingPathExtension
+        var fileNameConflict = fileNameView
 
         if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
             fileNameConflict = fileNameWithoutExtension + ".jpg"

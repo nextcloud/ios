@@ -377,7 +377,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                if NCManageDatabase.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
+                if let result = NCManageDatabase.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
+                    metadataForUpload.fileName = result.fileName
                     metadatasUploadInConflict.append(metadataForUpload)
                 } else {
                     metadatasNOConflict.append(metadataForUpload)
@@ -394,7 +395,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                         conflict.metadatasNOConflict = metadatasNOConflict
                         conflict.metadatasUploadInConflict = metadatasUploadInConflict
                         conflict.delegate = self.appDelegate
-                        conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl: self.serverUrl, userBase: self.appDelegate)
 
                         self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }

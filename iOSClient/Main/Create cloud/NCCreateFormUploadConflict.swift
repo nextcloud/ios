@@ -58,7 +58,6 @@ extension NCCreateFormUploadConflictDelegate {
     @objc weak var delegate: NCCreateFormUploadConflictDelegate?
     @objc var alwaysNewFileNameNumber: Bool = false
     @objc var textLabelDetailNewFile: String?
-    @objc var isE2EE: Bool = false
 
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
@@ -150,17 +149,13 @@ extension NCCreateFormUploadConflictDelegate {
         let conflictAlert = UIAlertController(title: tile, message: "", preferredStyle: .alert)
 
         // REPLACE
-        if !isE2EE {
-            conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
+        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
+            for metadata in self.metadatasUploadInConflict {
+                self.metadatasNOConflict.append(metadata)
+            }
+            self.buttonContinueTouch(action)
+        }))
 
-                for metadata in self.metadatasUploadInConflict {
-                    self.metadatasNOConflict.append(metadata)
-                }
-
-                self.buttonContinueTouch(action)
-            }))
-        }
-        
         // KEEP BOTH
         conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { action in
 
@@ -178,12 +173,10 @@ extension NCCreateFormUploadConflictDelegate {
             }
         }))
 
-        if !isE2EE {
-            conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
-                self.blurView.removeFromSuperview()
-            }))
-        }
-        
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
+            self.blurView.removeFromSuperview()
+        }))
+
         self.present(conflictAlert, animated: true, completion: nil)
     }
 
@@ -326,7 +319,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             // -----> Already Existing File
 
-            guard let metadataAlreadyExists = NCManageDatabase.shared.getMetadataConflict(account: metadataNewFile.account, serverUrl: metadataNewFile.serverUrl, fileName: metadataNewFile.fileNameView) else { return UITableViewCell() }
+            guard let metadataAlreadyExists = NCManageDatabase.shared.getMetadataConflict(account: metadataNewFile.account, serverUrl: metadataNewFile.serverUrl, fileNameView: metadataNewFile.fileNameView) else { return UITableViewCell() }
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag)) {
                 cell.imageAlreadyExistingFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag))
             } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView)) && metadataAlreadyExists.contentType == "application/pdf" {
