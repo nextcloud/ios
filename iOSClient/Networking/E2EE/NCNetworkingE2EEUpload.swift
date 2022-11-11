@@ -35,8 +35,6 @@ class NCNetworkingE2EEUpload: NSObject {
     func upload(metadata: tableMetadata, filename: String) async -> (NKError) {
 
         var metadata = tableMetadata.init(value: metadata)
-        let account = metadata.account
-        let serverUrl = metadata.serverUrl
         let ocIdTemp = metadata.ocId
         let errorCreateEncrypted = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_create_encrypted_")
 
@@ -67,7 +65,7 @@ class NCNetworkingE2EEUpload: NSObject {
         let errorSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken)
 
         // unclock
-        await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
+        await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         return(errorSendFile)
     }
@@ -110,6 +108,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     private func sendFile(metadata: tableMetadata, e2eToken: String) async -> (NKError) {
 
+        let metadata = tableMetadata.init(value: metadata)
         let ocIdTemp = metadata.ocId
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
 
