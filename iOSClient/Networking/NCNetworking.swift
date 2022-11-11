@@ -413,7 +413,7 @@ import Photos
         }
     }
 
-    func uploadFile(metadata: tableMetadata, addCustomHeaders: [String: String]? = nil, start: @escaping () -> Void, completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
+    func uploadFile(metadata: tableMetadata, withUploadComplete: Bool = true ,addCustomHeaders: [String: String]? = nil, start: @escaping () -> Void, completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -448,7 +448,7 @@ import Photos
         }) { account, ocId, etag, date, size, allHeaderFields, afError, error in
 
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            if let uploadTask = uploadTask {
+            if withUploadComplete, let uploadTask = uploadTask {
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)

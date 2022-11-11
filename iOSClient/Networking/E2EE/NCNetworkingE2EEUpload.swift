@@ -62,12 +62,43 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         // Send file
-        let errorSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken)
+        let sendFileResults = await sendFile(metadata: metadata, e2eToken: e2eToken)
 
-        // unclock
+        // Unlock
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
-        return(errorSendFile)
+        if sendFileResults.afError?.isExplicitlyCancelledError ?? false {
+
+            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": sendFileResults.error])
+
+        } else if sendFileResults.error == .success, let ocId = sendFileResults.ocId {
+
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+
+            metadata.date = sendFileResults.date ?? NSDate()
+            metadata.etag = sendFileResults.etag ?? ""
+            metadata.ocId = ocId
+
+            metadata.session = ""
+            metadata.sessionError = ""
+            metadata.sessionTaskIdentifier = 0
+            metadata.status = NCGlobal.shared.metadataStatusNormal
+
+            NCManageDatabase.shared.addMetadata(metadata)
+            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+            NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": sendFileResults.error])
+
+        } else {
+
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: sendFileResults.error.errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": sendFileResults.error])
+        }
+
+        return(sendFileResults.error)
     }
 
     private func createE2Ee(metadata: tableMetadata) async -> (e2eToken: String?, error: NKError) {
@@ -106,57 +137,18 @@ class NCNetworkingE2EEUpload: NSObject {
         return await NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: metadata.urlBase, userId: metadata.userId, upload: true)
     }
 
-    private func sendFile(metadata: tableMetadata, e2eToken: String) async -> (NKError) {
-
-        let metadata = tableMetadata.init(value: metadata)
-        let ocIdTemp = metadata.ocId
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+    private func sendFile(metadata: tableMetadata, e2eToken: String) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
 
         return await withCheckedContinuation({ continuation in
 
-            NCNetworking.shared.uploadFile(metadata: metadata, addCustomHeaders: ["e2e-token": e2eToken]) {
+            NCNetworking.shared.uploadFile(metadata: metadata, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
 
                 NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_e2ee_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
 
             } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in
 
-                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-
-                if afError?.isExplicitlyCancelledError ?? false {
-
-                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
-
-                } else if error == .success, let ocId = ocId {
-
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-
-                    NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
-
-                    metadata.date = date ?? NSDate()
-                    metadata.etag = etag ?? ""
-                    metadata.ocId = ocId
-
-                    metadata.session = ""
-                    metadata.sessionError = ""
-                    metadata.sessionTaskIdentifier = 0
-                    metadata.status = NCGlobal.shared.metadataStatusNormal
-
-                    NCManageDatabase.shared.addMetadata(metadata)
-                    NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                    NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
-
-                } else {
-
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: error.errorDescription, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusUploadError)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
-                }
-
-                continuation.resume(returning: error)
+                continuation.resume(returning: (ocId: ocId, etag: etag, date: date ,afError: afError, error: error))
             }
         })
     }
