@@ -403,7 +403,8 @@ import Photos
                 completion(error)
             }
         } else if metadata.session == NKCommon.shared.sessionIdentifierUpload {
-            uploadFile(metadata: metadata, start: start) { account, ocId, etag, date, size, allHeaderFields, afError, error in
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            uploadFile(metadata: metadata, fileNameLocalPath:fileNameLocalPath, start: start) { account, ocId, etag, date, size, allHeaderFields, afError, error in
                 completion(error)
             }
         } else {
@@ -413,10 +414,9 @@ import Photos
         }
     }
 
-    func uploadFile(metadata: tableMetadata, withUploadComplete: Bool = true ,addCustomHeaders: [String: String]? = nil, start: @escaping () -> Void, completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
+    func uploadFile(metadata: tableMetadata, fileNameLocalPath: String, withUploadComplete: Bool = true ,addCustomHeaders: [String: String]? = nil, start: @escaping () -> Void, completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var uploadTask: URLSessionTask?
         let description = metadata.ocId
 
