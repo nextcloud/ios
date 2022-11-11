@@ -26,8 +26,8 @@ import CFNetwork
 import Alamofire
 import Foundation
 
-@objc class NCNetworkingE2EEUpload: NSObject {
-    @objc public static let shared: NCNetworkingE2EEUpload = {
+class NCNetworkingE2EEUpload: NSObject {
+    public static let shared: NCNetworkingE2EEUpload = {
         let instance = NCNetworkingE2EEUpload()
         return instance
     }()

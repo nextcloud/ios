@@ -26,8 +26,8 @@ import CFNetwork
 import Alamofire
 import Foundation
 
-@objc class NCNetworkingE2EEDelete: NSObject {
-    @objc public static let shared: NCNetworkingE2EEDelete = {
+class NCNetworkingE2EEDelete: NSObject {
+    public static let shared: NCNetworkingE2EEDelete = {
         let instance = NCNetworkingE2EEDelete()
         return instance
     }()
