@@ -34,8 +34,13 @@ import UIKit
 
     @objc public let capabilitiesFileSharingApiEnabled: Array = ["ocs", "data", "capabilities", "files_sharing", "api_enabled"]
     @objc public let capabilitiesFileSharingPubPasswdEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "password", "enforced"]
+    @objc public let capabilitiesFileSharingPubExpireDateEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "enforced"]
+    @objc public let capabilitiesFileSharingPubExpireDateDays: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "days"]
+    @objc public let capabilitiesFileSharingInternalExpireDateEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "enforced"]
+    @objc public let capabilitiesFileSharingInternalExpireDateDays: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "days"]
+    @objc public let capabilitiesFileSharingRemoteExpireDateEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "enforced"]
+    @objc public let capabilitiesFileSharingRemoteExpireDateDays: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "days"]
     @objc public let capabilitiesFileSharingDefaultPermissions: Array = ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]
-    // NC >= 23
     @objc public let capabilitiesFileSharingSendPasswordMail: Array = ["ocs", "data", "capabilities", "files_sharing", "sharebymail", "send_password_by_mail"]
 
     @objc public let capabilitiesThemingColor: Array = ["ocs", "data", "capabilities", "theming", "color"]

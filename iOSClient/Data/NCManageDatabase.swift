@@ -641,10 +641,6 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Directory
 
-    @objc func copyObject(directory: tableDirectory) -> tableDirectory {
-        return tableDirectory.init(value: directory)
-    }
-
     @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
 
         let realm = try! Realm()
@@ -1077,10 +1073,6 @@ class NCManageDatabase: NSObject {
 
     // MARK: -
     // MARK: Table LocalFile
-
-    @objc func copyObject(localFile: tableLocalFile) -> tableLocalFile {
-        return tableLocalFile.init(value: localFile)
-    }
 
     func addLocalFile(metadata: tableMetadata) {
 

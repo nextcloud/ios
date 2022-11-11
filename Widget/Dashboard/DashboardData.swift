@@ -140,7 +140,6 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     
     let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true
-    let options = NKRequestOptions(timeout: 15, queue: NKCommon.shared.backgroundQueue)
     let title = tableDashboard?.title ?? id
 
     var imagetmp = UIImage(named: "widget")!
@@ -151,7 +150,8 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         }
     }
     let titleImage = imagetmp
-        
+
+    let options = NKRequestOptions(timeout: 90, queue: NKCommon.shared.backgroundQueue)
     NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { _, results, data, error in
 
         Task {

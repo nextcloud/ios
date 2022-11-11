@@ -129,11 +129,8 @@ import Photos
     }
 
     func authenticationChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-
-        if checkTrustedChallenge(session, didReceive: challenge) {
-            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
-        } else {
-            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        DispatchQueue.global().async {
+            self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
     }
 
@@ -158,21 +155,13 @@ import Photos
 
     // MARK: - Pinning check
 
-    private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) -> Bool {
+    private func checkTrustedChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
 
         let protectionSpace: URLProtectionSpace = challenge.protectionSpace
         let directoryCertificate = CCUtility.getDirectoryCerificates()!
         let host = challenge.protectionSpace.host
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
-
-        #if !EXTENSION
-        defer {
-            if !isTrusted {
-                DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
-            }
-        }
-        #endif
 
         if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
 
@@ -197,8 +186,15 @@ import Photos
         } else {
             isTrusted = false
         }
-        
-        return isTrusted
+
+        if isTrusted {
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+        } else {
+            #if !EXTENSION
+            DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
+            #endif
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+        }
     }
 
     func writeCertificate(host: String) {
@@ -207,9 +203,8 @@ import Photos
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
         let certificateToPath = directoryCertificate + "/" + host + ".der"
 
-        if !NCUtilityFileSystem.shared.moveFile(atPath: certificateAtPath, toPath: certificateToPath) {
-            let error = NKError(errorCode: NCGlobal.shared.errorCreationFile, errorDescription: "_error_creation_file_")
-            NCContentPresenter.shared.showError(error: error, priority: .max)
+        if !NCUtilityFileSystem.shared.copyFile(atPath: certificateAtPath, toPath: certificateToPath) {
+            NKCommon.shared.writeLog("[ERROR] Write certificare error")
         }
     }
     
@@ -221,7 +216,7 @@ import Photos
         let x509cert = d2i_X509_bio(mem, nil)
 
         if x509cert == nil {
-            print("[LOG] OpenSSL couldn't parse X509 Certificate")
+            NKCommon.shared.writeLog("[ERROR] OpenSSL couldn't parse X509 Certificate")
         } else {
             // save details
             if FileManager.default.fileExists(atPath: certNamePathTXT) {
@@ -1006,33 +1001,37 @@ import Photos
 
     func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String) -> Bool {
 
-        let serverUrl = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
-        let fileName =  NCManageDatabase.shared.getAccountAutoUploadFileName()
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
-        var result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+        let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+        let fileNameBase =  NCManageDatabase.shared.getAccountAutoUploadFileName()
+
+        func createFolder(fileName: String, serverUrl: String) -> Bool {
+            var result: Bool = false
+            let semaphore = DispatchSemaphore(value: 0)
+            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
+                if error == .success { result = true }
+                semaphore.signal()
+            }
+            semaphore.wait()
+            return result
+        }
+
+        var result = createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
 
         if useSubFolder && result {
             for dateSubFolder in createNameSubFolder(assets: assets) {
-                let fileName = (dateSubFolder as NSString).lastPathComponent
-                let serverUrl = ((autoUploadPath + "/" + dateSubFolder) as NSString).deletingLastPathComponent
-                result = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+                let yearMonth = dateSubFolder.split(separator: "/")
+                guard let year = yearMonth.first else { break }
+                guard let month = yearMonth.last else { break }
+                let serverUrlYear = autoUploadPath
+                let serverUrlMonth = autoUploadPath + "/" + year
+                result = createFolder(fileName: String(year), serverUrl: serverUrlYear)
+                if result {
+                    result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
+                }
                 if !result { break }
             }
         }
-
-        return result
-    }
-
-    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
-
-        var result: Bool = false
-        let semaphore = DispatchSemaphore(value: 0)
-
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
-            if error == .success { result = true }
-            semaphore.signal()
-        }
-        semaphore.wait()
 
         return result
     }

@@ -44,6 +44,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionHeaderMenu?
+    internal var isSearchingMode: Bool = false
 
     internal var layoutForView: NCGlobal.layoutForViewType?
     internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
@@ -88,6 +89,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.navigationController?.presentationController?.delegate = self
 
+        // CollectionView & layout
+        listLayout = NCListLayout()
+        gridLayout = NCGridLayout()
+        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
+        if layoutForView?.layout == NCGlobal.shared.layoutList {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
         collectionView.alwaysBounceVertical = true
 
         // Color
@@ -117,9 +128,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
-
-        listLayout = NCListLayout()
-        gridLayout = NCGridLayout()
 
         // Refresh Control
         collectionView.addSubview(refreshControl)
@@ -209,7 +217,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationItem()
 
         reloadDataSource(forced: false)
-        if !appDelegate.isSearchingMode {
+        if !isSearchingMode {
             reloadDataSourceNetwork()
         }
 
@@ -284,9 +292,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !appDelegate.account.isEmpty else { return }
 
         // Search
-        if searchController?.isActive ?? false || appDelegate.isSearchingMode {
+        if searchController?.isActive ?? false || isSearchingMode {
             searchController?.isActive = false
-            appDelegate.isSearchingMode = false
+            isSearchingMode = false
         }
 
         // Select
@@ -336,7 +344,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
 
-        if !appDelegate.isSearchingMode {
+        if !isSearchingMode {
             reloadDataSourceNetwork(forced: true)
         }
     }
@@ -419,7 +427,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func renameFile(_ notification: NSNotification) {
 
-        if appDelegate.isSearchingMode {
+        if isSearchingMode {
             reloadDataSourceNetwork()
         } else {
             reloadDataSource()
@@ -538,7 +546,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        guard !appDelegate.isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        guard !isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
         dataSource.addMetadata(metadata)
         self.collectionView?.reloadData()
     }
@@ -734,7 +742,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func emptyDataSetView(_ view: NCEmptyView) {
 
         self.emptyDataSet?.setOffset(getHeaderHeight())
-        if appDelegate.isSearchingMode {
+        if isSearchingMode {
             view.emptyImage.image = UIImage(named: "search")?.image(color: .gray, size: UIScreen.main.bounds.width)
             if isReloadDataSourceNetworkInProgress {
                 view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
@@ -767,7 +775,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
 
-        appDelegate.isSearchingMode = true
+        isSearchingMode = true
         self.providers?.removeAll()
         self.dataSource.clearDataSource()
         self.collectionView.reloadData()
@@ -778,7 +786,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
 
-        if appDelegate.isSearchingMode && self.literalSearch?.count ?? 0 >= 2 {
+        if isSearchingMode && self.literalSearch?.count ?? 0 >= 2 {
             reloadDataSourceNetwork()
         }
     }
@@ -788,7 +796,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         DispatchQueue.global().async {
             NCNetworking.shared.cancelUnifiedSearchFiles()
 
-            self.appDelegate.isSearchingMode = false
+            self.isSearchingMode = false
             self.literalSearch = ""
             self.providers?.removeAll()
             self.dataSource.clearDataSource()
@@ -838,7 +846,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            if appDelegate.isSearchingMode {
+            if isSearchingMode {
                 self.groupByField = "name"
             } else {
                 self.groupByField = "classFile"
@@ -1009,7 +1017,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
 
         // set GroupField for Grid
-        if !appDelegate.isSearchingMode && layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        if !isSearchingMode && layoutForView?.layout == NCGlobal.shared.layoutGrid {
             groupByField = "classFile"
         } else {
             groupByField = "name"
@@ -1046,7 +1054,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     providers: self.providers,
                     searchResults: self.searchResults)
             } update: { account, id, searchResult, metadatas in
-                guard let metadatas = metadatas, metadatas.count > 0, self.appDelegate.isSearchingMode , let searchResult = searchResult else { return }
+                guard let metadatas = metadatas, metadatas.count > 0, self.isSearchingMode , let searchResult = searchResult else { return }
                 NCOperationQueue.shared.unifiedSearchAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
             } completion: { account, error in
                 self.refreshControl.endRefreshing()
@@ -1059,7 +1067,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.refreshControl.endRefreshing()
                     self.collectionView.reloadData()
                 }
-                guard let metadatas = metadatas, error == .success, self.appDelegate.isSearchingMode else { return }
+                guard let metadatas = metadatas, error == .success, self.isSearchingMode else { return }
                 self.dataSource = NCDataSource(
                     metadatas: metadatas,
                     account: self.appDelegate.account,
@@ -1491,7 +1499,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.hideButtonMore(false)
         cell.titleInfoTrailingDefault()
 
-        if appDelegate.isSearchingMode {
+        if isSearchingMode {
             cell.fileTitleLabel?.text = metadata.fileName
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
             if metadata.name == NCGlobal.shared.appName {
@@ -1642,7 +1650,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Separator
-        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || appDelegate.isSearchingMode {
+        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearchingMode {
             cell.cellSeparatorView?.isHidden = true
         } else {
             cell.cellSeparatorView?.isHidden = false
@@ -1665,7 +1673,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
-        if appDelegate.isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
+        if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
             attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : UIColor.systemBlue], range: longestWordRange)
@@ -1694,7 +1702,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                if headerMenuButtonsCommand && !appDelegate.isSearchingMode {
+                if headerMenuButtonsCommand && !isSearchingMode {
                     header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "folder"), titleButton2: NSLocalizedString("_create_folder_", comment: ""), imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
@@ -1749,11 +1757,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             footer.buttonIsHidden(true)
             footer.hideActivityIndicatorSection()
 
-            if appDelegate.isSearchingMode {
+            if isSearchingMode {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
-                if appDelegate.isSearchingMode && isPaginated && metadatasCount > 0 {
+                if isSearchingMode && isPaginated && metadatasCount > 0 {
                     footer.buttonIsHidden(false)
                 }
                 if unifiedSearchInProgress {
@@ -1779,7 +1787,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var size: CGFloat = 0
 
-        if headerMenuButtonsCommand && !appDelegate.isSearchingMode {
+        if headerMenuButtonsCommand && !isSearchingMode {
             size += NCGlobal.shared.heightButtonsCommand
         }
         if headerMenuButtonsView {
@@ -1795,12 +1803,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         if let richWorkspaceText = richWorkspaceText, !headerRichWorkspaceDisable {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if trimmed.count > 0 && !appDelegate.isSearchingMode {
+            if trimmed.count > 0 && !isSearchingMode {
                 headerRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
         }
 
-        if appDelegate.isSearchingMode || layoutForView?.layout == NCGlobal.shared.layoutGrid || dataSource.numberOfSections() > 1 {
+        if isSearchingMode || layoutForView?.layout == NCGlobal.shared.layoutGrid || dataSource.numberOfSections() > 1 {
             if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {
@@ -1833,7 +1841,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             size.height += NCGlobal.shared.heightFooter
         }
 
-        if appDelegate.isSearchingMode && isPaginated && metadatasCount > 0 {
+        if isSearchingMode && isPaginated && metadatasCount > 0 {
             size.height += NCGlobal.shared.heightFooterButton
         }
 

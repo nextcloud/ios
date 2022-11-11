@@ -308,22 +308,35 @@ import Photos
                 let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
                 return NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
             }
-            if metadata.classFile == NKCommon.typeClassFile.image.rawValue, let image = UIImage(contentsOfFile: fileNamePath) {
-                UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-            } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue, UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
-                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(self.saveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
-            } else {
-                let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
-                NCContentPresenter.shared.messageNotification("_save_selected_files_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+
+            let errorSave = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
+
+            do {
+                if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
+                    PHPhotoLibrary.shared().performChanges({
+                        let assetRequest = PHAssetCreationRequest.forAsset()
+                        assetRequest.addResource(with: .photo, data: data, options: nil)
+                    }) { (success, error) in
+                        if !success {
+                            NCContentPresenter.shared.messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                        }
+                    }
+                } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: fileNamePath))
+                    }) { (success, error) in
+                        if !success {
+                            NCContentPresenter.shared.messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                        }
+                    }
+                } else {
+                    NCContentPresenter.shared.messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                    return
+                }
+            } catch {
+                NCContentPresenter.shared.messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
             }
-        }
-    }
-
-    @objc private func saveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-
-        if error != nil {
-            let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
-            NCContentPresenter.shared.messageNotification("_save_selected_files_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
         }
     }
 
@@ -462,8 +475,6 @@ import Photos
 
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?) {
 
-        appDelegate.isSearchingMode = false
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             var topNavigationController: UINavigationController?
             var pushServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)

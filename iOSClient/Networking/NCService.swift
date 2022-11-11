@@ -201,7 +201,6 @@ class NCService: NSObject {
                         if let shares = shares, !shares.isEmpty {
                             NCManageDatabase.shared.addShare(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, shares: shares)
                         }
-                        self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: account)
                     }
                 }
             }

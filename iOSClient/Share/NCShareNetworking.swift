@@ -53,7 +53,6 @@ class NCShareNetworking: NSObject {
 
             if error == .success, let shares = shares {
                 NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: shares)
-                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
             } else {
                 NCContentPresenter.shared.showError(error: error)
             }
@@ -77,7 +76,6 @@ class NCShareNetworking: NSObject {
             if error == .success, let share = share {
                 option.idShare = share.idShare
                 NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: [share])
-                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 if option.hasChanges(comparedTo: share) {
                     self.updateShare(option: option)
                 }
@@ -107,7 +105,6 @@ class NCShareNetworking: NSObject {
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: [share])
-                self.appDelegate.shares = NCManageDatabase.shared.getTableShares(account: self.metadata.account)
                 self.delegate?.readShareCompleted()
             } else {
                 NCContentPresenter.shared.showError(error: error)
