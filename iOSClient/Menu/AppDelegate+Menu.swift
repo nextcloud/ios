@@ -114,13 +114,16 @@ extension AppDelegate {
             )
         )
 
-        if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if CCUtility.isEnd(toEndEnabled: appDelegate.account) && appDelegate.activeServerUrl == serverUrlHome {
             actions.append(.seperator)
         }
 
+        let titleCreateFolder = isEncrypted ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
+        let imageCreateFolder = isEncrypted ? UIImage(named: "folderEncrypted")! : UIImage(named: "folder")!
+
         actions.append(
-            NCMenuAction(title: NSLocalizedString("_create_folder_", comment: ""),
-                icon: UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
+            NCMenuAction(title: titleCreateFolder,
+                icon: imageCreateFolder.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
                     guard !appDelegate.activeServerUrl.isEmpty else { return }
                     let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
                     appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
@@ -130,7 +133,7 @@ extension AppDelegate {
 
         if CCUtility.isEnd(toEndEnabled: appDelegate.account) && appDelegate.activeServerUrl == serverUrlHome {
             actions.append(
-                NCMenuAction(title: NSLocalizedString("_create_folder_3233_", comment: ""),
+                NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                     icon: UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement, size: 50), action: { _ in
                         guard !appDelegate.activeServerUrl.isEmpty else { return }
                         let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate, markE2ee: true)
@@ -157,7 +160,7 @@ extension AppDelegate {
             )
         }
 
-        if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if CCUtility.isEnd(toEndEnabled: appDelegate.account) && appDelegate.activeServerUrl == serverUrlHome {
             actions.append(.seperator)
         }
 
