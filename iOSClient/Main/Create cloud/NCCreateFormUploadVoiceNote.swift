@@ -231,7 +231,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
         metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
 
-        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
 
             guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
             
@@ -239,7 +239,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             conflict.serverUrl = serverUrl
             conflict.metadatasUploadInConflict = [metadataForUpload]
             conflict.delegate = self
-            conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, userBase: appDelegate)
 
             self.present(conflict, animated: true, completion: nil)
 

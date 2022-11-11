@@ -268,7 +268,7 @@ import XLForm
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
 
-            if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
+            if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: String(describing: fileNameForm)) != nil {
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
@@ -279,7 +279,6 @@ import XLForm
                 conflict.serverUrl = serverUrl
                 conflict.metadatasUploadInConflict = [metadataForUpload]
                 conflict.delegate = self
-                conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, userBase: appDelegate)
 
                 self.present(conflict, animated: true, completion: nil)
 

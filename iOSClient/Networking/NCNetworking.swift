@@ -392,9 +392,8 @@ import Photos
         if metadata.e2eEncrypted {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
-                let fineName = NCNetworkingE2EE.shared.generateRandomIdentifier()
                 start()
-                let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, filename: fineName)
+                let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata)
                 completion(error)
             }
             #endif

@@ -404,7 +404,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
 
             guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
 
@@ -412,7 +412,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             conflict.serverUrl = serverUrl
             conflict.metadatasUploadInConflict = [metadataForUpload]
             conflict.delegate = self
-            conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, userBase: appDelegate)
 
             self.present(conflict, animated: true, completion: nil)
 

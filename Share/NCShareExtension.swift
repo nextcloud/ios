@@ -316,7 +316,7 @@ extension NCShareExtension {
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-            if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileName: fileName) != nil {
+            if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                 conflicts.append(metadata)
             } else {
                 uploadMetadata.append(metadata)
@@ -329,7 +329,6 @@ extension NCShareExtension {
             conflict.serverUrl = self.serverUrl
             conflict.metadatasUploadInConflict = conflicts
             conflict.delegate = self
-            conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl:self.serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase, userId: activeAccount.userId)
             self.present(conflict, animated: true, completion: nil)
         } else {
             upload()

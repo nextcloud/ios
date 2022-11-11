@@ -32,7 +32,7 @@ class NCNetworkingE2EEUpload: NSObject {
         return instance
     }()
 
-    func upload(metadata: tableMetadata, filename: String) async -> (NKError) {
+    func upload(metadata: tableMetadata) async -> (NKError) {
 
         var metadata = tableMetadata.init(value: metadata)
         let ocIdTemp = metadata.ocId
@@ -46,7 +46,9 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         // Create metadata for upload
-        metadata.fileName = filename
+        if !(metadata.fileName.hasPrefix("E2EE|") && metadata.fileName.hasSuffix("|E2EE")) {
+            metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
+        }
         metadata.e2eEncrypted = true
         metadata.session = NKCommon.shared.sessionIdentifierUpload
         metadata.sessionError = ""
