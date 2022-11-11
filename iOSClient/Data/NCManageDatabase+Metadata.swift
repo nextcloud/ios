@@ -31,7 +31,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: metadata)
     }
 
-    @objc func convertNCFileToMetadata(_ file: NKFile, isEncrypted: Bool, account: String) -> tableMetadata {
+    @objc func convertNCFileToMetadata(_ file: NKFile, isEncrypted: Bool = false, account: String) -> tableMetadata {
 
         let metadata = tableMetadata()
 
