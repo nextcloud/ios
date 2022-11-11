@@ -239,11 +239,6 @@
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
 
-// ===== E2E Encrypted =====
-
-+ (NSString *)generateRandomIdentifier;
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase userId:(NSString *)userId;
-
 // ===== Share Permissions =====
 
 + (NSInteger)getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder;

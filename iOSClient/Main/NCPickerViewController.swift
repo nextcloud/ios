@@ -169,7 +169,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         conflict.delegate = appDelegate
                         conflict.serverUrl = serverUrl
                         conflict.metadatasUploadInConflict = [metadataForUpload]
-                        conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                        conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, userBase: appDelegate)
 
                         appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }

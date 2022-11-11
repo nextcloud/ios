@@ -42,7 +42,7 @@ import Foundation
         if fileNameFolder.isEmpty {
             return NKError()
         }
-        fileNameIdentifier = CCUtility.generateRandomIdentifier()
+        fileNameIdentifier = NCNetworkingE2EE.shared.generateRandomIdentifier()
         serverUrlFileName = serverUrl + "/" + fileNameIdentifier
 
         // Lock
@@ -127,8 +127,9 @@ import Foundation
         return await NCNetworkingE2EE.shared.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId)
     }
 
-    func createFolderAndMarkE2EE(serverUrlFileName: String) async -> NKError {
+    func createFolderAndMarkE2EE(fileName: String, serverUrl: String) async -> NKError {
 
+        let serverUrlFileName = serverUrl + "/" + fileName
         let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName)
         if createFolderResults.error != .success { return createFolderResults.error }
 
