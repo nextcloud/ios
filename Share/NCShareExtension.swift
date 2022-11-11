@@ -329,7 +329,7 @@ extension NCShareExtension {
             conflict.serverUrl = self.serverUrl
             conflict.metadatasUploadInConflict = conflicts
             conflict.delegate = self
-            conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: activeAccount.account, urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+            conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl:self.serverUrl, account: activeAccount.account, urlBase: activeAccount.urlBase, userId: activeAccount.userId)
             self.present(conflict, animated: true, completion: nil)
         } else {
             upload()
@@ -345,7 +345,7 @@ extension NCShareExtension {
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
         // E2EE
-        metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: activeAccount.userId)
+        metadata.e2eEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 

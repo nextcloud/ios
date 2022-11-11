@@ -394,7 +394,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                         conflict.metadatasNOConflict = metadatasNOConflict
                         conflict.metadatasUploadInConflict = metadatasUploadInConflict
                         conflict.delegate = self.appDelegate
-                        conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+                        conflict.isE2EE = NCUtility.shared.isFolderEncrypted(serverUrl: self.serverUrl, userBase: self.appDelegate)
 
                         self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }

@@ -1007,8 +1007,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !appDelegate.account.isEmpty else { return }
 
         // E2EE
-        isEncryptedFolder = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-
+        isEncryptedFolder = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, userBase: appDelegate)
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)

@@ -82,7 +82,7 @@ import NextcloudKit
 
     func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
 
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+        let isFolderEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         if isFolderEncrypted {
             for case let operation as NCOperationDelete in deleteQueueE2EE.operations where operation.metadata.ocId == metadata.ocId {
                 return

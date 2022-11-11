@@ -31,6 +31,48 @@ import Alamofire
         return instance
     }()
 
+    /*
+     + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase userId:(NSString *)userId
+     {
+         NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
+
+         if (e2eEncrypted) {
+
+             return true;
+
+         } else if ([serverUrl isEqualToString:home] || [serverUrl isEqualToString:@".."]) {
+
+             return false;
+
+         } else {
+
+             tableDirectory *directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
+
+             while (directory != nil && ![directory.serverUrl isEqualToString:home]) {
+                 if (directory.e2eEncrypted == true) {
+                     return true;
+                 }
+                 NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
+                 NSString* path = [[NCUtilityFileSystem shared] deleteLastPathWithServerUrlPath:serverUrl home:home];
+                 if (path != nil) {
+                     serverUrl = path;
+                 }
+                 directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
+             }
+
+             return false;
+         }
+     }
+
+     */
+
+    @objc func generateRandomIdentifier() -> String {
+
+        var UUID = NSUUID().uuidString
+        UUID = "E2EE" + UUID.replacingOccurrences(of: "-", with: "").lowercased()
+        return UUID
+    }
+
     func lock(account: String, serverUrl: String) async -> (directory: tableDirectory?, e2eToken: String?, error: NKError) {
 
         var e2eToken: String?

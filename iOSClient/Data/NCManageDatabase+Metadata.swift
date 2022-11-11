@@ -146,7 +146,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isEncrypted = key
             } else {
-                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
+                isEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
                 listServerUrl[file.serverUrl] = isEncrypted
             }
 
