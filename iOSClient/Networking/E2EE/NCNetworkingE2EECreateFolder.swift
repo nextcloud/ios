@@ -26,8 +26,8 @@ import CFNetwork
 import Alamofire
 import Foundation
 
-@objc class NCNetworkingE2EECreateFolder: NSObject {
-    @objc public static let shared: NCNetworkingE2EECreateFolder = {
+class NCNetworkingE2EECreateFolder: NSObject {
+    public static let shared: NCNetworkingE2EECreateFolder = {
         let instance = NCNetworkingE2EECreateFolder()
         return instance
     }()

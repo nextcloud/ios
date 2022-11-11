@@ -26,8 +26,8 @@ import CFNetwork
 import Alamofire
 import Foundation
 
-@objc class NCNetworkingE2EERename: NSObject {
-    @objc public static let shared: NCNetworkingE2EERename = {
+class NCNetworkingE2EERename: NSObject {
+    public static let shared: NCNetworkingE2EERename = {
         let instance = NCNetworkingE2EERename()
         return instance
     }()
