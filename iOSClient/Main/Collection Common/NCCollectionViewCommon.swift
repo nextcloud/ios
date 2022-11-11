@@ -1701,7 +1701,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
                 if headerMenuButtonsCommand && !isSearchingMode {
-                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "folder"), titleButton2: NSLocalizedString("_create_folder_", comment: ""), imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
+                    let imageButton2 = isEncryptedFolder ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
+                    let titleButton2 = isEncryptedFolder ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
+                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
                 }
