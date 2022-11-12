@@ -46,7 +46,10 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         // Create metadata for upload
-        if !(metadata.fileName.hasPrefix("E2EE|") && metadata.fileName.hasSuffix("|E2EE")) {
+
+        if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverURL == %@ AND fileNameView == %@", metadata.serverUrl, metadata.fileNameView)) {
+            metadata.fileName = result.fileName
+        } else {
             metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
         }
         metadata.e2eEncrypted = true
