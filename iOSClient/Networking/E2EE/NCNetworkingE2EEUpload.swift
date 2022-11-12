@@ -47,7 +47,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // Create metadata for upload
 
-        if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverURL == %@ AND fileNameView == %@", metadata.serverUrl, metadata.fileNameView)) {
+        if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
         } else {
             metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
