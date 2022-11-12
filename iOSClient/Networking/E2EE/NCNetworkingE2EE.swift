@@ -34,7 +34,7 @@ class NCNetworkingE2EE: NSObject {
     func generateRandomIdentifier() -> String {
 
         var UUID = NSUUID().uuidString
-        UUID = "E2EE|" + UUID.replacingOccurrences(of: "-", with: "").uppercased() + "|E2EE"
+        UUID = "E2EE" + UUID.replacingOccurrences(of: "-", with: "")
         return UUID
     }
 
