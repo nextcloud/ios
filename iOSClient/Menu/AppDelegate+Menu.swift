@@ -143,6 +143,10 @@ extension AppDelegate {
             )
         }
 
+        if CCUtility.isEnd(toEndEnabled: appDelegate.account) && appDelegate.activeServerUrl == serverUrlHome {
+            actions.append(.seperator)
+        }
+
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isEncrypted && NextcloudKit.shared.isNetworkReachable() {
             actions.append(
                 NCMenuAction(
@@ -158,10 +162,6 @@ extension AppDelegate {
                     }
                 )
             )
-        }
-
-        if CCUtility.isEnd(toEndEnabled: appDelegate.account) && appDelegate.activeServerUrl == serverUrlHome {
-            actions.append(.seperator)
         }
 
         if NextcloudKit.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx}) && !isEncrypted {
