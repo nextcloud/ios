@@ -150,7 +150,6 @@ class NCNetworkingE2EEUpload: NSObject {
             NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath:fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
 
                 NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_e2ee_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
 
             } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in
 
