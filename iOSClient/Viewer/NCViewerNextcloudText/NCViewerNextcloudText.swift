@@ -29,7 +29,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
-
     var link: String = ""
     var editor: String = ""
     var metadata: tableMetadata = tableMetadata()
@@ -84,7 +83,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
         appDelegate.activeViewController = self
 
-        //
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -96,12 +94,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if let navigationController = self.navigationController {
-            if !navigationController.viewControllers.contains(self) {
-            }
-        }
-
-        //
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
 
@@ -110,7 +102,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     @objc func viewUnload() {
-
         navigationController?.popViewController(animated: true)
     }
 
@@ -137,7 +128,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     @objc func keyboardWillHide(notification: Notification) {
-
         bottomConstraint?.constant = 0
     }
 
