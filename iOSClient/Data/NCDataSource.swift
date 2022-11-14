@@ -522,7 +522,12 @@ class NCMetadataForSection: NSObject {
             }
 
             // skipped livePhoto
-            if filterLivePhoto && metadata.livePhoto && (metadata.fileNameView as NSString).pathExtension.lowercased() == "mov" && metadata.session.isEmpty {
+            if filterLivePhoto && metadata.livePhoto && (metadata.fileNameView as NSString).pathExtension.lowercased() == "mov" {
+                continue
+            }
+
+            // Upload [REPLACE] skip
+            if metadata.session.isEmpty && !metadataInSession.filter({ $0.fileNameView == metadata.fileNameView }).isEmpty {
                 continue
             }
 
