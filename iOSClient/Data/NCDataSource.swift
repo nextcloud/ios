@@ -526,8 +526,8 @@ class NCMetadataForSection: NSObject {
                 continue
             }
 
-            // Upload [REPLACE]
-            if !metadataInSession.filter({ $0.fileNameView == metadata.fileNameView && $0.session.isEmpty }).isEmpty {
+            // Upload [REPLACE] skip
+            if metadata.session.isEmpty && !metadataInSession.filter({ $0.fileNameView == metadata.fileNameView }).isEmpty {
                 continue
             }
 
