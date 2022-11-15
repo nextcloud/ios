@@ -72,7 +72,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return error
     }
 
-    private func createE2Ee(account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String, e2eToken: String, directory: tableDirectory ,urlBase: String, userId: String) async -> (NKError) {
+    private func createE2Ee(account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String, e2eToken: String, directory: tableDirectory, urlBase: String, userId: String) async -> (NKError) {
 
         var key: NSString?
         var initializationVector: NSString?
