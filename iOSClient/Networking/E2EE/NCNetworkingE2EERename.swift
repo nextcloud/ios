@@ -77,12 +77,16 @@ class NCNetworkingE2EERename: NSObject {
                 do {
                     try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                 } catch { }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
             }
 
             // Unlock
             await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
         }
+
+        if error == .success {
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
+        }
+
         return error
     }
 }
