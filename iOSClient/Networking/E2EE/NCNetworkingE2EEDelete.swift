@@ -43,10 +43,8 @@ class NCNetworkingE2EEDelete: NSObject {
 
             // Get last metadata
             let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
-            if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata {
-                if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(metadata.account), serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId) {
+            if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata, !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(metadata.account), serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId) {
                     return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
-                }
             }
 
             // delete
@@ -66,14 +64,14 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
-        if lockResults.error != .success { error = lockResults.error}
-        if lockResults.error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
+        error = lockResults.error
+        if error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
 
             let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
-            if deleteMetadataPlainError != .success { error = deleteMetadataPlainError }
-            if deleteMetadataPlainError == .success {
+            error = deleteMetadataPlainError
+            if error == .success {
                 let sendE2EMetadataError = await sendE2EMetadata(e2eToken: e2eToken, directory: directory)
-                if sendE2EMetadataError != .success { error = sendE2EMetadataError }
+                error = sendE2EMetadataError
             }
             // Unlock
             await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
