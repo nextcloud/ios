@@ -34,6 +34,8 @@ class NCNetworkingE2EERename: NSObject {
 
     func rename(metadata: tableMetadata, fileNameNew: String) async -> (NKError) {
 
+        var error = NKError()
+
         func sendE2EMetadata(e2eToken: String, directory: tableDirectory) async -> (NKError) {
 
             var e2eMetadataNew: String?
@@ -68,16 +70,16 @@ class NCNetworkingE2EERename: NSObject {
 
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
-        if lockResults.error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
+        error = lockResults.error
+        if error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
 
-            let error = await sendE2EMetadata(e2eToken: e2eToken, directory: directory)
+            let sendE2EMetadataError = await sendE2EMetadata(e2eToken: e2eToken, directory: directory)
+            error = sendE2EMetadataError
             if error == .success {
                 NCManageDatabase.shared.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
-
                 // Move file system
                 let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
-
                 do {
                     try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                 } catch { }
@@ -86,9 +88,7 @@ class NCNetworkingE2EERename: NSObject {
 
             // Unlock
             await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-
-            return error
         }
-        return lockResults.error
+        return error
     }
 }
