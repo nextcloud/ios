@@ -47,7 +47,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
         error = lockResults.error
-        if error == .success, let e2eToken = lockResults.e2eToken {
+        if error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
 
             let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
             error = createFolderResults.error
@@ -56,9 +56,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
                 error = markE2EEFolderResults.error
                 if error == .success {
-                    let sendE2EMetadataResults = await createE2Ee(account: account, fileNameFolder: fileNameFolder, fileNameIdentifier: fileNameIdentifier, serverUrl: serverUrl, urlBase: urlBase, userId: userId)
-                    error = sendE2EMetadataResults.error
-                    if sendE2EMetadataResults.error == .success, let ocId = createFolderResults.ocId {
+                    error = await createE2Ee(account: account, fileNameFolder: fileNameFolder, fileNameIdentifier: fileNameIdentifier, serverUrl: serverUrl, e2eToken: e2eToken, directory: directory ,urlBase: urlBase, userId: userId)
+                    if error == .success, let ocId = createFolderResults.ocId {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
                     }
                 }
@@ -71,7 +70,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return error
     }
 
-    private func createE2Ee(account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String, urlBase: String, userId: String) async -> (e2eToken: String?, error: NKError) {
+    private func createE2Ee(account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String, e2eToken: String, directory: tableDirectory ,urlBase: String, userId: String) async -> (NKError) {
 
         var key: NSString?
         var initializationVector: NSString?
@@ -97,8 +96,20 @@ class NCNetworkingE2EECreateFolder: NSObject {
         object.version = 1
         NCManageDatabase.shared.addE2eEncryption(object)
 
-        // Send metadata
-        return await NCNetworkingE2EE.shared.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase, userId: userId)
+        // Get last metadata
+        let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
+        if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata, !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId) {
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+        }
+
+        // Rebuild metadata
+        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)), let e2eMetadataNew = NCEndToEndMetadata.shared.encoderMetadata(tableE2eEncryption, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl) else {
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+        }
+
+        // send metadata
+        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: "PUT")
+        return putE2EEMetadataResults.error
     }
 
     func createFolderAndMarkE2EE(fileName: String, serverUrl: String) async -> NKError {
