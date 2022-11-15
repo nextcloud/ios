@@ -79,6 +79,16 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let object = tableE2eEncryption()
         var method = "POST"
 
+        // Get last metadata
+        let getE2EEMetadataResults = await  NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
+        if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata {
+            if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId) {
+                return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+            }
+            method = "PUT"
+        }
+
+        // Add new metadata
         NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
         object.account = account
         object.authenticationTag = nil
@@ -98,15 +108,6 @@ class NCNetworkingE2EECreateFolder: NSObject {
         object.serverUrl = serverUrl
         object.version = 1
         NCManageDatabase.shared.addE2eEncryption(object)
-
-        // Get last metadata
-        let getE2EEMetadataResults = await  NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
-        if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata {
-            if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId) {
-                return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
-            }
-            method = "PUT"
-        }
 
         // Rebuild metadata
         guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)), let e2eMetadataNew = NCEndToEndMetadata.shared.encoderMetadata(tableE2eEncryption, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl) else {
