@@ -1260,13 +1260,13 @@ import Photos
                     let error = await NCNetworkingE2EERename.shared.rename(metadata: metadataLive, fileNameNew: fileNameNew)
                     if error == .success {
                         let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew)
-                        completion(error)
+                        DispatchQueue.main.async { completion(error) }
                     } else {
-                        completion(error)
+                        DispatchQueue.main.async { completion(error) }
                     }
                 } else {
                     let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew)
-                    completion(error)
+                    DispatchQueue.main.async { completion(error) }
                 }
             }
             #endif
