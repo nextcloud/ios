@@ -34,25 +34,42 @@ class NCNetworkingE2EERename: NSObject {
 
     func rename(metadata: tableMetadata, fileNameNew: String) async -> (NKError) {
 
+        func sendE2EMetadata(e2eToken: String, directory: tableDirectory) async -> (NKError) {
+
+            var e2eMetadataNew: String?
+
+            let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
+            if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata {
+                if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(metadata.account), serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId) {
+                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+                }
+            }
+
+            NCManageDatabase.shared.renameFileE2eEncryption(serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account))
+
+            // Rebuild metadata for send it
+            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+                e2eMetadataNew = NCEndToEndMetadata.shared.encoderMetadata(tableE2eEncryption, privateKey: CCUtility.getEndToEndPrivateKey(metadata.account), serverUrl: metadata.serverUrl)
+            } else {
+                return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+            }
+
+            // send metadata
+            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: "PUT")
+            return putE2EEMetadataResults.error
+        }
+
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_already_exists_")
+        }
 
-        } else {
+        // Lock
+        let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        if lockResults.error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
 
-            // Lock & Send metadata
-            let sendE2EMetadataResults = await
-            NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account,
-                            serverUrl: metadata.serverUrl,
-                            fileNameRename: metadata.fileName,
-                            fileNameNewRename: fileNameNew,
-                            deleteE2eEncryption: nil,
-                            urlBase: metadata.urlBase,
-                            userId: metadata.userId)
-
-            if sendE2EMetadataResults.error == .success {
-
+            let error = await sendE2EMetadata(e2eToken: e2eToken, directory: directory)
+            if error == .success {
                 NCManageDatabase.shared.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
 
                 // Move file system
@@ -66,10 +83,10 @@ class NCNetworkingE2EERename: NSObject {
             }
 
             // Unlock
-            if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
-                await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-            }
-            return sendE2EMetadataResults.error
+            await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+
+            return error
         }
+        return lockResults.error
     }
 }
