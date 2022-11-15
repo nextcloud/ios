@@ -65,8 +65,9 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         // Send e2e metadata
-        let createE2EeError = await createE2Ee(metadata: metadata, e2eToken: e2eToken, directory: directory)
-        guard createE2EeError == .success else {
+        guard await createE2Ee(metadata: metadata, e2eToken: e2eToken, directory: directory) == .success else {
+            // Unlock
+            await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_create_encrypted_")])
             return errorCreateEncrypted
@@ -162,6 +163,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // send metadata
         let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: method)
+        
         return putE2EEMetadataResults.error
     }
 
