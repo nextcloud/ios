@@ -37,64 +37,38 @@ class NCNetworkingE2EECreateFolder: NSObject {
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var serverUrlFileName = ""
         var fileNameIdentifier = ""
+        var error = NKError()
 
         fileNameFolder = NCUtilityFileSystem.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
-        if fileNameFolder.isEmpty {
-            return NKError()
-        }
+        if fileNameFolder.isEmpty { return error }
         fileNameIdentifier = NCNetworkingE2EE.shared.generateRandomIdentifier()
         serverUrlFileName = serverUrl + "/" + fileNameIdentifier
 
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
+        error = lockResults.error
+        if error == .success, let e2eToken = lockResults.e2eToken {
 
-        if lockResults.error == .success, let e2eToken = lockResults.e2eToken {
-
-            let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
-            let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: options)
-
-            if createFolderResults.error == .success {
-                guard let fileId = NCUtility.shared.ocIdToFileId(ocId: createFolderResults.ocId) else {
-                    // unlock
-                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                        await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                    }
-                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Error convert ocId")
-                }
-
+            let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
+            error = createFolderResults.error
+            if error == .success, let fileId = NCUtility.shared.ocIdToFileId(ocId: createFolderResults.ocId) {
                 // Mark folder as E2EE
                 let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
-
-                if markE2EEFolderResults.error == .success {
-
+                error = markE2EEFolderResults.error
+                if error == .success {
                     let sendE2EMetadataResults = await createE2Ee(account: account, fileNameFolder: fileNameFolder, fileNameIdentifier: fileNameIdentifier, serverUrl: serverUrl, urlBase: urlBase, userId: userId)
-
-                    // Unlock
-                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                        await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                    }
-
+                    error = sendE2EMetadataResults.error
                     if sendE2EMetadataResults.error == .success, let ocId = createFolderResults.ocId {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
                     }
-
-                    return sendE2EMetadataResults.error
-
-                } else {
-
-                    // Unlock
-                    if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                        await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
-                    }
-
-                    return markE2EEFolderResults.error
                 }
-            } else {
-                return createFolderResults.error
             }
-        } else {
-            return lockResults.error
+
+            // Unlock
+            await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
         }
+
+        return error
     }
 
     private func createE2Ee(account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String, urlBase: String, userId: String) async -> (e2eToken: String?, error: NKError) {
@@ -130,27 +104,28 @@ class NCNetworkingE2EECreateFolder: NSObject {
     func createFolderAndMarkE2EE(fileName: String, serverUrl: String) async -> NKError {
 
         let serverUrlFileName = serverUrl + "/" + fileName
+        var error = NKError()
+
         let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName)
         if createFolderResults.error != .success { return createFolderResults.error }
 
         let readFileOrFolderResults = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
-        if readFileOrFolderResults.error == .success, let file = readFileOrFolderResults.files.first {
+        error = readFileOrFolderResults.error
+        if error == .success, let file = readFileOrFolderResults.files.first {
 
             let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: file.fileId, delete: false)
             if markE2EEFolderResults.error != .success { return markE2EEFolderResults.error }
 
             file.e2eEncrypted = true
             guard let metadata = NCManageDatabase.shared.addMetadata(NCManageDatabase.shared.convertNCFileToMetadata(file, account: readFileOrFolderResults.account)) else {
-                return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_internal_generic_error_")
+                return error
             }
             NCManageDatabase.shared.addDirectory(encrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": serverUrl])
-
-            return markE2EEFolderResults.error
-        } else {
-            return readFileOrFolderResults.error
         }
+
+        return error
     }
 }

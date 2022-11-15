@@ -778,6 +778,8 @@
 "_not_connected_internet_"              = "Server connection error";
 "_not_possible_connect_to_server_"      = "It is not possible to connect to the server at this time";
 "_not_possible_create_folder_"          = "Folder could not be created";
+"_not_possible_delete_file_"            = "File could not be delete";
+"_not_possible_rename_file_"            = "File could not be renamed";
 "_server_down_"                         = "Could not establish contact with server";
 "_time_out_"                            = "Timeout, try again";
 "_unknow_response_server_"              = "Unexpected response from server";

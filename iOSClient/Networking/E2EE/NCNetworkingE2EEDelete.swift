@@ -34,6 +34,8 @@ class NCNetworkingE2EEDelete: NSObject {
 
     func delete(metadata: tableMetadata) async -> (NKError) {
 
+        var error = NKError()
+
         func sendE2EMetadata(e2eToken: String, directory: tableDirectory) async -> (NKError) {
 
             var e2eMetadataNew: String?
@@ -64,17 +66,19 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        if lockResults.error != .success { error = lockResults.error}
         if lockResults.error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
 
-            var error = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
-            if error == .success {
-                error = await sendE2EMetadata(e2eToken: e2eToken, directory: directory)
+            let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
+            if deleteMetadataPlainError != .success { error = deleteMetadataPlainError }
+            if deleteMetadataPlainError == .success {
+                let sendE2EMetadataError = await sendE2EMetadata(e2eToken: e2eToken, directory: directory)
+                if sendE2EMetadataError != .success { error = sendE2EMetadataError }
             }
             // Unlock
             await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            return error
-        } else {
-            return lockResults.error
         }
+
+        return error
     }
 }
