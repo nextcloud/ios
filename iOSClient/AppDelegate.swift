@@ -312,6 +312,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
 
+        // Unlock E2EE
+        NCNetworkingE2EE.shared.unlockAll(account: account)
+        
         // Start services
         NCService.shared.startRequestServicesServer()
 
