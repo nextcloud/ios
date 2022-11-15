@@ -85,7 +85,7 @@ class NCNetworkingE2EE: NSObject {
         let lockResults = await lock(account: account, serverUrl: serverUrl)
 
         if lockResults.error == .success, let e2eToken = lockResults.e2eToken, let directory = lockResults.directory {
-            let getE2EEMetadataResults = await  NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
+            let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: directory.fileId, e2eToken: e2eToken)
 
             var method = "POST"
             var e2eMetadataNew: String?
