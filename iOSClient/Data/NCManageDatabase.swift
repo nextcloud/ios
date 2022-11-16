@@ -972,7 +972,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deteleE2ETokenLock(account: String, serverUrl: String) {
+    @objc func deleteE2ETokenLock(account: String, serverUrl: String) {
 
         let realm = try! Realm()
 
