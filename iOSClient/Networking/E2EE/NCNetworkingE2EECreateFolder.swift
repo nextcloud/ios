@@ -47,6 +47,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
+        //
+
         error = lockResults.error
         if error == .success, let e2eToken = lockResults.e2eToken {
 
@@ -61,11 +63,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
                     error = await createE2Ee(account: account, fileNameFolder: fileNameFolder, fileNameIdentifier: fileNameIdentifier, serverUrl: serverUrl, e2eToken: e2eToken, fileId: fileId ,urlBase: urlBase, userId: userId)
                 }
             }
-
-            // Unlock
-            await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
         }
 
+        // Unlock
+        await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
+        //
+        
         if error == .success, let ocId = ocId {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
         }

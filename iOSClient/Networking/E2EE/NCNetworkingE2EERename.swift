@@ -65,6 +65,8 @@ class NCNetworkingE2EERename: NSObject {
 
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        //
+
         error = lockResults.error
         if error == .success, let e2eToken = lockResults.e2eToken, let fileId = lockResults.fileId {
 
@@ -79,11 +81,12 @@ class NCNetworkingE2EERename: NSObject {
                     try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                 } catch { }
             }
-
-            // Unlock
-            await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
         }
 
+        // Unlock
+        await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+        //
+        
         if error == .success {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
         }
