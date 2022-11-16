@@ -63,9 +63,8 @@ class NCNetworkingE2EEDelete: NSObject {
             return putE2EEMetadataResults.error
         }
 
-        // Lock
+        // ** Lock **
         let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
-        //
 
         error = lockResults.error
         if error == .success, let e2eToken = lockResults.e2eToken, let fileId = lockResults.fileId {
@@ -78,9 +77,8 @@ class NCNetworkingE2EEDelete: NSObject {
             }
         }
 
-        // Unlock
+        // ** Unlock **
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-        //
         
         return error
     }
