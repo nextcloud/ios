@@ -48,7 +48,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // Lock
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
         error = lockResults.error
-        if error == .success, let e2eToken = lockResults.e2eToken, let fileId = lockResults.fileId {
+        if error == .success, let e2eToken = lockResults.e2eToken {
 
             let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
             error = createFolderResults.error

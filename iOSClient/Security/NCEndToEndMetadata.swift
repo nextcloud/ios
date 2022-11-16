@@ -230,6 +230,7 @@ class NCEndToEndMetadata: NSObject {
 
                 } catch let error {
                     print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
+                    return false
                 }
             }
 
