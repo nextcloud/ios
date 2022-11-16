@@ -875,6 +875,7 @@
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
 "_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
+"_video_not_streamed_e2ee_" = "The server does not allow video streaming because is encrypted, do you want to download it?";
 "_scan_"                    = "Scan";
 "_in_"                      = "in";
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
