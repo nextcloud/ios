@@ -78,7 +78,7 @@ class NCNetworkingE2EE: NSObject {
         Task {
             for result in NCManageDatabase.shared.getE2EAllTokenLock(account: account) {
                 let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: result.fileId, e2eToken: result.e2eToken, method: "DELETE")
-                if lockE2EEFolderResults.error == .success || lockE2EEFolderResults.error.errorCode == 500 {
+                if lockE2EEFolderResults.error == .success {
                     NCManageDatabase.shared.deteleE2ETokenLock(account: account, serverUrl: result.serverUrl)
                 }
             }
