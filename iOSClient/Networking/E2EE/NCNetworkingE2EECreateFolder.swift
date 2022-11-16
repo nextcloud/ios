@@ -79,7 +79,6 @@ class NCNetworkingE2EECreateFolder: NSObject {
         var initializationVector: NSString?
         let object = tableE2eEncryption()
         var method = "POST"
-        var e2eMetadataNew: String?
 
         // ** Lock **
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
@@ -118,8 +117,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         NCManageDatabase.shared.addE2eEncryption(object)
 
         // Rebuild metadata for send it
-        if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-            e2eMetadataNew = NCEndToEndMetadata.shared.encoderMetadata(tableE2eEncryption, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl)
+        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)), let e2eMetadataNew = NCEndToEndMetadata.shared.encoderMetadata(tableE2eEncryption, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl) else {
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
         }
 
         // send metadata
