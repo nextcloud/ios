@@ -1053,6 +1053,9 @@ class NCUtility: NSObject {
     func isFolderEncrypted(serverUrl: String, e2eEncrypted: Bool = false, userBase: NCUserBaseUrl) -> Bool {
         return isFolderEncrypted(serverUrl: serverUrl, e2eEncrypted: e2eEncrypted, account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId)
     }
+    func isFolderEncrypted(metadata: tableMetadata) -> Bool {
+        return isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+    }
     @objc func isFolderEncrypted(serverUrl: String, e2eEncrypted: Bool = false, account:String, urlBase: String, userId: String) -> Bool {
         if e2eEncrypted { return true }
 
