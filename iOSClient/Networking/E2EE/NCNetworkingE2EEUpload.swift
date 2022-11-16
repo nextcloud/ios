@@ -57,14 +57,10 @@ class NCNetworkingE2EEUpload: NSObject {
         guard let result = NCManageDatabase.shared.addMetadata(metadata) else { return errorCreateEncrypted }
         metadata = result
 
-        // Lock
+        // ** Lock **
         let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
-        //
 
         guard let e2eToken = lockResults.e2eToken, let fileId = lockResults.fileId, lockResults.error == .success else {
-            // Unlock
-            await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            //
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_create_encrypted_")])
             return errorCreateEncrypted
@@ -73,9 +69,9 @@ class NCNetworkingE2EEUpload: NSObject {
         // Send e2e metadata
         let createE2EeError = await createE2Ee(metadata: metadata, e2eToken: e2eToken, fileId: fileId)
         guard createE2EeError == .success else {
-            // Unlock
+            // ** Unlock **
             await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            //
+
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": createE2EeError])
             return errorCreateEncrypted
@@ -84,7 +80,7 @@ class NCNetworkingE2EEUpload: NSObject {
         // Send file
         let sendFileResults = await sendFile(metadata: metadata, e2eToken: e2eToken)
 
-        // Unlock
+        // ** Unlock **
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         if sendFileResults.afError?.isExplicitlyCancelledError ?? false {
