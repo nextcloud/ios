@@ -137,6 +137,9 @@ class NCNetworkingE2EEUpload: NSObject {
             method = "PUT"
         }
 
+        // [REPLACE]
+        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileNameView))
+
         // Add new metadata
         if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             objectE2eEncryption.metadataKey = result.metadataKey
