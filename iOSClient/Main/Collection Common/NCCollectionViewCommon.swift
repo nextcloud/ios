@@ -1278,6 +1278,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 }
 
+// MARK: - E2EE
+
+extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
+
+    func endToEndInitializeSuccess() {
+        if let metadata = appDelegate.activeMetadata {
+            pushMetadata(metadata)
+        }
+    }
+}
+
 // MARK: - Collection View
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
@@ -1300,8 +1311,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            let error = NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_goto_settings_for_enable_")
-            NCContentPresenter.shared.showInfo(error: error)
+            let e2ee = NCEndToEndInitialize()
+            e2ee.delegate = self
+            e2ee.initEndToEndEncryption()
             return
         }
 
