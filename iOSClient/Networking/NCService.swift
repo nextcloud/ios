@@ -109,7 +109,7 @@ class NCService: NSObject {
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
         NextcloudKit.shared.getUserProfile(options: options) { account, userProfile, data, error in
-            guard error == .success, account == self.appDelegate.account else {
+            guard error == .success, let userProfile = userProfile else {
                 
                 // Ops the server has Unauthorized
                 NKCommon.shared.writeLog("[ERROR] The server has response with Unauthorized \(error.errorCode)")
@@ -127,7 +127,7 @@ class NCService: NSObject {
             }
 
             // Update User (+ userProfile.id) & active account & account network
-            guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
+            guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile) else {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Internal error : account not found on DB")
                 NCContentPresenter.shared.showError(error: error, priority: .max)
                 return
