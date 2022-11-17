@@ -188,6 +188,13 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
 
     [self initializeForm];
+
+    /*
+    NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken: nil timeout:30 queue:dispatch_get_main_queue()];
+    [[NextcloudKit shared] getE2EECertificateWithOptions:options completionHandler:^(NSString* account, NSString *certificate, NSData *data, NKError *error) {
+
+    }];
+    */
 }
 
 - (void)viewWillAppear:(BOOL)animated
