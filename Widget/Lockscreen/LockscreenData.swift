@@ -76,14 +76,14 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     if #available(iOSApplicationExtension 16.0, *) {
         if family == .accessoryCircular {
             NextcloudKit.shared.getUserProfile(options: options) { _, userProfile, _, error in
-                if error == .success, let userProfile = userProfile, let account = NCManageDatabase.shared.setAccountUserProfile(userProfile) {
-                    if account.quotaRelative > 0 {
-                        quotaRelative = Float(account.quotaRelative) / 100
+                if error == .success, let userProfile = userProfile {
+                    if userProfile.quotaRelative > 0 {
+                        quotaRelative = Float(userProfile.quotaRelative) / 100
                     }
-                    let quotaUsed: String = CCUtility.transformedSize(account.quotaUsed)
+                    let quotaUsed: String = CCUtility.transformedSize(userProfile.quotaUsed)
                     var quotaTotal: String = ""
 
-                    switch account.quotaTotal {
+                    switch userProfile.quotaTotal {
                     case -1:
                         quotaTotal = ""
                     case -2:
@@ -91,7 +91,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                     case -3:
                         quotaTotal = ""
                     default:
-                        quotaTotal = CCUtility.transformedSize(account.quotaTotal)
+                        quotaTotal = CCUtility.transformedSize(userProfile.quotaTotal)
                     }
                     completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal, error: false))
                 } else {
