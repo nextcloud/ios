@@ -26,15 +26,19 @@ import SwiftUI
 @objc
 class NCManageE2EEInterface: NSObject {
     @objc func makeShipDetailsUI() -> UIViewController {
-        var details = NCManageE2EE()
+        let details = NCManageE2EE()
         return UIHostingController(rootView: details)
     }
 }
 
 struct NCManageE2EE: View {
     var body: some View {
-        Text("Hello, world!")
-            .navigationTitle("Cifratura End-To-End")
+        VStack {
+            Text("Hello, world! 1")
+            Text("Hello, world! 2")
+            Text("Hello, world! 3")
+        }
+        .navigationTitle("Cifratura End-To-End")
     }
 }
 
