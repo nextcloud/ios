@@ -37,7 +37,7 @@ extension FileProviderExtension {
         let directoryName = NCUtilityFileSystem.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
-        NextcloudKit.shared.createFolder(serverUrlFileName) { account, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { account, ocId, _, error in
 
             if error == .success {
 
@@ -88,7 +88,7 @@ extension FileProviderExtension {
         let serverUrl = metadata.serverUrl
         let fileName = metadata.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
 
             if error == .success { // || error == kOCErrorServerPathNotFound {
 
