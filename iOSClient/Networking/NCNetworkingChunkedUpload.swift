@@ -216,7 +216,7 @@ extension NCNetworking {
             if error == .success {
                 completion(NKError())
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                NextcloudKit.shared.createFolder(chunkFolderPath, options: options) { _, _, _, error in
+                NextcloudKit.shared.createFolder(serverUrlFileName: chunkFolderPath, options: options) { _, _, _, error in
                     completion(error)
                 }
             } else {
@@ -234,13 +234,13 @@ extension NCNetworking {
         if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
             // Delete chunk folder
-            NextcloudKit.shared.deleteFileOrFolder(chunkFolderPath) { _, _ in }
+            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: chunkFolderPath) { _, _ in }
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
-            NextcloudKit.shared.deleteFileOrFolder(chunkFolderPath) { _, _ in }
+            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: chunkFolderPath) { _, _ in }
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 

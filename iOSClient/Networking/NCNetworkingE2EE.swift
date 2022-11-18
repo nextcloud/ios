@@ -53,7 +53,7 @@ import Alamofire
 
                 let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken!])
                 
-                NextcloudKit.shared.createFolder(fileNameFolderUrl, options: options) { account, ocId, _, error in
+                NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, options: options) { account, ocId, _, error in
                     if error == .success {
                         guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
                             // unlock

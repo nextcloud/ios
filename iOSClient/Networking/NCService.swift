@@ -109,7 +109,7 @@ class NCService: NSObject {
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
 
         NextcloudKit.shared.getUserProfile(options: options) { account, userProfile, data, error in
-            guard error == .success, account == self.appDelegate.account else {
+            guard error == .success, let userProfile = userProfile else {
                 
                 // Ops the server has Unauthorized
                 NKCommon.shared.writeLog("[ERROR] The server has response with Unauthorized \(error.errorCode)")
@@ -127,7 +127,7 @@ class NCService: NSObject {
             }
 
             // Update User (+ userProfile.id) & active account & account network
-            guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
+            guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile) else {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Internal error : account not found on DB")
                 NCContentPresenter.shared.showError(error: error, priority: .max)
                 return
@@ -195,19 +195,18 @@ class NCService: NSObject {
             // File Sharing
             let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
             if isFilesSharingEnabled {
-                NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, data, error in
-                    if error == .success {
+                NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, data, error in
+                    if error == .success, let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
                         NCManageDatabase.shared.deleteTableShare(account: account)
                         if let shares = shares, !shares.isEmpty {
-                            NCManageDatabase.shared.addShare(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, shares: shares)
+                            let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId)
+                            NCManageDatabase.shared.addShare(account: account, home: home, shares: shares)
                         }
                     }
                 }
             }
-
             let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
             let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
-
             if !isFilesSharingEnabled && !comments && activity == nil {
                 self.appDelegate.disableSharesView = true
             } else {
