@@ -22,21 +22,139 @@
 //
 
 import SwiftUI
+import NextcloudKit
+import TOPasscodeViewController
+import LocalAuthentication
+
 
 @objc
-class NCManageE2EEInterface: NSObject {
+class NCManageE2EEInterface: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
+
+    let endToEndInitialize = NCEndToEndInitialize()
+
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var passcodeType = ""
+
+    override init() {
+        super.init()
+
+        endToEndInitialize.delegate = self
+    }
+
     @objc func makeShipDetailsUI() -> UIViewController {
         let details = NCManageE2EE()
         return UIHostingController(rootView: details)
     }
+
+    func endToEndInitializeSuccess() {
+
+    }
+
+    // MARK: - Passcode
+
+    func requestPasscodeType(_ passcodeType: String) {
+
+        let laContext = LAContext()
+        var error: NSError?
+
+        let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
+        passcodeViewController.delegate = self
+        passcodeViewController.keypadButtonShowLettering = false
+        if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            if error == nil {
+                if laContext.biometryType == .faceID  {
+                    passcodeViewController.biometryType = .faceID
+                    passcodeViewController.allowBiometricValidation = true
+                } else if laContext.biometryType == .touchID  {
+                    passcodeViewController.biometryType = .touchID
+                }
+                passcodeViewController.allowBiometricValidation = true
+                passcodeViewController.automaticallyPromptForBiometricValidation = true
+            }
+        }
+
+        self.passcodeType = passcodeType
+        appDelegate.window?.rootViewController?.present(passcodeViewController, animated: true)
+    }
+
+    func correctPasscode() {
+
+        if self.passcodeType == "removeLocallyEncryption" {
+            let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { action in
+                CCUtility.clearAllKeysEnd(toEnd: self.appDelegate.account)
+            }))
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { action in }))
+            appDelegate.window?.rootViewController?.present(alertController, animated: true)
+        }
+    }
+
+    func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
+
+        if code == CCUtility.getPasscode() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.correctPasscode()
+            }
+            return true
+        } else {
+            return false
+        }
+    }
+
+    func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
+
+        LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+            if success {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    passcodeViewController.dismiss(animated: true)
+                    self.correctPasscode()
+                }
+            }
+        }
+    }
+
+    func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
+        passcodeViewController.dismiss(animated: true)
+    }
 }
 
 struct NCManageE2EE: View {
+    let manageE2EEInterface = NCManageE2EEInterface()
+
     var body: some View {
         VStack {
             Text("Hello, world! 1")
-            Text("Hello, world! 2")
-            Text("Hello, world! 3")
+            Button(action: {
+                manageE2EEInterface.endToEndInitialize.initEndToEndEncryption()
+            }, label: {
+                Text("Start")
+            })
+
+            Button(action: {
+                if CCUtility.getPasscode().isEmpty {
+                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                } else {
+                    manageE2EEInterface.requestPasscodeType("removeLocallyEncryption")
+                }
+            }, label: {
+                Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+            })
+
+            #if DEBUG
+            Button(action: {
+
+            }, label: {
+                Text("Delete Certificate")
+            })
+            Button(action: {
+                NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
+
+                }
+            }, label: {
+                Text("Delete PrivateKey")
+            })
+            #endif
+
         }
         .navigationTitle("Cifratura End-To-End")
     }

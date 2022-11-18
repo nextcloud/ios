@@ -122,6 +122,7 @@ excluded:
   - iOSClient/Select/NCSelect.swift
   - iOSClient/Settings/NCEndToEndInitialize.swift
   - iOSClient/Settings/NCManageAutoUploadFileName.swift
+  - iOSClient/Settings/NCManageE2EE.swift
   - iOSClient/Share/NCShareCommon.swift
   - iOSClient/Share/NCShareNetworking.swift
   - iOSClient/Shares/NCShares.swift
