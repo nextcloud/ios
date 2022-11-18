@@ -1296,10 +1296,9 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Share
 
-    @objc func addShare(account: String, urlBase: String, userId: String, shares: [NKShare]) {
+    @objc func addShare(account: String, home: String, shares: [NKShare]) {
 
         let realm = try! Realm()
-        let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
 
         do {
             try realm.write {
@@ -1310,12 +1309,13 @@ class NCManageDatabase: NSObject {
                     guard let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else {
                         continue
                     }
-                    let fileName = NSString(string: serverUrlPath).lastPathComponent
 
                     let object = tableShare()
 
                     object.account = account
-                    object.fileName = fileName
+                    if let fileName = share.path.components(separatedBy: "/").last {
+                        object.fileName = fileName
+                    }
                     object.serverUrl = serverUrl
 
                     object.canEdit = share.canEdit

@@ -52,7 +52,8 @@ class NCShareNetworking: NSObject {
             }
 
             if error == .success, let shares = shares {
-                NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: shares)
+                let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
+                NCManageDatabase.shared.addShare(account: self.metadata.account, home:home, shares: shares)
             } else {
                 NCContentPresenter.shared.showError(error: error)
             }
@@ -75,7 +76,8 @@ class NCShareNetworking: NSObject {
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 option.idShare = share.idShare
-                NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: [share])
+                let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
+                NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: [share])
                 if option.hasChanges(comparedTo: share) {
                     self.updateShare(option: option)
                 }
@@ -104,7 +106,8 @@ class NCShareNetworking: NSObject {
         NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, data, error in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
-                NCManageDatabase.shared.addShare(account: self.metadata.account, urlBase: self.metadata.urlBase, userId: self.metadata.userId, shares: [share])
+                let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
+                NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
             } else {
                 NCContentPresenter.shared.showError(error: error)
