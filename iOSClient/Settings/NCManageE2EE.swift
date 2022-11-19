@@ -52,7 +52,7 @@ class NCManageE2EEInterface: NSObject, NCEndToEndInitializeDelegate, TOPasscodeV
 
     // MARK: - Passcode
 
-    func requestPasscodeType(_ passcodeType: String) {
+    @objc func requestPasscodeType(_ passcodeType: String) {
 
         let laContext = LAContext()
         var error: NSError?
@@ -77,7 +77,7 @@ class NCManageE2EEInterface: NSObject, NCEndToEndInitializeDelegate, TOPasscodeV
         appDelegate.window?.rootViewController?.present(passcodeViewController, animated: true)
     }
 
-    func correctPasscode() {
+    @objc func correctPasscode() {
 
         if self.passcodeType == "removeLocallyEncryption" {
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
@@ -123,39 +123,60 @@ struct NCManageE2EE: View {
 
     var body: some View {
         VStack {
-            Text("Hello, world! 1")
-            Button(action: {
-                manageE2EEInterface.endToEndInitialize.initEndToEndEncryption()
-            }, label: {
-                Text("Start")
-            })
+            VStack {
 
-            Button(action: {
-                if CCUtility.getPasscode().isEmpty {
-                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                } else {
-                    manageE2EEInterface.requestPasscodeType("removeLocallyEncryption")
+                Text("Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, versione 2 perchè la versione 1 e poi altro testo ")
+                    .frame(height: 100)
+                    .padding()
+
+                Button(action: {}) {
+                    HStack{
+                        Image(systemName: "person.crop.circle.fill")
+                        Text("This is a button")
+                            .padding(.horizontal)
+                    }
+                    .padding()
                 }
-            }, label: {
-                Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-            })
+                .foregroundColor(Color.white)
+                .background(Color.blue)
+                .cornerRadius(.infinity)
+                .frame(height: 100)
 
-            #if DEBUG
-            Button(action: {
+                Button(action: {
+                    manageE2EEInterface.endToEndInitialize.initEndToEndEncryption()
+                }, label: {
+                    Text("Start")
+                })
+                Button(action: {
+                    if CCUtility.getPasscode().isEmpty {
+                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                    } else {
+                        manageE2EEInterface.requestPasscodeType("removeLocallyEncryption")
+                    }
+                }, label: {
+                    Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+                })
 
-            }, label: {
-                Text("Delete Certificate")
-            })
-            Button(action: {
-                NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
+#if DEBUG
+                Button(action: {
 
-                }
-            }, label: {
-                Text("Delete PrivateKey")
-            })
-            #endif
+                }, label: {
+                    Text("Delete Certificate")
+                })
+                Button(action: {
+                    NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
 
+                    }
+                }, label: {
+                    Text("Delete PrivateKey")
+                })
+#endif
+
+            }
+            .background(Color.green)
+            Spacer()
         }
+        .background(Color.gray)
         .navigationTitle("Cifratura End-To-End")
     }
 }
