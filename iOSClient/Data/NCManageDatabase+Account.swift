@@ -79,7 +79,6 @@ extension NCManageDatabase {
         do {
             try realm.write {
                 let result = realm.objects(tableAccount.self).filter("account == %@", account)
-
                 realm.delete(result)
             }
         } catch let error {
@@ -285,88 +284,47 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountUserProfile(_ userProfile: NKUserProfile) -> tableAccount? {
+    @objc func setAccountUserProfile(account: String, userProfile: NKUserProfile) -> tableAccount? {
 
         let realm = try! Realm()
 
-        var returnAccount = tableAccount()
-
         do {
-            guard let activeAccount = self.getActiveAccount() else {
-                return nil
-            }
-
             try realm.write {
-
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
-                    return
+                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                    result.address = userProfile.address
+                    result.backend = userProfile.backend
+                    result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
+                    result.backendCapabilitiesSetPassword = userProfile.backendCapabilitiesSetPassword
+                    result.displayName = userProfile.displayName
+                    result.email = userProfile.email
+                    result.enabled = userProfile.enabled
+                    result.groups = userProfile.groups.joined(separator: ",")
+                    result.language = userProfile.language
+                    result.lastLogin = userProfile.lastLogin
+                    result.locale = userProfile.locale
+                    result.organisation = userProfile.organisation
+                    result.phone = userProfile.phone
+                    result.quota = userProfile.quota
+                    result.quotaFree = userProfile.quotaFree
+                    result.quotaRelative = userProfile.quotaRelative
+                    result.quotaTotal = userProfile.quotaTotal
+                    result.quotaUsed = userProfile.quotaUsed
+                    result.storageLocation = userProfile.storageLocation
+                    result.subadmin = userProfile.subadmin.joined(separator: ",")
+                    result.twitter = userProfile.twitter
+                    result.userId = userProfile.userId
+                    result.website = userProfile.website
                 }
-
-                result.address = userProfile.address
-                result.backend = userProfile.backend
-                result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
-                result.backendCapabilitiesSetPassword = userProfile.backendCapabilitiesSetPassword
-                result.displayName = userProfile.displayName
-                result.email = userProfile.email
-                result.enabled = userProfile.enabled
-                result.groups = userProfile.groups.joined(separator: ",")
-                result.language = userProfile.language
-                result.lastLogin = userProfile.lastLogin
-                result.locale = userProfile.locale
-                result.organisation = userProfile.organisation
-                result.phone = userProfile.phone
-                result.quota = userProfile.quota
-                result.quotaFree = userProfile.quotaFree
-                result.quotaRelative = userProfile.quotaRelative
-                result.quotaTotal = userProfile.quotaTotal
-                result.quotaUsed = userProfile.quotaUsed
-                result.storageLocation = userProfile.storageLocation
-                result.subadmin = userProfile.subadmin.joined(separator: ",")
-                result.twitter = userProfile.twitter
-                result.userId = userProfile.userId
-                result.website = userProfile.website
-
-                returnAccount = result
             }
         } catch let error {
             NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
 
-        return tableAccount.init(value: returnAccount)
-    }
-
-    @objc func setAccountUserProfileHC(businessSize: String, businessType: String, city: String, organisation: String, country: String, role: String, zip: String) -> tableAccount? {
-
-        let realm = try! Realm()
-
-        var returnAccount = tableAccount()
-
-        do {
-            guard let activeAccount = self.getActiveAccount() else {
-                return nil
-            }
-
-            try realm.write {
-
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
-                    return
-                }
-
-                result.businessSize = businessSize
-                result.businessType = businessType
-                result.city = city
-                result.organisation =  organisation
-                result.country = country
-                result.role = role
-                result.zip = zip
-
-                returnAccount = result
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+        if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+            return tableAccount.init(value: result)
+        } else {
+            return nil
         }
-
-        return tableAccount.init(value: returnAccount)
     }
 
     @objc func setAccountMediaPath(_ path: String, account: String) {

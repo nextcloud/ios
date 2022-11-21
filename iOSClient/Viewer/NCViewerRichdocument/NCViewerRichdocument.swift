@@ -31,7 +31,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
-
     var link: String = ""
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
@@ -44,6 +43,11 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.title = metadata.fileNameView
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
@@ -76,21 +80,14 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         appDelegate.activeViewController = self
 
-        //
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-
-        //
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
-
-        navigationItem.hidesBackButton = true
-        navigationController?.navigationBar.prefersLargeTitles = false
-        navigationItem.title = metadata.fileNameView
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -105,7 +102,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
         }
 
-        //
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
@@ -116,7 +112,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     @objc func viewUnload() {
-
         navigationController?.popViewController(animated: true)
     }
 
@@ -143,7 +138,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     @objc func keyboardWillHide(notification: Notification) {
-
         bottomConstraint?.constant = 0
     }
 

@@ -480,6 +480,7 @@ class NCMetadataForSection: NSObject {
         totalSize = 0
 
         var ocIds: [String] = []
+        let metadataInSession = metadatas.filter({ !$0.session.isEmpty })
 
         // Metadata order
         //
@@ -522,6 +523,11 @@ class NCMetadataForSection: NSObject {
 
             // skipped livePhoto
             if filterLivePhoto && metadata.livePhoto && (metadata.fileNameView as NSString).pathExtension.lowercased() == "mov" {
+                continue
+            }
+
+            // Upload [REPLACE] skip
+            if metadata.session.isEmpty && !metadataInSession.filter({ $0.fileNameView == metadata.fileNameView }).isEmpty {
                 continue
             }
 

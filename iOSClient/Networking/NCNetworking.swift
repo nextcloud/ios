@@ -973,7 +973,7 @@ import Photos
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        NextcloudKit.shared.createFolder(fileNameFolderUrl) { account, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl) { account, ocId, _, error in
             guard error == .success else {
                 if error.errorCode == NCGlobal.shared.errordMethodNotSupported && overwrite {
                     completion(NKError())
@@ -1125,7 +1125,7 @@ import Photos
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
         
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName, options: options) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options) { account, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 

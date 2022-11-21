@@ -316,7 +316,7 @@ extension NCTrash {
 
         let serverUrlFileName = appDelegate.urlBase + "/" + NCGlobal.shared.dav + "/trashbin/" + appDelegate.userId + "/trash"
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
                 NCContentPresenter.shared.showError(error: error)
@@ -333,7 +333,7 @@ extension NCTrash {
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
 
             guard error == .success, account == self.appDelegate.account else {
                 NCContentPresenter.shared.showError(error: error)
