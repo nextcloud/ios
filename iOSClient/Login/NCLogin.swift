@@ -130,11 +130,28 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         appDelegate.timerErrorNetworking?.invalidate()
 
         // test
-        createTalkAccount()
+        //createTalkAccount()
 
-        if let talkAccounts = readTalkAccounts(), let image = UIImage(named: "iconSuccess"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
+        if let talkAccounts = readTalkAccounts(), let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
             NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "Talk is intalled", description: "Hei I have fount talk user, ...", textCancelButton: "cancel", textOkButton: "ok", attributes: EKAttributes.topFloat) { identifier in
-                print(identifier)
+                if identifier == "ok" {
+                    if let vc = UIStoryboard(name: "NCTalkAccounts", bundle: nil).instantiateInitialViewController() as? NCTalkAccounts {
+
+                        vc.accounts = talkAccounts
+                        vc.enableTimerProgress = false
+                        vc.dismissDidEnterBackground = true
+                        //vcAccountRequest.delegate = self
+
+                        let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                        let numberCell = talkAccounts.count
+                        let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
+
+                        let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
+                        popup.backgroundAlpha = 0.8
+
+                        self.appDelegate.window?.rootViewController?.present(popup, animated: true)
+                    }
+                }
             }
         }
     }

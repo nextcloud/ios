@@ -25,14 +25,12 @@ import UIKit
 import NextcloudKit
 
 public protocol NCTalkAccountsDelegate: AnyObject {
-    func accountRequestAddAccount()
-    func accountRequestChangeAccount(account: String)
+    func accountRequestChangeAccount(serverUrl: String, user: String)
 }
 
 // optional func
 public extension NCTalkAccountsDelegate {
-    func accountRequestAddAccount() {}
-    func accountRequestChangeAccount(account: String) {}
+    func accountRequestChangeAccount(serverUrl: String, user: String) {}
 }
 
 class NCTalkAccounts: UIViewController {
@@ -42,12 +40,10 @@ class NCTalkAccounts: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    public var accounts: [tableAccount] = []
-    public var activeAccount: tableAccount?
+    public var accounts: [[String: String]] = [[:]]
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
-    public var enableAddAccount: Bool = false
-    public var dismissDidEnterBackground: Bool = false
+    public var dismissDidEnterBackground: Bool = true
     public weak var delegate: NCTalkAccountsDelegate?
 
     private var timer: Timer?
@@ -90,7 +86,6 @@ class NCTalkAccounts: UIViewController {
 
         let visibleCells = tableView.visibleCells
         var numAccounts = accounts.count
-        if enableAddAccount { numAccounts += 1 }
 
         if visibleCells.count == numAccounts {
             tableView.isScrollEnabled = false
@@ -167,6 +162,9 @@ extension NCTalkAccounts: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
+
+
+        /*
         if indexPath.row == accounts.count {
 
             dismiss(animated: true)
@@ -183,17 +181,14 @@ extension NCTalkAccounts: UITableViewDelegate {
                 dismiss(animated: true)
             }
         }
+        */
     }
 }
 
 extension NCTalkAccounts: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if enableAddAccount {
-            return accounts.count + 1
-        } else {
-            return accounts.count
-        }
+        return accounts.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -209,36 +204,31 @@ extension NCTalkAccounts: UITableViewDataSource {
         userLabel?.text = ""
         urlLabel?.text = ""
 
-        if indexPath.row == accounts.count {
-
-            avatarImage?.image = NCUtility.shared.loadImage(named: "plus").image(color: .systemBlue, size: 15)
-            avatarImage?.contentMode = .center
-            userLabel?.text = NSLocalizedString("_add_account_", comment: "")
-            userLabel?.textColor = .systemBlue
-            userLabel?.font = UIFont.systemFont(ofSize: 15)
-
-        } else {
-
-            let account = accounts[indexPath.row]
-
-            avatarImage?.image = NCUtility.shared.loadUserImage(
-                for: account.user,
-                   displayName: account.displayName,
-                   userBaseUrl: account)
-
-            if account.alias.isEmpty {
-                userLabel?.text = account.user.uppercased()
-                urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
-            } else {
-                userLabel?.text = account.alias.uppercased()
-            }
-
-            if account.active {
-                activeImage?.image = NCUtility.shared.loadImage(named: "checkmark").image(color: .systemBlue, size: 30)
-            } else {
-                activeImage?.image = nil
-            }
+        if let account = accounts[indexPath.row].first {
+            userLabel?.text = account.value.uppercased()
+            urlLabel?.text = (URL(string: account.key)?.host ?? "")
         }
+
+        /*
+        let serverUrl = account.keys
+        let user = account.values
+
+        urlLabel?.text = serverUrl
+
+
+        if account.alias.isEmpty {
+            userLabel?.text = account.user.uppercased()
+            urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
+        } else {
+            userLabel?.text = account.alias.uppercased()
+        }
+
+        if account.active {
+            activeImage?.image = NCUtility.shared.loadImage(named: "checkmark").image(color: .systemBlue, size: 30)
+        } else {
+            activeImage?.image = nil
+        }
+        */
 
         return cell
     }
