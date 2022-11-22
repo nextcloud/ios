@@ -119,9 +119,9 @@ class NCLoginWeb: UIViewController {
                 urlBase = loginFlowV2Login
             } else {
                 urlBase += "/index.php/login/flow"
-            }
-            if let user = self.user {
-                urlBase += "?user=\(user)"
+                if let user = self.user {
+                    urlBase += "?user=\(user)"
+                }
             }
         }
 
