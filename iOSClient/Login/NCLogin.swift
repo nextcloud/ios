@@ -252,6 +252,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
                             loginWeb.urlBase = url
+                            loginWeb.user = user
                             loginWeb.loginFlowV2Available = true
                             loginWeb.loginFlowV2Token = token!
                             loginWeb.loginFlowV2Endpoint = endpoint!
@@ -266,6 +267,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
                             loginWeb.urlBase = url
+                            loginWeb.user = user
 
                             self.navigationController?.pushViewController(loginWeb, animated: true)
                         }
