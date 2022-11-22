@@ -130,7 +130,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         appDelegate.timerErrorNetworking?.invalidate()
 
         // test
-        //createTalkAccount()
+        createTalkAccount()
 
         if let talkAccounts = readTalkAccounts(), let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
             NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "Talk is intalled", description: "Hei I have fount talk user, ...", textCancelButton: "cancel", textOkButton: "ok", attributes: EKAttributes.topFloat) { identifier in
@@ -139,8 +139,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         vc.accounts = talkAccounts
                         vc.enableTimerProgress = false
-                        vc.dismissDidEnterBackground = true
-                        //vcAccountRequest.delegate = self
+                        vc.dismissDidEnterBackground = false
+                        vc.delegate = self
 
                         let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
                         let numberCell = talkAccounts.count
@@ -149,7 +149,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
                         popup.backgroundAlpha = 0.8
 
-                        self.appDelegate.window?.rootViewController?.present(popup, animated: true)
+                        self.present(popup, animated: true)
                     }
                 }
             }
@@ -230,7 +230,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     // MARK: - Login
 
-    func isUrlValid(url: String) {
+    func isUrlValid(url: String, user: String? = nil) {
 
         loginButton.isEnabled = false
 
@@ -440,5 +440,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             accounts.append([account.urlBase:account.user])
         }
         return NCUtility.shared.createAccountsFile(at: url, accounts: accounts)
+    }
+}
+
+extension NCLogin: NCTalkAccountsDelegate {
+
+    func selected(url: String, user: String) {
+        isUrlValid(url: url, user: user)
     }
 }

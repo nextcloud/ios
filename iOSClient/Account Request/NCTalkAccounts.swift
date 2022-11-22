@@ -25,12 +25,12 @@ import UIKit
 import NextcloudKit
 
 public protocol NCTalkAccountsDelegate: AnyObject {
-    func accountRequestChangeAccount(serverUrl: String, user: String)
+    func selected(url: String, user: String)
 }
 
 // optional func
 public extension NCTalkAccountsDelegate {
-    func accountRequestChangeAccount(serverUrl: String, user: String) {}
+    func selected(url: String, user: String) {}
 }
 
 class NCTalkAccounts: UIViewController {
@@ -55,12 +55,12 @@ class NCTalkAccounts: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleLabel.text = NSLocalizedString("_account_select_", comment: "")
+        titleLabel.text = NSLocalizedString("_account_select_to_add_", comment: "")
 
         closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: .label), for: .normal)
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
-        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        //tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         view.backgroundColor = .secondarySystemBackground
         tableView.backgroundColor = .secondarySystemBackground
@@ -85,9 +85,8 @@ class NCTalkAccounts: UIViewController {
         super.viewDidAppear(animated)
 
         let visibleCells = tableView.visibleCells
-        var numAccounts = accounts.count
 
-        if visibleCells.count == numAccounts {
+        if visibleCells.count == accounts.count {
             tableView.isScrollEnabled = false
         }
     }
@@ -162,26 +161,11 @@ extension NCTalkAccounts: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-
-
-        /*
-        if indexPath.row == accounts.count {
-
-            dismiss(animated: true)
-            delegate?.accountRequestAddAccount()
-
-        } else {
-
-            let account = accounts[indexPath.row]
-            if account.account != activeAccount?.account {
-                dismiss(animated: true) {
-                    self.delegate?.accountRequestChangeAccount(account: account.account)
-                }
-            } else {
-                dismiss(animated: true)
+        if let account = accounts[indexPath.row].first {
+            dismiss(animated: true) {
+                self.delegate?.selected(url: account.key, user: account.value)
             }
         }
-        */
     }
 }
 
@@ -196,10 +180,8 @@ extension NCTalkAccounts: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = tableView.backgroundColor
 
-        let avatarImage = cell.viewWithTag(10) as? UIImageView
-        let userLabel = cell.viewWithTag(20) as? UILabel
-        let urlLabel = cell.viewWithTag(30) as? UILabel
-        let activeImage = cell.viewWithTag(40) as? UIImageView
+        let userLabel = cell.viewWithTag(10) as? UILabel
+        let urlLabel = cell.viewWithTag(20) as? UILabel
 
         userLabel?.text = ""
         urlLabel?.text = ""
@@ -208,27 +190,6 @@ extension NCTalkAccounts: UITableViewDataSource {
             userLabel?.text = account.value.uppercased()
             urlLabel?.text = (URL(string: account.key)?.host ?? "")
         }
-
-        /*
-        let serverUrl = account.keys
-        let user = account.values
-
-        urlLabel?.text = serverUrl
-
-
-        if account.alias.isEmpty {
-            userLabel?.text = account.user.uppercased()
-            urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
-        } else {
-            userLabel?.text = account.alias.uppercased()
-        }
-
-        if account.active {
-            activeImage?.image = NCUtility.shared.loadImage(named: "checkmark").image(color: .systemBlue, size: 30)
-        } else {
-            activeImage?.image = nil
-        }
-        */
 
         return cell
     }
