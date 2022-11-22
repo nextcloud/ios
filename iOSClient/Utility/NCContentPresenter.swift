@@ -148,6 +148,61 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
     }
 
+    // MARK: -
+
+    func alertAction(image: UIImage, backgroundColor: UIColor, textColor: UIColor, title: String, description: String, textCancelButton: String, textOkButton: String, attributes: EKAttributes, completion: @escaping (_ identifier: String) -> Void) {
+
+        var buttonAttributes: EKAttributes {
+            var attributes = attributes
+            attributes.hapticFeedbackType = .success
+            attributes.displayDuration = .infinity
+            attributes.entryBackground = .color(color: EKColor(backgroundColor))
+            attributes.shadow = .active(with: .init(color: .black, opacity: 0.3, radius: 8))
+            attributes.screenInteraction = .dismiss
+            attributes.entryInteraction = .absorbTouches
+            attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
+            attributes.roundCorners = .all(radius: 25)
+            attributes.entranceAnimation = .init(translate: .init(duration: 0.7, spring: .init(damping: 1, initialVelocity: 0)), scale: .init(from: 1.05, to: 1, duration: 0.4, spring: .init(damping: 1, initialVelocity: 0)))
+            attributes.exitAnimation = .init(translate: .init(duration: 0.2))
+            attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.2)))
+            attributes.positionConstraints.verticalOffset = 20
+            attributes.positionConstraints.size = .init(width: .offset(value: 20), height: .intrinsic)
+            attributes.positionConstraints.maxSize = .init(width: .constant(value: min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)), height: .intrinsic)
+            attributes.statusBar = .dark
+            return attributes
+        }
+
+        let simpleMessage = EKSimpleMessage(image: EKProperty.ImageContent(image: image, size: CGSize(width: 34, height: 34)),
+                                            title: EKProperty.LabelContent(text: title, style: .init(font: MainFont.medium.with(size: 15), color: EKColor(textColor)), accessibilityIdentifier: "title"),
+                                            description: EKProperty.LabelContent(text: description, style: .init( font: MainFont.light.with(size: 13), color: EKColor(textColor)), accessibilityIdentifier: "description"))
+
+        let cancelButton = EKProperty.ButtonContent(
+            label: EKProperty.LabelContent(text: textCancelButton, style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+            backgroundColor: .clear,
+            highlightedBackgroundColor: EKColor(UIColor.lightGray),
+            accessibilityIdentifier: "close") {
+                SwiftEntryKit.dismiss()
+                completion("close")
+            }
+
+        let okButton = EKProperty.ButtonContent(
+            label: EKProperty.LabelContent(text: textOkButton,style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+            backgroundColor: .clear,
+            highlightedBackgroundColor: EKColor(UIColor.lightGray),
+            displayMode: EKAttributes.DisplayMode.inferred,
+            accessibilityIdentifier: "ok") {
+                SwiftEntryKit.dismiss()
+                completion("ok")
+            }
+
+        let buttonsBarContent = EKProperty.ButtonBarContent(with: cancelButton, okButton, separatorColor: EKColor(UIColor.lightGray), buttonHeight: 60, expandAnimatedly: true)
+        let alertMessage = EKAlertMessage(simpleMessage: simpleMessage, imagePosition: .left, buttonBarContent: buttonsBarContent)
+        let contentView = EKAlertMessageView(with: alertMessage)
+
+        SwiftEntryKit.display(entry: contentView, using: buttonAttributes)
+    }
+
+
     // MARK: - Note Message
 
     func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {

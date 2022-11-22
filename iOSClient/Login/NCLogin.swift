@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import SwiftEntryKit
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
@@ -127,6 +128,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         super.viewDidAppear(animated)
 
         appDelegate.timerErrorNetworking?.invalidate()
+
+        // test
+        createTalkAccount()
+
+        if let talkAccounts = readTalkAccounts(), let image = UIImage(named: "iconSuccess"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
+            NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "Talk is intalled", description: "Hei I have fount talk user, ...", textCancelButton: "cancel", textOkButton: "ok", attributes: EKAttributes.topFloat) { identifier in
+                print(identifier)
+            }
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -388,5 +398,30 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
             self.present(alertController, animated: true, completion: { })
         }
+    }
+
+    func readTalkAccounts() -> [[String:String]]? {
+
+        guard let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) else { return nil }
+        let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
+
+        if FileManager.default.fileExists(atPath: url.path) {
+            return NCUtility.shared.readAccountsFile(at: url)
+        }
+        return nil
+    }
+
+    func createTalkAccount() -> Error? {
+
+        guard let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) else { return nil }
+        let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
+
+
+        let tableAccount = NCManageDatabase.shared.getAllAccount()
+        var accounts = [[String:String]]()
+        for account in tableAccount {
+            accounts.append([account.urlBase:account.user])
+        }
+        return NCUtility.shared.createAccountsFile(at: url, accounts: accounts)
     }
 }
