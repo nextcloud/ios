@@ -51,6 +51,7 @@ import UIKit
 
     // Capabilities Group
     @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
+    @objc public var capabilitiesGroupsTalk: String = "group.com.nextcloud.Talk"
 
     // User Agent
     @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!

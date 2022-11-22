@@ -1074,4 +1074,28 @@ class NCUtility: NSObject {
 
         return false
     }
+
+    //
+
+    @objc func createAccountsFile(at url: URL, accounts: [[String:String]]) -> Error? {
+
+        do {
+            let encode = try JSONEncoder().encode(accounts)
+            try encode.write(to: url)
+        } catch {
+            return error
+        }
+        return nil
+    }
+
+    @objc func readAccountsFile(at url: URL) -> [[String:String]]? {
+
+        do {
+            let data = try Data(contentsOf: url)
+            let accounts: [[String:String]] = try JSONDecoder().decode([[String: String]].self, from: data)
+            return accounts
+        } catch {
+            return nil
+        }
+    }
 }
