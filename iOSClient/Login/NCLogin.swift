@@ -41,6 +41,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var textColorOpponent: UIColor = .black
     private var activeTextfieldDiff: CGFloat = 0
     private var activeTextField = UITextField()
+    private var talkAccounts: [NKDataAccountFile]?
 
     // MARK: - View Life Cycle
 
@@ -117,6 +118,16 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             navigationItem.leftBarButtonItem = navigationItemCancel
         }
 
+        if NCBrandOptions.shared.use_talkDetect, let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) {
+            let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
+            if FileManager.default.fileExists(atPath: url.path), let talkAccounts = NKCommon.shared.readDataAccountFile(at: url) {
+                self.talkAccounts = talkAccounts
+                let navigationItemTalk = UIBarButtonItem(image: UIImage(named: "talk_bar"), style: .plain, target: self, action: #selector(openTalkAccountsViewController))
+                navigationItemTalk.tintColor = textColor
+                self.navigationItem.rightBarButtonItem = navigationItemTalk
+            }
+        }
+
         self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
         view.backgroundColor = NCBrandColor.shared.customer
 
@@ -129,24 +140,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         appDelegate.timerErrorNetworking?.invalidate()
 
-        if NCBrandOptions.shared.use_talkDetect, let talkAccounts = readTalkAccounts(), let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
+        if self.talkAccounts != nil, let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
             NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "_talk_detect_", description: "_talk_add_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
-                    if let vc = UIStoryboard(name: "NCTalkAccounts", bundle: nil).instantiateInitialViewController() as? NCTalkAccounts {
-
-                        vc.accounts = talkAccounts
-                        vc.enableTimerProgress = false
-                        vc.dismissDidEnterBackground = false
-                        vc.delegate = self
-
-                        let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
-                        let numberCell = talkAccounts.count
-                        let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
-
-                        let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
-
-                        self.present(popup, animated: true)
-                    }
+                    self.openTalkAccountsViewController()
                 }
             }
         }
@@ -222,6 +219,27 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     @IBAction func actionCertificate(_ sender: Any) {
 
+    }
+
+    // MARK: - Talk accounts View Controller
+
+    @objc func openTalkAccountsViewController() {
+
+        if let talkAccounts = self.talkAccounts, let vc = UIStoryboard(name: "NCTalkAccounts", bundle: nil).instantiateInitialViewController() as? NCTalkAccounts {
+
+            vc.accounts = talkAccounts
+            vc.enableTimerProgress = false
+            vc.dismissDidEnterBackground = false
+            vc.delegate = self
+
+            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+            let numberCell = talkAccounts.count
+            let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
+
+            let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
+
+            self.present(popup, animated: true)
+        }
     }
 
     // MARK: - Login
@@ -413,17 +431,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
             self.present(alertController, animated: true, completion: { })
         }
-    }
-
-    func readTalkAccounts() -> [NKDataAccountFile]? {
-
-        guard let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) else { return nil }
-        let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
-
-        if FileManager.default.fileExists(atPath: url.path) {
-            return NKCommon.shared.readDataAccountFile(at: url)
-        }
-        return nil
     }
 }
 
