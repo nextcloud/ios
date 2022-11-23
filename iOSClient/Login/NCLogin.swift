@@ -419,13 +419,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-    func readTalkAccounts() -> [[String:String]]? {
+    func readTalkAccounts() -> [dataAccountFile]? {
 
         guard let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) else { return nil }
         let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
 
         if FileManager.default.fileExists(atPath: url.path) {
-            return NCUtility.shared.readAccountsFile(at: url)
+            return NCUtility.shared.readDataAccountFile(at: url)
         }
         return nil
     }
@@ -435,13 +435,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         guard let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) else { return nil }
         let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
 
-
         let tableAccount = NCManageDatabase.shared.getAllAccount()
-        var accounts = [[String:String]]()
+        var accounts = [dataAccountFile]()
         for account in tableAccount {
-            accounts.append([account.urlBase:account.user])
+            let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
+            let avatar = String(CCUtility.getDirectoryUserData()) + "/" +  userBaseUrl + "-\(account.user).png"
+            let userData = dataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias, avatar: avatar)
+            accounts.append(userData)
         }
-        return NCUtility.shared.createAccountsFile(at: url, accounts: accounts)
+        return NCUtility.shared.createDataAccountFile(at: url, accounts: accounts)
     }
 }
 
