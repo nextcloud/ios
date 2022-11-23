@@ -1075,9 +1075,7 @@ class NCUtility: NSObject {
         return false
     }
 
-    //
-
-    @objc func createAccountsFile(at url: URL, accounts: [[String:String]]) -> Error? {
+    @objc func createDataAccountFile(at url: URL, accounts: [dataAccountFile]) -> Error? {
 
         do {
             let encode = try JSONEncoder().encode(accounts)
@@ -1088,14 +1086,29 @@ class NCUtility: NSObject {
         return nil
     }
 
-    @objc func readAccountsFile(at url: URL) -> [[String:String]]? {
+    @objc func readDataAccountFile(at url: URL) -> [dataAccountFile]? {
 
         do {
             let data = try Data(contentsOf: url)
-            let accounts: [[String:String]] = try JSONDecoder().decode([[String: String]].self, from: data)
+            let accounts: [dataAccountFile] = try JSONDecoder().decode([dataAccountFile].self, from: data)
             return accounts
         } catch {
             return nil
         }
+    }
+}
+
+class dataAccountFile: NSObject, Codable {
+
+    @objc var url: String
+    @objc var user: String
+    @objc var alias: String?
+    @objc var avatar: String?
+
+    init(withUrl url: String, user: String, alias: String? = nil, avatar: String? = nil) {
+        self.url = url
+        self.user = user
+        self.alias = alias
+        self.avatar = avatar
     }
 }

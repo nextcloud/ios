@@ -40,7 +40,7 @@ class NCTalkAccounts: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    public var accounts: [[String: String]] = [[:]]
+    public var accounts: [dataAccountFile] = []
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var dismissDidEnterBackground: Bool = true
@@ -161,10 +161,9 @@ extension NCTalkAccounts: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        if let account = accounts[indexPath.row].first {
-            dismiss(animated: true) {
-                self.delegate?.selected(url: account.key, user: account.value)
-            }
+        dismiss(animated: true) {
+            let account = self.accounts[indexPath.row]
+            self.delegate?.selected(url: account.url, user: account.user)
         }
     }
 }
@@ -180,16 +179,26 @@ extension NCTalkAccounts: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = tableView.backgroundColor
 
-        let userLabel = cell.viewWithTag(10) as? UILabel
-        let urlLabel = cell.viewWithTag(20) as? UILabel
+        let avatarImage = cell.viewWithTag(10) as? UIImageView
+        let userLabel = cell.viewWithTag(20) as? UILabel
+        let urlLabel = cell.viewWithTag(30) as? UILabel
 
         userLabel?.text = ""
         urlLabel?.text = ""
 
-        if let account = accounts[indexPath.row].first {
-            userLabel?.text = account.value.uppercased()
-            urlLabel?.text = (URL(string: account.key)?.host ?? "")
+        let account = accounts[indexPath.row]
+
+        if let avatarPath = account.avatar, let avatarImage = avatarImage {
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: avatarPath))
+                if let image = UIImage(data: data) {
+                    avatarImage.image = image
+                }
+            } catch { print("Error: \(error)") }
         }
+
+        userLabel?.text = account.user.uppercased()
+        urlLabel?.text = (URL(string: account.url)?.host ?? "")
 
         return cell
     }
