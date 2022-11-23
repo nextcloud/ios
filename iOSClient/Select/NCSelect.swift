@@ -83,6 +83,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var backgroundImageView = UIImageView()
 
     private var activeAccount: tableAccount!
+    private let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
 
     // MARK: - View Life Cycle
 
@@ -114,7 +115,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 
-        bottomContraint?.constant = UIApplication.shared.keyWindow?.rootViewController?.view.safeAreaInsets.bottom ?? 0
+        bottomContraint?.constant = window?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Empty
         emptyDataSet = NCEmptyDataSet(view: collectionView, offset: NCGlobal.shared.heightButtonsView, delegate: self)

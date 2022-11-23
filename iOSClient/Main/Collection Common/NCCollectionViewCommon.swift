@@ -716,7 +716,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     
                     let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
                     
-                    UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
+                    self.present(popup, animated: true)
                 }
 
                 // TIP

@@ -64,7 +64,7 @@ class NCActivityIndicator: NSObject {
 
             #if !EXTENSION
             if backgroundView == nil {
-                if let window = UIApplication.shared.keyWindow {
+                if let window = (UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }) {
                     self.viewBackgroundActivityIndicator?.removeFromSuperview()
                     self.viewBackgroundActivityIndicator = NCViewActivityIndicator(frame: window.bounds)
                     window.addSubview(self.viewBackgroundActivityIndicator!)
