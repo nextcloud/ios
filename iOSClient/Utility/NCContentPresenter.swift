@@ -173,11 +173,11 @@ class NCContentPresenter: NSObject {
         }
 
         let simpleMessage = EKSimpleMessage(image: EKProperty.ImageContent(image: image, size: CGSize(width: 34, height: 34)),
-                                            title: EKProperty.LabelContent(text: title, style: .init(font: MainFont.medium.with(size: 15), color: EKColor(textColor)), accessibilityIdentifier: "title"),
-                                            description: EKProperty.LabelContent(text: description, style: .init( font: MainFont.light.with(size: 13), color: EKColor(textColor)), accessibilityIdentifier: "description"))
+                                            title: EKProperty.LabelContent(text: NSLocalizedString(title, comment: ""), style: .init(font: MainFont.medium.with(size: 15), color: EKColor(textColor)), accessibilityIdentifier: "title"),
+                                            description: EKProperty.LabelContent(text: NSLocalizedString(description, comment: ""), style: .init( font: MainFont.light.with(size: 13), color: EKColor(textColor)), accessibilityIdentifier: "description"))
 
         let cancelButton = EKProperty.ButtonContent(
-            label: EKProperty.LabelContent(text: textCancelButton, style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+            label: EKProperty.LabelContent(text: NSLocalizedString(textCancelButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
             backgroundColor: .clear,
             highlightedBackgroundColor: EKColor(UIColor.lightGray),
             accessibilityIdentifier: "close") {
@@ -186,7 +186,7 @@ class NCContentPresenter: NSObject {
             }
 
         let okButton = EKProperty.ButtonContent(
-            label: EKProperty.LabelContent(text: textOkButton,style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+            label: EKProperty.LabelContent(text: NSLocalizedString(textOkButton, comment: ""),style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
             backgroundColor: .clear,
             highlightedBackgroundColor: EKColor(UIColor.lightGray),
             displayMode: EKAttributes.DisplayMode.inferred,

@@ -59,7 +59,8 @@ import UIKit
     // BRAND ONLY
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public var use_AppConfig:                     Bool = false                                                // Don't touch me !!
-    
+    @objc public var use_talkDetect:                    Bool = true                                                 // Don't touch me !!
+
     // Options
     @objc public var use_default_auto_upload:           Bool = false
     @objc public var use_themingColor:                  Bool = true

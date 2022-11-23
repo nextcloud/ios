@@ -129,11 +129,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         appDelegate.timerErrorNetworking?.invalidate()
 
-        // test
-        createTalkAccount()
-
-        if let talkAccounts = readTalkAccounts(), let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
-            NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "Talk is intalled", description: "Hei I have fount talk user, ...", textCancelButton: "cancel", textOkButton: "ok", attributes: EKAttributes.topFloat) { identifier in
+        if NCBrandOptions.shared.use_talkDetect, let talkAccounts = readTalkAccounts(), let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
+            NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "_talk_detect_", description: "_talk_add_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
                     if let vc = UIStoryboard(name: "NCTalkAccounts", bundle: nil).instantiateInitialViewController() as? NCTalkAccounts {
 
@@ -147,7 +144,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
 
                         let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
-                        popup.backgroundAlpha = 0.8
 
                         self.present(popup, animated: true)
                     }
@@ -419,31 +415,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-    func readTalkAccounts() -> [dataAccountFile]? {
+    func readTalkAccounts() -> [NKDataAccountFile]? {
 
         guard let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) else { return nil }
         let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
 
         if FileManager.default.fileExists(atPath: url.path) {
-            return NCUtility.shared.readDataAccountFile(at: url)
+            return NKCommon.shared.readDataAccountFile(at: url)
         }
         return nil
-    }
-
-    func createTalkAccount() -> Error? {
-
-        guard let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) else { return nil }
-        let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
-
-        let tableAccount = NCManageDatabase.shared.getAllAccount()
-        var accounts = [dataAccountFile]()
-        for account in tableAccount {
-            let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
-            let avatar = String(CCUtility.getDirectoryUserData()) + "/" +  userBaseUrl + "-\(account.user).png"
-            let userData = dataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias, avatar: avatar)
-            accounts.append(userData)
-        }
-        return NCUtility.shared.createDataAccountFile(at: url, accounts: accounts)
     }
 }
 
