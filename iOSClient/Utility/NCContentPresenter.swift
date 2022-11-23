@@ -195,7 +195,7 @@ class NCContentPresenter: NSObject {
                 completion("ok")
             }
 
-        let buttonsBarContent = EKProperty.ButtonBarContent(with: cancelButton, okButton, separatorColor: EKColor(UIColor.lightGray), buttonHeight: 60, expandAnimatedly: true)
+        let buttonsBarContent = EKProperty.ButtonBarContent(with: cancelButton, okButton, separatorColor: EKColor(textColor), buttonHeight: 60, expandAnimatedly: true)
         let alertMessage = EKAlertMessage(simpleMessage: simpleMessage, imagePosition: .left, buttonBarContent: buttonsBarContent)
         let contentView = EKAlertMessageView(with: alertMessage)
 
