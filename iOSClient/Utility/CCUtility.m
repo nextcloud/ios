@@ -1125,7 +1125,7 @@
 {
     NSString *fileNameViewPath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
     NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
-    BOOL isFolderEncrypted = [self isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account urlBase:metadata.urlBase userId:metadata.userId];
+    BOOL isFolderEncrypted = [[NCUtility shared] isFolderEncryptedWithServerUrl:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account urlBase:metadata.urlBase userId:metadata.userId];
 
     unsigned long long fileNameViewSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNameViewPath error:nil] fileSize];
     unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
@@ -1299,49 +1299,6 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     return path;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== E2E Encrypted =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (NSString *)generateRandomIdentifier
-{
-    NSString *UUID = [[NSUUID UUID] UUIDString];
-    
-    return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
-}
-
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase userId:(NSString *)userId
-{
-    NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
-        
-    if (e2eEncrypted) {
-    
-        return true;
-        
-    } else if ([serverUrl isEqualToString:home] || [serverUrl isEqualToString:@".."]) {
-        
-        return false;
-
-    } else {
-       
-        tableDirectory *directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
-        
-        while (directory != nil && ![directory.serverUrl isEqualToString:home]) {
-            if (directory.e2eEncrypted == true) {
-                return true;
-            }
-            NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
-            NSString* path = [[NCUtilityFileSystem shared] deleteLastPathWithServerUrlPath:serverUrl home:home];
-            if (path != nil) {
-                serverUrl = path;
-            }
-            directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
-        }
-        
-        return false;
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

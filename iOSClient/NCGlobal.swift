@@ -89,6 +89,7 @@ class NCGlobal: NSObject {
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
     @objc let appScan                               = "Library/Application Support/Scan"
     @objc let appUserData                           = "Library/Application Support/UserData"
+    @objc let appDatabaseTalk                       = "Library/Application Support/Talk"
 
     // Service
     //
@@ -122,6 +123,7 @@ class NCGlobal: NSObject {
     //
     let databaseDefault                             = "nextcloud.realm"
     let databaseSchemaVersion: UInt64               = 255
+    let fileAccounts: String                        = "accounts.json"
 
     // Intro selector
     //

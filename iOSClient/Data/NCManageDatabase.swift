@@ -939,6 +939,19 @@ class NCManageDatabase: NSObject {
         return tableE2eEncryptionLock.init(value: result)
     }
 
+    @objc func getE2EAllTokenLock(account: String) -> [tableE2eEncryptionLock] {
+
+        let realm = try! Realm()
+
+        let results = realm.objects(tableE2eEncryptionLock.self).filter("account == %@", account)
+
+        if results.count > 0 {
+            return Array(results.map { tableE2eEncryptionLock.init(value: $0) })
+        } else {
+            return []
+        }
+    }
+
     @objc func setE2ETokenLock(account: String, serverUrl: String, fileId: String, e2eToken: String) {
 
         let realm = try! Realm()
@@ -959,7 +972,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deteleE2ETokenLock(account: String, serverUrl: String) {
+    @objc func deleteE2ETokenLock(account: String, serverUrl: String) {
 
         let realm = try! Realm()
 

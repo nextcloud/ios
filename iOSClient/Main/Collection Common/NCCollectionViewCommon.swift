@@ -568,7 +568,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         
-        if metadata.livePhoto && metadata.classFile == NKCommon.typeClassFile.video.rawValue { return }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -1007,8 +1006,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !appDelegate.account.isEmpty else { return }
 
         // E2EE
-        isEncryptedFolder = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-
+        isEncryptedFolder = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, userBase: appDelegate)
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
@@ -1280,6 +1278,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 }
 
+// MARK: - E2EE
+
+extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
+
+    func endToEndInitializeSuccess() {
+        if let metadata = appDelegate.activeMetadata {
+            pushMetadata(metadata)
+        }
+    }
+}
+
 // MARK: - Collection View
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
@@ -1302,8 +1311,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            let error = NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_goto_settings_for_enable_")
-            NCContentPresenter.shared.showInfo(error: error)
+            let e2ee = NCEndToEndInitialize()
+            e2ee.delegate = self
+            e2ee.initEndToEndEncryption()
             return
         }
 
@@ -1703,7 +1713,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
                 if headerMenuButtonsCommand && !isSearchingMode {
-                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "folder"), titleButton2: NSLocalizedString("_create_folder_", comment: ""), imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
+                    let imageButton2 = isEncryptedFolder ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
+                    let titleButton2 = isEncryptedFolder ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
+                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
                 }

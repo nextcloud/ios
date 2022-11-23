@@ -31,7 +31,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: metadata)
     }
 
-    @objc func convertNCFileToMetadata(_ file: NKFile, isEncrypted: Bool, account: String) -> tableMetadata {
+    @objc func convertNCFileToMetadata(_ file: NKFile, isEncrypted: Bool = false, account: String) -> tableMetadata {
 
         let metadata = tableMetadata()
 
@@ -146,7 +146,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isEncrypted = key
             } else {
-                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
+                isEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
                 listServerUrl[file.serverUrl] = isEncrypted
             }
 
@@ -817,12 +817,12 @@ extension NCManageDatabase {
         return false
     }
 
-    func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {
+    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {
 
         // verify exists conflict
-        let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
-        let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
-        var fileNameConflict = fileName
+        let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
+        let fileNameWithoutExtension = (fileNameView as NSString).deletingPathExtension
+        var fileNameConflict = fileNameView
 
         if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
             fileNameConflict = fileNameWithoutExtension + ".jpg"

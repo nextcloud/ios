@@ -51,6 +51,7 @@ import UIKit
 
     // Capabilities Group
     @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
+    @objc public var capabilitiesGroupsTalk: String = "group.com.nextcloud.Talk"
 
     // User Agent
     @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!
@@ -58,7 +59,8 @@ import UIKit
     // BRAND ONLY
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public var use_AppConfig:                     Bool = false                                                // Don't touch me !!
-    
+    @objc public var use_talkDetect:                    Bool = true                                                 // Don't touch me !!
+
     // Options
     @objc public var use_default_auto_upload:           Bool = false
     @objc public var use_themingColor:                  Bool = true

@@ -77,6 +77,7 @@
 "_transfers_in_queue_"      = "Transfers in progress, please wait …";
 "_too_errors_upload_"       = "Too many errors, please verify the problem";
 "_create_folder_"           = "Create folder";
+"_create_folder_e2ee_"      = "Create encrypted folder";
 "_create_folder_on_"        = "Create folder on";
 "_close_"                   = "Close";
 "_postpone_"                = "Postpone";
@@ -196,6 +197,7 @@
 "_privacy_legal_"           = "Privacy and Legal Policy";
 "_source_code_"             = "Get source code";
 "_account_select_"          = "Select the account";
+"_account_select_to_add_"   = "Select the account to add";
 "_host_insert_"             = "Insert the host name, for example:";
 "_certificate_not_found_"   = "File %@ in documents directory not found.";
 "_copy_failed_"             = "Copy failed";
@@ -874,6 +876,7 @@
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
 "_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
+"_video_not_streamed_e2ee_" = "The server does not allow video streaming because is encrypted, do you want to download it?";
 "_scan_"                    = "Scan";
 "_in_"                      = "in";
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
@@ -898,6 +901,8 @@
 "_no_items_"                = "No items";
 "_check_back_later_"        = "Check back later";
 "_exporting_video_"         = "Exporting video … Tap to cancel.";
+"_talk_detect_"             = "Detected Nextcloud Talk";
+"_talk_add_account_"        = "Nextcloud Talk has been detected, do you want to add an existing account ?";
 
 // Video
 "_select_trace_"            = "Select the trace";

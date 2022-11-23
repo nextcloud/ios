@@ -34,6 +34,7 @@ class NCLoginWeb: UIViewController {
     var titleView: String = ""
 
     var urlBase = ""
+    var user: String?
     
     var configServerUrl: String?
     var configUsername: String?
@@ -118,6 +119,9 @@ class NCLoginWeb: UIViewController {
                 urlBase = loginFlowV2Login
             } else {
                 urlBase += "/index.php/login/flow"
+                if let user = self.user {
+                    urlBase += "?user=\(user)"
+                }
             }
         }
 

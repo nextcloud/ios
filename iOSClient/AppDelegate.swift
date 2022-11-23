@@ -228,6 +228,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Request Service Server Nextcloud
         NCService.shared.startRequestServicesServer()
+
+        // Unlock E2EE
+        NCNetworkingE2EE.shared.unlockAll(account: account)
         
         // Request TouchID, FaceID
         enableTouchFaceID()
@@ -246,6 +249,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // STOP OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
         NCNetworkingProcessUpload.shared.stopTimer()
+
+        // Create file account for Nextcloud Talk
+        if let error = createDataAccountFile() {
+            NKCommon.shared.writeLog("[ERROR] Create account file for Talk \(error.localizedDescription)")
+        }
 
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
@@ -309,6 +317,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
 
+        // Unlock E2EE
+        NCNetworkingE2EE.shared.unlockAll(account: account)
+        
         // Start services
         NCService.shared.startRequestServicesServer()
 
@@ -626,6 +637,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
         }
+    }
+
+    func createDataAccountFile() -> Error? {
+        guard !account.isEmpty else { return nil }
+
+        let url =  CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.fileAccounts)
+
+        let tableAccount = NCManageDatabase.shared.getAllAccount()
+        var accounts = [NKDataAccountFile]()
+        for account in tableAccount {
+            let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
+            let avatar = String(CCUtility.getDirectoryUserData()) + "/" +  userBaseUrl + "-\(account.user).png"
+            accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias, avatar: avatar))
+        }
+        return NKCommon.shared.createDataAccountFile(at: url, accounts: accounts)
     }
 
     // MARK: - Account Request
