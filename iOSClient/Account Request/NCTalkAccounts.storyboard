@@ -50,7 +50,8 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="4cH-oC-YBd" userLabel="Avatar">
-                                                    <rect key="frame" x="0.0" y="15.999999999999998" width="30" height="28.666666666666664"/>
+                                                    <rect key="frame" x="0.0" y="16" width="30" height="28.666666666666664"/>
+                                                    <color key="tintColor" systemColor="systemGray2Color"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="Efd-BU-u61"/>
                                                         <constraint firstAttribute="width" constant="30" id="qFy-Tu-ov6"/>
@@ -58,19 +59,20 @@
                                                     <imageReference key="image" image="person.circle" catalog="system" variableValue="0.80000000000000004"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="20" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pWI-iZ-BTy" userLabel="User">
-                                                    <rect key="frame" x="40" y="20.333333333333336" width="220" height="19.333333333333336"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                                    <rect key="frame" x="40" y="21.666666666666668" width="220" height="17.000000000000004"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="30" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sWT-NJ-ihR" userLabel="Url">
-                                                    <rect key="frame" x="40" y="40.666666666666664" width="220" height="16"/>
+                                                    <rect key="frame" x="40" y="39.666666666666664" width="220" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="40" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="x47-dQ-alI" userLabel="Active">
                                                     <rect key="frame" x="265" y="24.666666666666671" width="15" height="11.333333333333329"/>
+                                                    <color key="tintColor" systemColor="systemGray2Color"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="15" id="SXt-LG-c5N"/>
                                                         <constraint firstAttribute="width" constant="15" id="vdZ-4R-gY5"/>
@@ -148,6 +150,9 @@
         </systemColor>
         <systemColor name="systemBlueColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

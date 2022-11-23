@@ -40,7 +40,7 @@ class NCTalkAccounts: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    public var accounts: [dataAccountFile] = []
+    public var accounts: [NKDataAccountFile] = []
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var dismissDidEnterBackground: Bool = true
@@ -60,7 +60,7 @@ class NCTalkAccounts: UIViewController {
         closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: .label), for: .normal)
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
-        //tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        // tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         view.backgroundColor = .secondarySystemBackground
         tableView.backgroundColor = .secondarySystemBackground
@@ -145,16 +145,6 @@ extension NCTalkAccounts: UITableViewDelegate {
         progressView.progress = 0
     }
 
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if decelerate {
-//            startTimer()
-        }
-    }
-
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-//        startTimer()
-    }
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightCell
     }
@@ -188,7 +178,7 @@ extension NCTalkAccounts: UITableViewDataSource {
 
         let account = accounts[indexPath.row]
 
-        if let avatarPath = account.avatar, let avatarImage = avatarImage {
+        if let avatarPath = account.avatar, !avatarPath.isEmpty, let avatarImage = avatarImage {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: avatarPath))
                 if let image = UIImage(data: data) {
@@ -197,7 +187,11 @@ extension NCTalkAccounts: UITableViewDataSource {
             } catch { print("Error: \(error)") }
         }
 
-        userLabel?.text = account.user.uppercased()
+        if let alias = account.alias, !alias.isEmpty {
+            userLabel?.text = alias.uppercased() + " (\(account.user))"
+        } else {
+            userLabel?.text = account.user.uppercased()
+        }
         urlLabel?.text = (URL(string: account.url)?.host ?? "")
 
         return cell
