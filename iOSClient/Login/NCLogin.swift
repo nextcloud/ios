@@ -121,10 +121,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if NCBrandOptions.shared.use_talkDetect, let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) {
             let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
             if FileManager.default.fileExists(atPath: url.path), let talkAccounts = NKCommon.shared.readDataAccountFile(at: url) {
-                self.talkAccounts = talkAccounts
-                let navigationItemTalk = UIBarButtonItem(image: UIImage(named: "talk_bar"), style: .plain, target: self, action: #selector(openTalkAccountsViewController))
-                navigationItemTalk.tintColor = textColor
-                self.navigationItem.rightBarButtonItem = navigationItemTalk
+                var accountTemp = [NKDataAccountFile]()
+                for talkAccount in talkAccounts {
+                    if NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", talkAccount.url, talkAccount.user)) == nil {
+                        accountTemp.append(talkAccount)
+                    }
+                }
+                if !accountTemp.isEmpty {
+                    self.talkAccounts = accountTemp
+                    let navigationItemTalk = UIBarButtonItem(image: UIImage(named: "talk_bar"), style: .plain, target: self, action: #selector(openTalkAccountsViewController))
+                    navigationItemTalk.tintColor = textColor
+                    self.navigationItem.rightBarButtonItem = navigationItemTalk
+                }
             }
         }
 
