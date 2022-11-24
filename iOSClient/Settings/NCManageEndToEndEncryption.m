@@ -51,7 +51,8 @@
         NKError *error = [[NKError alloc] initWithErrorCode:NCGlobal.shared.errorInternalError errorDescription:@"_err_e2ee_app_version_"];
         [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" error:error delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError];
     }
-    
+
+    /*
     if (isE2EEEnabled == NO || ![versionE2EE isEqual:[[NCGlobal shared] e2eeVersion]]) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------
@@ -75,6 +76,7 @@
 
         return;
     }
+    */
     
     if ([CCUtility isEndToEndEnabled:appDelegate.account]) {
         

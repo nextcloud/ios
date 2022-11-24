@@ -26,12 +26,16 @@ import NextcloudKit
 import TOPasscodeViewController
 import LocalAuthentication
 
+@objc class NCManageE2EEInterface: NSObject {
+    @objc func makeShipDetailsUI(account: String) -> UIViewController {
+        let details = NCViewE2EE(isEndToEndEnabled: CCUtility.isEnd(toEndEnabled: account))
+        return UIHostingController(rootView: details)
+    }
+}
 
-@objc
-class NCManageE2EEInterface: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
+class NCManageE2EE: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
-
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var passcodeType = ""
 
@@ -41,13 +45,8 @@ class NCManageE2EEInterface: NSObject, NCEndToEndInitializeDelegate, TOPasscodeV
         endToEndInitialize.delegate = self
     }
 
-    @objc func makeShipDetailsUI() -> UIViewController {
-        let details = NCManageE2EE()
-        return UIHostingController(rootView: details)
-    }
-
     func endToEndInitializeSuccess() {
-
+       //details.isEndToEndEnabled = true
     }
 
     // MARK: - Passcode
@@ -118,8 +117,10 @@ class NCManageE2EEInterface: NSObject, NCEndToEndInitializeDelegate, TOPasscodeV
     }
 }
 
-struct NCManageE2EE: View {
-    let manageE2EEInterface = NCManageE2EEInterface()
+struct NCViewE2EE: View {
+
+    let manageE2EE = NCManageE2EE()
+    @State var isEndToEndEnabled: Bool = false
 
     var body: some View {
         VStack {
@@ -142,16 +143,22 @@ struct NCManageE2EE: View {
                 .cornerRadius(.infinity)
                 .frame(height: 100)
 
-                Button(action: {
-                    manageE2EEInterface.endToEndInitialize.initEndToEndEncryption()
-                }, label: {
-                    Text("Start")
-                })
+                if isEndToEndEnabled {
+                    Text("Activated")
+                } else {
+                    Button(action: {
+                        manageE2EE.endToEndInitialize.initEndToEndEncryption()
+                    }, label: {
+                        Text("Start")
+                    })
+                }
+
+
                 Button(action: {
                     if CCUtility.getPasscode().isEmpty {
                         NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                     } else {
-                        manageE2EEInterface.requestPasscodeType("removeLocallyEncryption")
+                        manageE2EE.requestPasscodeType("removeLocallyEncryption")
                     }
                 }, label: {
                     Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
@@ -178,11 +185,5 @@ struct NCManageE2EE: View {
         }
         .background(Color.gray)
         .navigationTitle("Cifratura End-To-End")
-    }
-}
-
-struct NCManageE2EE_Previews: PreviewProvider {
-    static var previews: some View {
-        NCManageE2EE()
     }
 }

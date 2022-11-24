@@ -118,8 +118,8 @@
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        //row.action.formSelector = @selector(manageE2EE:);
-        row.action.viewControllerClass = [NCManageEndToEndEncryption class];
+        row.action.formSelector = @selector(manageE2EE:);
+        //row.action.viewControllerClass = [NCManageEndToEndEncryption class];
         [section addFormRow:row];
     }
 
@@ -301,7 +301,7 @@
 {
     [self deselectFormRow:sender];
 
-    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUI];
+    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
