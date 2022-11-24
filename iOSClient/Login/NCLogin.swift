@@ -41,6 +41,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var textColorOpponent: UIColor = .black
     private var activeTextfieldDiff: CGFloat = 0
     private var activeTextField = UITextField()
+
     private var talkAccounts: [NKDataAccountFile]?
 
     // MARK: - View Life Cycle
@@ -108,11 +109,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
-        if NCManageDatabase.shared.getAccounts()?.count ?? 0 == 0 {
-
-        } else {
-
-            // Cancel Button
+        if !NCManageDatabase.shared.getAllAccount().isEmpty {
             let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
