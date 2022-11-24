@@ -902,7 +902,7 @@
 "_check_back_later_"        = "Check back later";
 "_exporting_video_"         = "Exporting video … Tap to cancel.";
 "_talk_detect_"             = "Detected Nextcloud Talk";
-"_talk_add_account_"        = "Nextcloud Talk has been detected, do you want to add an existing account ?";
+"_talk_add_account_"        = "Nextcloud Talk has been detected, do you want to add an existing account?";
 "_status_in_progress_"      = "Status reading in progress …";
 "_status_e2ee_on_server_"   = "The End-toEnd encryption is already configured in the server but not yet enabled on this device";
 "_status_e2ee_not_setup_"   = "The End-toEnd encryption is not yet configured on the server";
