@@ -876,7 +876,7 @@
 "_privacy_screen_"          = "Splash screen when app inactive";
 "_saving_"                  = "Saving …";
 "_video_not_streamed_"      = "The server does not allow video streaming, do you want to download it?";
-"_video_not_streamed_e2ee_" = "The server does not allow video streaming because is encrypted, do you want to download it?";
+"_video_not_streamed_e2ee_" = "The server does not allow video streaming because it is encrypted, do you want to download it?";
 "_scan_"                    = "Scan";
 "_in_"                      = "in";
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
@@ -904,8 +904,8 @@
 "_talk_detect_"             = "Detected Nextcloud Talk";
 "_talk_add_account_"        = "Nextcloud Talk has been detected, do you want to add an existing account ?";
 "_status_in_progress_"      = "Status reading in progress …";
-"_status_e2ee_on_server_"   = "The End-toEnd encryption is already configured in the server but not yet enabled on this device";
-"_status_e2ee_not_setup_"   = "The End-toEnd encryption is not yet configured on the server";
+"_status_e2ee_on_server_"   = "The End-to-end encryption is already configured in the server but not yet enabled on this device";
+"_status_e2ee_not_setup_"   = "The End-to-end encryption is not yet configured on the server";
 
 // Video
 "_select_trace_"            = "Select the trace";
