@@ -464,7 +464,7 @@ extension NCMedia {
         guard var predicateForGetMetadatasMedia = predicate else { return }
 
         if livePhoto {
-            let predicateLivePhoto = NSPredicate(format: "!(ext == 'mov' AND livePhoto == true)")
+            let predicateLivePhoto = NSPredicate(format: "!(classFile == '\(NKCommon.typeClassFile.video.rawValue)' AND livePhoto == true)")
             predicateForGetMetadatasMedia = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateForGetMetadatasMedia, predicateLivePhoto])
         }
 

@@ -184,7 +184,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
-                        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + metadata.fileNameWithoutExt
+                        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + (metadata.fileName as NSString).deletingPathExtension
 
                         NCActivityIndicator.shared.start(backgroundView: view)
 

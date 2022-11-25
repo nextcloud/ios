@@ -50,12 +50,10 @@ extension NCManageDatabase {
         metadata.downloadURL = file.downloadURL
         metadata.e2eEncrypted = file.e2eEncrypted
         metadata.etag = file.etag
-        metadata.ext = file.ext
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
         metadata.fileName = file.fileName
         metadata.fileNameView = file.fileName
-        metadata.fileNameWithoutExt = file.fileNameWithoutExt
         metadata.hasPreview = file.hasPreview
         metadata.iconName = file.iconName
         metadata.livePhoto = file.livePhoto
@@ -201,10 +199,8 @@ extension NCManageDatabase {
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
         metadata.etag = ocId
-        metadata.ext = (fileName as NSString).pathExtension.lowercased()
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.fileNameWithoutExt = (fileName as NSString).deletingPathExtension
         metadata.livePhoto = isLivePhoto
         metadata.name = name
         metadata.ocId = ocId
@@ -295,13 +291,6 @@ extension NCManageDatabase {
                     let resultsType = NKCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
-                    if result.directory {
-                        result.fileNameWithoutExt = fileNameTo
-                        result.ext = ""
-                    } else {
-                        result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
-                        result.ext = resultsType.ext
-                    }
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
                     result.classFile = resultsType.classFile
@@ -759,6 +748,7 @@ extension NCManageDatabase {
 
         let realm = try! Realm()
         var classFile = metadata.classFile
+        var fileName = (metadata.fileNameView as NSString).deletingPathExtension
 
         if !metadata.livePhoto || !CCUtility.getLivePhoto() {
             return nil
@@ -766,11 +756,13 @@ extension NCManageDatabase {
 
         if classFile == NKCommon.typeClassFile.image.rawValue {
             classFile = NKCommon.typeClassFile.video.rawValue
+            fileName = fileName + ".mov"
         } else {
             classFile = NKCommon.typeClassFile.image.rawValue
+            fileName = fileName + ".jpg"
         }
 
-        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)).first else {
+        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileName, metadata.ocId, classFile)).first else {
             return nil
         }
 
@@ -825,11 +817,11 @@ extension NCManageDatabase {
 
         // verify exists conflict
         let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
-        let fileNameWithoutExtension = (fileNameView as NSString).deletingPathExtension
+        let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
         var fileNameConflict = fileNameView
 
         if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
-            fileNameConflict = fileNameWithoutExtension + ".jpg"
+            fileNameConflict = fileNameNoExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }

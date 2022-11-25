@@ -399,12 +399,10 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var etagResource = ""
-    @objc dynamic var ext = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
-    @objc dynamic var fileNameWithoutExt = ""
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
     @objc dynamic var iconUrl = ""
