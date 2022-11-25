@@ -882,6 +882,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     print("No action")
                 }
             }
+            return true
         }
 
         /*
@@ -923,11 +924,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName)
                 }
             }
+            return true
         } else {
-            app.open(url)
+            let applicationHandle = NCApplicationHandle()
+            let isHandled = applicationHandle.application(app, open: url)
+            if isHandled {
+                return true
+            } else {
+                app.open(url)
+                return true
+            }
         }
-
-        return true
     }
 
     func getMatchedAccount(userId: String, url: String) -> tableAccount? {
