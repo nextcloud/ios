@@ -243,9 +243,9 @@ extension NCCreateFormUploadConflictDelegate {
 
                 var fileName = metadata.fileNameView
                 let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
-                let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
+                let fileNameNoExtension = (fileName as NSString).deletingPathExtension
                 if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
-                    fileName = fileNameWithoutExtension + ".jpg"
+                    fileName = fileNameNoExtension + ".jpg"
                 }
                 let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 let newFileName = NCUtilityFileSystem.shared.createFileName(fileName, serverUrl: metadata.serverUrl, account: metadata.account)

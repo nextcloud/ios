@@ -464,7 +464,6 @@ class NCUtility: NSObject {
         if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
-            metadata.ext = "jpg"
             fileNamePath = NSTemporaryDirectory() + fileName
             metadata.fileNameView = fileName
             if !metadata.e2eEncrypted {

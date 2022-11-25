@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="V0q-CP-xMJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="V0q-CP-xMJ">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -126,8 +126,8 @@
                     <connections>
                         <outlet property="cancelButton" destination="W5y-aT-UlI" id="P9l-o1-miU"/>
                         <outlet property="ext" destination="Q9G-gl-Fkc" id="YeW-bU-cMx"/>
-                        <outlet property="fileNameWithoutExt" destination="Ny2-wR-rxo" id="2Wq-hO-cwc"/>
-                        <outlet property="fileNameWithoutExtTrailingContraint" destination="BZO-yF-B1w" id="OBT-Ha-an7"/>
+                        <outlet property="fileNameNoExtension" destination="Ny2-wR-rxo" id="gQX-c7-EMv"/>
+                        <outlet property="fileNameNoExtensionTrailingContraint" destination="BZO-yF-B1w" id="VWV-as-Wa7"/>
                         <outlet property="point" destination="FOZ-fs-k7i" id="InG-ZA-GpE"/>
                         <outlet property="previewFile" destination="t26-3S-4T4" id="aOo-XG-pom"/>
                         <outlet property="renameButton" destination="hcV-V0-eZB" id="YGX-pw-OGW"/>
