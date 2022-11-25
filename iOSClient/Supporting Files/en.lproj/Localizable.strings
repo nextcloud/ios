@@ -906,6 +906,8 @@
 "_status_in_progress_"      = "Status reading in progress …";
 "_status_e2ee_on_server_"   = "The End-to-end encryption is already configured in the server but not yet enabled on this device";
 "_status_e2ee_not_setup_"   = "The End-to-end encryption is not yet configured on the server";
+"_change_upload_filename_"  = "Do you want to save the file with a different name ?";
+"_save_file_as_"            = "Save file as %@";
 
 // Video
 "_select_trace_"            = "Select the trace";

@@ -393,13 +393,17 @@ extension NCManageDatabase {
         return (metadatasUpdate, metadatasLocalUpdate, metadatasDelete)
     }
 
-    func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
+    func setMetadataSession(ocId: String, newFileName: String? = nil, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
 
         let realm = try! Realm()
 
         do {
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                if let newFileName = newFileName {
+                    result?.fileName = newFileName
+                    result?.fileNameView = newFileName
+                }
                 if let session = session {
                     result?.session = session
                 }

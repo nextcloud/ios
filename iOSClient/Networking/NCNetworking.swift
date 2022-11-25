@@ -494,6 +494,10 @@ import Photos
     }
 
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: NKError) {
+        var isApplicationStateActive = false
+        #if !EXTENSION
+        isApplicationStateActive = UIApplication.shared.applicationState == .active
+        #endif
         DispatchQueue.global().async {
             guard self.delegate == nil, let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else {
                 self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
@@ -544,6 +548,28 @@ import Photos
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+
+                } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
+
+                    DispatchQueue.main.async {
+                        let newFileName = NCUtilityFileSystem.shared.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+                        let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { action in
+                            let atpath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                            let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                            NCUtilityFileSystem.shared.moveFile(atPath: atpath, toPath: toPath)
+                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, newFileName: newFileName, session: nil, sessionError: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusWaitUpload)
+                        }))
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { action in
+                            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
+                        }))
+                        #if !EXTENSION
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                        appDelegate.window?.rootViewController?.present(alertController, animated: true)
+                        #endif
+                    }
 
                 } else {
                     
