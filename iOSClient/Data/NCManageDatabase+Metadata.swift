@@ -317,17 +317,17 @@ extension NCManageDatabase {
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
 
         let realm = try! Realm()
-        let returnMetadata = tableMetadata.init(value: metadata)
+        let result = tableMetadata.init(value: metadata)
 
         do {
             try realm.write {
-                realm.add(metadata, update: .all)
+                realm.add(result, update: .all)
             }
         } catch let error {
             NKCommon.shared.writeLog("Could not write to database: \(error)")
             return nil
         }
-        return returnMetadata
+        return tableMetadata.init(value: result)
     }
 
     @objc func addMetadatas(_ metadatas: [tableMetadata]) {

@@ -69,18 +69,6 @@ class NCGlobal: NSObject {
         var totalBytesExpected: Int64
     }
 
-    // Struct for LayoutForView
-    //
-    struct layoutForViewType {
-        var layout: String
-        var sort: String
-        var ascending: Bool
-        var groupBy: String
-        var directoryOnTop: Bool
-        var titleButtonHeader: String
-        var itemForLine: Int
-    }
-
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"

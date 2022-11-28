@@ -58,7 +58,7 @@ class NCShareExtension: UIViewController {
     var metadataFolder: tableMetadata?
     var networkInProgress = false
     var dataSource = NCDataSource()
-    var layoutForView: NCGlobal.layoutForViewType?
+    var layoutForView: NCDBLayoutForView?
     let heightRowTableView: CGFloat = 50
     let heightCommandView: CGFloat = 170
     var autoUploadFileName = ""

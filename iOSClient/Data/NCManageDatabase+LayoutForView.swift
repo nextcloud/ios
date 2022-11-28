@@ -42,18 +42,23 @@ class NCDBLayoutForView: Object {
 extension NCManageDatabase {
 
     @discardableResult
-    func setLayoutForView(account: String, keyStore: String, layout: String? = nil, sort: String? = nil, ascending: Bool? = nil, groupBy: String? = nil, directoryOnTop: Bool? = nil, titleButtonHeader: String? = nil, itemForLine: Int? = nil) -> NCDBLayoutForView? {
+    func setLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil, sort: String? = nil, ascending: Bool? = nil, groupBy: String? = nil, directoryOnTop: Bool? = nil, titleButtonHeader: String? = nil, itemForLine: Int? = nil) -> NCDBLayoutForView? {
 
         let realm = try! Realm()
-        var addObject = NCDBLayoutForView()
+
+        var keyStore = key
+        if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
+
+        var addObject = NCDBLayoutForView()
 
         do {
             try realm.write {
                 if let result = realm.objects(NCDBLayoutForView.self).filter("index == %@", index).first {
                     addObject = result
+                } else {
+                    addObject.index = index
                 }
-                addObject.index = index
                 addObject.account = account
                 addObject.keyStore = keyStore
                 if let layout = layout {
@@ -89,15 +94,35 @@ extension NCManageDatabase {
         return NCDBLayoutForView.init(value: addObject)
     }
 
-    func getLayoutForView(account: String, keyStore: String) -> NCDBLayoutForView? {
+    @discardableResult
+    func setLayoutForView(layoutForView: NCDBLayoutForView) -> NCDBLayoutForView? {
 
         let realm = try! Realm()
+        let result = NCDBLayoutForView.init(value: layoutForView)
+
+        do {
+            try realm.write {
+                realm.add(result, update: .all)
+            }
+        } catch let error {
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            return nil
+        }
+        return NCDBLayoutForView.init(value: result)
+    }
+
+    func getLayoutForView(account: String, key: String, serverUrl: String) -> NCDBLayoutForView? {
+
+        let realm = try! Realm()
+
+        var keyStore = key
+        if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
 
         if let result = realm.objects(NCDBLayoutForView.self).filter("index == %@", index).first {
             return NCDBLayoutForView.init(value: result)
         } else {
-            return setLayoutForView(account: account, keyStore: keyStore)
+            return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
         }
     }
 }
