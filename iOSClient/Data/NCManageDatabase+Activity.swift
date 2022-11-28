@@ -26,6 +26,81 @@ import RealmSwift
 import NextcloudKit
 import SwiftyJSON
 
+class tableActivity: Object, DateCompareable {
+    var dateKey: Date { date as Date }
+
+    @objc dynamic var account = ""
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var action = "Activity"
+    @objc dynamic var date = NSDate()
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var app = ""
+    @objc dynamic var type = ""
+    @objc dynamic var user = ""
+    @objc dynamic var subject = ""
+    @objc dynamic var subjectRich = ""
+    let subjectRichItem = List<tableActivitySubjectRich>()
+    @objc dynamic var icon = ""
+    @objc dynamic var link = ""
+    @objc dynamic var message = ""
+    @objc dynamic var objectType = ""
+    @objc dynamic var objectId: Int = 0
+    @objc dynamic var objectName = ""
+    @objc dynamic var note = ""
+    @objc dynamic var selector = ""
+    @objc dynamic var verbose: Bool = false
+
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+}
+
+class tableActivityLatestId: Object {
+
+    @objc dynamic var account = ""
+    @objc dynamic var activityFirstKnown: Int = 0
+    @objc dynamic var activityLastGiven: Int = 0
+
+    override static func primaryKey() -> String {
+        return "account"
+    }
+}
+
+class tableActivityPreview: Object {
+
+    @objc dynamic var account = ""
+    @objc dynamic var filename = ""
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var source = ""
+    @objc dynamic var link = ""
+    @objc dynamic var mimeType = ""
+    @objc dynamic var fileId: Int = 0
+    @objc dynamic var view = ""
+    @objc dynamic var isMimeTypeIcon: Bool = false
+
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+}
+
+class tableActivitySubjectRich: Object {
+
+    @objc dynamic var account = ""
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var id = ""
+    @objc dynamic var key = ""
+    @objc dynamic var link = ""
+    @objc dynamic var name = ""
+    @objc dynamic var path = ""
+    @objc dynamic var type = ""
+
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+}
+
 extension NCManageDatabase {
     
     @objc func addActivity(_ activities: [NKActivity], account: String) {
