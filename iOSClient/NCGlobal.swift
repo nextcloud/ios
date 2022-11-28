@@ -360,9 +360,6 @@ class NCGlobal: NSObject {
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
 
-    let notificationCenterChangedLocation                       = "changedLocation"
-    let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
-
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 
     let notificationCenterHidePlayerToolBar                     = "hidePlayerToolBar"               // userInfo: ocId
