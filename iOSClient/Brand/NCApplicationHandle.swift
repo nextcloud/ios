@@ -22,10 +22,35 @@
 //
 
 import Foundation
+import NextcloudKit
 
 class NCApplicationHandle: NSObject {
 
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+
+    // class: AppDelegate
+    // func: application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         return false
+    }
+
+    // class: NCFunctionCenter
+    // func: downloadedFile(_ notification: NSNotification)
+    func downloadedFile(selector: String, metadata: tableMetadata) {
+    }
+
+    // class: NCCollectionViewCommon (+Menu)
+    // func: toggleMenu(metadata: tableMetadata, imageIcon: UIImage?)
+    func addCollectionViewCommonMenu(metadata: tableMetadata, imageIcon: UIImage?, actions: [NCMenuAction]) {
+    }
+
+    // class: NCMore
+    // func: loadItems()
+    func loadItems(functionMenu: [NKExternalSite]) {
+    }
+
+    // class: NCMore
+    // func: tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    func didSelectItem(_ item: NKExternalSite, viewController: UIViewController) {
     }
 }

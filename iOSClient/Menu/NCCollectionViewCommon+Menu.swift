@@ -50,6 +50,7 @@ extension NCCollectionViewCommon {
 
         let editors = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
         let isRichDocument = NCUtility.shared.isRichDocument(metadata)
+        let applicationHandle = NCApplicationHandle()
 
         var iconHeader: UIImage!
 
@@ -358,6 +359,8 @@ extension NCCollectionViewCommon {
                 )
             )
         }
+
+        applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: actions)
 
         presentMenu(with: actions)
     }

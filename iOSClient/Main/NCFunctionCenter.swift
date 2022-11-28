@@ -128,7 +128,8 @@ import Photos
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId": metadata.ocId])
 
         default:
-            break
+            let applicationHandle = NCApplicationHandle()
+            applicationHandle.downloadedFile(selector: selector, metadata: metadata)
         }
     }
 

@@ -40,6 +40,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let defaultCornerRadius: CGFloat = 10.0
+    let applicationHandle = NCApplicationHandle()
     
     var tabAccount: tableAccount?
 
@@ -166,17 +167,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.url = "segueSettings"
         settingsMenu.append(item)
 
-        // ITEM: Test API
-        /*
-        if NCUtility.shared.isSimulator() {
-            item = NKExternalSite()
-            item.name = "Test API"
-            item.icon = "swift"
-            item.url = "test"
-            settingsMenu.append(item)
-        }
-        */
-        
+        // ITEM : HANDLE
+        applicationHandle.loadItems(functionMenu: functionMenu)
+
         if quotaMenu.count > 0 {
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
@@ -483,8 +476,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
 
-        } else if item.url == "test" {
-
+        } else {
+            applicationHandle.didSelectItem(item, viewController: self)
         }
     }
 }
