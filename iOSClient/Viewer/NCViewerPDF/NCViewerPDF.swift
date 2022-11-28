@@ -55,6 +55,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private var pdfThumbnailScrollViewWidthAnchor: NSLayoutConstraint?
     private var pageViewWidthAnchor: NSLayoutConstraint?
 
+    private var hideStatusBar: Bool = false {
+        didSet {
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -238,6 +244,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         })
     }
 
+    override var prefersStatusBarHidden: Bool {
+        return hideStatusBar
+    }
+
     deinit {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
@@ -390,10 +400,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         if navigationController?.isNavigationBarHidden ?? false {
             navigationController?.setNavigationBarHidden(false, animated: true)
+            self.hideStatusBar = false
             pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
 
         } else {
             navigationController?.setNavigationBarHidden(true, animated: true)
+            self.hideStatusBar = true
             pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.topAnchor)
         }
 
