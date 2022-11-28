@@ -30,7 +30,7 @@ class NCApplicationHandle: NSObject {
 
     // class: AppDelegate
     // func: application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    func applicationOpenURL(_ url: URL) -> Bool {
         return false
     }
 

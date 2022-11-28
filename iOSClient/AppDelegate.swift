@@ -927,7 +927,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return true
         } else {
             let applicationHandle = NCApplicationHandle()
-            let isHandled = applicationHandle.application(app, open: url)
+            let isHandled = applicationHandle.applicationOpenURL(url)
             if isHandled {
                 return true
             } else {
