@@ -69,18 +69,6 @@ class NCGlobal: NSObject {
         var totalBytesExpected: Int64
     }
 
-    // Struct for LayoutForView
-    //
-    struct layoutForViewType {
-        var layout: String
-        var sort: String
-        var ascending: Bool
-        var groupBy: String
-        var directoryOnTop: Bool
-        var titleButtonHeader: String
-        var itemForLine: Int
-    }
-
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
@@ -122,7 +110,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 256
+    let databaseSchemaVersion: UInt64               = 257
     let fileAccounts: String                        = "accounts.json"
 
     // Intro selector
@@ -371,9 +359,6 @@ class NCGlobal: NSObject {
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
-
-    let notificationCenterChangedLocation                       = "changedLocation"
-    let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
 
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 

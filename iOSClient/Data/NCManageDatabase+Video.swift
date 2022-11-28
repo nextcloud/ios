@@ -25,6 +25,24 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
+class tableVideo: Object {
+
+    @objc dynamic var account = ""
+    @objc dynamic var duration: Int64 = 0
+    @objc dynamic var ocId = ""
+    @objc dynamic var time: Int64 = 0
+    @objc dynamic var codecNameVideo: String?
+    @objc dynamic var codecNameAudio: String?
+    @objc dynamic var codecAudioChannelLayout: String?
+    @objc dynamic var codecAudioLanguage: String?
+    @objc dynamic var codecMaxCompatibility: Bool = false
+    @objc dynamic var codecQuality: String?
+
+    override static func primaryKey() -> String {
+        return "ocId"
+    }
+}
+
 extension NCManageDatabase {
 
     func addVideoTime(metadata: tableMetadata, time: CMTime?, durationTime: CMTime?) {
