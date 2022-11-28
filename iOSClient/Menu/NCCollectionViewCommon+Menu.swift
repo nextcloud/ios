@@ -375,7 +375,6 @@ extension NCCollectionViewCommon {
     }
 }
 
-
 extension TimeInterval {
     func format() -> String? {
         let formatter = DateComponentsFormatter()
