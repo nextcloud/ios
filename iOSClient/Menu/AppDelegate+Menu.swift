@@ -115,7 +115,7 @@ extension AppDelegate {
         )
 
         if CCUtility.isEnd(toEndEnabled: appDelegate.account) && appDelegate.activeServerUrl == serverUrlHome {
-            actions.append(.seperator)
+            actions.append(.seperator(order: 0))
         }
 
         let titleCreateFolder = isEncrypted ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
@@ -144,7 +144,7 @@ extension AppDelegate {
         }
 
         if CCUtility.isEnd(toEndEnabled: appDelegate.account) && appDelegate.activeServerUrl == serverUrlHome {
-            actions.append(.seperator)
+            actions.append(.seperator(order: 0))
         }
 
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isEncrypted && NextcloudKit.shared.isNetworkReachable() {

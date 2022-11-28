@@ -68,6 +68,7 @@ extension NCCollectionViewCommon {
             NCMenuAction(
                 title: metadata.fileNameView,
                 icon: iconHeader,
+                order: 0,
                 action: nil
             )
         )
@@ -100,11 +101,12 @@ extension NCCollectionViewCommon {
                     title: String(format: NSLocalizedString("_locked_by_", comment: ""), lockOwnerName),
                     details: lockTimeString,
                     icon: lockIcon,
+                    order: 10,
                     action: nil)
             )
         }
 
-        actions.append(.seperator)
+        actions.append(.seperator(order: 20))
 
         //
         // FAVORITE
@@ -115,6 +117,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
+                    order: 20,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
                             if error != .success {
@@ -134,6 +137,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
+                    order: 30,
                     action: { _ in
                         NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .activity)
                     }
@@ -148,10 +152,9 @@ extension NCCollectionViewCommon {
         if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), hasLockCapability {
             let lockAction = NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata])
             if metadata.lock {
-                // make unlock first action, after info rows & seperator
-                actions.insert(lockAction, at: 3)
+                actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 15))
             } else {
-                actions.append(lockAction)
+                actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 40))
             }
         }
 
@@ -159,7 +162,7 @@ extension NCCollectionViewCommon {
         // OFFLINE
         //
         if !isFolderEncrypted {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, completion: {
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 50, completion: {
                 self.reloadDataSource()
             }))
         }
@@ -188,6 +191,7 @@ extension NCCollectionViewCommon {
                     NCMenuAction(
                         title: title,
                         icon: icon!,
+                        order: 60,
                         action: { _ in
                             NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
                         }
@@ -200,21 +204,21 @@ extension NCCollectionViewCommon {
         // OPEN IN
         //
         if !metadata.directory && !NCBrandOptions.shared.disable_openin_file {
-            actions.append(.openInAction(selectedMetadatas: [metadata], viewController: self))
+            actions.append(.openInAction(selectedMetadatas: [metadata], viewController: self, order: 70))
         }
 
         //
         // PRINT
         //
         if metadata.isPrintable {
-            actions.append(.printAction(metadata: metadata))
+            actions.append(.printAction(metadata: metadata, order: 80))
         }
 
         //
         // SAVE
         //
         if (metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.classFile == NKCommon.typeClassFile.video.rawValue {
-            actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
+            actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata], order: 90))
         }
 
         //
@@ -225,6 +229,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
+                    order: 100,
                     action: { _ in
                         NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
                     }
@@ -240,6 +245,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "pencil"),
+                    order: 110,
                     action: { _ in
 
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
@@ -260,14 +266,14 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         if !isFolderEncrypted && serverUrl != "" {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata]))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], order: 120))
         }
 
         //
         // COPY
         //
         if !metadata.directory {
-            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view))
+            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view, order: 130))
         }
         
         //
@@ -278,6 +284,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
+                    order: 140,
                     action: { menuAction in
                         NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
                     }
@@ -293,6 +300,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "palette"),
+                    order: 150,
                     action: { _ in
                         if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {
                             picker.metadata = metadata
@@ -308,7 +316,7 @@ extension NCCollectionViewCommon {
         //
         // DELETE
         //
-        actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self))
+        actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 160))
 
         //
         // SET FOLDER E2EE
@@ -318,6 +326,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
+                    order: 170,
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, error in
                             if error == .success {
@@ -343,6 +352,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
+                    order: 180,
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, error in
                             if error == .success {
