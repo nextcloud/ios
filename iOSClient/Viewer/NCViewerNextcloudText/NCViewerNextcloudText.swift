@@ -52,7 +52,11 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
         contentController.add(self, name: "DirectEditingMobileInterface")
-
+        //FIXME: ONLYOFFICE Due to the WK Shared Workers issue the editors cannot be opened on the devices with iOS 16.1.
+        if editor == NCGlobal.shared.editorOnlyoffice {
+            let dropSharedWorkersScript = WKUserScript(source: "delete window.SharedWorker;", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
+            config.userContentController.addUserScript(dropSharedWorkersScript)
+        }
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView.navigationDelegate = self
         view.addSubview(webView)
