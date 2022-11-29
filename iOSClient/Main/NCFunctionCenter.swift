@@ -98,7 +98,11 @@ import Photos
             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
             
         case NCGlobal.shared.selectorPrint:
-            printDocument(metadata: metadata)
+            // waiting close menu
+            // https://github.com/nextcloud/ios/issues/2278
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.printDocument(metadata: metadata)
+            }
             
         case NCGlobal.shared.selectorSaveAlbum:
             saveAlbum(metadata: metadata)
