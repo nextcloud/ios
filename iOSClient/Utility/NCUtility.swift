@@ -1006,15 +1006,9 @@ class NCUtility: NSObject {
     }
     @objc func isFolderEncrypted(serverUrl: String, e2eEncrypted: Bool = false, account:String, urlBase: String, userId: String) -> Bool {
         if e2eEncrypted { return true }
-        let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
-        if serverUrl == home || serverUrl == ".." { return false }
-        // Current
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-            if directory.e2eEncrypted { return true }
-            // .. up one ..
-            if let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrl, home: home), serverUrl != home, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))  {
-                return directory.e2eEncrypted
-            }
+            return directory.e2eEncrypted
         }
         return false
     }
