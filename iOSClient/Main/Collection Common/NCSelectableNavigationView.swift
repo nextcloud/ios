@@ -88,38 +88,29 @@ extension NCSelectableNavigationView {
 
     func createViewImageAndText(image: UIImage, title: String) -> UIView {
 
-        // Creates a new UIView
+        let imageView = UIImageView()
         let titleView = UIView()
-
-        // Creates a new text label
         let label = UILabel()
+
         label.text = title + " "
         label.sizeToFit()
         label.center = titleView.center
         label.textAlignment = NSTextAlignment.center
 
-        // Creates the image view
-        let imageView = UIImageView()
         imageView.image = image
 
-        // Maintains the image's aspect ratio:
         let imageAspect = (imageView.image?.size.width ?? 0) / (imageView.image?.size.height ?? 0)
-
-        // Sets the image frame so that it's immediately before the text:
         let imageX = label.frame.origin.x - label.frame.size.height * imageAspect
         let imageY = label.frame.origin.y
-
         let imageWidth = label.frame.size.height * imageAspect
         let imageHeight = label.frame.size.height
 
         imageView.frame = CGRect(x: imageX, y: imageY, width: imageWidth, height: imageHeight)
         imageView.contentMode = UIView.ContentMode.scaleAspectFit
 
-        // Adds both the label and image view to the titleView
         titleView.addSubview(label)
         titleView.addSubview(imageView)
 
-        // Sets the titleView frame to fit within the UINavigation Title
         titleView.sizeToFit()
 
         return titleView
