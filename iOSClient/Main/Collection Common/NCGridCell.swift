@@ -169,10 +169,12 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func selectMode(_ status: Bool) {
         if status {
             imageSelect.isHidden = false
+            buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
+            buttonMore.isHidden = false
             setA11yActions()
         }
     }
