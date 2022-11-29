@@ -86,9 +86,13 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         if status {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
+            imageRestore.isHidden = true
+            imageMore.isHidden = true
         } else {
             imageItemLeftConstraint.constant = 10
             imageSelect.isHidden = true
+            imageRestore.isHidden = false
+            imageMore.isHidden = false
             backgroundView = nil
         }
     }
