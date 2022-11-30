@@ -51,7 +51,6 @@ class NCNetworkingE2EEUpload: NSObject {
         } else {
             metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
         }
-        metadata.e2eEncrypted = true
         metadata.session = NKCommon.shared.sessionIdentifierUpload
         metadata.sessionError = ""
         guard let result = NCManageDatabase.shared.addMetadata(metadata) else { return errorCreateEncrypted }

@@ -386,6 +386,7 @@ class NCUtility: NSObject {
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
+        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
 
         func callCompletionWithError(_ error: Bool = true) {
             if error {
@@ -394,7 +395,6 @@ class NCUtility: NSObject {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
-                    metadata.e2eEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
@@ -415,7 +415,7 @@ class NCUtility: NSObject {
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
             metadata.fileNameView = fileName
-            if !metadata.e2eEncrypted {
+            if !isDirectoryE2EE {
                 metadata.fileName = fileName
             }
             compatibilityFormat = true

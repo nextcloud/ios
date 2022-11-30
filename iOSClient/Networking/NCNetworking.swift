@@ -387,9 +387,10 @@ import Photos
                       completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
-        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.e2eEncrypted)]")
+        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
+        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(isDirectoryE2EE)]")
 
-        if metadata.e2eEncrypted {
+        if isDirectoryE2EE {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
                 start()

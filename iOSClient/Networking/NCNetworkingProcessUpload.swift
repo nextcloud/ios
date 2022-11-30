@@ -153,7 +153,8 @@ class NCNetworkingProcessUpload: NSObject {
                                 }
 
                                 // NO E2EE, CHUCK in background
-                                if applicationState != .active && (metadata.e2eEncrypted || metadata.chunk) {
+                                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
+                                if applicationState != .active && (isDirectoryE2EE || metadata.chunk) {
                                     continue
                                 }
 
