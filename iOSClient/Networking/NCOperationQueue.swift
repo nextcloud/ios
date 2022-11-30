@@ -82,8 +82,7 @@ import NextcloudKit
 
     func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
 
-        let isFolderEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
-        if isFolderEncrypted {
+        if NCUtility.shared.isDirectoryE2EE(metadata: metadata) {
             for case let operation as NCOperationDelete in deleteQueueE2EE.operations where operation.metadata.ocId == metadata.ocId {
                 return
             }
@@ -354,7 +353,7 @@ class NCOperationSynchronization: ConcurrentOperation {
 
                             if error == .success {
 
-                                NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, _, metadatas in
+                                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, _, metadatas in
 
                                     let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
 

@@ -757,7 +757,7 @@ import Photos
                 return
             }
 
-            NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: true, account: account) { metadataFolder, metadatasFolder, metadatas in
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { metadataFolder, metadatasFolder, metadatas in
 
                 // Add metadata folder
                 NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadataFolder))
@@ -790,8 +790,8 @@ import Photos
                 return
             }
 
-            let isEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
-            let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
+            let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+            let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
             completion(account, metadata, error)
         }
@@ -809,7 +809,7 @@ import Photos
                 return completion(nil, error)
             }
 
-            NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
 
                 // Update sub directories
                 for folder in metadatasFolder {
@@ -977,7 +977,7 @@ import Photos
 
     @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if isDirectoryEncrypted {
@@ -1113,7 +1113,7 @@ import Photos
             return completion(NKError())
         }
 
-        let isDirectoryEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
         if isDirectoryEncrypted {
@@ -1238,7 +1238,7 @@ import Photos
                 return
             }
 
-            NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
+            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                 if selector != NCGlobal.shared.selectorListingFavorite {
                     #if !EXTENSION
@@ -1274,7 +1274,7 @@ import Photos
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"

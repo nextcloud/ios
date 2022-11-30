@@ -533,7 +533,7 @@ extension NCMedia {
 
             if error == .success && account == self.appDelegate.account {
                 if files.count > 0 {
-                    NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { _, _, metadatas in
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
@@ -612,7 +612,7 @@ extension NCMedia {
                 self.mediaCommandView?.activityIndicator.stopAnimating()
 
                 if error == .success && account == self.appDelegate.account && files.count > 0 {
-                    NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)

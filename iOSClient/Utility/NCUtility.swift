@@ -350,7 +350,7 @@ class NCUtility: NSObject {
                 metadataSource.date = date
             }
             metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
-            metadataSource.e2eEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+            metadataSource.e2eEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
@@ -394,7 +394,7 @@ class NCUtility: NSObject {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
-                    metadata.e2eEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+                    metadata.e2eEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
@@ -522,7 +522,7 @@ class NCUtility: NSObject {
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
         let chunckSize = CCUtility.getChunkSize() * 1000000
-        let e2eEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+        let e2eEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
@@ -998,14 +998,16 @@ class NCUtility: NSObject {
         return returnImage
     }
 
-    func isFolderEncrypted(serverUrl: String, e2eEncrypted: Bool = false, userBase: NCUserBaseUrl) -> Bool {
-        return isFolderEncrypted(serverUrl: serverUrl, e2eEncrypted: e2eEncrypted, account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId)
+    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
+        return isDirectoryE2EE(serverUrl: serverUrl, account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId)
     }
-    func isFolderEncrypted(metadata: tableMetadata) -> Bool {
-        return isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+    func isDirectoryE2EE(file: NKFile) -> Bool {
+        return isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account, urlBase: file.urlBase, userId: file.userId)
     }
-    @objc func isFolderEncrypted(serverUrl: String, e2eEncrypted: Bool = false, account:String, urlBase: String, userId: String) -> Bool {
-        if e2eEncrypted { return true }
+    @objc func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
+        return isDirectoryE2EE(serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+    }
+    @objc func isDirectoryE2EE(serverUrl: String, account:String, urlBase: String, userId: String) -> Bool {
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
             return directory.e2eEncrypted

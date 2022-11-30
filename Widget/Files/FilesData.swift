@@ -236,9 +236,8 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     }
                 }
 
-                //
-                let isEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account.account, urlBase: file.urlBase, userId: file.userId)
-                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account.account)
+                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
                 let data = FilesData.init(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)

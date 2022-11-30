@@ -66,7 +66,7 @@ extension NCSelectableNavigationView {
         } else {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, action: tapSelect)
             navigationItem.leftBarButtonItem = nil
-            if NCUtility.shared.isFolderEncrypted(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate), let image = UIImage(systemName: "lock.circle") {
+            if NCUtility.shared.isDirectoryE2EE(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate), let image = UIImage(systemName: "lock.circle") {
                 navigationItem.titleView = createViewImageAndText(image: image.withTintColor(NCBrandColor.shared.brand, renderingMode: .alwaysOriginal), title: titleCurrentFolder)
             }
             navigationItem.title = titleCurrentFolder

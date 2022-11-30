@@ -151,8 +151,8 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
             NextcloudKit.shared.getFileFromFileId(fileId: String(activityPreview.fileId)) { account, file, data, error in
                 if let file = file {
-
-                    let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: file.e2eEncrypted, account: account)
+                    let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                    let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                     NCManageDatabase.shared.addMetadata(metadata)
 
                     let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName

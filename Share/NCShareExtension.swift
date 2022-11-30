@@ -344,7 +344,7 @@ extension NCShareExtension {
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
         // E2EE
-        metadata.e2eEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+        metadata.e2eEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 

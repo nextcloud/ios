@@ -124,11 +124,11 @@ extension NCManageDatabase {
         return tableMetadata.init(value: metadata)
     }
 
-    @objc func convertNCFileToMetadata(_ file: NKFile, isEncrypted: Bool = false, account: String) -> tableMetadata {
+    @objc func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
 
         let metadata = tableMetadata()
 
-        metadata.account = account
+        metadata.account = file.account
         metadata.checksums = file.checksums
         metadata.commentsUnread = file.commentsUnread
         metadata.contentType = file.contentType
@@ -193,8 +193,8 @@ extension NCManageDatabase {
         metadata.userId = file.userId
 
         // E2EE find the fileName for fileNameView
-        if isEncrypted || metadata.e2eEncrypted {
-            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
+        if isDirectoryE2EE || file.e2eEncrypted {
+            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
                 let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
                 metadata.contentType = results.mimeType
@@ -222,10 +222,10 @@ extension NCManageDatabase {
         return metadata
     }
 
-    @objc func convertNKFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, account: String, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
+    @objc func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
 
         var counter: Int = 0
-        var isEncrypted: Bool = false
+        var isDirectoryE2EE: Bool = false
         let listServerUrl = ThreadSafeDictionary<String,Bool>()
 
         var metadataFolder = tableMetadata()
@@ -235,13 +235,13 @@ extension NCManageDatabase {
         for file in files {
 
             if let key = listServerUrl[file.serverUrl] {
-                isEncrypted = key
+                isDirectoryE2EE = key
             } else {
-                isEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
-                listServerUrl[file.serverUrl] = isEncrypted
+                isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            let metadata = convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
+            let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
             if counter == 0 && useMetadataFolder {
                 metadataFolder = tableMetadata.init(value: metadata)

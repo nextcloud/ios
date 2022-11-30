@@ -48,7 +48,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
             if markE2EEFolderResults.error != .success { return markE2EEFolderResults.error }
 
             file.e2eEncrypted = true
-            guard let metadata = NCManageDatabase.shared.addMetadata(NCManageDatabase.shared.convertNCFileToMetadata(file, account: readFileOrFolderResults.account)) else {
+            let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+            guard let metadata = NCManageDatabase.shared.addMetadata(NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)) else {
                 return error
             }
             NCManageDatabase.shared.addDirectory(encrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)

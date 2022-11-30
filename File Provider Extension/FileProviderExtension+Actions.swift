@@ -46,7 +46,9 @@ extension FileProviderExtension {
                     if error == .success && files.count > 0 {
 
                         let file = files.first!
-                        let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, account: fileProviderData.shared.account)
+
+                        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(file: file)
+                        let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
 
                         NCManageDatabase.shared.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                         NCManageDatabase.shared.addMetadata(metadata)

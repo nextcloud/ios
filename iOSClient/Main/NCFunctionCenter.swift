@@ -611,7 +611,7 @@ import Photos
             return UIMenu()
         }
 
-        let isFolderEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
@@ -787,7 +787,7 @@ import Photos
             children.insert(viewInFolder, at: children.count - 1)
         }
 
-        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if (!isDirectoryE2EE && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             children.insert(modify, at: children.count - 1)
         }
 

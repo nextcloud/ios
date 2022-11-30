@@ -37,7 +37,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
     internal var serverUrl: String = ""
-    internal var isEncryptedFolder = false
+    internal var isDirectoryE2EE = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var metadataFolder: tableMetadata?
@@ -999,7 +999,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !appDelegate.account.isEmpty else { return }
 
         // E2EE
-        isEncryptedFolder = NCUtility.shared.isFolderEncrypted(serverUrl: serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, userBase: appDelegate)
+        isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, userBase: appDelegate)
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
@@ -1632,11 +1632,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         }
 
-        // E2EE
-        if metadata.e2eEncrypted || isEncryptedFolder {
-            cell.hideButtonShare(true)
-        }
-
         // URL
         if metadata.classFile == NKCommon.typeClassFile.url.rawValue {
             cell.fileLocalImage?.image = nil
@@ -1682,6 +1677,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
         }
+
+        // E2EE
+        // ** IMPORT MUST BE AT THE END **
+        if metadata.e2eEncrypted || isDirectoryE2EE {
+            cell.hideButtonShare(true)
+        }
+
         return cell
     }
 
@@ -1706,8 +1708,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
                 if headerMenuButtonsCommand && !isSearchingMode {
-                    let imageButton2 = isEncryptedFolder ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
-                    let titleButton2 = isEncryptedFolder ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
+                    let imageButton2 = isDirectoryE2EE ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
+                    let titleButton2 = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
                     header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
