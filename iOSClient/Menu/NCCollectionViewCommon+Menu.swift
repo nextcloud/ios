@@ -106,6 +106,67 @@ extension NCCollectionViewCommon {
             )
         }
 
+        //
+        // LOCK / UNLOCK
+        //
+        let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
+        if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), hasLockCapability {
+            actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 15))
+        }
+
+        //
+        // SET FOLDER E2EE
+        //
+        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "lock"),
+                    order: 15,
+                    action: { _ in
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, error in
+                            if error == .success {
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
+                                NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
+
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
+                            } else {
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                            }
+                        }
+                    }
+                )
+            )
+        }
+
+        //
+        // UNSET FOLDER E2EE
+        //
+        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "lock"),
+                    order: 15,
+                    action: { _ in
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, error in
+                            if error == .success {
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
+                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
+                                NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
+
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
+                            } else {
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                            }
+                        }
+                    }
+                )
+            )
+        }
+
+
         actions.append(.seperator(order: 20))
 
         //
@@ -143,18 +204,6 @@ extension NCCollectionViewCommon {
                     }
                 )
             )
-        }
-        
-        //
-        // LOCK / UNLOCK
-        //
-        let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
-        if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), hasLockCapability {
-            if metadata.lock {
-                actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 15))
-            } else {
-                actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 50))
-            }
         }
 
         //
@@ -239,7 +288,9 @@ extension NCCollectionViewCommon {
         //
         // RENAME
         //
-        if !(isDirectoryE2EE && metadata.serverUrl == serverUrlHome), !metadata.lock {
+        if (!isDirectoryE2EE && metadata.e2eEncrypted) || metadata.lock {
+            print("Not possible rename")
+        } else {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -264,7 +315,9 @@ extension NCCollectionViewCommon {
         //
         // COPY - MOVE
         //
-        if !isDirectoryE2EE && serverUrl != "" {
+        if isDirectoryE2EE || metadata.e2eEncrypted {
+            print("Not possible copy/move")
+        } else {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], order: 130))
         }
 
@@ -315,58 +368,10 @@ extension NCCollectionViewCommon {
         //
         // DELETE
         //
-        actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 170))
-
-        //
-        // SET FOLDER E2EE
-        //
-        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "lock"),
-                    order: 15,
-                    action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, error in
-                            if error == .success {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
-                                NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
-
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
-                            } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-                            }
-                        }
-                    }
-                )
-            )
-        }
-
-        //
-        // UNSET FOLDER E2EE
-        //
-        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "lock"),
-                    order: 15,
-                    action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, error in
-                            if error == .success {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
-                                NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
-
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
-                            } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-                            }
-                        }
-                    }
-                )
-            )
+        if !isDirectoryE2EE && metadata.e2eEncrypted {
+            print("Not possible delete")
+        } else {
+            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 170))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: actions)
