@@ -149,7 +149,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         if action != #selector(startTask(_:)) { return false }
         guard let metadata = metadataTemp else { return false }
-        if metadata.e2eEncrypted { return false }
+        if NCUtility.shared.isDirectoryE2EE(metadata: metadata) { return false }
 
         if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
             return true
