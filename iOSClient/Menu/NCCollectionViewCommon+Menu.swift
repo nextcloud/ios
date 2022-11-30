@@ -320,7 +320,7 @@ extension NCCollectionViewCommon {
         //
         // SET FOLDER E2EE
         //
-        if metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
@@ -346,7 +346,7 @@ extension NCCollectionViewCommon {
         //
         // UNSET FOLDER E2EE
         //
-        if metadata.directory && metadata.size == 0 && metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
