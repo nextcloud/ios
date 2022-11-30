@@ -165,7 +165,6 @@ extension NCNetworking {
                 let serverUrl = metadata.serverUrl
                 let assetLocalIdentifier = metadata.assetLocalIdentifier
                 let isLivePhoto = metadata.livePhoto
-                let isE2eEncrypted = metadata.e2eEncrypted
                 let account = metadata.account
                 let fileName = metadata.fileName
 
@@ -177,7 +176,7 @@ extension NCNetworking {
                     if error == .success, let metadata = metadata {
 
                         metadata.assetLocalIdentifier = assetLocalIdentifier
-                        metadata.e2eEncrypted = isE2eEncrypted
+                        metadata.e2eEncrypted = metadata.e2eEncrypted
                         metadata.livePhoto = isLivePhoto
 
                         // Delete Asset on Photos album

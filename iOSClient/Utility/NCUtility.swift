@@ -395,6 +395,7 @@ class NCUtility: NSObject {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
+                    //metadata.e2eEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
