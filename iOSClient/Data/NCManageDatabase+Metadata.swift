@@ -239,13 +239,14 @@ extension NCManageDatabase {
             counter += 1
         }
 
-        // E2EE detect Live Photo [NOT DETECT FROM NKFILES]
+        // E2EE detect Live Photo [NOT DETECTED IN NKFILES]
         if isDirectoryE2EE {
             for metadata in metadatas {
                 if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
                     let fileNameViewMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                     let fileNameViewJPG = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
-                    let results = metadatas.filter({ $0.fileNameView == fileNameViewJPG ||  $0.fileNameView == fileNameViewMOV })
+                    let fileNameViewHEIC = (metadata.fileNameView as NSString).deletingPathExtension + ".heic"
+                    let results = metadatas.filter({ $0.fileNameView.lowercased() == fileNameViewJPG.lowercased() || $0.fileNameView.lowercased() == fileNameViewHEIC.lowercased() || $0.fileNameView.lowercased() == fileNameViewMOV.lowercased() })
                     if results.count == 2 {
                         results.first?.livePhoto = true
                         results.last?.livePhoto = true
