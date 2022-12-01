@@ -103,10 +103,8 @@ class NCNetworkingProcessUpload: NSObject {
 
             let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
             let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
-            var counterUpload: Int = 0
+            var counterUpload = metadatasUpload.count
             let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
-
-            counterUpload = metadatasUpload.count
 
             // Update Badge
             let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
@@ -130,8 +128,18 @@ class NCNetworkingProcessUpload: NSObject {
                             continue
                         }
 
-                        // Chunk or E2EE ... only one ? skipped
-                        if metadatasUpload.filter({ $0.chunk || $0.e2eEncrypted }).count > 0 {
+                        // Chunk only one
+                        if metadatasUpload.filter({ $0.chunk }).count > 0 {
+                            continue
+                        }
+
+                        // E2EE only one
+                        let uniqueMetadatas = metadatasUpload.unique(map: { $0.serverUrl })
+                        var alreadyPresentE2EE: Bool = false
+                        for metadata in uniqueMetadatas where alreadyPresentE2EE == false {
+                            if NCUtility.shared.isDirectoryE2EE(metadata: metadata) {alreadyPresentE2EE = true }
+                        }
+                        if alreadyPresentE2EE {
                             continue
                         }
 
@@ -147,13 +155,14 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                             for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
 
+                                // isE2EE
+                                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
+
                                 // NO WiFi
                                 if !isWiFi && metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
                                     continue
                                 }
 
-                                // NO E2EE, CHUCK in background
-                                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
                                 if applicationState != .active && (isDirectoryE2EE || metadata.chunk) {
                                     continue
                                 }

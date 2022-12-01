@@ -350,7 +350,6 @@ class NCUtility: NSObject {
                 metadataSource.date = date
             }
             metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
-            metadataSource.e2eEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
@@ -395,7 +394,6 @@ class NCUtility: NSObject {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
-                    //metadata.e2eEncrypted = NCUtility.shared.isFolderEncrypted(serverUrl: metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
@@ -523,7 +521,6 @@ class NCUtility: NSObject {
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
         let chunckSize = CCUtility.getChunkSize() * 1000000
-        let e2eEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
@@ -543,7 +540,6 @@ class NCUtility: NSObject {
                 if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
                 metadataLivePhoto.classFile = NKCommon.typeClassFile.video.rawValue
-                metadataLivePhoto.e2eEncrypted = e2eEncrypted
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
