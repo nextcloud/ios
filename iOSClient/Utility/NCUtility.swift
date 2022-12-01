@@ -1011,6 +1011,43 @@ class NCUtility: NSObject {
         }
         return false
     }
+
+    func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {
+
+        let imageView = UIImageView()
+        let titleView = UIView()
+        let label = UILabel()
+
+        if let title = title {
+            label.text = title + " "
+        } else {
+            label.text = " "
+        }
+        label.sizeToFit()
+        label.center = titleView.center
+        label.textAlignment = NSTextAlignment.center
+
+        imageView.image = image
+
+        let imageAspect = (imageView.image?.size.width ?? 0) / (imageView.image?.size.height ?? 0)
+        let imageX = label.frame.origin.x - label.frame.size.height * imageAspect
+        let imageY = label.frame.origin.y
+        let imageWidth = label.frame.size.height * imageAspect
+        let imageHeight = label.frame.size.height
+
+        if title != nil {
+            imageView.frame = CGRect(x: imageX, y: imageY, width: imageWidth, height: imageHeight)
+            titleView.addSubview(label)
+        } else {
+            imageView.frame = CGRect(x: imageX / 2, y: imageY, width: imageWidth, height: imageHeight)
+        }
+        imageView.contentMode = UIView.ContentMode.scaleAspectFit
+
+        titleView.addSubview(imageView)
+        titleView.sizeToFit()
+
+        return titleView
+    }
 }
 
 

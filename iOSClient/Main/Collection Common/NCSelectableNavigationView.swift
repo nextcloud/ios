@@ -66,9 +66,6 @@ extension NCSelectableNavigationView {
         } else {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, action: tapSelect)
             navigationItem.leftBarButtonItem = nil
-            if NCUtility.shared.isDirectoryE2EE(serverUrl: appDelegate.activeServerUrl, userBase: appDelegate), let image = UIImage(systemName: "lock.circle") {
-                navigationItem.titleView = createViewImageAndText(image: image.withTintColor(NCBrandColor.shared.brand, renderingMode: .alwaysOriginal), title: titleCurrentFolder)
-            }
             navigationItem.title = titleCurrentFolder
         }
     }
@@ -84,43 +81,6 @@ extension NCSelectableNavigationView {
         selectOcId = selectableDataSource.compactMap({ $0.primaryKeyValue })
         navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(selectableDataSource.count)"
         collectionView.reloadData()
-    }
-
-    func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {
-
-        let imageView = UIImageView()
-        let titleView = UIView()
-        let label = UILabel()
-
-        if let title = title {
-            label.text = title + " "
-        } else {
-            label.text = " "
-        }
-        label.sizeToFit()
-        label.center = titleView.center
-        label.textAlignment = NSTextAlignment.center
-
-        imageView.image = image
-
-        let imageAspect = (imageView.image?.size.width ?? 0) / (imageView.image?.size.height ?? 0)
-        let imageX = label.frame.origin.x - label.frame.size.height * imageAspect
-        let imageY = label.frame.origin.y
-        let imageWidth = label.frame.size.height * imageAspect
-        let imageHeight = label.frame.size.height
-
-        if title != nil {
-            imageView.frame = CGRect(x: imageX, y: imageY, width: imageWidth, height: imageHeight)
-            titleView.addSubview(label)
-        } else {
-            imageView.frame = CGRect(x: imageX / 2, y: imageY, width: imageWidth, height: imageHeight)
-        }
-        imageView.contentMode = UIView.ContentMode.scaleAspectFit
-
-        titleView.addSubview(imageView)
-        titleView.sizeToFit()
-
-        return titleView
     }
 }
 
