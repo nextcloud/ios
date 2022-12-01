@@ -400,12 +400,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         if navigationController?.isNavigationBarHidden ?? false {
             navigationController?.setNavigationBarHidden(false, animated: true)
-            self.hideStatusBar = false
+            hideStatusBar = false
             pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
 
         } else {
             navigationController?.setNavigationBarHidden(true, animated: true)
-            self.hideStatusBar = true
+            hideStatusBar = true
             pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.topAnchor)
         }
 

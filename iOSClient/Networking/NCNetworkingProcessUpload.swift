@@ -110,6 +110,21 @@ class NCNetworkingProcessUpload: NSObject {
             let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter":counterBadge.count])
 
+            // ** TEST ONLY ONE **
+            // E2EE
+            let uniqueMetadatas = metadatasUpload.unique(map: { $0.serverUrl })
+            for metadata in uniqueMetadatas {
+                if NCUtility.shared.isDirectoryE2EE(metadata: metadata) {
+                    self.pauseProcess = false
+                    return completition(counterUpload)
+                }
+            }
+            // CHUNK
+            if metadatasUpload.filter({ $0.chunk }).count > 0 {
+                self.pauseProcess = false
+                return completition(counterUpload)
+            }
+
             NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
 
                 for sessionSelector in sessionSelectors where counterUpload < maxConcurrentOperationUpload {
@@ -125,21 +140,6 @@ class NCNetworkingProcessUpload: NSObject {
                         // Is already in upload background? skipped
                         if listOcId.contains(metadata.ocId) {
                             NKCommon.shared.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
-                            continue
-                        }
-
-                        // Chunk only one
-                        if metadatasUpload.filter({ $0.chunk }).count > 0 {
-                            continue
-                        }
-
-                        // E2EE only one
-                        let uniqueMetadatas = metadatasUpload.unique(map: { $0.serverUrl })
-                        var alreadyPresentE2EE: Bool = false
-                        for metadata in uniqueMetadatas where alreadyPresentE2EE == false {
-                            if NCUtility.shared.isDirectoryE2EE(metadata: metadata) {alreadyPresentE2EE = true }
-                        }
-                        if alreadyPresentE2EE {
                             continue
                         }
 
