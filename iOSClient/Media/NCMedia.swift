@@ -521,7 +521,7 @@ extension NCMedia {
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
             bottom = -mainTabBar.getHight()
         }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .gray)
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
 
         let options = NKRequestOptions(timeout: 300)
         

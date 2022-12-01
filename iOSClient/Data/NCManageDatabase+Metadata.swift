@@ -203,22 +203,6 @@ extension NCManageDatabase {
             }
         }
 
-        // Live Photo "DETECT"
-        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
-            var classFile = metadata.classFile
-            var fileNameView = metadata.fileNameView
-            if classFile == NKCommon.typeClassFile.image.rawValue {
-                classFile = NKCommon.typeClassFile.video.rawValue
-                fileNameView = (fileNameView as NSString).deletingPathExtension + ".mov"
-            } else {
-                classFile = NKCommon.typeClassFile.image.rawValue
-                fileNameView = (fileNameView as NSString).deletingPathExtension + ".jpg"
-            }
-            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView =[c] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileNameView, metadata.ocId, classFile)) != nil {
-                metadata.livePhoto = true
-            }
-        }
-
         return metadata
     }
 
@@ -253,6 +237,21 @@ extension NCManageDatabase {
             }
 
             counter += 1
+        }
+
+        // E2EE detect Live Photo [NOT DETECT FROM NKFILES]
+        if isDirectoryE2EE {
+            for metadata in metadatas {
+                if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+                    let fileNameViewMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+                    let fileNameViewJPG = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
+                    let results = metadatas.filter({ $0.fileNameView == fileNameViewJPG ||  $0.fileNameView == fileNameViewMOV })
+                    if results.count == 2 {
+                        results.first?.livePhoto = true
+                        results.last?.livePhoto = true
+                    }
+                }
+            }
         }
 
         completion(metadataFolder, metadataFolders, metadatas)
