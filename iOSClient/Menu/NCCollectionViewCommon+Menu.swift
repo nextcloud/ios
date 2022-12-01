@@ -191,9 +191,9 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // DETAIL
+        // DETAILS
         //
-        if !isDirectoryE2EE && !appDelegate.disableSharesView {
+        if !appDelegate.disableSharesView {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -209,11 +209,9 @@ extension NCCollectionViewCommon {
         //
         // OFFLINE
         //
-        if !isDirectoryE2EE {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
-                self.reloadDataSource()
-            }))
-        }
+        actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
+            self.reloadDataSource()
+        }))
 
         //
         // OPEN with external editor

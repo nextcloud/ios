@@ -1325,12 +1325,12 @@
 			isa = PBXGroup;
 			children = (
 				AF93471627E2361E002537EE /* NCShareAdvancePermission.swift */,
-				AFCE353627E4ED7B00FEA6C2 /* NCShareCells.swift */,
 				AF93471827E2361E002537EE /* NCShareAdvancePermissionFooter.swift */,
 				AF93471427E2361E002537EE /* NCShareAdvancePermissionFooter.xib */,
-				AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */,
 				AF93471527E2361E002537EE /* NCShareAdvancePermissionHeader.swift */,
 				AF93471727E2361E002537EE /* NCShareAdvancePermissionHeader.xib */,
+				AFCE353627E4ED7B00FEA6C2 /* NCShareCells.swift */,
+				AF93474D27E3F211002537EE /* NCShareNewUserAddComment.swift */,
 			);
 			path = Advanced;
 			sourceTree = "<group>";
@@ -1464,11 +1464,11 @@
 		F728CE741BF6322C00E69702 /* Share */ = {
 			isa = PBXGroup;
 			children = (
+				AF93471327E235EB002537EE /* Advanced */,
 				F700510022DF63AC003A3356 /* NCShare.storyboard */,
 				F700510422DF6A89003A3356 /* NCShare.swift */,
 				AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */,
 				AF730AF727834B1400B7520E /* NCShare+NCCellDelegate.swift */,
-				AF93471327E235EB002537EE /* Advanced */,
 				F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */,
 				F7E4D9C322ED929B003675FD /* NCShareCommentsCell.swift */,
 				F769454522E9F1B0000A798A /* NCShareCommon.swift */,
@@ -3693,7 +3693,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -3756,7 +3756,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
