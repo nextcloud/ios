@@ -130,6 +130,8 @@ extension AppDelegate {
             )
         )
 
+        // Folder encrypted only HOME
+        // if serverUrlHome == appDelegate.activeServerUrl && CCUtility.isEnd(toEndEnabled: appDelegate.account) { }
         if !isDirectoryE2EE && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
