@@ -115,9 +115,10 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // SET FOLDER E2EE
+        // SET FOLDER E2EE (ONLY ROOT)
         //
-        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        //if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if metadata.serverUrl == serverUrlHome && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
