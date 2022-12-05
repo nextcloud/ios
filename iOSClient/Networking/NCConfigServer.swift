@@ -13,12 +13,7 @@ import NextcloudKit
 @objc class NCConfigServer: NSObject, UIActionSheetDelegate {
 
     // MARK: Singleton
-
     @objc static let shared = NCConfigServer()
-
-    fileprivate override init() {
-
-    }
 
     // Start service
     @objc func startService(url: URL) {
@@ -30,7 +25,10 @@ import NextcloudKit
         urlRequest.headers = NKCommon.shared.getStandardHeaders(nil, customUserAgent: nil)
 
         let dataTask = defaultSession.dataTask(with: urlRequest) { (data, response, error) in
-            if let data = data {
+            if let error = error {
+                let error = NKError(errorCode: error._code, errorDescription: error.localizedDescription)
+                NCContentPresenter.shared.showInfo(error: error)
+            } else if let data = data {
                 DispatchQueue.main.async { self.start(data: data) }
             }
         }
@@ -48,7 +46,6 @@ import NextcloudKit
     private var configData: Data!
 
     private var serverState: ConfigState = .Stopped
-    private var startTime: NSDate!
     private var registeredForNotifications = false
     private var backgroundTask = UIBackgroundTaskIdentifier.invalid
 
@@ -68,12 +65,12 @@ import NextcloudKit
         if UIApplication.shared.canOpenURL(url as URL) {
             do {
                 try localServer.start(listeningPort, forceIPv4: false, priority: .default)
-
-                startTime = NSDate()
                 serverState = .Ready
                 registerForNotifications()
-                UIApplication.shared.openURL(url)
-            } catch let error as NSError {
+                UIApplication.shared.open(url)
+            } catch {
+                let error = NKError(errorCode: error._code, errorDescription: error.localizedDescription)
+                NCContentPresenter.shared.showInfo(error: error)
                 self.stop()
             }
         }
@@ -122,8 +119,7 @@ import NextcloudKit
     private func basePage(pathComponent: String?) -> String {
         var page = "<!doctype html><html>" + "<head><meta charset='utf-8'><title>\(self.configName)</title></head>"
         if let component = pathComponent {
-            let script = "function load() {  window.location.href='\(self.baseURL(pathComponent: component))'; }window.setInterval(load, 800);"
-
+            let script = "function load() { window.location.href='\(self.baseURL(pathComponent: component))'; } window.setInterval(load, 800);"
             page += "<script>\(script)</script>"
         }
         page += "<body></body></html>"
