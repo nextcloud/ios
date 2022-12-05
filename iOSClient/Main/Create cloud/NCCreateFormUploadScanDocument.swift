@@ -490,7 +490,15 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
             let pdfData = NSMutableData()
 
-            if password.count > 0 {
+            if !password.isEmpty {
+                for char in password.unicodeScalars {
+                    if !char.isASCII {
+                        NCActivityIndicator.shared.stop()
+                        let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
+                        NCContentPresenter.shared.showError(error: error)
+                        return
+                    }
+                }
                 let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String: password, kCGPDFContextOwnerPassword as String: password]
                 UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
             } else {
