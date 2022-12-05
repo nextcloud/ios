@@ -350,7 +350,9 @@
     [self deselectFormRow:sender];
 
     NSString *url = [appDelegate.urlBase stringByAppendingString:@"/remote.php/dav/provisioning/apple-provisioning.mobileconfig"];
-    [[NCConfigServer shared] startServiceWithUrl:[NSURL URLWithString: url]];
+    //[[NCConfigServer shared] startServiceWithUrl:[NSURL URLWithString: url]];
+    NCConfigServer *configServer = [NCConfigServer new];
+    [configServer startServiceWithUrl:[NSURL URLWithString: url]];
 }
 
 

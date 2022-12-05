@@ -12,9 +12,6 @@ import NextcloudKit
 
 @objc class NCConfigServer: NSObject, UIActionSheetDelegate {
 
-    // MARK: Singleton
-    @objc static let shared = NCConfigServer()
-
     // Start service
     @objc func startService(url: URL) {
 
@@ -41,7 +38,7 @@ import NextcloudKit
 
     internal let listeningPort: in_port_t = 8080
     internal var configName: String = "Profile install"
-    private var localServer: HttpServer!
+    private var localServer: HttpServer?
     private var returnURL: String = ""
     private var configData: Data!
 
@@ -53,7 +50,7 @@ import NextcloudKit
         unregisterFromNotifications()
     }
 
-    // MARK:- Control functions
+    // MARK: - Control functions
 
     internal func start(data: Data) {
         self.configData = data
@@ -64,7 +61,7 @@ import NextcloudKit
         let url = URL(string: page)!
         if UIApplication.shared.canOpenURL(url as URL) {
             do {
-                try localServer.start(listeningPort, forceIPv4: false, priority: .default)
+                try localServer?.start(listeningPort, forceIPv4: false, priority: .default)
                 serverState = .Ready
                 registerForNotifications()
                 UIApplication.shared.open(url)
@@ -83,10 +80,10 @@ import NextcloudKit
         }
     }
 
-    // MARK:- Private functions
+    // MARK: - Private functions
 
     private func setupHandlers() {
-        localServer["/install"] = { request in
+        localServer?["/install"] = { request in
             switch self.serverState {
             case .Stopped:
                 return .notFound()
@@ -129,7 +126,7 @@ import NextcloudKit
     private func returnedToApp() {
         if serverState != .Stopped {
             serverState = .BackToApp
-            localServer.stop()
+            localServer?.stop()
         }
     }
 
