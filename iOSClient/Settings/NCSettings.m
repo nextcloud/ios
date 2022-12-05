@@ -99,7 +99,21 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
-    
+
+    // Section : CARDAV --------------------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_cardav_", nil)];
+    [form addFormSection:section];
+
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cardav" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_cardav_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"shield.checkerboard"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(CalDAVCardDAV:);
+    [section addFormRow:row];
+
     // Section : E2EEncryption --------------------------------------------------------------
 
     BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
@@ -330,6 +344,15 @@
     
     [self presentViewController:browserWebVC animated:YES completion:nil];
 }
+
+- (void)CalDAVCardDAV:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+
+    NSString *url = [appDelegate.urlBase stringByAppendingString:@"/remote.php/dav/provisioning/apple-provisioning.mobileconfig"];
+    [[NCConfigServer shared] startServiceWithUrl:[NSURL URLWithString: url]];
+}
+
 
 #pragma mark - Passcode
 
