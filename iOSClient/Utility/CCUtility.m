@@ -831,18 +831,6 @@
     return result;
 }
 
-+ (NSString *)createRandomString:(int)numChars
-{
-    NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    NSMutableString *randomString = [NSMutableString stringWithCapacity: numChars];
-    
-    for (int i=0; i < numChars; i++) {
-        [randomString appendFormat: @"%C", [letters characterAtIndex: arc4random_uniform((unsigned int)[letters length]) % [letters length]]];
-    }
-    
-    return [NSString stringWithFormat:@"%@", randomString];
-}
-
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
