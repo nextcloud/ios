@@ -34,7 +34,7 @@ import NextcloudKit
     @objc func startService(url: URL) {
 
         let defaultSessionConfiguration = URLSessionConfiguration.default
-        let defaultSession = URLSession(configuration: defaultSessionConfiguration, delegate: self, delegateQueue: nil)
+        let defaultSession = URLSession(configuration: defaultSessionConfiguration, delegate: self, delegateQueue: .main)
 
         var urlRequest = URLRequest(url: url)
         urlRequest.headers = NKCommon.shared.getStandardHeaders()
@@ -43,16 +43,14 @@ import NextcloudKit
             if let error = error {
                 NCContentPresenter.shared.showInfo(error: NKError(error: error))
             } else if let data = data {
-                DispatchQueue.main.async { self.start(data: data) }
+                self.start(data: data)
             }
         }
         dataTask.resume()
     }
 
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        DispatchQueue.global().async {
-            NCNetworking.shared.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
-        }
+        NCNetworking.shared.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
     }
 
     private enum ConfigState: Int {
