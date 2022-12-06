@@ -897,7 +897,7 @@
 "_keep_running_"            = "Keep the app running for a better user experience";
 "_recent_activity_"         = "Recent activity";
 "_title_lockscreenwidget_"  = "Status";
-"_description_lockscreenwidget_" = "Keep an eye on available space and recent activity";
+"_description_lockscreenwidget_"    = "Keep an eye on available space and recent activity";
 "_no_items_"                = "No items";
 "_check_back_later_"        = "Check back later";
 "_exporting_video_"         = "Exporting video … Tap to cancel.";
@@ -909,6 +909,9 @@
 "_change_upload_filename_"  = "Do you want to save the file with a different name ?";
 "_save_file_as_"            = "Save file as %@";
 "_password_ascii_"          = "The password cannot contain special characters";
+"_calendar_contacts_"       = "Calendar and Contacts";
+"_mobile_config_"           = "Download the Mobile Config";
+"_calendar_contacts_footer_"    = "xxxx";
 
 // Video
 "_select_trace_"            = "Select the trace";

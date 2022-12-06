@@ -5,18 +5,36 @@
 //  Created by Marino Faggiana on 05/12/22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
 //
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 import Swifter
 import NextcloudKit
 
-@objc class NCConfigServer: NSObject, UIActionSheetDelegate {
+// Source:
+// https://stackoverflow.com/questions/2338035/installing-a-configuration-profile-on-iphone-programmatically
+
+@objc class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate {
 
     // Start service
     @objc func startService(url: URL) {
 
         let defaultSessionConfiguration = URLSessionConfiguration.default
-        let defaultSession = URLSession(configuration: defaultSessionConfiguration)
+        let defaultSession = URLSession(configuration: defaultSessionConfiguration, delegate: self, delegateQueue: nil)
 
         var urlRequest = URLRequest(url: url)
         urlRequest.headers = NKCommon.shared.getStandardHeaders(nil, customUserAgent: nil)
@@ -32,6 +50,12 @@ import NextcloudKit
         dataTask.resume()
     }
 
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        DispatchQueue.global().async {
+            NCNetworking.shared.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
+        }
+    }
+
     private enum ConfigState: Int {
         case Stopped, Ready, InstalledConfig, BackToApp
     }
@@ -40,7 +64,7 @@ import NextcloudKit
     internal var configName: String = "Profile install"
     private var localServer: HttpServer?
     private var returnURL: String = ""
-    private var configData: Data!
+    private var configData: Data?
 
     private var serverState: ConfigState = .Stopped
     private var registeredForNotifications = false
@@ -91,7 +115,9 @@ import NextcloudKit
                 self.serverState = .InstalledConfig
                 return HttpResponse.raw(200, "OK", ["Content-Type": "application/x-apple-aspen-config"], { writer in
                     do {
-                        try writer.write(self.configData)
+                        if let configData = self.configData {
+                            try writer.write(configData)
+                        }
                     } catch {
                         print("Failed to write response data")
                     }
