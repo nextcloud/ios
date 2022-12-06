@@ -412,10 +412,27 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfThumbnailScrollViewTopAnchor?.isActive = true
 
         handlePageChange()
+
+        closePdfThumbnail()
+    }
+
+    @objc func gestureClosePdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+
+        if recognizer.state == .recognized {
+            closePdfThumbnail()
+        }
     }
 
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
         guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
+
+        OpenPdfThumbnail()
+    }
+
+
+    // MARK: - OPEN / CLOSE Thumbnail
+
+    func OpenPdfThumbnail() {
 
         if let tipView = self.tipView {
             tipView.dismiss()
@@ -430,15 +447,14 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         })
     }
 
-    @objc func gestureClosePdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+    func closePdfThumbnail() {
+        guard !self.pdfThumbnailScrollView.isHidden else { return }
 
-        if recognizer.state == .recognized && !self.pdfThumbnailScrollView.isHidden {
-            UIView.animate(withDuration: animateDuration) {
-                self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
-                self.view.layoutIfNeeded()
-            } completion: { _ in
-                self.pdfThumbnailScrollView.isHidden = true
-            }
+        UIView.animate(withDuration: animateDuration) {
+            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            self.pdfThumbnailScrollView.isHidden = true
         }
     }
 
