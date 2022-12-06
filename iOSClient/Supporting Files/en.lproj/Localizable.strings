@@ -910,8 +910,8 @@
 "_save_file_as_"            = "Save file as %@";
 "_password_ascii_"          = "The password cannot contain special characters";
 "_calendar_contacts_"       = "Calendar and Contacts";
-"_mobile_config_"           = "Download the Mobile Config";
-"_calendar_contacts_footer_"    = "xxxx";
+"_mobile_config_"           = "Download the configuration profile";
+"_calendar_contacts_footer_"    = "After the download you need to go to the Settings app to install it. If a profile is not installed within 8 minutes of downloading it, it is automatically deleted";
 
 // Video
 "_select_trace_"            = "Select the trace";
