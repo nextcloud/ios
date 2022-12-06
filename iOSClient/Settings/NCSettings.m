@@ -69,7 +69,7 @@
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_privacy_", nil)];
     [form addFormSection:section];
-    
+
     // Lock active YES/NO
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"bloccopasscode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_lock_not_active_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
@@ -101,17 +101,20 @@
 
     // Section : CALDAV CARDAV --------------------------------------------------------------
 
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_calendar_contacts_", nil)];
-    [form addFormSection:section];
+    if (!NCBrandOptions.shared.disable_mobileconfig) {
 
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"caldavcardav" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_mobile_config_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"caldavcardav"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-    row.action.formSelector = @selector(CalDAVCardDAV:);
-    [section addFormRow:row];
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_calendar_contacts_", nil)];
+        [form addFormSection:section];
+
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"caldavcardav" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_mobile_config_", nil)];
+        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"caldavcardav"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+        row.action.formSelector = @selector(CalDAVCardDAV:);
+        [section addFormRow:row];
+    }
 
     // Section : E2EEncryption --------------------------------------------------------------
 
@@ -348,7 +351,7 @@
 {
     [self deselectFormRow:sender];
 
-    NSString *url = [appDelegate.urlBase stringByAppendingString:@"/remote.php/dav/provisioning/apple-provisioning.mobileconfig"];
+    NSString *url = [appDelegate.urlBase stringByAppendingString:NCBrandOptions.shared.mobileconfig];
     NCConfigServer *configServer = [NCConfigServer new];
     [configServer startServiceWithUrl:[NSURL URLWithString: url]];
 }
@@ -450,7 +453,7 @@
 
     if (section == 1) {
         sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
-    } else if (section == 2) {
+    } else if (section == 2 && !NCBrandOptions.shared.disable_mobileconfig) {
         sectionName = NSLocalizedString(@"_calendar_contacts_footer_", nil);
     } else if (section == numSections) {
         NSString *versionServer = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionString];

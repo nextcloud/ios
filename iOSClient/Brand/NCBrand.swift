@@ -41,6 +41,7 @@ import UIKit
     @objc public var webLoginAutenticationProtocol: String = "nc://"                                                // example "abc://"
     @objc public var privacy: String = "https://nextcloud.com/privacy"
     @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
+    @objc public var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
 
     // Personalized
     @objc public var webCloseViewProtocolPersonalized: String = ""                                                  // example "abc://change/plan"      Don't touch me !!
@@ -76,6 +77,7 @@ import UIKit
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
     @objc public var disable_crash_service:             Bool = false
     @objc public var disable_log:                       Bool = false
+    @objc public var disable_mobileconfig:              Bool = false
 
     override init() {
 
