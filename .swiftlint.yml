@@ -113,6 +113,7 @@ excluded:
   - iOSClient/Networking/NCNetworkingProcessUpload.swift
   - iOSClient/Networking/NCOperationQueue.swift
   - iOSClient/Networking/NCService.swift
+  - iOSClient/Networking/NCConfigServer.swift
   - iOSClient/Notification/NCNotification.swift
   - iOSClient/Recent/NCRecent.swift
   - iOSClient/Rename file/NCRenameFile.swift
