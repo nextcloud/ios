@@ -37,12 +37,11 @@ import NextcloudKit
         let defaultSession = URLSession(configuration: defaultSessionConfiguration, delegate: self, delegateQueue: nil)
 
         var urlRequest = URLRequest(url: url)
-        urlRequest.headers = NKCommon.shared.getStandardHeaders(nil, customUserAgent: nil)
+        urlRequest.headers = NKCommon.shared.getStandardHeaders()
 
         let dataTask = defaultSession.dataTask(with: urlRequest) { (data, response, error) in
             if let error = error {
-                let error = NKError(errorCode: error._code, errorDescription: error.localizedDescription)
-                NCContentPresenter.shared.showInfo(error: error)
+                NCContentPresenter.shared.showInfo(error: NKError(error: error))
             } else if let data = data {
                 DispatchQueue.main.async { self.start(data: data) }
             }
@@ -90,8 +89,7 @@ import NextcloudKit
                 registerForNotifications()
                 UIApplication.shared.open(url)
             } catch {
-                let error = NKError(errorCode: error._code, errorDescription: error.localizedDescription)
-                NCContentPresenter.shared.showInfo(error: error)
+                NCContentPresenter.shared.showInfo(error: NKError(error: error))
                 self.stop()
             }
         }
