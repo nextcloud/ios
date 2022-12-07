@@ -450,7 +450,7 @@ extension NCMedia {
                     metadata.livePhoto = true
                     metadatas[index+1].livePhoto = true
                     if update {
-                        NCManageDatabase.shared.addMetadatas([metadata, metadatas[index+1]])
+                        NCManageDatabase.shared.addMetadatas([tableMetadata.init(value: metadata), tableMetadata.init(value: metadatas[index+1])])
                     }
                 }
                 if metadata.livePhoto {
