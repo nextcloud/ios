@@ -106,7 +106,10 @@ class tableMetadata: Object, NCUserBaseUrl {
 }
 
 extension tableMetadata {
+
     var fileExtension: String { (fileNameView as NSString).pathExtension }
+
+    var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
 
     var isPrintable: Bool {
         classFile == NKCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
@@ -306,6 +309,7 @@ extension NCManageDatabase {
         metadata.etag = ocId
         metadata.fileName = fileName
         metadata.fileNameView = fileName
+        metadata.fileExtension
         metadata.livePhoto = isLivePhoto
         metadata.name = name
         metadata.ocId = ocId

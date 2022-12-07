@@ -461,21 +461,50 @@ extension NCMedia {
             predicate = predicateDefault
         }
 
-        guard var predicateForGetMetadatasMedia = predicate else { return }
-
-        if livePhoto {
-            let predicateLivePhoto = NSPredicate(format: "!(classFile == '\(NKCommon.typeClassFile.video.rawValue)' AND livePhoto == true)")
-            predicateForGetMetadatasMedia = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateForGetMetadatasMedia, predicateLivePhoto])
-        }
-
+        guard let predicate = predicate else { return }
         DispatchQueue.global().async {
-            self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicateForGetMetadatasMedia, sort: CCUtility.getMediaSortDate())
+            let metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, sort: "fileNameView", ascending: false)
+            if self.livePhoto {
+                self.filterLivePhoto(metadatas: metadatas)
+            } else {
+                self.metadatas = metadatas
+            }
+            switch CCUtility.getMediaSortDate() {
+            case "date":
+                self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )
+            case "creationDate":
+                self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)} )
+            case "uploadDate":
+                self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)} )
+            default:
+                break
+            }
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
                     self.mediaCommandTitle()
                     completion(self.metadatas)
                 }
+            }
+        }
+    }
+
+    func filterLivePhoto(metadatas: [tableMetadata]) {
+
+        let numMetadatas: Int = metadatas.count - 1
+        self.metadatas.removeAll()
+
+        for index in metadatas.indices {
+            let metadata = metadatas[index]
+            if index < numMetadatas, metadata.fileNoExtension == metadatas[index+1].fileNoExtension {
+                metadata.livePhoto = true
+                metadatas[index+1].livePhoto = true
+            }
+            if metadata.livePhoto {
+                if metadata.classFile == NKCommon.typeClassFile.image.rawValue { self.metadatas.append(metadata) }
+                continue
+            } else {
+                self.metadatas.append(metadata)
             }
         }
     }
