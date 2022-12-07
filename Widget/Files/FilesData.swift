@@ -107,11 +107,20 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
     @Sendable func isLive(file: NKFile, files: [NKFile]) -> Bool {
 
-        if file.ext.lowercased() != "mov" { return false }
-        if files.filter({ ($0.fileNameWithoutExt == file.fileNameWithoutExt) && ($0.ext.lowercased() == "jpg") }).first != nil {
+        let ext = (file.fileName as NSString).pathExtension.lowercased()
+        if ext != "mov" { return false }
+
+        let fileName = (file.fileName as NSString).deletingPathExtension.lowercased()
+        let fileNameViewMOV = fileName + ".mov"
+        let fileNameViewJPG = fileName + ".jpg"
+        let fileNameViewHEIC = fileName + ".heic"
+
+        let results = files.filter({ $0.fileName.lowercased() == fileNameViewJPG.lowercased() || $0.fileName.lowercased() == fileNameViewHEIC.lowercased() || $0.fileName.lowercased() == fileNameViewMOV.lowercased() })
+        if results.count == 2 {
             return true
+        } else {
+            return false
         }
-        return false
     }
 
     // NETWORKING

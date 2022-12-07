@@ -164,7 +164,6 @@ extension NCManageDatabase {
         metadata.fileNameView = file.fileName
         metadata.hasPreview = file.hasPreview
         metadata.iconName = file.iconName
-        metadata.livePhoto = file.livePhoto
         metadata.mountType = file.mountType
         metadata.name = file.name
         metadata.note = file.note
@@ -254,23 +253,7 @@ extension NCManageDatabase {
             counter += 1
         }
 
-        // E2EE detect Live Photo [NOT DETECTED IN NKFILES]
-        if isDirectoryE2EE {
-            for metadata in metadatas {
-                if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
-                    let fileNameViewMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-                    let fileNameViewJPG = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
-                    let fileNameViewHEIC = (metadata.fileNameView as NSString).deletingPathExtension + ".heic"
-                    let results = metadatas.filter({ $0.fileNameView.lowercased() == fileNameViewJPG.lowercased() || $0.fileNameView.lowercased() == fileNameViewHEIC.lowercased() || $0.fileNameView.lowercased() == fileNameViewMOV.lowercased() })
-                    if results.count == 2 {
-                        results.first?.livePhoto = true
-                        results.last?.livePhoto = true
-                    }
-                }
-            }
-        }
-
-        completion(metadataFolder, metadataFolders, metadatas)
+        completion(metadataFolder, metadataFolders, setLivePhoto(metadatas: metadatas.sorted(by: {$0.fileNameView > $1.fileNameView})))
     }
 
     @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
@@ -575,6 +558,24 @@ extension NCManageDatabase {
         } catch let error {
             NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
+    }
+
+    func setLivePhoto(metadatas: [tableMetadata]) -> [tableMetadata] {
+
+        let numMetadatas: Int = metadatas.count - 1
+        var metadataOutput: [tableMetadata] = []
+
+        for index in metadatas.indices {
+            let metadata = metadatas[index]
+            if index < numMetadatas,
+               metadata.fileNoExtension == metadatas[index+1].fileNoExtension,
+               ((metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.video.rawValue) || (metadata.classFile == NKCommon.typeClassFile.video.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.image.rawValue)){
+                metadata.livePhoto = true
+                metadatas[index+1].livePhoto = true
+            }
+            metadataOutput.append(metadata)
+        }
+        return metadataOutput
     }
 
     @objc func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {

@@ -435,8 +435,30 @@ extension NCMedia {
     // MARK: - Datasource
 
     @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-
         guard !appDelegate.account.isEmpty else { return }
+
+        func setLivePhoto(metadatas: [tableMetadata]) {
+
+            let numMetadatas: Int = metadatas.count - 1
+            self.metadatas.removeAll()
+
+            for index in metadatas.indices {
+                let metadata = metadatas[index]
+                if index < numMetadatas, metadata.fileNoExtension == metadatas[index+1].fileNoExtension {
+                    var update = false
+                    if !metadata.livePhoto || !metadatas[index+1].livePhoto { update = true}
+                    metadata.livePhoto = true
+                    metadatas[index+1].livePhoto = true
+                    if update { NCManageDatabase.shared.addMetadatas([metadata, metadatas[index+1]]) }
+                }
+                if metadata.livePhoto {
+                    if metadata.classFile == NKCommon.typeClassFile.image.rawValue { self.metadatas.append(metadata) }
+                    continue
+                } else {
+                    self.metadatas.append(metadata)
+                }
+            }
+        }
 
         if account != appDelegate.account {
             self.metadatas = []
@@ -465,7 +487,7 @@ extension NCMedia {
         DispatchQueue.global().async {
             let metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate)
             if self.livePhoto {
-                self.filterLivePhoto(metadatas: metadatas)
+                setLivePhoto(metadatas: metadatas)
             } else {
                 self.metadatas = metadatas
             }
@@ -485,26 +507,6 @@ extension NCMedia {
                     self.mediaCommandTitle()
                     completion(self.metadatas)
                 }
-            }
-        }
-    }
-
-    func filterLivePhoto(metadatas: [tableMetadata]) {
-
-        let numMetadatas: Int = metadatas.count - 1
-        self.metadatas.removeAll()
-
-        for index in metadatas.indices {
-            let metadata = metadatas[index]
-            if index < numMetadatas, metadata.fileNoExtension == metadatas[index+1].fileNoExtension {
-                metadata.livePhoto = true
-                metadatas[index+1].livePhoto = true
-            }
-            if metadata.livePhoto {
-                if metadata.classFile == NKCommon.typeClassFile.image.rawValue { self.metadatas.append(metadata) }
-                continue
-            } else {
-                self.metadatas.append(metadata)
             }
         }
     }
