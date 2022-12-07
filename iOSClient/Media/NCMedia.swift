@@ -446,10 +446,12 @@ extension NCMedia {
                 let metadata = metadatas[index]
                 if index < numMetadatas, metadata.fileNoExtension == metadatas[index+1].fileNoExtension {
                     var update = false
-                    if !metadata.livePhoto || !metadatas[index+1].livePhoto { update = true}
+                    if !metadata.livePhoto || !metadatas[index+1].livePhoto { update = true }
                     metadata.livePhoto = true
                     metadatas[index+1].livePhoto = true
-                    if update { NCManageDatabase.shared.addMetadatas([metadata, metadatas[index+1]]) }
+                    if update {
+                        NCManageDatabase.shared.addMetadatas([metadata, metadatas[index+1]])
+                    }
                 }
                 if metadata.livePhoto {
                     if metadata.classFile == NKCommon.typeClassFile.image.rawValue { self.metadatas.append(metadata) }
