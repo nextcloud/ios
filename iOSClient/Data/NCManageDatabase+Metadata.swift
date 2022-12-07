@@ -309,7 +309,6 @@ extension NCManageDatabase {
         metadata.etag = ocId
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.fileExtension
         metadata.livePhoto = isLivePhoto
         metadata.name = name
         metadata.ocId = ocId
@@ -878,13 +877,12 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
+    func getMetadatasMedia(predicate: NSPredicate) -> [tableMetadata] {
 
         let realm = try! Realm()
         realm.refresh()
 
-        let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "fileNameView", ascending: false)
 
         return Array(results.map { tableMetadata.init(value: $0) })
     }

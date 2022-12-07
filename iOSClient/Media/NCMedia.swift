@@ -463,7 +463,7 @@ extension NCMedia {
 
         guard let predicate = predicate else { return }
         DispatchQueue.global().async {
-            let metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, sort: "fileNameView", ascending: false)
+            let metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate)
             if self.livePhoto {
                 self.filterLivePhoto(metadatas: metadatas)
             } else {
