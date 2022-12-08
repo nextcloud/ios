@@ -253,7 +253,7 @@ extension NCManageDatabase {
             counter += 1
         }
 
-        completion(metadataFolder, metadataFolders, setLivePhoto(metadatas: metadatas.sorted(by: {$0.fileNameView > $1.fileNameView})))
+        completion(metadataFolder, metadataFolders, setLivePhoto(metadatas: metadatas))
     }
 
     @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
@@ -564,6 +564,7 @@ extension NCManageDatabase {
 
         let numMetadatas: Int = metadatas.count - 1
         var metadataOutput: [tableMetadata] = []
+        let metadatas = metadatas.sorted(by: {$0.fileNameView < $1.fileNameView})
 
         for index in metadatas.indices {
             let metadata = metadatas[index]
