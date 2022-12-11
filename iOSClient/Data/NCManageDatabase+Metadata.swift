@@ -884,7 +884,8 @@ extension NCManageDatabase {
 
         do {
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "fileNameView", ascending: false)
+                let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath:  "fileNameView", ascending: false)]
+                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
                 if livePhoto {
                     for index in results.indices {
                         let metadata = results[index]
