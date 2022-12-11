@@ -437,31 +437,6 @@ extension NCMedia {
     @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
         guard !appDelegate.account.isEmpty else { return }
 
-        func setLivePhoto(metadatas: [tableMetadata]) {
-
-            let numMetadatas: Int = metadatas.count - 1
-            self.metadatas.removeAll()
-
-            for index in metadatas.indices {
-                let metadata = metadatas[index]
-                if index < numMetadatas, metadata.fileNoExtension == metadatas[index+1].fileNoExtension {
-                    var update = false
-                    if !metadata.livePhoto || !metadatas[index+1].livePhoto { update = true }
-                    metadata.livePhoto = true
-                    metadatas[index+1].livePhoto = true
-                    if update {
-                        NCManageDatabase.shared.addMetadatas([tableMetadata.init(value: metadata), tableMetadata.init(value: metadatas[index+1])])
-                    }
-                }
-                if metadata.livePhoto {
-                    if metadata.classFile == NKCommon.typeClassFile.image.rawValue { self.metadatas.append(metadata) }
-                    continue
-                } else {
-                    self.metadatas.append(metadata)
-                }
-            }
-        }
-
         if account != appDelegate.account {
             self.metadatas = []
             account = appDelegate.account
@@ -487,12 +462,7 @@ extension NCMedia {
 
         guard let predicate = predicate else { return }
         DispatchQueue.global().async {
-            let metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate)
-            if self.livePhoto {
-                setLivePhoto(metadatas: metadatas)
-            } else {
-                self.metadatas = metadatas
-            }
+            self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: self.livePhoto)
             switch CCUtility.getMediaSortDate() {
             case "date":
                 self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )

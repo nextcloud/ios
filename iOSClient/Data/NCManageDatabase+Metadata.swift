@@ -253,7 +253,24 @@ extension NCManageDatabase {
             counter += 1
         }
 
-        completion(metadataFolder, metadataFolders, setLivePhoto(metadatas: metadatas))
+        //
+        // Detect Live photo
+        //
+        var metadataOutput: [tableMetadata] = []
+        metadatas = metadatas.sorted(by: {$0.fileNameView < $1.fileNameView})
+
+        for index in metadatas.indices {
+            let metadata = metadatas[index]
+            if index < metadatas.count - 1,
+                metadata.fileNoExtension == metadatas[index+1].fileNoExtension,
+                ((metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.video.rawValue) || (metadata.classFile == NKCommon.typeClassFile.video.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.image.rawValue)){
+                metadata.livePhoto = true
+                metadatas[index+1].livePhoto = true
+            }
+            metadataOutput.append(metadata)
+        }
+
+        completion(metadataFolder, metadataFolders, metadataOutput)
     }
 
     @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
@@ -560,25 +577,6 @@ extension NCManageDatabase {
         }
     }
 
-    func setLivePhoto(metadatas: [tableMetadata]) -> [tableMetadata] {
-
-        let numMetadatas: Int = metadatas.count - 1
-        var metadataOutput: [tableMetadata] = []
-        let metadatas = metadatas.sorted(by: {$0.fileNameView < $1.fileNameView})
-
-        for index in metadatas.indices {
-            let metadata = metadatas[index]
-            if index < numMetadatas,
-               metadata.fileNoExtension == metadatas[index+1].fileNoExtension,
-               ((metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.video.rawValue) || (metadata.classFile == NKCommon.typeClassFile.video.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.image.rawValue)){
-                metadata.livePhoto = true
-                metadatas[index+1].livePhoto = true
-            }
-            metadataOutput.append(metadata)
-        }
-        return metadataOutput
-    }
-
     @objc func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {
 
         let realm = try! Realm()
@@ -879,14 +877,37 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    func getMetadatasMedia(predicate: NSPredicate) -> [tableMetadata] {
+    func getMetadatasMedia(predicate: NSPredicate, livePhoto: Bool) -> [tableMetadata] {
 
         let realm = try! Realm()
-        realm.refresh()
+        var metadatas: [tableMetadata] = []
 
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "fileNameView", ascending: false)
-
-        return Array(results.map { tableMetadata.init(value: $0) })
+        if livePhoto {
+            for index in results.indices {
+                let metadata = results[index]
+                if index < results.count - 1, metadata.fileNoExtension == results[index+1].fileNoExtension {
+                    var update = false
+                    if !metadata.livePhoto || !results[index+1].livePhoto { update = true }
+                    metadata.livePhoto = true
+                    results[index+1].livePhoto = true
+                    if update {
+                        NCManageDatabase.shared.addMetadatas([metadata, results[index+1]])
+                    }
+                }
+                if metadata.livePhoto {
+                    if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+                        metadatas.append(tableMetadata.init(value: metadata))
+                    }
+                    continue
+                } else {
+                    metadatas.append(tableMetadata.init(value: metadata))
+                }
+            }
+            return metadatas
+        } else {
+            return Array(results.map { tableMetadata.init(value: $0) })
+        }
     }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
