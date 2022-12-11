@@ -882,32 +882,38 @@ extension NCManageDatabase {
         let realm = try! Realm()
         var metadatas: [tableMetadata] = []
 
-        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "fileNameView", ascending: false)
-        if livePhoto {
-            for index in results.indices {
-                let metadata = results[index]
-                if index < results.count - 1, metadata.fileNoExtension == results[index+1].fileNoExtension {
-                    var update = false
-                    if !metadata.livePhoto || !results[index+1].livePhoto { update = true }
-                    metadata.livePhoto = true
-                    results[index+1].livePhoto = true
-                    if update {
-                        NCManageDatabase.shared.addMetadatas([metadata, results[index+1]])
+        do {
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "fileNameView", ascending: false)
+                if livePhoto {
+                    for index in results.indices {
+                        let metadata = results[index]
+                        if index < results.count - 1, metadata.fileNoExtension == results[index+1].fileNoExtension {
+                            if !metadata.livePhoto {
+                                metadata.livePhoto = true
+                            }
+                            if !results[index+1].livePhoto {
+                                results[index+1].livePhoto = true
+                            }
+                        }
+                        if metadata.livePhoto {
+                            if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+                                metadatas.append(tableMetadata.init(value: metadata))
+                            }
+                            continue
+                        } else {
+                            metadatas.append(tableMetadata.init(value: metadata))
+                        }
                     }
-                }
-                if metadata.livePhoto {
-                    if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
-                        metadatas.append(tableMetadata.init(value: metadata))
-                    }
-                    continue
                 } else {
-                    metadatas.append(tableMetadata.init(value: metadata))
+                    metadatas = Array(results.map { tableMetadata.init(value: $0) })
                 }
             }
-            return metadatas
-        } else {
-            return Array(results.map { tableMetadata.init(value: $0) })
+        } catch let error {
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
+
+        return metadatas
     }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
