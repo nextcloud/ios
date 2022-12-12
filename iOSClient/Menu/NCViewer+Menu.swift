@@ -114,7 +114,7 @@ extension NCViewer {
                     icon: NCUtility.shared.loadImage(named: "film"),
                     action: { menuAction in
                         if let ncplayer = (viewController as? NCViewerMediaPage)?.currentViewController.ncplayer {
-                            ncplayer.convertVideo()
+                            ncplayer.convertVideo(withAlert: false)
                         }
                     }
                 )

@@ -92,7 +92,7 @@ class NCPlayer: NSObject {
         MFFF.shared.dismissMessage()
         NotificationCenter.default.addObserver(self, selector: #selector(convertVideoDidFinish(_:)), name: NSNotification.Name(rawValue: self.metadata.ocId), object: nil)
 
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
+        if CCUtility.fileProviderStorageExists(metadata) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
             self.isProxy = false
         }
