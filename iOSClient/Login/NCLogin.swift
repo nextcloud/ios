@@ -115,8 +115,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             navigationItem.leftBarButtonItem = navigationItemCancel
         }
 
-        if NCBrandOptions.shared.use_talkDetect, let dirGroupTalk = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupsTalk) {
-            let url = dirGroupTalk.appendingPathComponent(NCGlobal.shared.appDatabaseTalk + "/" + NCGlobal.shared.fileAccounts)
+        if NCBrandOptions.shared.use_GroupApp, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
+            let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareTalk + "/" + NCGlobal.shared.fileAccounts)
             if FileManager.default.fileExists(atPath: url.path), let talkAccounts = NKCommon.shared.readDataAccountFile(at: url) {
                 var accountTemp = [NKDataAccountFile]()
                 for talkAccount in talkAccounts {

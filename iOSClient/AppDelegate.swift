@@ -250,7 +250,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
         NCNetworkingProcessUpload.shared.stopTimer()
 
-        // Create file account for Nextcloud Talk
+        // Create file account for Nextcloud data share
         if let error = createDataAccountFile() {
             NKCommon.shared.writeLog("[ERROR] Create account file for Talk \(error.localizedDescription)")
         }
@@ -640,9 +640,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func createDataAccountFile() -> Error? {
-        guard !account.isEmpty else { return nil }
+        guard !account.isEmpty, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
 
-        let url =  CCUtility.getDirectoryGroup().appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.fileAccounts)
+        try? FileManager.default.createDirectory(at: dirGroupApps.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud), withIntermediateDirectories: true)
+        let url =  dirGroupApps.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.fileAccounts)
 
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKDataAccountFile]()
