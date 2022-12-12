@@ -1187,6 +1187,13 @@
     }
 }
 
++ (void)removeGroupDataShareAppsNextcloud
+{
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions shared].capabilitiesGroupApps];
+    NSString *path = [[dirGroup URLByAppendingPathComponent:NCGlobal.shared.appDataShareNextcloud] path];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+}
+
 + (NSString *)getTitleSectionDate:(NSDate *)date
 {
     NSString *title;

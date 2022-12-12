@@ -461,6 +461,7 @@
 
         [CCUtility removeGroupDirectoryProviderStorage];
         [CCUtility removeGroupApplicationSupport];
+        [CCUtility removeGroupDataShareAppsNextcloud];
         
         [CCUtility removeDocumentsDirectory];
         [CCUtility removeTemporaryDirectory];

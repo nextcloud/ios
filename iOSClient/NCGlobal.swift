@@ -77,7 +77,11 @@ class NCGlobal: NSObject {
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
     @objc let appScan                               = "Library/Application Support/Scan"
     @objc let appUserData                           = "Library/Application Support/UserData"
+
+    // Directory on Group data share Nextcloud apps
+    //
     @objc let appDataShareTalk                      = "Library/Application Support/Talk"
+    @objc let appDataShareNextcloud                 = "Library/Application Support/Nextcloud"
 
     // Service
     //
