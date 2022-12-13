@@ -169,7 +169,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : HANDLE
-        applicationHandle.loadItems(functionMenu: functionMenu)
+        applicationHandle.loadItems(functionMenu: &functionMenu)
 
         // ORDER ITEM
         functionMenu = functionMenu.sorted(by: { $0.order < $1.order })

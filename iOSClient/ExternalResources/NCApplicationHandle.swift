@@ -26,7 +26,7 @@ import NextcloudKit
 
 class NCApplicationHandle: NSObject {
 
-    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     // class: AppDelegate
     // func: application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
@@ -41,12 +41,12 @@ class NCApplicationHandle: NSObject {
 
     // class: NCCollectionViewCommon (+Menu)
     // func: toggleMenu(metadata: tableMetadata, imageIcon: UIImage?)
-    func addCollectionViewCommonMenu(metadata: tableMetadata, imageIcon: UIImage?, actions: [NCMenuAction]) {
+    func addCollectionViewCommonMenu(metadata: tableMetadata, imageIcon: UIImage?, actions: inout [NCMenuAction]) {
     }
 
     // class: NCMore
     // func: loadItems()
-    func loadItems(functionMenu: [NKExternalSite]) {
+    func loadItems(functionMenu: inout [NKExternalSite]) {
     }
 
     // class: NCMore

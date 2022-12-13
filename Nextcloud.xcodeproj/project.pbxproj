@@ -1715,6 +1715,14 @@
 			path = NCViewerMedia;
 			sourceTree = "<group>";
 		};
+		F7903A4A2948CAC300203DA5 /* ExternalResources */ = {
+			isa = PBXGroup;
+			children = (
+				F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */,
+			);
+			path = ExternalResources;
+			sourceTree = "<group>";
+		};
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
@@ -1914,7 +1922,6 @@
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
 				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
-				F71CD6C92930D7B1006C95C1 /* NCApplicationHandle.swift */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
 			path = Brand;
@@ -2118,6 +2125,7 @@
 				F73FAEE224D2CA830090692E /* Diagnostics */,
 				F723986F253D867900257F49 /* EmptyView */,
 				F7A0D14E259229FA008F8A13 /* Extensions */,
+				F7903A4A2948CAC300203DA5 /* ExternalResources */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7725A5D251F33BB00D125E0 /* Files */,
 				F7BFFA621A24D7300044ED85 /* Login */,

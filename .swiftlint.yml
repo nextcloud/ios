@@ -49,6 +49,7 @@ excluded:
   - Widget/Lockscreen/LockscreenData.swift
   - Widget/Lockscreen/LockscreenWidgetView.swift
   - Widget/Lockscreen/LockscreenWidgetProvider.swift
+  - iOSClient/ExternalResources
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift

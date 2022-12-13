@@ -803,7 +803,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Open URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        guard !account.isEmpty else { return false }
 
         let scheme = url.scheme
         let action = url.host
@@ -815,7 +814,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        if scheme == "nextcloud" && action == "open-action" {
+        if !account.isEmpty && scheme == "nextcloud" && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -891,7 +890,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
-        else if scheme == "nextcloud" && action == "open-file" {
+        else if !account.isEmpty && scheme == "nextcloud" && action == "open-file" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
