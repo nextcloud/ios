@@ -205,13 +205,11 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             let source = activityPreview.source
 
-            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { imageNamePath in
-                if imageNamePath != nil {
-                    if let image = UIImage(contentsOfFile: imageNamePath!) {
-                        cell.imageView.image = image
-                    }
+            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+                if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
+                    cell.imageView.image = image
                 } else {
-                     cell.imageView.image = UIImage(named: "file_photo")
+                    cell.imageView.image = UIImage(named: "file")
                 }
             }
 
@@ -221,13 +219,11 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
                 let source = activityPreview.source
 
-                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { imageNamePath in
-                    if imageNamePath != nil {
-                        if let image = UIImage(contentsOfFile: imageNamePath!) {
-                            cell.imageView.image = image
-                        }
+                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: appDelegate.account, id: idActivity) { imageNamePath, id in
+                    if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
+                        cell.imageView.image = image
                     } else {
-                        cell.imageView.image = UIImage(named: "file_photo")
+                        cell.imageView.image = UIImage(named: "file")
                     }
                 }
 
@@ -236,15 +232,10 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                 if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
-
-                    if FileManager.default.fileExists(atPath: fileNamePath) {
-
-                        if let image = UIImage(contentsOfFile: fileNamePath) {
-                            cell.imageView.image = image
-                        }
-
+                    
+                    if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
+                        cell.imageView.image = image
                     } else {
-
                         NCOperationQueue.shared.downloadThumbnailActivity(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, fileId: fileId, cell: cell, collectionView: collectionView)
                     }
                 }

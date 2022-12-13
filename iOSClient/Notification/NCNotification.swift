@@ -299,7 +299,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 for notification in sortedListOfNotifications {
                     if let icon = (notification as! NKNotifications).icon {
-                        NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, closure: { _ in })
+                        NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
                     }
                     self.notifications.append(notification as! NKNotifications)
                 }

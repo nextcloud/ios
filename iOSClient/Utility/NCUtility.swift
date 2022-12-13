@@ -38,13 +38,13 @@ class NCUtility: NSObject {
         return instance
     }()
 
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> Void) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
 
         var fileNamePNG = ""
 
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let iconURL = URL(string: svgUrlString) else {
-            return closure(nil)
+            return completion(nil, id)
         }
 
         if let fileName = fileName {
@@ -80,17 +80,17 @@ class NCUtility: NSObject {
                         }
 
                         guard let pngImageData = newImage.pngData() else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
 
                         try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
 
-                        return closure(imageNamePath)
+                        return completion(imageNamePath, id)
 
                     } else {
 
                         guard let svgImage: SVGKImage = SVGKImage(data: data) else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
 
                         if width != nil {
@@ -99,23 +99,23 @@ class NCUtility: NSObject {
                         }
 
                         guard let image: UIImage = svgImage.uiImage else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
                         guard let pngImageData = image.pngData() else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
 
                         try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
 
-                        return closure(imageNamePath)
+                        return completion(imageNamePath, id)
                     }
                 } else {
-                    return closure(nil)
+                    return completion(nil, id)
                 }
             }
 
         } else {
-            return closure(imageNamePath)
+            return completion(imageNamePath, id)
         }
     }
 
