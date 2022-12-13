@@ -1128,7 +1128,7 @@ class NCManageDatabase: NSObject {
                     object.date = share.date
                     object.displaynameFileOwner = share.displaynameFileOwner
                     object.displaynameOwner = share.displaynameOwner
-                    object.expirationDate =  share.expirationDate
+                    object.expirationDate = share.expirationDate
                     object.fileParent = share.fileParent
                     object.fileSource = share.fileSource
                     object.fileTarget = share.fileTarget
