@@ -172,10 +172,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // Passcode
-        DispatchQueue.main.async {
-            self.presentPasscode {
-                self.enableTouchFaceID()
-            }
+        self.presentPasscode {
+            self.enableTouchFaceID()
         }
 
         return true
