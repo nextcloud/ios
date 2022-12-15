@@ -28,7 +28,6 @@ import NextcloudKit
 import PDFKit
 import Accelerate
 import CoreMedia
-import Queuer
 import Photos
 import JGProgressHUD
 

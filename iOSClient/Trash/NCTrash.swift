@@ -88,7 +88,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         navigationController?.setFileAppreance()
         navigationItem.title = titleCurrentFolder
 
-        layoutForView =  NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
