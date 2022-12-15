@@ -643,14 +643,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !account.isEmpty, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
 
         try? FileManager.default.createDirectory(at: dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud), withIntermediateDirectories: true)
-        let url =  dirGroupApps.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.fileAccounts)
-
+        let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud + "/" + NCGlobal.shared.fileAccounts)
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKDataAccountFile]()
         for account in tableAccount {
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
-            let avatar = String(CCUtility.getDirectoryUserData()) + "/" +  userBaseUrl + "-\(account.user).png"
-            accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias, avatar: avatar))
+            let avatarFileName = userBaseUrl + "-\(account.user).png"
+            let atPathAvatar = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
+            let toPathAvatar = (dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud + "/" + avatarFileName)).path
+            if FileManager.default.fileExists(atPath: atPathAvatar) {
+                NCUtilityFileSystem.shared.copyFile(atPath: atPathAvatar, toPath: toPathAvatar)
+                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias, avatar: toPathAvatar))
+            } else {
+                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias))
+            }
         }
         return NKCommon.shared.createDataAccountFile(at: url, accounts: accounts)
     }
