@@ -26,7 +26,10 @@ import NextcloudKit
 
 extension NCNetworking {
 
-    internal func uploadChunkedFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ error: NKError) -> Void) {
+    internal func uploadChunkedFile(metadata: tableMetadata,
+                                    start: @escaping () -> Void,
+                                    progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
+                                    completion: @escaping (_ error: NKError) -> Void) {
 
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
@@ -94,7 +97,7 @@ extension NCNetworking {
                     if let size = size {
                         let totalBytesExpected = metadata.size
                         let totalBytes = size + progress.completedUnitCount
-                        let fractionCompleted = Float(totalBytes) / Float(totalBytesExpected)
+                        let fractionCompleted = Double(totalBytes) / Double(totalBytesExpected)
 
                         NotificationCenter.default.postOnMainThread(
                             name: NCGlobal.shared.notificationCenterProgressTask,
@@ -108,6 +111,8 @@ extension NCNetworking {
                                 "progress": NSNumber(value: fractionCompleted),
                                 "totalBytes": NSNumber(value: totalBytes),
                                 "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+
+                        progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
                     }
 
                 }) { _, _, _, _, _, _, _, error in

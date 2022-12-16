@@ -384,6 +384,7 @@ import Photos
 
     @objc func upload(metadata: tableMetadata,
                       start: @escaping () -> () = { },
+                      progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
                       completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
@@ -399,12 +400,12 @@ import Photos
             }
             #endif
         } else if metadata.chunk {
-            uploadChunkedFile(metadata: metadata, start: start) { error in
+            uploadChunkedFile(metadata: metadata, start: start, progressHandler: progressHandler) { error in
                 completion(error)
             }
         } else if metadata.session == NKCommon.shared.sessionIdentifierUpload {
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            uploadFile(metadata: metadata, fileNameLocalPath:fileNameLocalPath, start: start) { account, ocId, etag, date, size, allHeaderFields, afError, error in
+            uploadFile(metadata: metadata, fileNameLocalPath:fileNameLocalPath, start: start, progressHandler: progressHandler) { account, ocId, etag, date, size, allHeaderFields, afError, error in
                 completion(error)
             }
         } else {
@@ -414,7 +415,10 @@ import Photos
         }
     }
 
-    func uploadFile(metadata: tableMetadata, fileNameLocalPath: String, withUploadComplete: Bool = true ,addCustomHeaders: [String: String]? = nil, start: @escaping () -> Void, completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
+    func uploadFile(metadata: tableMetadata, fileNameLocalPath: String, withUploadComplete: Bool = true ,addCustomHeaders: [String: String]? = nil,
+                    start: @escaping () -> Void,
+                    progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
+                    completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         var uploadTask: URLSessionTask?
@@ -444,6 +448,8 @@ import Photos
                     "progress": NSNumber(value: progress.fractionCompleted),
                     "totalBytes": NSNumber(value: progress.totalUnitCount),
                     "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+
+            progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
 
         }) { account, ocId, etag, date, size, allHeaderFields, afError, error in
 

@@ -139,7 +139,6 @@ class NCShareExtension: UIViewController {
             indicatorView.ringWidth = 1.5
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didCreateFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
 
@@ -191,11 +190,6 @@ class NCShareExtension: UIViewController {
             onDismiss?()
         }))
         self.present(alertController, animated: true)
-    }
-
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let progress = notification.userInfo?["progress"] as? Float else { return }
-        hud.progress = progress
     }
 
     func setNavigationBar(navigationTitle: String) {
@@ -347,10 +341,13 @@ extension NCShareExtension {
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-        hud.progress = 0
         hud.show(in: self.view)
 
-        NCNetworking.shared.upload(metadata: metadata) { } completion: { error in
+        NCNetworking.shared.upload(metadata: metadata) {
+            self.hud.progress = 0
+        } progressHandler: { _, _, fractionCompleted in
+            self.hud.progress = Float(fractionCompleted)
+        } completion: { error in
             if error != .success {
                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -358,7 +355,6 @@ extension NCShareExtension {
                 NCUtilityFileSystem.shared.deleteFile(filePath: path)
                 self.uploadErrors.append(metadata)
             }
-
             self.counterUploaded += 1
             self.upload()
         }
