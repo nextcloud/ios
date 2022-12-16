@@ -645,15 +645,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKDataAccountFile]()
         for account in tableAccount {
+            let alias = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
             let atPathAvatar = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
             let toPathAvatar = (dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud + "/" + avatarFileName)).path
             if FileManager.default.fileExists(atPath: atPathAvatar) {
                 NCUtilityFileSystem.shared.copyFile(atPath: atPathAvatar, toPath: toPathAvatar)
-                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias, avatar: toPathAvatar))
+                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias, avatar: toPathAvatar))
             } else {
-                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: account.alias))
+                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias))
             }
         }
         return NKCommon.shared.createDataAccountFile(at: url, accounts: accounts)
