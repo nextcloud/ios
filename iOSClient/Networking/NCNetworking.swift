@@ -34,6 +34,10 @@ import Photos
     @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: NKError)
 }
 
+#if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_WIDGET
+@objc protocol uploadE2EEDelegate: AnyObject { }
+#endif
+
 @objc class NCNetworking: NSObject, NKCommonDelegate {
     @objc public static let shared: NCNetworking = {
         let instance = NCNetworking()
@@ -382,10 +386,11 @@ import Photos
 
     // MARK: - Upload
 
-    @objc func upload(metadata: tableMetadata,
-                      start: @escaping () -> () = { },
-                      progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
-                      completion: @escaping (_ error: NKError) -> () = { error in }) {
+    func upload(metadata: tableMetadata,
+                uploadE2EEDelegate: uploadE2EEDelegate? = nil,
+                start: @escaping () -> () = { },
+                progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
+                completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
         let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
@@ -395,7 +400,7 @@ import Photos
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
                 start()
-                let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata)
+                let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
                 completion(error)
             }
             #endif

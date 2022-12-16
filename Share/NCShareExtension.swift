@@ -331,7 +331,7 @@ extension NCShareExtension {
 
     func upload() {
         guard uploadStarted else { return }
-        guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
+        guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
         let metadata = uploadMetadata[counterUploaded]
         let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
         metadata.contentType = results.mimeType
@@ -343,7 +343,7 @@ extension NCShareExtension {
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.show(in: self.view)
 
-        NCNetworking.shared.upload(metadata: metadata) {
+        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self) {
             self.hud.progress = 0
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress = Float(fractionCompleted)
@@ -374,5 +374,11 @@ extension NCShareExtension {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             }
         }
+    }
+}
+
+extension NCShareExtension: uploadE2EEDelegate {
+    func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
+        self.hud.progress = Float(fractionCompleted)
     }
 }

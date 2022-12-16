@@ -26,13 +26,23 @@ import CFNetwork
 import Alamofire
 import Foundation
 
+protocol uploadE2EEDelegate: AnyObject {
+    func start()
+    func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double)
+}
+
+extension uploadE2EEDelegate {
+    func start() { }
+    func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {}
+}
+
 class NCNetworkingE2EEUpload: NSObject {
     public static let shared: NCNetworkingE2EEUpload = {
         let instance = NCNetworkingE2EEUpload()
         return instance
     }()
 
-    func upload(metadata: tableMetadata) async -> (NKError) {
+    func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (NKError) {
 
         var metadata = tableMetadata.init(value: metadata)
         let ocIdTemp = metadata.ocId
@@ -77,7 +87,7 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         // Send file
-        let sendFileResults = await sendFile(metadata: metadata, e2eToken: e2eToken)
+        let sendFileResults = await sendFile(metadata: metadata, e2eToken: e2eToken, uploadE2EEDelegate: uploadE2EEDelegate)
 
         // ** Unlock **
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
@@ -171,13 +181,16 @@ class NCNetworkingE2EEUpload: NSObject {
         return putE2EEMetadataResults.error
     }
 
-    private func sendFile(metadata: tableMetadata, e2eToken: String) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
+    private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
 
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
 
         return await withCheckedContinuation({ continuation in
-            NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath:fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
+            NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
+                uploadE2EEDelegate?.start()
                 NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_e2ee_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
+            } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+                uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
             } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in
                 continuation.resume(returning: (ocId: ocId, etag: etag, date: date ,afError: afError, error: error))
             }
