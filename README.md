@@ -38,7 +38,7 @@ branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios
 
 Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
 
-### Xcode 14 Project Setup
+### Xcode 14.2 Project Setup
 
 #### Dependencies
 
