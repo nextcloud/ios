@@ -61,7 +61,6 @@ extension NCNetworking {
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { error in
 
             NCContentPresenter.shared.dismiss(after: NCGlobal.shared.dismissAfterSecond)
-            start()
 
             guard error == .success else {
                 self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, error: error)
@@ -70,6 +69,8 @@ extension NCNetworking {
             }
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
+
+            start()
 
             for fileName in filesNames {
 
