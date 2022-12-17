@@ -382,7 +382,7 @@ extension NCShareExtension: uploadE2EEDelegate {
     func start() {
         self.hud.progress = 0
     }
-    
+
     func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
         self.hud.progress = Float(fractionCompleted)
     }
