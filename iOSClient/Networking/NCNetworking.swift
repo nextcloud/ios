@@ -399,7 +399,6 @@ import Photos
         if isDirectoryE2EE {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
-                start()
                 let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
                 completion(error)
             }
