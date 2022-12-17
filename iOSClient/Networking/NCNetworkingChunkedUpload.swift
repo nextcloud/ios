@@ -27,7 +27,7 @@ import NextcloudKit
 extension NCNetworking {
 
     internal func uploadChunkedFile(metadata: tableMetadata,
-                                    start: @escaping () -> Void,
+                                    start: @escaping () -> () = { },
                                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
                                     completion: @escaping (_ error: NKError) -> Void) {
 

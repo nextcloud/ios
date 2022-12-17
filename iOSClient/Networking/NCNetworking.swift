@@ -421,7 +421,7 @@ import Photos
     }
 
     func uploadFile(metadata: tableMetadata, fileNameLocalPath: String, withUploadComplete: Bool = true ,addCustomHeaders: [String: String]? = nil,
-                    start: @escaping () -> Void,
+                    start: @escaping () -> () = { },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
                     completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
 
@@ -466,7 +466,9 @@ import Photos
         }
     }
 
-    private func uploadFileInBackground(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ error: NKError) -> Void) {
+    private func uploadFileInBackground(metadata: tableMetadata,
+                                        start: @escaping () -> () = { },
+                                        completion: @escaping (_ error: NKError) -> Void) {
 
         var session: URLSession?
         let metadata = tableMetadata.init(value: metadata)
