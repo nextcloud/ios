@@ -75,8 +75,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CCUtility.createDirectoryStandard()
         CCUtility.emptyTemporaryDirectory()
 
-        NKCommon.shared.setup(delegate: NCNetworking.shared)
-        NKCommon.shared.setup(userAgent: userAgent)
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(userAgent: userAgent)
 
         startTimerErrorNetworking()
 
@@ -377,7 +377,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        NKCommon.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NKCommon.shared.writeLog("[INFO] Refresh task auto upload with \(items) uploads")
@@ -582,10 +582,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         _ = NCFunctionCenter.shared
 
-        NKCommon.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor > 0 {
-            NKCommon.shared.setup(nextcloudVersion: serverVersionMajor)
+            NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
         }
         NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
 

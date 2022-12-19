@@ -62,7 +62,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
 
     // NETWORKING
     let password = CCUtility.getPassword(account.account)!
-    NKCommon.shared.setup(
+    NextcloudKit.shared.setup(
         account: account.account,
         user: account.user,
         userId: account.userId,

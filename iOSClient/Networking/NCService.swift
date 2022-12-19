@@ -181,7 +181,7 @@ class NCService: NSObject {
 
             // Setup communication
             if serverVersionMajor > 0 {
-                NKCommon.shared.setup(nextcloudVersion: serverVersionMajor)
+                NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
             }
 
             // Theming
