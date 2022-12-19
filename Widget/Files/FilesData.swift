@@ -107,11 +107,20 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
     @Sendable func isLive(file: NKFile, files: [NKFile]) -> Bool {
 
-        if file.ext.lowercased() != "mov" { return false }
-        if files.filter({ ($0.fileNameWithoutExt == file.fileNameWithoutExt) && ($0.ext.lowercased() == "jpg") }).first != nil {
+        let ext = (file.fileName as NSString).pathExtension.lowercased()
+        if ext != "mov" { return false }
+
+        let fileName = (file.fileName as NSString).deletingPathExtension.lowercased()
+        let fileNameViewMOV = fileName + ".mov"
+        let fileNameViewJPG = fileName + ".jpg"
+        let fileNameViewHEIC = fileName + ".heic"
+
+        let results = files.filter({ $0.fileName.lowercased() == fileNameViewJPG.lowercased() || $0.fileName.lowercased() == fileNameViewHEIC.lowercased() || $0.fileName.lowercased() == fileNameViewMOV.lowercased() })
+        if results.count == 2 {
             return true
+        } else {
+            return false
         }
-        return false
     }
 
     // NETWORKING
@@ -236,9 +245,8 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     }
                 }
 
-                //
-                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account.account, urlBase: file.urlBase, userId: file.userId)
-                let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account.account)
+                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
                 let data = FilesData.init(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)

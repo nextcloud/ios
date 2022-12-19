@@ -25,6 +25,79 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
+class tableAccount: Object, NCUserBaseUrl {
+
+    @objc dynamic var account = ""
+    @objc dynamic var active: Bool = false
+    @objc dynamic var address = ""
+    @objc dynamic var alias = ""
+    @objc dynamic var autoUpload: Bool = false
+    @objc dynamic var autoUploadCreateSubfolder: Bool = false
+    @objc dynamic var autoUploadDirectory = ""
+    @objc dynamic var autoUploadFileName = ""
+    @objc dynamic var autoUploadFull: Bool = false
+    @objc dynamic var autoUploadImage: Bool = false
+    @objc dynamic var autoUploadVideo: Bool = false
+    @objc dynamic var autoUploadWWAnPhoto: Bool = false
+    @objc dynamic var autoUploadWWAnVideo: Bool = false
+    @objc dynamic var backend = ""
+    @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
+    @objc dynamic var backendCapabilitiesSetPassword: Bool = false
+    @objc dynamic var businessSize: String = ""
+    @objc dynamic var businessType = ""
+    @objc dynamic var city = ""
+    @objc dynamic var country = ""
+    @objc dynamic var displayName = ""
+    @objc dynamic var email = ""
+    @objc dynamic var enabled: Bool = false
+    @objc dynamic var groups = ""
+    @objc dynamic var language = ""
+    @objc dynamic var lastLogin: Int64 = 0
+    @objc dynamic var locale = ""
+    @objc dynamic var mediaPath = ""
+    @objc dynamic var organisation = ""
+    @objc dynamic var password = ""
+    @objc dynamic var phone = ""
+    @objc dynamic var quota: Int64 = 0
+    @objc dynamic var quotaFree: Int64 = 0
+    @objc dynamic var quotaRelative: Double = 0
+    @objc dynamic var quotaTotal: Int64 = 0
+    @objc dynamic var quotaUsed: Int64 = 0
+    @objc dynamic var role = ""
+    @objc dynamic var storageLocation = ""
+    @objc dynamic var subadmin = ""
+    @objc dynamic var twitter = ""
+    @objc dynamic var urlBase = ""
+    @objc dynamic var user = ""
+    @objc dynamic var userId = ""
+    @objc dynamic var userStatusClearAt: NSDate?
+    @objc dynamic var userStatusIcon: String?
+    @objc dynamic var userStatusMessage: String?
+    @objc dynamic var userStatusMessageId: String?
+    @objc dynamic var userStatusMessageIsPredefined: Bool = false
+    @objc dynamic var userStatusStatus: String?
+    @objc dynamic var userStatusStatusIsUserDefined: Bool = false
+    @objc dynamic var website = ""
+    @objc dynamic var zip = ""
+
+    // HC
+    @objc dynamic var hcIsTrial: Bool = false
+    @objc dynamic var hcTrialExpired: Bool = false
+    @objc dynamic var hcTrialRemainingSec: Int64 = 0
+    @objc dynamic var hcTrialEndTime: NSDate?
+    @objc dynamic var hcAccountRemoveExpired: Bool = false
+    @objc dynamic var hcAccountRemoveRemainingSec: Int64 = 0
+    @objc dynamic var hcAccountRemoveTime: NSDate?
+    @objc dynamic var hcNextGroupExpirationGroup = ""
+    @objc dynamic var hcNextGroupExpirationGroupExpired: Bool = false
+    @objc dynamic var hcNextGroupExpirationExpiresTime: NSDate?
+    @objc dynamic var hcNextGroupExpirationExpires = ""
+
+    override static func primaryKey() -> String {
+        return "account"
+    }
+}
+
 extension NCManageDatabase {
 
     @objc func addAccount(_ account: String, urlBase: String, user: String, password: String) {

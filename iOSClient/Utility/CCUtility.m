@@ -831,18 +831,6 @@
     return result;
 }
 
-+ (NSString *)createRandomString:(int)numChars
-{
-    NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    NSMutableString *randomString = [NSMutableString stringWithCapacity: numChars];
-    
-    for (int i=0; i < numChars; i++) {
-        [randomString appendFormat: @"%C", [letters characterAtIndex: arc4random_uniform((unsigned int)[letters length]) % [letters length]]];
-    }
-    
-    return [NSString stringWithFormat:@"%@", randomString];
-}
-
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -1125,7 +1113,7 @@
 {
     NSString *fileNameViewPath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
     NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
-    BOOL isFolderEncrypted = [self isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account urlBase:metadata.urlBase userId:metadata.userId];
+    BOOL isFolderEncrypted = [[NCUtility shared] isDirectoryE2EEWithMetadata:metadata];
 
     unsigned long long fileNameViewSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNameViewPath error:nil] fileSize];
     unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
@@ -1197,6 +1185,13 @@
     for (NSString *file in tmpDirectory) {
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
     }
+}
+
++ (void)removeGroupDataShareAppsNextcloud
+{
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions shared].capabilitiesGroupApps];
+    NSString *path = [[dirGroup URLByAppendingPathComponent:NCGlobal.shared.appDataShareNextcloud] path];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 + (NSString *)getTitleSectionDate:(NSDate *)date
@@ -1299,49 +1294,6 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     return path;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== E2E Encrypted =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (NSString *)generateRandomIdentifier
-{
-    NSString *UUID = [[NSUUID UUID] UUIDString];
-    
-    return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
-}
-
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase userId:(NSString *)userId
-{
-    NSString *home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
-        
-    if (e2eEncrypted) {
-    
-        return true;
-        
-    } else if ([serverUrl isEqualToString:home] || [serverUrl isEqualToString:@".."]) {
-        
-        return false;
-
-    } else {
-       
-        tableDirectory *directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
-        
-        while (directory != nil && ![directory.serverUrl isEqualToString:home]) {
-            if (directory.e2eEncrypted == true) {
-                return true;
-            }
-            NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:urlBase userId:userId];
-            NSString* path = [[NCUtilityFileSystem shared] deleteLastPathWithServerUrlPath:serverUrl home:home];
-            if (path != nil) {
-                serverUrl = path;
-            }
-            directory = [[NCManageDatabase shared] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
-        }
-        
-        return false;
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

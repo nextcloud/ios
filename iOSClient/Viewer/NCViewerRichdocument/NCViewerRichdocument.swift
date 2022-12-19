@@ -44,8 +44,9 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
-
+        if !metadata.ocId.hasPrefix("TEMP") {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        }
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
 
@@ -83,7 +84,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -184,7 +184,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
-                        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + metadata.fileNameWithoutExt
+                        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + (metadata.fileName as NSString).deletingPathExtension
 
                         NCActivityIndicator.shared.start(backgroundView: view)
 

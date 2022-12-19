@@ -28,7 +28,6 @@ import NextcloudKit
 import PDFKit
 import Accelerate
 import CoreMedia
-import Queuer
 import Photos
 import JGProgressHUD
 
@@ -38,64 +37,13 @@ class NCUtility: NSObject {
         return instance
     }()
 
-    func setLayoutForView(key: String, serverUrl: String, layoutForView: NCGlobal.layoutForViewType) {
-
-        let string =  layoutForView.layout + "|" + layoutForView.sort + "|" + "\(layoutForView.ascending)" + "|" + layoutForView.groupBy + "|" + "\(layoutForView.directoryOnTop)" + "|" + layoutForView.titleButtonHeader + "|" + "\(layoutForView.itemForLine)"
-        var keyStore = key
-
-        if serverUrl != "" {
-            keyStore = serverUrl
-        }
-
-        UICKeyChainStore.setString(string, forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain)
-    }
-
-    func setLayoutForView(key: String, serverUrl: String, layout: String?) {
-
-        var layoutForView: NCGlobal.layoutForViewType = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-
-        if let layout = layout {
-            layoutForView.layout = layout
-            setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
-        }
-    }
-
-    func getLayoutForView(key: String, serverUrl: String, sort: String = "fileName", ascending: Bool = true, titleButtonHeader: String = "_sorted_by_name_a_z_") -> (NCGlobal.layoutForViewType) {
-
-        var keyStore = key
-        var layoutForView: NCGlobal.layoutForViewType = NCGlobal.layoutForViewType(layout: NCGlobal.shared.layoutList, sort: sort, ascending: ascending, groupBy: "none", directoryOnTop: true, titleButtonHeader: titleButtonHeader, itemForLine: 3)
-
-        if serverUrl != "" {
-            keyStore = serverUrl
-        }
-
-        guard let string = UICKeyChainStore.string(forKey: keyStore, service: NCGlobal.shared.serviceShareKeyChain) else {
-            setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
-            return layoutForView
-        }
-
-        let array = string.components(separatedBy: "|")
-        if array.count >= 7 {
-            // version 1
-            layoutForView.layout = array[0]
-            layoutForView.sort = array[1]
-            layoutForView.ascending = NSString(string: array[2]).boolValue
-            layoutForView.groupBy = array[3]
-            layoutForView.directoryOnTop = NSString(string: array[4]).boolValue
-            layoutForView.titleButtonHeader = array[5]
-            layoutForView.itemForLine = Int(NSString(string: array[6]).intValue)
-        }
-
-        return layoutForView
-    }
-
-    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> Void) {
+    func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
 
         var fileNamePNG = ""
 
         guard let svgUrlString = svgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let iconURL = URL(string: svgUrlString) else {
-            return closure(nil)
+            return completion(nil, id)
         }
 
         if let fileName = fileName {
@@ -131,17 +79,17 @@ class NCUtility: NSObject {
                         }
 
                         guard let pngImageData = newImage.pngData() else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
 
                         try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
 
-                        return closure(imageNamePath)
+                        return completion(imageNamePath, id)
 
                     } else {
 
                         guard let svgImage: SVGKImage = SVGKImage(data: data) else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
 
                         if width != nil {
@@ -150,23 +98,23 @@ class NCUtility: NSObject {
                         }
 
                         guard let image: UIImage = svgImage.uiImage else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
                         guard let pngImageData = image.pngData() else {
-                            return closure(nil)
+                            return completion(nil, id)
                         }
 
                         try? pngImageData.write(to: URL(fileURLWithPath: imageNamePath))
 
-                        return closure(imageNamePath)
+                        return completion(imageNamePath, id)
                     }
                 } else {
-                    return closure(nil)
+                    return completion(nil, id)
                 }
             }
 
         } else {
-            return closure(imageNamePath)
+            return completion(imageNamePath, id)
         }
     }
 
@@ -401,7 +349,6 @@ class NCUtility: NSObject {
                 metadataSource.date = date
             }
             metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
-            metadataSource.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
@@ -437,6 +384,7 @@ class NCUtility: NSObject {
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
+        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
 
         func callCompletionWithError(_ error: Bool = true) {
             if error {
@@ -445,7 +393,6 @@ class NCUtility: NSObject {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
-                    metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
@@ -464,10 +411,9 @@ class NCUtility: NSObject {
         if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && CCUtility.getFormatCompatibility() {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
-            metadata.ext = "jpg"
             fileNamePath = NSTemporaryDirectory() + fileName
             metadata.fileNameView = fileName
-            if !metadata.e2eEncrypted {
+            if !isDirectoryE2EE {
                 metadata.fileName = fileName
             }
             compatibilityFormat = true
@@ -574,7 +520,6 @@ class NCUtility: NSObject {
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
         let chunckSize = CCUtility.getChunkSize() * 1000000
-        let e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
@@ -594,7 +539,6 @@ class NCUtility: NSObject {
                 if error != nil { return completion(nil) }
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account, user: metadata.user, userId: metadata.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, url: "", contentType: "", isLivePhoto: true)
                 metadataLivePhoto.classFile = NKCommon.typeClassFile.video.rawValue
-                metadataLivePhoto.e2eEncrypted = e2eEncrypted
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
@@ -1049,4 +993,60 @@ class NCUtility: NSObject {
         }
         return returnImage
     }
+
+    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
+        return isDirectoryE2EE(serverUrl: serverUrl, account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId)
+    }
+    func isDirectoryE2EE(file: NKFile) -> Bool {
+        return isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account, urlBase: file.urlBase, userId: file.userId)
+    }
+    @objc func isDirectoryE2EE(metadata: tableMetadata) -> Bool {
+        return isDirectoryE2EE(serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+    }
+    @objc func isDirectoryE2EE(serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
+        if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+            return directory.e2eEncrypted
+        }
+        return false
+    }
+
+    func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {
+
+        let imageView = UIImageView()
+        let titleView = UIView()
+        let label = UILabel()
+
+        if let title = title {
+            label.text = title + " "
+        } else {
+            label.text = " "
+        }
+        label.sizeToFit()
+        label.center = titleView.center
+        label.textAlignment = NSTextAlignment.center
+
+        imageView.image = image
+
+        let imageAspect = (imageView.image?.size.width ?? 0) / (imageView.image?.size.height ?? 0)
+        let imageX = label.frame.origin.x - label.frame.size.height * imageAspect
+        let imageY = label.frame.origin.y
+        let imageWidth = label.frame.size.height * imageAspect
+        let imageHeight = label.frame.size.height
+
+        if title != nil {
+            imageView.frame = CGRect(x: imageX, y: imageY, width: imageWidth, height: imageHeight)
+            titleView.addSubview(label)
+        } else {
+            imageView.frame = CGRect(x: imageX / 2, y: imageY, width: imageWidth, height: imageHeight)
+        }
+        imageView.contentMode = UIView.ContentMode.scaleAspectFit
+
+        titleView.addSubview(imageView)
+        titleView.sizeToFit()
+
+        return titleView
+    }
 }
+
+

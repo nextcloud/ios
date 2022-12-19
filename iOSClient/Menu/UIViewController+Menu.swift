@@ -110,6 +110,7 @@ extension UIViewController {
 
     func presentMenu(with actions: [NCMenuAction]) {
         guard !actions.isEmpty else { return }
+        let actions = actions.sorted(by: { $0.order < $1.order })
         guard let menuViewController = NCMenu.makeNCMenu(with: actions) else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_internal_generic_error_")
             NCContentPresenter.shared.showError(error: error)

@@ -40,6 +40,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let defaultCornerRadius: CGFloat = 10.0
+    let applicationHandle = NCApplicationHandle()
     
     var tabAccount: tableAccount?
 
@@ -101,6 +102,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_transfers_"
         item.icon = "arrow.left.arrow.right"
         item.url = "segueTransfers"
+        item.order = 10
         functionMenu.append(item)
 
         // ITEM : Recent
@@ -108,6 +110,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_recent_"
         item.icon = "recent"
         item.url = "segueRecent"
+        item.order = 20
         functionMenu.append(item)
 
         // ITEM : Notification
@@ -115,6 +118,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_notification_"
         item.icon = "bell"
         item.url = "segueNotification"
+        item.order = 30
         functionMenu.append(item)
 
         // ITEM : Activity
@@ -122,6 +126,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_activity_"
         item.icon = "bolt"
         item.url = "segueActivity"
+        item.order = 40
         functionMenu.append(item)
 
         // ITEM : Shares
@@ -131,6 +136,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             item.name = "_list_shares_"
             item.icon = "share"
             item.url = "segueShares"
+            item.order = 50
             functionMenu.append(item)
         }
 
@@ -139,6 +145,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_manage_file_offline_"
         item.icon = "tray.and.arrow.down"
         item.url = "segueOffline"
+        item.order = 60
         functionMenu.append(item)
 
         // ITEM : Scan
@@ -146,6 +153,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_scanned_images_"
         item.icon = "scan"
         item.url = "openStoryboardNCScan"
+        item.order = 70
         functionMenu.append(item)
 
         // ITEM : Trash
@@ -156,8 +164,15 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             item.name = "_trash_view_"
             item.icon = "trash"
             item.url = "segueTrash"
+            item.order = 80
             functionMenu.append(item)
         }
+
+        // ITEM : HANDLE
+        applicationHandle.loadItems(functionMenu: &functionMenu)
+
+        // ORDER ITEM
+        functionMenu = functionMenu.sorted(by: { $0.order < $1.order })
 
         // ITEM : Settings
         item = NKExternalSite()
@@ -166,17 +181,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.url = "segueSettings"
         settingsMenu.append(item)
 
-        // ITEM: Test API
-        /*
-        if NCUtility.shared.isSimulator() {
-            item = NKExternalSite()
-            item.name = "Test API"
-            item.icon = "swift"
-            item.url = "test"
-            settingsMenu.append(item)
-        }
-        */
-        
         if quotaMenu.count > 0 {
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
@@ -483,8 +487,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
 
-        } else if item.url == "test" {
-
+        } else {
+            applicationHandle.didSelectItem(item, viewController: self)
         }
     }
 }

@@ -30,8 +30,6 @@ import WebKit
 
 class NCBrowserWeb: UIViewController {
 
-    var webView: WKWebView?
-
     @objc var urlBase = ""
     @objc var isHiddenButtonExit = false
     @objc var titleBrowser: String?
@@ -44,16 +42,15 @@ class NCBrowserWeb: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        webView = WKWebView(frame: CGRect.zero)
-        webView!.navigationDelegate = self
-        view.addSubview(webView!)
-        webView!.translatesAutoresizingMaskIntoConstraints = false
-        webView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        webView!.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        let webView = WKWebView(frame: CGRect.zero)
+        webView.navigationDelegate = self
+        view.addSubview(webView)
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 
-        // button exit
         if isHiddenButtonExit {
             buttonExit.isHidden = true
         } else {
@@ -63,13 +60,11 @@ class NCBrowserWeb: UIViewController {
         }
 
         if let url = URL(string: urlBase) {
-            loadWebPage(webView: webView!, url: url)
+            loadWebPage(webView: webView, url: url)
         } else {
             let url = URL(fileURLWithPath: urlBase)
-            loadWebPage(webView: webView!, url: url)
+            loadWebPage(webView: webView, url: url)
         }
-
-        // navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -92,8 +87,6 @@ class NCBrowserWeb: UIViewController {
         }
     }
 
-    //
-
     func loadWebPage(webView: WKWebView, url: URL) {
 
         let language = NSLocale.preferredLanguages[0] as String
@@ -101,8 +94,8 @@ class NCBrowserWeb: UIViewController {
 
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
+        
         webView.customUserAgent = CCUtility.getUserAgent()
-
         webView.load(request)
     }
 }
@@ -120,18 +113,8 @@ extension NCBrowserWeb: WKNavigationDelegate {
     }
 
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(.allow)
-    }
-
-    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print("didStartProvisionalNavigation")
-    }
-
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("didFinishProvisionalNavigation")
-    }
-
-    public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        print("didReceiveServerRedirectForProvisionalNavigation")
+        DispatchQueue.global().async {
+            decisionHandler(.allow)
+        }
     }
 }

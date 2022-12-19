@@ -37,7 +37,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
     internal var serverUrl: String = ""
-    internal var isEncryptedFolder = false
+    internal var isDirectoryE2EE = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var metadataFolder: tableMetadata?
@@ -46,7 +46,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var headerMenu: NCSectionHeaderMenu?
     internal var isSearchingMode: Bool = false
 
-    internal var layoutForView: NCGlobal.layoutForViewType?
+    internal var layoutForView: NCDBLayoutForView?
     internal var selectableDataSource: [RealmSwiftObject] { dataSource.getMetadataSourceForAllSections() }
 
     private var autoUploadFileName = ""
@@ -90,16 +90,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.navigationController?.presentationController?.delegate = self
 
         // CollectionView & layout
+        collectionView.alwaysBounceVertical = true
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            collectionView?.collectionViewLayout = listLayout
-        } else {
-            collectionView?.collectionViewLayout = gridLayout
-        }
-        collectionView.alwaysBounceVertical = true
 
         // Color
         view.backgroundColor = .systemBackground
@@ -172,7 +165,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         appDelegate.activeViewController = self
 
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
@@ -319,7 +312,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.navigationController?.popToRootViewController(animated: false)
         }
 
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
@@ -568,7 +561,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         
-        if metadata.livePhoto && metadata.classFile == NKCommon.typeClassFile.video.rawValue { return }
         let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
         if let indexPath = indexPath {
             if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
@@ -717,7 +709,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     
                     let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
                     
-                    UIApplication.shared.keyWindow?.rootViewController?.present(popup, animated: true)
+                    self.present(popup, animated: true)
                 }
 
                 // TIP
@@ -830,7 +822,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             // list layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_grid_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutList
-            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             self.groupByField = "name"
             if self.dataSource.groupByField != self.groupByField {
                 self.dataSource.changeGroupByField(self.groupByField)
@@ -845,7 +837,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             // grid layout
             headerMenu?.buttonSwitch.accessibilityLabel = NSLocalizedString("_list_view_", comment: "")
             layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             if isSearchingMode {
                 self.groupByField = "name"
             } else {
@@ -864,7 +856,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapButtonOrder(_ sender: Any) {
 
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
+        sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
 
     func tapButton1(_ sender: Any) {
@@ -1007,14 +999,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !appDelegate.account.isEmpty else { return }
 
         // E2EE
-        isEncryptedFolder = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-
+        isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, userBase: appDelegate)
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
 
         // get layout for view
-        layoutForView = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
 
         // set GroupField for Grid
         if !isSearchingMode && layoutForView?.layout == NCGlobal.shared.layoutGrid {
@@ -1280,6 +1271,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 }
 
+// MARK: - E2EE
+
+extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
+
+    func endToEndInitializeSuccess() {
+        if let metadata = appDelegate.activeMetadata {
+            pushMetadata(metadata)
+        }
+    }
+}
+
 // MARK: - Collection View
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
@@ -1302,8 +1304,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-            let error = NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_goto_settings_for_enable_")
-            NCContentPresenter.shared.showInfo(error: error)
+            let e2ee = NCEndToEndInitialize()
+            e2ee.delegate = self
+            e2ee.initEndToEndEncryption()
             return
         }
 
@@ -1583,7 +1586,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Button More
-        if metadata.status == NCGlobal.shared.metadataStatusInDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
+        if metadata.isDownloadUpload {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
         } else if metadata.lock == true {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)
@@ -1627,11 +1630,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if metadata.livePhoto {
             cell.fileStatusImage?.image = NCBrandColor.cacheImages.livePhoto
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
-        }
-
-        // E2EE
-        if metadata.e2eEncrypted || isEncryptedFolder {
-            cell.hideButtonShare(true)
         }
 
         // URL
@@ -1679,6 +1677,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
         }
+
+        // E2EE
+        // ** IMPORT MUST BE AT THE END **
+        if metadata.e2eEncrypted || isDirectoryE2EE {
+            cell.hideButtonShare(true)
+        }
+
         return cell
     }
 
@@ -1703,7 +1708,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
                 if headerMenuButtonsCommand && !isSearchingMode {
-                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: UIImage(named: "folder"), titleButton2: NSLocalizedString("_create_folder_", comment: ""), imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
+                    let imageButton2 = isDirectoryE2EE ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
+                    let titleButton2 = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
+                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
                 }
@@ -1862,4 +1869,3 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
         self.tipView?.dismiss()
     }
 }
-

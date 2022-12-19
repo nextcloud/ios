@@ -51,6 +51,13 @@ class NCEndToEndInitialize: NSObject {
         self.getPublicKey()
     }
 
+    @objc func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
+
+        NextcloudKit.shared.getE2EECertificate { account, certificate, data, error in
+            completion(error)
+        }
+    }
+
     func getPublicKey() {
 
         NextcloudKit.shared.getE2EECertificate { account, certificate, data, error in

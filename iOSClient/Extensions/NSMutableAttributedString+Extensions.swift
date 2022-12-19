@@ -1,5 +1,5 @@
 //
-//  UI+Extensions.swift
+//  NSMutableAttributedString+Extensions.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 26/05/21.

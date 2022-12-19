@@ -531,6 +531,11 @@ class NCMetadataForSection: NSObject {
                 continue
             }
 
+            // Upload [REPLACE] skip
+            if metadata.session.isEmpty && !metadataInSession.filter({ $0.fileNameView == metadata.fileNameView }).isEmpty {
+                continue
+            }
+
             // share
             if let share = self.shares.filter({ $0.serverUrl == metadata.serverUrl && $0.fileName == metadata.fileName }).first {
                 metadataShare[metadata.ocId] = share

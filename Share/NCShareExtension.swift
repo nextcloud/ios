@@ -58,7 +58,7 @@ class NCShareExtension: UIViewController {
     var metadataFolder: tableMetadata?
     var networkInProgress = false
     var dataSource = NCDataSource()
-    var layoutForView: NCGlobal.layoutForViewType?
+    var layoutForView: NCDBLayoutForView?
     let heightRowTableView: CGFloat = 50
     let heightCommandView: CGFloat = 170
     var autoUploadFileName = ""
@@ -139,7 +139,6 @@ class NCShareExtension: UIViewController {
             indicatorView.ringWidth = 1.5
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didCreateFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
 
@@ -191,11 +190,6 @@ class NCShareExtension: UIViewController {
             onDismiss?()
         }))
         self.present(alertController, animated: true)
-    }
-
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let progress = notification.userInfo?["progress"] as? Float else { return }
-        hud.progress = progress
     }
 
     func setNavigationBar(navigationTitle: String) {
@@ -316,7 +310,7 @@ extension NCShareExtension {
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-            if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileName: fileName) != nil {
+            if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                 conflicts.append(metadata)
             } else {
                 uploadMetadata.append(metadata)
@@ -329,7 +323,6 @@ extension NCShareExtension {
             conflict.serverUrl = self.serverUrl
             conflict.metadatasUploadInConflict = conflicts
             conflict.delegate = self
-            conflict.isE2EE = CCUtility.isFolderEncrypted(self.serverUrl, e2eEncrypted: false, account: activeAccount.account, urlBase: activeAccount.urlBase, userId: activeAccount.userId)
             self.present(conflict, animated: true, completion: nil)
         } else {
             upload()
@@ -338,22 +331,23 @@ extension NCShareExtension {
 
     func upload() {
         guard uploadStarted else { return }
-        guard uploadMetadata.count > counterUploaded else { return finishedUploading() }
+        guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
         let metadata = uploadMetadata[counterUploaded]
         let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
-        // E2EE
-        metadata.e2eEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: activeAccount.userId)
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
 
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
-        hud.progress = 0
         hud.show(in: self.view)
 
-        NCNetworking.shared.upload(metadata: metadata) { } completion: { error in
+        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self) {
+            self.hud.progress = 0
+        } progressHandler: { _, _, fractionCompleted in
+            self.hud.progress = Float(fractionCompleted)
+        } completion: { error in
             if error != .success {
                 let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -361,7 +355,6 @@ extension NCShareExtension {
                 NCUtilityFileSystem.shared.deleteFile(filePath: path)
                 self.uploadErrors.append(metadata)
             }
-
             self.counterUploaded += 1
             self.upload()
         }
@@ -381,5 +374,16 @@ extension NCShareExtension {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             }
         }
+    }
+}
+
+extension NCShareExtension: uploadE2EEDelegate {
+
+    func start() {
+        self.hud.progress = 0
+    }
+
+    func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
+        self.hud.progress = Float(fractionCompleted)
     }
 }

@@ -37,10 +37,10 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var previewFile: UIImageView!
-    @IBOutlet weak var fileNameWithoutExt: UITextField!
+    @IBOutlet weak var fileNameNoExtension: UITextField!
     @IBOutlet weak var point: UILabel!
     @IBOutlet weak var ext: UITextField!
-    @IBOutlet weak var fileNameWithoutExtTrailingContraint: NSLayoutConstraint!
+    @IBOutlet weak var fileNameNoExtensionTrailingContraint: NSLayoutConstraint!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var renameButton: UIButton!
 
@@ -66,9 +66,9 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
             }
 
-            fileNameWithoutExt.text = (metadata.fileNameView as NSString).deletingPathExtension
-            fileNameWithoutExt.delegate = self
-            fileNameWithoutExt.becomeFirstResponder()
+            fileNameNoExtension.text = (metadata.fileNameView as NSString).deletingPathExtension
+            fileNameNoExtension.delegate = self
+            fileNameNoExtension.becomeFirstResponder()
 
             ext.text = metadata.fileExtension
             ext.delegate = self
@@ -89,7 +89,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
                 ext.isHidden = true
                 point.isHidden = true
-                fileNameWithoutExtTrailingContraint.constant = 20
+                fileNameNoExtensionTrailingContraint.constant = 20
 
             } else {
 
@@ -97,17 +97,17 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                     previewFile.image = NCBrandColor.cacheImages.file
                 }
 
-                fileNameWithoutExtTrailingContraint.constant = 90
+                fileNameNoExtensionTrailingContraint.constant = 90
             }
 
         } else if let fileName = self.fileName {
 
             titleLabel.text = NSLocalizedString("_rename_file_", comment: "")
 
-            fileNameWithoutExt.text = (fileName as NSString).deletingPathExtension
-            fileNameWithoutExt.delegate = self
-            fileNameWithoutExt.becomeFirstResponder()
-            fileNameWithoutExtTrailingContraint.constant = 90
+            fileNameNoExtension.text = (fileName as NSString).deletingPathExtension
+            fileNameNoExtension.delegate = self
+            fileNameNoExtension.becomeFirstResponder()
+            fileNameNoExtensionTrailingContraint.constant = 90
 
             ext.text = (fileName as NSString).pathExtension
             ext.delegate = self
@@ -136,7 +136,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             dismiss(animated: true)
         }
 
-        fileNameWithoutExt.selectAll(nil)
+        fileNameNoExtension.selectAll(nil)
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -155,7 +155,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     @IBAction func renameFile(_ sender: Any) {
 
-        var fileNameWithoutExtNew = ""
+        var fileNameNoExtensionNew = ""
         var extNew = ""
         var fileNameNew = ""
 
@@ -163,16 +163,16 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
             let extCurrent = (metadata.fileNameView as NSString).pathExtension
 
-            if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
-                self.fileNameWithoutExt.text = (metadata.fileNameView as NSString).deletingPathExtension
+            if fileNameNoExtension.text == nil || fileNameNoExtension.text?.count == 0 {
+                self.fileNameNoExtension.text = (metadata.fileNameView as NSString).deletingPathExtension
                 return
             } else {
-                fileNameWithoutExtNew = fileNameWithoutExt.text!
+                fileNameNoExtensionNew = fileNameNoExtension.text!
             }
 
             if metadata.directory {
 
-                fileNameNew = fileNameWithoutExtNew
+                fileNameNew = fileNameNoExtensionNew
                 renameMetadata(metadata, fileNameNew: fileNameNew)
 
             } else {
@@ -192,7 +192,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                     var title = NSLocalizedString("_use_", comment: "") + " ." + extNew
                     alertController.addAction(UIAlertAction(title: title, style: .default, handler: { _ in
 
-                        fileNameNew = fileNameWithoutExtNew + "." + extNew
+                        fileNameNew = fileNameNoExtensionNew + "." + extNew
                         self.renameMetadata(metadata, fileNameNew: fileNameNew)
                     }))
 
@@ -205,22 +205,22 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
                 } else {
 
-                    fileNameNew = fileNameWithoutExtNew + "." + extNew
+                    fileNameNew = fileNameNoExtensionNew + "." + extNew
                     renameMetadata(metadata, fileNameNew: fileNameNew)
                 }
             }
 
         } else if let fileName = self.fileName {
 
-            if fileNameWithoutExt.text == nil || fileNameWithoutExt.text?.count == 0 {
-                fileNameWithoutExt.text = (fileName as NSString).deletingPathExtension
+            if fileNameNoExtension.text == nil || fileNameNoExtension.text?.count == 0 {
+                fileNameNoExtension.text = (fileName as NSString).deletingPathExtension
                 return
             } else if ext.text == nil || ext.text?.count == 0 {
                 ext.text = (fileName as NSString).pathExtension
                 return
             }
 
-            fileNameNew = (fileNameWithoutExt.text ?? "") + "." + (ext.text ?? "")
+            fileNameNew = (fileNameNoExtension.text ?? "") + "." + (ext.text ?? "")
             self.dismiss(animated: true) {
                 self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew)
             }

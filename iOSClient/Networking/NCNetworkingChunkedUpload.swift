@@ -26,7 +26,10 @@ import NextcloudKit
 
 extension NCNetworking {
 
-    internal func uploadChunkedFile(metadata: tableMetadata, start: @escaping () -> Void, completion: @escaping (_ error: NKError) -> Void) {
+    internal func uploadChunkedFile(metadata: tableMetadata,
+                                    start: @escaping () -> () = { },
+                                    progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
+                                    completion: @escaping (_ error: NKError) -> Void) {
 
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
@@ -58,7 +61,6 @@ extension NCNetworking {
         createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { error in
 
             NCContentPresenter.shared.dismiss(after: NCGlobal.shared.dismissAfterSecond)
-            start()
 
             guard error == .success else {
                 self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, error: error)
@@ -67,6 +69,8 @@ extension NCNetworking {
             }
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
+
+            start()
 
             for fileName in filesNames {
 
@@ -94,7 +98,7 @@ extension NCNetworking {
                     if let size = size {
                         let totalBytesExpected = metadata.size
                         let totalBytes = size + progress.completedUnitCount
-                        let fractionCompleted = Float(totalBytes) / Float(totalBytesExpected)
+                        let fractionCompleted = Double(totalBytes) / Double(totalBytesExpected)
 
                         NotificationCenter.default.postOnMainThread(
                             name: NCGlobal.shared.notificationCenterProgressTask,
@@ -108,6 +112,8 @@ extension NCNetworking {
                                 "progress": NSNumber(value: fractionCompleted),
                                 "totalBytes": NSNumber(value: totalBytes),
                                 "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+
+                        progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
                     }
 
                 }) { _, _, _, _, _, _, _, error in
@@ -165,7 +171,6 @@ extension NCNetworking {
                 let serverUrl = metadata.serverUrl
                 let assetLocalIdentifier = metadata.assetLocalIdentifier
                 let isLivePhoto = metadata.livePhoto
-                let isE2eEncrypted = metadata.e2eEncrypted
                 let account = metadata.account
                 let fileName = metadata.fileName
 
@@ -177,7 +182,6 @@ extension NCNetworking {
                     if error == .success, let metadata = metadata {
 
                         metadata.assetLocalIdentifier = assetLocalIdentifier
-                        metadata.e2eEncrypted = isE2eEncrypted
                         metadata.livePhoto = isLivePhoto
 
                         // Delete Asset on Photos album

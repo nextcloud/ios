@@ -103,14 +103,27 @@ class NCNetworkingProcessUpload: NSObject {
 
             let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
             let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
-            var counterUpload: Int = 0
+            var counterUpload = metadatasUpload.count
             let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
-
-            counterUpload = metadatasUpload.count
 
             // Update Badge
             let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter":counterBadge.count])
+
+            // ** TEST ONLY ONE **
+            // E2EE
+            let uniqueMetadatas = metadatasUpload.unique(map: { $0.serverUrl })
+            for metadata in uniqueMetadatas {
+                if NCUtility.shared.isDirectoryE2EE(metadata: metadata) {
+                    self.pauseProcess = false
+                    return completition(counterUpload)
+                }
+            }
+            // CHUNK
+            if metadatasUpload.filter({ $0.chunk }).count > 0 {
+                self.pauseProcess = false
+                return completition(counterUpload)
+            }
 
             NCNetworking.shared.getOcIdInBackgroundSession(queue: queue, completion: { listOcId in
 
@@ -130,11 +143,6 @@ class NCNetworkingProcessUpload: NSObject {
                             continue
                         }
 
-                        // Chunk or E2EE ... only one ? skipped
-                        if metadatasUpload.filter({ $0.chunk || $0.e2eEncrypted }).count > 0 {
-                            continue
-                        }
-
                         // Session Extension ? skipped
                         if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundExtension {
                             continue
@@ -147,19 +155,21 @@ class NCNetworkingProcessUpload: NSObject {
                             }
                             for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
 
+                                // isE2EE
+                                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
+
                                 // NO WiFi
                                 if !isWiFi && metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
                                     continue
                                 }
 
-                                // NO E2EE, CHUCK in background
-                                if applicationState != .active && (metadata.e2eEncrypted || metadata.chunk) {
+                                if applicationState != .active && (isDirectoryE2EE || metadata.chunk) {
                                     continue
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
-                                    if metadata.e2eEncrypted || metadata.chunk {
+                                    if isDirectoryE2EE || metadata.chunk {
                                         maxConcurrentOperationUpload = 1
                                     }
                                     counterUpload += 1

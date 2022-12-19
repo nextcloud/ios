@@ -149,7 +149,7 @@ class NCRecent: NCCollectionViewCommon {
         NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
 
             if error == .success {
-                NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, metadatasFolder, metadatas in
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
 
                     // Update sub directories
                     for metadata in metadatasFolder {

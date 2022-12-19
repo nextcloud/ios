@@ -35,7 +35,7 @@ extension NCViewer {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let isOffline = localFile?.offline == true
 
         //
@@ -114,7 +114,7 @@ extension NCViewer {
                     icon: NCUtility.shared.loadImage(named: "film"),
                     action: { menuAction in
                         if let ncplayer = (viewController as? NCViewerMediaPage)?.currentViewController.ncplayer {
-                            ncplayer.convertVideo()
+                            ncplayer.convertVideo(withAlert: false)
                         }
                     }
                 )
@@ -241,7 +241,7 @@ extension NCViewer {
         //
         // MODIFY
         //
-        if !isFolderEncrypted && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if !isDirectoryE2EE && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),

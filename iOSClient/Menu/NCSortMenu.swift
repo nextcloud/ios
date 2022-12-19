@@ -33,14 +33,14 @@ class NCSortMenu: NSObject {
 
     private var key = ""
 
-    func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
+    func toggleMenu(viewController: UIViewController, account: String, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
 
         self.key = key
         self.sortButton = sortButton
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
 
-        var layoutForView = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: account, key: key, serverUrl: serverUrl) else { return }
         var actions = [NCMenuAction]()
         var title = ""
         var icon = UIImage()
@@ -129,9 +129,7 @@ class NCSortMenu: NSObject {
         viewController.presentMenu(with: actions)
     }
 
-    func actionMenu(layoutForView: NCGlobal.layoutForViewType) {
-
-        var layoutForView = layoutForView
+    func actionMenu(layoutForView: NCDBLayoutForView) {
 
         switch layoutForView.sort {
         case "fileName":
@@ -145,9 +143,7 @@ class NCSortMenu: NSObject {
         }
 
         self.sortButton?.setTitle(NSLocalizedString(layoutForView.titleButtonHeader, comment: ""), for: .normal)
-
-        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layoutForView: layoutForView)
-
+        NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
     }
 }

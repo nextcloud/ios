@@ -43,6 +43,12 @@ class NCViewerMediaPage: UIViewController {
         return self.pageViewController.viewControllers![0] as! NCViewerMedia
     }
 
+    private var hideStatusBar: Bool = false {
+        didSet {
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
     var metadatas: [tableMetadata] = []
     var modifiedOcId: [String] = []
     var currentIndex = 0
@@ -151,6 +157,10 @@ class NCViewerMediaPage: UIViewController {
         return currentScreenMode == .full
     }
 
+    override var prefersStatusBarHidden: Bool {
+        return hideStatusBar
+    }
+
     // MARK: -
     
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
@@ -181,6 +191,7 @@ class NCViewerMediaPage: UIViewController {
         if mode == .normal {
 
             navigationController?.setNavigationBarHidden(false, animated: true)
+            hideStatusBar = false
             progressView.isHidden = false
 
             if !currentViewController.detailView.isShow() {
@@ -194,6 +205,7 @@ class NCViewerMediaPage: UIViewController {
         } else {
 
             navigationController?.setNavigationBarHidden(true, animated: true)
+            hideStatusBar = true
             progressView.isHidden = true
 
             currentViewController.playerToolBar?.hide()

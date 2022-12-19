@@ -435,7 +435,6 @@ extension NCMedia {
     // MARK: - Datasource
 
     @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-
         guard !appDelegate.account.isEmpty else { return }
 
         if account != appDelegate.account {
@@ -461,15 +460,19 @@ extension NCMedia {
             predicate = predicateDefault
         }
 
-        guard var predicateForGetMetadatasMedia = predicate else { return }
-
-        if livePhoto {
-            let predicateLivePhoto = NSPredicate(format: "!(ext == 'mov' AND livePhoto == true)")
-            predicateForGetMetadatasMedia = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateForGetMetadatasMedia, predicateLivePhoto])
-        }
-
+        guard let predicate = predicate else { return }
         DispatchQueue.global().async {
-            self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicateForGetMetadatasMedia, sort: CCUtility.getMediaSortDate())
+            self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: self.livePhoto)
+            switch CCUtility.getMediaSortDate() {
+            case "date":
+                self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )
+            case "creationDate":
+                self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)} )
+            case "uploadDate":
+                self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)} )
+            default:
+                break
+            }
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
@@ -521,7 +524,7 @@ extension NCMedia {
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
             bottom = -mainTabBar.getHight()
         }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .gray)
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
 
         let options = NKRequestOptions(timeout: 300)
         
@@ -533,7 +536,7 @@ extension NCMedia {
 
             if error == .success && account == self.appDelegate.account {
                 if files.count > 0 {
-                    NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { _, _, metadatas in
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)
@@ -612,7 +615,7 @@ extension NCMedia {
                 self.mediaCommandView?.activityIndicator.stopAnimating()
 
                 if error == .success && account == self.appDelegate.account && files.count > 0 {
-                    NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: false, account: account) { _, _, metadatas in
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: predicateResult)

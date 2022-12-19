@@ -69,18 +69,6 @@ class NCGlobal: NSObject {
         var totalBytesExpected: Int64
     }
 
-    // Struct for LayoutForView
-    //
-    struct layoutForViewType {
-        var layout: String
-        var sort: String
-        var ascending: Bool
-        var groupBy: String
-        var directoryOnTop: Bool
-        var titleButtonHeader: String
-        var itemForLine: Int
-    }
-
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
@@ -89,6 +77,11 @@ class NCGlobal: NSObject {
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
     @objc let appScan                               = "Library/Application Support/Scan"
     @objc let appUserData                           = "Library/Application Support/UserData"
+
+    // Directory on Group data share Nextcloud apps
+    //
+    @objc let appDataShareTalk                      = "Library/Application Support/Talk"
+    @objc let appDataShareNextcloud                 = "Library/Application Support/Nextcloud"
 
     // Service
     //
@@ -121,7 +114,8 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 255
+    let databaseSchemaVersion: UInt64               = 259
+    let fileAccounts: String                        = "accounts.json"
 
     // Intro selector
     //
@@ -369,9 +363,6 @@ class NCGlobal: NSObject {
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
-
-    let notificationCenterChangedLocation                       = "changedLocation"
-    let notificationStatusAuthorizationChangedLocation          = "statusAuthorizationChangedLocation"
 
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 

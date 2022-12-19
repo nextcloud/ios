@@ -70,7 +70,7 @@ class NCManageDatabase: NSObject {
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault),
                 schemaVersion: NCGlobal.shared.databaseSchemaVersion,
-                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tablePhotoLibrary.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableShare.self, tableChunk.self, tableAvatar.self, tableDashboardWidget.self, tableDashboardWidgetButton.self]
+                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tablePhotoLibrary.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableShare.self, tableChunk.self, tableAvatar.self, tableDashboardWidget.self, tableDashboardWidgetButton.self, NCDBLayoutForView.self]
             )
 
             Realm.Configuration.defaultConfiguration = config
@@ -639,201 +639,6 @@ class NCManageDatabase: NSObject {
     }
 
     // MARK: -
-    // MARK: Table Directory
-
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                var addObject = tableDirectory()
-                let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
-
-                if result != nil {
-                    addObject = result!
-                } else {
-                    addObject.ocId = ocId
-                }
-
-                addObject.account = account
-                addObject.e2eEncrypted = encrypted
-                addObject.favorite = favorite
-                addObject.fileId = fileId
-                if let etag = etag {
-                    addObject.etag = etag
-                }
-                if let permissions = permissions {
-                    addObject.permissions = permissions
-                }
-                addObject.serverUrl = serverUrl
-
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
-
-        let realm = try! Realm()
-
-        let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
-
-        // Delete table Metadata & LocalFile
-        for result in results {
-
-            self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
-            self.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", result.ocId))
-        }
-
-        // Delete table Dirrectory
-        do {
-            try realm.write {
-                realm.delete(results)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-                    return
-                }
-
-                let directory = tableDirectory.init(value: result)
-
-                realm.delete(result)
-
-                directory.e2eEncrypted = encrypted
-                if let etag = etag {
-                    directory.etag = etag
-                }
-                if let ocId = ocId {
-                    directory.ocId = ocId
-                }
-                if let fileId = fileId {
-                    directory.fileId = fileId
-                }
-                if let serverUrlTo = serverUrlTo {
-                    directory.serverUrl = serverUrlTo
-                }
-                if let richWorkspace = richWorkspace {
-                    directory.richWorkspace = richWorkspace
-                }
-
-                realm.add(directory, update: .all)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
-            return nil
-        }
-
-        return tableDirectory.init(value: result)
-    }
-
-    @objc func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
-
-        let realm = try! Realm()
-
-        let results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-
-        if results.count > 0 {
-            return Array(results.map { tableDirectory.init(value: $0) })
-        } else {
-            return nil
-        }
-    }
-
-    @objc func renameDirectory(ocId: String, serverUrl: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
-                result?.serverUrl = serverUrl
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func setDirectory(serverUrl: String, offline: Bool, account: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.offline = offline
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @discardableResult
-    @objc func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
-
-        let realm = try! Realm()
-        var result: tableDirectory?
-
-        do {
-            try realm.write {
-                result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.richWorkspace = richWorkspace
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-
-        if let result = result {
-            return tableDirectory.init(value: result)
-        } else {
-            return nil
-        }
-    }
-
-    @discardableResult
-    @objc func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
-
-        let realm = try! Realm()
-        var result: tableDirectory?
-
-        do {
-            try realm.write {
-                result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.colorFolder = colorFolder
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-
-        if let result = result {
-            return tableDirectory.init(value: result)
-        } else {
-            return nil
-        }
-    }
-
-    // MARK: -
     // MARK: Table e2e Encryption
 
     @objc func addE2eEncryption(_ e2e: tableE2eEncryption) {
@@ -939,6 +744,19 @@ class NCManageDatabase: NSObject {
         return tableE2eEncryptionLock.init(value: result)
     }
 
+    @objc func getE2EAllTokenLock(account: String) -> [tableE2eEncryptionLock] {
+
+        let realm = try! Realm()
+
+        let results = realm.objects(tableE2eEncryptionLock.self).filter("account == %@", account)
+
+        if results.count > 0 {
+            return Array(results.map { tableE2eEncryptionLock.init(value: $0) })
+        } else {
+            return []
+        }
+    }
+
     @objc func setE2ETokenLock(account: String, serverUrl: String, fileId: String, e2eToken: String) {
 
         let realm = try! Realm()
@@ -959,7 +777,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deteleE2ETokenLock(account: String, serverUrl: String) {
+    @objc func deleteE2ETokenLock(account: String, serverUrl: String) {
 
         let realm = try! Realm()
 
@@ -1310,7 +1128,7 @@ class NCManageDatabase: NSObject {
                     object.date = share.date
                     object.displaynameFileOwner = share.displaynameFileOwner
                     object.displaynameOwner = share.displaynameOwner
-                    object.expirationDate =  share.expirationDate
+                    object.expirationDate = share.expirationDate
                     object.fileParent = share.fileParent
                     object.fileSource = share.fileSource
                     object.fileTarget = share.fileTarget

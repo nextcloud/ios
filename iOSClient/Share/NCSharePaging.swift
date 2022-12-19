@@ -115,7 +115,9 @@ class NCSharePaging: UIViewController {
         sharingEnabled = sharing
         let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesActivity)
         activityEnabled = activity != nil
-
+        if metadata.e2eEncrypted || NCUtility.shared.isDirectoryE2EE(metadata: metadata) {
+            sharingEnabled = false
+        }
         if indexPage == .sharing && !sharingEnabled {
             indexPage = .activity
         }

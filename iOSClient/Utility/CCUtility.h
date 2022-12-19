@@ -197,7 +197,6 @@
 
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
-+ (NSString *)createRandomString:(int)numChars;
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension;
 + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName;
 
@@ -224,6 +223,7 @@
 + (void)removeDocumentsDirectory;
 + (void)removeTemporaryDirectory;
 + (void)emptyTemporaryDirectory;
++ (void)removeGroupDataShareAppsNextcloud;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
@@ -238,11 +238,6 @@
 + (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
-
-// ===== E2E Encrypted =====
-
-+ (NSString *)generateRandomIdentifier;
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase userId:(NSString *)userId;
 
 // ===== Share Permissions =====
 

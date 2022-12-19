@@ -195,7 +195,7 @@ class NCService: NSObject {
             // File Sharing
             let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
             if isFilesSharingEnabled {
-                NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, data, error in
+                NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, data, error in
                     if error == .success, let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
                         NCManageDatabase.shared.deleteTableShare(account: account)
                         if let shares = shares, !shares.isEmpty {

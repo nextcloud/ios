@@ -38,7 +38,7 @@
 
 @implementation NCManageEndToEndEncryption
 
-- (void)initializeForm
+- (void)initializeForm:(NKError *)error
 {
     XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
@@ -51,31 +51,7 @@
         NKError *error = [[NKError alloc] initWithErrorCode:NCGlobal.shared.errorInternalError errorDescription:@"_err_e2ee_app_version_"];
         [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" error:error delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError];
     }
-    
-    if (isE2EEEnabled == NO || ![versionE2EE isEqual:[[NCGlobal shared] e2eeVersion]]) {
-        
-        // Section SERVICE NOT AVAILABLE -------------------------------------------------
-        
-        section = [XLFormSectionDescriptor formSection];
-        if (isE2EEEnabled) {
-            section.footerTitle = [NSString stringWithFormat:@"End-to-End Encryption %@", versionE2EE];
-        }
-        [form addFormSection:section];
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_not_available_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[[UIImage imageNamed:@"closeCircle"] imageWithColor:[UIColor redColor] size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        [section addFormRow:row];
-        
-        self.tableView.showsVerticalScrollIndicator = NO;
-        self.form = form;
 
-        return;
-    }
-    
     if ([CCUtility isEndToEndEnabled:appDelegate.account]) {
         
         // Section SERVICE ACTIVATED -------------------------------------------------
@@ -127,6 +103,13 @@
         // Section START E2E -------------------------------------------------
 
         section = [XLFormSectionDescriptor formSection];
+        if (error == nil) {
+            section.footerTitle = NSLocalizedString(@"_status_in_progress_", nil);
+        } else if (error.errorCode == 0) {
+            section.footerTitle = NSLocalizedString(@"_status_e2ee_on_server_", nil);
+        } else {
+            section.footerTitle = NSLocalizedString(@"_status_e2ee_not_setup_", nil);
+        }
         [form addFormSection:section];
     
         // Start e2e
@@ -187,7 +170,13 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:NCGlobal.shared.notificationCenterApplicationDidEnterBackground object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initialize) name:NCGlobal.shared.notificationCenterInitialize object:nil];
 
-    [self initializeForm];
+    [self initializeForm:nil];
+    /*
+    NKRequestOptions *options = [[NKRequestOptions alloc] initWithEndpoint:nil customHeader:nil customUserAgent:nil contentType:nil e2eToken: nil timeout:30 queue:dispatch_get_main_queue()];
+    [[NextcloudKit shared] getE2EECertificateWithOptions:options completionHandler:^(NSString* account, NSString *certificate, NSData *data, NKError *error) {
+
+    }];
+    */
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -195,6 +184,10 @@
     [super viewWillAppear:animated];
     
     appDelegate.activeViewController = self;
+
+    [[NCEndToEndInitialize alloc] statusOfServiceWithCompletion:^(NKError * error) {
+        [self initializeForm:error];
+    }];
 }
 
 #pragma mark - NotificationCenter
@@ -361,7 +354,7 @@
         
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [CCUtility clearAllKeysEndToEnd:appDelegate.account];
-            [self initializeForm];
+            [self initializeForm:nil];
         }];
         
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
@@ -410,7 +403,7 @@
     // Reload All Datasource
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:NCGlobal.shared.notificationCenterReloadDataSource object:nil];
 
-    [self initializeForm];
+    [self initializeForm:nil];
 }
 
 #pragma mark -

@@ -49,6 +49,7 @@ excluded:
   - Widget/Lockscreen/LockscreenData.swift
   - Widget/Lockscreen/LockscreenWidgetView.swift
   - Widget/Lockscreen/LockscreenWidgetProvider.swift
+  - iOSClient/ExternalResources
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift
@@ -63,7 +64,9 @@ excluded:
   - iOSClient/Data/NCManageDatabase+Activity.swift
   - iOSClient/Data/NCManageDatabase.swift
   - iOSClient/Data/NCManageDatabase+Metadata.swift
+  - iOSClient/Data/NCManageDatabase+Directory.swift
   - iOSClient/Data/NCManageDatabase+Video.swift
+  - iOSClient/Data/NCManageDatabase+LayoutForView.swift
   - iOSClient/Data/NCManageDatabase+DashboardWidget.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
   - iOSClient/EmptyView/NCEmptyDataSet.swift
@@ -103,10 +106,15 @@ excluded:
   - iOSClient/Networking/NCNetworking.swift
   - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift
   - iOSClient/Networking/NCNetworkingChunkedUpload.swift
-  - iOSClient/Networking/NCNetworkingE2EE.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EE.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EEUpload.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EEDelete.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EERename.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EECreateFolder.swift
   - iOSClient/Networking/NCNetworkingProcessUpload.swift
   - iOSClient/Networking/NCOperationQueue.swift
   - iOSClient/Networking/NCService.swift
+  - iOSClient/Networking/NCConfigServer.swift
   - iOSClient/Notification/NCNotification.swift
   - iOSClient/Recent/NCRecent.swift
   - iOSClient/Rename file/NCRenameFile.swift
@@ -118,6 +126,7 @@ excluded:
   - iOSClient/Select/NCSelect.swift
   - iOSClient/Settings/NCEndToEndInitialize.swift
   - iOSClient/Settings/NCManageAutoUploadFileName.swift
+  - iOSClient/Settings/NCManageE2EE.swift
   - iOSClient/Share/NCShareCommon.swift
   - iOSClient/Share/NCShareNetworking.swift
   - iOSClient/Shares/NCShares.swift

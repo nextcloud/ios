@@ -92,7 +92,7 @@ class NCPlayer: NSObject {
         MFFF.shared.dismissMessage()
         NotificationCenter.default.addObserver(self, selector: #selector(convertVideoDidFinish(_:)), name: NSNotification.Name(rawValue: self.metadata.ocId), object: nil)
 
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded) {
+        if CCUtility.fileProviderStorageExists(metadata) {
             self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
             self.isProxy = false
         }
@@ -200,6 +200,13 @@ class NCPlayer: NSObject {
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
                             self.downloadVideo()
+                        }))
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
+                        self.viewController?.present(alertController, animated: true)
+                    } else if NCUtility.shared.isDirectoryE2EE(metadata: self.metadata) {
+                        let alertController = UIAlertController(title: NSLocalizedString("_info_", value: "Info", comment: ""), message: NSLocalizedString("_video_not_streamed_e2ee_", comment: ""), preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
+                            self.downloadVideo(isEncrypted: true)
                         }))
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
                         self.viewController?.present(alertController, animated: true)
@@ -416,11 +423,11 @@ class NCPlayer: NSObject {
         }
     }
 
-    internal func downloadVideo(requiredConvert: Bool = false) {
+    internal func downloadVideo(isEncrypted: Bool = false, requiredConvert: Bool = false) {
 
         guard let view = appDelegate.window?.rootViewController?.view else { return }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let hud = JGProgressHUD()
         var downloadRequest: DownloadRequest?
 
@@ -444,6 +451,11 @@ class NCPlayer: NSObject {
         } completionHandler: { _, _, _, _, _, afError, error in
             if afError == nil {
                 NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
+                if isEncrypted {
+                    if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", self.metadata.fileName, self.metadata.serverUrl)) {
+                        NCEndToEndEncryption.sharedManager()?.decryptFileName(self.metadata.fileName, fileNameView: self.metadata.fileNameView, ocId: self.metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                    }
+                }
                 let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
                 if let url = urlVideo.url {
                     self.url = url

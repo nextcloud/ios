@@ -49,8 +49,7 @@
     XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    //NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
-    
+
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
     // Section AUTO UPLOAD OF CAMERA IMAGES ----------------------------
@@ -70,7 +69,7 @@
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_privacy_", nil)];
     [form addFormSection:section];
-    
+
     // Lock active YES/NO
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"bloccopasscode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_lock_not_active_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
@@ -99,7 +98,24 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
-    
+
+    // Section : CALDAV CARDAV --------------------------------------------------------------
+
+    if (!NCBrandOptions.shared.disable_mobileconfig) {
+
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_calendar_contacts_", nil)];
+        [form addFormSection:section];
+
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"caldavcardav" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_mobile_config_", nil)];
+        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"caldavcardav"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+        row.action.formSelector = @selector(CalDAVCardDAV:);
+        [section addFormRow:row];
+    }
+
     // Section : E2EEncryption --------------------------------------------------------------
 
     BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
@@ -115,10 +131,11 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:title];
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+        //row.action.formSelector = @selector(manageE2EE:);
         row.action.viewControllerClass = [NCManageEndToEndEncryption class];
-
         [section addFormRow:row];
     }
 
@@ -296,6 +313,14 @@
 
 #pragma mark -
 
+- (void)manageE2EE:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+
+    UIViewController *vc = [[NCManageE2EEInterface alloc] makeShipDetailsUIWithAccount:appDelegate.account];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 - (void)privacy:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
@@ -321,6 +346,16 @@
     
     [self presentViewController:browserWebVC animated:YES completion:nil];
 }
+
+- (void)CalDAVCardDAV:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+
+    NSString *url = [appDelegate.urlBase stringByAppendingString:NCBrandOptions.shared.mobileconfig];
+    NCConfigServer *configServer = [NCConfigServer new];
+    [configServer startServiceWithUrl:[NSURL URLWithString: url]];
+}
+
 
 #pragma mark - Passcode
 
@@ -418,6 +453,8 @@
 
     if (section == 1) {
         sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
+    } else if (section == 2 && !NCBrandOptions.shared.disable_mobileconfig) {
+        sectionName = NSLocalizedString(@"_calendar_contacts_footer_", nil);
     } else if (section == numSections) {
         NSString *versionServer = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionString];
         NSString *themingName = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingName];

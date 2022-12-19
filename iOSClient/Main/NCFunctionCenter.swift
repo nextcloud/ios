@@ -98,7 +98,11 @@ import Photos
             NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: true)
             
         case NCGlobal.shared.selectorPrint:
-            printDocument(metadata: metadata)
+            // waiting close menu
+            // https://github.com/nextcloud/ios/issues/2278
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.printDocument(metadata: metadata)
+            }
             
         case NCGlobal.shared.selectorSaveAlbum:
             saveAlbum(metadata: metadata)
@@ -128,7 +132,8 @@ import Photos
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOpenMediaDetail, userInfo: ["ocId": metadata.ocId])
 
         default:
-            break
+            let applicationHandle = NCApplicationHandle()
+            applicationHandle.downloadedFile(selector: selector, metadata: metadata)
         }
     }
 
@@ -605,7 +610,8 @@ import Photos
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
             return UIMenu()
         }
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
+
+        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
@@ -781,7 +787,7 @@ import Photos
             children.insert(viewInFolder, at: children.count - 1)
         }
 
-        if (!isFolderEncrypted && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if (!isDirectoryE2EE && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             children.insert(modify, at: children.count - 1)
         }
 

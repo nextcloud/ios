@@ -268,7 +268,7 @@ import XLForm
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
 
-            if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
+            if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: String(describing: fileNameForm)) != nil {
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: String(describing: fileNameForm), fileNameView: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
@@ -279,7 +279,6 @@ import XLForm
                 conflict.serverUrl = serverUrl
                 conflict.metadatasUploadInConflict = [metadataForUpload]
                 conflict.delegate = self
-                conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
                 self.present(conflict, animated: true, completion: nil)
 
@@ -311,6 +310,8 @@ import XLForm
     func createDocument(fileNamePath: String, fileName: String) {
 
         self.navigationItem.rightBarButtonItem?.isEnabled = false
+        var UUID = NSUUID().uuidString
+        UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
 
         if self.editorId == NCGlobal.shared.editorText || self.editorId == NCGlobal.shared.editorOnlyoffice {
             
@@ -320,7 +321,7 @@ import XLForm
             } else if editorId == NCGlobal.shared.editorText {
                 options = NKRequestOptions(customUserAgent: NCUtility.shared.getCustomUserAgentNCText())
             }
-            
+
             NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, data, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
@@ -335,7 +336,7 @@ import XLForm
                 }
 
                 self.dismiss(animated: true, completion: {
-                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: results.mimeType)
+                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: results.mimeType)
                     if let viewController = self.appDelegate.activeViewController {
                         NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }
@@ -354,7 +355,7 @@ import XLForm
 
                 self.dismiss(animated: true, completion: {
                     let createFileName = (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension
-                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
+                    let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: createFileName, fileNameView: createFileName, ocId: UUID, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: "")
                     if let viewController = self.appDelegate.activeViewController {
                         NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                     }

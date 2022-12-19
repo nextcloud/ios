@@ -25,17 +25,125 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
+class tableMetadata: Object, NCUserBaseUrl {
+    override func isEqual(_ object: Any?) -> Bool {
+        if let object = object as? tableMetadata {
+            return self.fileId == object.fileId && self.account == object.account
+                   && self.path == object.path && self.fileName == object.fileName
+        } else {
+            return false
+        }
+    }
+
+    @objc dynamic var account = ""
+    @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var checksums = ""
+    @objc dynamic var chunk: Bool = false
+    @objc dynamic var classFile = ""
+    @objc dynamic var commentsUnread: Bool = false
+    @objc dynamic var contentType = ""
+    @objc dynamic var creationDate = NSDate()
+    @objc dynamic var dataFingerprint = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var directory: Bool = false
+    @objc dynamic var deleteAssetLocalIdentifier: Bool = false
+    @objc dynamic var downloadURL = ""
+    @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var edited: Bool = false
+    @objc dynamic var etag = ""
+    @objc dynamic var etagResource = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileId = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var fileNameView = ""
+    @objc dynamic var hasPreview: Bool = false
+    @objc dynamic var iconName = ""
+    @objc dynamic var iconUrl = ""
+    @objc dynamic var isExtractFile: Bool = false
+    @objc dynamic var livePhoto: Bool = false
+    @objc dynamic var mountType = ""
+    @objc dynamic var name = ""                                             // for unifiedSearch is the provider.id
+    @objc dynamic var note = ""
+    @objc dynamic var ocId = ""
+    @objc dynamic var ownerId = ""
+    @objc dynamic var ownerDisplayName = ""
+    @objc public var lock = false
+    @objc public var lockOwner = ""
+    @objc public var lockOwnerEditor = ""
+    @objc public var lockOwnerType = 0
+    @objc public var lockOwnerDisplayName = ""
+    @objc public var lockTime: Date?
+    @objc public var lockTimeOut: Date?
+    @objc dynamic var path = ""
+    @objc dynamic var permissions = ""
+    @objc dynamic var quotaUsedBytes: Int64 = 0
+    @objc dynamic var quotaAvailableBytes: Int64 = 0
+    @objc dynamic var resourceType = ""
+    @objc dynamic var richWorkspace: String?
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var session = ""
+    @objc dynamic var sessionError = ""
+    @objc dynamic var sessionSelector = ""
+    @objc dynamic var sessionTaskIdentifier: Int = 0
+    @objc dynamic var sharePermissionsCollaborationServices: Int = 0
+    let sharePermissionsCloudMesh = List<String>()
+    let shareType = List<Int>()
+    @objc dynamic var size: Int64 = 0
+    @objc dynamic var status: Int = 0
+    @objc dynamic var subline: String?
+    @objc dynamic var trashbinFileName = ""
+    @objc dynamic var trashbinOriginalLocation = ""
+    @objc dynamic var trashbinDeletionTime = NSDate()
+    @objc dynamic var uploadDate = NSDate()
+    @objc dynamic var url = ""
+    @objc dynamic var urlBase = ""
+    @objc dynamic var user = ""
+    @objc dynamic var userId = ""
+
+    override static func primaryKey() -> String {
+        return "ocId"
+    }
+}
+
+extension tableMetadata {
+
+    var fileExtension: String { (fileNameView as NSString).pathExtension }
+
+    var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
+
+    var isPrintable: Bool {
+        classFile == NKCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+    }
+
+    var isDownloadUpload: Bool {
+        status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+    }
+
+    var isDownload: Bool {
+        status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading
+    }
+
+    var isUpload: Bool {
+        status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+    }
+
+    /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
+    func canUnlock(as user: String) -> Bool {
+        return !lock || (lockOwner == user && lockOwnerType == 0)
+    }
+}
+
 extension NCManageDatabase {
 
     @objc func copyObject(metadata: tableMetadata) -> tableMetadata {
         return tableMetadata.init(value: metadata)
     }
 
-    @objc func convertNCFileToMetadata(_ file: NKFile, isEncrypted: Bool, account: String) -> tableMetadata {
+    @objc func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
 
         let metadata = tableMetadata()
 
-        metadata.account = account
+        metadata.account = file.account
         metadata.checksums = file.checksums
         metadata.commentsUnread = file.commentsUnread
         metadata.contentType = file.contentType
@@ -50,15 +158,12 @@ extension NCManageDatabase {
         metadata.downloadURL = file.downloadURL
         metadata.e2eEncrypted = file.e2eEncrypted
         metadata.etag = file.etag
-        metadata.ext = file.ext
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
         metadata.fileName = file.fileName
         metadata.fileNameView = file.fileName
-        metadata.fileNameWithoutExt = file.fileNameWithoutExt
         metadata.hasPreview = file.hasPreview
         metadata.iconName = file.iconName
-        metadata.livePhoto = file.livePhoto
         metadata.mountType = file.mountType
         metadata.name = file.name
         metadata.note = file.note
@@ -102,8 +207,8 @@ extension NCManageDatabase {
         metadata.userId = file.userId
 
         // E2EE find the fileName for fileNameView
-        if isEncrypted || metadata.e2eEncrypted {
-            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
+        if isDirectoryE2EE || file.e2eEncrypted {
+            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
                 let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
                 metadata.contentType = results.mimeType
@@ -112,29 +217,13 @@ extension NCManageDatabase {
             }
         }
 
-        // Live Photo "DETECT"
-        if !metadata.directory && !metadata.livePhoto && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
-            var classFile = metadata.classFile
-            var fileNameView = metadata.fileNameView
-            if classFile == NKCommon.typeClassFile.image.rawValue {
-                classFile = NKCommon.typeClassFile.video.rawValue
-                fileNameView = (fileNameView as NSString).deletingPathExtension + ".mov"
-            } else {
-                classFile = NKCommon.typeClassFile.image.rawValue
-                fileNameView = (fileNameView as NSString).deletingPathExtension + ".jpg"
-            }
-            if getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView =[c] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileNameView, metadata.ocId, classFile)) != nil {
-                metadata.livePhoto = true
-            }
-        }
-
         return metadata
     }
 
-    @objc func convertNKFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, account: String, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
+    @objc func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
 
         var counter: Int = 0
-        var isEncrypted: Bool = false
+        var isDirectoryE2EE: Bool = false
         let listServerUrl = ThreadSafeDictionary<String,Bool>()
 
         var metadataFolder = tableMetadata()
@@ -144,13 +233,13 @@ extension NCManageDatabase {
         for file in files {
 
             if let key = listServerUrl[file.serverUrl] {
-                isEncrypted = key
+                isDirectoryE2EE = key
             } else {
-                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase, userId: file.userId)
-                listServerUrl[file.serverUrl] = isEncrypted
+                isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            let metadata = convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
+            let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
             if counter == 0 && useMetadataFolder {
                 metadataFolder = tableMetadata.init(value: metadata)
@@ -164,7 +253,24 @@ extension NCManageDatabase {
             counter += 1
         }
 
-        completion(metadataFolder, metadataFolders, metadatas)
+        //
+        // Detect Live photo
+        //
+        var metadataOutput: [tableMetadata] = []
+        metadatas = metadatas.sorted(by: {$0.fileNameView < $1.fileNameView})
+
+        for index in metadatas.indices {
+            let metadata = metadatas[index]
+            if index < metadatas.count - 1,
+                metadata.fileNoExtension == metadatas[index+1].fileNoExtension,
+                ((metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.video.rawValue) || (metadata.classFile == NKCommon.typeClassFile.video.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.image.rawValue)){
+                metadata.livePhoto = true
+                metadatas[index+1].livePhoto = true
+            }
+            metadataOutput.append(metadata)
+        }
+
+        completion(metadataFolder, metadataFolders, metadataOutput)
     }
 
     @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
@@ -201,10 +307,8 @@ extension NCManageDatabase {
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
         metadata.etag = ocId
-        metadata.ext = (fileName as NSString).pathExtension.lowercased()
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.fileNameWithoutExt = (fileName as NSString).deletingPathExtension
         metadata.livePhoto = isLivePhoto
         metadata.name = name
         metadata.ocId = ocId
@@ -228,17 +332,17 @@ extension NCManageDatabase {
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
 
         let realm = try! Realm()
-        let returnMetadata = tableMetadata.init(value: metadata)
+        let result = tableMetadata.init(value: metadata)
 
         do {
             try realm.write {
-                realm.add(metadata, update: .all)
+                realm.add(result, update: .all)
             }
         } catch let error {
             NKCommon.shared.writeLog("Could not write to database: \(error)")
             return nil
         }
-        return returnMetadata
+        return tableMetadata.init(value: result)
     }
 
     @objc func addMetadatas(_ metadatas: [tableMetadata]) {
@@ -295,13 +399,6 @@ extension NCManageDatabase {
                     let resultsType = NKCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
-                    if result.directory {
-                        result.fileNameWithoutExt = fileNameTo
-                        result.ext = ""
-                    } else {
-                        result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
-                        result.ext = resultsType.ext
-                    }
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
                     result.classFile = resultsType.classFile
@@ -393,13 +490,17 @@ extension NCManageDatabase {
         return (metadatasUpdate, metadatasLocalUpdate, metadatasDelete)
     }
 
-    func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
+    func setMetadataSession(ocId: String, newFileName: String? = nil, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil) {
 
         let realm = try! Realm()
 
         do {
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                if let newFileName = newFileName {
+                    result?.fileName = newFileName
+                    result?.fileNameView = newFileName
+                }
                 if let session = session {
                     result?.session = session
                 }
@@ -755,6 +856,7 @@ extension NCManageDatabase {
 
         let realm = try! Realm()
         var classFile = metadata.classFile
+        var fileName = (metadata.fileNameView as NSString).deletingPathExtension
 
         if !metadata.livePhoto || !CCUtility.getLivePhoto() {
             return nil
@@ -762,26 +864,57 @@ extension NCManageDatabase {
 
         if classFile == NKCommon.typeClassFile.image.rawValue {
             classFile = NKCommon.typeClassFile.video.rawValue
+            fileName = fileName + ".mov"
         } else {
             classFile = NKCommon.typeClassFile.image.rawValue
+            fileName = fileName + ".jpg"
         }
 
-        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId, classFile)).first else {
+        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@ AND ocId != %@ AND classFile == %@", metadata.account, metadata.serverUrl, fileName, metadata.ocId, classFile)).first else {
             return nil
         }
 
         return tableMetadata.init(value: result)
     }
 
-    func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
+    func getMetadatasMedia(predicate: NSPredicate, livePhoto: Bool) -> [tableMetadata] {
 
         let realm = try! Realm()
-        realm.refresh()
+        var metadatas: [tableMetadata] = []
 
-        let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
+        do {
+            try realm.write {
+                let sortProperties = [SortDescriptor(keyPath: "serverUrl", ascending: false), SortDescriptor(keyPath:  "fileNameView", ascending: false)]
+                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
+                if livePhoto {
+                    for index in results.indices {
+                        let metadata = results[index]
+                        if index < results.count - 1, metadata.fileNoExtension == results[index+1].fileNoExtension {
+                            if !metadata.livePhoto {
+                                metadata.livePhoto = true
+                            }
+                            if !results[index+1].livePhoto {
+                                results[index+1].livePhoto = true
+                            }
+                        }
+                        if metadata.livePhoto {
+                            if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+                                metadatas.append(tableMetadata.init(value: metadata))
+                            }
+                            continue
+                        } else {
+                            metadatas.append(tableMetadata.init(value: metadata))
+                        }
+                    }
+                } else {
+                    metadatas = Array(results.map { tableMetadata.init(value: $0) })
+                }
+            }
+        } catch let error {
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
+        }
 
-        return Array(results.map { tableMetadata.init(value: $0) })
+        return metadatas
     }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
@@ -817,15 +950,15 @@ extension NCManageDatabase {
         return false
     }
 
-    func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {
+    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {
 
         // verify exists conflict
-        let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
-        let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
-        var fileNameConflict = fileName
+        let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
+        let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
+        var fileNameConflict = fileNameView
 
         if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
-            fileNameConflict = fileNameWithoutExtension + ".jpg"
+            fileNameConflict = fileNameNoExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }

@@ -1,5 +1,5 @@
 //
-//  UIApplication+Orientation.swift
+//  UIApplication+Extensions.swift
 //  Nextcloud
 //
 //  Created by Henrik Storch on 15.12.2021.

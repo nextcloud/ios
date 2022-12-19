@@ -169,15 +169,22 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func selectMode(_ status: Bool) {
         if status {
             imageSelect.isHidden = false
+            buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
+            buttonMore.isHidden = false
             setA11yActions()
         }
     }
 
     func selected(_ status: Bool) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isDownloadUpload else {
+            imageSelect.isHidden = true
+            imageVisualEffect.isHidden = true
+            return
+        }
         if status {
             if traitCollection.userInterfaceStyle == .dark {
                 imageVisualEffect.effect = UIBlurEffect(style: .dark)

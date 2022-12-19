@@ -172,10 +172,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // Passcode
-        DispatchQueue.main.async {
-            self.presentPasscode {
-                self.enableTouchFaceID()
-            }
+        self.presentPasscode {
+            self.enableTouchFaceID()
         }
 
         return true
@@ -228,6 +226,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Request Service Server Nextcloud
         NCService.shared.startRequestServicesServer()
+
+        // Unlock E2EE
+        NCNetworkingE2EE.shared.unlockAll(account: account)
         
         // Request TouchID, FaceID
         enableTouchFaceID()
@@ -246,6 +247,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // STOP OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
         NCNetworkingProcessUpload.shared.stopTimer()
+
+        // Create file account for Nextcloud data share
+        if let error = createDataAccountFile() {
+            NKCommon.shared.writeLog("[ERROR] Create account file for Talk \(error.localizedDescription)")
+        }
 
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
@@ -309,6 +315,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Registeration push notification
         NCPushNotification.shared().pushNotification()
 
+        // Unlock E2EE
+        NCNetworkingE2EE.shared.unlockAll(account: account)
+        
         // Start services
         NCService.shared.startRequestServicesServer()
 
@@ -628,6 +637,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
+    func createDataAccountFile() -> Error? {
+        guard !account.isEmpty, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
+
+        try? FileManager.default.createDirectory(at: dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud), withIntermediateDirectories: true)
+        let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud + "/" + NCGlobal.shared.fileAccounts)
+        let tableAccount = NCManageDatabase.shared.getAllAccount()
+        var accounts = [NKDataAccountFile]()
+        for account in tableAccount {
+            let alias = account.alias.isEmpty ? account.displayName : account.alias
+            let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
+            let avatarFileName = userBaseUrl + "-\(account.user).png"
+            let atPathAvatar = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
+            let toPathAvatar = (dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud + "/" + avatarFileName)).path
+            if FileManager.default.fileExists(atPath: atPathAvatar) {
+                NCUtilityFileSystem.shared.copyFile(atPath: atPathAvatar, toPath: toPathAvatar)
+                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias, avatar: toPathAvatar))
+            } else {
+                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias))
+            }
+        }
+        return NKCommon.shared.createDataAccountFile(at: url, accounts: accounts)
+    }
+
     // MARK: - Account Request
 
     func accountRequestChangeAccount(account: String) {
@@ -776,7 +808,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Open URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        guard !account.isEmpty else { return false }
 
         let scheme = url.scheme
         let action = url.host
@@ -788,7 +819,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        if scheme == "nextcloud" && action == "open-action" {
+        if !account.isEmpty && scheme == "nextcloud" && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -856,6 +887,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     print("No action")
                 }
             }
+            return true
         }
 
         /*
@@ -863,7 +895,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
-        else if scheme == "nextcloud" && action == "open-file" {
+        else if !account.isEmpty && scheme == "nextcloud" && action == "open-file" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -897,11 +929,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     NCFunctionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName)
                 }
             }
+            return true
         } else {
-            app.open(url)
+            let applicationHandle = NCApplicationHandle()
+            let isHandled = applicationHandle.applicationOpenURL(url)
+            if isHandled {
+                return true
+            } else {
+                app.open(url)
+                return true
+            }
         }
-
-        return true
     }
 
     func getMatchedAccount(userId: String, url: String) -> tableAccount? {

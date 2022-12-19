@@ -49,7 +49,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
@@ -149,9 +149,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         if action != #selector(startTask(_:)) { return false }
         guard let metadata = metadataTemp else { return false }
-        if metadata.e2eEncrypted { return false }
+        if NCUtility.shared.isDirectoryE2EE(metadata: metadata) { return false }
 
-        if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.status == NCGlobal.shared.metadataStatusInUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
+        if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.isUpload {
             return true
         }
 

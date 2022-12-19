@@ -404,7 +404,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+        if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
 
             guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
 
@@ -412,7 +412,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             conflict.serverUrl = serverUrl
             conflict.metadatasUploadInConflict = [metadataForUpload]
             conflict.delegate = self
-            conflict.isE2EE = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
             self.present(conflict, animated: true, completion: nil)
 
@@ -491,7 +490,15 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
             let pdfData = NSMutableData()
 
-            if password.count > 0 {
+            if !password.isEmpty {
+                for char in password.unicodeScalars {
+                    if !char.isASCII {
+                        NCActivityIndicator.shared.stop()
+                        let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
+                        NCContentPresenter.shared.showError(error: error)
+                        return
+                    }
+                }
                 let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String: password, kCGPDFContextOwnerPassword as String: password]
                 UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
             } else {

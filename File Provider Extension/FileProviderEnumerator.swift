@@ -211,7 +211,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                     if error == .success {
                         DispatchQueue.global().async {
-                            NCManageDatabase.shared.convertNKFilesToMetadatas(files, useMetadataFolder: true, account: account) { _, metadatasFolder, metadatas in
+                            NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: true) { _, metadatasFolder, metadatas in
                                 let metadatasResult = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
                                 NCManageDatabase.shared.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                                 for metadata in metadatasFolder {

@@ -41,6 +41,7 @@ import UIKit
     @objc public var webLoginAutenticationProtocol: String = "nc://"                                                // example "abc://"
     @objc public var privacy: String = "https://nextcloud.com/privacy"
     @objc public var sourceCode: String = "https://github.com/nextcloud/ios"
+    @objc public var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
 
     // Personalized
     @objc public var webCloseViewProtocolPersonalized: String = ""                                                  // example "abc://change/plan"      Don't touch me !!
@@ -51,6 +52,7 @@ import UIKit
 
     // Capabilities Group
     @objc public var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
+    @objc public var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
     // User Agent
     @objc public var userAgent: String = "Nextcloud-iOS"                                                            // Don't touch me !!
@@ -58,7 +60,8 @@ import UIKit
     // BRAND ONLY
     @objc public var use_login_web_personalized:        Bool = false                                                // Don't touch me !!
     @objc public var use_AppConfig:                     Bool = false                                                // Don't touch me !!
-    
+    @objc public var use_GroupApps:                     Bool = true                                                 // Don't touch me !!
+
     // Options
     @objc public var use_default_auto_upload:           Bool = false
     @objc public var use_themingColor:                  Bool = true
@@ -74,6 +77,7 @@ import UIKit
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
     @objc public var disable_crash_service:             Bool = false
     @objc public var disable_log:                       Bool = false
+    @objc public var disable_mobileconfig:              Bool = false
 
     override init() {
 

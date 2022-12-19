@@ -46,6 +46,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private let thumbnailPadding: CGFloat = 2
     private let animateDuration: TimeInterval = 0.3
     private let pageViewtopAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 10 : 30
+    private let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
 
     private var defaultBackgroundColor: UIColor = .clear
 
@@ -53,6 +54,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private var pdfThumbnailScrollViewTrailingAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewWidthAnchor: NSLayoutConstraint?
     private var pageViewWidthAnchor: NSLayoutConstraint?
+
+    private var hideStatusBar: Bool = false {
+        didSet {
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
 
     // MARK: - View Life Cycle
 
@@ -112,7 +119,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             pdfThumbnailView.topAnchor.constraint(equalTo: pdfThumbnailScrollView.topAnchor),
             pdfThumbnailView.bottomAnchor.constraint(equalTo: pdfThumbnailScrollView.bottomAnchor),
             pdfThumbnailView.leadingAnchor.constraint(equalTo: pdfThumbnailScrollView.leadingAnchor),
-            pdfThumbnailView.leadingAnchor.constraint(equalTo: pdfThumbnailScrollView.trailingAnchor, constant: (UIApplication.shared.keyWindow?.safeAreaInsets.left ?? 0)),
+            pdfThumbnailView.leadingAnchor.constraint(equalTo: pdfThumbnailScrollView.trailingAnchor, constant: (window?.safeAreaInsets.left ?? 0)),
             pdfThumbnailView.widthAnchor.constraint(equalToConstant: thumbnailViewWidth)
         ])
         let contentViewCenterY = pdfThumbnailView.centerYAnchor.constraint(equalTo: pdfThumbnailScrollView.centerYAnchor)
@@ -199,7 +206,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         preferences.drawing.arrowPosition = .right
         preferences.drawing.cornerRadius = 10
 
-        preferences.positioning.bubbleInsets.right = UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0
+        preferences.positioning.bubbleInsets.right = window?.safeAreaInsets.right ?? 0
 
         preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
         preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
@@ -229,12 +236,16 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         tipView?.dismiss()
         coordinator.animate(alongsideTransition: { context in
-            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0)
+            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfThumbnailScrollView.isHidden = true
         }, completion: { context in
             self.setConstraints()
             self.showTip()
         })
+    }
+
+    override var prefersStatusBarHidden: Bool {
+        return hideStatusBar
     }
 
     deinit {
@@ -389,20 +400,39 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         if navigationController?.isNavigationBarHidden ?? false {
             navigationController?.setNavigationBarHidden(false, animated: true)
+            hideStatusBar = false
             pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
 
         } else {
             navigationController?.setNavigationBarHidden(true, animated: true)
+            hideStatusBar = true
             pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: view.topAnchor)
         }
 
         pdfThumbnailScrollViewTopAnchor?.isActive = true
 
         handlePageChange()
+
+        closePdfThumbnail()
+    }
+
+    @objc func gestureClosePdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+
+        if recognizer.state == .recognized {
+            closePdfThumbnail()
+        }
     }
 
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
         guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
+
+        OpenPdfThumbnail()
+    }
+
+
+    // MARK: - OPEN / CLOSE Thumbnail
+
+    func OpenPdfThumbnail() {
 
         if let tipView = self.tipView {
             tipView.dismiss()
@@ -410,22 +440,21 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             self.tipView = nil
         }
         self.pdfThumbnailScrollView.isHidden = false
-        self.pdfThumbnailScrollViewWidthAnchor?.constant = thumbnailViewWidth + (UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0)
+        self.pdfThumbnailScrollViewWidthAnchor?.constant = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
         UIView.animate(withDuration: animateDuration, animations: {
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = 0
             self.view.layoutIfNeeded()
         })
     }
 
-    @objc func gestureClosePdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+    func closePdfThumbnail() {
+        guard !self.pdfThumbnailScrollView.isHidden else { return }
 
-        if recognizer.state == .recognized && !self.pdfThumbnailScrollView.isHidden {
-            UIView.animate(withDuration: animateDuration) {
-                self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0)
-                self.view.layoutIfNeeded()
-            } completion: { _ in
-                self.pdfThumbnailScrollView.isHidden = true
-            }
+        UIView.animate(withDuration: animateDuration) {
+            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            self.pdfThumbnailScrollView.isHidden = true
         }
     }
 
@@ -433,7 +462,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     func setConstraints() {
 
-        let widthThumbnail = thumbnailViewWidth + (UIApplication.shared.keyWindow?.safeAreaInsets.right ?? 0)
+        let widthThumbnail = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
 
         UIView.animate(withDuration: animateDuration, animations: {
             // Close
