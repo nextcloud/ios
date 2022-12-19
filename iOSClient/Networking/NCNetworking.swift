@@ -809,6 +809,44 @@ import Photos
             completion(account, metadata, error)
         }
     }
+
+    func fileExists(serverUrlFileName: String, completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
+
+        /*
+        let requestBody =
+        """
+        <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+        <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+            <d:prop>
+                <d:getlastmodified />
+                <d:getetag />
+                <permissions xmlns=\"http://owncloud.org/ns\"/>
+                <id xmlns=\"http://owncloud.org/ns\"/>
+                <fileid xmlns=\"http://owncloud.org/ns\"/>
+                <size xmlns=\"http://owncloud.org/ns\"/>
+            </d:prop>
+        </d:propfind>
+        """
+        */
+        let requestBody =
+        """
+        <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+        <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+            <d:prop></d:prop>
+        </d:propfind>
+        """
+        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8), options: options) { account, files, _, error in
+            if error == .success, let file = files.first {
+                completion(account, true, file, error)
+            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                completion(account, false, nil, error)
+            } else {
+                completion(account, nil, nil, error)
+            }
+        }
+    }
     
     //MARK: - Search
     
