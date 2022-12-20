@@ -356,20 +356,20 @@ class NCUtility: NSObject {
             return completition(metadatas)
         }
 
-        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, returnError in
-            if let metadata = metadata, let fileNamePath = fileNamePath, !returnError {
+        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true, viewController: viewController, hud: hud) { metadata, fileNamePath, error in
+            if let metadata = metadata, let fileNamePath = fileNamePath, !error {
                 metadatas.append(metadata)
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
-            } else {
-                return completition(metadatas)
-            }
-            let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
-            if metadataSource.livePhoto, fetchAssets.count > 0  {
-                NCUtility.shared.createMetadataLivePhotoFromMetadata(metadataSource, asset: fetchAssets.firstObject) { metadata in
-                    if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
-                        metadatas.append(metadata)
+                let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
+                if metadata.livePhoto, fetchAssets.count > 0  {
+                    NCUtility.shared.createMetadataLivePhotoFromMetadata(metadata, asset: fetchAssets.firstObject) { metadata in
+                        if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                            metadatas.append(metadata)
+                        }
+                        completition(metadatas)
                     }
+                } else {
                     completition(metadatas)
                 }
             } else {
@@ -545,6 +545,9 @@ class NCUtility: NSObject {
                 metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 metadataLivePhoto.status = metadata.status
                 metadataLivePhoto.chunk = chunckSize != 0 && metadata.size > chunckSize
+                metadataLivePhoto.creationDate = metadata.creationDate
+                metadataLivePhoto.date = metadata.date
+                metadataLivePhoto.uploadDate = metadata.uploadDate
                 return completion(NCManageDatabase.shared.addMetadata(metadataLivePhoto))
             }
         }
