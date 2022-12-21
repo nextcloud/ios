@@ -38,15 +38,20 @@ import LocalAuthentication
 class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var passcodeType = ""
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var passcodeType = ""
+
     @Published var isEndToEndEnabled: Bool = false
+    @Published var statusOfService: NKError?
 
     override init() {
         super.init()
 
         endToEndInitialize.delegate = self
         isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: appDelegate.account)
+        endToEndInitialize.statusOfService { error in
+            self.statusOfService = error
+        }
     }
 
     func endToEndInitializeSuccess() {
@@ -150,14 +155,18 @@ struct NCViewE2EE: View {
         VStack {
             VStack {
 
-                Text("Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, versione 2 perchè la versione 1 e poi altro testo ")
-                    .frame(height: 100)
-                    .padding()
+                if manageE2EE.statusOfService == nil {
+                    Text(NSLocalizedString("_status_in_progress_", comment: ""))
+                } else if manageE2EE.statusOfService == .success {
+                    Text(NSLocalizedString("_status_e2ee_on_server_", comment: ""))
+                } else {
+                    Text(NSLocalizedString("_status_e2ee_not_setup_", comment: ""))
+                }
 
                 if manageE2EE.isEndToEndEnabled {
 
                     List {
-                        
+
                         Section(footer:Text("End-to-End Encription " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
@@ -199,6 +208,10 @@ struct NCViewE2EE: View {
                                 .scaledToFit()
                                 .frame(width: 25, height: 25)
                         }
+
+                    #if DEBUG
+                        DeleteCerificateSection()
+                    #endif
                     }
 
                 } else {
@@ -207,21 +220,9 @@ struct NCViewE2EE: View {
                 }
 
 
-                /*
-                Button(action: {}) {
-                    HStack{
-                        Image(systemName: "person.crop.circle.fill")
-                        Text("This is a button")
-                            .padding(.horizontal)
-                    }
-                    .padding()
-                }
-                .foregroundColor(Color.white)
-                .background(Color.blue)
-                .cornerRadius(.infinity)
-                .frame(height: 100)
-                */
 
+
+                /*
                 if manageE2EE.isEndToEndEnabled {
                     Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                 } else {
@@ -259,9 +260,21 @@ struct NCViewE2EE: View {
                         Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
                     })
                 }
+                */
+            }
+        }
+        .navigationTitle("Cifratura End-To-End")
+    }
+}
 
-#if DEBUG
-                Button(action: {
+struct DeleteCerificateSection: View {
+
+    var body: some View {
+
+        Section(header:Text("Delete Server keys")) {
+
+            Label {
+                Text("Delete certificate").onTapGesture {
                     NextcloudKit.shared.deleteE2EECertificate { account, error in
                         if error == .success {
                             NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
@@ -269,11 +282,18 @@ struct NCViewE2EE: View {
                             NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                         }
                     }
-                }, label: {
-                    Text(NSLocalizedString("Delete certificate", comment: ""))
-                })
+                }
+            } icon: {
+                Image(systemName: "delete.left")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 25, height: 25)
+                    .foregroundColor(.gray)
 
-                Button(action: {
+            }
+
+            Label {
+                Text("Delete PrivateKey").onTapGesture {
                     NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
                         if error == .success {
                             NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
@@ -281,16 +301,15 @@ struct NCViewE2EE: View {
                             NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                         }
                     }
-                }, label: {
-                    Text(NSLocalizedString("Delete PrivateKey", comment: ""))
-                })
-#endif
-
+                }
+            } icon: {
+                Image(systemName: "delete.left")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 25, height: 25)
+                    .foregroundColor(.gray)
             }
-            .background(Color.green)
-            Spacer()
         }
-        .background(Color.gray)
-        .navigationTitle("Cifratura End-To-End")
     }
 }
+
