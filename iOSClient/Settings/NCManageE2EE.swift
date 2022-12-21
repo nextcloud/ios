@@ -132,6 +132,7 @@ struct NCViewE2EE: View {
                     .frame(height: 100)
                     .padding()
 
+                /*
                 Button(action: {}) {
                     HStack{
                         Image(systemName: "person.crop.circle.fill")
@@ -144,9 +145,10 @@ struct NCViewE2EE: View {
                 .background(Color.blue)
                 .cornerRadius(.infinity)
                 .frame(height: 100)
+                */
 
                 if manageE2EE.isEndToEndEnabled {
-                    Text("Activated")
+                    Text("Cifratura End to And attivata")
                 } else {
                     Button(action: {
                         manageE2EE.endToEndInitialize.initEndToEndEncryption()
@@ -155,16 +157,25 @@ struct NCViewE2EE: View {
                     })
                 }
 
+                if manageE2EE.isEndToEndEnabled {
+                    Button(action: {
 
-                Button(action: {
-                    if CCUtility.getPasscode().isEmpty {
-                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                    } else {
-                        manageE2EE.requestPasscodeType("removeLocallyEncryption")
-                    }
-                }, label: {
-                    Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                })
+                    }, label: {
+                        Text("Leggi la frase segreta")
+                    })
+                }
+
+                if manageE2EE.isEndToEndEnabled {
+                    Button(action: {
+                        if CCUtility.getPasscode().isEmpty {
+                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                        } else {
+                            manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                        }
+                    }, label: {
+                        Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+                    })
+                }
 
 #if DEBUG
                 Button(action: {
