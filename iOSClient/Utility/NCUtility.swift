@@ -23,13 +23,16 @@
 
 import UIKit
 import SVGKit
-import KTVHTTPCache
 import NextcloudKit
 import PDFKit
 import Accelerate
 import CoreMedia
 import Photos
 import JGProgressHUD
+
+#if !EXTENSION
+import KTVHTTPCache
+#endif
 
 class NCUtility: NSObject {
     @objc static let shared: NCUtility = {
@@ -204,6 +207,7 @@ class NCUtility: NSObject {
         return Array(Set(editor))
     }
 
+    #if !EXTENSION
     @objc func removeAllSettings() {
 
         URLCache.shared.memoryCapacity = 0
@@ -222,6 +226,7 @@ class NCUtility: NSObject {
 
         CCUtility.deleteAllChainStore()
     }
+    #endif
 
     @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
 
