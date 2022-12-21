@@ -99,7 +99,9 @@ extension NCCreateFormUploadConflictDelegate {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
+        switchNewFiles.onTintColor = NCBrandColor.shared.brand
         switchNewFiles.isOn = false
+        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brand
         switchAlreadyExistingFiles.isOn = false
 
         buttonCancel.layer.cornerRadius = 20
@@ -308,7 +310,9 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
 
             cell.backgroundColor = tableView.backgroundColor
-
+            cell.switchNewFile.onTintColor = NCBrandColor.shared.brand
+            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brand
+            
             let metadataNewFile =  tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
             cell.ocId = metadataNewFile.ocId
