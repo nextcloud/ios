@@ -167,7 +167,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: Text(manageE2EE.statusOfService) ,footer:Text("End-to-End Encription " + versionE2EE)) {
+                        Section(footer:Text("End-to-End Encription " + versionE2EE + "\n" + manageE2EE.statusOfService)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                             } icon: {
