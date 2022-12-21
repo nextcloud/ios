@@ -42,15 +42,23 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     var passcodeType = ""
 
     @Published var isEndToEndEnabled: Bool = false
-    @Published var statusOfService: NKError?
+    @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
 
     override init() {
         super.init()
 
         endToEndInitialize.delegate = self
         isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: appDelegate.account)
-        endToEndInitialize.statusOfService { error in
-            self.statusOfService = error
+        if isEndToEndEnabled {
+            statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
+        } else {
+            endToEndInitialize.statusOfService { error in
+                if error == .success {
+                    self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
+                } else {
+                    self.statusOfService = NSLocalizedString("_status_e2ee_not_setup_", comment: "")
+                }
+            }
         }
     }
 
@@ -155,19 +163,11 @@ struct NCViewE2EE: View {
         VStack {
             VStack {
 
-                if manageE2EE.statusOfService == nil {
-                    Text(NSLocalizedString("_status_in_progress_", comment: ""))
-                } else if manageE2EE.statusOfService == .success {
-                    Text(NSLocalizedString("_status_e2ee_on_server_", comment: ""))
-                } else {
-                    Text(NSLocalizedString("_status_e2ee_not_setup_", comment: ""))
-                }
-
                 if manageE2EE.isEndToEndEnabled {
 
                     List {
 
-                        Section(footer:Text("End-to-End Encription " + versionE2EE)) {
+                        Section(header: Text(manageE2EE.statusOfService) ,footer:Text("End-to-End Encription " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                             } icon: {
@@ -213,7 +213,6 @@ struct NCViewE2EE: View {
                         DeleteCerificateSection()
                     #endif
                     }
-
                 } else {
 
 
