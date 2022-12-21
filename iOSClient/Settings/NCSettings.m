@@ -127,16 +127,6 @@
         [form addFormSection:section];
 
         // EndToEnd Encryption
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:@"OLD"];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        row.action.viewControllerClass = [NCManageEndToEndEncryption class];
-        [section addFormRow:row];
-
-        // EndToEnd Encryption
         NSString *title = [NSString stringWithFormat:@"%@",NSLocalizedString(@"_e2e_settings_", nil)];
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:title];
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
@@ -145,6 +135,16 @@
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
         row.action.formSelector = @selector(manageE2EE:);
+        [section addFormRow:row];
+
+        // EndToEnd Encryption
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:@"OLD"];
+        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+        row.action.viewControllerClass = [NCManageEndToEndEncryption class];
         [section addFormRow:row];
     }
 

@@ -27,8 +27,10 @@ import TOPasscodeViewController
 import LocalAuthentication
 
 @objc class NCManageE2EEInterface: NSObject {
+
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
-        let details = NCViewE2EE()
+        let account = (UIApplication.shared.delegate as! AppDelegate).account
+        let details = NCViewE2EE(account: account)
         return UIHostingController(rootView: details)
     }
 }
@@ -138,16 +140,72 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
 struct NCViewE2EE: View {
 
-    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @ObservedObject var manageE2EE = NCManageE2EE()
+    @State var account: String = ""
 
     var body: some View {
+
+        let versionE2EE = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) ?? ""
+
         VStack {
             VStack {
 
                 Text("Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, versione 2 perchè la versione 1 e poi altro testo ")
                     .frame(height: 100)
                     .padding()
+
+                if manageE2EE.isEndToEndEnabled {
+
+                    List {
+                        
+                        Section(footer:Text("End-to-End Encription " + versionE2EE)) {
+                            Label {
+                                Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                            } icon: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(.green)
+                            }
+                        }
+
+                        Label {
+                            Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: "")).onTapGesture {
+                                if CCUtility.getPasscode().isEmpty {
+                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                } else {
+                                    manageE2EE.requestPasscodeType("readPassphrase")
+                                }
+                            }
+                        } icon: {
+                            Image(systemName: "text.word.spacing")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25, height: 25)
+                        }
+
+                        Label {
+                            Text(NSLocalizedString("_e2e_settings_remove_", comment: "")).onTapGesture {
+                                if CCUtility.getPasscode().isEmpty {
+                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                } else {
+                                    manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                                }
+                            }
+                        } icon: {
+                            Image(systemName: "xmark.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25, height: 25)
+                        }
+                    }
+
+                } else {
+
+
+                }
+
 
                 /*
                 Button(action: {}) {
@@ -236,9 +294,3 @@ struct NCViewE2EE: View {
         .navigationTitle("Cifratura End-To-End")
     }
 }
-
-struct SignatureView_Previews: PreviewProvider {
-    static var previews: some View {
-        NCViewE2EE()
-    }
- }
