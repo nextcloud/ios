@@ -80,13 +80,30 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
     @objc func correctPasscode() {
 
-        if self.passcodeType == "removeLocallyEncryption" {
+        switch self.passcodeType {
+        case "startE2E":
+            endToEndInitialize.initEndToEndEncryption()
+        case "readPassphrase":
+            if let e2ePassphrase = CCUtility.getEndToEndPassphrase(appDelegate.account) {
+                print("[LOG]Passphrase: " + e2ePassphrase)
+                let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
+                let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_copy_passphrase_", comment: ""), style: .default, handler: { action in
+                    UIPasteboard.general.string = e2ePassphrase
+                }))
+                appDelegate.window?.rootViewController?.present(alertController, animated: true)
+            }
+        case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { action in
                 CCUtility.clearAllKeysEnd(toEnd: self.appDelegate.account)
+                self.isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: self.appDelegate.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { action in }))
             appDelegate.window?.rootViewController?.present(alertController, animated: true)
+        default:
+            break
         }
     }
 
@@ -121,7 +138,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 
 struct NCViewE2EE: View {
 
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @ObservedObject var manageE2EE = NCManageE2EE()
 
     var body: some View {
@@ -148,20 +165,28 @@ struct NCViewE2EE: View {
                 */
 
                 if manageE2EE.isEndToEndEnabled {
-                    Text("Cifratura End to And attivata")
+                    Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                 } else {
                     Button(action: {
-                        manageE2EE.endToEndInitialize.initEndToEndEncryption()
+                        if CCUtility.getPasscode().isEmpty {
+                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                        } else {
+                            manageE2EE.requestPasscodeType("startE2E")
+                        }
                     }, label: {
-                        Text("Start E2EE")
+                        Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
                     })
                 }
 
                 if manageE2EE.isEndToEndEnabled {
                     Button(action: {
-
+                        if CCUtility.getPasscode().isEmpty {
+                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                        } else {
+                            manageE2EE.requestPasscodeType("readPassphrase")
+                        }
                     }, label: {
-                        Text("Leggi la frase segreta")
+                        Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
                     })
                 }
 
@@ -179,16 +204,27 @@ struct NCViewE2EE: View {
 
 #if DEBUG
                 Button(action: {
-
-                }, label: {
-                    Text("Delete Certificate")
-                })
-                Button(action: {
-                    NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
-
+                    NextcloudKit.shared.deleteE2EECertificate { account, error in
+                        if error == .success {
+                            NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        } else {
+                            NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        }
                     }
                 }, label: {
-                    Text("Delete PrivateKey")
+                    Text(NSLocalizedString("Delete certificate", comment: ""))
+                })
+
+                Button(action: {
+                    NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
+                        if error == .success {
+                            NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        } else {
+                            NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        }
+                    }
+                }, label: {
+                    Text(NSLocalizedString("Delete PrivateKey", comment: ""))
                 })
 #endif
 
@@ -200,3 +236,9 @@ struct NCViewE2EE: View {
         .navigationTitle("Cifratura End-To-End")
     }
 }
+
+struct SignatureView_Previews: PreviewProvider {
+    static var previews: some View {
+        NCViewE2EE()
+    }
+ }
