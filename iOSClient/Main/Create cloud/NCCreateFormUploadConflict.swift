@@ -384,7 +384,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
 
                     // PREVIEW
-                    NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { metadata, fileNamePath, error in
+                    let cameraRoll = NCCameraRoll()
+                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { metadata, fileNamePath, error in
                         if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {

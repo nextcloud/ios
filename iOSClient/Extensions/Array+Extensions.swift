@@ -24,7 +24,7 @@
 
 import Foundation
 
-//https://stackoverflow.com/questions/33861036/unique-objects-inside-a-array-swift/45023247#45023247
+// https://stackoverflow.com/questions/33861036/unique-objects-inside-a-array-swift/45023247#45023247
 extension Array {
     func unique<T: Hashable>(map: ((Element) -> (T))) -> [Element] {
         var set = Set<T>() // the unique list kept in a Set for fast retrieval
