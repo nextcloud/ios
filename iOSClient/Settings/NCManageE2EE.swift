@@ -33,7 +33,7 @@ import LocalAuthentication
     }
 }
 
-class NCManageE2EE: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
+class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -120,6 +120,7 @@ class NCManageE2EE: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewContro
 struct NCViewE2EE: View {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    var manageE2EE = NCManageE2EE()
 
     var body: some View {
         VStack {
@@ -146,7 +147,7 @@ struct NCViewE2EE: View {
                     Text("Activated")
                 } else {
                     Button(action: {
-                        //manageE2EE.endToEndInitialize.initEndToEndEncryption()
+                        manageE2EE.endToEndInitialize.initEndToEndEncryption()
                     }, label: {
                         Text("Start E2EE")
                     })
@@ -157,7 +158,7 @@ struct NCViewE2EE: View {
                     if CCUtility.getPasscode().isEmpty {
                         NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                     } else {
-                        //manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                        manageE2EE.requestPasscodeType("removeLocallyEncryption")
                     }
                 }, label: {
                     Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
