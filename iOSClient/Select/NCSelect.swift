@@ -784,6 +784,7 @@ class NCSelectCommandView: UIView {
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
+        overwriteSwitch?.onTintColor = NCBrandColor.shared.brand
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
         selectButton?.layer.cornerRadius = 15
