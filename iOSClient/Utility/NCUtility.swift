@@ -331,10 +331,6 @@ class NCUtility: NSObject {
         return(onlineStatus, statusMessage, descriptionMessage)
     }
 
-    // MARK: -
-
-    
-
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
 
         let asset = AVURLAsset(url: url)
