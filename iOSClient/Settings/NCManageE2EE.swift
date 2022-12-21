@@ -38,15 +38,17 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     let endToEndInitialize = NCEndToEndInitialize()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var passcodeType = ""
+    @Published var isEndToEndEnabled: Bool = false
 
     override init() {
         super.init()
 
         endToEndInitialize.delegate = self
+        isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: appDelegate.account)
     }
 
     func endToEndInitializeSuccess() {
-       //details.isEndToEndEnabled = true
+        isEndToEndEnabled = true
     }
 
     // MARK: - Passcode
@@ -120,7 +122,7 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
 struct NCViewE2EE: View {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    var manageE2EE = NCManageE2EE()
+    @ObservedObject var manageE2EE = NCManageE2EE()
 
     var body: some View {
         VStack {
@@ -143,7 +145,7 @@ struct NCViewE2EE: View {
                 .cornerRadius(.infinity)
                 .frame(height: 100)
 
-                if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+                if manageE2EE.isEndToEndEnabled {
                     Text("Activated")
                 } else {
                     Button(action: {
