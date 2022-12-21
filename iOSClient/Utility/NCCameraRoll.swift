@@ -62,7 +62,7 @@ class NCCameraRoll: NSObject {
                 NCUtilityFileSystem.shared.moveFile(atPath: fileNamePath, toPath: toPath)
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 if metadata.livePhoto, fetchAssets.count > 0 {
-                    self.createMetadataLivePhotoFromMetadata(metadata, asset: fetchAssets.firstObject) { metadata in
+                    self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
                         if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                             metadatas.append(metadata)
                         }
@@ -218,9 +218,9 @@ class NCCameraRoll: NSObject {
         }
     }
 
-    private func createMetadataLivePhotoFromMetadata(_ metadata: tableMetadata,
-                                                     asset: PHAsset?,
-                                                     completion: @escaping (_ metadata: tableMetadata?) -> Void) {
+    private func createMetadataLivePhoto(metadata: tableMetadata,
+                                         asset: PHAsset?,
+                                         completion: @escaping (_ metadata: tableMetadata?) -> Void) {
 
         guard let asset = asset else { return completion(nil) }
         let options = PHLivePhotoRequestOptions()

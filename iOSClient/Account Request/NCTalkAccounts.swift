@@ -36,7 +36,6 @@ public extension NCTalkAccountsDelegate {
 class NCTalkAccounts: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
 
@@ -56,8 +55,6 @@ class NCTalkAccounts: UIViewController {
         super.viewDidLoad()
 
         titleLabel.text = NSLocalizedString("_account_select_to_add_", comment: "")
-
-        closeButton.setImage(NCUtility.shared.loadImage(named: "xmark", color: .label), for: .normal)
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
         // tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
@@ -95,12 +92,6 @@ class NCTalkAccounts: UIViewController {
         super.viewWillDisappear(animated)
 
         timer?.invalidate()
-    }
-
-    // MARK: - Action
-
-    @IBAction func actionClose(_ sender: UIButton) {
-        dismiss(animated: true)
     }
 
     // MARK: - NotificationCenter
