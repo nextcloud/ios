@@ -124,8 +124,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             becomeFirstResponder()
             let startTaskItem = UIMenuItem(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
             UIMenuController.shared.menuItems = [startTaskItem]
-            UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
-            UIMenuController.shared.setMenuVisible(true, animated: true)
+            UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
         }
     }
 

@@ -972,8 +972,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
-            UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
-            UIMenuController.shared.setMenuVisible(true, animated: true)
+            UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
         }
     }
 

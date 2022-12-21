@@ -81,7 +81,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
-        guard let appDelegate = appDelegate, let metadata = metadata else { return }
+        guard let metadata = metadata else { return }
 
         checkSharedWithYou()
 
