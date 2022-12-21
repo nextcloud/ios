@@ -312,3 +312,62 @@ struct DeleteCerificateSection: View {
     }
 }
 
+struct NCViewE2EETest: View {
+
+    var body: some View {
+
+        VStack {
+            List {
+                Section(header:SectionView(height: 50, text: "Section Header View")) {
+                    Label {
+                        Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(.green)
+                    }
+                }
+                Section(header:SectionView(text: "Section Header View 42")) {
+                    Label {
+                        Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+        }
+    }
+}
+struct SectionView: View {
+
+    @State var height: CGFloat = 0
+    @State var text: String = ""
+
+    var body: some View {
+        HStack {
+            Text(text)
+        }
+        .frame(maxWidth: .infinity, minHeight: height, alignment: .bottomLeading)
+    }
+}
+
+struct NCViewE2EE_Previews: PreviewProvider {
+    static var previews: some View {
+        NCViewE2EETest()
+    }
+}
+
+extension List {
+
+    func listBackground(_ color: Color) -> some View {
+        UITableView.appearance().backgroundColor = UIColor(color)
+        return self
+    }
+}
+
