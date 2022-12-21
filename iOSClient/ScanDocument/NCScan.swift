@@ -355,8 +355,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
 
                 UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
-                UIMenuController.shared.setTargetRect(recognizerView.frame, in: recognizerSuperView)
-                UIMenuController.shared.setMenuVisible(true, animated: true)
+                UIMenuController.shared.showMenu(from: recognizerSuperView, rect: recognizerView.frame)
             }
 
             // TIP
