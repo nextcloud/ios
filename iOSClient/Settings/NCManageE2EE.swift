@@ -170,6 +170,7 @@ struct NCViewE2EE: View {
                         Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encription " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                                    .font(NCBrandFont.shared.settings)
                             } icon: {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
@@ -180,7 +181,9 @@ struct NCViewE2EE: View {
                         }
 
                         Label {
-                            Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: "")).onTapGesture {
+                            Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
+                                .font(NCBrandFont.shared.settings)
+                                .onTapGesture {
                                 if CCUtility.getPasscode().isEmpty {
                                     NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                                 } else {
@@ -196,7 +199,9 @@ struct NCViewE2EE: View {
                         }
 
                         Label {
-                            Text(NSLocalizedString("_e2e_settings_remove_", comment: "")).onTapGesture {
+                            Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+                                .font(NCBrandFont.shared.settings)
+                                .onTapGesture {
                                 if CCUtility.getPasscode().isEmpty {
                                     NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                                 } else {
@@ -277,7 +282,9 @@ struct DeleteCerificateSection: View {
         Section(header: Text("Delete Server keys"), footer: Text("Available only in debug")) {
 
             Label {
-                Text("Delete certificate").onTapGesture {
+                Text("Delete certificate")
+                    .font(NCBrandFont.shared.settings)
+                    .onTapGesture {
                     NextcloudKit.shared.deleteE2EECertificate { account, error in
                         if error == .success {
                             NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
@@ -295,7 +302,9 @@ struct DeleteCerificateSection: View {
             }
 
             Label {
-                Text("Delete PrivateKey").onTapGesture {
+                Text("Delete PrivateKey")
+                    .font(NCBrandFont.shared.settings)
+                    .onTapGesture {
                     NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
                         if error == .success {
                             NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
