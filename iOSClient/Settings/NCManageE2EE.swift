@@ -62,6 +62,8 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
         }
     }
 
+    // MARK: - Delegate
+
     func endToEndInitializeSuccess() {
         isEndToEndEnabled = true
     }
@@ -151,6 +153,8 @@ class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TO
     }
 }
 
+// MARK: Views
+
 struct NCViewE2EE: View {
 
     @ObservedObject var manageE2EE = NCManageE2EE()
@@ -167,7 +171,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encryption " + versionE2EE)) {
+                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                                     .font(NCBrandFont.shared.settings)
@@ -225,9 +229,9 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encryption " + versionE2EE)) {
+                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
-                                Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                                Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
                                     .font(NCBrandFont.shared.settings)
                                     .onTapGesture {
                                         if CCUtility.getPasscode().isEmpty {
@@ -237,11 +241,11 @@ struct NCViewE2EE: View {
                                         }
                                     }
                             } icon: {
-                                Image(systemName: "doc.plaintext")
+                                Image(systemName: "play.circle")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 25, height: 25)
-                                    .foregroundColor(Color(UIColor.systemGray))
+                                    .foregroundColor(.green)
                             }
                         }
 
@@ -319,6 +323,8 @@ struct SectionView: View {
     }
 }
 
+// MARK: - Preview
+
 struct NCViewE2EETest: View {
 
     var body: some View {
@@ -357,12 +363,3 @@ struct NCViewE2EE_Previews: PreviewProvider {
         NCViewE2EETest()
     }
 }
-
-extension List {
-
-    func listBackground(_ color: Color) -> some View {
-        UITableView.appearance().backgroundColor = UIColor(color)
-        return self
-    }
-}
-
