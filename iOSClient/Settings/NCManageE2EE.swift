@@ -272,7 +272,7 @@ struct DeleteCerificateSection: View {
 
     var body: some View {
 
-        Section(header:Text("Delete Server keys")) {
+        Section(header: Text("Delete Server keys"), footer: Text("Available only in debug")) {
 
             Label {
                 Text("Delete certificate").onTapGesture {
@@ -285,7 +285,7 @@ struct DeleteCerificateSection: View {
                     }
                 }
             } icon: {
-                Image(systemName: "delete.left")
+                Image(systemName: "exclamationmark.triangle")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 25, height: 25)
@@ -303,7 +303,7 @@ struct DeleteCerificateSection: View {
                     }
                 }
             } icon: {
-                Image(systemName: "delete.left")
+                Image(systemName: "exclamationmark.triangle")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 25, height: 25)
