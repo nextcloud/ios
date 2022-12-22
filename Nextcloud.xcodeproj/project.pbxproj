@@ -189,7 +189,6 @@
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738D4902756740100CD1D38 /* NCLoginNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F738D48F2756740100CD1D38 /* NCLoginNavigationController.swift */; };
-		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
 		F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD1B265546890069EA0D /* SwiftEntryKit */; };
 		F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F73ADD2026554F8E0069EA0D /* SwiftEntryKit */; };
 		F73ADD2226554FD10069EA0D /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
@@ -813,8 +812,6 @@
 		F7381EDA218218C9000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
 		F738D48F2756740100CD1D38 /* NCLoginNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginNavigationController.swift; sourceTree = "<group>"; };
-		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
-		F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCManageEndToEndEncryption.m; sourceTree = "<group>"; };
 		F73B42292476764F00A30FD3 /* NCNotification.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = NCNotification.storyboard; path = Notification/NCNotification.storyboard; sourceTree = "<group>"; };
 		F73B422A2476764F00A30FD3 /* NCNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NCNotification.swift; path = Notification/NCNotification.swift; sourceTree = "<group>"; };
 		F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCShareHeaderView.xib; sourceTree = "<group>"; };
@@ -1838,8 +1835,6 @@
 				F7ACE4311BAC0268006C0017 /* NCSettings.m */,
 				F7A7FA6229265CF4000603EF /* NCManageE2EE.swift */,
 				F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */,
-				F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */,
-				F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3048,7 +3043,6 @@
 				F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */,
 				F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
-				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F7A60F86292D215000FCE1F2 /* NCTalkAccounts.swift in Sources */,

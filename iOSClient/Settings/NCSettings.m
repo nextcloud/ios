@@ -25,7 +25,6 @@
 #import "CCAdvanced.h"
 #import "CCManageAccount.h"
 #import "CCManageAutoUpload.h"
-#import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 #import "NSNotificationCenter+MainThread.h"
 #import <LocalAuthentication/LocalAuthentication.h>
@@ -135,16 +134,6 @@
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
         row.action.formSelector = @selector(manageE2EE:);
-        [section addFormRow:row];
-
-        // EndToEnd Encryption
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:@"OLD"];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"lock"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
-        row.action.viewControllerClass = [NCManageEndToEndEncryption class];
         [section addFormRow:row];
     }
 
