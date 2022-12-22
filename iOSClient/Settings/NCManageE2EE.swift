@@ -265,7 +265,7 @@ struct DeleteCerificateSection: View {
 
     var body: some View {
 
-        Section(header: Text("Delete Server keys"), footer: Text("Available only in debug")) {
+        Section(header: Text("Delete Server keys"), footer: Text("Available only in debug mode")) {
 
             Label {
                 Text("Delete certificate")
