@@ -167,7 +167,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: SectionView(height: 15), footer:Text("End-to-End Encription " + versionE2EE + "\n" + manageE2EE.statusOfService)) {
+                        Section(header: SectionView(height: 10), footer:Text("End-to-End Encription " + versionE2EE + "\n" + manageE2EE.statusOfService)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                             } icon: {
@@ -188,10 +188,11 @@ struct NCViewE2EE: View {
                                 }
                             }
                         } icon: {
-                            Image(systemName: "text.word.spacing")
+                            Image(systemName: "doc.plaintext")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 25, height: 25)
+                                .foregroundColor(Color(UIColor.systemGray))
                         }
 
                         Label {
@@ -203,10 +204,11 @@ struct NCViewE2EE: View {
                                 }
                             }
                         } icon: {
-                            Image(systemName: "xmark.circle")
+                            Image(systemName: "trash.circle")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 25, height: 25)
+                                .foregroundColor(Color.red)
                         }
 
                     #if DEBUG
@@ -287,8 +289,7 @@ struct DeleteCerificateSection: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 25, height: 25)
-                    .foregroundColor(.gray)
-
+                    .foregroundColor(Color(UIColor.systemGray))
             }
 
             Label {
@@ -306,7 +307,7 @@ struct DeleteCerificateSection: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 25, height: 25)
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color(UIColor.systemGray))
             }
         }
     }
