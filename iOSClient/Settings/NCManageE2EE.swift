@@ -162,12 +162,12 @@ struct NCViewE2EE: View {
 
         VStack {
             VStack {
-
+                
                 if manageE2EE.isEndToEndEnabled {
-
+                    
                     List {
-
-                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encription " + versionE2EE)) {
+                        
+                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                                     .font(NCBrandFont.shared.settings)
@@ -179,17 +179,17 @@ struct NCViewE2EE: View {
                                     .foregroundColor(.green)
                             }
                         }
-
+                        
                         Label {
                             Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
                                 .font(NCBrandFont.shared.settings)
                                 .onTapGesture {
-                                if CCUtility.getPasscode().isEmpty {
-                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                                } else {
-                                    manageE2EE.requestPasscodeType("readPassphrase")
+                                    if CCUtility.getPasscode().isEmpty {
+                                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                    } else {
+                                        manageE2EE.requestPasscodeType("readPassphrase")
+                                    }
                                 }
-                            }
                         } icon: {
                             Image(systemName: "doc.plaintext")
                                 .resizable()
@@ -197,17 +197,17 @@ struct NCViewE2EE: View {
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(UIColor.systemGray))
                         }
-
+                        
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
                                 .font(NCBrandFont.shared.settings)
                                 .onTapGesture {
-                                if CCUtility.getPasscode().isEmpty {
-                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                                } else {
-                                    manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                                    if CCUtility.getPasscode().isEmpty {
+                                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                    } else {
+                                        manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                                    }
                                 }
-                            }
                         } icon: {
                             Image(systemName: "trash.circle")
                                 .resizable()
@@ -215,63 +215,45 @@ struct NCViewE2EE: View {
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color.red)
                         }
-
-                    #if DEBUG
+                        
+#if DEBUG
                         DeleteCerificateSection()
-                    #endif
+#endif
                     }
+                    
                 } else {
-
-
-                }
-
-
-
-
-                /*
-                if manageE2EE.isEndToEndEnabled {
-                    Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
-                } else {
-                    Button(action: {
-                        if CCUtility.getPasscode().isEmpty {
-                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                        } else {
-                            manageE2EE.requestPasscodeType("startE2E")
+                    
+                    List {
+                        
+                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encryption " + versionE2EE)) {
+                            Label {
+                                Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                                    .font(NCBrandFont.shared.settings)
+                                    .onTapGesture {
+                                        if CCUtility.getPasscode().isEmpty {
+                                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                        } else {
+                                            manageE2EE.requestPasscodeType("startE2E")
+                                        }
+                                    }
+                            } icon: {
+                                Image(systemName: "doc.plaintext")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(Color(UIColor.systemGray))
+                            }
                         }
-                    }, label: {
-                        Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
-                    })
+                        
+#if DEBUG
+                        DeleteCerificateSection()
+#endif
+                    }
                 }
-
-                if manageE2EE.isEndToEndEnabled {
-                    Button(action: {
-                        if CCUtility.getPasscode().isEmpty {
-                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                        } else {
-                            manageE2EE.requestPasscodeType("readPassphrase")
-                        }
-                    }, label: {
-                        Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
-                    })
-                }
-
-                if manageE2EE.isEndToEndEnabled {
-                    Button(action: {
-                        if CCUtility.getPasscode().isEmpty {
-                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                        } else {
-                            manageE2EE.requestPasscodeType("removeLocallyEncryption")
-                        }
-                    }, label: {
-                        Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                    })
-                }
-                */
             }
-            //Text("Versione 12")
         }
         .background(Color(UIColor.systemGroupedBackground))
-        .navigationTitle("Cifratura End-To-End")
+        .navigationTitle(NSLocalizedString("_e2e_settings_", comment: ""))
     }
 }
 

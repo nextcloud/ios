@@ -324,9 +324,9 @@ class NCBrandColor: NSObject {
         }
         
         createImagesThemingColor()
-        #if !EXTENSION
+#if !EXTENSION
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
-        #endif
+#endif
     }
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {

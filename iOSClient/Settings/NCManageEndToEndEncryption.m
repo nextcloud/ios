@@ -122,7 +122,7 @@
         [section addFormRow:row];   
     }
     
-    #ifdef DEBUG
+#ifdef DEBUG
     // Section DELETE KEYS -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Delete server keys ", nil)];
@@ -145,7 +145,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
-    #endif
+#endif
     
     self.tableView.showsVerticalScrollIndicator = NO;
     self.form = form;
