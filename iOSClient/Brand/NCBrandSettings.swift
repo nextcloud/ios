@@ -1,5 +1,5 @@
 //
-//  NCBrandFont.swift
+//  NCBrandSettings.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 22/12/22.
@@ -24,11 +24,14 @@
 import Foundation
 import SwiftUI
 
-class NCBrandFont: NSObject {
-    static let shared: NCBrandFont = {
-        let instance = NCBrandFont()
+class NCBrandSettings: NSObject {
+    static let shared: NCBrandSettings = {
+        let instance = NCBrandSettings()
         return instance
     }()
 
-    var settings: Font = .subheadline
+    // MARK: - Settings views
+
+    let settingsSizeImage: CGFloat = 25
+    let settingsFont: Font = .subheadline
 }

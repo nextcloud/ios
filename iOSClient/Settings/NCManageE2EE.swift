@@ -174,19 +174,19 @@ struct NCViewE2EE: View {
                         Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
-                                    .font(NCBrandFont.shared.settings)
+                                    .font(NCBrandSettings.shared.settingsFont)
                             } icon: {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                     .foregroundColor(.green)
                             }
                         }
 
                         Label {
                             Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
-                                .font(NCBrandFont.shared.settings)
+                                .font(NCBrandSettings.shared.settingsFont)
                                 .onTapGesture {
                                     if CCUtility.getPasscode().isEmpty {
                                         NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
@@ -195,16 +195,16 @@ struct NCViewE2EE: View {
                                     }
                                 }
                         } icon: {
-                            Image(systemName: "doc.plaintext")
+                            Image(systemName: "eye")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 25, height: 25)
+                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                 .foregroundColor(Color(UIColor.systemGray))
                         }
 
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                                .font(NCBrandFont.shared.settings)
+                                .font(NCBrandSettings.shared.settingsFont)
                                 .onTapGesture {
                                     if CCUtility.getPasscode().isEmpty {
                                         NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
@@ -216,7 +216,7 @@ struct NCViewE2EE: View {
                             Image(systemName: "trash.circle")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 25, height: 25)
+                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                 .foregroundColor(Color.red)
                         }
 
@@ -232,7 +232,7 @@ struct NCViewE2EE: View {
                         Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
-                                    .font(NCBrandFont.shared.settings)
+                                    .font(NCBrandSettings.shared.settingsFont)
                                     .onTapGesture {
                                         if CCUtility.getPasscode().isEmpty {
                                             NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
@@ -244,7 +244,7 @@ struct NCViewE2EE: View {
                                 Image(systemName: "play.circle")
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                     .foregroundColor(.green)
                             }
                         }
@@ -269,7 +269,7 @@ struct DeleteCerificateSection: View {
 
             Label {
                 Text("Delete certificate")
-                    .font(NCBrandFont.shared.settings)
+                    .font(NCBrandSettings.shared.settingsFont)
                     .onTapGesture {
                     NextcloudKit.shared.deleteE2EECertificate { account, error in
                         if error == .success {
@@ -283,13 +283,13 @@ struct DeleteCerificateSection: View {
                 Image(systemName: "exclamationmark.triangle")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 25, height: 25)
+                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                     .foregroundColor(Color(UIColor.systemGray))
             }
 
             Label {
                 Text("Delete PrivateKey")
-                    .font(NCBrandFont.shared.settings)
+                    .font(NCBrandSettings.shared.settingsFont)
                     .onTapGesture {
                     NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
                         if error == .success {
@@ -303,7 +303,7 @@ struct DeleteCerificateSection: View {
                 Image(systemName: "exclamationmark.triangle")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 25, height: 25)
+                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                     .foregroundColor(Color(UIColor.systemGray))
             }
         }
