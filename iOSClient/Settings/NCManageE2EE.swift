@@ -167,7 +167,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(footer:Text("End-to-End Encription " + versionE2EE + "\n" + manageE2EE.statusOfService)) {
+                        Section(header: SectionView(height: 15), footer:Text("End-to-End Encription " + versionE2EE + "\n" + manageE2EE.statusOfService)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                             } icon: {
@@ -312,6 +312,19 @@ struct DeleteCerificateSection: View {
     }
 }
 
+struct SectionView: View {
+
+    @State var height: CGFloat = 0
+    @State var text: String = ""
+
+    var body: some View {
+        HStack {
+            Text(text)
+        }
+        .frame(maxWidth: .infinity, minHeight: height, alignment: .bottomLeading)
+    }
+}
+
 struct NCViewE2EETest: View {
 
     var body: some View {
@@ -342,18 +355,6 @@ struct NCViewE2EETest: View {
                 }
             }
         }
-    }
-}
-struct SectionView: View {
-
-    @State var height: CGFloat = 0
-    @State var text: String = ""
-
-    var body: some View {
-        HStack {
-            Text(text)
-        }
-        .frame(maxWidth: .infinity, minHeight: height, alignment: .bottomLeading)
     }
 }
 
