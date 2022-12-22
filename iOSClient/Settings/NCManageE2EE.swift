@@ -165,94 +165,92 @@ struct NCViewE2EE: View {
         let versionE2EE = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) ?? ""
 
         VStack {
-            VStack {
 
-                if manageE2EE.isEndToEndEnabled {
+            if manageE2EE.isEndToEndEnabled {
 
-                    List {
+                List {
 
-                        Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
-                            Label {
-                                Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
-                                    .font(NCBrandSettings.shared.settingsFont)
-                            } icon: {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                    .foregroundColor(.green)
-                            }
-                        }
-
+                    Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                         Label {
-                            Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
+                            Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                                .font(NCBrandSettings.shared.settingsFont)
+                        } icon: {
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                .foregroundColor(.green)
+                        }
+                    }
+
+                    Label {
+                        Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
+                            .font(NCBrandSettings.shared.settingsFont)
+                            .onTapGesture {
+                                if CCUtility.getPasscode().isEmpty {
+                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                } else {
+                                    manageE2EE.requestPasscodeType("readPassphrase")
+                                }
+                            }
+                    } icon: {
+                        Image(systemName: "eye")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                            .foregroundColor(Color(UIColor.systemGray))
+                    }
+
+                    Label {
+                        Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+                            .font(NCBrandSettings.shared.settingsFont)
+                            .onTapGesture {
+                                if CCUtility.getPasscode().isEmpty {
+                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                } else {
+                                    manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                                }
+                            }
+                    } icon: {
+                        Image(systemName: "trash.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                            .foregroundColor(Color.red)
+                    }
+
+#if DEBUG
+                    DeleteCerificateSection()
+#endif
+                }
+
+            } else {
+
+                List {
+
+                    Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                        Label {
+                            Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
                                 .font(NCBrandSettings.shared.settingsFont)
                                 .onTapGesture {
                                     if CCUtility.getPasscode().isEmpty {
                                         NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                                     } else {
-                                        manageE2EE.requestPasscodeType("readPassphrase")
+                                        manageE2EE.requestPasscodeType("startE2E")
                                     }
                                 }
                         } icon: {
-                            Image(systemName: "eye")
+                            Image(systemName: "play.circle")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                .foregroundColor(Color(UIColor.systemGray))
+                                .foregroundColor(.green)
                         }
-
-                        Label {
-                            Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                                .font(NCBrandSettings.shared.settingsFont)
-                                .onTapGesture {
-                                    if CCUtility.getPasscode().isEmpty {
-                                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                                    } else {
-                                        manageE2EE.requestPasscodeType("removeLocallyEncryption")
-                                    }
-                                }
-                        } icon: {
-                            Image(systemName: "trash.circle")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                .foregroundColor(Color.red)
-                        }
-
-#if DEBUG
-                        DeleteCerificateSection()
-#endif
                     }
 
-                } else {
-
-                    List {
-
-                        Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
-                            Label {
-                                Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
-                                    .font(NCBrandSettings.shared.settingsFont)
-                                    .onTapGesture {
-                                        if CCUtility.getPasscode().isEmpty {
-                                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                                        } else {
-                                            manageE2EE.requestPasscodeType("startE2E")
-                                        }
-                                    }
-                            } icon: {
-                                Image(systemName: "play.circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                    .foregroundColor(.green)
-                            }
-                        }
-
 #if DEBUG
-                        DeleteCerificateSection()
+                    DeleteCerificateSection()
 #endif
-                    }
                 }
             }
         }
