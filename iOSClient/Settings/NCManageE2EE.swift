@@ -171,7 +171,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                        Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                                     .font(NCBrandSettings.shared.settingsFont)
@@ -229,7 +229,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                        Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
                                     .font(NCBrandSettings.shared.settingsFont)
@@ -258,6 +258,7 @@ struct NCViewE2EE: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .navigationTitle(NSLocalizedString("_e2e_settings_", comment: ""))
+        //.navigationBarTitleDisplayMode(.inline)
     }
 }
 
