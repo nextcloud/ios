@@ -27,26 +27,45 @@ import TOPasscodeViewController
 import LocalAuthentication
 
 @objc class NCManageE2EEInterface: NSObject {
+
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
-        let details = NCViewE2EE()
+        let account = (UIApplication.shared.delegate as! AppDelegate).account
+        let details = NCViewE2EE(account: account)
         return UIHostingController(rootView: details)
     }
 }
 
-class NCManageE2EE: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
+class NCManageE2EE: NSObject, ObservableObject, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
 
     let endToEndInitialize = NCEndToEndInitialize()
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var passcodeType = ""
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var passcodeType = ""
+
+    @Published var isEndToEndEnabled: Bool = false
+    @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
 
     override init() {
         super.init()
 
         endToEndInitialize.delegate = self
+        isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: appDelegate.account)
+        if isEndToEndEnabled {
+            statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
+        } else {
+            endToEndInitialize.statusOfService { error in
+                if error == .success {
+                    self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
+                } else {
+                    self.statusOfService = NSLocalizedString("_status_e2ee_not_setup_", comment: "")
+                }
+            }
+        }
     }
 
+    // MARK: - Delegate
+
     func endToEndInitializeSuccess() {
-       //details.isEndToEndEnabled = true
+        isEndToEndEnabled = true
     }
 
     // MARK: - Passcode
@@ -78,13 +97,30 @@ class NCManageE2EE: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewContro
 
     @objc func correctPasscode() {
 
-        if self.passcodeType == "removeLocallyEncryption" {
+        switch self.passcodeType {
+        case "startE2E":
+            endToEndInitialize.initEndToEndEncryption()
+        case "readPassphrase":
+            if let e2ePassphrase = CCUtility.getEndToEndPassphrase(appDelegate.account) {
+                print("[LOG]Passphrase: " + e2ePassphrase)
+                let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
+                let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_copy_passphrase_", comment: ""), style: .default, handler: { action in
+                    UIPasteboard.general.string = e2ePassphrase
+                }))
+                appDelegate.window?.rootViewController?.present(alertController, animated: true)
+            }
+        case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { action in
                 CCUtility.clearAllKeysEnd(toEnd: self.appDelegate.account)
+                self.isEndToEndEnabled = CCUtility.isEnd(toEndEnabled: self.appDelegate.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { action in }))
             appDelegate.window?.rootViewController?.present(alertController, animated: true)
+        default:
+            break
         }
     }
 
@@ -117,72 +153,213 @@ class NCManageE2EE: NSObject, NCEndToEndInitializeDelegate, TOPasscodeViewContro
     }
 }
 
+// MARK: Views
+
 struct NCViewE2EE: View {
 
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @ObservedObject var manageE2EE = NCManageE2EE()
+    @State var account: String = ""
 
     var body: some View {
+
+        let versionE2EE = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) ?? ""
+
         VStack {
             VStack {
 
-                Text("Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, Hello, world! 1 come stai spero bene ma secondo te quanto è lunga questa cosa, versione 2 perchè la versione 1 e poi altro testo ")
-                    .frame(height: 100)
-                    .padding()
+                if manageE2EE.isEndToEndEnabled {
 
-                Button(action: {}) {
-                    HStack{
-                        Image(systemName: "person.crop.circle.fill")
-                        Text("This is a button")
-                            .padding(.horizontal)
-                    }
-                    .padding()
-                }
-                .foregroundColor(Color.white)
-                .background(Color.blue)
-                .cornerRadius(.infinity)
-                .frame(height: 100)
+                    List {
 
-                if CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-                    Text("Activated")
-                } else {
-                    Button(action: {
-                        //manageE2EE.endToEndInitialize.initEndToEndEncryption()
-                    }, label: {
-                        Text("Start E2EE")
-                    })
-                }
+                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                            Label {
+                                Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                                    .font(NCBrandFont.shared.settings)
+                            } icon: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(.green)
+                            }
+                        }
 
+                        Label {
+                            Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
+                                .font(NCBrandFont.shared.settings)
+                                .onTapGesture {
+                                    if CCUtility.getPasscode().isEmpty {
+                                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                    } else {
+                                        manageE2EE.requestPasscodeType("readPassphrase")
+                                    }
+                                }
+                        } icon: {
+                            Image(systemName: "doc.plaintext")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(UIColor.systemGray))
+                        }
 
-                Button(action: {
-                    if CCUtility.getPasscode().isEmpty {
-                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                    } else {
-                        //manageE2EE.requestPasscodeType("removeLocallyEncryption")
-                    }
-                }, label: {
-                    Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                })
+                        Label {
+                            Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+                                .font(NCBrandFont.shared.settings)
+                                .onTapGesture {
+                                    if CCUtility.getPasscode().isEmpty {
+                                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                    } else {
+                                        manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                                    }
+                                }
+                        } icon: {
+                            Image(systemName: "trash.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color.red)
+                        }
 
 #if DEBUG
-                Button(action: {
-
-                }, label: {
-                    Text("Delete Certificate")
-                })
-                Button(action: {
-                    NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
-
-                    }
-                }, label: {
-                    Text("Delete PrivateKey")
-                })
+                        DeleteCerificateSection()
 #endif
+                    }
 
+                } else {
+
+                    List {
+
+                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                            Label {
+                                Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
+                                    .font(NCBrandFont.shared.settings)
+                                    .onTapGesture {
+                                        if CCUtility.getPasscode().isEmpty {
+                                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                                        } else {
+                                            manageE2EE.requestPasscodeType("startE2E")
+                                        }
+                                    }
+                            } icon: {
+                                Image(systemName: "play.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(.green)
+                            }
+                        }
+
+#if DEBUG
+                        DeleteCerificateSection()
+#endif
+                    }
+                }
             }
-            .background(Color.green)
-            Spacer()
         }
-        .background(Color.gray)
-        .navigationTitle("Cifratura End-To-End")
+        .background(Color(UIColor.systemGroupedBackground))
+        .navigationTitle(NSLocalizedString("_e2e_settings_", comment: ""))
+    }
+}
+
+struct DeleteCerificateSection: View {
+
+    var body: some View {
+
+        Section(header: Text("Delete Server keys"), footer: Text("Available only in debug")) {
+
+            Label {
+                Text("Delete certificate")
+                    .font(NCBrandFont.shared.settings)
+                    .onTapGesture {
+                    NextcloudKit.shared.deleteE2EECertificate { account, error in
+                        if error == .success {
+                            NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        } else {
+                            NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        }
+                    }
+                }
+            } icon: {
+                Image(systemName: "exclamationmark.triangle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 25, height: 25)
+                    .foregroundColor(Color(UIColor.systemGray))
+            }
+
+            Label {
+                Text("Delete PrivateKey")
+                    .font(NCBrandFont.shared.settings)
+                    .onTapGesture {
+                    NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
+                        if error == .success {
+                            NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                        } else {
+                            NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        }
+                    }
+                }
+            } icon: {
+                Image(systemName: "exclamationmark.triangle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 25, height: 25)
+                    .foregroundColor(Color(UIColor.systemGray))
+            }
+        }
+    }
+}
+
+struct SectionView: View {
+
+    @State var height: CGFloat = 0
+    @State var text: String = ""
+
+    var body: some View {
+        HStack {
+            Text(text)
+        }
+        .frame(maxWidth: .infinity, minHeight: height, alignment: .bottomLeading)
+    }
+}
+
+// MARK: - Preview
+
+struct NCViewE2EETest: View {
+
+    var body: some View {
+
+        VStack {
+            List {
+                Section(header:SectionView(height: 50, text: "Section Header View")) {
+                    Label {
+                        Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(.green)
+                    }
+                }
+                Section(header:SectionView(text: "Section Header View 42")) {
+                    Label {
+                        Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct NCViewE2EE_Previews: PreviewProvider {
+    static var previews: some View {
+        NCViewE2EETest()
     }
 }

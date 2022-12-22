@@ -207,7 +207,7 @@ class NCUtility: NSObject {
         return Array(Set(editor))
     }
 
-    #if !EXTENSION
+#if !EXTENSION
     @objc func removeAllSettings() {
 
         URLCache.shared.memoryCapacity = 0
@@ -226,7 +226,7 @@ class NCUtility: NSObject {
 
         CCUtility.deleteAllChainStore()
     }
-    #endif
+#endif
 
     @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
 

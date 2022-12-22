@@ -1,9 +1,9 @@
 //
-//  NCManageEndToEndEncryption.h
+//  NCBrandFont.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 13/10/17.
-//  Copyright © 2017 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 22/12/22.
+//  Copyright © 2022 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -21,12 +21,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <XLForm.h>
+import Foundation
+import SwiftUI
 
-@class NCEndToEndInitialize;
+class NCBrandFont: NSObject {
+    static let shared: NCBrandFont = {
+        let instance = NCBrandFont()
+        return instance
+    }()
 
-@interface NCManageEndToEndEncryption : XLFormViewController
-
-@property (nonatomic, strong) NCEndToEndInitialize *endToEndInitialize;
-
-@end
+    var settings: Font = .subheadline
+}
