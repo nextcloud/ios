@@ -263,7 +263,9 @@ struct NCViewE2EE: View {
                 }
                 */
             }
+            //Text("Versione 12")
         }
+        .background(Color(UIColor.systemGroupedBackground))
         .navigationTitle("Cifratura End-To-End")
     }
 }
