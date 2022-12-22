@@ -162,11 +162,11 @@ struct NCViewE2EE: View {
 
         VStack {
             VStack {
-                
+
                 if manageE2EE.isEndToEndEnabled {
-                    
+
                     List {
-                        
+
                         Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
@@ -179,7 +179,7 @@ struct NCViewE2EE: View {
                                     .foregroundColor(.green)
                             }
                         }
-                        
+
                         Label {
                             Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
                                 .font(NCBrandFont.shared.settings)
@@ -197,7 +197,7 @@ struct NCViewE2EE: View {
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(UIColor.systemGray))
                         }
-                        
+
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
                                 .font(NCBrandFont.shared.settings)
@@ -215,16 +215,16 @@ struct NCViewE2EE: View {
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color.red)
                         }
-                        
+
 #if DEBUG
                         DeleteCerificateSection()
 #endif
                     }
-                    
+
                 } else {
-                    
+
                     List {
-                        
+
                         Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
@@ -244,7 +244,7 @@ struct NCViewE2EE: View {
                                     .foregroundColor(Color(UIColor.systemGray))
                             }
                         }
-                        
+
 #if DEBUG
                         DeleteCerificateSection()
 #endif
