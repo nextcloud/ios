@@ -171,7 +171,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                        Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                                     .font(NCBrandFont.shared.settings)
@@ -229,7 +229,7 @@ struct NCViewE2EE: View {
 
                     List {
 
-                        Section(header: SectionView(height: 10), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                        Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
                                     .font(NCBrandFont.shared.settings)
@@ -310,6 +310,8 @@ struct DeleteCerificateSection: View {
     }
 }
 
+// MARK: - Preview / Test
+
 struct SectionView: View {
 
     @State var height: CGFloat = 0
@@ -322,8 +324,6 @@ struct SectionView: View {
         .frame(maxWidth: .infinity, minHeight: height, alignment: .bottomLeading)
     }
 }
-
-// MARK: - Preview
 
 struct NCViewE2EETest: View {
 
