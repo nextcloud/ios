@@ -280,7 +280,7 @@ struct DeleteCerificateSection: View {
 
             HStack {
                 Label {
-                    Text("Delete certificate")
+                    Text("Delete Certificate")
                         .font(NCBrandSettings.shared.settingsFont)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
