@@ -172,7 +172,7 @@ struct NCViewE2EE: View {
 
                 List {
 
-                    Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                    Section(header: Text(""), footer: Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                                 .font(NCBrandSettings.shared.settingsFont)
@@ -185,40 +185,48 @@ struct NCViewE2EE: View {
                         }
                     }
 
-                    Label {
-                        Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
-                            .font(NCBrandSettings.shared.settingsFont)
-                            .onTapGesture {
-                                if CCUtility.getPasscode().isEmpty {
-                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                                } else {
-                                    manageE2EE.requestPasscodeType("readPassphrase")
-                                }
-                            }
-                    } icon: {
-                        Image(systemName: "eye")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                            .foregroundColor(Color(UIColor.systemGray))
+                    HStack {
+                        Label {
+                            Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
+                                .font(NCBrandSettings.shared.settingsFont)
+                        } icon: {
+                            Image(systemName: "eye")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                .foregroundColor(Color(UIColor.systemGray))
+                        }
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        if CCUtility.getPasscode().isEmpty {
+                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                        } else {
+                            manageE2EE.requestPasscodeType("readPassphrase")
+                        }
                     }
 
-                    Label {
-                        Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                            .font(NCBrandSettings.shared.settingsFont)
-                            .onTapGesture {
-                                if CCUtility.getPasscode().isEmpty {
-                                    NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                                } else {
-                                    manageE2EE.requestPasscodeType("removeLocallyEncryption")
-                                }
-                            }
-                    } icon: {
-                        Image(systemName: "trash.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                            .foregroundColor(Color.red)
+                    HStack {
+                        Label {
+                            Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
+                                .font(NCBrandSettings.shared.settingsFont)
+                        } icon: {
+                            Image(systemName: "trash.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                .foregroundColor(Color.red)
+                        }
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        if CCUtility.getPasscode().isEmpty {
+                            NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                        } else {
+                            manageE2EE.requestPasscodeType("removeLocallyEncryption")
+                        }
                     }
 
 #if DEBUG
@@ -230,23 +238,27 @@ struct NCViewE2EE: View {
 
                 List {
 
-                    Section(footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
-                        Label {
-                            Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
-                                .font(NCBrandSettings.shared.settingsFont)
-                                .onTapGesture {
-                                    if CCUtility.getPasscode().isEmpty {
-                                        NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                                    } else {
-                                        manageE2EE.requestPasscodeType("startE2E")
-                                    }
-                                }
-                        } icon: {
-                            Image(systemName: "play.circle")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                .foregroundColor(.green)
+                    Section(header: Text(""), footer:Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
+                        HStack {
+                            Label {
+                                Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
+                                    .font(NCBrandSettings.shared.settingsFont)
+                            } icon: {
+                                Image(systemName: "play.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                    .foregroundColor(.green)
+                            }
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if CCUtility.getPasscode().isEmpty {
+                                NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
+                            } else {
+                                manageE2EE.requestPasscodeType("startE2E")
+                            }
                         }
                     }
 
@@ -266,44 +278,52 @@ struct DeleteCerificateSection: View {
 
         Section(header: Text("Delete Server keys"), footer: Text("Available only in debug mode")) {
 
-            Label {
-                Text("Delete certificate")
-                    .font(NCBrandSettings.shared.settingsFont)
-                    .onTapGesture {
-                    NextcloudKit.shared.deleteE2EECertificate { account, error in
-                        if error == .success {
-                            NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
-                        } else {
-                            NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-                        }
+            HStack {
+                Label {
+                    Text("Delete certificate")
+                        .font(NCBrandSettings.shared.settingsFont)
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                        .foregroundColor(Color(UIColor.systemGray))
+                }
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                NextcloudKit.shared.deleteE2EECertificate { account, error in
+                    if error == .success {
+                        NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                    } else {
+                        NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                     }
                 }
-            } icon: {
-                Image(systemName: "exclamationmark.triangle")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                    .foregroundColor(Color(UIColor.systemGray))
             }
 
-            Label {
-                Text("Delete PrivateKey")
-                    .font(NCBrandSettings.shared.settingsFont)
-                    .onTapGesture {
-                    NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
-                        if error == .success {
-                            NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
-                        } else {
-                            NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-                        }
+            HStack {
+                Label {
+                    Text("Delete PrivateKey")
+                        .font(NCBrandSettings.shared.settingsFont)
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                        .foregroundColor(Color(UIColor.systemGray))
+                }
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
+                    if error == .success {
+                        NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
+                    } else {
+                        NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                     }
                 }
-            } icon: {
-                Image(systemName: "exclamationmark.triangle")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                    .foregroundColor(Color(UIColor.systemGray))
             }
         }
     }
