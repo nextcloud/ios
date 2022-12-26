@@ -379,6 +379,7 @@ struct NCViewE2EETest: View {
 
 struct NCViewE2EE_Previews: PreviewProvider {
     static var previews: some View {
-        NCViewE2EETest()
+        let account = (UIApplication.shared.delegate as! AppDelegate).account
+        NCViewE2EE(account: account)
     }
 }
