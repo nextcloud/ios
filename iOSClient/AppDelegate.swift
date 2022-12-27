@@ -216,20 +216,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application will enter in foreground")
 
-        // Account changed ??
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                // Unlock E2EE
+                NCNetworkingE2EE.shared.unlockAll(account: self.account)
+                // Request Service Server Nextcloud
+                NCService.shared.startRequestServicesServer()
+            }
         }
 
         // Required unsubscribing / subscribing
         NCPushNotification.shared().pushNotification()
 
-        // Request Service Server Nextcloud
-        NCService.shared.startRequestServicesServer()
-
-        // Unlock E2EE
-        NCNetworkingE2EE.shared.unlockAll(account: account)
-        
         // Request TouchID, FaceID
         enableTouchFaceID()
         
@@ -320,7 +320,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Unlock E2EE
         NCNetworkingE2EE.shared.unlockAll(account: account)
-        
+
         // Start services
         NCService.shared.startRequestServicesServer()
 
