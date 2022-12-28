@@ -51,7 +51,7 @@ class NCUploadScanDocument: ObservableObject {
         createPDF()
     }
 
-    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double = 2) {
+    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double = 1) {
 
         guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
@@ -202,9 +202,12 @@ struct UploadScanDocumentView: View {
 
                         VStack {
                             Text("Current slider value")
-                            Slider(value: $currentValue, in: 0...3, step: 1) { _ in
+                            Slider(value: $currentValue, in: 0...2, step: 1) { _ in
                                 uploadScanDocument.createPDF(quality: currentValue)
                             }
+                            // Slider(value: $currentValue, in: 0...2, step: 1).onChange(of: currentValue, perform: { currentValue in
+                            //    uploadScanDocument.createPDF(quality: currentValue)
+                            // })
                             .accentColor(Color(NCBrandColor.shared.brand))
                         }
                     }
@@ -212,7 +215,7 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
 
                         PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(width: .infinity, height: geo.size.height / 3)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3)
                     }
 
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
@@ -253,6 +256,7 @@ struct UploadScanDocumentView: View {
                 }
             }
         }
+        .background(Color(UIColor.systemGroupedBackground))
     }
 }
 
