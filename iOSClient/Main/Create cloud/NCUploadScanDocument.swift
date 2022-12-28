@@ -30,8 +30,7 @@ import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
 
-    @objc func makeShipDetailsUI(account: String, arrayImages: [UIImage]) -> UIViewController {
-        let account = (UIApplication.shared.delegate as? AppDelegate)?.account
+    @objc func makeShipDetailsUI(arrayImages: [UIImage], account: String, serverUrl: String) -> UIViewController {
         let details = UploadScanDocumentView(arrayImages: arrayImages)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_settings_", comment: "")
@@ -46,18 +45,18 @@ class NCUploadScanDocument: ObservableObject {
 
     var arrayImages: [UIImage] = []
 
-    enum TypeQuality {
-        case low
-        case medium
-        case high
+    init() {
+        createPDF()
     }
-    var quality: TypeQuality = .medium
 
-    func createPDF(password: String, textRecognition: Bool) {
+    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double = 2) {
 
+        guard !arrayImages.isEmpty else { return }
         let pdfData = NSMutableData()
 
-        if !password.isEmpty {
+        if password.isEmpty {
+            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+        } else {
             for char in password.unicodeScalars {
                 if !char.isASCII {
                     NCActivityIndicator.shared.stop()
@@ -68,30 +67,23 @@ class NCUploadScanDocument: ObservableObject {
             }
             let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String: password, kCGPDFContextOwnerPassword as String: password]
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
-        } else {
-            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
         }
 
         for var image in self.arrayImages {
 
-            image = changeCompressionImage(image)
-
+            image = changeCompressionImage(image, quality: quality)
             let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-
             if textRecognition {
 
             } else {
-
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
             }
         }
-
         UIGraphicsEndPDFContext()
 
         do {
             if let url = URL(string: NSTemporaryDirectory() + "scandocument.pdf") {
-                self.urlPreviewFile = url
                 try pdfData.write(to: url, options: .atomic)
             }
         } catch {
@@ -99,25 +91,27 @@ class NCUploadScanDocument: ObservableObject {
         }
     }
 
-    func changeCompressionImage(_ image: UIImage) -> UIImage {
+    func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
 
         var compressionQuality: CGFloat = 0.5
         var baseHeight: Float = 595.2    // A4
         var baseWidth: Float = 841.8     // A4
 
         switch quality {
-        case .low:
+        case 0:
             baseHeight *= 1
             baseWidth *= 1
             compressionQuality = 0.3
-        case .medium:
+        case 1:
             baseHeight *= 2
             baseWidth *= 2
             compressionQuality = 0.6
-        case .high:
+        case 2:
             baseHeight *= 4
             baseWidth *= 4
             compressionQuality = 0.9
+        default:
+            break
         }
 
         var newHeight = Float(image.size.height)
@@ -172,7 +166,6 @@ struct UploadScanDocumentView: View {
     @State var currentValue = 1.0
     @State var password: String = ""
     @State var isSecured: Bool = true
-    @State var urlPreviewFile: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
     var body: some View {
 
@@ -206,8 +199,8 @@ struct UploadScanDocumentView: View {
 
                         VStack {
                             Text("Current slider value")
-                            Slider(value: $currentValue, in: 0...3, step: 1) { didChange in
-                                //
+                            Slider(value: $currentValue, in: 0...3, step: 1) { _ in
+                                uploadScanDocument.createPDF(quality: currentValue)
                             }
                             .accentColor(Color(NCBrandColor.shared.brand))
                         }
