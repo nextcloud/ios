@@ -30,8 +30,9 @@ import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
 
-    @objc func makeShipDetailsUI(arrayImages: [UIImage], account: String, serverUrl: String) -> UIViewController {
-        let details = UploadScanDocumentView(arrayImages: arrayImages)
+    @objc func makeShipDetailsUI(images: [UIImage], account: String, serverUrl: String) -> UIViewController {
+        let uploadScanDocument = NCUploadScanDocument(images: images)
+        let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_settings_", comment: "")
         return vc
@@ -41,17 +42,18 @@ class NCHostingUploadScanDocumentView: NSObject {
 class NCUploadScanDocument: ObservableObject {
 
     @Published var isTextRecognition: Bool = false
-    @Published var urlPreviewFile: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+    @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
-    var arrayImages: [UIImage] = []
+    var images: [UIImage] = []
 
-    init() {
+    init(images: [UIImage]) {
+        self.images = images
         createPDF()
     }
 
     func createPDF(password: String = "", textRecognition: Bool = false, quality: Double = 2) {
 
-        guard !arrayImages.isEmpty else { return }
+        guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
 
         if password.isEmpty {
@@ -69,7 +71,7 @@ class NCUploadScanDocument: ObservableObject {
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
         }
 
-        for var image in self.arrayImages {
+        for var image in images {
 
             image = changeCompressionImage(image, quality: quality)
             let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
@@ -83,9 +85,8 @@ class NCUploadScanDocument: ObservableObject {
         UIGraphicsEndPDFContext()
 
         do {
-            if let url = URL(string: NSTemporaryDirectory() + "scandocument.pdf") {
-                try pdfData.write(to: url, options: .atomic)
-            }
+            url = URL(fileURLWithPath: NSTemporaryDirectory() + "scandocument.pdf")
+            try pdfData.write(to: url, options: .atomic)
         } catch {
             print("error catched")
         }
@@ -160,12 +161,14 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @ObservedObject var uploadScanDocument = NCUploadScanDocument()
-
-    @State var arrayImages: [UIImage] = []
     @State var currentValue = 1.0
     @State var password: String = ""
     @State var isSecured: Bool = true
+    @ObservedObject var uploadScanDocument: NCUploadScanDocument
+
+    init(_ uploadScanDocument: NCUploadScanDocument) {
+        self.uploadScanDocument = uploadScanDocument
+    }
 
     var body: some View {
 
@@ -208,7 +211,7 @@ struct UploadScanDocumentView: View {
 
                     Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
 
-                        PDFKitRepresentedView(uploadScanDocument.urlPreviewFile)
+                        PDFKitRepresentedView(uploadScanDocument.url)
                             .frame(width: .infinity, height: geo.size.height / 3)
                     }
 
@@ -277,8 +280,8 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        // let account = (UIApplication.shared.delegate as! AppDelegate).account
-        UploadScanDocumentView()
+        let uploadScanDocument = NCUploadScanDocument(images: [])
+        UploadScanDocumentView(uploadScanDocument)
             // .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
             // .previewDisplayName("iPhone 14")
     }

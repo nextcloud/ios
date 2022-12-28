@@ -172,7 +172,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             }
 
             // let formViewController = NCCreateFormUploadScanDocument(serverUrl: serverUrl, arrayImages: images)
-            let  vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(arrayImages: images, account: appDelegate.account, serverUrl: serverUrl)
+            let  vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, account: appDelegate.account, serverUrl: serverUrl)
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
