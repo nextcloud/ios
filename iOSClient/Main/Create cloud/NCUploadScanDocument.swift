@@ -160,8 +160,9 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var currentValue = 1.0
+    @State var quality = 1.0
     @State var password: String = ""
+    @State var filename: String = ""
     @State var isSecured: Bool = true
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
 
@@ -200,8 +201,8 @@ struct UploadScanDocumentView: View {
 
                         VStack {
                             Text("Current slider value")
-                            Slider(value: $currentValue, in: 0...2, step: 1) { _ in
-                                uploadScanDocument.createPDF(quality: currentValue)
+                            Slider(value: $quality, in: 0...2, step: 1) { _ in
+                                uploadScanDocument.createPDF(quality: quality)
                             }
                             // Slider(value: $currentValue, in: 0...2, step: 1).onChange(of: currentValue, perform: { currentValue in
                             //    uploadScanDocument.createPDF(quality: currentValue)
@@ -213,7 +214,7 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
 
                         PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
                     }
 
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
@@ -247,7 +248,7 @@ struct UploadScanDocumentView: View {
 
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
-                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $password)
+                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $filename)
                                 .multilineTextAlignment(.trailing)
                         }
                     }
