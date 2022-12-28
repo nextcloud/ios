@@ -28,11 +28,11 @@ import VisionKit
 import Photos
 import PDFKit
 
-class NCHostingControllerUploadScanDocumentView: NSObject {
+class NCHostingUploadScanDocumentView: NSObject {
 
-    @objc func makeShipDetailsUI(account: String) -> UIViewController {
+    @objc func makeShipDetailsUI(account: String, arrayImages: [UIImage]) -> UIViewController {
         let account = (UIApplication.shared.delegate as? AppDelegate)?.account
-        let details = UploadScanDocumentView(currentValue: 1.0, password: "", isSecured: true)
+        let details = UploadScanDocumentView(arrayImages: arrayImages)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_settings_", comment: "")
         return vc
@@ -41,8 +41,113 @@ class NCHostingControllerUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
-     @Published var isTextRecognition: Bool = false
+    @Published var isTextRecognition: Bool = false
+    @Published var urlPreviewFile: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
+    var arrayImages: [UIImage] = []
+
+    enum TypeQuality {
+        case low
+        case medium
+        case high
+    }
+    var quality: TypeQuality = .medium
+
+    func createPDF(password: String, textRecognition: Bool) {
+
+        let pdfData = NSMutableData()
+
+        if !password.isEmpty {
+            for char in password.unicodeScalars {
+                if !char.isASCII {
+                    NCActivityIndicator.shared.stop()
+                    let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
+                    NCContentPresenter.shared.showError(error: error)
+                    return
+                }
+            }
+            let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String: password, kCGPDFContextOwnerPassword as String: password]
+            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
+        } else {
+            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+        }
+
+        for var image in self.arrayImages {
+
+            image = changeCompressionImage(image)
+
+            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+
+            if textRecognition {
+
+            } else {
+
+                UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                image.draw(in: bounds)
+            }
+        }
+
+        UIGraphicsEndPDFContext()
+
+        do {
+            if let url = URL(string: NSTemporaryDirectory() + "scandocument.pdf") {
+                self.urlPreviewFile = url
+                try pdfData.write(to: url, options: .atomic)
+            }
+        } catch {
+            print("error catched")
+        }
+    }
+
+    func changeCompressionImage(_ image: UIImage) -> UIImage {
+
+        var compressionQuality: CGFloat = 0.5
+        var baseHeight: Float = 595.2    // A4
+        var baseWidth: Float = 841.8     // A4
+
+        switch quality {
+        case .low:
+            baseHeight *= 1
+            baseWidth *= 1
+            compressionQuality = 0.3
+        case .medium:
+            baseHeight *= 2
+            baseWidth *= 2
+            compressionQuality = 0.6
+        case .high:
+            baseHeight *= 4
+            baseWidth *= 4
+            compressionQuality = 0.9
+        }
+
+        var newHeight = Float(image.size.height)
+        var newWidth = Float(image.size.width)
+        var imgRatio: Float = newWidth / newHeight
+        let baseRatio: Float = baseWidth / baseHeight
+
+        if newHeight > baseHeight || newWidth > baseWidth {
+            if imgRatio < baseRatio {
+                imgRatio = baseHeight / newHeight
+                newWidth = imgRatio * newWidth
+                newHeight = baseHeight
+            } else if imgRatio > baseRatio {
+                imgRatio = baseWidth / newWidth
+                newHeight = imgRatio * newHeight
+                newWidth = baseWidth
+            } else {
+                newHeight = baseHeight
+                newWidth = baseWidth
+            }
+        }
+
+        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(newWidth), height: CGFloat(newHeight))
+        UIGraphicsBeginImageContext(rect.size)
+        image.draw(in: rect)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
+        UIGraphicsEndImageContext()
+        return UIImage(data: imageData!) ?? image
+    }
 }
 
 extension NCUploadScanDocument: NCSelectDelegate {
@@ -63,6 +168,7 @@ struct UploadScanDocumentView: View {
 
     @ObservedObject var uploadScanDocument = NCUploadScanDocument()
 
+    @State var arrayImages: [UIImage] = []
     @State var currentValue = 1.0
     @State var password: String = ""
     @State var isSecured: Bool = true
@@ -109,7 +215,7 @@ struct UploadScanDocumentView: View {
 
                     Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
 
-                        PDFKitRepresentedView(urlPreviewFile)
+                        PDFKitRepresentedView(uploadScanDocument.urlPreviewFile)
                             .frame(width: .infinity, height: geo.size.height / 3)
                     }
 
