@@ -71,7 +71,8 @@ class NCUploadScanDocument: ObservableObject {
         }
 
         if preview {
-            if let image = images.first {
+            if var image = images.first {
+                image = changeCompressionImage(image, quality: quality)
                 let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
