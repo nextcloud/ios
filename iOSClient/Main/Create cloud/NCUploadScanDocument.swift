@@ -45,6 +45,7 @@ struct NCUploadScanDocumentTest: View {
             VStack {
                 List {
                     Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
+
                         HStack {
                             Label {
                                 Text("/")
@@ -66,6 +67,7 @@ struct NCUploadScanDocumentTest: View {
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+
                         VStack {
                             Text("Current slider value")
                             Slider(value: $currentValue, in: 0...3, step: 1) { didChange in
@@ -76,18 +78,15 @@ struct NCUploadScanDocumentTest: View {
                     }
 
                     Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
+
                         PDFKitRepresentedView(urlPreviewFile)
                             .frame(width: .infinity, height: geo.size.height / 4)
                     }
 
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
+
                         HStack {
                             Group {
-                                Image(systemName: "ellipsis.rectangle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                    .foregroundColor(Color(NCBrandColor.shared.brand))
                                 Text(NSLocalizedString("_password_", comment: ""))
                                 if isSecured {
                                     SecureField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
@@ -106,27 +105,13 @@ struct NCUploadScanDocumentTest: View {
                         }
 
                         HStack {
-                            Image(systemName: "text.viewfinder")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                .foregroundColor(Color(NCBrandColor.shared.brand))
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                         }
 
                         HStack {
-                            Label {
-                                Text(NSLocalizedString("_filename_", comment: ""))
-                            } icon: {
-                                Image(systemName: "character.textbox")
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                    .foregroundColor(Color(NCBrandColor.shared.brand))
-                            }
-                            TextField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
+                            Text(NSLocalizedString("_filename_", comment: ""))
+                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $password)
                                 .multilineTextAlignment(.trailing)
                         }
                     }
