@@ -50,7 +50,7 @@ class NCUploadScanDocument: ObservableObject {
         createPDF()
     }
 
-    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double = 1) {
+    func createPDF(preview: Bool = true, password: String = "", textRecognition: Bool = false, quality: Double = 1) {
 
         guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
@@ -70,17 +70,26 @@ class NCUploadScanDocument: ObservableObject {
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
         }
 
-        for var image in images {
-
-            image = changeCompressionImage(image, quality: quality)
-            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-            if textRecognition {
-
-            } else {
+        if preview {
+            if let image = images.first {
+                let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
             }
+        } else {
+            for var image in images {
+
+                image = changeCompressionImage(image, quality: quality)
+                let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+                if textRecognition {
+
+                } else {
+                    UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                    image.draw(in: bounds)
+                }
+            }
         }
+
         UIGraphicsEndPDFContext()
 
         do {
@@ -200,13 +209,19 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
 
                         VStack {
-                            Text("Current slider value")
-                            Slider(value: $quality, in: 0...2, step: 1) { _ in
-                                uploadScanDocument.createPDF(quality: quality)
+                            switch quality {
+                            case 0:
+                                Text(NSLocalizedString("_quality_low_", comment: ""))
+                            case 1:
+                                Text(NSLocalizedString("_quality_medium_", comment: ""))
+                            case 2:
+                                Text(NSLocalizedString("_quality_high_", comment: ""))
+                            default:
+                                Text("")
                             }
-                            // Slider(value: $currentValue, in: 0...2, step: 1).onChange(of: currentValue, perform: { currentValue in
-                            //    uploadScanDocument.createPDF(quality: currentValue)
-                            // })
+                            Slider(value: $quality, in: 0...2, step: 1).onChange(of: quality, perform: { quality in
+                                uploadScanDocument.createPDF(quality: quality)
+                            })
                             .accentColor(Color(NCBrandColor.shared.brand))
                         }
                     }
