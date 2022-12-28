@@ -35,6 +35,7 @@ class NCHostingUploadScanDocumentView: NSObject {
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_settings_", comment: "")
+        // vc.navigationItem.largeTitleDisplayMode = .never
         return vc
     }
 }
@@ -173,7 +174,6 @@ struct UploadScanDocumentView: View {
     var body: some View {
 
         GeometryReader { geo in
-
             VStack {
                 List {
                     Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
@@ -256,7 +256,6 @@ struct UploadScanDocumentView: View {
                 }
             }
         }
-        .background(Color(UIColor.systemGroupedBackground))
     }
 }
 
