@@ -34,6 +34,10 @@ struct NCUploadScanDocumentTest: View {
 
     @State var currentValue = 1.0
     @State var password: String = ""
+    @State var isSecured: Bool = true
+    @State var isTextRecognition = true
+    @State var urlPreviewFile: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+
 
     var body: some View {
 
@@ -53,7 +57,6 @@ struct NCUploadScanDocumentTest: View {
                                     .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                     .foregroundColor(Color(NCBrandColor.shared.brand))
                             }
-
                             Spacer()
                         }
                         .contentShape(Rectangle())
@@ -73,15 +76,57 @@ struct NCUploadScanDocumentTest: View {
                     }
 
                     Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
-                        let fileUrl = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
-                        PDFKitRepresentedView(fileUrl)
-                            .frame(width: .infinity, height: geo.size.height / 3)
+                        PDFKitRepresentedView(urlPreviewFile)
+                            .frame(width: .infinity, height: geo.size.height / 4)
                     }
 
-                    Section(header: Text(NSLocalizedString("_pdf_password_", comment: ""))) {
+                    Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
                         HStack {
-                            Text(NSLocalizedString("_password_", comment: ""))
-                            SecureField("Enter password...", text: $password)
+                            Group {
+                                Image(systemName: "ellipsis.rectangle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                    .foregroundColor(Color(NCBrandColor.shared.brand))
+                                Text(NSLocalizedString("_password_", comment: ""))
+                                if isSecured {
+                                    SecureField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
+                                        .multilineTextAlignment(.trailing)
+                                } else {
+                                    TextField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
+                                        .multilineTextAlignment(.trailing)
+                                }
+                            }
+                            Button(action: {
+                                isSecured.toggle()
+                            }) {
+                                Image(systemName: self.isSecured ? "eye.slash" : "eye")
+                                    .accentColor(.gray)
+                            }
+                        }
+
+                        HStack {
+                            Image(systemName: "text.viewfinder")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                .foregroundColor(Color(NCBrandColor.shared.brand))
+                            Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                        }
+
+                        HStack {
+                            Label {
+                                Text(NSLocalizedString("_filename_", comment: ""))
+                            } icon: {
+                                Image(systemName: "character.textbox")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                    .foregroundColor(Color(NCBrandColor.shared.brand))
+                            }
+                            TextField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
                                 .multilineTextAlignment(.trailing)
                         }
                     }
