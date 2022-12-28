@@ -32,48 +32,59 @@ import PDFKit
 
 struct NCUploadScanDocumentTest: View {
 
-    @State private var currentValue = 1.0
+    @State var currentValue = 1.0
+    @State var password: String = ""
 
     var body: some View {
 
-        VStack {
-            List {
-                Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
-                    HStack {
-                        Label {
-                            Text("/")
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        } icon: {
-                            Image("folder")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
-                                .foregroundColor(Color(NCBrandColor.shared.brand))
+        GeometryReader { geo in
+            VStack {
+                List {
+                    Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
+                        HStack {
+                            Label {
+                                Text("/")
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                            } icon: {
+                                Image("folder")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
+                                    .foregroundColor(Color(NCBrandColor.shared.brand))
+                            }
+
+                            Spacer()
                         }
-
-                        Spacer()
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        //
-                    }
-                }
-
-                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
-                    VStack {
-                        Text("Current slider value")
-                        Slider(value: $currentValue, in: 0...3, step: 1) { didChange in
+                        .contentShape(Rectangle())
+                        .onTapGesture {
                             //
                         }
-                        .accentColor(Color(NCBrandColor.shared.brand))
                     }
-                }
 
-                Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
-                    let fileUrl = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
-                    PDFKitRepresentedView(fileUrl)
-                        .frame(width: .infinity, height: 200)
+                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+                        VStack {
+                            Text("Current slider value")
+                            Slider(value: $currentValue, in: 0...3, step: 1) { didChange in
+                                //
+                            }
+                            .accentColor(Color(NCBrandColor.shared.brand))
+                        }
+                    }
+
+                    Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
+                        let fileUrl = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+                        PDFKitRepresentedView(fileUrl)
+                            .frame(width: .infinity, height: geo.size.height / 3)
+                    }
+
+                    Section(header: Text(NSLocalizedString("_pdf_password_", comment: ""))) {
+                        HStack {
+                            Text(NSLocalizedString("_password_", comment: ""))
+                            SecureField("Enter password...", text: $password)
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
                 }
             }
         }
@@ -83,6 +94,7 @@ struct NCUploadScanDocumentTest: View {
 struct PDFKitRepresentedView: UIViewRepresentable {
 
     let url: URL
+
     init(_ url: URL) {
         self.url = url
     }
@@ -96,7 +108,6 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
-
     }
 }
 
