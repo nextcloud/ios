@@ -28,9 +28,7 @@ import VisionKit
 import Photos
 import PDFKit
 
-// MARK: - Preview / Test
-
-class NCManageUploadScanDocument: NSObject {
+class NCHostingControllerUploadScanDocumentView: NSObject {
 
     @objc func makeShipDetailsUI(account: String) -> UIViewController {
         let account = (UIApplication.shared.delegate as? AppDelegate)?.account
@@ -58,6 +56,8 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
     }
 }
+
+// MARK: - Preview / Test
 
 struct UploadScanDocumentView: View {
 
