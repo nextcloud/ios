@@ -190,8 +190,8 @@ class NCNetworkingProcessUpload: NSObject {
                     }
 
                     // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-                    if applicationState == .active && metadatas.isEmpty && !self.appDelegate.isPasscodePresented() {
-                        self.deleteAssetLocalIdentifiers {
+                    if applicationState == .active && metadatas.isEmpty {
+                        self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
                             self.pauseProcess = false
                         }
                     } else {
@@ -206,22 +206,29 @@ class NCNetworkingProcessUpload: NSObject {
         }
     }
 
-    private func deleteAssetLocalIdentifiers(completition: @escaping () -> Void) {
+    private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
 
-        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", appDelegate.account, "upload"))
-        if !metadatasSessionUpload.isEmpty { return completition() }
+        DispatchQueue.main.async {
 
-        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: appDelegate.account)
-        if localIdentifiers.isEmpty { return completition() }
+            guard !self.appDelegate.isPasscodePresented() else {
+                return completition()
+            }
 
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+            let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
+            if !metadatasSessionUpload.isEmpty { return completition() }
 
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
-        }, completionHandler: { _, _ in
-            NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
-            completition()
-        })
+            let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
+            if localIdentifiers.isEmpty { return completition() }
+
+            let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+            }, completionHandler: { _, _ in
+                NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
+                completition()
+            })
+        }
     }
 
     // MARK: -

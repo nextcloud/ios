@@ -110,16 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Activate user account
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
-            // FIX 3.0.5 lost urlbase
-            if activeAccount.urlBase.count == 0 {
-                let user = activeAccount.user + " "
-                let urlBase = activeAccount.account.replacingOccurrences(of: user, with: "")
-                activeAccount.urlBase = urlBase
-                NCManageDatabase.shared.updateAccount(activeAccount)
-            }
-
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
-
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
         } else {
@@ -128,7 +119,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
-
             NCBrandColor.shared.createImagesThemingColor()
         }
 
@@ -158,7 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Intro
         if NCBrandOptions.shared.disable_intro {
             CCUtility.setIntro(true)
-            if account == "" {
+            if account.isEmpty {
                 openLogin(viewController: nil, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         } else {
@@ -219,7 +209,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 // Unlock E2EE
                 NCNetworkingE2EE.shared.unlockAll(account: self.account)
                 // Request Service Server Nextcloud
