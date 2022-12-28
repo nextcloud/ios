@@ -188,12 +188,12 @@ struct UploadScanDocumentView: View {
         GeometryReader { geo in
             VStack {
                 List {
-                    Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
+                    Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
 
                         HStack {
                             Label {
                                 Text("/")
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    //.frame(maxWidth: .infinity, alignment: .trailing)
                             } icon: {
                                 Image("folder")
                                     .renderingMode(.template)
@@ -208,36 +208,11 @@ struct UploadScanDocumentView: View {
                         .onTapGesture {
                             //
                         }
-                    }
-
-                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
-
-                        VStack {
-                            switch quality {
-                            case 0:
-                                Text(NSLocalizedString("_quality_low_", comment: ""))
-                            case 1:
-                                Text(NSLocalizedString("_quality_medium_", comment: ""))
-                            case 2:
-                                Text(NSLocalizedString("_quality_high_", comment: ""))
-                            default:
-                                Text("")
-                            }
-                            Slider(value: $quality, in: 0...2, step: 1).onChange(of: quality, perform: { quality in
-                                uploadScanDocument.createPDF(quality: quality)
-                            })
-                            .accentColor(Color(NCBrandColor.shared.brand))
+                        HStack {
+                            Text(NSLocalizedString("_filename_", comment: ""))
+                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $filename)
+                                .multilineTextAlignment(.trailing)
                         }
-                    }
-
-                    Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
-
-                        PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
-                    }
-
-                    Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
-
                         HStack {
                             Group {
                                 Text(NSLocalizedString("_password_", comment: ""))
@@ -264,13 +239,30 @@ struct UploadScanDocumentView: View {
 
                                 }
                         }
-
-                        HStack {
-                            Text(NSLocalizedString("_filename_", comment: ""))
-                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $filename)
-                                .multilineTextAlignment(.trailing)
-                        }
                     }
+
+                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+
+                        VStack {
+                            switch quality {
+                            case 0:
+                                Text(NSLocalizedString("_quality_low_", comment: ""))
+                            case 1:
+                                Text(NSLocalizedString("_quality_medium_", comment: ""))
+                            case 2:
+                                Text(NSLocalizedString("_quality_high_", comment: ""))
+                            default:
+                                Text("")
+                            }
+                            Slider(value: $quality, in: 0...2, step: 1).onChange(of: quality, perform: { quality in
+                                uploadScanDocument.createPDF(quality: quality)
+                            })
+                            .accentColor(Color(NCBrandColor.shared.brand))
+                        }
+                        PDFKitRepresentedView(uploadScanDocument.url)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
+                    }
+                    //.listRowSeparator(.hidden)
                 }
             }
         }
