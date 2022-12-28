@@ -34,8 +34,6 @@ class NCHostingUploadScanDocumentView: NSObject {
         let uploadScanDocument = NCUploadScanDocument(images: images)
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
-        vc.title = NSLocalizedString("_save_settings_", comment: "")
-        // vc.navigationItem.largeTitleDisplayMode = .never
         return vc
     }
 }

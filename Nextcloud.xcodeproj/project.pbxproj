@@ -1583,7 +1583,7 @@
 			path = Networking;
 			sourceTree = "<group>";
 		};
-		F758B41E212C516300515F55 /* ScanDocument */ = {
+		F758B41E212C516300515F55 /* Scan */ = {
 			isa = PBXGroup;
 			children = (
 				F758B457212C564000515F55 /* NCScan.storyboard */,
@@ -1591,7 +1591,7 @@
 				F758B45F212C56A400515F55 /* NCScan.swift */,
 				F7B6B70327C4E7FA00A7F6EB /* NCScan+CollectionView.swift */,
 			);
-			path = ScanDocument;
+			path = Scan;
 			sourceTree = "<group>";
 		};
 		F75DD764290AB369002EB562 /* Intent */ = {
@@ -2149,7 +2149,7 @@
 				F765F72E25237E3F00391DBE /* Recent */,
 				F70D87CC25EE6E58008CBBBD /* Rename file */,
 				F7CADB3D23CCDDA1000EEC78 /* RichWorkspace */,
-				F758B41E212C516300515F55 /* ScanDocument */,
+				F758B41E212C516300515F55 /* Scan */,
 				F7FE125B1BAC03FB0041924B /* Security */,
 				F79A65C12191D8DC00FF6DCC /* Select */,
 				F7ACE4281BAC0268006C0017 /* Settings */,
