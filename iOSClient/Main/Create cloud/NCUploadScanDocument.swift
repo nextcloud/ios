@@ -38,7 +38,6 @@ struct NCUploadScanDocumentTest: View {
     @State var isTextRecognition = true
     @State var urlPreviewFile: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
-
     var body: some View {
 
         GeometryReader { geo in
