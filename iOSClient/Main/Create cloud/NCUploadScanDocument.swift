@@ -30,17 +30,48 @@ import PDFKit
 
 // MARK: - Preview / Test
 
-struct NCUploadScanDocumentTest: View {
+class NCManageUploadScanDocument: NSObject {
+
+    @objc func makeShipDetailsUI(account: String) -> UIViewController {
+        let account = (UIApplication.shared.delegate as? AppDelegate)?.account
+        let details = UploadScanDocumentView(currentValue: 1.0, password: "", isSecured: true)
+        let vc = UIHostingController(rootView: details)
+        vc.title = NSLocalizedString("_save_settings_", comment: "")
+        return vc
+    }
+}
+
+class NCUploadScanDocument: ObservableObject {
+
+     @Published var isTextRecognition: Bool = false
+
+}
+
+extension NCUploadScanDocument: NCSelectDelegate {
+
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    }
+}
+
+extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
+
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+    }
+}
+
+struct UploadScanDocumentView: View {
+
+    @ObservedObject var uploadScanDocument = NCUploadScanDocument()
 
     @State var currentValue = 1.0
     @State var password: String = ""
     @State var isSecured: Bool = true
-    @State var isTextRecognition = true
     @State var urlPreviewFile: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
     var body: some View {
 
         GeometryReader { geo in
+
             VStack {
                 List {
                     Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
@@ -79,7 +110,7 @@ struct NCUploadScanDocumentTest: View {
                     Section(header: Text(NSLocalizedString("_preview_", comment: ""))) {
 
                         PDFKitRepresentedView(urlPreviewFile)
-                            .frame(width: .infinity, height: geo.size.height / 4)
+                            .frame(width: .infinity, height: geo.size.height / 3)
                     }
 
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
@@ -104,8 +135,11 @@ struct NCUploadScanDocumentTest: View {
                         }
 
                         HStack {
-                            Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
+                            Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $uploadScanDocument.isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                                .onChange(of: uploadScanDocument.isTextRecognition) { newValue in
+
+                                }
                         }
 
                         HStack {
@@ -133,6 +167,8 @@ struct PDFKitRepresentedView: UIViewRepresentable {
         pdfView.document = PDFDocument(url: self.url)
         pdfView.autoScales = true
         pdfView.backgroundColor = .clear
+        pdfView.displayMode = .singlePage
+        pdfView.displayDirection = .vertical
         return pdfView
     }
 
@@ -140,9 +176,11 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 }
 
-struct NCUploadScanDocument_Previews: PreviewProvider {
+struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         // let account = (UIApplication.shared.delegate as! AppDelegate).account
-        NCUploadScanDocumentTest()
+        UploadScanDocumentView()
+            // .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
+            // .previewDisplayName("iPhone 14")
     }
 }
