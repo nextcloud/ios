@@ -57,6 +57,50 @@ class NCUploadScanDocument: ObservableObject {
         createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
+    func save(fileName: String) {
+
+        guard fileName.isEmpty else { return }
+
+        let ext = (fileName as NSString).pathExtension.uppercased()
+        var fileNameSave = ""
+
+        if ext.isEmpty {
+            fileNameSave = fileName + ".pdf"
+        } else {
+            fileNameSave = (fileName as NSString).deletingPathExtension + ".pdf"
+        }
+
+        // Create metadata for upload
+        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
+                                                                       user: userBaseUrl.user,
+                                                                       userId: userBaseUrl.userId,
+                                                                       fileName: fileNameSave,
+                                                                       fileNameView: fileNameSave,
+                                                                       ocId: UUID().uuidString,
+                                                                       serverUrl: serverUrl,
+                                                                       urlBase: userBaseUrl.urlBase,
+                                                                       url: "",
+                                                                       contentType: "")
+
+        metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+        metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+
+        if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
+
+            guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+
+            conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+            conflict.serverUrl = serverUrl
+            conflict.metadatasUploadInConflict = [metadataForUpload]
+            conflict.delegate = self
+
+            // self.present(conflict, animated: true, completion: nil)
+        } else {
+            // self.dismissAndUpload(metadataForUpload)
+        }
+    }
+
     func createPDF(password: String = "", textRecognition: Bool = false, quality: Double) {
 
         guard !images.isEmpty else { return }
