@@ -267,7 +267,7 @@ struct UploadScanDocumentView: View {
                 Button(NSLocalizedString("_save_", comment: "")) {
                     print("ciao")
                 }
-                .buttonStyle(NCButton())
+                .buttonStyle(NCButton(disabled: true))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
@@ -277,13 +277,15 @@ struct UploadScanDocumentView: View {
 }
 
 struct NCButton: ButtonStyle {
+    var disabled = false
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 40)
             .padding(.vertical, 10)
-            .background(Color(NCBrandColor.shared.brand))
+            .background(disabled ? Color(UIColor.systemGray4) : Color(NCBrandColor.shared.brand))
             .foregroundColor(.white)
             .clipShape(Capsule())
+
     }
 }
 
