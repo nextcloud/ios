@@ -44,7 +44,6 @@ class NCUploadScanDocument: ObservableObject {
 
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var serverUrl: String
-
     @Published var size: String = ""
     @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
@@ -55,10 +54,10 @@ class NCUploadScanDocument: ObservableObject {
         self.images = images
         self.userBaseUrl = userBaseUrl
         self.serverUrl = serverUrl
-        createPDF()
+        createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
-    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double = 1) {
+    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double) {
 
         guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
@@ -104,7 +103,7 @@ class NCUploadScanDocument: ObservableObject {
 
     func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
 
-        var compressionQuality: CGFloat = 0.5
+        var compressionQuality: CGFloat = 0.0
         var baseHeight: Float = 595.2    // A4
         var baseWidth: Float = 841.8     // A4
 
@@ -169,7 +168,7 @@ extension NCUploadScanDocument: NCSelectDelegate {
 
         if let serverUrl = serverUrl {
 
-            CCUtility.setDirectoryScanDocuments(serverUrl)
+            CCUtility.setDirectoryScanDocument(serverUrl)
             self.serverUrl = serverUrl
         }
     }
@@ -185,7 +184,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var quality = 2.0
+    @State var quality = CCUtility.getQualityScanDocument()
     @State var password: String = ""
     @State var filename: String = CCUtility.createFileNameDate("scan", extension: "pdf")
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
@@ -272,6 +271,7 @@ struct UploadScanDocumentView: View {
 
                     VStack {
                         Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
+                            CCUtility.setQualityScanDocument(quality)
                             uploadScanDocument.createPDF(quality: quality)
                         })
                         .accentColor(Color(NCBrandColor.shared.brand))

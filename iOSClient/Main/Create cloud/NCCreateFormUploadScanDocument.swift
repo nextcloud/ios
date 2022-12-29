@@ -362,7 +362,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         if serverUrl != nil {
 
-            CCUtility.setDirectoryScanDocuments(serverUrl!)
+            CCUtility.setDirectoryScanDocument(serverUrl!)
             self.serverUrl = serverUrl!
 
             if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {

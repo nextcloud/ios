@@ -156,8 +156,10 @@
 
 + (BOOL)getTextRecognitionStatus;
 + (void)setTextRecognitionStatus:(BOOL)value;
-+ (NSString *)getDirectoryScanDocuments;
-+ (void)setDirectoryScanDocuments:(NSString *)value;
++ (NSString *)getDirectoryScanDocument;
++ (void)setDirectoryScanDocument:(NSString *)value;
++ (double)getQualityScanDocument;
++ (void)setQualityScanDocument:(double)value;
 
 + (NSInteger)getLogLevel;
 + (void)setLogLevel:(NSInteger)value;

@@ -604,14 +604,31 @@
     [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSString *)getDirectoryScanDocuments
++ (NSString *)getDirectoryScanDocument
 {
     return [UICKeyChainStore stringForKey:@"directoryScanDocuments" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (void)setDirectoryScanDocuments:(NSString *)value
++ (void)setDirectoryScanDocument:(NSString *)value
 {
     [UICKeyChainStore setString:value forKey:@"directoryScanDocuments" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (double)getQualityScanDocument
+{
+    NSString *value = [UICKeyChainStore stringForKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
+
+    if (value == nil) {
+        return 2;
+    } else {
+        return [value doubleValue];
+    }
+}
+
++ (void)setQualityScanDocument:(double)value
+{
+    NSString *valueString = [@(value) stringValue];
+    [UICKeyChainStore setString:valueString forKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSInteger)getLogLevel
