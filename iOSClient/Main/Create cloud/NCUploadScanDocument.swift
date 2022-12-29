@@ -57,7 +57,7 @@ class NCUploadScanDocument: ObservableObject {
         createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
-    func save(fileName: String) {
+    func save(fileName: String, completion: @escaping (_ dismiss: Bool) -> Void) {
 
         guard fileName.isEmpty else { return }
 
@@ -71,20 +71,20 @@ class NCUploadScanDocument: ObservableObject {
         }
 
         // Create metadata for upload
-        let metadataForUpload = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
-                                                                       user: userBaseUrl.user,
-                                                                       userId: userBaseUrl.userId,
-                                                                       fileName: fileNameSave,
-                                                                       fileNameView: fileNameSave,
-                                                                       ocId: UUID().uuidString,
-                                                                       serverUrl: serverUrl,
-                                                                       urlBase: userBaseUrl.urlBase,
-                                                                       url: "",
-                                                                       contentType: "")
+        let metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
+                                                              user: userBaseUrl.user,
+                                                              userId: userBaseUrl.userId,
+                                                              fileName: fileNameSave,
+                                                              fileNameView: fileNameSave,
+                                                              ocId: UUID().uuidString,
+                                                              serverUrl: serverUrl,
+                                                              urlBase: userBaseUrl.urlBase,
+                                                              url: "",
+                                                              contentType: "")
 
-        metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-        metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+        metadata.session = NCNetworking.shared.sessionIdentifierBackground
+        metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+        metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
 
@@ -92,12 +92,19 @@ class NCUploadScanDocument: ObservableObject {
 
             conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
             conflict.serverUrl = serverUrl
-            conflict.metadatasUploadInConflict = [metadataForUpload]
+            conflict.metadatasUploadInConflict = [metadata]
             conflict.delegate = self
 
-            // self.present(conflict, animated: true, completion: nil)
+            completion(false)
+
         } else {
-            // self.dismissAndUpload(metadataForUpload)
+
+            guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
+            NCUtilityFileSystem.shared.copyFile(atPath: fileNameDefault, toPath: fileNameGenerateExport)
+            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameGenerateExport)
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
+
+            completion(true)
         }
     }
 
@@ -329,7 +336,9 @@ struct UploadScanDocumentView: View {
                 }
 
                 Button(NSLocalizedString("_save_", comment: "")) {
-                    print("ciao")
+                    uploadScanDocument.save(fileName: filename) { dismiss in
+                        
+                    }
                 }
                 .buttonStyle(ButtonUploadScanDocumenStyle(disabled: true))
                 .frame(maxWidth: .infinity, alignment: .center)
