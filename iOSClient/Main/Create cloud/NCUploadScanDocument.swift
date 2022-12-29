@@ -215,7 +215,6 @@ struct UploadScanDocumentView: View {
         GeometryReader { geo in
             List {
                 Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
-
                     HStack {
                         Label {
                             if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
@@ -225,7 +224,6 @@ struct UploadScanDocumentView: View {
                                 Text((uploadScanDocument.serverUrl as NSString).lastPathComponent)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
-
                         } icon: {
                             Image("folder")
                                 .renderingMode(.template)
@@ -269,7 +267,6 @@ struct UploadScanDocumentView: View {
                                 .accentColor(.gray)
                         }
                     }
-
                     HStack {
                         Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $uploadScanDocument.isTextRecognition)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
