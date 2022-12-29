@@ -219,6 +219,13 @@ struct UploadScanDocumentView: View {
                     .onTapGesture {
                         //
                     }
+                    .complexModifier { view in
+                        if #available(iOS 16, *) {
+                            view.alignmentGuide(.listRowSeparatorLeading) { _ in
+                                return 0
+                            }
+                        }
+                    }
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
                         TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $filename)
@@ -261,9 +268,9 @@ struct UploadScanDocumentView: View {
                     }
                     PDFKitRepresentedView(uploadScanDocument.url)
                         .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
-                }.complexModifier { section in
+                }.complexModifier { view in
                     if #available(iOS 15, *) {
-                        section.listRowSeparator(.hidden)
+                        view.listRowSeparator(.hidden)
                     }
                 }
 
