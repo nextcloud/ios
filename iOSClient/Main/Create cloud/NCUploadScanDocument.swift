@@ -277,29 +277,26 @@ struct UploadScanDocumentView: View {
                     }
                 }
 
-                Section() {
-                    Button(NSLocalizedString("_save_", comment: "")) {
-                        print("ciao")
-                    }
-                    .buttonStyle(GrowingButton())
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowBackground(Color(UIColor.systemGroupedBackground))
+                Button(NSLocalizedString("_save_", comment: "")) {
+                    print("ciao")
                 }
+                .buttonStyle(NCButton())
+                .frame(maxWidth: .infinity, alignment: .center)
+                .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
     }
 }
 
-struct GrowingButton: ButtonStyle {
+struct NCButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding()
-            .background(Color(red: 0, green: 0, blue: 0.5))
+            .padding(.horizontal, 50)
+            .padding(.vertical, 10)
+            .background(Color(NCBrandColor.shared.brand))
             .foregroundColor(.white)
             .clipShape(Capsule())
-            .scaleEffect(configuration.isPressed ? 1.2 : 1)
-            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
     }
 }
 
