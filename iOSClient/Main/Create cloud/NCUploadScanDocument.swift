@@ -44,7 +44,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 class NCUploadScanDocument: ObservableObject {
 
     @Published var isTextRecognition: Bool = false
-    @Published var size: Int64 = 0
+    @Published var size: String = ""
     @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
     let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
@@ -55,7 +55,7 @@ class NCUploadScanDocument: ObservableObject {
         createPDF()
     }
 
-    func createPDF(preview: Bool = true, password: String = "", textRecognition: Bool = false, quality: Double = 1) {
+    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double = 1) {
 
         guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
@@ -75,24 +75,15 @@ class NCUploadScanDocument: ObservableObject {
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
         }
 
-        if preview {
-            if var image = images.first {
-                image = changeCompressionImage(image, quality: quality)
-                let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        for var image in images {
+
+            image = changeCompressionImage(image, quality: quality)
+            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+            if textRecognition {
+
+            } else {
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
-            }
-        } else {
-            for var image in images {
-
-                image = changeCompressionImage(image, quality: quality)
-                let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-                if textRecognition {
-
-                } else {
-                    UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-                    image.draw(in: bounds)
-                }
             }
         }
 
@@ -105,7 +96,7 @@ class NCUploadScanDocument: ObservableObject {
             print("error catched")
         }
 
-        size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameDefault)
+        size = CCUtility.transformedSize(NCUtilityFileSystem.shared.getFileSize(filePath: fileNameDefault))
     }
 
     func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
@@ -258,7 +249,7 @@ struct UploadScanDocumentView: View {
                     }
                 }
 
-                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text( NSLocalizedString("_file_size_", comment: "") + " \(uploadScanDocument.size)")) {
                     VStack {
                         Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
                             uploadScanDocument.createPDF(quality: quality)

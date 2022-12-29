@@ -176,6 +176,7 @@
 "_automatic_Download_Image_" = "Use images in full resolution";
 "_automatic_Download_Image_footer_" = "When viewing images always download, if not available locally, the images in full resolution";
 "_size_"                    = "Size";
+"_file_size_"               = "Exported file size";
 "_dimension_"               = "Dimension";
 "_duration_"                = "Duration";
 "_model_"                   = "Model";
