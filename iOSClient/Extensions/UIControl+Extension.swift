@@ -1,5 +1,5 @@
 //
-//  UIControl+Extensions.swift
+//  UIControl+Extension.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 16/08/21.

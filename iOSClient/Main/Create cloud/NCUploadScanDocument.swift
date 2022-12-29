@@ -252,28 +252,18 @@ struct UploadScanDocumentView: View {
                     }
                 }
 
-                if #available(iOS 15, *) {
-                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text("Size: \(uploadScanDocument.size)")) {
-                        VStack {
-                            Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
-                                uploadScanDocument.createPDF(quality: quality)
-                            })
-                            .accentColor(Color(NCBrandColor.shared.brand))
-                        }
-                        PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
+                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+                    VStack {
+                        Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
+                            uploadScanDocument.createPDF(quality: quality)
+                        })
+                        .accentColor(Color(NCBrandColor.shared.brand))
                     }
-                    .listRowSeparator(.hidden)
-                } else {
-                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
-                        VStack {
-                            Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
-                                uploadScanDocument.createPDF(quality: quality)
-                            })
-                            .accentColor(Color(NCBrandColor.shared.brand))
-                        }
-                        PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
+                    PDFKitRepresentedView(uploadScanDocument.url)
+                        .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
+                }.complexModifier { section in
+                    if #available(iOS 15, *) {
+                        section.listRowSeparator(.hidden)
                     }
                 }
 

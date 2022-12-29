@@ -1,11 +1,11 @@
 //
-//  UIApplication+Extensions.swift
+//  UIDevice+Extension.swift
 //  Nextcloud
 //
-//  Created by Henrik Storch on 15.12.2021.
-//  Copyright (c) 2021 Henrik Storch. All rights reserved.
+//  Created by Federico Malagoni on 23/02/22.
+//  Copyright © 2022 Federico Malagoni. All rights reserved.
 //
-//  Author Henrik Storch <henrik.storch@nextcloud.com>
+//  Author Federico Malagoni <federico.malagoni@astrairidium.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,15 +20,19 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-import UIKit
 
-extension UIApplication {
-    // indicates if current device is in landscape orientation
-    var isLandscape: Bool {
-        if UIDevice.current.orientation.isValidInterfaceOrientation {
-            return UIDevice.current.orientation.isLandscape
+import Foundation
+
+extension UIDevice {
+
+    var hasNotch: Bool {
+        if #available(iOS 11.0, *) {
+            if UIApplication.shared.windows.isEmpty { return false }
+            let top = UIApplication.shared.windows[0].safeAreaInsets.top
+            return top > 20
         } else {
-            return windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
+            // Fallback on earlier versions
+            return false
         }
     }
 }
