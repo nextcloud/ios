@@ -30,9 +30,9 @@ import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
 
-    @objc func makeShipDetailsUI(images: [UIImage], urlBase: NCUserBaseUrl, serverUrl: String) -> UIViewController {
+    @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
-        let uploadScanDocument = NCUploadScanDocument(images: images, urlBase: urlBase, serverUrl: serverUrl)
+        let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
 
@@ -43,7 +43,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
-    @Published var urlBase: NCUserBaseUrl
+    @Published var userBaseUrl: NCUserBaseUrl
     @Published var serverUrl: String
 
     @Published var isTextRecognition: Bool = false
@@ -53,9 +53,9 @@ class NCUploadScanDocument: ObservableObject {
     let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
     var images: [UIImage]
 
-    init(images: [UIImage], urlBase: NCUserBaseUrl, serverUrl: String) {
+    init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.images = images
-        self.urlBase = urlBase
+        self.userBaseUrl = userBaseUrl
         self.serverUrl = serverUrl
         createPDF()
     }
@@ -218,8 +218,14 @@ struct UploadScanDocumentView: View {
 
                     HStack {
                         Label {
-                            Text("/")
-                                .frame(maxWidth: .infinity, alignment: .trailing)
+                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
+                                Text("/")
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                            } else {
+                                Text((uploadScanDocument.serverUrl as NSString).lastPathComponent)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                            }
+
                         } icon: {
                             Image("folder")
                                 .renderingMode(.template)
@@ -338,7 +344,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            let uploadScanDocument = NCUploadScanDocument(images: [], urlBase: appDelegate, serverUrl: "")
+            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "")
             UploadScanDocumentView(uploadScanDocument)
             // .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
             // .previewDisplayName("iPhone 14")
