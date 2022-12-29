@@ -90,8 +90,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         initializeForm()
 
-        let value = CCUtility.getTextRecognitionStatus()
-        setTextRecognition(newValue: value)
+        //let value = CCUtility.getTextRecognitionStatus()
+        //setTextRecognition(newValue: value)
     }
 
     // MARK: XLForm
@@ -328,8 +328,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         self.updateFormRow(rowFileName)
         self.tableView.reloadData()
 
-        CCUtility.setTextRecognitionStatus(newValue)
-        rowTextRecognition.value = newValue
+        //CCUtility.setTextRecognitionStatus(newValue)
+        //rowTextRecognition.value = newValue
 
         self.form.delegate = self
     }

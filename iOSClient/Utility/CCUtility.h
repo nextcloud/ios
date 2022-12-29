@@ -154,8 +154,8 @@
 + (NSString *)getMediaSortDate;
 + (void)setMediaSortDate:(NSString *)value;
 
-+ (NSInteger)getTextRecognitionStatus;
-+ (void)setTextRecognitionStatus:(NSInteger)value;
++ (BOOL)getTextRecognitionStatus;
++ (void)setTextRecognitionStatus:(BOOL)value;
 + (NSString *)getDirectoryScanDocuments;
 + (void)setDirectoryScanDocuments:(NSString *)value;
 

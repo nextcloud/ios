@@ -593,20 +593,14 @@
     [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSInteger)getTextRecognitionStatus
++ (BOOL)getTextRecognitionStatus
 {
-    NSString *value = [UICKeyChainStore stringForKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (value == nil) {
-        return 0;
-    } else {
-        return [value integerValue];
-    }
+    return [[UICKeyChainStore stringForKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
-+ (void)setTextRecognitionStatus:(NSInteger)value
++ (void)setTextRecognitionStatus:(BOOL)value
 {
-    NSString *valueString = [@(value) stringValue];
+    NSString *valueString = (value) ? @"true" : @"false";
     [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain];
 }
 

@@ -46,7 +46,6 @@ class NCUploadScanDocument: ObservableObject {
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var serverUrl: String
 
-    @Published var isTextRecognition: Bool = false
     @Published var size: String = ""
     @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
@@ -189,7 +188,8 @@ struct UploadScanDocumentView: View {
 
     @State var quality = 2.0
     @State var password: String = ""
-    @State var filename: String = ""
+    @State var filename: String = CCUtility.createFileNameDate("scan", extension: "pdf")
+    @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
     @State var isSecured: Bool = true
     @State var isPresented = false
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
@@ -261,10 +261,10 @@ struct UploadScanDocumentView: View {
                     }
 
                     HStack {
-                        Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $uploadScanDocument.isTextRecognition)
+                        Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                            .onChange(of: uploadScanDocument.isTextRecognition) { newValue in
-
+                            .onChange(of: isTextRecognition) { newValue in
+                                CCUtility.setTextRecognitionStatus(newValue)
                             }
                     }
                 }
