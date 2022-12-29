@@ -261,7 +261,7 @@ struct UploadScanDocumentView: View {
                             .accentColor(Color(NCBrandColor.shared.brand))
                         }
                         PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
                     }
                     .listRowSeparator(.hidden)
                 } else {
@@ -273,7 +273,7 @@ struct UploadScanDocumentView: View {
                             .accentColor(Color(NCBrandColor.shared.brand))
                         }
                         PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
                     }
                 }
 
