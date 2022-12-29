@@ -289,7 +289,7 @@ struct UploadScanDocumentView: View {
 struct NCButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding(.horizontal, 50)
+            .padding(.horizontal, 40)
             .padding(.vertical, 10)
             .background(Color(NCBrandColor.shared.brand))
             .foregroundColor(.white)
