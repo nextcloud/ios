@@ -44,7 +44,9 @@ class NCHostingUploadScanDocumentView: NSObject {
 class NCUploadScanDocument: ObservableObject {
 
     @Published var isTextRecognition: Bool = false
+    @Published var size: Int64 = 0
     @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+    let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
     var images: [UIImage] = []
 
@@ -97,11 +99,13 @@ class NCUploadScanDocument: ObservableObject {
         UIGraphicsEndPDFContext()
 
         do {
-            url = URL(fileURLWithPath: NSTemporaryDirectory() + "scandocument.pdf")
+            url = URL(fileURLWithPath: fileNameDefault)
             try pdfData.write(to: url, options: .atomic)
         } catch {
             print("error catched")
         }
+
+        size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameDefault)
     }
 
     func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
@@ -122,7 +126,15 @@ class NCUploadScanDocument: ObservableObject {
         case 2:
             baseHeight *= 4
             baseWidth *= 4
+            compressionQuality = 0.8
+        case 3:
+            baseHeight *= 6
+            baseWidth *= 6
             compressionQuality = 0.9
+        case 4:
+            baseHeight *= 8
+            baseWidth *= 8
+            compressionQuality = 1
         default:
             break
         }
@@ -173,7 +185,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var quality = 1.0
+    @State var quality = 2.0
     @State var password: String = ""
     @State var filename: String = ""
     @State var isSecured: Bool = true
@@ -193,7 +205,7 @@ struct UploadScanDocumentView: View {
                         HStack {
                             Label {
                                 Text("/")
-                                    //.frame(maxWidth: .infinity, alignment: .trailing)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
                             } icon: {
                                 Image("folder")
                                     .renderingMode(.template)
@@ -241,28 +253,30 @@ struct UploadScanDocumentView: View {
                         }
                     }
 
-                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
-
-                        VStack {
-                            switch quality {
-                            case 0:
-                                Text(NSLocalizedString("_quality_low_", comment: ""))
-                            case 1:
-                                Text(NSLocalizedString("_quality_medium_", comment: ""))
-                            case 2:
-                                Text(NSLocalizedString("_quality_high_", comment: ""))
-                            default:
-                                Text("")
+                    if #available(iOS 15, *) {
+                        Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text("Size: \(uploadScanDocument.size)")) {
+                            VStack {
+                                Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
+                                    uploadScanDocument.createPDF(quality: quality)
+                                })
+                                .accentColor(Color(NCBrandColor.shared.brand))
                             }
-                            Slider(value: $quality, in: 0...2, step: 1).onChange(of: quality, perform: { quality in
-                                uploadScanDocument.createPDF(quality: quality)
-                            })
-                            .accentColor(Color(NCBrandColor.shared.brand))
+                            PDFKitRepresentedView(uploadScanDocument.url)
+                                .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
                         }
-                        PDFKitRepresentedView(uploadScanDocument.url)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
+                        .listRowSeparator(.hidden)
+                    } else {
+                        Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+                            VStack {
+                                Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
+                                    uploadScanDocument.createPDF(quality: quality)
+                                })
+                                .accentColor(Color(NCBrandColor.shared.brand))
+                            }
+                            PDFKitRepresentedView(uploadScanDocument.url)
+                                .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
+                        }
                     }
-                    //.listRowSeparator(.hidden)
                 }
             }
         }
