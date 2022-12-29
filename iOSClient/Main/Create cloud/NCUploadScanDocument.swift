@@ -210,7 +210,6 @@ struct UploadScanDocumentView: View {
                                 .renderingMode(.template)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                 .foregroundColor(Color(NCBrandColor.shared.brand))
                         }
                         Spacer()
