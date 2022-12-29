@@ -30,9 +30,9 @@ import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
 
-    @objc func makeShipDetailsUI(images: [UIImage], account: String, serverUrl: String) -> UIViewController {
+    @objc func makeShipDetailsUI(images: [UIImage], urlBase: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
-        let uploadScanDocument = NCUploadScanDocument(images: images)
+        let uploadScanDocument = NCUploadScanDocument(images: images, urlBase: urlBase, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
 
@@ -43,15 +43,20 @@ class NCHostingUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
+    @Published var urlBase: NCUserBaseUrl
+    @Published var serverUrl: String
+
     @Published var isTextRecognition: Bool = false
     @Published var size: String = ""
     @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+
     let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
+    var images: [UIImage]
 
-    var images: [UIImage] = []
-
-    init(images: [UIImage]) {
+    init(images: [UIImage], urlBase: NCUserBaseUrl, serverUrl: String) {
         self.images = images
+        self.urlBase = urlBase
+        self.serverUrl = serverUrl
         createPDF()
     }
 
@@ -163,6 +168,25 @@ class NCUploadScanDocument: ObservableObject {
 extension NCUploadScanDocument: NCSelectDelegate {
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+
+        if let serverUrl = serverUrl {
+
+            CCUtility.setDirectoryScanDocuments(serverUrl)
+            self.serverUrl = serverUrl
+
+            /*
+            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
+                self.titleServerUrl = "/"
+            } else {
+                self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
+            }
+
+            // Update
+            let row: XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+            row.title = self.titleServerUrl
+            self.updateFormRow(row)
+            */
+        }
     }
 }
 
@@ -313,9 +337,11 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        let uploadScanDocument = NCUploadScanDocument(images: [])
-        UploadScanDocumentView(uploadScanDocument)
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            let uploadScanDocument = NCUploadScanDocument(images: [], urlBase: appDelegate, serverUrl: "")
+            UploadScanDocumentView(uploadScanDocument)
             // .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
             // .previewDisplayName("iPhone 14")
+        }
     }
 }
