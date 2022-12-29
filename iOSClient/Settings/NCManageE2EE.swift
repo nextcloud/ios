@@ -175,12 +175,10 @@ struct NCViewE2EE: View {
                     Section(header: Text(""), footer: Text(manageE2EE.statusOfService + "\n\n" + "End-to-End Encryption " + versionE2EE)) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
-                                .font(NCBrandSettings.shared.settingsFont)
                         } icon: {
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                 .foregroundColor(.green)
                         }
                     }
@@ -188,12 +186,10 @@ struct NCViewE2EE: View {
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_read_passphrase_", comment: ""))
-                                .font(NCBrandSettings.shared.settingsFont)
                         } icon: {
                             Image(systemName: "eye")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                 .foregroundColor(Color(UIColor.systemGray))
                         }
                         Spacer()
@@ -210,12 +206,10 @@ struct NCViewE2EE: View {
                     HStack {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_remove_", comment: ""))
-                                .font(NCBrandSettings.shared.settingsFont)
                         } icon: {
                             Image(systemName: "trash.circle")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                 .foregroundColor(Color.red)
                         }
                         Spacer()
@@ -242,12 +236,10 @@ struct NCViewE2EE: View {
                         HStack {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))
-                                    .font(NCBrandSettings.shared.settingsFont)
                             } icon: {
                                 Image(systemName: "play.circle")
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                                     .foregroundColor(.green)
                             }
                             Spacer()
@@ -281,12 +273,10 @@ struct DeleteCerificateSection: View {
             HStack {
                 Label {
                     Text("Delete Certificate")
-                        .font(NCBrandSettings.shared.settingsFont)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                         .foregroundColor(Color(UIColor.systemGray))
                 }
                 Spacer()
@@ -305,12 +295,10 @@ struct DeleteCerificateSection: View {
             HStack {
                 Label {
                     Text("Delete PrivateKey")
-                        .font(NCBrandSettings.shared.settingsFont)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: NCBrandSettings.shared.settingsSizeImage, height: NCBrandSettings.shared.settingsSizeImage)
                         .foregroundColor(Color(UIColor.systemGray))
                 }
                 Spacer()
