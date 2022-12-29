@@ -173,19 +173,6 @@ extension NCUploadScanDocument: NCSelectDelegate {
 
             CCUtility.setDirectoryScanDocuments(serverUrl)
             self.serverUrl = serverUrl
-
-            /*
-            if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
-                self.titleServerUrl = "/"
-            } else {
-                self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
-            }
-
-            // Update
-            let row: XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-            row.title = self.titleServerUrl
-            self.updateFormRow(row)
-            */
         }
     }
 }
@@ -204,6 +191,7 @@ struct UploadScanDocumentView: View {
     @State var password: String = ""
     @State var filename: String = ""
     @State var isSecured: Bool = true
+    @State var isPresented = false
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
 
     init(_ uploadScanDocument: NCUploadScanDocument) {
@@ -231,11 +219,11 @@ struct UploadScanDocumentView: View {
                                 .scaledToFit()
                                 .foregroundColor(Color(NCBrandColor.shared.brand))
                         }
-                        Spacer()
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        //
+                        Button("") {
+                            isPresented.toggle()
+                        }.sheet(isPresented: $isPresented) {
+                            NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
+                        }
                     }
                     .complexModifier { view in
                         if #available(iOS 16, *) {
@@ -244,11 +232,13 @@ struct UploadScanDocumentView: View {
                             }
                         }
                     }
+
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
                         TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $filename)
                             .multilineTextAlignment(.trailing)
                     }
+
                     HStack {
                         Group {
                             Text(NSLocalizedString("_password_", comment: ""))
@@ -313,6 +303,28 @@ struct NCButton: ButtonStyle {
             .foregroundColor(.white)
             .clipShape(Capsule())
 
+    }
+}
+
+struct NCSelectRepresentedView: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = UINavigationController
+    @ObservedObject var uploadScanDocument: NCUploadScanDocument
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController?.topViewController as? NCSelect
+
+        viewController?.delegate = uploadScanDocument
+        viewController?.typeOfCommandView = .selectCreateFolder
+        viewController?.includeDirectoryE2EEncryption = true
+
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
     }
 }
 
