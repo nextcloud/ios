@@ -35,8 +35,7 @@ class NCHostingUploadScanDocumentView: NSObject {
         let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
-
-        // vc.title = NSLocalizedString("_save_settings_", comment: "")
+        vc.title = NSLocalizedString("_save_", comment: "")
         return vc
     }
 }
@@ -288,7 +287,7 @@ struct UploadScanDocumentView: View {
                 Button(NSLocalizedString("_save_", comment: "")) {
                     print("ciao")
                 }
-                .buttonStyle(NCButton(disabled: true))
+                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: true))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
@@ -297,7 +296,7 @@ struct UploadScanDocumentView: View {
     }
 }
 
-struct NCButton: ButtonStyle {
+struct ButtonUploadScanDocumenStyle: ButtonStyle {
     var disabled = false
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -306,7 +305,6 @@ struct NCButton: ButtonStyle {
             .background(disabled ? Color(UIColor.systemGray4) : Color(NCBrandColor.shared.brand))
             .foregroundColor(.white)
             .clipShape(Capsule())
-
     }
 }
 
