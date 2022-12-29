@@ -219,11 +219,14 @@ struct UploadScanDocumentView: View {
                                 .scaledToFit()
                                 .foregroundColor(Color(NCBrandColor.shared.brand))
                         }
-                        Button("") {
-                            isPresented.toggle()
-                        }.sheet(isPresented: $isPresented) {
-                            NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
-                        }
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        isPresented.toggle()
+                    }
+                    .sheet(isPresented: $isPresented) {
+                        NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
                     }
                     .complexModifier { view in
                         if #available(iOS 16, *) {
@@ -257,6 +260,7 @@ struct UploadScanDocumentView: View {
                                 .accentColor(.gray)
                         }
                     }
+
                     HStack {
                         Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $uploadScanDocument.isTextRecognition)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
@@ -267,6 +271,7 @@ struct UploadScanDocumentView: View {
                 }
 
                 Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text( NSLocalizedString("_file_size_", comment: "") + " \(uploadScanDocument.size)")) {
+
                     VStack {
                         Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
                             uploadScanDocument.createPDF(quality: quality)
@@ -353,7 +358,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "")
+            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD")
             UploadScanDocumentView(uploadScanDocument)
             // .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
             // .previewDisplayName("iPhone 14")
