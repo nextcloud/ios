@@ -219,7 +219,6 @@ struct UploadScanDocumentView: View {
                                 .scaledToFit()
                                 .foregroundColor(Color(NCBrandColor.shared.brand))
                         }
-                        Spacer()
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
