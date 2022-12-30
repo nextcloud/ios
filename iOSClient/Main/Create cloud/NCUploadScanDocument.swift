@@ -107,7 +107,7 @@ class NCUploadScanDocument: ObservableObject {
         NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
     }
 
-    func createPDF(password: String = "", textRecognition: Bool = false, quality: Double) {
+    func createPDF(password: String = "", isTextRecognition: Bool = false, quality: Double) {
 
         guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
@@ -131,7 +131,7 @@ class NCUploadScanDocument: ObservableObject {
 
             image = changeCompressionImage(image, quality: quality)
             let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-            if textRecognition {
+            if isTextRecognition {
 
             } else {
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
@@ -329,7 +329,7 @@ struct UploadScanDocumentView: View {
                         Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in
                             if !touch {
                                 CCUtility.setQualityScanDocument(quality)
-                                uploadScanDocument.createPDF(quality: quality)
+                                uploadScanDocument.createPDF(password: password, isTextRecognition: isTextRecognition, quality: quality)
                             }
                         })
                         .accentColor(Color(NCBrandColor.shared.brand))
