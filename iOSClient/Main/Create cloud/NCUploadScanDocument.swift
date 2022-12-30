@@ -272,9 +272,6 @@ struct UploadScanDocumentView: View {
                     .onTapGesture {
                         isPresentedSelect = true
                     }
-                    .sheet(isPresented: $isPresentedSelect) {
-                        NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
-                    }
                     .complexModifier { view in
                         if #available(iOS 16, *) {
                             view.alignmentGuide(.listRowSeparatorLeading) { _ in
@@ -352,6 +349,9 @@ struct UploadScanDocumentView: View {
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
+        .sheet(isPresented: $isPresentedSelect) {
+            NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
+        }
         .sheet(isPresented: $isPresentedUploadConflict) {
             NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument, serverUrl: serverUrl, metadatasConflict: metadatasConflict)
         }
