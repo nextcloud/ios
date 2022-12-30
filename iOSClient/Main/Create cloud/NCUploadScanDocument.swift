@@ -42,15 +42,14 @@ class NCHostingUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
-    @Published var userBaseUrl: NCUserBaseUrl
-    @Published var serverUrl: String
-    @Published var fileName: String
-    @Published var size: String = ""
-    @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
-    @Published var metadata = tableMetadata()
-
-    let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
+    var userBaseUrl: NCUserBaseUrl
+    var serverUrl: String
+    var fileName: String
+    var size: String = ""
+    var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+    var metadata = tableMetadata()
     var images: [UIImage]
+    let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
     init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String, fileName: String) {
         self.images = images
