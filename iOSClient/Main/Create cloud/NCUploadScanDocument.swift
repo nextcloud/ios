@@ -160,23 +160,23 @@ class NCUploadScanDocument: ObservableObject {
         case 0:
             baseHeight *= 1
             baseWidth *= 1
-            compressionQuality = 0.3
+            compressionQuality = 0.1
         case 1:
             baseHeight *= 2
             baseWidth *= 2
-            compressionQuality = 0.6
+            compressionQuality = 0.2
         case 2:
             baseHeight *= 4
             baseWidth *= 4
-            compressionQuality = 0.8
+            compressionQuality = 0.4
         case 3:
             baseHeight *= 6
             baseWidth *= 6
-            compressionQuality = 0.9
+            compressionQuality = 0.6
         case 4:
             baseHeight *= 8
             baseWidth *= 8
-            compressionQuality = 1
+            compressionQuality = 0.8
         default:
             break
         }
@@ -207,7 +207,10 @@ class NCUploadScanDocument: ObservableObject {
         let img = UIGraphicsGetImageFromCurrentImageContext()
         let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
         UIGraphicsEndImageContext()
-        return UIImage(data: imageData!) ?? image
+        if let imageData = imageData, let image = UIImage(data: imageData) {
+            return image
+        }
+        return image
     }
 }
 
