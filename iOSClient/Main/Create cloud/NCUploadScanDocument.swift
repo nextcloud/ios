@@ -242,6 +242,7 @@ struct UploadScanDocumentView: View {
     @State var isSecured: Bool = true
     @State var isPresented = false
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
+    @Environment(\.presentationMode) var presentationMode
 
     init(_ uploadScanDocument: NCUploadScanDocument) {
         self.uploadScanDocument = uploadScanDocument
@@ -336,9 +337,10 @@ struct UploadScanDocumentView: View {
                 }
 
                 Button(NSLocalizedString("_save_", comment: "")) {
-                    uploadScanDocument.save(fileName: filename) { dismiss in
-                        
-                    }
+                    // presentationMode.wrappedValue.dismiss()
+                    // uploadScanDocument.save(fileName: filename) { dismiss in
+                    // }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                 }
                 .buttonStyle(ButtonUploadScanDocumenStyle(disabled: true))
                 .frame(maxWidth: .infinity, alignment: .center)

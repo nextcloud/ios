@@ -111,6 +111,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
 
+        NotificationCenter.default.addObserver(self, selector: #selector(dismiss(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDismissScanDocument), object: nil)
+
         loadImage()
     }
 
@@ -154,6 +156,10 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             return true
         }
         return false
+    }
+
+    @objc func dismiss(_ notification: NSNotification) {
+        self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func cancelAction(sender: UIBarButtonItem) {
