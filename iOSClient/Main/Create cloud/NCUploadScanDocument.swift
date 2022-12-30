@@ -32,7 +32,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 
     @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
-        let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
+        let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl, fileName: CCUtility.createFileNameDate("scan", extension: "pdf"))
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_", comment: "")
@@ -44,22 +44,24 @@ class NCUploadScanDocument: ObservableObject {
 
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var serverUrl: String
+    @Published var fileName: String
     @Published var size: String = ""
     @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
 
     let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
     var images: [UIImage]
 
-    init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
+    init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String, fileName: String) {
         self.images = images
         self.userBaseUrl = userBaseUrl
         self.serverUrl = serverUrl
+        self.fileName = fileName
         createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
-    func save(fileName: String, completion: @escaping (_ dismiss: Bool, _ metadatasConflict: [tableMetadata]?, _ serverUrl: String) -> Void) {
+    func save(completion: @escaping (_ dismiss: Bool, _ metadatasConflict: [tableMetadata]?, _ serverUrl: String) -> Void) {
 
-        guard fileName.isEmpty else { return }
+        guard !fileName.isEmpty else { return }
 
         let ext = (fileName as NSString).pathExtension.uppercased()
         var fileNameSave = ""
@@ -221,6 +223,10 @@ extension NCUploadScanDocument: NCSelectDelegate {
 extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+
+        if let metadata = metadatas?.first {
+            self.fileName = metadata.fileName
+        }
     }
 }
 
@@ -231,11 +237,9 @@ struct UploadScanDocumentView: View {
     @State var quality = CCUtility.getQualityScanDocument()
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
-    @State var filename: String = CCUtility.createFileNameDate("scan", extension: "pdf")
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
-
     @State var serverUrl: String = ""
     @State var metadatasConflict: [tableMetadata] = []
 
@@ -282,7 +286,7 @@ struct UploadScanDocumentView: View {
 
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
-                        TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $filename)
+                        TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $uploadScanDocument.fileName)
                             .multilineTextAlignment(.trailing)
                     }
 
@@ -333,7 +337,7 @@ struct UploadScanDocumentView: View {
 
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
-                    uploadScanDocument.save(fileName: filename) { dismiss, metadatasConflict, serverUrl in
+                    uploadScanDocument.save { dismiss, metadatasConflict, serverUrl in
                         if let metadatasConflict = metadatasConflict {
                             self.metadatasConflict = metadatasConflict
                             self.serverUrl = serverUrl
@@ -343,7 +347,7 @@ struct UploadScanDocumentView: View {
                         }
                     }
                 }
-                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: filename.isEmpty))
+                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: uploadScanDocument.fileName.isEmpty))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
@@ -441,7 +445,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD")
+            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD", fileName: CCUtility.createFileNameDate("scan", extension: "pdf"))
             UploadScanDocumentView(uploadScanDocument)
             // .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
             // .previewDisplayName("iPhone 14")
