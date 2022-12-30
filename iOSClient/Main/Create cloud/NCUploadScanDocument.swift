@@ -224,10 +224,9 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
-        if let metadata = metadatas?.first {
-            uploadMetadata()
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
-        }
+        if metadatas == nil { return }
+        uploadMetadata()
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
     }
 }
 
