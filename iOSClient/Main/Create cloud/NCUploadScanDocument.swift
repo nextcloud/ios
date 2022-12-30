@@ -339,9 +339,11 @@ struct UploadScanDocumentView: View {
 
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
-                    // uploadScanDocument.save(fileName: filename) { dismiss in
-                    // }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                    uploadScanDocument.save(fileName: filename) { dismiss in
+                        if dismiss {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                        }
+                    }
                 }
                 .buttonStyle(ButtonUploadScanDocumenStyle(disabled: filename.isEmpty))
                 .frame(maxWidth: .infinity, alignment: .center)
