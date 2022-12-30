@@ -42,10 +42,11 @@ class NCHostingUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
+    @Published var fileName: String
+    @Published var size: String = ""
+
     var userBaseUrl: NCUserBaseUrl
     var serverUrl: String
-    var fileName: String
-    var size: String = ""
     var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
     var metadata = tableMetadata()
     var images: [UIImage]
@@ -321,9 +322,11 @@ struct UploadScanDocumentView: View {
                 Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text( NSLocalizedString("_file_size_", comment: "") + " \(uploadScanDocument.size)")) {
 
                     VStack {
-                        Slider(value: $quality, in: 0...4, step: 1).onChange(of: quality, perform: { quality in
-                            CCUtility.setQualityScanDocument(quality)
-                            uploadScanDocument.createPDF(quality: quality)
+                        Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
+                            if !touch {
+                                CCUtility.setQualityScanDocument(quality)
+                                uploadScanDocument.createPDF(quality: quality)
+                            }
                         })
                         .accentColor(Color(NCBrandColor.shared.brand))
                     }
