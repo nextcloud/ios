@@ -211,7 +211,7 @@ class NCUploadScanDocument: ObservableObject {
     }
 }
 
-// MARK: -  Delegate
+// MARK: - Delegate
 
 extension NCUploadScanDocument: NCSelectDelegate {
 
@@ -235,7 +235,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
     }
 }
 
-// MARK: -  View
+// MARK: - View
 
 struct UploadScanDocumentView: View {
 
