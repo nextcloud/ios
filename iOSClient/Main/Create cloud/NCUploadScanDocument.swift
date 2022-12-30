@@ -57,7 +57,7 @@ class NCUploadScanDocument: ObservableObject {
         createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
-    func save(fileName: String, completion: @escaping (_ dismiss: Bool) -> Void) {
+    func save(fileName: String, completion: @escaping (_ dismiss: Bool, _ metadatasConflict: [tableMetadata]?, _ serverUrl: String) -> Void) {
 
         guard fileName.isEmpty else { return }
 
@@ -88,14 +88,7 @@ class NCUploadScanDocument: ObservableObject {
 
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
 
-            guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
-
-            conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
-            conflict.serverUrl = serverUrl
-            conflict.metadatasUploadInConflict = [metadata]
-            conflict.delegate = self
-
-            completion(false)
+            completion(false, [metadata], serverUrl)
 
         } else {
 
@@ -104,7 +97,7 @@ class NCUploadScanDocument: ObservableObject {
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameGenerateExport)
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
 
-            completion(true)
+            completion(true, nil, serverUrl)
         }
     }
 
@@ -240,7 +233,7 @@ struct UploadScanDocumentView: View {
     @State var isSecuredPassword: Bool = true
     @State var filename: String = CCUtility.createFileNameDate("scan", extension: "pdf")
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
-    @State var isPresentedSelect = false
+    @State var isPresented = true
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
     @Environment(\.presentationMode) var presentationMode
@@ -273,9 +266,9 @@ struct UploadScanDocumentView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        isPresentedSelect = true
+                        isPresented = true
                     }
-                    .sheet(isPresented: $isPresentedSelect) {
+                    .sheet(isPresented: $isPresented) {
                         NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
                     }
                     .complexModifier { view in
@@ -339,8 +332,12 @@ struct UploadScanDocumentView: View {
 
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
-                    uploadScanDocument.save(fileName: filename) { dismiss in
-                        if dismiss {
+                    uploadScanDocument.save(fileName: filename) { dismiss, metadatasConflict, serverUrl in
+                        if let metadatas = metadatasConflict {
+                            self.sheet(isPresented: $isPresented) {
+                                NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument, serverUrl: serverUrl, metadatas: metadatas)
+                            }
+                        } else if dismiss {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                         }
                     }
@@ -385,6 +382,30 @@ struct NCSelectRepresentedView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+    }
+}
+
+struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = NCCreateFormUploadConflict
+    @ObservedObject var uploadScanDocument: NCUploadScanDocument
+    @State var serverUrl: String = ""
+    @State var metadatas: [tableMetadata] = []
+
+    func makeUIViewController(context: Context) -> NCCreateFormUploadConflict {
+
+        let storyboard = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as? NCCreateFormUploadConflict
+
+        viewController?.delegate = uploadScanDocument
+        viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+        viewController?.serverUrl = serverUrl
+        viewController?.metadatasUploadInConflict = metadatas
+
+        return viewController!
+    }
+
+    func updateUIViewController(_ uiViewController: NCCreateFormUploadConflict, context: Context) {
     }
 }
 
