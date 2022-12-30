@@ -40,7 +40,7 @@ class NCHostingUploadScanDocumentView: NSObject {
     }
 }
 
-// MARK: -  Class
+// MARK: - Class
 
 class NCUploadScanDocument: ObservableObject {
 
