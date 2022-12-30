@@ -94,6 +94,7 @@ class NCUploadScanDocument: ObservableObject {
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
             completion(true)
         } else {
+            uploadMetadata()
             completion(false)
         }
     }
