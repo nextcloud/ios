@@ -237,10 +237,11 @@ struct UploadScanDocumentView: View {
 
     @State var quality = CCUtility.getQualityScanDocument()
     @State var password: String = ""
+    @State var isSecuredPassword: Bool = true
     @State var filename: String = CCUtility.createFileNameDate("scan", extension: "pdf")
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
-    @State var isSecured: Bool = true
-    @State var isPresented = false
+    @State var isPresentedSelect = false
+
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
     @Environment(\.presentationMode) var presentationMode
 
@@ -272,9 +273,9 @@ struct UploadScanDocumentView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        isPresented.toggle()
+                        isPresentedSelect = true
                     }
-                    .sheet(isPresented: $isPresented) {
+                    .sheet(isPresented: $isPresentedSelect) {
                         NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
                     }
                     .complexModifier { view in
@@ -294,7 +295,7 @@ struct UploadScanDocumentView: View {
                     HStack {
                         Group {
                             Text(NSLocalizedString("_password_", comment: ""))
-                            if isSecured {
+                            if isSecuredPassword {
                                 SecureField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
                                     .multilineTextAlignment(.trailing)
                             } else {
@@ -303,9 +304,9 @@ struct UploadScanDocumentView: View {
                             }
                         }
                         Button(action: {
-                            isSecured.toggle()
+                            isSecuredPassword.toggle()
                         }) {
-                            Image(systemName: self.isSecured ? "eye.slash" : "eye")
+                            Image(systemName: self.isSecuredPassword ? "eye.slash" : "eye")
                                 .accentColor(.gray)
                         }
                     }
@@ -342,7 +343,7 @@ struct UploadScanDocumentView: View {
                     // }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                 }
-                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: true))
+                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: filename.isEmpty))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
