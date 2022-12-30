@@ -40,6 +40,8 @@ class NCHostingUploadScanDocumentView: NSObject {
     }
 }
 
+// MARK: -  Class
+
 class NCUploadScanDocument: ObservableObject {
 
     @Published var fileName: String
@@ -209,6 +211,8 @@ class NCUploadScanDocument: ObservableObject {
     }
 }
 
+// MARK: -  Delegate
+
 extension NCUploadScanDocument: NCSelectDelegate {
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
@@ -231,7 +235,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
     }
 }
 
-// MARK: - Preview / Test
+// MARK: -  View
 
 struct UploadScanDocumentView: View {
 
@@ -375,6 +379,8 @@ struct ButtonUploadScanDocumenStyle: ButtonStyle {
     }
 }
 
+// MARK: - UIViewControllerRepresentable
+
 struct NCSelectRepresentedView: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = UINavigationController
@@ -440,6 +446,8 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
     }
 }
+
+// MARK: - Preview
 
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
