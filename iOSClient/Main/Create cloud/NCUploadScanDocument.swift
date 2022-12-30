@@ -161,22 +161,18 @@ class NCUploadScanDocument: ObservableObject {
         case 0:
             baseHeight *= 1
             baseWidth *= 1
-            compressionQuality = 0.1
+            compressionQuality = 0.2
         case 1:
             baseHeight *= 2
             baseWidth *= 2
-            compressionQuality = 0.2
+            compressionQuality = 0.4
         case 2:
+            baseHeight *= 3
+            baseWidth *= 3
+            compressionQuality = 0.6
+        case 3:
             baseHeight *= 4
             baseWidth *= 4
-            compressionQuality = 0.4
-        case 3:
-            baseHeight *= 6
-            baseWidth *= 6
-            compressionQuality = 0.6
-        case 4:
-            baseHeight *= 8
-            baseWidth *= 8
             compressionQuality = 0.8
         default:
             break
@@ -330,7 +326,7 @@ struct UploadScanDocumentView: View {
                 Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text( NSLocalizedString("_file_size_", comment: "") + " \(uploadScanDocument.size)")) {
 
                     VStack {
-                        Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
+                        Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in
                             if !touch {
                                 CCUtility.setQualityScanDocument(quality)
                                 uploadScanDocument.createPDF(quality: quality)
