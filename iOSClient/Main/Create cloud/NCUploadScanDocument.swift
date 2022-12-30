@@ -59,7 +59,7 @@ class NCUploadScanDocument: ObservableObject {
         createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
-    func save(completion: @escaping (_ dismiss: Bool) -> Void) {
+    func save(completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
         guard !fileName.isEmpty else { return }
 
@@ -89,18 +89,18 @@ class NCUploadScanDocument: ObservableObject {
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
-
-            completion(false)
-
-        } else {
-
-            guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
-            NCUtilityFileSystem.shared.copyFile(atPath: fileNameDefault, toPath: fileNameGenerateExport)
-            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameGenerateExport)
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
-
             completion(true)
+        } else {
+            completion(false)
         }
+    }
+
+    func uploadMetadata() {
+
+        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
+        NCUtilityFileSystem.shared.copyFile(atPath: fileNameDefault, toPath: fileNameGenerateExport)
+        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameGenerateExport)
+        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
     }
 
     func createPDF(password: String = "", textRecognition: Bool = false, quality: Double) {
@@ -225,7 +225,8 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
         if let metadata = metadatas?.first {
-            self.fileName = metadata.fileName
+            uploadMetadata()
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
         }
     }
 }
@@ -337,11 +338,11 @@ struct UploadScanDocumentView: View {
 
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
-                    uploadScanDocument.save { dismiss in
-                        if dismiss {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
-                        } else {
+                    uploadScanDocument.save { openConflictViewController in
+                        if openConflictViewController {
                             isPresentedUploadConflict = true
+                        } else {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                         }
                     }
                 }
