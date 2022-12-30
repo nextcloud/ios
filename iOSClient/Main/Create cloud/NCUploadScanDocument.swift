@@ -47,6 +47,7 @@ class NCUploadScanDocument: ObservableObject {
     @Published var fileName: String
     @Published var size: String = ""
     @Published var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+    @Published var metadata = tableMetadata()
 
     let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
     var images: [UIImage]
@@ -59,7 +60,7 @@ class NCUploadScanDocument: ObservableObject {
         createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
-    func save(completion: @escaping (_ dismiss: Bool, _ metadatasConflict: [tableMetadata]?, _ serverUrl: String) -> Void) {
+    func save(completion: @escaping (_ dismiss: Bool) -> Void) {
 
         guard !fileName.isEmpty else { return }
 
@@ -73,16 +74,16 @@ class NCUploadScanDocument: ObservableObject {
         }
 
         // Create metadata for upload
-        let metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
-                                                              user: userBaseUrl.user,
-                                                              userId: userBaseUrl.userId,
-                                                              fileName: fileNameSave,
-                                                              fileNameView: fileNameSave,
-                                                              ocId: UUID().uuidString,
-                                                              serverUrl: serverUrl,
-                                                              urlBase: userBaseUrl.urlBase,
-                                                              url: "",
-                                                              contentType: "")
+        metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
+                                                          user: userBaseUrl.user,
+                                                          userId: userBaseUrl.userId,
+                                                          fileName: fileNameSave,
+                                                          fileNameView: fileNameSave,
+                                                          ocId: UUID().uuidString,
+                                                          serverUrl: serverUrl,
+                                                          urlBase: userBaseUrl.urlBase,
+                                                          url: "",
+                                                          contentType: "")
 
         metadata.session = NCNetworking.shared.sessionIdentifierBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -90,7 +91,7 @@ class NCUploadScanDocument: ObservableObject {
 
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
 
-            completion(false, [metadata], serverUrl)
+            completion(false)
 
         } else {
 
@@ -99,7 +100,7 @@ class NCUploadScanDocument: ObservableObject {
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameGenerateExport)
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
 
-            completion(true, nil, serverUrl)
+            completion(true)
         }
     }
 
@@ -240,8 +241,8 @@ struct UploadScanDocumentView: View {
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
-    @State var serverUrl: String = ""
-    @State var metadatasConflict: [tableMetadata] = []
+
+    var metadatasConflict: [tableMetadata] = []
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
     @Environment(\.presentationMode) var presentationMode
@@ -337,13 +338,11 @@ struct UploadScanDocumentView: View {
 
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
-                    uploadScanDocument.save { dismiss, metadatasConflict, serverUrl in
-                        if let metadatasConflict = metadatasConflict {
-                            self.metadatasConflict = metadatasConflict
-                            self.serverUrl = serverUrl
-                            isPresentedUploadConflict = true
-                        } else if dismiss {
+                    uploadScanDocument.save { dismiss in
+                        if dismiss {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                        } else {
+                            isPresentedUploadConflict = true
                         }
                     }
                 }
@@ -357,7 +356,7 @@ struct UploadScanDocumentView: View {
             NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument, serverUrl: serverUrl, metadatasConflict: metadatasConflict)
+            NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument)
         }
     }
 }
@@ -400,8 +399,6 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = NCCreateFormUploadConflict
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
-    @State var serverUrl: String = ""
-    @State var metadatasConflict: [tableMetadata] = []
 
     func makeUIViewController(context: Context) -> NCCreateFormUploadConflict {
 
@@ -410,8 +407,8 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
 
         viewController?.delegate = uploadScanDocument
         viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
-        viewController?.serverUrl = serverUrl
-        viewController?.metadatasUploadInConflict = metadatasConflict
+        viewController?.serverUrl = uploadScanDocument.serverUrl
+        viewController?.metadatasUploadInConflict = [uploadScanDocument.metadata]
 
         return viewController!
     }
