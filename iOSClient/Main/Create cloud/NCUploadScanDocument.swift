@@ -233,7 +233,11 @@ struct UploadScanDocumentView: View {
     @State var isSecuredPassword: Bool = true
     @State var filename: String = CCUtility.createFileNameDate("scan", extension: "pdf")
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
-    @State var isPresented = true
+    @State var isPresentedSelect = false
+    @State var isPresentedUploadConflict = false
+
+    @State var serverUrl: String = ""
+    @State var metadatasConflict: [tableMetadata] = []
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
     @Environment(\.presentationMode) var presentationMode
@@ -266,9 +270,9 @@ struct UploadScanDocumentView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        isPresented = true
+                        isPresentedSelect = true
                     }
-                    .sheet(isPresented: $isPresented) {
+                    .sheet(isPresented: $isPresentedSelect) {
                         NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
                     }
                     .complexModifier { view in
@@ -333,10 +337,10 @@ struct UploadScanDocumentView: View {
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
                     uploadScanDocument.save(fileName: filename) { dismiss, metadatasConflict, serverUrl in
-                        if let metadatas = metadatasConflict {
-                            self.sheet(isPresented: $isPresented) {
-                                NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument, serverUrl: serverUrl, metadatas: metadatas)
-                            }
+                        if let metadatasConflict = metadatasConflict {
+                            self.metadatasConflict = metadatasConflict
+                            self.serverUrl = serverUrl
+                            isPresentedUploadConflict = true
                         } else if dismiss {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                         }
@@ -348,6 +352,9 @@ struct UploadScanDocumentView: View {
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
+        .sheet(isPresented: $isPresentedUploadConflict) {
+            NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument, serverUrl: serverUrl, metadatasConflict: metadatasConflict)
+        }
     }
 }
 
@@ -390,7 +397,7 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
     typealias UIViewControllerType = NCCreateFormUploadConflict
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
     @State var serverUrl: String = ""
-    @State var metadatas: [tableMetadata] = []
+    @State var metadatasConflict: [tableMetadata] = []
 
     func makeUIViewController(context: Context) -> NCCreateFormUploadConflict {
 
@@ -400,7 +407,7 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
         viewController?.delegate = uploadScanDocument
         viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
         viewController?.serverUrl = serverUrl
-        viewController?.metadatasUploadInConflict = metadatas
+        viewController?.metadatasUploadInConflict = metadatasConflict
 
         return viewController!
     }
