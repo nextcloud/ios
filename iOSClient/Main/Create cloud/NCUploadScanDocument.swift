@@ -335,7 +335,7 @@ struct UploadScanDocumentView: View {
                         })
                         .accentColor(Color(NCBrandColor.shared.brand))
                     }
-                    PDFKitRepresentedView(url: $uploadScanDocument.url)
+                    PDFKitRepresentedView(quality: $quality)
                         .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
                 }.complexModifier { view in
                     if #available(iOS 15, *) {
@@ -429,7 +429,9 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
 struct PDFKitRepresentedView: UIViewRepresentable {
 
     typealias UIView = PDFView
-    @Binding var url: URL
+    @Binding var quality: Double
+    @State private var internalQuality: Double = -1
+    let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
     func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
         let pdfView = PDFView()
@@ -441,7 +443,10 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
-        uiView.document = PDFDocument(url: url)
+        if internalQuality != quality {
+            uiView.document = PDFDocument(url: URL(fileURLWithPath: fileNameDefault))
+            internalQuality = quality
+        }
     }
 }
 
