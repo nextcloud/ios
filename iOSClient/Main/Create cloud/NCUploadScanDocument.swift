@@ -49,6 +49,10 @@ class NCUploadScanDocument: ObservableObject {
     var metadata = tableMetadata()
     var images: [UIImage]
 
+    var password: String = ""
+    var isTextRecognition: Bool = false
+    var quality: Double = 0
+
     init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.images = images
         self.userBaseUrl = userBaseUrl
@@ -57,23 +61,24 @@ class NCUploadScanDocument: ObservableObject {
 
     func save(fileName: String, password: String = "", isTextRecognition: Bool = false, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
-        guard !fileName.isEmpty else { return }
-
         let ext = (fileName as NSString).pathExtension.uppercased()
-        var fileNameSave = ""
+        var fileNameMetadata = ""
 
         if ext.isEmpty {
-            fileNameSave = fileName + ".pdf"
+            fileNameMetadata = fileName + ".pdf"
         } else {
-            fileNameSave = (fileName as NSString).deletingPathExtension + ".pdf"
+            fileNameMetadata = (fileName as NSString).deletingPathExtension + ".pdf"
         }
 
-        // Create metadata for upload
+        self.password = password
+        self.isTextRecognition = isTextRecognition
+        self.quality = quality
+
         metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
                                                           user: userBaseUrl.user,
                                                           userId: userBaseUrl.userId,
-                                                          fileName: fileNameSave,
-                                                          fileNameView: fileNameSave,
+                                                          fileName: fileNameMetadata,
+                                                          fileNameView: fileNameMetadata,
                                                           ocId: UUID().uuidString,
                                                           serverUrl: serverUrl,
                                                           urlBase: userBaseUrl.urlBase,
@@ -84,24 +89,15 @@ class NCUploadScanDocument: ObservableObject {
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
-        if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
+        if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameMetadata) != nil {
             completion(true)
         } else {
-            createPDF(metadata: metadata, password: password, isTextRecognition: isTextRecognition, quality: quality)
+            createPDF(metadata: metadata)
             completion(false)
         }
     }
 
-    /*
-    func uploadMetadata() {
-
-        guard let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
-        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
-    }
-    */
-
-    func createPDF(metadata: tableMetadata, password: String, isTextRecognition: Bool, quality: Double) {
+    func createPDF(metadata: tableMetadata) {
 
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let pdfData = NSMutableData()
@@ -241,8 +237,8 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
-        if metadatas == nil { return }
-        //uploadMetadata()
+        guard let metadata = metadatas?.first else { return }
+        createPDF(metadata: metadata)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
     }
 }
