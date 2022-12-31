@@ -346,26 +346,24 @@ struct UploadScanDocumentView: View {
                     }
                     PDFKitRepresentedView(quality: $quality, uploadScanDocument: uploadScanDocument)
                         .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.5)
-
-                    Button(NSLocalizedString("_save_", comment: "")) {
-                        uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
-                            if openConflictViewController {
-                                isPresentedUploadConflict = true
-                            } else {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
-                            }
-                        }
-                    }
-                    .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowBackground(Color(UIColor.systemGroupedBackground))
-
                 }.complexModifier { view in
                     if #available(iOS 15, *) {
                         view.listRowSeparator(.hidden)
                     }
                 }
 
+                Button(NSLocalizedString("_save_", comment: "")) {
+                    uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
+                        if openConflictViewController {
+                            isPresentedUploadConflict = true
+                        } else {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                        }
+                    }
+                }
+                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
@@ -441,7 +439,6 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     typealias UIView = PDFView
     @Binding var quality: Double
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
-    let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
     func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
         let pdfView = PDFView()

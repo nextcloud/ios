@@ -255,7 +255,6 @@
 		F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F765E9CD295C585800A09ED8 /* NCUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765E9CC295C585800A09ED8 /* NCUploadScanDocument.swift */; };
-		F765E9CF295C684F00A09ED8 /* Reasons to use Nextcloud.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F765E9CE295C684F00A09ED8 /* Reasons to use Nextcloud.pdf */; };
 		F765F73125237E3F00391DBE /* NCRecent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765F72F25237E3F00391DBE /* NCRecent.swift */; };
 		F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F765F73025237E3F00391DBE /* NCRecent.storyboard */; };
 		F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
@@ -869,7 +868,6 @@
 		F765608A23BF80A400765969 /* SwiftEntryKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftEntryKit.framework; path = Carthage/Build/iOS/SwiftEntryKit.framework; sourceTree = "<group>"; };
 		F765608E23BF813500765969 /* NCContentPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCContentPresenter.swift; sourceTree = "<group>"; };
 		F765E9CC295C585800A09ED8 /* NCUploadScanDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUploadScanDocument.swift; sourceTree = "<group>"; };
-		F765E9CE295C684F00A09ED8 /* Reasons to use Nextcloud.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Reasons to use Nextcloud.pdf"; sourceTree = SOURCE_ROOT; };
 		F765F72F25237E3F00391DBE /* NCRecent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCRecent.swift; sourceTree = "<group>"; };
 		F765F73025237E3F00391DBE /* NCRecent.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCRecent.storyboard; sourceTree = "<group>"; };
 		F76673EC22C901F5007ED366 /* FileProviderDomain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderDomain.swift; sourceTree = "<group>"; };
@@ -2167,7 +2165,6 @@
 		F7F67BAB1A24D27800EE80DA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F765E9CE295C684F00A09ED8 /* Reasons to use Nextcloud.pdf */,
 				F7F4F0FB27ECDBDA008676F9 /* Font */,
 				F72B60941A24F04E004EF66F /* Localizations */,
 			);
@@ -2753,7 +2750,6 @@
 				F70753F72542A9C000972D44 /* NCViewerMediaPage.storyboard in Resources */,
 				F70A58C024D0545100DED00D /* NCCapabilitiesViewController.storyboard in Resources */,
 				F7F4F10627ECDBDB008676F9 /* Inconsolata-Medium.ttf in Resources */,
-				F765E9CF295C684F00A09ED8 /* Reasons to use Nextcloud.pdf in Resources */,
 				F749C10D23C4A5340027D966 /* NCIntro.storyboard in Resources */,
 				F7A60F87292D215000FCE1F2 /* NCTalkAccounts.storyboard in Resources */,
 				F7239877253D86D300257F49 /* NCEmptyView.xib in Resources */,
