@@ -44,14 +44,14 @@ class NCHostingUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
-    var userBaseUrl: NCUserBaseUrl
-    var serverUrl: String
-    var metadata = tableMetadata()
-    var images: [UIImage]
+    internal var userBaseUrl: NCUserBaseUrl
+    internal var serverUrl: String
+    internal var metadata = tableMetadata()
+    internal var images: [UIImage]
 
-    var password: String = ""
-    var isTextRecognition: Bool = false
-    var quality: Double = 0
+    internal var password: String = ""
+    internal var isTextRecognition: Bool = false
+    internal var quality: Double = 0
 
     init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.images = images
