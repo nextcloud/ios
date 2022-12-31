@@ -32,7 +32,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 
     @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
-        let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl, fileName: "Scan.pdf")
+        let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_", comment: "")
@@ -44,8 +44,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
-    @Published var fileName: String
-
+    var fileName: String = ""
     var userBaseUrl: NCUserBaseUrl
     var serverUrl: String
     var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
@@ -53,11 +52,10 @@ class NCUploadScanDocument: ObservableObject {
     var images: [UIImage]
     let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
-    init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String, fileName: String) {
+    init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.images = images
         self.userBaseUrl = userBaseUrl
         self.serverUrl = serverUrl
-        self.fileName = fileName
     }
 
     func save(completion: @escaping (_ openConflictViewController: Bool) -> Void) {
@@ -467,7 +465,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD", fileName: "Scan.pdf")
+            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD")
             UploadScanDocumentView(uploadScanDocument)
         }
     }
