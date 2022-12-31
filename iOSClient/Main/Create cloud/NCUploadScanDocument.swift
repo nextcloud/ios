@@ -45,7 +45,6 @@ class NCHostingUploadScanDocumentView: NSObject {
 class NCUploadScanDocument: ObservableObject {
 
     @Published var fileName: String
-    @Published var size: String = ""
 
     var userBaseUrl: NCUserBaseUrl
     var serverUrl: String
@@ -59,7 +58,6 @@ class NCUploadScanDocument: ObservableObject {
         self.userBaseUrl = userBaseUrl
         self.serverUrl = serverUrl
         self.fileName = fileName
-        createPDF(quality: CCUtility.getQualityScanDocument())
     }
 
     func save(completion: @escaping (_ openConflictViewController: Bool) -> Void) {
@@ -107,6 +105,30 @@ class NCUploadScanDocument: ObservableObject {
         NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
     }
 
+    func createPDFPreview(quality: Double) {
+
+        guard !images.isEmpty else { return }
+        let pdfData = NSMutableData()
+
+        UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+
+        if var image = images.first {
+            image = changeCompressionImage(image, quality: quality)
+            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+            image.draw(in: bounds)
+        }
+
+        UIGraphicsEndPDFContext()
+
+        do {
+            url = URL(fileURLWithPath: fileNameDefault)
+            try pdfData.write(to: url, options: .atomic)
+        } catch {
+            print("error catched")
+        }
+    }
+
     func createPDF(password: String = "", isTextRecognition: Bool = false, quality: Double) {
 
         guard !images.isEmpty else { return }
@@ -148,8 +170,6 @@ class NCUploadScanDocument: ObservableObject {
         } catch {
             print("error catched")
         }
-
-        size = CCUtility.transformedSize(NCUtilityFileSystem.shared.getFileSize(filePath: fileNameDefault))
     }
 
     func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
@@ -324,18 +344,18 @@ struct UploadScanDocumentView: View {
                     }
                 }
 
-                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text( NSLocalizedString("_file_size_", comment: "") + " \(uploadScanDocument.size)")) {
+                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
 
                     VStack {
                         Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in
                             if !touch {
                                 CCUtility.setQualityScanDocument(quality)
-                                uploadScanDocument.createPDF(password: password, isTextRecognition: isTextRecognition, quality: quality)
+                                // uploadScanDocument.createPDF(password: password, isTextRecognition: isTextRecognition, quality: quality)
                             }
                         })
                         .accentColor(Color(NCBrandColor.shared.brand))
                     }
-                    PDFKitRepresentedView(quality: $quality)
+                    PDFKitRepresentedView(quality: $quality, uploadScanDocument: uploadScanDocument)
                         .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
                 }.complexModifier { view in
                     if #available(iOS 15, *) {
@@ -430,7 +450,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
     typealias UIView = PDFView
     @Binding var quality: Double
-    @State private var internalQuality: Double = -1
+    @ObservedObject var uploadScanDocument: NCUploadScanDocument
     let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
     func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
@@ -443,10 +463,8 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
-        if internalQuality != quality {
-            uiView.document = PDFDocument(url: URL(fileURLWithPath: fileNameDefault))
-            internalQuality = quality
-        }
+        uploadScanDocument.createPDFPreview(quality: quality)
+        uiView.document = PDFDocument(url: URL(fileURLWithPath: fileNameDefault))
     }
 }
 
