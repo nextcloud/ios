@@ -345,25 +345,27 @@ struct UploadScanDocumentView: View {
                         .accentColor(Color(NCBrandColor.shared.brand))
                     }
                     PDFKitRepresentedView(quality: $quality, uploadScanDocument: uploadScanDocument)
-                        .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
+                        .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.5)
+
+                    Button(NSLocalizedString("_save_", comment: "")) {
+                        uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
+                            if openConflictViewController {
+                                isPresentedUploadConflict = true
+                            } else {
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                            }
+                        }
+                    }
+                    .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color(UIColor.systemGroupedBackground))
+
                 }.complexModifier { view in
                     if #available(iOS 15, *) {
                         view.listRowSeparator(.hidden)
                     }
                 }
 
-                Button(NSLocalizedString("_save_", comment: "")) {
-                    uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
-                        if openConflictViewController {
-                            isPresentedUploadConflict = true
-                        } else {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
-                        }
-                    }
-                }
-                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
-                .frame(maxWidth: .infinity, alignment: .center)
-                .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
