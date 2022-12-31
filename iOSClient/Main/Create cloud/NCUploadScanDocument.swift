@@ -226,7 +226,6 @@ extension NCUploadScanDocument: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
 
         if let serverUrl = serverUrl {
-
             CCUtility.setDirectoryScanDocument(serverUrl)
             self.serverUrl = serverUrl
         }
@@ -237,9 +236,10 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
-        guard let metadata = metadatas?.first else { return }
-        createPDF(metadata: metadata)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+        if let metadata = metadatas?.first {
+            createPDF(metadata: metadata)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+        }
     }
 }
 
