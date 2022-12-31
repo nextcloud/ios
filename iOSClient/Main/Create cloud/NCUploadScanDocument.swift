@@ -345,7 +345,7 @@ struct UploadScanDocumentView: View {
                         .accentColor(Color(NCBrandColor.shared.brand))
                     }
                     PDFKitRepresentedView(quality: $quality, uploadScanDocument: uploadScanDocument)
-                        .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.5)
+                        .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.6)
                 }.complexModifier { view in
                     if #available(iOS 15, *) {
                         view.listRowSeparator(.hidden)
