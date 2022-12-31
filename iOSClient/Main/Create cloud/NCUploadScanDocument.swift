@@ -105,9 +105,8 @@ class NCUploadScanDocument: ObservableObject {
         NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
     }
 
-    func createPDFPreview(quality: Double) {
+    func createPDFPreview(quality: Double) -> Data {
 
-        guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
 
         UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
@@ -121,12 +120,7 @@ class NCUploadScanDocument: ObservableObject {
 
         UIGraphicsEndPDFContext()
 
-        do {
-            url = URL(fileURLWithPath: fileNameDefault)
-            try pdfData.write(to: url, options: .atomic)
-        } catch {
-            print("error catched")
-        }
+        return pdfData as Data
     }
 
     func createPDF(password: String = "", isTextRecognition: Bool = false, quality: Double) {
@@ -463,8 +457,8 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
-        uploadScanDocument.createPDFPreview(quality: quality)
-        uiView.document = PDFDocument(url: URL(fileURLWithPath: fileNameDefault))
+        let data = uploadScanDocument.createPDFPreview(quality: quality)
+        uiView.document = PDFDocument(data: data)
     }
 }
 
