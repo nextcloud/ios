@@ -132,7 +132,8 @@ class NCUploadScanDocument: ObservableObject {
             image = changeCompressionImage(image, quality: quality)
             let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
             if isTextRecognition {
-
+                UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                image.draw(in: bounds)
             } else {
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
@@ -427,8 +428,8 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
 
 struct PDFKitRepresentedView: UIViewRepresentable {
 
-    @Binding var url: URL
     typealias UIView = PDFView
+    @Binding var url: URL
 
     func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
         let pdfView = PDFView()
