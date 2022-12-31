@@ -352,7 +352,6 @@ struct UploadScanDocumentView: View {
                 }
 
                 Button(NSLocalizedString("_save_", comment: "")) {
-                    // presentationMode.wrappedValue.dismiss()
                     uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
                         if openConflictViewController {
                             isPresentedUploadConflict = true
