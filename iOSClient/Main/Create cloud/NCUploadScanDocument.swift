@@ -46,10 +46,8 @@ class NCUploadScanDocument: ObservableObject {
 
     var userBaseUrl: NCUserBaseUrl
     var serverUrl: String
-    var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
     var metadata = tableMetadata()
     var images: [UIImage]
-    let fileNameDefault = NSTemporaryDirectory() + "scandocument.pdf"
 
     init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.images = images
@@ -57,7 +55,7 @@ class NCUploadScanDocument: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
+    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
         guard !fileName.isEmpty else { return }
 
@@ -89,40 +87,23 @@ class NCUploadScanDocument: ObservableObject {
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
             completion(true)
         } else {
-            uploadMetadata()
+            createPDF(metadata: metadata, password: password, isTextRecognition: isTextRecognition, quality: quality)
             completion(false)
         }
     }
 
+    /*
     func uploadMetadata() {
 
-        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
-        NCUtilityFileSystem.shared.copyFile(atPath: fileNameDefault, toPath: fileNameGenerateExport)
-        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameGenerateExport)
+        guard let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
+        metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
         NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
     }
+    */
 
-    func createPDFPreview(quality: Double) -> Data {
+    func createPDF(metadata: tableMetadata, password: String, isTextRecognition: Bool, quality: Double) {
 
-        let pdfData = NSMutableData()
-
-        UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
-
-        if var image = images.first {
-            image = changeCompressionImage(image, quality: quality)
-            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-            image.draw(in: bounds)
-        }
-
-        UIGraphicsEndPDFContext()
-
-        return pdfData as Data
-    }
-
-    func createPDF(fileName: String, password: String = "", isTextRecognition: Bool = false, quality: Double) {
-
-        guard !images.isEmpty else { return }
+        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let pdfData = NSMutableData()
 
         if password.isEmpty {
@@ -156,11 +137,30 @@ class NCUploadScanDocument: ObservableObject {
         UIGraphicsEndPDFContext()
 
         do {
-            url = URL(fileURLWithPath: fileNameDefault)
-            try pdfData.write(to: url, options: .atomic)
+            try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
         } catch {
             print("error catched")
         }
+    }
+
+    func createPDFPreview(quality: Double) -> Data {
+
+        let pdfData = NSMutableData()
+
+        UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+
+        if var image = images.first {
+            image = changeCompressionImage(image, quality: quality)
+            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+            image.draw(in: bounds)
+        }
+
+        UIGraphicsEndPDFContext()
+
+        return pdfData as Data
     }
 
     func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
@@ -242,7 +242,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
         if metadatas == nil { return }
-        uploadMetadata()
+        //uploadMetadata()
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
     }
 }
@@ -357,7 +357,7 @@ struct UploadScanDocumentView: View {
 
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
-                    uploadScanDocument.save(fileName: fileName) { openConflictViewController in
+                    uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
                         if openConflictViewController {
                             isPresentedUploadConflict = true
                         } else {
