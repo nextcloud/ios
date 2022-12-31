@@ -32,7 +32,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 
     @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
-        let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl, fileName: CCUtility.createFileNameDate("scan", extension: "pdf"))
+        let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl, fileName: "Scan.pdf")
         let details = UploadScanDocumentView(uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_", comment: "")
@@ -165,15 +165,15 @@ class NCUploadScanDocument: ObservableObject {
         case 1:
             baseHeight *= 2
             baseWidth *= 2
-            compressionQuality = 0.4
+            compressionQuality = 0.3
         case 2:
             baseHeight *= 3
             baseWidth *= 3
-            compressionQuality = 0.6
+            compressionQuality = 0.4
         case 3:
             baseHeight *= 4
             baseWidth *= 4
-            compressionQuality = 0.8
+            compressionQuality = 0.5
         default:
             break
         }
@@ -334,7 +334,7 @@ struct UploadScanDocumentView: View {
                         })
                         .accentColor(Color(NCBrandColor.shared.brand))
                     }
-                    PDFKitRepresentedView(uploadScanDocument.url)
+                    PDFKitRepresentedView(url: $uploadScanDocument.url)
                         .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.7)
                 }.complexModifier { view in
                     if #available(iOS 15, *) {
@@ -427,15 +427,11 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
 
 struct PDFKitRepresentedView: UIViewRepresentable {
 
-    let url: URL
-
-    init(_ url: URL) {
-        self.url = url
-    }
+    @Binding var url: URL
+    typealias UIView = PDFView
 
     func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
         let pdfView = PDFView()
-        pdfView.document = PDFDocument(url: self.url)
         pdfView.autoScales = true
         pdfView.backgroundColor = .clear
         pdfView.displayMode = .singlePage
@@ -444,6 +440,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
+        uiView.document = PDFDocument(url: url)
     }
 }
 
@@ -452,10 +449,8 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD", fileName: CCUtility.createFileNameDate("scan", extension: "pdf"))
+            let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD", fileName: "Scan.pdf")
             UploadScanDocumentView(uploadScanDocument)
-            // .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
-            // .previewDisplayName("iPhone 14")
         }
     }
 }
