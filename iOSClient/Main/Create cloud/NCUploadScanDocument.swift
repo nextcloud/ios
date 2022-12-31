@@ -248,10 +248,11 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 struct UploadScanDocumentView: View {
 
     @State var fileName = "Scan.pdf"
-    @State var quality = CCUtility.getQualityScanDocument()
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
+    @State var quality = CCUtility.getQualityScanDocument()
+
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
