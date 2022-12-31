@@ -44,7 +44,6 @@ class NCHostingUploadScanDocumentView: NSObject {
 
 class NCUploadScanDocument: ObservableObject {
 
-    var fileName: String = ""
     var userBaseUrl: NCUserBaseUrl
     var serverUrl: String
     var url: URL = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
@@ -58,7 +57,7 @@ class NCUploadScanDocument: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func save(completion: @escaping (_ openConflictViewController: Bool) -> Void) {
+    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
         guard !fileName.isEmpty else { return }
 
@@ -121,7 +120,7 @@ class NCUploadScanDocument: ObservableObject {
         return pdfData as Data
     }
 
-    func createPDF(password: String = "", isTextRecognition: Bool = false, quality: Double) {
+    func createPDF(fileName: String, password: String = "", isTextRecognition: Bool = false, quality: Double) {
 
         guard !images.isEmpty else { return }
         let pdfData = NSMutableData()
@@ -252,6 +251,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
+    @State var fileName = "Scan.pdf"
     @State var quality = CCUtility.getQualityScanDocument()
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
@@ -304,7 +304,7 @@ struct UploadScanDocumentView: View {
 
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
-                        TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $uploadScanDocument.fileName)
+                        TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                             .multilineTextAlignment(.trailing)
                     }
 
@@ -357,7 +357,7 @@ struct UploadScanDocumentView: View {
 
                 Button(NSLocalizedString("_save_", comment: "")) {
                     // presentationMode.wrappedValue.dismiss()
-                    uploadScanDocument.save { openConflictViewController in
+                    uploadScanDocument.save(fileName: fileName) { openConflictViewController in
                         if openConflictViewController {
                             isPresentedUploadConflict = true
                         } else {
@@ -365,7 +365,7 @@ struct UploadScanDocumentView: View {
                         }
                     }
                 }
-                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: uploadScanDocument.fileName.isEmpty))
+                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
