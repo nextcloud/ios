@@ -359,6 +359,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
                 if useSubFolder {
                     let dateFormatter = DateFormatter()
+                    let app_locale = Bundle.main.preferredLocalizations.first
+                    dateFormatter.locale = Locale(identifier: app_locale ?? "en_US")
                     dateFormatter.dateFormat = "yyyy"
                     let yearString = dateFormatter.string(from: creationDate)
                     dateFormatter.dateFormat = "MM"
