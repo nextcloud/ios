@@ -259,6 +259,17 @@ extension NCManageDatabase {
 
         return folderPhotos
     }
+    
+    @objc func getAccountAutoUploadSubfolderGranularity() -> Int64 {
+
+        let realm = try! Realm()
+
+        guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
+            return 1
+        }
+
+        return result.autoUploadSubfolderGranularity
+    }
 
     @discardableResult
     @objc func setAccountActive(_ account: String) -> tableAccount? {
