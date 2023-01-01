@@ -143,20 +143,26 @@ class NCUploadScanDocument: ObservableObject {
 
     func createPDFPreview(quality: Double) -> Data {
 
-        let pdfData = NSMutableData()
-
-        UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
-
         if var image = images.first {
+
+            let pdfData = NSMutableData()
+
+            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
             image = changeCompressionImage(image, quality: quality)
             let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
             UIGraphicsBeginPDFPageWithInfo(bounds, nil)
             image.draw(in: bounds)
+            UIGraphicsEndPDFContext()
+
+            return pdfData as Data
+
+        } else {
+
+            let url = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+            let data = try? Data(contentsOf: url)
+
+            return data!
         }
-
-        UIGraphicsEndPDFContext()
-
-        return pdfData as Data
     }
 
     func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
