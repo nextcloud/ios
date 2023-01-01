@@ -147,6 +147,20 @@
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadSubfolderGranularity" rowType:XLFormRowDescriptorTypeSelectorPush title:NSLocalizedString(@"_autoupload_subfolder_granularity_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    row.selectorOptions = @[
+        [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_yearly_", nil)],
+        [XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_monthly_", nil)],
+        [XLFormOptionsObject formOptionsObjectWithValue:@(2) displayText:NSLocalizedString(@"_daily_", nil)]
+        ];
+    row.value = row.selectorOptions[activeAccount.autoUploadSubfolderGranularity];
+    row.required = true;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
+    [section addFormRow:row];
+    
     // Auto Upload file name
     
     section = [XLFormSectionDescriptor formSection];
@@ -286,6 +300,11 @@
         
         [[NCManageDatabase shared] setAccountAutoUploadProperty:@"autoUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
     }
+    
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadSubfolderGranularity"]) {
+
+        [[NCManageDatabase shared] setAccountAutoUploadGranularity:@"autoUploadSubfolderGranularity" state:[[rowDescriptor.value valueData] integerValue]];
+    }
 }
 
 - (void)done:(XLFormRowDescriptor *)sender
@@ -308,7 +327,8 @@
     XLFormRowDescriptor *rowAutoUploadFull = [self.form formRowWithTag:@"autoUploadFull"];
     
     XLFormRowDescriptor *rowAutoUploadCreateSubfolder = [self.form formRowWithTag:@"autoUploadCreateSubfolder"];
-    
+    XLFormRowDescriptor *rowAutoUploadSubfolderGranularity = [self.form formRowWithTag:@"autoUploadSubfolderGranularity"];
+
     XLFormRowDescriptor *rowAutoUploadFileName = [self.form formRowWithTag:@"autoUploadFileName"];
         
     // - STATUS ---------------------
@@ -334,6 +354,8 @@
     
     if (activeAccount.autoUploadCreateSubfolder)
         [rowAutoUploadCreateSubfolder setValue:@1]; else [rowAutoUploadCreateSubfolder setValue:@0];
+    
+    [rowAutoUploadSubfolderGranularity setValue:rowAutoUploadSubfolderGranularity.selectorOptions[activeAccount.autoUploadSubfolderGranularity]];
 
     // - HIDDEN --------------------------------------------------------------------------
     
@@ -346,7 +368,8 @@
     rowAutoUploadFull.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
     rowAutoUploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    
+    rowAutoUploadSubfolderGranularity.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+
     rowAutoUploadFileName.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
         
     // -----------------------------------------------------------------------------------

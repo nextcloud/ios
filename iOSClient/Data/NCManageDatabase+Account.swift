@@ -33,6 +33,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var alias = ""
     @objc dynamic var autoUpload: Bool = false
     @objc dynamic var autoUploadCreateSubfolder: Bool = false
+    @objc dynamic var autoUploadSubfolderGranularity: Int64 = 1
     @objc dynamic var autoUploadDirectory = ""
     @objc dynamic var autoUploadFileName = ""
     @objc dynamic var autoUploadFull: Bool = false
@@ -316,6 +317,21 @@ extension NCManageDatabase {
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @objc func setAccountAutoUploadGranularity(_ property: String, state: Int64) {
+
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+                if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                    result.autoUploadSubfolderGranularity = state
+                }
+            }
+        } catch let error {
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 

@@ -390,6 +390,7 @@
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
+"_autoupload_subfolder_granularity_" = "Subfolder Granularity";
 "_autoupload_filenamemask_"         = "Change filename mask";
 "_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
 "_autoupload_current_folder_"       = "Currently selected folder";
@@ -860,6 +861,7 @@
 "_1_month_"                 = "1 month";
 "_1_week_"                  = "1 week";
 "_1_day_"                   = "1 day";
+"_daily_"                   = "Daily";
 "_monthly_"                 = "Monthly";
 "_yearly_"                  = "Yearly";
 "_weekly_"                  = "Weekly";
