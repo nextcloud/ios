@@ -319,6 +319,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             var metadatasNOConflict: [tableMetadata] = []
             var metadatasUploadInConflict: [tableMetadata] = []
             let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, account: self.appDelegate.account)
+            let autoUploadSubfolderGranularity =  NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
                 self.serverUrl = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, account: self.appDelegate.account)
@@ -351,7 +352,18 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     let yearString = dateFormatter.string(from: creationDate)
                     dateFormatter.dateFormat = "MM"
                     let monthString = dateFormatter.string(from: creationDate)
-                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                    dateFormatter.dateFormat = "dd"
+                    let dayString = dateFormatter.string(from: creationDate)
+                    if (autoUploadSubfolderGranularity == 0) {
+                        serverUrl = autoUploadPath + "/" + yearString
+                    }
+                    else if (autoUploadSubfolderGranularity == 2) {
+                        serverUrl = autoUploadPath + "/" + yearString + "/" + monthString + "/" + dayString
+                    }
+                    else {  // Month Granularity is default
+                        serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                    }
+                    
                 }
 
                 // Check if is in upload

@@ -1102,6 +1102,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
         let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
         let fileNameBase =  NCManageDatabase.shared.getAccountAutoUploadFileName()
+        let autoUploadSubfolderGranularity =  NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
@@ -1125,7 +1126,18 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 let year = dateFormatter.string(from: date)
                 dateFormatter.dateFormat = "MM"
                 let month = dateFormatter.string(from: date)
-                datesSubFolder.append("\(year)/\(month)")
+                dateFormatter.dateFormat = "dd"
+                let day = dateFormatter.string(from: date)
+                if (autoUploadSubfolderGranularity == 0) {
+                    datesSubFolder.append("\(year)")
+                }
+                else if (autoUploadSubfolderGranularity == 2) {
+                    datesSubFolder.append("\(year)/\(month)/\(day)")
+                }
+                else {  // Month Granularity is default
+                    datesSubFolder.append("\(year)/\(month)")
+                }
+                
             }
 
             return Array(Set(datesSubFolder))
@@ -1135,14 +1147,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if useSubFolder && result {
             for dateSubFolder in createNameSubFolder() {
-                let yearMonth = dateSubFolder.split(separator: "/")
-                guard let year = yearMonth.first else { break }
-                guard let month = yearMonth.last else { break }
+                let subfolderArray = dateSubFolder.split(separator: "/")
+                let year = subfolderArray[0]
                 let serverUrlYear = autoUploadPath
-                let serverUrlMonth = autoUploadPath + "/" + year
-                result = createFolder(fileName: String(year), serverUrl: serverUrlYear)
-                if result {
+                result = createFolder(fileName: String(year), serverUrl: serverUrlYear)  // Year always present independently of preference value
+                if result && (autoUploadSubfolderGranularity >= 1) {
+                    let month = subfolderArray[1]
+                    let serverUrlMonth = autoUploadPath + "/" + year
                     result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
+                    if result && (autoUploadSubfolderGranularity == 2) {
+                        let day = subfolderArray[2]
+                        let serverUrlDay = autoUploadPath + "/" + year + "/" + month
+                        result = createFolder(fileName: String(day), serverUrl: serverUrlDay)
+                    }
                 }
                 if !result { break }
             }
