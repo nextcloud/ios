@@ -101,6 +101,10 @@ class NCUploadScanDocument: ObservableObject {
 
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let pdfData = NSMutableData()
+        var fontColor = UIColor.clear
+#if targetEnvironment(simulator)
+        fontColor = UIColor.red
+#endif
 
         if password.isEmpty {
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
@@ -122,8 +126,39 @@ class NCUploadScanDocument: ObservableObject {
             image = changeCompressionImage(image, quality: quality)
             let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
             if isTextRecognition {
+
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
+
+                let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+
+                let request = VNRecognizeTextRequest { request, _ in
+                    guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                        NCActivityIndicator.shared.stop()
+                        return
+                    }
+                    for observation in observations {
+                        guard let textLine = observation.topCandidates(1).first else {
+                            continue
+                        }
+
+                        var t: CGAffineTransform = CGAffineTransform.identity
+                        t = t.scaledBy(x: image.size.width, y: -image.size.height)
+                        t = t.translatedBy(x: 0, y: -1)
+                        let rect = observation.boundingBox.applying(t)
+                        let text = textLine.string
+
+                        let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
+                        let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
+
+                        text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+                    }
+                }
+
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = true
+                try? requestHandler.perform([request])
+
             } else {
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
@@ -222,6 +257,44 @@ class NCUploadScanDocument: ObservableObject {
             return image
         }
         return image
+    }
+
+    func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, fontColor: UIColor) -> [NSAttributedString.Key: Any] {
+
+        let constrainingDimension = min(bounds.width, bounds.height)
+        let properBounds = CGRect(origin: .zero, size: bounds.size)
+        var attributes: [NSAttributedString.Key: Any] = [:]
+
+        let infiniteBounds = CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
+        var bestFontSize: CGFloat = constrainingDimension
+
+        // Search font (H)
+        for fontSize in stride(from: bestFontSize, through: 0, by: -1) {
+            let newFont = UIFont(descriptor: fontDescriptor, size: fontSize)
+            attributes[.font] = newFont
+
+            let currentFrame = text.boundingRect(with: infiniteBounds, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes, context: nil)
+
+            if properBounds.contains(currentFrame) {
+                bestFontSize = fontSize
+                break
+            }
+        }
+
+        // Search kern (W)
+        let font = UIFont(descriptor: fontDescriptor, size: bestFontSize)
+        attributes = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: 0] as [NSAttributedString.Key: Any]
+        for kern in stride(from: 0, through: 100, by: 0.1) {
+            let attributesTmp = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: kern] as [NSAttributedString.Key: Any]
+            let size = text.size(withAttributes: attributesTmp).width
+            if size <= bounds.width {
+                attributes = attributesTmp
+            } else {
+                break
+            }
+        }
+
+        return attributes
     }
 }
 
