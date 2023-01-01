@@ -782,6 +782,8 @@
     } else {
         // Older than one month
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        NSString *app_locale = [[NSBundle mainBundle] preferredLocalizations].firstObject;
+        df.locale = [[NSLocale alloc] initWithLocaleIdentifier: app_locale];
         [df setFormatterBehavior:NSDateFormatterBehavior10_4];
         [df setDateStyle:NSDateFormatterMediumStyle];
         return [df stringFromDate:convertedDate];
@@ -834,6 +836,7 @@
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
     [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:[NSDate date]];
     NSString *returnFileName;
@@ -1206,7 +1209,12 @@
         
     } else {
         
-        title = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterLongStyle timeStyle:0];
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        NSString *app_locale = [[NSBundle mainBundle] preferredLocalizations].firstObject;
+        df.locale = [[NSLocale alloc] initWithLocaleIdentifier: app_locale];
+        df.dateStyle = NSDateFormatterLongStyle;
+        df.timeStyle = 0;
+        title = [df stringFromDate:date];
         
         if ([date isEqualToDate:[CCUtility datetimeWithOutTime:today]])
             title = [NSString stringWithFormat:NSLocalizedString(@"_today_", nil)];
