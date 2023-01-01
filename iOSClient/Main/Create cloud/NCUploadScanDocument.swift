@@ -247,7 +247,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var fileName = "Scan.pdf"
+    @State var fileName = "Scan"
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
@@ -372,7 +372,13 @@ struct UploadScanDocumentView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument)
+        }.onTapGesture {
+            dismissKeyboard()
         }
+    }
+
+    func dismissKeyboard() {
+        UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.endEditing(true)
     }
 }
 
