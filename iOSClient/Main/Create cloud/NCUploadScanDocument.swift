@@ -125,6 +125,7 @@ class NCUploadScanDocument: ObservableObject {
 
             image = changeCompressionImage(image, quality: quality)
             let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+
             if isTextRecognition {
 
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
@@ -160,6 +161,7 @@ class NCUploadScanDocument: ObservableObject {
                 try? requestHandler.perform([request])
 
             } else {
+
                 UIGraphicsBeginPDFPageWithInfo(bounds, nil)
                 image.draw(in: bounds)
             }
