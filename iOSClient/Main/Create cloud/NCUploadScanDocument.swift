@@ -171,21 +171,21 @@ class NCUploadScanDocument: ObservableObject {
 
         switch quality {
         case 0:
-            baseHeight *= 1
-            baseWidth *= 1
-            compressionQuality = 0.2
-        case 1:
             baseHeight *= 2
             baseWidth *= 2
             compressionQuality = 0.3
-        case 2:
+        case 1:
             baseHeight *= 3
             baseWidth *= 3
             compressionQuality = 0.4
-        case 3:
+        case 2:
             baseHeight *= 4
             baseWidth *= 4
             compressionQuality = 0.5
+        case 3:
+            baseHeight *= 5
+            baseWidth *= 5
+            compressionQuality = 0.6
         default:
             break
         }
@@ -451,6 +451,7 @@ struct UploadScanDocumentView: View {
                             }
                         }
                     }
+                    .offset(y: -10)
                     .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
