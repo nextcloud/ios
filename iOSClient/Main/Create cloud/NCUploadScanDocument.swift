@@ -354,11 +354,9 @@ struct UploadScanDocumentView: View {
     @State var isSecuredPassword: Bool = true
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
     @State var quality = CCUtility.getQualityScanDocument()
-
+    @State var removeAllFiles: Bool = CCUtility.getDeleteAllScanImages()
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
-
-    @State var removeAllFiles = false
 
     var metadatasConflict: [tableMetadata] = []
 
@@ -449,7 +447,7 @@ struct UploadScanDocumentView: View {
                             .accentColor(Color(NCBrandColor.shared.brand))
                         }
                         PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.6)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.5)
                     }.complexModifier { view in
                         if #available(iOS 15, *) {
                             view.listRowSeparator(.hidden)
@@ -461,6 +459,7 @@ struct UploadScanDocumentView: View {
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                             .onChange(of: removeAllFiles) { newValue in
+                                CCUtility.setDeleteAllScanImages(newValue)
 
                             }
 

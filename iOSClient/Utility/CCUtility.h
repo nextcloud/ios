@@ -156,6 +156,8 @@
 
 + (BOOL)getTextRecognitionStatus;
 + (void)setTextRecognitionStatus:(BOOL)value;
++ (BOOL)getDeleteAllScanImages;
++ (void)setDeleteAllScanImages:(BOOL)value;
 + (NSString *)getDirectoryScanDocument;
 + (void)setDirectoryScanDocument:(NSString *)value;
 + (double)getQualityScanDocument;
