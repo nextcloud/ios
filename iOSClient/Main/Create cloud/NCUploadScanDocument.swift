@@ -350,102 +350,104 @@ struct UploadScanDocumentView: View {
     var body: some View {
 
         GeometryReader { geo in
-            List {
-                Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
-                    HStack {
-                        Label {
-                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
-                                Text("/")
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
+            ZStack(alignment: .top) {
+                List {
+                    Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
+                        HStack {
+                            Label {
+                                if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
+                                    Text("/")
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                } else {
+                                    Text((uploadScanDocument.serverUrl as NSString).lastPathComponent)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                }
+                            } icon: {
+                                Image("folder")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(Color(NCBrandColor.shared.brand))
+                            }
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            isPresentedSelect = true
+                        }
+                        .complexModifier { view in
+                            if #available(iOS 16, *) {
+                                view.alignmentGuide(.listRowSeparatorLeading) { _ in
+                                    return 0
+                                }
+                            }
+                        }
+
+                        HStack {
+                            Text(NSLocalizedString("_filename_", comment: ""))
+                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
+                                .multilineTextAlignment(.trailing)
+                        }
+
+                        HStack {
+                            Group {
+                                Text(NSLocalizedString("_password_", comment: ""))
+                                if isSecuredPassword {
+                                    SecureField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
+                                        .multilineTextAlignment(.trailing)
+                                } else {
+                                    TextField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
+                                        .multilineTextAlignment(.trailing)
+                                }
+                            }
+                            Button(action: {
+                                isSecuredPassword.toggle()
+                            }) {
+                                Image(systemName: self.isSecuredPassword ? "eye.slash" : "eye")
+                                    .accentColor(.gray)
+                            }
+                        }
+
+                        HStack {
+                            Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                                .onChange(of: isTextRecognition) { newValue in
+                                    CCUtility.setTextRecognitionStatus(newValue)
+                                }
+                        }
+                    }
+
+                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text(NSLocalizedString("_preview_", comment: ""))) {
+
+                        VStack {
+                            Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in
+                                if !touch {
+                                    CCUtility.setQualityScanDocument(quality)
+                                    // uploadScanDocument.createPDF(password: password, isTextRecognition: isTextRecognition, quality: quality)
+                                }
+                            })
+                            .accentColor(Color(NCBrandColor.shared.brand))
+                        }
+                        PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.6)
+                    }.complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
+                    }
+
+                    Button(NSLocalizedString("_save_", comment: "")) {
+                        uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
+                            if openConflictViewController {
+                                isPresentedUploadConflict = true
                             } else {
-                                Text((uploadScanDocument.serverUrl as NSString).lastPathComponent)
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                            }
-                        } icon: {
-                            Image("folder")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(Color(NCBrandColor.shared.brand))
-                        }
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        isPresentedSelect = true
-                    }
-                    .complexModifier { view in
-                        if #available(iOS 16, *) {
-                            view.alignmentGuide(.listRowSeparatorLeading) { _ in
-                                return 0
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                             }
                         }
                     }
-
-                    HStack {
-                        Text(NSLocalizedString("_filename_", comment: ""))
-                        TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
-                            .multilineTextAlignment(.trailing)
-                    }
-
-                    HStack {
-                        Group {
-                            Text(NSLocalizedString("_password_", comment: ""))
-                            if isSecuredPassword {
-                                SecureField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
-                                    .multilineTextAlignment(.trailing)
-                            } else {
-                                TextField(NSLocalizedString("_enter_password_", comment: ""), text: $password)
-                                    .multilineTextAlignment(.trailing)
-                            }
-                        }
-                        Button(action: {
-                            isSecuredPassword.toggle()
-                        }) {
-                            Image(systemName: self.isSecuredPassword ? "eye.slash" : "eye")
-                                .accentColor(.gray)
-                        }
-                    }
-
-                    HStack {
-                        Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                            .onChange(of: isTextRecognition) { newValue in
-                                CCUtility.setTextRecognitionStatus(newValue)
-                            }
-                    }
+                    .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
-
-                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text(NSLocalizedString("_preview_", comment: ""))) {
-
-                    VStack {
-                        Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in
-                            if !touch {
-                                CCUtility.setQualityScanDocument(quality)
-                                // uploadScanDocument.createPDF(password: password, isTextRecognition: isTextRecognition, quality: quality)
-                            }
-                        })
-                        .accentColor(Color(NCBrandColor.shared.brand))
-                    }
-                    PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
-                        .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.6)
-                }.complexModifier { view in
-                    if #available(iOS 15, *) {
-                        view.listRowSeparator(.hidden)
-                    }
-                }
-
-                Button(NSLocalizedString("_save_", comment: "")) {
-                    uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
-                        if openConflictViewController {
-                            isPresentedUploadConflict = true
-                        } else {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
-                        }
-                    }
-                }
-                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
-                .frame(maxWidth: .infinity, alignment: .center)
-                .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
