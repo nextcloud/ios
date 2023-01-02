@@ -197,6 +197,10 @@ class NCUploadScanDocument: ObservableObject {
             baseHeight *= 5
             baseWidth *= 5
             compressionQuality = 0.6
+        case 4:
+            baseHeight = Float(image.size.height)
+            baseWidth = Float(image.size.width)
+            compressionQuality = 0.6
         default:
             break
         }
@@ -436,7 +440,7 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
 
                         VStack {
-                            Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in
+                            Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
                                 if !touch {
                                     CCUtility.setQualityScanDocument(quality)
                                 }
