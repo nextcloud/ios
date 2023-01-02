@@ -92,43 +92,47 @@ class NCUploadScanDocument: ObservableObject {
         if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameMetadata) != nil {
             completion(true)
         } else {
-            createPDF(metadata: metadata)
-            completion(false)
+            createPDF(metadata: metadata) { error in
+                if !error {
+                    completion(false)
+                }
+            }
         }
     }
 
-    func createPDF(metadata: tableMetadata) {
+    func createPDF(metadata: tableMetadata, completion: @escaping (_ error: Bool) -> Void) {
 
-        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let pdfData = NSMutableData()
+        DispatchQueue.global().async {
+            let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let pdfData = NSMutableData()
 
-        if password.isEmpty {
-            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
-        } else {
-            for char in password.unicodeScalars {
-                if !char.isASCII {
-                    NCActivityIndicator.shared.stop()
-                    let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
-                    NCContentPresenter.shared.showError(error: error)
-                    return
+            if self.password.isEmpty {
+                UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+            } else {
+                for char in self.password.unicodeScalars {
+                    if !char.isASCII {
+                        let error = NKError(errorCode: NCGlobal.shared.errorForbidden, errorDescription: "_password_ascii_")
+                        NCContentPresenter.shared.showError(error: error)
+                        return DispatchQueue.main.async { completion(true) }
+                    }
                 }
+                let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String: self.password, kCGPDFContextOwnerPassword as String: self.password]
+                UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
             }
-            let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String: password, kCGPDFContextOwnerPassword as String: password]
-            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
-        }
 
-        for image in images {
-            drawImage(image: image, quality: quality, isTextRecognition: isTextRecognition, fontColor: UIColor.red)
-        }
+            for image in self.images {
+                self.drawImage(image: image, quality: self.quality, isTextRecognition: self.isTextRecognition, fontColor: UIColor.clear)
+            }
 
-        UIGraphicsEndPDFContext()
+            UIGraphicsEndPDFContext()
 
-        do {
-            try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
-        } catch {
-            print("error catched")
+            do {
+                try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
+            } catch { }
+
+            DispatchQueue.main.async { completion(false) }
         }
     }
 
@@ -267,14 +271,9 @@ class NCUploadScanDocument: ObservableObject {
             let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
 
             let request = VNRecognizeTextRequest { request, _ in
-                guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                    NCActivityIndicator.shared.stop()
-                    return
-                }
+                guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
                 for observation in observations {
-                    guard let textLine = observation.topCandidates(1).first else {
-                        continue
-                    }
+                    guard let textLine = observation.topCandidates(1).first else { continue }
 
                     var t: CGAffineTransform = CGAffineTransform.identity
                     t = t.scaledBy(x: image.size.width, y: -image.size.height)
@@ -319,8 +318,11 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
         if let metadata = metadatas?.first {
-            createPDF(metadata: metadata)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+            createPDF(metadata: metadata) { error in
+                if !error {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                }
+            }
         }
     }
 }
@@ -424,7 +426,6 @@ struct UploadScanDocumentView: View {
                             Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in
                                 if !touch {
                                     CCUtility.setQualityScanDocument(quality)
-                                    // uploadScanDocument.createPDF(password: password, isTextRecognition: isTextRecognition, quality: quality)
                                 }
                             })
                             .accentColor(Color(NCBrandColor.shared.brand))
@@ -440,7 +441,7 @@ struct UploadScanDocumentView: View {
                     Button(NSLocalizedString("_save_", comment: "")) {
                         self.showHUD.toggle()
                         uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
-                            //self.showHUD.toggle()
+                            self.showHUD.toggle()
                             if openConflictViewController {
                                 isPresentedUploadConflict = true
                             } else {
