@@ -1,5 +1,5 @@
 //
-//  SwiftUIHUDView.swift
+//  HUD.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 02/01/23.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SwiftUIHUD: View {
+struct HUD: View {
      var body: some View {
         Text("Saved image")
             .foregroundColor(.gray)
@@ -45,14 +45,14 @@ struct ContentView: View {
                 }
                 .navigationTitle("Content View")
             }
-            SwiftUIHUD()
+            HUD()
                 .offset(y: showHUD ? 0 : -150)
                 .animation(.easeOut)
         }
     }
 }
 
-struct SwiftUIHUD_Previews: PreviewProvider {
+struct HUD_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
