@@ -52,6 +52,7 @@ class NCUploadScanDocument: ObservableObject {
     internal var password: String = ""
     internal var isTextRecognition: Bool = false
     internal var quality: Double = 0
+    internal var removeAllFiles: Bool = false
 
     @Published var showHUD: Bool = false
 
@@ -61,7 +62,7 @@ class NCUploadScanDocument: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
+    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool = false, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
         let ext = (fileName as NSString).pathExtension.uppercased()
         var fileNameMetadata = ""
@@ -75,6 +76,7 @@ class NCUploadScanDocument: ObservableObject {
         self.password = password
         self.isTextRecognition = isTextRecognition
         self.quality = quality
+        self.removeAllFiles = removeAllFiles
 
         metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
                                                           user: userBaseUrl.user,
@@ -132,7 +134,16 @@ class NCUploadScanDocument: ObservableObject {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadata], completion: { _ in })
-            } catch { }
+                if self.removeAllFiles {
+                    let path = CCUtility.getDirectoryScan()!
+                    let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
+                    for filePath in filePaths {
+                        try FileManager.default.removeItem(atPath: path + "/" + filePath)
+                    }
+                }
+            } catch {
+                // print("Error: \(error.debugDescription)")
+            }
 
             DispatchQueue.main.async { completion(false) }
         }
@@ -160,20 +171,6 @@ class NCUploadScanDocument: ObservableObject {
 
                 DispatchQueue.main.async { completion(data!) }
             }
-        }
-    }
-
-    func removeAllFile() {
-
-        let path = CCUtility.getDirectoryScan()!
-
-        do {
-            let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
-            for filePath in filePaths {
-                try FileManager.default.removeItem(atPath: path + "/" + filePath)
-            }
-        } catch let error as NSError {
-            print("Error: \(error.debugDescription)")
         }
     }
 
