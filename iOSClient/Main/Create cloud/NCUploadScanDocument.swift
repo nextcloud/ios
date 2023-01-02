@@ -132,26 +132,28 @@ class NCUploadScanDocument: ObservableObject {
         }
     }
 
-    func createPDFPreview(quality: Double, isTextRecognition: Bool) -> Data {
+    func createPDFPreview(quality: Double, isTextRecognition: Bool, completion: @escaping (_ data: Data) -> Void) {
 
-        if var image = images.first {
+        DispatchQueue.global().async {
+            if let image = self.images.first {
 
-            let pdfData = NSMutableData()
+                let pdfData = NSMutableData()
 
-            UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
+                UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
 
-            drawImage(image: image, quality: quality, isTextRecognition: isTextRecognition, fontColor: UIColor.red)
+                self.drawImage(image: image, quality: quality, isTextRecognition: isTextRecognition, fontColor: UIColor.red)
 
-            UIGraphicsEndPDFContext()
+                UIGraphicsEndPDFContext()
 
-            return pdfData as Data
+                DispatchQueue.main.async { completion(pdfData as Data) }
 
-        } else {
+            } else {
 
-            let url = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
-            let data = try? Data(contentsOf: url)
+                let url = Bundle.main.url(forResource: "Reasons to use Nextcloud", withExtension: "pdf")!
+                let data = try? Data(contentsOf: url)
 
-            return data!
+                DispatchQueue.main.async { completion(data!) }
+            }
         }
     }
 
@@ -537,8 +539,9 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
-        let data = uploadScanDocument.createPDFPreview(quality: quality, isTextRecognition: isTextRecognition)
-        uiView.document = PDFDocument(data: data)
+        uploadScanDocument.createPDFPreview(quality: quality, isTextRecognition: isTextRecognition) { data in
+            uiView.document = PDFDocument(data: data)
+        }
     }
 }
 
