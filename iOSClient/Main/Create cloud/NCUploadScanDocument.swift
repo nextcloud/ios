@@ -216,7 +216,7 @@ class NCUploadScanDocument: ObservableObject {
         return image
     }
 
-    func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, fontColor: UIColor) -> [NSAttributedString.Key: Any] {
+    private func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, fontColor: UIColor) -> [NSAttributedString.Key: Any] {
 
         let constrainingDimension = min(bounds.width, bounds.height)
         let properBounds = CGRect(origin: .zero, size: bounds.size)
