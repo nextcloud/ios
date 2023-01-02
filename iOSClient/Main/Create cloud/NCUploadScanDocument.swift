@@ -475,11 +475,7 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 10)
-                        .background(fileName.isEmpty ? Color(UIColor.systemGray4) : Color(NCBrandColor.shared.brand))
-                        .foregroundColor(.white)
-                        .clipShape(Capsule())
+                        .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
                     }
                     // .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
@@ -501,6 +497,18 @@ struct UploadScanDocumentView: View {
 
     func dismissKeyboard() {
         UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
+    }
+}
+
+struct ButtonUploadScanDocumenStyle: ButtonStyle {
+    var disabled = false
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 40)
+            .padding(.vertical, 10)
+            .background(disabled ? Color(UIColor.systemGray4) : Color(NCBrandColor.shared.brand))
+            .foregroundColor(.white)
+            .clipShape(Capsule())
     }
 }
 
