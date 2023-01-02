@@ -163,6 +163,20 @@ class NCUploadScanDocument: ObservableObject {
         }
     }
 
+    func removeAllFile() {
+
+        let path = CCUtility.getDirectoryScan()!
+
+        do {
+            let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
+            for filePath in filePaths {
+                try FileManager.default.removeItem(atPath: path + "/" + filePath)
+            }
+        } catch let error as NSError {
+            print("Error: \(error.debugDescription)")
+        }
+    }
+
     private func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
 
         var compressionQuality: CGFloat = 0.0
@@ -344,6 +358,8 @@ struct UploadScanDocumentView: View {
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
+    @State var removeAllFiles = false
+
     var metadatasConflict: [tableMetadata] = []
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
@@ -440,21 +456,28 @@ struct UploadScanDocumentView: View {
                         }
                     }
 
-                    Button(NSLocalizedString("_save_", comment: "")) {
-                        uploadScanDocument.showHUD.toggle()
-                        uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
+                    VStack(spacing: 20) {
+
+                        Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                            .onChange(of: removeAllFiles) { newValue in
+
+                            }
+
+                        Button(NSLocalizedString("_save_", comment: "")) {
                             uploadScanDocument.showHUD.toggle()
-                            if openConflictViewController {
-                                isPresentedUploadConflict = true
-                            } else {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                            uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
+                                uploadScanDocument.showHUD.toggle()
+                                if openConflictViewController {
+                                    isPresentedUploadConflict = true
+                                } else {
+                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                }
                             }
                         }
+                        .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
                     }
-                    .offset(y: -10)
-                    .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowBackground(Color(UIColor.systemGroupedBackground))
+                    // .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 0 : -200)
