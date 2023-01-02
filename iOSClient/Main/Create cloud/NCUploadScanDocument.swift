@@ -415,7 +415,7 @@ struct UploadScanDocumentView: View {
                     }
                 }
 
-                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+                Section(header: Text(NSLocalizedString("_quality_image_title_", comment: "")), footer: Text(NSLocalizedString("_preview_", comment: ""))) {
 
                     VStack {
                         Slider(value: $quality, in: 0...3, step: 1, onEditingChanged: { touch in

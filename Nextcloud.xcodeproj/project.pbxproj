@@ -240,6 +240,8 @@
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75B0ABD244C4DBB00E58DCA /* NCFunctionCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCFunctionCenter.swift */; };
 		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
+		F75CA1472962F13700B01130 /* SwiftUIHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75CA1462962F13700B01130 /* SwiftUIHUDView.swift */; };
+		F75CA1482962F13700B01130 /* SwiftUIHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75CA1462962F13700B01130 /* SwiftUIHUDView.swift */; };
 		F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */; };
 		F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
@@ -857,6 +859,7 @@
 		F75B91F71ECAE26300199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F75B923D1ECAE55E00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRichWorkspaceCommon.swift; sourceTree = "<group>"; };
+		F75CA1462962F13700B01130 /* SwiftUIHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIHUDView.swift; sourceTree = "<group>"; };
 		F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCTrash+Menu.swift"; sourceTree = "<group>"; };
 		F75DD768290ABB25002EB562 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/Intent.intentdefinition; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
@@ -1896,6 +1899,7 @@
 				F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */,
 				F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
+				F75CA1462962F13700B01130 /* SwiftUIHUDView.swift */,
 				AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				AF93474B27E34120002537EE /* NCUtility+Image.swift */,
@@ -2844,6 +2848,7 @@
 				F73D5E4A246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F79B646326CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F78A10C429322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
+				F75CA1482962F13700B01130 /* SwiftUIHUDView.swift in Sources */,
 				AF4BF61C27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				AF817EF4274BC781009ED85B /* NCUserBaseUrl.swift in Sources */,
 				F798F0EC2588060A000DAFFD /* UIColor+Extension.swift in Sources */,
@@ -3178,6 +3183,7 @@
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F7D68FCC28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */,
+				F75CA1472962F13700B01130 /* SwiftUIHUDView.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F7A7FA6329265CF4000603EF /* NCManageE2EE.swift in Sources */,
