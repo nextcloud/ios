@@ -338,6 +338,8 @@ struct UploadScanDocumentView: View {
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
+    @State private var showHUD = false
+
     var metadatasConflict: [tableMetadata] = []
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
@@ -436,7 +438,9 @@ struct UploadScanDocumentView: View {
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {
+                        self.showHUD.toggle()
                         uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
+                            //self.showHUD.toggle()
                             if openConflictViewController {
                                 isPresentedUploadConflict = true
                             } else {
@@ -448,6 +452,9 @@ struct UploadScanDocumentView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
+                HUDView(showHUD: $showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
+                    .offset(y: showHUD ? 0 : -200)
+                    .animation(.easeOut)
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
