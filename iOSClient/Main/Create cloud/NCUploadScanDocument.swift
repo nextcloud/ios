@@ -117,51 +117,8 @@ class NCUploadScanDocument: ObservableObject {
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
         }
 
-        for var image in images {
-
-            image = changeCompressionImage(image, quality: quality)
-            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-
-            if isTextRecognition {
-
-                UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-                image.draw(in: bounds)
-
-                let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
-
-                let request = VNRecognizeTextRequest { request, _ in
-                    guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                        NCActivityIndicator.shared.stop()
-                        return
-                    }
-                    for observation in observations {
-                        guard let textLine = observation.topCandidates(1).first else {
-                            continue
-                        }
-
-                        var t: CGAffineTransform = CGAffineTransform.identity
-                        t = t.scaledBy(x: image.size.width, y: -image.size.height)
-                        t = t.translatedBy(x: 0, y: -1)
-                        let rect = observation.boundingBox.applying(t)
-                        let text = textLine.string
-
-                        let fontSize = FontSizeCalculator.shared.fontSizeThatFits(text: text, rectSize: rect.size)
-                        let font = UIFont.systemFont(ofSize: fontSize)
-                        let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: UIColor.clear)
-
-                        text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
-                    }
-                }
-
-                request.recognitionLevel = .accurate
-                request.usesLanguageCorrection = true
-                try? requestHandler.perform([request])
-
-            } else {
-
-                UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-                image.draw(in: bounds)
-            }
+        for image in images {
+            drawImage(image: image, quality: quality, isTextRecognition: isTextRecognition, fontColor: UIColor.red)
         }
 
         UIGraphicsEndPDFContext()
@@ -182,10 +139,9 @@ class NCUploadScanDocument: ObservableObject {
             let pdfData = NSMutableData()
 
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
-            image = changeCompressionImage(image, quality: quality)
-            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-            image.draw(in: bounds)
+
+            drawImage(image: image, quality: quality, isTextRecognition: isTextRecognition, fontColor: UIColor.red)
+
             UIGraphicsEndPDFContext()
 
             return pdfData as Data
@@ -199,7 +155,7 @@ class NCUploadScanDocument: ObservableObject {
         }
     }
 
-    func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
+    private func changeCompressionImage(_ image: UIImage, quality: Double) -> UIImage {
 
         var compressionQuality: CGFloat = 0.0
         var baseHeight: Float = 595.2    // A4
@@ -294,6 +250,52 @@ class NCUploadScanDocument: ObservableObject {
         }
 
         return attributes
+    }
+
+    private func drawImage(image: UIImage, quality: Double, isTextRecognition: Bool, fontColor: UIColor) {
+
+        let image = changeCompressionImage(image, quality: quality)
+        let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+
+        if isTextRecognition {
+
+            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+            image.draw(in: bounds)
+
+            let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+
+            let request = VNRecognizeTextRequest { request, _ in
+                guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                    NCActivityIndicator.shared.stop()
+                    return
+                }
+                for observation in observations {
+                    guard let textLine = observation.topCandidates(1).first else {
+                        continue
+                    }
+
+                    var t: CGAffineTransform = CGAffineTransform.identity
+                    t = t.scaledBy(x: image.size.width, y: -image.size.height)
+                    t = t.translatedBy(x: 0, y: -1)
+                    let rect = observation.boundingBox.applying(t)
+                    let text = textLine.string
+
+                    let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
+                    let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
+
+                    text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+                }
+            }
+
+            request.recognitionLevel = .accurate
+            request.usesLanguageCorrection = true
+            try? requestHandler.perform([request])
+
+        } else {
+
+            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+            image.draw(in: bounds)
+        }
     }
 }
 

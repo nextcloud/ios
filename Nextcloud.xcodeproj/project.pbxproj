@@ -436,7 +436,6 @@
 		F7A8D74528F1828E008BBE1C /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F7AC1CB028AB94490032D99F /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AC1CAF28AB94490032D99F /* Array+Extension.swift */; };
 		F7AC934A296193050002BC0F /* Reasons to use Nextcloud.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F7AC9349296193050002BC0F /* Reasons to use Nextcloud.pdf */; };
-		F7AC934C2962DF050002BC0F /* FontSizeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AC934B2962DF050002BC0F /* FontSizeCalculator.swift */; };
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
@@ -1026,7 +1025,6 @@
 		F7AA41E127C7CF8100494705 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F7AC1CAF28AB94490032D99F /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
 		F7AC9349296193050002BC0F /* Reasons to use Nextcloud.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Reasons to use Nextcloud.pdf"; sourceTree = SOURCE_ROOT; };
-		F7AC934B2962DF050002BC0F /* FontSizeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSizeCalculator.swift; sourceTree = "<group>"; };
 		F7ACE4291BAC0268006C0017 /* Acknowledgements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Acknowledgements.h; sourceTree = "<group>"; };
 		F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Acknowledgements.m; sourceTree = "<group>"; };
 		F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgements.rtf; sourceTree = "<group>"; };
@@ -1902,7 +1900,6 @@
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				AF93474B27E34120002537EE /* NCUtility+Image.swift */,
 				F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */,
-				F7AC934B2962DF050002BC0F /* FontSizeCalculator.swift */,
 				AF36077027BFA4E8001A243D /* ParallelWorker.swift */,
 				F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */,
 			);
@@ -3116,7 +3113,6 @@
 				F73D5E47246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,
 				F7B6B70427C4E7FA00A7F6EB /* NCScan+CollectionView.swift in Sources */,
-				F7AC934C2962DF050002BC0F /* FontSizeCalculator.swift in Sources */,
 				F7C30DF6291BC0CA0017149B /* NCNetworkingE2EEUpload.swift in Sources */,
 				F7501C332212E57500FB1415 /* NCMedia.swift in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
