@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SwiftUIHUDView: View {
+struct SwiftUIHUD: View {
      var body: some View {
         Text("Saved image")
             .foregroundColor(.gray)
@@ -37,22 +37,22 @@ struct Blur: UIViewRepresentable {
 struct ContentView: View {
     @State private var showHUD = false
 
-    @ViewBuilder var body: some View {
-        ZStack {
+    var body: some View {
+        ZStack(alignment: .top) {
             NavigationView {
                 Button("Save image") {
                     self.showHUD.toggle()
                 }
                 .navigationTitle("Content View")
             }
-            SwiftUIHUDView()
-                .offset(y: showHUD ? 0 : -100)
+            SwiftUIHUD()
+                .offset(y: showHUD ? 0 : -150)
                 .animation(.easeOut)
         }
     }
 }
 
-struct SwiftUIHUDView_Previews: PreviewProvider {
+struct SwiftUIHUD_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
