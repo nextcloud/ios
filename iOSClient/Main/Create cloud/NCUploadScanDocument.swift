@@ -53,6 +53,8 @@ class NCUploadScanDocument: ObservableObject {
     internal var isTextRecognition: Bool = false
     internal var quality: Double = 0
 
+    @Published var showHUD: Bool = false
+
     init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.images = images
         self.userBaseUrl = userBaseUrl
@@ -318,8 +320,10 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
         if let metadata = metadatas?.first {
+            self.showHUD.toggle()
             createPDF(metadata: metadata) { error in
                 if !error {
+                    self.showHUD.toggle()
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                 }
             }
@@ -339,8 +343,6 @@ struct UploadScanDocumentView: View {
 
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
-
-    @State private var showHUD = false
 
     var metadatasConflict: [tableMetadata] = []
 
@@ -439,9 +441,9 @@ struct UploadScanDocumentView: View {
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {
-                        self.showHUD.toggle()
+                        uploadScanDocument.showHUD.toggle()
                         uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
-                            self.showHUD.toggle()
+                            uploadScanDocument.showHUD.toggle()
                             if openConflictViewController {
                                 isPresentedUploadConflict = true
                             } else {
@@ -453,8 +455,8 @@ struct UploadScanDocumentView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
-                HUDView(showHUD: $showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
-                    .offset(y: showHUD ? 0 : -200)
+                HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
+                    .offset(y: uploadScanDocument.showHUD ? 0 : -200)
                     .animation(.easeOut)
             }
         }
