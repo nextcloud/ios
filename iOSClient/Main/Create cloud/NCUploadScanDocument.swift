@@ -101,10 +101,6 @@ class NCUploadScanDocument: ObservableObject {
 
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let pdfData = NSMutableData()
-        var fontColor = UIColor.clear
-#if targetEnvironment(simulator)
-        fontColor = UIColor.red
-#endif
 
         if password.isEmpty {
             UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
@@ -149,8 +145,9 @@ class NCUploadScanDocument: ObservableObject {
                         let rect = observation.boundingBox.applying(t)
                         let text = textLine.string
 
-                        let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                        let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
+                        let fontSize = FontSizeCalculator.shared.fontSizeThatFits(text: text, rectSize: rect.size)
+                        let font = UIFont.systemFont(ofSize: fontSize)
+                        let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: UIColor.clear)
 
                         text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
                     }
@@ -178,7 +175,7 @@ class NCUploadScanDocument: ObservableObject {
         }
     }
 
-    func createPDFPreview(quality: Double) -> Data {
+    func createPDFPreview(quality: Double, isTextRecognition: Bool) -> Data {
 
         if var image = images.first {
 
@@ -425,7 +422,7 @@ struct UploadScanDocumentView: View {
                         })
                         .accentColor(Color(NCBrandColor.shared.brand))
                     }
-                    PDFKitRepresentedView(quality: $quality, uploadScanDocument: uploadScanDocument)
+                    PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
                         .frame(maxWidth: .infinity, minHeight: geo.size.height / 2.6)
                 }.complexModifier { view in
                     if #available(iOS 15, *) {
@@ -525,6 +522,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
     typealias UIView = PDFView
     @Binding var quality: Double
+    @Binding var isTextRecognition: Bool
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
 
     func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
@@ -537,7 +535,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
-        let data = uploadScanDocument.createPDFPreview(quality: quality)
+        let data = uploadScanDocument.createPDFPreview(quality: quality, isTextRecognition: isTextRecognition)
         uiView.document = PDFDocument(data: data)
     }
 }
