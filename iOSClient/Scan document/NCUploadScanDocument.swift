@@ -62,17 +62,20 @@ class NCUploadScanDocument: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
+    func fileName(_ fileName: String) -> String {
 
-        guard !fileName.isEmpty else { return }
+        var fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !fileName.isEmpty, fileName != ".", fileName.lowercased() != ".pdf" else { return "" }
+
         let ext = (fileName as NSString).pathExtension.uppercased()
-        var fileNameMetadata = ""
-
         if ext.isEmpty {
-            fileNameMetadata = fileName + ".pdf"
+            return fileName + ".pdf"
         } else {
-            fileNameMetadata = (fileName as NSString).deletingPathExtension + ".pdf"
+            return (fileName as NSString).deletingPathExtension + ".pdf"
         }
+    }
+
+    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool, quality: Double, completion: @escaping (_ openConflictViewController: Bool, _ error: Bool) -> Void) {
 
         self.password = password
         self.isTextRecognition = isTextRecognition
@@ -82,8 +85,8 @@ class NCUploadScanDocument: ObservableObject {
         metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account,
                                                           user: userBaseUrl.user,
                                                           userId: userBaseUrl.userId,
-                                                          fileName: fileNameMetadata,
-                                                          fileNameView: fileNameMetadata,
+                                                          fileName: fileName,
+                                                          fileNameView: fileName,
                                                           ocId: UUID().uuidString,
                                                           serverUrl: serverUrl,
                                                           urlBase: userBaseUrl.urlBase,
@@ -94,12 +97,12 @@ class NCUploadScanDocument: ObservableObject {
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
-        if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileNameMetadata) != nil {
-            completion(true)
+        if NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+            completion(true, false)
         } else {
             createPDF(metadata: metadata) { error in
                 if !error {
-                    completion(false)
+                    completion(false, false)
                 }
             }
         }
@@ -449,13 +452,18 @@ struct UploadScanDocumentView: View {
                             }
 
                         Button(NSLocalizedString("_save_", comment: "")) {
-                            uploadScanDocument.showHUD.toggle()
-                            uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController in
+                            let fileName = uploadScanDocument.fileName(fileName)
+                            if !fileName.isEmpty {
                                 uploadScanDocument.showHUD.toggle()
-                                if openConflictViewController {
-                                    isPresentedUploadConflict = true
-                                } else {
-                                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController, error in
+                                    uploadScanDocument.showHUD.toggle()
+                                    if error {
+                                        print("error")
+                                    } else if openConflictViewController {
+                                        isPresentedUploadConflict = true
+                                    } else {
+                                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                    }
                                 }
                             }
                         }
