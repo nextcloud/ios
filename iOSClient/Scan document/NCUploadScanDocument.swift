@@ -167,7 +167,7 @@ class NCUploadScanDocument: ObservableObject {
 
     func fileName(_ fileName: String) -> String {
 
-        var fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !fileName.isEmpty, fileName != ".", fileName.lowercased() != ".pdf" else { return "" }
 
         let ext = (fileName as NSString).pathExtension.uppercased()
