@@ -64,6 +64,7 @@ class NCUploadScanDocument: ObservableObject {
 
     func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
+        guard !fileName.isEmpty else { return }
         let ext = (fileName as NSString).pathExtension.uppercased()
         var fileNameMetadata = ""
 
@@ -362,7 +363,6 @@ struct UploadScanDocumentView: View {
     var metadatasConflict: [tableMetadata] = []
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
-    @Environment(\.presentationMode) var presentationMode
 
     init(_ uploadScanDocument: NCUploadScanDocument) {
         self.uploadScanDocument = uploadScanDocument
@@ -406,6 +406,7 @@ struct UploadScanDocumentView: View {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
+                                .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
                         }
 
@@ -426,6 +427,7 @@ struct UploadScanDocumentView: View {
                                 Image(systemName: self.isSecuredPassword ? "eye.slash" : "eye")
                                     .accentColor(.gray)
                             }
+                            .buttonStyle(BorderlessButtonStyle())
                         }
 
                         HStack {
@@ -497,6 +499,25 @@ struct UploadScanDocumentView: View {
 
     func dismissKeyboard() {
         UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
+    }
+}
+
+struct TextFieldClearButton: ViewModifier {
+    @Binding var text: String
+
+    func body(content: Content) -> some View {
+        HStack {
+            content
+            if !text.isEmpty {
+                Button(
+                    action: { self.text = "" },
+                    label: {
+                        Image(systemName: "delete.left")
+                            .foregroundColor(Color(UIColor.opaqueSeparator))
+                    }
+                ).buttonStyle(BorderlessButtonStyle())
+            }
+        }
     }
 }
 
