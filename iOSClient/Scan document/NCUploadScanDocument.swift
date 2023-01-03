@@ -437,25 +437,6 @@ struct UploadScanDocumentView: View {
                         }
                     }
 
-                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
-
-                        VStack {
-                            Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
-                                if !touch {
-                                    CCUtility.setQualityScanDocument(quality)
-                                }
-                            })
-                            .accentColor(Color(NCBrandColor.shared.brand))
-                        }
-                        PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
-                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.7)
-                    }
-                    .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
-                    }
-
                     VStack(spacing: 20) {
 
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
@@ -478,9 +459,26 @@ struct UploadScanDocumentView: View {
                         }
                         .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
                     }
-                    // .listRowBackground(Color(UIColor.systemGroupedBackground))
+
+                    Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
+
+                        VStack {
+                            Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
+                                if !touch {
+                                    CCUtility.setQualityScanDocument(quality)
+                                }
+                            })
+                            .accentColor(Color(NCBrandColor.shared.brand))
+                        }
+                        PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
+                            .frame(maxWidth: .infinity, minHeight: geo.size.height / 2)
+                    }
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
+                    }
                 }
-                .offset(y: -10)
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 0 : -200)
                     .animation(.easeOut)
