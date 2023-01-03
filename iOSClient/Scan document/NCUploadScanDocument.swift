@@ -428,7 +428,7 @@ struct UploadScanDocumentView: View {
                                 isSecuredPassword.toggle()
                             }) {
                                 Image(systemName: self.isSecuredPassword ? "eye.slash" : "eye")
-                                    .accentColor(.gray)
+                                    .foregroundColor(Color(UIColor.opaqueSeparator))
                             }
                             .buttonStyle(BorderlessButtonStyle())
                         }
@@ -535,7 +535,7 @@ struct ButtonUploadScanDocumenStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, 40)
             .padding(.vertical, 10)
-            .background(disabled ? Color(UIColor.systemGray4) : Color(NCBrandColor.shared.brand))
+            .background(disabled ? Color(UIColor.opaqueSeparator) : Color(NCBrandColor.shared.brand))
             .foregroundColor(.white)
             .clipShape(Capsule())
     }
