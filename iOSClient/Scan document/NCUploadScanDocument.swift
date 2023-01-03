@@ -62,19 +62,6 @@ class NCUploadScanDocument: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func fileName(_ fileName: String) -> String {
-
-        var fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !fileName.isEmpty, fileName != ".", fileName.lowercased() != ".pdf" else { return "" }
-
-        let ext = (fileName as NSString).pathExtension.uppercased()
-        if ext.isEmpty {
-            return fileName + ".pdf"
-        } else {
-            return (fileName as NSString).deletingPathExtension + ".pdf"
-        }
-    }
-
     func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool, quality: Double, completion: @escaping (_ openConflictViewController: Bool, _ error: Bool) -> Void) {
 
         self.password = password
@@ -175,6 +162,19 @@ class NCUploadScanDocument: ObservableObject {
 
                 DispatchQueue.main.async { completion(data!) }
             }
+        }
+    }
+
+    func fileName(_ fileName: String) -> String {
+
+        var fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !fileName.isEmpty, fileName != ".", fileName.lowercased() != ".pdf" else { return "" }
+
+        let ext = (fileName as NSString).pathExtension.uppercased()
+        if ext.isEmpty {
+            return fileName + ".pdf"
+        } else {
+            return (fileName as NSString).deletingPathExtension + ".pdf"
         }
     }
 
