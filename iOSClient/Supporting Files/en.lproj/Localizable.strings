@@ -176,6 +176,7 @@
 "_automatic_Download_Image_" = "Use images in full resolution";
 "_automatic_Download_Image_footer_" = "When viewing images always download, if not available locally, the images in full resolution";
 "_size_"                    = "Size";
+"_file_size_"               = "Exported file size";
 "_dimension_"               = "Dimension";
 "_duration_"                = "Duration";
 "_model_"                   = "Model";
@@ -287,6 +288,7 @@
 "_acknowledgements_"            = "Acknowledgements";
 "_settings_"                    = "Settings";
 "_passcode_"                    = "Password";
+"_enter_password_"              = "Enter password …";
 "_lock_"                        = "Lock";
 "_lock_active_"                 = "Lock: On";
 "_lock_not_active_"             = "Lock: Off";
@@ -672,6 +674,7 @@
 "_use_folder_auto_upload_"          = "Use the \"Auto upload\" folder as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
+"_enter_filename_"                  = "Enter filename …";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
 "_forbidden_characters_"            = "Invalid character in filename";
 "_add_filenametype_"                = "Specify type in filename";
@@ -730,7 +733,7 @@
 "_file_type_"                       = "File type";
 "_pdf_password_"                    = "PDF Password";
 "_file_creation_"                   = "File creation";
-"_delete_all_scanned_images_"       = "Do you want to delete all scanned images?";
+"_delete_all_scanned_images_"       = "Delete all scanned images";
 "_text_recognition_"                = "Text recognition";
 
 /* The title on the navigation bar of the Scanning screen. */
@@ -913,6 +916,7 @@
 "_calendar_contacts_"       = "Calendar and Contacts";
 "_mobile_config_"           = "Download the configuration profile";
 "_calendar_contacts_footer_"    = "After the downloading you need to go to the Settings app to install it. If a profile is not installed within 8 minutes of downloading it, it is automatically deleted";
+"_preview_"                 = "Preview";
 
 // Video
 "_select_trace_"            = "Select the trace";

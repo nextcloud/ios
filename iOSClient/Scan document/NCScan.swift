@@ -111,6 +111,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
 
+        NotificationCenter.default.addObserver(self, selector: #selector(dismiss(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDismissScanDocument), object: nil)
+
         loadImage()
     }
 
@@ -156,6 +158,10 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         return false
     }
 
+    @objc func dismiss(_ notification: NSNotification) {
+        self.dismiss(animated: true, completion: nil)
+    }
+
     @IBAction func cancelAction(sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
@@ -171,8 +177,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
                 images.append(filter(image: image)!)
             }
 
-            let formViewController = NCCreateFormUploadScanDocument(serverUrl: serverUrl, arrayImages: images)
-            self.navigationController?.pushViewController(formViewController, animated: true)
+            let  vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 
@@ -181,7 +187,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         // TIP
         dismissTip()
 
-        NCCreateScanDocument.shared.openScannerDocument(viewController: self)
+        NCDocumentCamera.shared.openScannerDocument(viewController: self)
     }
 
     @IBAction func transferDown(sender: UIButton) {

@@ -1,5 +1,5 @@
 //
-//  String+Extensions.swift
+//  String+Extension.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 22/12/20.

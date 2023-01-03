@@ -1,5 +1,5 @@
 //
-//  UIColor+fixedOrientation.swift
+//  UIImage+Extensions.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 27/11/2019.
@@ -65,7 +65,8 @@ extension UIImage {
             return nil
         }
 
-        guard let colorSpace = cgImage.colorSpace, let ctx = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+        guard let colorSpace = cgImage.colorSpace,
+              let ctx = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
             return nil // Not able to create CGContext
         }
 

@@ -1,5 +1,5 @@
 //
-//  UIColor+Extensions.swift
+//  UIColor+Extension.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 04/02/2020.

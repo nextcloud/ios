@@ -593,31 +593,53 @@
     [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSInteger)getTextRecognitionStatus
++ (BOOL)getTextRecognitionStatus
 {
-    NSString *value = [UICKeyChainStore stringForKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (value == nil) {
-        return 0;
-    } else {
-        return [value integerValue];
-    }
+    return [[UICKeyChainStore stringForKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
 }
 
-+ (void)setTextRecognitionStatus:(NSInteger)value
++ (void)setTextRecognitionStatus:(BOOL)value
 {
-    NSString *valueString = [@(value) stringValue];
+    NSString *valueString = (value) ? @"true" : @"false";
     [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSString *)getDirectoryScanDocuments
++ (BOOL)getDeleteAllScanImages
+{
+    return [[UICKeyChainStore stringForKey:@"deleteAllScanImages" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+}
+
++ (void)setDeleteAllScanImages:(BOOL)value
+{
+    NSString *valueString = (value) ? @"true" : @"false";
+    [UICKeyChainStore setString:valueString forKey:@"deleteAllScanImages" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (NSString *)getDirectoryScanDocument
 {
     return [UICKeyChainStore stringForKey:@"directoryScanDocuments" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (void)setDirectoryScanDocuments:(NSString *)value
++ (void)setDirectoryScanDocument:(NSString *)value
 {
     [UICKeyChainStore setString:value forKey:@"directoryScanDocuments" service:NCGlobal.shared.serviceShareKeyChain];
+}
+
++ (double)getQualityScanDocument
+{
+    NSString *value = [UICKeyChainStore stringForKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
+
+    if (value == nil) {
+        return 2;
+    } else {
+        return [value doubleValue];
+    }
+}
+
++ (void)setQualityScanDocument:(double)value
+{
+    NSString *valueString = [@(value) stringValue];
+    [UICKeyChainStore setString:valueString forKey:@"qualityScanDocument" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (NSInteger)getLogLevel

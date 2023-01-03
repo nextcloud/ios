@@ -1,5 +1,5 @@
 //
-//  UIView+Extensions.swift
+//  UIView+Extension.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 14/12/2022.

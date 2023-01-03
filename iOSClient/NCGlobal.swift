@@ -374,6 +374,8 @@ class NCGlobal: NSObject {
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
 
+    let notificationCenterDismissScanDocument                   = "dismissScanDocument"
+
     // TIP
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"

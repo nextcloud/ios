@@ -842,9 +842,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     }
                     
                 case NCGlobal.shared.actionScanDocument:
-                    
-                    NCCreateScanDocument.shared.openScannerDocument(viewController: rootViewController)
-                    
+
+                    NCDocumentCamera.shared.openScannerDocument(viewController: rootViewController)
+
                 case NCGlobal.shared.actionTextDocument:
                     
                     guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(), let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account), let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}) else { return false }
