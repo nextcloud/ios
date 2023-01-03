@@ -62,7 +62,7 @@ class NCUploadScanDocument: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool = false, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
+    func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool, quality: Double, completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
         let ext = (fileName as NSString).pathExtension.uppercased()
         var fileNameMetadata = ""
@@ -448,7 +448,7 @@ struct UploadScanDocumentView: View {
 
                         Button(NSLocalizedString("_save_", comment: "")) {
                             uploadScanDocument.showHUD.toggle()
-                            uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, quality: quality) { openConflictViewController in
+                            uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController in
                                 uploadScanDocument.showHUD.toggle()
                                 if openConflictViewController {
                                     isPresentedUploadConflict = true
@@ -577,6 +577,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
         uploadScanDocument.createPDFPreview(quality: quality, isTextRecognition: isTextRecognition) { data in
             uiView.document = PDFDocument(data: data)
+            uiView.autoScales = true
         }
     }
 }
