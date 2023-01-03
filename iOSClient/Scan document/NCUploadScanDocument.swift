@@ -449,7 +449,8 @@ struct UploadScanDocumentView: View {
                         }
                         PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
                             .frame(maxWidth: .infinity, minHeight: geo.size.height / 3.7)
-                    }.complexModifier { view in
+                    }
+                    .complexModifier { view in
                         if #available(iOS 15, *) {
                             view.listRowSeparator(.hidden)
                         }
@@ -479,6 +480,7 @@ struct UploadScanDocumentView: View {
                     }
                     // .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
+                .offset(y: -10)
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 0 : -200)
                     .animation(.easeOut)
