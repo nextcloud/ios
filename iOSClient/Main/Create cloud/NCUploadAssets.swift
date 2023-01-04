@@ -26,7 +26,9 @@ class NCUploadAssets: ObservableObject {
     internal var cryptated: Bool
     internal var session: String
     internal var userBaseUrl: NCUserBaseUrl
-    internal var serverUrl: String
+
+    @Published var serverUrl: String
+    @Published var fileName: String?
 
     init(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.assets = assets
@@ -34,6 +36,62 @@ class NCUploadAssets: ObservableObject {
         self.session = session
         self.userBaseUrl = userBaseUrl
         self.serverUrl = serverUrl
+    }
+
+    func previewFileName() -> String {
+
+        var returnString: String = ""
+        let asset = assets[0]
+        let creationDate = asset.creationDate ?? Date()
+
+        if CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal), let asset = assets.first, let name = (asset.value(forKey: "filename") as? String) {
+
+            return NSLocalizedString("_filename_", comment: "") + ": \(name)"
+
+        } else if let fileName = fileName {
+
+            let fileName = fileName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+
+            if !fileName.isEmpty {
+
+                CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
+
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+                                                        fileDate: creationDate, fileType: asset.mediaType,
+                                                        keyFileName: NCGlobal.shared.keyFileNameMask,
+                                                        keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                        keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                        forcedNewFileName: false)
+
+            } else {
+
+                CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+                                                        fileDate: creationDate,
+                                                        fileType: asset.mediaType,
+                                                        keyFileName: nil,
+                                                        keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                        keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                        forcedNewFileName: false)
+            }
+
+        } else {
+
+            CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
+            returnString = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+                                                    fileDate: creationDate,
+                                                    fileType: asset.mediaType,
+                                                    keyFileName: nil,
+                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                    forcedNewFileName: false)
+        }
+
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + returnString
+    }
+
+    func save() {
+
     }
 }
 
@@ -52,7 +110,10 @@ extension NCUploadAssets: NCSelectDelegate {
 
 struct UploadAssetsView: View {
 
+    @State var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
     @State var isPresentedSelect = false
+    @State var isMaintainOriginalFilename: Bool = false
+    @State var isAddFilenametype: Bool = false
 
     @ObservedObject var uploadAssets: NCUploadAssets
 
@@ -94,37 +155,43 @@ struct UploadAssetsView: View {
                             }
                         }
                     }
+
+                    Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+
+                        Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                            .onChange(of: isMaintainOriginalFilename) { newValue in
+                            }
+
+                        Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                            .onChange(of: isAddFilenametype) { newValue in
+                            }
+                    }
+
+                    Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
+
+                        HStack {
+                            Text(NSLocalizedString("_filename_", comment: ""))
+                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
+                                .modifier(TextFieldClearButton(text: $fileName))
+                                .multilineTextAlignment(.trailing)
+                        }
+                        //Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + returnString)
+                    }
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
+                    }
                 }
             }
         }
         .background(Color(UIColor.systemGroupedBackground))
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectUploadAssets(delegate: uploadAssets)
+            NCSelectViewControllerRepresentable(delegate: uploadAssets)
         }
     }
-}
-
-// MARK: - UIViewControllerRepresentable
-
-struct NCSelectUploadAssets: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = UINavigationController
-    @ObservedObject var delegate: NCUploadAssets
-
-    func makeUIViewController(context: Context) -> UINavigationController {
-
-        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
-        let viewController = navigationController?.topViewController as? NCSelect
-
-        viewController?.delegate = delegate
-        viewController?.typeOfCommandView = .selectCreateFolder
-        viewController?.includeDirectoryE2EEncryption = true
-
-        return navigationController!
-    }
-
-    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
 }
 
 // MARK: - Preview
