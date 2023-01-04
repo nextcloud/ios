@@ -496,7 +496,7 @@ struct UploadScanDocumentView: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
+            NCSelectScanDocument(delegate: uploadScanDocument)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument)
@@ -543,10 +543,10 @@ struct ButtonUploadScanDocumenStyle: ButtonStyle {
 
 // MARK: - UIViewControllerRepresentable
 
-struct NCSelectRepresentedView: UIViewControllerRepresentable {
+struct NCSelectScanDocument: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = UINavigationController
-    @ObservedObject var uploadScanDocument: NCUploadScanDocument
+    @ObservedObject var delegate: NCUploadScanDocument
 
     func makeUIViewController(context: Context) -> UINavigationController {
 
@@ -554,15 +554,14 @@ struct NCSelectRepresentedView: UIViewControllerRepresentable {
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let viewController = navigationController?.topViewController as? NCSelect
 
-        viewController?.delegate = uploadScanDocument
+        viewController?.delegate = delegate
         viewController?.typeOfCommandView = .selectCreateFolder
         viewController?.includeDirectoryE2EEncryption = true
 
         return navigationController!
     }
 
-    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
-    }
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
 }
 
 struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
@@ -583,8 +582,7 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
         return viewController!
     }
 
-    func updateUIViewController(_ uiViewController: NCCreateFormUploadConflict, context: Context) {
-    }
+    func updateUIViewController(_ uiViewController: NCCreateFormUploadConflict, context: Context) { }
 }
 
 struct PDFKitRepresentedView: UIViewRepresentable {
