@@ -124,66 +124,70 @@ struct UploadAssetsView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .top) {
-                List {
-                    Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
-                        HStack {
-                            Label {
-                                if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
-                                    Text("/")
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                } else {
-                                    Text((uploadAssets.serverUrl as NSString).lastPathComponent)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                NavigationView {
+                    List {
+                        Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
+                            HStack {
+                                Label {
+                                    if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
+                                        Text("/")
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                    } else {
+                                        Text((uploadAssets.serverUrl as NSString).lastPathComponent)
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                    }
+                                } icon: {
+                                    Image("folder")
+                                        .renderingMode(.template)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(Color(NCBrandColor.shared.brand))
                                 }
-                            } icon: {
-                                Image("folder")
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundColor(Color(NCBrandColor.shared.brand))
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                isPresentedSelect = true
+                            }
+                            .complexModifier { view in
+                                if #available(iOS 16, *) {
+                                    view.alignmentGuide(.listRowSeparatorLeading) { _ in
+                                        return 0
+                                    }
+                                }
                             }
                         }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            isPresentedSelect = true
+
+                        Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+
+                            Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                                .onChange(of: isMaintainOriginalFilename) { newValue in
+                                }
+
+                            Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                                .onChange(of: isAddFilenametype) { newValue in
+                                }
+                        }
+
+                        Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
+
+                            HStack {
+                                Text(NSLocalizedString("_filename_", comment: ""))
+                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
+                                    .modifier(TextFieldClearButton(text: $fileName))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                            // Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + returnString)
                         }
                         .complexModifier { view in
-                            if #available(iOS 16, *) {
-                                view.alignmentGuide(.listRowSeparatorLeading) { _ in
-                                    return 0
-                                }
+                            if #available(iOS 15, *) {
+                                view.listRowSeparator(.hidden)
                             }
                         }
                     }
-
-                    Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
-
-                        Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                            .onChange(of: isMaintainOriginalFilename) { newValue in
-                            }
-
-                        Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                            .onChange(of: isAddFilenametype) { newValue in
-                            }
-                    }
-
-                    Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
-
-                        HStack {
-                            Text(NSLocalizedString("_filename_", comment: ""))
-                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
-                                .modifier(TextFieldClearButton(text: $fileName))
-                                .multilineTextAlignment(.trailing)
-                        }
-                        //Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + returnString)
-                    }
-                    .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
-                    }
+                    .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
         }
