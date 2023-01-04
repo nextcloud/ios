@@ -53,34 +53,34 @@ class NCUploadAssets: ObservableObject {
                 CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
 
                 preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                        fileDate: creationDate, fileType: asset.mediaType,
-                                                        keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                        keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                        keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                        forcedNewFileName: false)
+                                                   fileDate: creationDate, fileType: asset.mediaType,
+                                                   keyFileName: NCGlobal.shared.keyFileNameMask,
+                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                   forcedNewFileName: false)
 
             } else {
 
                 CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
                 preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                        fileDate: creationDate,
-                                                        fileType: asset.mediaType,
-                                                        keyFileName: nil,
-                                                        keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                        keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                        forcedNewFileName: false)
+                                                   fileDate: creationDate,
+                                                   fileType: asset.mediaType,
+                                                   keyFileName: nil,
+                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                   forcedNewFileName: false)
             }
 
         } else {
 
             CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
             preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                    fileDate: creationDate,
-                                                    fileType: asset.mediaType,
-                                                    keyFileName: nil,
-                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                    forcedNewFileName: false)
+                                               fileDate: creationDate,
+                                               fileType: asset.mediaType,
+                                               keyFileName: nil,
+                                               keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                               keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                               forcedNewFileName: false)
         }
 
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + preview
@@ -178,6 +178,9 @@ struct UploadAssetsView: View {
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
+                                .onChange(of: fileName) { newValue in
+                                    CCUtility.setFileNameMask(newValue, key: NCGlobal.shared.keyFileNameMask)
+                                }
                         }
                     }
                     if !uploadAssets.isMaintainOriginalFilename {
