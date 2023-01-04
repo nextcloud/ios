@@ -490,7 +490,7 @@ struct UploadScanDocumentView: View {
                     }
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
-                    .offset(y: uploadScanDocument.showHUD ? 0 : -200)
+                    .offset(y: uploadScanDocument.showHUD ? 5 : -200)
                     .animation(.easeOut)
             }
         }
