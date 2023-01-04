@@ -10,9 +10,9 @@ import SwiftUI
 
 class NCHostingUploadAssetsView: NSObject {
 
-    @objc func makeShipDetailsUI(userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
+    @objc func makeShipDetailsUI(assets: [PHAsset], cryptated: Bool, session: String ,userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
-        let uploadAssets = NCUploadAssets(userBaseUrl: userBaseUrl, serverUrl: serverUrl)
+        let uploadAssets = NCUploadAssets(assets: assets, cryptated: cryptated, session: session, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
         let details = UploadAssetsView(uploadAssets: uploadAssets)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_upload_photos_videos_", comment: "")
@@ -22,10 +22,16 @@ class NCHostingUploadAssetsView: NSObject {
 
 class NCUploadAssets: ObservableObject {
 
+    internal var assets: [PHAsset]
+    internal var cryptated: Bool
+    internal var session: String
     internal var userBaseUrl: NCUserBaseUrl
     internal var serverUrl: String
 
-    init(userBaseUrl: NCUserBaseUrl, serverUrl: String) {
+    init(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) {
+        self.assets = assets
+        self.cryptated = cryptated
+        self.session = session
         self.userBaseUrl = userBaseUrl
         self.serverUrl = serverUrl
     }
@@ -45,7 +51,7 @@ struct UploadAssetsView: View {
 struct UploadAssetsView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            let uploadAssets = NCUploadAssets(userBaseUrl: appDelegate, serverUrl: "ABCD")
+            let uploadAssets = NCUploadAssets(assets: [], cryptated: false, session: "", userBaseUrl: appDelegate, serverUrl: "ABCD")
             UploadAssetsView(uploadAssets: uploadAssets)
         }
     }
