@@ -186,12 +186,16 @@ struct UploadAssetsView: View {
                             view.listRowSeparator(.hidden)
                         }
                     }
+
+                    Button(NSLocalizedString("_save_", comment: "")) {
+                    }
+                    .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
+                    .background(Color(UIColor.systemGroupedBackground))
                 }
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
             }
         }
-        .background(Color(UIColor.systemGroupedBackground))
         .sheet(isPresented: $isPresentedSelect) {
             NCSelectViewControllerRepresentable(delegate: uploadAssets)
         }
