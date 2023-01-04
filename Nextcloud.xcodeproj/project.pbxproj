@@ -267,6 +267,7 @@
 		F769454022E9F077000A798A /* NCSharePaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769453F22E9F077000A798A /* NCSharePaging.swift */; };
 		F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769454522E9F1B0000A798A /* NCShareCommon.swift */; };
 		F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769454722E9F20D000A798A /* NCShareNetworking.swift */; };
+		F769CA172965AB7C00039397 /* NCUploadAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769CA162965AB7C00039397 /* NCUploadAssets.swift */; };
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
@@ -882,6 +883,7 @@
 		F769453F22E9F077000A798A /* NCSharePaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSharePaging.swift; sourceTree = "<group>"; };
 		F769454522E9F1B0000A798A /* NCShareCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCommon.swift; sourceTree = "<group>"; };
 		F769454722E9F20D000A798A /* NCShareNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareNetworking.swift; sourceTree = "<group>"; };
+		F769CA162965AB7C00039397 /* NCUploadAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCUploadAssets.swift; sourceTree = "<group>"; };
 		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
 		F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityIndicator.swift; sourceTree = "<group>"; };
 		F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerPDFSearch.swift; sourceTree = "<group>"; };
@@ -2026,6 +2028,7 @@
 		F7DFB7E9219C5A0500680748 /* Create cloud */ = {
 			isa = PBXGroup;
 			children = (
+				F769CA162965AB7C00039397 /* NCUploadAssets.swift */,
 				F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */,
 				F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */,
 				F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */,
@@ -3024,6 +3027,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
+				F769CA172965AB7C00039397 /* NCUploadAssets.swift in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
 				F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */,
