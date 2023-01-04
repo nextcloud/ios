@@ -36,11 +36,11 @@ struct HUDView: View {
             }
         }) {
             Label(textLabel, systemImage: image)
-                .foregroundColor(.gray)
+                .foregroundColor(Color(NCBrandColor.shared.brandText))
                 .padding(.horizontal, 10)
                 .padding(14)
                 .background(
-                    Blur(style: .systemMaterial)
+                    Blur(style: .regular)
                         .clipShape(Capsule())
                         .shadow(color: Color(.black).opacity(0.22), radius: 12, x: 0, y: 5)
                     )
@@ -53,7 +53,9 @@ struct Blur: UIViewRepresentable {
     var style: UIBlurEffect.Style
 
     func makeUIView(context: Context) -> UIVisualEffectView {
-        return UIVisualEffectView(effect: UIBlurEffect(style: style))
+        let effectView = UIVisualEffectView(effect: UIBlurEffect(style: style))
+        effectView.backgroundColor = NCBrandColor.shared.brand
+        return effectView
     }
 
     func updateUIView(_ uiView: UIVisualEffectView, context: Context) {

@@ -428,7 +428,7 @@ struct UploadScanDocumentView: View {
                                 isSecuredPassword.toggle()
                             }) {
                                 Image(systemName: self.isSecuredPassword ? "eye.slash" : "eye")
-                                    .foregroundColor(Color(UIColor.opaqueSeparator))
+                                    .foregroundColor(Color(UIColor.placeholderText))
                             }
                             .buttonStyle(BorderlessButtonStyle())
                         }
@@ -520,8 +520,8 @@ struct TextFieldClearButton: ViewModifier {
                 Button(
                     action: { self.text = "" },
                     label: {
-                        Image(systemName: "delete.left")
-                            .foregroundColor(Color(UIColor.opaqueSeparator))
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(Color(UIColor.placeholderText))
                     }
                 ).buttonStyle(BorderlessButtonStyle())
             }
@@ -535,8 +535,8 @@ struct ButtonUploadScanDocumenStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, 40)
             .padding(.vertical, 10)
-            .background(disabled ? Color(UIColor.opaqueSeparator) : Color(NCBrandColor.shared.brand))
-            .foregroundColor(.white)
+            .background(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brand))
+            .foregroundColor(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brandText))
             .clipShape(Capsule())
     }
 }
