@@ -15,7 +15,6 @@ class NCHostingUploadAssetsView: NSObject {
         let uploadAssets = NCUploadAssets(assets: assets, cryptated: cryptated, session: session, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
         let details = UploadAssetsView(uploadAssets)
         let vc = UIHostingController(rootView: details)
-        vc.title = NSLocalizedString("_upload_photos_videos_", comment: "")
         return vc
     }
 }
@@ -28,7 +27,6 @@ class NCUploadAssets: ObservableObject {
     internal var userBaseUrl: NCUserBaseUrl
 
     @Published var serverUrl: String
-    @Published var fileName: String?
 
     init(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.assets = assets
@@ -38,7 +36,7 @@ class NCUploadAssets: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func previewFileName() -> String {
+    func previewFileName(fileName: String?) -> String {
 
         var returnString: String = ""
         let asset = assets[0]
@@ -114,6 +112,8 @@ struct UploadAssetsView: View {
     @State var isPresentedSelect = false
     @State var isMaintainOriginalFilename: Bool = false
     @State var isAddFilenametype: Bool = false
+    @State var fileNameonChange: Bool = true
+    @State var example: String = ""
 
     @ObservedObject var uploadAssets: NCUploadAssets
 
