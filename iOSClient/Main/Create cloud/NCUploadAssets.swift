@@ -27,6 +27,8 @@ class NCUploadAssets: ObservableObject {
     internal var userBaseUrl: NCUserBaseUrl
 
     @Published var serverUrl: String
+    @Published var isMaintainOriginalFilename: Bool = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
+    @Published var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
 
     init(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) {
         self.assets = assets
@@ -38,15 +40,11 @@ class NCUploadAssets: ObservableObject {
 
     func previewFileName(fileName: String?) -> String {
 
-        var returnString: String = ""
-        let asset = assets[0]
+        guard let asset = assets.first else { return "" }
+        var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
 
-        if CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal), let asset = assets.first, let name = (asset.value(forKey: "filename") as? String) {
-
-            return NSLocalizedString("_filename_", comment: "") + ": \(name)"
-
-        } else if let fileName = fileName {
+        if let fileName = fileName {
 
             let fileName = fileName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
@@ -54,7 +52,7 @@ class NCUploadAssets: ObservableObject {
 
                 CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
 
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+                preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
                                                         fileDate: creationDate, fileType: asset.mediaType,
                                                         keyFileName: NCGlobal.shared.keyFileNameMask,
                                                         keyFileNameType: NCGlobal.shared.keyFileNameType,
@@ -64,7 +62,7 @@ class NCUploadAssets: ObservableObject {
             } else {
 
                 CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+                preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
                                                         fileDate: creationDate,
                                                         fileType: asset.mediaType,
                                                         keyFileName: nil,
@@ -76,7 +74,7 @@ class NCUploadAssets: ObservableObject {
         } else {
 
             CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-            returnString = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+            preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
                                                     fileDate: creationDate,
                                                     fileType: asset.mediaType,
                                                     keyFileName: nil,
@@ -85,7 +83,16 @@ class NCUploadAssets: ObservableObject {
                                                     forcedNewFileName: false)
         }
 
-        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + returnString
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + preview
+    }
+
+    func getOriginalFilename() -> String {
+
+        if let asset = assets.first, let name = (asset.value(forKey: "filename") as? String) {
+            return name
+        } else {
+            return ""
+        }
     }
 
     func save() {
@@ -110,9 +117,6 @@ struct UploadAssetsView: View {
 
     @State var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
     @State var isPresentedSelect = false
-    @State var isMaintainOriginalFilename: Bool = false
-    @State var isAddFilenametype: Bool = false
-    @State var fileNameonChange: Bool = true
     @State var example: String = ""
 
     @ObservedObject var uploadAssets: NCUploadAssets
@@ -146,25 +150,20 @@ struct UploadAssetsView: View {
                     .onTapGesture {
                         isPresentedSelect = true
                     }
-                    .complexModifier { view in
-                        if #available(iOS 16, *) {
-                            view.alignmentGuide(.listRowSeparatorLeading) { _ in
-                                return 0
-                            }
-                        }
-                    }
                 }
 
                 Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
 
-                    Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
+                    Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $uploadAssets.isMaintainOriginalFilename)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: isMaintainOriginalFilename) { newValue in
+                        .onChange(of: uploadAssets.isMaintainOriginalFilename) { newValue in
+                            CCUtility.setOriginalFileName(newValue, key: NCGlobal.shared.keyFileNameOriginal)
                         }
 
-                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $uploadAssets.isAddFilenametype)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: isAddFilenametype) { newValue in
+                        .onChange(of: uploadAssets.isAddFilenametype) { newValue in
+                            CCUtility.setFileNameType(newValue, key: NCGlobal.shared.keyFileNameType)
                         }
                 }
 
@@ -172,11 +171,16 @@ struct UploadAssetsView: View {
 
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
-                        TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
-                            .modifier(TextFieldClearButton(text: $fileName))
-                            .multilineTextAlignment(.trailing)
+                        if uploadAssets.isMaintainOriginalFilename {
+                            Text(uploadAssets.getOriginalFilename())
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        } else {
+                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
+                                .modifier(TextFieldClearButton(text: $fileName))
+                                .multilineTextAlignment(.trailing)
+                        }
                     }
-                    if !uploadAssets.assets.isEmpty {
+                    if !uploadAssets.isMaintainOriginalFilename {
                         Text(uploadAssets.previewFileName(fileName: fileName))
                     }
                 }
@@ -189,7 +193,7 @@ struct UploadAssetsView: View {
                 Button(NSLocalizedString("_save_", comment: "")) {
                 }
                 .frame(maxWidth: .infinity)
-                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
+                .buttonStyle(ButtonUploadScanDocumenStyle(disabled: false))
                 .listRowBackground(Color(UIColor.systemGroupedBackground))
             }
             .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
