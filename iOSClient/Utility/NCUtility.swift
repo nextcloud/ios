@@ -828,6 +828,123 @@ class NCUtility: NSObject {
 
         return titleView
     }
+
+    func createFileName(fileName : String, date: Date) {
+
+        var numberFileName = ""
+
+        if fileName.count > 8 {
+            numberFileName = fileName.substring(from: 4, length: 4) ?? ""
+        } else {
+            numberFileName = CCUtility.getIncrementalNumber()
+        }
+
+
+    }
+    /*
+     + (NSString *)createFileName:(NSString *)fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal forcedNewFileName:(BOOL)forcedNewFileName
+     {
+         BOOL addFileNameType = NO;
+
+         // Original FileName ?
+         if ([self getOriginalFileName:keyFileNameOriginal] && !forcedNewFileName) {
+             return fileName;
+         }
+
+         NSString *numberFileName;
+         if ([fileName length] > 8) numberFileName = [fileName substringWithRange:NSMakeRange(04, 04)];
+         else numberFileName = [CCUtility getIncrementalNumber];
+
+         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+         [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
+         [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
+         NSString *fileNameDate = [formatter stringFromDate:fileDate];
+
+         NSString *fileNameType = @"";
+         if (fileType == PHAssetMediaTypeImage)
+             fileNameType = NSLocalizedString(@"_photo_", nil);
+         if (fileType == PHAssetMediaTypeVideo)
+             fileNameType = NSLocalizedString(@"_video_", nil);
+         if (fileType == PHAssetMediaTypeAudio)
+             fileNameType = NSLocalizedString(@"_audio_", nil);
+         if (fileType == PHAssetMediaTypeUnknown)
+             fileNameType = NSLocalizedString(@"_unknown_", nil);
+
+         // Use File Name Type
+         if (keyFileNameType)
+             addFileNameType = [CCUtility getFileNameType:keyFileNameType];
+
+         NSString *fileNameExt = [[fileName pathExtension] lowercaseString];
+
+         if (keyFileName) {
+
+             fileName = [CCUtility getFileNameMask:keyFileName];
+
+             if ([fileName length] > 0) {
+
+                 [formatter setDateFormat:@"dd"];
+                 NSString *dayNumber = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"MMM"];
+                 NSString *month = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"MM"];
+                 NSString *monthNumber = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"yyyy"];
+                 NSString *year = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"yy"];
+                 NSString *yearNumber = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"HH"];
+                 NSString *hour24 = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"hh"];
+                 NSString *hour12 = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"mm"];
+                 NSString *minute = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"ss"];
+                 NSString *second = [formatter stringFromDate:fileDate];
+                 [formatter setDateFormat:@"a"];
+                 NSString *ampm = [formatter stringFromDate:fileDate];
+
+                 // Replace string with date
+
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"DD" withString:dayNumber];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"MMM" withString:month];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"MM" withString:monthNumber];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"YYYY" withString:year];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"YY" withString:yearNumber];
+
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"HH" withString:hour24];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"hh" withString:hour12];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"mm" withString:minute];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"ss" withString:second];
+                 fileName = [fileName stringByReplacingOccurrencesOfString:@"ampm" withString:ampm];
+
+                 if (addFileNameType)
+                     fileName = [NSString stringWithFormat:@"%@%@%@.%@", fileNameType, fileName, numberFileName, fileNameExt];
+                 else
+                     fileName = [NSString stringWithFormat:@"%@%@.%@", fileName, numberFileName, fileNameExt];
+
+                 fileName = [fileName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+             } else {
+
+                 if (addFileNameType)
+                     fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+                 else
+                     fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+             }
+
+         } else {
+
+             if (addFileNameType)
+                 fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+             else
+                 fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+
+         }
+
+         return fileName;
+     }
+
+     */
 }
 
 
