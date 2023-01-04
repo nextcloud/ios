@@ -45,7 +45,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 class NCUploadScanDocument: ObservableObject {
 
     internal var userBaseUrl: NCUserBaseUrl
-    internal var serverUrl: String
+
     internal var metadata = tableMetadata()
     internal var images: [UIImage]
 
@@ -54,6 +54,7 @@ class NCUploadScanDocument: ObservableObject {
     internal var quality: Double = 0
     internal var removeAllFiles: Bool = false
 
+    @Published var serverUrl: String
     @Published var showHUD: Bool = false
 
     init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
@@ -496,7 +497,7 @@ struct UploadScanDocumentView: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectScanDocument(delegate: uploadScanDocument)
+            NCSelectViewControllerRepresentable(delegate: uploadScanDocument)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument)
@@ -542,27 +543,6 @@ struct ButtonUploadScanDocumenStyle: ButtonStyle {
 }
 
 // MARK: - UIViewControllerRepresentable
-
-struct NCSelectScanDocument: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = UINavigationController
-    @ObservedObject var delegate: NCUploadScanDocument
-
-    func makeUIViewController(context: Context) -> UINavigationController {
-
-        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
-        let viewController = navigationController?.topViewController as? NCSelect
-
-        viewController?.delegate = delegate
-        viewController?.typeOfCommandView = .selectCreateFolder
-        viewController?.includeDirectoryE2EEncryption = true
-
-        return navigationController!
-    }
-
-    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
-}
 
 struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
 

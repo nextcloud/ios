@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 import NextcloudKit
 
 @objc protocol NCSelectDelegate {
@@ -835,4 +836,27 @@ class NCSelectCommandView: UIView {
     @IBAction func valueChangedSwitchOverwrite(_ sender: UISwitch) {
         selectView?.valueChangedSwitchOverwrite(sender)
     }
+}
+
+// MARK: - UIViewControllerRepresentable
+
+struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = UINavigationController
+    var delegate: NCSelectDelegate
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController?.topViewController as? NCSelect
+
+        viewController?.delegate = delegate
+        viewController?.typeOfCommandView = .selectCreateFolder
+        viewController?.includeDirectoryE2EEncryption = true
+
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
 }
