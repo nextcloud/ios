@@ -51,7 +51,6 @@ class NCUploadAssets: ObservableObject {
             if !fileName.isEmpty {
 
                 CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
-
                 preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
                                                    fileDate: creationDate, fileType: asset.mediaType,
                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
