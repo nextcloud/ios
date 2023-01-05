@@ -190,12 +190,31 @@ extension NCUploadAssets: NCSelectDelegate {
     }
 }
 
+extension NCUploadAssets: NCCreateFormUploadConflictDelegate {
+
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+
+        /*
+        if let metadata = metadatas?.first {
+            self.showHUD.toggle()
+            createPDF(metadata: metadata) { error in
+                if !error {
+                    self.showHUD.toggle()
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                }
+            }
+        }
+        */
+    }
+}
+
 // MARK: - View
 
 struct UploadAssetsView: View {
 
     @State var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
     @State var isPresentedSelect = false
+    @State var isPresentedUploadConflict = false
 
     @ObservedObject var uploadAssets: NCUploadAssets
 
@@ -275,6 +294,9 @@ struct UploadAssetsView: View {
         }
         .sheet(isPresented: $isPresentedSelect) {
             NCSelectViewControllerRepresentable(delegate: uploadAssets)
+        }
+        .sheet(isPresented: $isPresentedUploadConflict) {
+            NCUploadConflictRepresentedView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: [uploadAssets.metadata])
         }
     }
 }
