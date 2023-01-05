@@ -1,5 +1,5 @@
 //
-//  NCComponentView.swift
+//  ComponentView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 05/01/23.
@@ -24,6 +24,7 @@
 import SwiftUI
 
 struct TextFieldClearButton: ViewModifier {
+
     @Binding var text: String
 
     func body(content: Content) -> some View {
@@ -43,7 +44,9 @@ struct TextFieldClearButton: ViewModifier {
 }
 
 struct ButtonRounded: ButtonStyle {
+
     var disabled = false
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 40)
