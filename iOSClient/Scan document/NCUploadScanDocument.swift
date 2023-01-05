@@ -33,7 +33,7 @@ class NCHostingUploadScanDocumentView: NSObject {
     @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
         let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
-        let details = UploadScanDocumentView(uploadScanDocument)
+        let details = UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_", comment: "")
         return vc
@@ -368,7 +368,7 @@ struct UploadScanDocumentView: View {
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
 
-    init(_ uploadScanDocument: NCUploadScanDocument) {
+    init(uploadScanDocument: NCUploadScanDocument) {
         self.uploadScanDocument = uploadScanDocument
     }
 
@@ -564,7 +564,7 @@ struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD")
-            UploadScanDocumentView(uploadScanDocument)
+            UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
         }
     }
 }

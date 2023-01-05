@@ -28,7 +28,7 @@ class NCHostingUploadAssetsView: NSObject {
     @objc func makeShipDetailsUI(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
         let uploadAssets = NCUploadAssets(assets: assets, cryptated: cryptated, session: session, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
-        let details = UploadAssetsView(uploadAssets)
+        let details = UploadAssetsView(uploadAssets: uploadAssets)
         let vc = UIHostingController(rootView: details)
         return vc
     }
@@ -139,7 +139,7 @@ struct UploadAssetsView: View {
 
     @ObservedObject var uploadAssets: NCUploadAssets
 
-    init(_ uploadAssets: NCUploadAssets) {
+    init(uploadAssets: NCUploadAssets) {
         self.uploadAssets = uploadAssets
     }
 
@@ -225,7 +225,7 @@ struct UploadAssetsView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             let uploadAssets = NCUploadAssets(assets: [], cryptated: false, session: "", userBaseUrl: appDelegate, serverUrl: "/")
-            UploadAssetsView(uploadAssets)
+            UploadAssetsView(uploadAssets: uploadAssets)
         }
     }
 }
