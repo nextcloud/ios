@@ -13,8 +13,8 @@ cyclomatic_complexity:
   warning: 25
 
 line_length:
-  warning: 250
-  error: 250
+  warning: 400
+  error: 400
 
 function_body_length:
    warning: 200

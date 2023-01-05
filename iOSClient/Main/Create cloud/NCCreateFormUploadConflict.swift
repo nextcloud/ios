@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 import NextcloudKit
 import Photos
 import JGProgressHUD
@@ -510,4 +511,29 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
             buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
         }
     }
+}
+
+// MARK: - UIViewControllerRepresentable
+
+struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = NCCreateFormUploadConflict
+    var delegate: NCCreateFormUploadConflictDelegate
+    var serverUrl: String
+    var metadatasUploadInConflict: [tableMetadata]
+
+    func makeUIViewController(context: Context) -> NCCreateFormUploadConflict {
+
+        let storyboard = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as? NCCreateFormUploadConflict
+
+        viewController?.delegate = delegate
+        viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+        viewController?.serverUrl = serverUrl
+        viewController?.metadatasUploadInConflict = metadatasUploadInConflict
+
+        return viewController!
+    }
+
+    func updateUIViewController(_ uiViewController: NCCreateFormUploadConflict, context: Context) { }
 }

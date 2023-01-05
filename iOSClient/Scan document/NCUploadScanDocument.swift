@@ -500,7 +500,7 @@ struct UploadScanDocumentView: View {
             NCSelectViewControllerRepresentable(delegate: uploadScanDocument)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument)
+            NCUploadConflictRepresentedView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata])
         }.onTapGesture {
             dismissKeyboard()
         }
@@ -512,27 +512,6 @@ struct UploadScanDocumentView: View {
 }
 
 // MARK: - UIViewControllerRepresentable
-
-struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = NCCreateFormUploadConflict
-    @ObservedObject var uploadScanDocument: NCUploadScanDocument
-
-    func makeUIViewController(context: Context) -> NCCreateFormUploadConflict {
-
-        let storyboard = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil)
-        let viewController = storyboard.instantiateInitialViewController() as? NCCreateFormUploadConflict
-
-        viewController?.delegate = uploadScanDocument
-        viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
-        viewController?.serverUrl = uploadScanDocument.serverUrl
-        viewController?.metadatasUploadInConflict = [uploadScanDocument.metadata]
-
-        return viewController!
-    }
-
-    func updateUIViewController(_ uiViewController: NCCreateFormUploadConflict, context: Context) { }
-}
 
 struct PDFKitRepresentedView: UIViewRepresentable {
 
