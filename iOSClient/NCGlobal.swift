@@ -375,6 +375,7 @@ class NCGlobal: NSObject {
     let notificationCenterPauseMedia                            = "pauseMedia"
 
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
+    let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
     // TIP
     //

@@ -113,70 +113,67 @@ class NCUploadAssets: ObservableObject {
 
     func save() {
 
-        // DispatchQueue.global().async {
+        var metadatasNOConflict: [tableMetadata] = []
+        var metadatasUploadInConflict: [tableMetadata] = []
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: userBaseUrl.urlBase, userId: userBaseUrl.userId, account: userBaseUrl.account)
 
-            var metadatasNOConflict: [tableMetadata] = []
-            var metadatasUploadInConflict: [tableMetadata] = []
-            let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: userBaseUrl.urlBase, userId: userBaseUrl.userId, account: userBaseUrl.account)
+        for asset in self.assets {
 
-            for asset in self.assets {
+            var serverUrl = self.serverUrl
+            var livePhoto: Bool = false
+            let creationDate = asset.creationDate ?? Date()
+            let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+                                                    fileDate: creationDate,
+                                                    fileType: asset.mediaType,
+                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
+                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                                    forcedNewFileName: false)!
 
-                var serverUrl = self.serverUrl
-                var livePhoto: Bool = false
-                let creationDate = asset.creationDate ?? Date()
-                let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                        fileDate: creationDate,
-                                                        fileType: asset.mediaType,
-                                                        keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                        keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                        keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                        forcedNewFileName: false)!
-
-                if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
-                    livePhoto = true
-                }
-
-                // Check if is in upload
-                let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
-                if !isRecordInSessions.isEmpty { continue }
-
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: userBaseUrl.user, userId: userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
-
-                metadataForUpload.assetLocalIdentifier = asset.localIdentifier
-                metadataForUpload.session = self.session
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-
-                if let result = NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) {
-                    metadataForUpload.fileName = result.fileName
-                    metadatasUploadInConflict.append(metadataForUpload)
-                } else {
-                    metadatasNOConflict.append(metadataForUpload)
-                }
+            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
+                livePhoto = true
             }
 
-            // Verify if file(s) exists
-            if !metadatasUploadInConflict.isEmpty {
+            // Check if is in upload
+            let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
+            if !isRecordInSessions.isEmpty { continue }
 
-                /*
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: userBaseUrl.user, userId: userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
 
-                        conflict.serverUrl = self.serverUrl
-                        conflict.metadatasNOConflict = metadatasNOConflict
-                        conflict.metadatasUploadInConflict = metadatasUploadInConflict
-                        conflict.delegate = self.appDelegate
+            metadataForUpload.assetLocalIdentifier = asset.localIdentifier
+            metadataForUpload.session = self.session
+            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                        self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
-                    }
-                }
-                */
+            if let result = NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) {
+                metadataForUpload.fileName = result.fileName
+                metadatasUploadInConflict.append(metadataForUpload)
             } else {
-                NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
+                metadatasNOConflict.append(metadataForUpload)
             }
+        }
 
-            // DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }
-        // }
+        // Verify if file(s) exists
+        if !metadatasUploadInConflict.isEmpty {
+
+            /*
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+
+                    conflict.serverUrl = self.serverUrl
+                    conflict.metadatasNOConflict = metadatasNOConflict
+                    conflict.metadatasUploadInConflict = metadatasUploadInConflict
+                    conflict.delegate = self.appDelegate
+
+                    self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
+                }
+            }
+            */
+        } else {
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
+        }
+
+        // DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }
     }
 }
 
