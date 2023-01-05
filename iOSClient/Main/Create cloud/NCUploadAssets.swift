@@ -44,7 +44,6 @@ class NCUploadAssets: ObservableObject {
     @Published var serverUrl: String
     @Published var isMaintainOriginalFilename: Bool = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
     @Published var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
-    @Published var previewText = ""
 
     init(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) {
 
@@ -193,9 +192,6 @@ struct UploadAssetsView: View {
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
-                                .onChange(of: fileName) { newValue in
-                                    CCUtility.setFileNameMask(newValue, key: NCGlobal.shared.keyFileNameMask)
-                                }
                         }
                     }
                     if !uploadAssets.isMaintainOriginalFilename {
