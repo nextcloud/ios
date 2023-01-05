@@ -468,7 +468,7 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-                        .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
+                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty))
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
@@ -508,37 +508,6 @@ struct UploadScanDocumentView: View {
 
     func dismissKeyboard() {
         UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
-    }
-}
-
-struct TextFieldClearButton: ViewModifier {
-    @Binding var text: String
-
-    func body(content: Content) -> some View {
-        HStack {
-            content
-            if !text.isEmpty {
-                Button(
-                    action: { self.text = "" },
-                    label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(Color(UIColor.placeholderText))
-                    }
-                ).buttonStyle(BorderlessButtonStyle())
-            }
-        }
-    }
-}
-
-struct ButtonUploadScanDocumenStyle: ButtonStyle {
-    var disabled = false
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.horizontal, 40)
-            .padding(.vertical, 10)
-            .background(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brand))
-            .foregroundColor(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brandText))
-            .clipShape(Capsule())
     }
 }
 
