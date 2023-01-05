@@ -44,8 +44,10 @@ class NCUploadAssets: ObservableObject {
     @Published var serverUrl: String
     @Published var isMaintainOriginalFilename: Bool = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
     @Published var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
+    @Published var previewText = ""
 
     init(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) {
+
         self.assets = assets
         self.cryptated = cryptated
         self.session = session
@@ -53,11 +55,13 @@ class NCUploadAssets: ObservableObject {
         self.serverUrl = serverUrl
     }
 
-    func previewFileName(fileName: String?) -> String {
+    func setFileNameMask(fileName: String?) -> String {
 
         guard let asset = assets.first else { return "" }
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
+
+        CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
 
         if let fileName = fileName {
 
@@ -127,11 +131,12 @@ extension NCUploadAssets: NCSelectDelegate {
     }
 }
 
+// MARK: - View
+
 struct UploadAssetsView: View {
 
     @State var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
     @State var isPresentedSelect = false
-    @State var example: String = ""
 
     @ObservedObject var uploadAssets: NCUploadAssets
 
@@ -170,15 +175,11 @@ struct UploadAssetsView: View {
 
                     Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $uploadAssets.isMaintainOriginalFilename)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: uploadAssets.isMaintainOriginalFilename) { newValue in
-                            CCUtility.setOriginalFileName(newValue, key: NCGlobal.shared.keyFileNameOriginal)
-                        }
+                        .onChange(of: uploadAssets.isMaintainOriginalFilename) { _ in }
 
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $uploadAssets.isAddFilenametype)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: uploadAssets.isAddFilenametype) { newValue in
-                            CCUtility.setFileNameType(newValue, key: NCGlobal.shared.keyFileNameType)
-                        }
+                        .onChange(of: uploadAssets.isAddFilenametype) { _ in }
                 }
 
                 Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
@@ -198,7 +199,7 @@ struct UploadAssetsView: View {
                         }
                     }
                     if !uploadAssets.isMaintainOriginalFilename {
-                        Text(uploadAssets.previewFileName(fileName: fileName))
+                        Text(uploadAssets.setFileNameMask(fileName: fileName))
                     }
                 }
                 .complexModifier { view in
