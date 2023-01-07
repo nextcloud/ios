@@ -55,9 +55,12 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        var metadatasToUpload = metadatasNOConflict
         if let metadatas = metadatas {
-
+            metadatasToUpload.append(contentsOf: metadatas)
         }
+        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasToUpload, completion: { _ in })
+        //self.presentationMode.wrappedValue.dismiss()
     }
 }
 
