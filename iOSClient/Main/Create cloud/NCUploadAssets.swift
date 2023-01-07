@@ -43,6 +43,7 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
     @Published var serverUrl: String
     @Published var assets: [PHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
+    @Published var dismiss = false;
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
@@ -254,7 +255,7 @@ struct UploadAssetsView: View {
                 Button(NSLocalizedString("_save_", comment: "")) {
                     save { metadatasNOConflict, metadatasUploadInConflict in
                         if metadatasUploadInConflict.isEmpty {
-                            self.presentationMode.wrappedValue.dismiss()
+                            presentationMode.wrappedValue.dismiss()
                         } else {
                             uploadAssets.metadatasNOConflict = metadatasNOConflict
                             uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
@@ -273,6 +274,9 @@ struct UploadAssetsView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict)
+        }
+        .onReceive(uploadAssets.$dismiss) { _ in
+            presentationMode.wrappedValue.dismiss()
         }
     }
 }
