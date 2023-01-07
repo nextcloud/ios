@@ -111,7 +111,7 @@ class NCUploadAssets: ObservableObject {
         }
     }
 
-    func save() {
+    func save(completion: @escaping (_ openConflictViewController: Bool) -> Void) {
 
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
@@ -169,11 +169,11 @@ class NCUploadAssets: ObservableObject {
                 }
             }
             */
+            completion(true)
         } else {
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
+            completion(false)
         }
-
-        // DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }
     }
 }
 
