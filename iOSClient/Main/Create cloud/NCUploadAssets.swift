@@ -28,7 +28,9 @@ class NCHostingUploadAssetsView: NSObject {
 
     @objc func makeShipDetailsUI(assets: [PHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) -> UIViewController {
 
-        let details = UploadAssetsView(assets: assets, serverUrl: serverUrl, userBaseUrl: userBaseUrl)
+        let uploadAssets = NCUploadAssets(assets: assets, serverUrl: serverUrl, userBaseUrl: userBaseUrl )
+        let details = UploadAssetsView(uploadAssets: uploadAssets)
+
         let vc = UIHostingController(rootView: details)
         return vc
     }
@@ -36,11 +38,21 @@ class NCHostingUploadAssetsView: NSObject {
 
 // MARK: - View
 
-struct UploadAssetsView: View {
+class NCUploadAssets: ObservableObject {
 
-    @State private var serverUrl: String
-    @State private var assets: [PHAsset]
-    @State private var userBaseUrl: NCUserBaseUrl
+    @Published var serverUrl: String
+    @Published var assets: [PHAsset]
+    @Published var userBaseUrl: NCUserBaseUrl
+
+    init(assets: [PHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
+
+        self.assets = assets
+        self.serverUrl = serverUrl
+        self.userBaseUrl = userBaseUrl
+    }
+}
+
+struct UploadAssetsView: View {
 
     @State private var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
 
@@ -49,16 +61,16 @@ struct UploadAssetsView: View {
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
 
-    init(assets: [PHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
+    @ObservedObject var uploadAssets: NCUploadAssets
+    @Environment(\.presentationMode) var presentationMode
 
-        self.assets = assets
-        self.serverUrl = serverUrl
-        self.userBaseUrl = userBaseUrl
+    init(uploadAssets: NCUploadAssets) {
+        self.uploadAssets = uploadAssets
     }
 
     func getOriginalFilename() -> String {
 
-        if let asset = assets.first, let name = (asset.value(forKey: "filename") as? String) {
+        if let asset = uploadAssets.assets.first, let name = (asset.value(forKey: "filename") as? String) {
             return name
         } else {
             return ""
@@ -67,7 +79,7 @@ struct UploadAssetsView: View {
 
     func setFileNameMask(fileName: String?) -> String {
 
-        guard let asset = assets.first else { return "" }
+        guard let asset = uploadAssets.assets.first else { return "" }
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
 
@@ -118,11 +130,11 @@ struct UploadAssetsView: View {
 
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: userBaseUrl.urlBase, userId: userBaseUrl.userId, account: userBaseUrl.account)
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
 
-        for asset in self.assets {
+        for asset in uploadAssets.assets {
 
-            var serverUrl = self.serverUrl
+            var serverUrl = uploadAssets.serverUrl
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
@@ -138,17 +150,17 @@ struct UploadAssetsView: View {
             }
 
             // Check if is in upload
-            let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
+            let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", uploadAssets.userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
             if !isRecordInSessions.isEmpty { continue }
 
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: userBaseUrl.user, userId: userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
 
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-            if let result = NCManageDatabase.shared.getMetadataConflict(account: userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) {
+            if let result = NCManageDatabase.shared.getMetadataConflict(account: uploadAssets.userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) {
                 metadataForUpload.fileName = result.fileName
                 metadatasUploadInConflict.append(metadataForUpload)
             } else {
@@ -185,11 +197,11 @@ struct UploadAssetsView: View {
                 Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
                     HStack {
                         Label {
-                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: userBaseUrl.urlBase, userId: userBaseUrl.userId) == serverUrl {
+                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
                                 Text("/")
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             } else {
-                                Text((serverUrl as NSString).lastPathComponent)
+                                Text((uploadAssets.serverUrl as NSString).lastPathComponent)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                         } icon: {
@@ -241,6 +253,7 @@ struct UploadAssetsView: View {
                 }
 
                 Button(NSLocalizedString("_save_", comment: "")) {
+                    self.presentationMode.wrappedValue.dismiss()
                 }
                 .frame(maxWidth: .infinity)
                 .buttonStyle(ButtonRounded(disabled: false))
@@ -250,7 +263,7 @@ struct UploadAssetsView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectView(serverUrl: $serverUrl)
+            NCSelectView(serverUrl: $uploadAssets.serverUrl)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             // NCUploadConflictRepresentedView(delegate: uploadAssets, serverUrl: serverUrl, metadatasUploadInConflict: []) // uploadAssets.metadata
@@ -263,7 +276,8 @@ struct UploadAssetsView: View {
 struct UploadAssetsView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            UploadAssetsView(assets: [], serverUrl: "/", userBaseUrl: appDelegate)
+            let uploadAssets = NCUploadAssets(assets: [], serverUrl: "/", userBaseUrl: appDelegate)
+            UploadAssetsView(uploadAssets: uploadAssets)
         }
     }
 }
