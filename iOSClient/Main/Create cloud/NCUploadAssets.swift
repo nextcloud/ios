@@ -36,7 +36,7 @@ class NCHostingUploadAssetsView: NSObject {
     }
 }
 
-// MARK: - View
+// MARK: - Class
 
 class NCUploadAssets: ObservableObject {
 
@@ -51,6 +51,8 @@ class NCUploadAssets: ObservableObject {
         self.userBaseUrl = userBaseUrl
     }
 }
+
+// MARK: - View
 
 struct UploadAssetsView: View {
 
