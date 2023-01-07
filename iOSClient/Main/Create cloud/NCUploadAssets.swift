@@ -66,6 +66,10 @@ struct UploadAssetsView: View {
     @ObservedObject var uploadAssets: NCUploadAssets
     @Environment(\.presentationMode) var presentationMode
 
+    @State private var metadatasNOConflict: [tableMetadata]
+    @State private var metadatasUploadInConflict: [tableMetadata]
+    @State private var metadatasToUpload: [tableMetadata]
+
     init(uploadAssets: NCUploadAssets) {
         self.uploadAssets = uploadAssets
     }
@@ -128,15 +132,14 @@ struct UploadAssetsView: View {
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + preview
     }
 
-    func save(completion: @escaping (_ openConflictViewController: Bool) -> Void) {
+    func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
 
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
 
         for asset in uploadAssets.assets {
 
-            var serverUrl = uploadAssets.serverUrl
+            let serverUrl = uploadAssets.serverUrl
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
@@ -172,24 +175,10 @@ struct UploadAssetsView: View {
 
         // Verify if file(s) exists
         if !metadatasUploadInConflict.isEmpty {
-
-            /*
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
-
-                    conflict.serverUrl = self.serverUrl
-                    conflict.metadatasNOConflict = metadatasNOConflict
-                    conflict.metadatasUploadInConflict = metadatasUploadInConflict
-                    conflict.delegate = self.appDelegate
-
-                    self.appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
-                }
-            }
-            */
-            completion(true)
+            completion(metadatasNOConflict, metadatasUploadInConflict)
         } else {
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
-            completion(false)
+            completion(metadatasNOConflict, metadatasUploadInConflict)
         }
     }
 
@@ -255,7 +244,14 @@ struct UploadAssetsView: View {
                 }
 
                 Button(NSLocalizedString("_save_", comment: "")) {
-                    self.presentationMode.wrappedValue.dismiss()
+                    save { metadatasNOConflict, metadatasUploadInConflict in
+                        if metadatasUploadInConflict.isEmpty {
+                            self.presentationMode.wrappedValue.dismiss()
+                        } else {
+                            self.metadatasNOConflict = metadatasNOConflict
+                            self.metadatasUploadInConflict = metadatasUploadInConflict
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .buttonStyle(ButtonRounded(disabled: false))
@@ -265,10 +261,10 @@ struct UploadAssetsView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectView(serverUrl: $uploadAssets.serverUrl)
+            SelectView(serverUrl: $uploadAssets.serverUrl)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            // NCUploadConflictRepresentedView(delegate: uploadAssets, serverUrl: serverUrl, metadatasUploadInConflict: []) // uploadAssets.metadata
+            
         }
     }
 }

@@ -861,7 +861,7 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
 }
 
-struct NCSelectView: UIViewControllerRepresentable {
+struct SelectView: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = UINavigationController
 
@@ -869,15 +869,15 @@ struct NCSelectView: UIViewControllerRepresentable {
 
     class Coordinator: NSObject, NCSelectDelegate {
 
-        var parent: NCSelectView
+        var parent: SelectView
 
-        init(_ parent: NCSelectView) {
+        init(_ parent: SelectView) {
             self.parent = parent
         }
 
         func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
             if let serverUrl = serverUrl {
-                self.parent.serverUrl  = serverUrl
+                self.parent.serverUrl = serverUrl
             }
         }
     }

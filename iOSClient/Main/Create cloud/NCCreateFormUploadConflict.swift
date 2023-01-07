@@ -27,15 +27,11 @@ import NextcloudKit
 import Photos
 import JGProgressHUD
 
-@objc protocol NCCreateFormUploadConflictDelegate {
-    @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
+protocol NCCreateFormUploadConflictDelegate {
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
 }
 
-extension NCCreateFormUploadConflictDelegate {
-    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {}
-}
-
-@objc class NCCreateFormUploadConflict: UIViewController {
+class NCCreateFormUploadConflict: UIViewController {
 
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelSubTitle: UILabel!
@@ -53,12 +49,12 @@ extension NCCreateFormUploadConflictDelegate {
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
 
-    @objc var metadatasNOConflict: [tableMetadata]
-    @objc var metadatasUploadInConflict: [tableMetadata]
-    @objc var serverUrl: String?
-    @objc weak var delegate: NCCreateFormUploadConflictDelegate?
-    @objc var alwaysNewFileNameNumber: Bool = false
-    @objc var textLabelDetailNewFile: String?
+    var metadatasNOConflict: [tableMetadata]
+    var metadatasUploadInConflict: [tableMetadata]
+    var serverUrl: String?
+    var delegate: NCCreateFormUploadConflictDelegate?
+    var alwaysNewFileNameNumber: Bool = false
+    var textLabelDetailNewFile: String?
 
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
@@ -67,7 +63,7 @@ extension NCCreateFormUploadConflictDelegate {
 
     // MARK: - View Life Cycle
 
-    @objc required init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         self.metadatasNOConflict = []
         self.metadatasUploadInConflict = []
         super.init(coder: aDecoder)
@@ -515,14 +511,14 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
 
 // MARK: - UIViewControllerRepresentable
 
-struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
+struct UploadConflictView: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = NCCreateFormUploadConflict
     var delegate: NCCreateFormUploadConflictDelegate
     var serverUrl: String
     var metadatasUploadInConflict: [tableMetadata]
 
-    func makeUIViewController(context: Context) -> NCCreateFormUploadConflict {
+    func makeUIViewController(context: Context) -> UIViewControllerType {
 
         let storyboard = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil)
         let viewController = storyboard.instantiateInitialViewController() as? NCCreateFormUploadConflict
@@ -535,5 +531,5 @@ struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
         return viewController!
     }
 
-    func updateUIViewController(_ uiViewController: NCCreateFormUploadConflict, context: Context) { }
+    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) { }
 }
