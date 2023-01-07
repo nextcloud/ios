@@ -43,7 +43,7 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
     @Published var serverUrl: String
     @Published var assets: [PHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
-    @Published var dismiss = false;
+    @Published var dismiss = false
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
@@ -60,8 +60,9 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
         if let metadatas = metadatas {
             metadatasToUpload.append(contentsOf: metadatas)
         }
-        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasToUpload, completion: { _ in })
-        //self.presentationMode.wrappedValue.dismiss()
+        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasToUpload, completion: { _ in
+            self.dismiss = true
+        })
     }
 }
 
