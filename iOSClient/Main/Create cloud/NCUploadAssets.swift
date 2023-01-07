@@ -29,7 +29,7 @@ class NCHostingUploadAssetsView: NSObject {
     @objc func makeShipDetailsUI(assets: [PHAsset], cryptated: Bool, session: String, userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
         let uploadAssets = NCUploadAssets(assets: assets, session: session, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
-        let details = UploadAssetsView(uploadAssets: uploadAssets)
+        let details = UploadAssetsView(uploadAssets: uploadAssets, serverUrl: serverUrl)
         let vc = UIHostingController(rootView: details)
         return vc
     }
@@ -212,14 +212,16 @@ extension NCUploadAssets: NCCreateFormUploadConflictDelegate {
 
 struct UploadAssetsView: View {
 
+    @State private var serverUrl: String
     @State var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
     @ObservedObject var uploadAssets: NCUploadAssets
 
-    init(uploadAssets: NCUploadAssets) {
+    init(uploadAssets: NCUploadAssets, serverUrl: String) {
         self.uploadAssets = uploadAssets
+        self.serverUrl = serverUrl
     }
 
     var body: some View {
@@ -228,11 +230,11 @@ struct UploadAssetsView: View {
                 Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
                     HStack {
                         Label {
-                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
+                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == serverUrl {
                                 Text("/")
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             } else {
-                                Text((uploadAssets.serverUrl as NSString).lastPathComponent)
+                                Text((serverUrl as NSString).lastPathComponent)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                         } icon: {
@@ -293,10 +295,12 @@ struct UploadAssetsView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectViewControllerRepresentable(delegate: uploadAssets)
+            NCSelectView(serverUrl: $serverUrl)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            NCUploadConflictRepresentedView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: [uploadAssets.metadata])
+            if let serverUrl = serverUrl {
+                NCUploadConflictRepresentedView(delegate: uploadAssets, serverUrl: serverUrl, metadatasUploadInConflict: []) // uploadAssets.metadata
+            }
         }
     }
 }
@@ -307,7 +311,7 @@ struct UploadAssetsView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             let uploadAssets = NCUploadAssets(assets: [], session: "", userBaseUrl: appDelegate, serverUrl: "/")
-            UploadAssetsView(uploadAssets: uploadAssets)
+            UploadAssetsView(uploadAssets: uploadAssets, serverUrl: "/")
         }
     }
 }
