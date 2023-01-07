@@ -864,6 +864,7 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 struct NCSelectView: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = UINavigationController
+
     @Binding var serverUrl: String
 
     class Coordinator: NSObject, NCSelectDelegate {
