@@ -66,10 +66,6 @@ struct UploadAssetsView: View {
     @ObservedObject var uploadAssets: NCUploadAssets
     @Environment(\.presentationMode) var presentationMode
 
-    @State private var metadatasNOConflict: [tableMetadata]
-    @State private var metadatasUploadInConflict: [tableMetadata]
-    @State private var metadatasToUpload: [tableMetadata]
-
     init(uploadAssets: NCUploadAssets) {
         self.uploadAssets = uploadAssets
     }
@@ -248,8 +244,7 @@ struct UploadAssetsView: View {
                         if metadatasUploadInConflict.isEmpty {
                             self.presentationMode.wrappedValue.dismiss()
                         } else {
-                            self.metadatasNOConflict = metadatasNOConflict
-                            self.metadatasUploadInConflict = metadatasUploadInConflict
+                           
                         }
                     }
                 }
@@ -264,7 +259,7 @@ struct UploadAssetsView: View {
             SelectView(serverUrl: $uploadAssets.serverUrl)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            
+
         }
     }
 }
