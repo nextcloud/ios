@@ -38,17 +38,26 @@ class NCHostingUploadAssetsView: NSObject {
 
 // MARK: - Class
 
-class NCUploadAssets: ObservableObject {
+class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
 
     @Published var serverUrl: String
     @Published var assets: [PHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
+
+    var metadatasNOConflict: [tableMetadata] = []
+    var metadatasUploadInConflict: [tableMetadata] = []
 
     init(assets: [PHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
 
         self.assets = assets
         self.serverUrl = serverUrl
         self.userBaseUrl = userBaseUrl
+    }
+
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        if let metadatas = metadatas {
+
+        }
     }
 }
 
@@ -244,7 +253,8 @@ struct UploadAssetsView: View {
                         if metadatasUploadInConflict.isEmpty {
                             self.presentationMode.wrappedValue.dismiss()
                         } else {
-                           
+                            uploadAssets.metadatasNOConflict = metadatasNOConflict
+                            uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
                         }
                     }
                 }
@@ -259,7 +269,7 @@ struct UploadAssetsView: View {
             SelectView(serverUrl: $uploadAssets.serverUrl)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-
+            UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict)
         }
     }
 }
