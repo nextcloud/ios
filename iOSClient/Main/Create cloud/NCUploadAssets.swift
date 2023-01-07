@@ -30,9 +30,7 @@ class NCHostingUploadAssetsView: NSObject {
 
         let uploadAssets = NCUploadAssets(assets: assets, serverUrl: serverUrl, userBaseUrl: userBaseUrl )
         let details = UploadAssetsView(uploadAssets: uploadAssets)
-
-        let vc = UIHostingController(rootView: details)
-        return vc
+        return UIHostingController(rootView: details)
     }
 }
 
@@ -56,7 +54,9 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+
         var metadatasToUpload = metadatasNOConflict
+
         if let metadatas = metadatas {
             metadatasToUpload.append(contentsOf: metadatas)
         }
