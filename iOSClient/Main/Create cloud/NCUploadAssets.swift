@@ -71,13 +71,13 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
 struct UploadAssetsView: View {
 
     @State private var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
-
     @State private var isMaintainOriginalFilename: Bool = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
     @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
 
     @ObservedObject var uploadAssets: NCUploadAssets
+
     @Environment(\.presentationMode) var presentationMode
 
     init(uploadAssets: NCUploadAssets) {
