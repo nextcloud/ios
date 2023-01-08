@@ -198,6 +198,7 @@ struct UploadAssetsView: View {
         NavigationView {
             List {
                 Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
+
                     HStack {
                         Label {
                             if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
