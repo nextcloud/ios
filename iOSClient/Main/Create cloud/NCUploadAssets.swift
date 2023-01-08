@@ -259,6 +259,7 @@ struct UploadAssetsView: View {
                         } else {
                             uploadAssets.metadatasNOConflict = metadatasNOConflict
                             uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
+                            isPresentedUploadConflict = true
                         }
                     }
                 }
