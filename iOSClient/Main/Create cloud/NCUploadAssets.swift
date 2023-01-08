@@ -98,8 +98,6 @@ struct UploadAssetsView: View {
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
 
-        CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
-
         if let fileName = fileName {
 
             let fileName = fileName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
@@ -167,18 +165,18 @@ struct UploadAssetsView: View {
             let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", uploadAssets.userBaseUrl.account, serverUrl, fileName), sorted: "fileName", ascending: false)
             if !isRecordInSessions.isEmpty { continue }
 
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
+            let metadata = NCManageDatabase.shared.createMetadata(account: uploadAssets.userBaseUrl.account, user: uploadAssets.userBaseUrl.user, userId: uploadAssets.userBaseUrl.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
 
-            metadataForUpload.assetLocalIdentifier = asset.localIdentifier
-            metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadata.assetLocalIdentifier = asset.localIdentifier
+            metadata.session = NCNetworking.shared.sessionIdentifierBackground
+            metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
             if let result = NCManageDatabase.shared.getMetadataConflict(account: uploadAssets.userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) {
-                metadataForUpload.fileName = result.fileName
-                metadatasUploadInConflict.append(metadataForUpload)
+                metadata.fileName = result.fileName
+                metadatasUploadInConflict.append(metadata)
             } else {
-                metadatasNOConflict.append(metadataForUpload)
+                metadatasNOConflict.append(metadata)
             }
         }
 
@@ -228,8 +226,8 @@ struct UploadAssetsView: View {
 
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: isAddFilenametype) { _ in
-
+                        .onChange(of: isAddFilenametype) { newValue in
+                            CCUtility.setFileNameType(newValue, key: NCGlobal.shared.keyFileNameType)
                         }
                 }
 
