@@ -70,7 +70,6 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
 struct UploadAssetsView: View {
 
     @State private var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
-    @State private var preview: String = ""
     @State private var isMaintainOriginalFilename: Bool = CCUtility.getOriginalFileName(NCGlobal.shared.keyFileNameOriginal)
     @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
@@ -224,15 +223,9 @@ struct UploadAssetsView: View {
 
                     Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: isMaintainOriginalFilename) { _ in
-                            preview = setFileNameMask(fileName: fileName)
-                        }
 
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: isAddFilenametype) { _ in
-                            preview = setFileNameMask(fileName: fileName)
-                        }
                 }
 
                 Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
