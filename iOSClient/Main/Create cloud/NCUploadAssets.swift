@@ -227,8 +227,10 @@ struct UploadAssetsView: View {
                     Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
 
-                    Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                    if !isMaintainOriginalFilename {
+                        Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                    }
                 }
 
                 Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
