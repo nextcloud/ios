@@ -255,7 +255,7 @@ struct UploadAssetsView: View {
                 Button(NSLocalizedString("_save_", comment: "")) {
                     save { metadatasNOConflict, metadatasUploadInConflict in
                         if metadatasUploadInConflict.isEmpty {
-                            presentationMode.wrappedValue.dismiss()
+                            uploadAssets.dismiss = true
                         } else {
                             uploadAssets.metadatasNOConflict = metadatasNOConflict
                             uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
@@ -275,8 +275,10 @@ struct UploadAssetsView: View {
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
         }
-        .onReceive(uploadAssets.$dismiss) { _ in
-            presentationMode.wrappedValue.dismiss()
+        .onReceive(uploadAssets.$dismiss) { newValue in
+            if newValue {
+                presentationMode.wrappedValue.dismiss()
+            }
         }
     }
 }
