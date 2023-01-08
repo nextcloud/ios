@@ -99,6 +99,9 @@ struct UploadAssetsView: View {
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
 
+        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
+        CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
+
         if let fileName = fileName {
 
             let fileName = fileName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
@@ -221,19 +224,13 @@ struct UploadAssetsView: View {
 
                     Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: isMaintainOriginalFilename) { newValue in
-                            CCUtility.setOriginalFileName(newValue, key: NCGlobal.shared.keyFileNameOriginal)
-                            if newValue {
-                                preview = ""
-                            } else {
-                                preview = setFileNameMask(fileName: fileName)
-                            }
+                        .onChange(of: isMaintainOriginalFilename) { _ in
+                            preview = setFileNameMask(fileName: fileName)
                         }
 
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                        .onChange(of: isAddFilenametype) { newValue in
-                            CCUtility.setFileNameType(newValue, key: NCGlobal.shared.keyFileNameType)
+                        .onChange(of: isAddFilenametype) { _ in
                             preview = setFileNameMask(fileName: fileName)
                         }
                 }
@@ -252,7 +249,7 @@ struct UploadAssetsView: View {
                         }
                     }
                     if !isMaintainOriginalFilename {
-                        Text(preview)
+                        Text(setFileNameMask(fileName: fileName))
                     }
                 }
                 .complexModifier { view in
