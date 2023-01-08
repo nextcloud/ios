@@ -517,6 +517,8 @@ struct UploadConflictView: UIViewControllerRepresentable {
     var delegate: NCCreateFormUploadConflictDelegate
     var serverUrl: String
     var metadatasUploadInConflict: [tableMetadata]
+    var metadatasNOConflict: [tableMetadata]
+
 
     func makeUIViewController(context: Context) -> UIViewControllerType {
 
@@ -527,6 +529,7 @@ struct UploadConflictView: UIViewControllerRepresentable {
         viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
         viewController?.serverUrl = serverUrl
         viewController?.metadatasUploadInConflict = metadatasUploadInConflict
+        viewController?.metadatasNOConflict = metadatasNOConflict
 
         return viewController!
     }

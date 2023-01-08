@@ -55,14 +55,13 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
 
-        var metadatasToUpload = metadatasNOConflict
-
         if let metadatas = metadatas {
-            metadatasToUpload.append(contentsOf: metadatas)
-        }
-        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasToUpload, completion: { _ in
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
+                self.dismiss = true
+            })
+        } else {
             self.dismiss = true
-        })
+        }
     }
 }
 
@@ -274,7 +273,7 @@ struct UploadAssetsView: View {
             SelectView(serverUrl: $uploadAssets.serverUrl)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict)
+            UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
         }
         .onReceive(uploadAssets.$dismiss) { _ in
             presentationMode.wrappedValue.dismiss()

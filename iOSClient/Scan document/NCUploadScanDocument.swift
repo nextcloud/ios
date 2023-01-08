@@ -500,7 +500,7 @@ struct UploadScanDocumentView: View {
             NCSelectViewControllerRepresentable(delegate: uploadScanDocument)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            UploadConflictView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata])
+            UploadConflictView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata], metadatasNOConflict: [])
         }.onTapGesture {
             dismissKeyboard()
         }
