@@ -86,7 +86,7 @@ struct UploadAssetsView: View {
     func getOriginalFilename() -> String {
 
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
-        
+
         if let asset = uploadAssets.assets.first, let name = (asset.value(forKey: "filename") as? String) {
             return name
         } else {
