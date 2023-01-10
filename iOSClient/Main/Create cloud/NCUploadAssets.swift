@@ -23,10 +23,11 @@
 
 import SwiftUI
 import NextcloudKit
+import TLPhotoPicker
 
 class NCHostingUploadAssetsView: NSObject {
 
-    @objc func makeShipDetailsUI(assets: [PHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) -> UIViewController {
+    func makeShipDetailsUI(assets: [TLPHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) -> UIViewController {
 
         let uploadAssets = NCUploadAssets(assets: assets, serverUrl: serverUrl, userBaseUrl: userBaseUrl )
         let details = UploadAssetsView(uploadAssets: uploadAssets)
@@ -39,14 +40,14 @@ class NCHostingUploadAssetsView: NSObject {
 class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
 
     @Published var serverUrl: String
-    @Published var assets: [PHAsset]
+    @Published var assets: [TLPHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var dismiss = false
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
 
-    init(assets: [PHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
+    init(assets: [TLPHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
 
         self.assets = assets
         self.serverUrl = serverUrl
@@ -87,7 +88,7 @@ struct UploadAssetsView: View {
 
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
 
-        if let asset = uploadAssets.assets.first, let name = (asset.value(forKey: "filename") as? String) {
+        if let asset = uploadAssets.assets.first?.phAsset, let name = (asset.value(forKey: "filename") as? String) {
             return name
         } else {
             return ""
@@ -96,7 +97,7 @@ struct UploadAssetsView: View {
 
     func setFileNameMask(fileName: String?) -> String {
 
-        guard let asset = uploadAssets.assets.first else { return "" }
+        guard let asset = uploadAssets.assets.first?.phAsset else { return "" }
         var preview: String = ""
         let creationDate = asset.creationDate ?? Date()
 
@@ -150,6 +151,7 @@ struct UploadAssetsView: View {
         var metadatasUploadInConflict: [tableMetadata] = []
 
         for asset in uploadAssets.assets {
+            guard let asset = asset.phAsset else { continue }
 
             let serverUrl = uploadAssets.serverUrl
             var livePhoto: Bool = false

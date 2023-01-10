@@ -45,8 +45,7 @@ class NCPhotosPickerViewController: NSObject {
         self.singleSelectedMode = singleSelectedMode
 
         self.openPhotosPickerViewController { assets in
-            guard let assets = assets else { return }
-            if assets.count > 0 {
+            if !assets.isEmpty {
                 let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: self.appDelegate.activeServerUrl, userBaseUrl: self.appDelegate)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     viewController.present(vc, animated: true, completion: nil)
@@ -55,9 +54,8 @@ class NCPhotosPickerViewController: NSObject {
         }
     }
 
-    private func openPhotosPickerViewController(completition: @escaping ([PHAsset]?) -> Void) {
+    private func openPhotosPickerViewController(completition: @escaping ([TLPHAsset]) -> Void) {
 
-        var selectedAssets: [PHAsset] = []
         var configure = TLPhotosPickerConfigure()
 
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
@@ -74,13 +72,7 @@ class NCPhotosPickerViewController: NSObject {
 
         let viewController = customPhotoPickerViewController(withTLPHAssets: { assets in
 
-            for asset: TLPHAsset in assets {
-                if asset.phAsset != nil {
-                    selectedAssets.append(asset.phAsset!)
-                }
-            }
-
-            completition(selectedAssets)
+            completition(assets)
 
         }, didCancel: nil)
 
