@@ -379,6 +379,7 @@
 		F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */; };
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */; };
+		F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C6FDD296D677300C952C3 /* NCContextMenu.swift */; };
 		F78D0C7F2912722100D706AB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F78D0C7E2912722100D706AB /* JGProgressHUD */; };
 		F78D0C812912723900D706AB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F78D0C802912723900D706AB /* JGProgressHUD */; };
 		F78D0C832912724F00D706AB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F78D0C822912724F00D706AB /* JGProgressHUD */; };
@@ -963,6 +964,7 @@
 		F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeaderFooter.swift; sourceTree = "<group>"; };
 		F78ACD53219047D40088454D /* NCSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionFooter.xib; sourceTree = "<group>"; };
 		F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionHeaderMenu.xib; sourceTree = "<group>"; };
+		F78C6FDD296D677300C952C3 /* NCContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenu.swift; sourceTree = "<group>"; };
 		F78D6F461F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F4D1F0B7CE4002F9619 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F541F0B7D47002F9619 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1325,6 +1327,7 @@
 				F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */,
 				AF93471127E2341B002537EE /* NCShare+Menu.swift */,
 				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
+				F78C6FDD296D677300C952C3 /* NCContextMenu.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -3040,6 +3043,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
+				F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */,
 				F769CA172965AB7C00039397 /* NCUploadAssets.swift in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
