@@ -47,12 +47,9 @@ class NCPhotosPickerViewController: NSObject {
         self.openPhotosPickerViewController { assets in
             guard let assets = assets else { return }
             if assets.count > 0 {
-
-                let form = NCCreateFormUploadAssets(serverUrl: self.appDelegate.activeServerUrl, assets: assets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: nil)
-                let navigationController = UINavigationController(rootViewController: form)
-
+                let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: self.appDelegate.activeServerUrl, userBaseUrl: self.appDelegate)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    viewController.present(navigationController, animated: true, completion: nil)
+                    viewController.present(vc, animated: true, completion: nil)
                 }
             }
         }

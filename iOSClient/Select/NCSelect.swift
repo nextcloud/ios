@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 import NextcloudKit
 
 @objc protocol NCSelectDelegate {
@@ -836,3 +837,69 @@ class NCSelectCommandView: UIView {
         selectView?.valueChangedSwitchOverwrite(sender)
     }
 }
+
+// MARK: - UIViewControllerRepresentable
+
+struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = UINavigationController
+    var delegate: NCSelectDelegate
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController?.topViewController as? NCSelect
+
+        viewController?.delegate = delegate
+        viewController?.typeOfCommandView = .selectCreateFolder
+        viewController?.includeDirectoryE2EEncryption = true
+
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+}
+
+struct SelectView: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = UINavigationController
+
+    @Binding var serverUrl: String
+
+    class Coordinator: NSObject, NCSelectDelegate {
+
+        var parent: SelectView
+
+        init(_ parent: SelectView) {
+            self.parent = parent
+        }
+
+        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+            if let serverUrl = serverUrl {
+                self.parent.serverUrl = serverUrl
+            }
+        }
+    }
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController?.topViewController as? NCSelect
+
+        viewController?.delegate = context.coordinator
+        viewController?.typeOfCommandView = .selectCreateFolder
+        viewController?.includeDirectoryE2EEncryption = true
+
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+}
+
+

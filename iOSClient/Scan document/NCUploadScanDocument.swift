@@ -33,7 +33,7 @@ class NCHostingUploadScanDocumentView: NSObject {
     @objc func makeShipDetailsUI(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) -> UIViewController {
 
         let uploadScanDocument = NCUploadScanDocument(images: images, userBaseUrl: userBaseUrl, serverUrl: serverUrl)
-        let details = UploadScanDocumentView(uploadScanDocument)
+        let details = UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_", comment: "")
         return vc
@@ -45,7 +45,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 class NCUploadScanDocument: ObservableObject {
 
     internal var userBaseUrl: NCUserBaseUrl
-    internal var serverUrl: String
+
     internal var metadata = tableMetadata()
     internal var images: [UIImage]
 
@@ -54,6 +54,7 @@ class NCUploadScanDocument: ObservableObject {
     internal var quality: Double = 0
     internal var removeAllFiles: Bool = false
 
+    @Published var serverUrl: String
     @Published var showHUD: Bool = false
 
     init(images: [UIImage], userBaseUrl: NCUserBaseUrl, serverUrl: String) {
@@ -367,7 +368,7 @@ struct UploadScanDocumentView: View {
 
     @ObservedObject var uploadScanDocument: NCUploadScanDocument
 
-    init(_ uploadScanDocument: NCUploadScanDocument) {
+    init(uploadScanDocument: NCUploadScanDocument) {
         self.uploadScanDocument = uploadScanDocument
     }
 
@@ -467,7 +468,7 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-                        .buttonStyle(ButtonUploadScanDocumenStyle(disabled: fileName.isEmpty))
+                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty))
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
@@ -496,10 +497,10 @@ struct UploadScanDocumentView: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectRepresentedView(uploadScanDocument: uploadScanDocument)
+            NCSelectViewControllerRepresentable(delegate: uploadScanDocument)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
-            NCUploadConflictRepresentedView(uploadScanDocument: uploadScanDocument)
+            UploadConflictView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata], metadatasNOConflict: [])
         }.onTapGesture {
             dismissKeyboard()
         }
@@ -510,82 +511,7 @@ struct UploadScanDocumentView: View {
     }
 }
 
-struct TextFieldClearButton: ViewModifier {
-    @Binding var text: String
-
-    func body(content: Content) -> some View {
-        HStack {
-            content
-            if !text.isEmpty {
-                Button(
-                    action: { self.text = "" },
-                    label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(Color(UIColor.placeholderText))
-                    }
-                ).buttonStyle(BorderlessButtonStyle())
-            }
-        }
-    }
-}
-
-struct ButtonUploadScanDocumenStyle: ButtonStyle {
-    var disabled = false
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.horizontal, 40)
-            .padding(.vertical, 10)
-            .background(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brand))
-            .foregroundColor(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brandText))
-            .clipShape(Capsule())
-    }
-}
-
 // MARK: - UIViewControllerRepresentable
-
-struct NCSelectRepresentedView: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = UINavigationController
-    @ObservedObject var uploadScanDocument: NCUploadScanDocument
-
-    func makeUIViewController(context: Context) -> UINavigationController {
-
-        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
-        let viewController = navigationController?.topViewController as? NCSelect
-
-        viewController?.delegate = uploadScanDocument
-        viewController?.typeOfCommandView = .selectCreateFolder
-        viewController?.includeDirectoryE2EEncryption = true
-
-        return navigationController!
-    }
-
-    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
-    }
-}
-
-struct NCUploadConflictRepresentedView: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = NCCreateFormUploadConflict
-    @ObservedObject var uploadScanDocument: NCUploadScanDocument
-
-    func makeUIViewController(context: Context) -> NCCreateFormUploadConflict {
-
-        let storyboard = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil)
-        let viewController = storyboard.instantiateInitialViewController() as? NCCreateFormUploadConflict
-
-        viewController?.delegate = uploadScanDocument
-        viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
-        viewController?.serverUrl = uploadScanDocument.serverUrl
-        viewController?.metadatasUploadInConflict = [uploadScanDocument.metadata]
-
-        return viewController!
-    }
-
-    func updateUIViewController(_ uiViewController: NCCreateFormUploadConflict, context: Context) {
-    }
-}
 
 struct PDFKitRepresentedView: UIViewRepresentable {
 
@@ -617,7 +543,7 @@ struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             let uploadScanDocument = NCUploadScanDocument(images: [], userBaseUrl: appDelegate, serverUrl: "ABCD")
-            UploadScanDocumentView(uploadScanDocument)
+            UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
         }
     }
 }
