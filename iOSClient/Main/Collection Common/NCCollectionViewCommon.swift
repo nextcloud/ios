@@ -981,7 +981,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
 
         if #selector(pasteFilesMenu) == action {
-            if UIPasteboard.general.items.count > 0 {
+            if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
                 return true
             }
         }
