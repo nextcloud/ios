@@ -39,7 +39,7 @@ class NCService: NSObject {
     @objc public func startRequestServicesServer() {
 
         NCManageDatabase.shared.clearAllAvatarLoaded()
-        guard !appDelegate.account.isEmpty, UIApplication.shared.applicationState == .active else { return }
+        guard !appDelegate.account.isEmpty else { return }
 
         addInternalTypeIdentifier()
         requestServerStatus()
