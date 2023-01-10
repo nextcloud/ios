@@ -748,7 +748,12 @@ import Photos
         // DIR
 
         guard !metadata.directory else {
-            let submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath, delete])
+            var submenu = UIMenu()
+            if !isDirectoryE2EE && metadata.e2eEncrypted {
+                submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath])
+            } else {
+                submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath, delete])
+            }
             guard appDelegate.disableSharesView == false else { return submenu }
             return UIMenu(title: "", children: [detail, submenu])
         }
