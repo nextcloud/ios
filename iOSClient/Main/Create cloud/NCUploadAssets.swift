@@ -59,7 +59,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func loadImages() {
         DispatchQueue.global().async {
             for asset in self.assets {
-                guard let image = asset.fullResolutionImage else { continue }
+                guard asset.type == .photo, let image = asset.fullResolutionImage else { continue }
                 self.images.append(image)
             }
         }
@@ -87,7 +87,7 @@ struct UploadAssetsView: View {
     @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
-
+    // Crop
     @State private var isPresentedCrop = false
     @State private var index: Int = 0
     @State private var imageForCrop: UIImage = UIImage()
@@ -221,20 +221,22 @@ struct UploadAssetsView: View {
         NavigationView {
             List {
 
-                Section(header: Text(NSLocalizedString("_crop_", comment: "")), footer: Text(NSLocalizedString("_crop_description_", comment: ""))) {
-                    ScrollView(.horizontal) {
-                        LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
-                            ForEach(0..<uploadAssets.images.count, id: \.self) { index in
-                                VStack {
-                                    Image(uiImage: uploadAssets.images[index])
-                                        .resizable()
-                                        .frame(width: 100, height: 100, alignment: .center)
-                                        .cornerRadius(10)
-                                        .scaledToFit()
-                                        .onTapGesture {
-                                            self.index = index
-                                            isPresentedCrop = true
-                                        }
+                if !uploadAssets.images.isEmpty {
+                    Section(header: Text(NSLocalizedString("_crop_", comment: "")), footer: Text(NSLocalizedString("_crop_description_", comment: ""))) {
+                        ScrollView(.horizontal) {
+                            LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
+                                ForEach(0..<uploadAssets.images.count, id: \.self) { index in
+                                    VStack {
+                                        Image(uiImage: uploadAssets.images[index])
+                                            .resizable()
+                                            .frame(width: 100, height: 100, alignment: .center)
+                                            .cornerRadius(10)
+                                            .scaledToFit()
+                                            .onTapGesture {
+                                                self.index = index
+                                                isPresentedCrop = true
+                                            }
+                                    }
                                 }
                             }
                         }
