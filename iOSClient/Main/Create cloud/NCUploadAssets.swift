@@ -259,6 +259,9 @@ struct UploadAssetsView: View {
                                             .onTapGesture {
                                                 self.index = index
                                                 isPresentedCrop = true
+                                            }.fullScreenCover(isPresented: $isPresentedCrop) {
+                                                ImageCropper(previewStore: $uploadAssets.previewStore, index: $index, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
+                                                    .ignoresSafeArea()
                                             }
                                     }
                                 }
@@ -342,10 +345,6 @@ struct UploadAssetsView: View {
             }
             .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
-        }
-        .sheet(isPresented: $isPresentedCrop) {
-            ImageCropper(previewStore: $uploadAssets.previewStore, index: $index, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
-                .ignoresSafeArea()
         }
         .sheet(isPresented: $isPresentedSelect) {
             SelectView(serverUrl: $uploadAssets.serverUrl)
