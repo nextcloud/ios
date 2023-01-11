@@ -374,13 +374,18 @@ struct ImageCropper: UIViewControllerRepresentable {
     class Coordinator: CropViewControllerDelegate {
 
         var parent: ImageCropper
+        var isModified: Bool = false
 
         init(_ parent: ImageCropper) {
             self.parent = parent
         }
 
         func cropViewControllerDidCrop(_ cropViewController: CropViewController, cropped: UIImage, transformation: Transformation, cropInfo: CropInfo) {
-            parent.previewStore[parent.index].cropImage = cropped
+            if isModified {
+                parent.previewStore[parent.index].cropImage = cropped
+            } else {
+                parent.previewStore[parent.index].cropImage = nil
+            }
             parent.presentationMode.wrappedValue.dismiss()
         }
 
@@ -388,13 +393,15 @@ struct ImageCropper: UIViewControllerRepresentable {
             parent.presentationMode.wrappedValue.dismiss()
         }
 
+        func cropViewControllerDidImageTransformed(_ cropViewController: Mantis.CropViewController) {
+            isModified = true
+        }
+
         func cropViewControllerDidFailToCrop(_ cropViewController: CropViewController, original: UIImage) { }
 
         func cropViewControllerDidBeginResize(_ cropViewController: CropViewController) { }
 
         func cropViewControllerDidEndResize(_ cropViewController: CropViewController, original: UIImage, cropInfo: CropInfo) { }
-
-        func cropViewControllerDidImageTransformed(_ cropViewController: Mantis.CropViewController) { }
     }
 
     func makeCoordinator() -> Coordinator {
