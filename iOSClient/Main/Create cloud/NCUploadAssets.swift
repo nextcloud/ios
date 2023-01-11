@@ -37,12 +37,13 @@ class NCHostingUploadAssetsView: NSObject {
 
 // MARK: - Class
 
-class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
+class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
 
     @Published var serverUrl: String
     @Published var assets: [TLPHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var dismiss = false
+    @Published var images: [UIImage] = []
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
@@ -52,6 +53,15 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
         self.assets = assets
         self.serverUrl = serverUrl
         self.userBaseUrl = userBaseUrl
+    }
+
+    func loadImages() {
+        DispatchQueue.global().async {
+            for asset in self.assets {
+                guard let image = asset.fullResolutionImage else { continue }
+                self.images.append(image)
+            }
+        }
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
@@ -64,6 +74,7 @@ class NCUploadAssets: ObservableObject, NCCreateFormUploadConflictDelegate {
             self.dismiss = true
         }
     }
+
 }
 
 // MARK: - View
@@ -75,6 +86,10 @@ struct UploadAssetsView: View {
     @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
+    @State private var isPresentedCrop = false
+    @State private var imageCrop = UIImage()
+
+    var gridItems: [GridItem] = [GridItem()]
 
     @ObservedObject var uploadAssets: NCUploadAssets
 
@@ -82,6 +97,7 @@ struct UploadAssetsView: View {
 
     init(uploadAssets: NCUploadAssets) {
         self.uploadAssets = uploadAssets
+        uploadAssets.loadImages()
     }
 
     func getOriginalFilename() -> String {
@@ -199,7 +215,39 @@ struct UploadAssetsView: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text(NSLocalizedString("_save_path_", comment: ""))) {
+
+                Section(header: Text(NSLocalizedString("_crop_", comment: "")), footer: Text(NSLocalizedString("_crop_description_", comment: ""))) {
+                    ScrollView(.horizontal) {
+                        LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
+                            ForEach(0..<uploadAssets.images.count, id: \.self) { index in
+                                VStack {
+                                    Image(uiImage: uploadAssets.images[index])
+                                        .resizable()
+                                        .frame(width: 100, height: 100, alignment: .center)
+                                        .cornerRadius(10)
+                                        .scaledToFit()
+                                        .onTapGesture {
+                                            imageCrop = uploadAssets.images[index]
+                                            isPresentedCrop = true
+                                        }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+
+                    Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+
+                    if !isMaintainOriginalFilename {
+                        Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                    }
+                }
+
+                Section {
 
                     HStack {
                         Label {
@@ -222,20 +270,6 @@ struct UploadAssetsView: View {
                     .onTapGesture {
                         isPresentedSelect = true
                     }
-                }
-
-                Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
-
-                    Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-
-                    if !isMaintainOriginalFilename {
-                        Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-                    }
-                }
-
-                Section(header: Text(NSLocalizedString("_filename_", comment: ""))) {
 
                     HStack {
                         Text(NSLocalizedString("_filename_", comment: ""))
@@ -250,6 +284,8 @@ struct UploadAssetsView: View {
                     }
                     if !isMaintainOriginalFilename {
                         Text(setFileNameMask(fileName: fileName))
+                            .font(.system(size: 12))
+                            .foregroundColor(Color.gray)
                     }
                 }
                 .complexModifier { view in
@@ -275,6 +311,9 @@ struct UploadAssetsView: View {
             }
             .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .sheet(isPresented: $isPresentedCrop) {
+            // CropView(image: $imageCrop)
         }
         .sheet(isPresented: $isPresentedSelect) {
             SelectView(serverUrl: $uploadAssets.serverUrl)
