@@ -246,7 +246,7 @@ struct UploadAssetsView: View {
             List {
 
                 if !uploadAssets.previewStore.isEmpty {
-                    Section(header: Text(NSLocalizedString("_crop_", comment: "")), footer: Text(NSLocalizedString("_modify_crop_desc_", comment: ""))) {
+                    Section(header: Text(NSLocalizedString("_crop_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_crop_desc_", comment: ""))) {
                         ScrollView(.horizontal) {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in

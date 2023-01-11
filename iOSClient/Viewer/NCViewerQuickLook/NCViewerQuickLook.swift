@@ -26,6 +26,7 @@
 import UIKit
 import QuickLook
 import NextcloudKit
+import Mantis
 
 @objc class NCViewerQuickLook: QLPreviewController {
 
@@ -70,6 +71,8 @@ import NextcloudKit
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
             NCContentPresenter.shared.showInfo(error: error)
         }
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_crop_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(crop))
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -101,6 +104,23 @@ import NextcloudKit
         })
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in })
         parentVC?.present(alertController, animated: true)
+    }
+
+    @objc func crop() {
+
+        guard let fileName = self.metadata?.fileNameView, let image = UIImage(contentsOfFile: NSTemporaryDirectory() + fileName) else { return }
+        let config = Mantis.Config()
+
+        if let bundleIdentifier = Bundle.main.bundleIdentifier {
+            config.localizationConfig.bundle = Bundle(identifier: bundleIdentifier)
+            config.localizationConfig.tableName = "Localizable"
+        }
+        let cropViewController = Mantis.cropViewController(image: image, config: config)
+
+        cropViewController.delegate = self
+        cropViewController.modalPresentationStyle = .fullScreen
+
+        self.present(cropViewController, animated: true)
     }
 }
 
@@ -162,6 +182,25 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         // needs to be moved otherwise it will only be called once!
         guard NCUtilityFileSystem.shared.moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
         hasChanges = true
+    }
+}
+
+extension NCViewerQuickLook: CropViewControllerDelegate {
+
+    func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
+        cropViewController.dismiss(animated: true)
+
+        guard let data = cropped.jpegData(compressionQuality: 1) else { return }
+
+        do {
+            try data.write(to: self.url)
+            reloadData()
+        } catch {  }
+    }
+
+    func cropViewControllerDidCancel(_ cropViewController: Mantis.CropViewController, original: UIImage) {
+
+        cropViewController.dismiss(animated: true)
     }
 }
 
