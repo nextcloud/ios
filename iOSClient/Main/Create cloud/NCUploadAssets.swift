@@ -208,6 +208,12 @@ struct UploadAssetsView: View {
 
             // Modified
             if let previewStore = uploadAssets.previewStore.first(where: {$0.localIdentifier == asset.localIdentifier && $0.modify == true }), let data = previewStore.image.jpegData(compressionQuality: 1) {
+                if metadata.contentType == "image/heic" {
+                    let fileNameNoExtension = (fileName as NSString).deletingPathExtension
+                    metadata.contentType = "image/jpeg"
+                    metadata.fileName = fileNameNoExtension + ".jpg"
+                    metadata.fileNameView = fileNameNoExtension + ".jpg"
+                }
                 let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
