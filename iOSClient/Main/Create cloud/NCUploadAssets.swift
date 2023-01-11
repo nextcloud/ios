@@ -24,6 +24,7 @@
 import SwiftUI
 import NextcloudKit
 import TLPhotoPicker
+import Mantis
 
 class NCHostingUploadAssetsView: NSObject {
 
@@ -86,8 +87,11 @@ struct UploadAssetsView: View {
     @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
+
     @State private var isPresentedCrop = false
-    @State private var imageCrop = UIImage()
+    @State private var imageForCrop: UIImage = UIImage()
+    @State private var cropShapeType: Mantis.CropShapeType = .rect
+    @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
 
     var gridItems: [GridItem] = [GridItem()]
 
@@ -227,7 +231,7 @@ struct UploadAssetsView: View {
                                         .cornerRadius(10)
                                         .scaledToFit()
                                         .onTapGesture {
-                                            imageCrop = uploadAssets.images[index]
+                                            imageForCrop = uploadAssets.images[index]
                                             isPresentedCrop = true
                                         }
                                 }
@@ -313,7 +317,8 @@ struct UploadAssetsView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $isPresentedCrop) {
-            // CropView(image: $imageCrop)
+            ImageCropper(image: $imageForCrop, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
+                .ignoresSafeArea()
         }
         .sheet(isPresented: $isPresentedSelect) {
             SelectView(serverUrl: $uploadAssets.serverUrl)
@@ -326,6 +331,67 @@ struct UploadAssetsView: View {
                 presentationMode.wrappedValue.dismiss()
             }
         }
+    }
+}
+
+// MARK: - ImageCropper
+
+struct ImageCropper: UIViewControllerRepresentable {
+
+    @Binding var image: UIImage
+    @Binding var cropShapeType: Mantis.CropShapeType
+    @Binding var presetFixedRatioType: Mantis.PresetFixedRatioType
+
+    @Environment(\.presentationMode) var presentationMode
+
+    class Coordinator: CropViewControllerDelegate {
+
+        var parent: ImageCropper
+
+        init(_ parent: ImageCropper) {
+            self.parent = parent
+        }
+
+        func cropViewControllerDidCrop(_ cropViewController: CropViewController, cropped: UIImage, transformation: Transformation, cropInfo: CropInfo) {
+            parent.image = cropped
+            print("transformation is \(transformation)")
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+
+        func cropViewControllerDidImageTransformed(_ cropViewController: Mantis.CropViewController) {
+
+        }
+
+        func cropViewControllerDidCancel(_ cropViewController: CropViewController, original: UIImage) {
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+
+        func cropViewControllerDidFailToCrop(_ cropViewController: CropViewController, original: UIImage) {
+        }
+
+        func cropViewControllerDidBeginResize(_ cropViewController: CropViewController) {
+        }
+
+        func cropViewControllerDidEndResize(_ cropViewController: CropViewController, original: UIImage, cropInfo: CropInfo) {
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    func makeUIViewController(context: Context) -> CropViewController {
+        var config = Mantis.Config()
+        config.cropViewConfig.cropShapeType = cropShapeType
+        config.presetFixedRatioType = presetFixedRatioType
+        let cropViewController = Mantis.cropViewController(image: image,
+                                                           config: config)
+        cropViewController.delegate = context.coordinator
+        return cropViewController
+    }
+
+    func updateUIViewController(_ uiViewController: CropViewController, context: Context) {
+
     }
 }
 

@@ -96,6 +96,7 @@
 		F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
+		F704A950296EE1C200D0737A /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F704A94F296EE1C200D0737A /* Mantis */; };
 		F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */; };
 		F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
 		F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E62430C06700632F5F /* NCCreateFormUploadConflictCell.xib */; };
@@ -1256,6 +1257,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F704A950296EE1C200D0737A /* Mantis in Frameworks */,
 				F76DA941277B75870082465B /* KTVHTTPCache.xcframework in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
@@ -2493,6 +2495,7 @@
 				F734B06528E75C0100E180D5 /* TLPhotoPicker */,
 				F77333872927A72100466E35 /* OpenSSL */,
 				F77BC3EA293E5268005F2B08 /* Swifter */,
+				F704A94F296EE1C200D0737A /* Mantis */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -2651,6 +2654,7 @@
 				F734B06428E75C0100E180D5 /* XCRemoteSwiftPackageReference "TLPhotoPicker" */,
 				F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */,
 				F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */,
+				F704A94E296EE1C200D0737A /* XCRemoteSwiftPackageReference "Mantis" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -3930,6 +3934,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F704A94E296EE1C200D0737A /* XCRemoteSwiftPackageReference "Mantis" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/guoyingtao/Mantis.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -4093,6 +4105,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F704A94F296EE1C200D0737A /* Mantis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F704A94E296EE1C200D0737A /* XCRemoteSwiftPackageReference "Mantis" */;
+			productName = Mantis;
+		};
 		F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
