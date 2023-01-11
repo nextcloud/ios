@@ -89,6 +89,7 @@ struct UploadAssetsView: View {
     @State private var isPresentedUploadConflict = false
 
     @State private var isPresentedCrop = false
+    @State private var index: Int = 0
     @State private var imageForCrop: UIImage = UIImage()
     @State private var cropShapeType: Mantis.CropShapeType = .rect
     @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
@@ -231,7 +232,7 @@ struct UploadAssetsView: View {
                                         .cornerRadius(10)
                                         .scaledToFit()
                                         .onTapGesture {
-                                            imageForCrop = uploadAssets.images[index]
+                                            self.index = index
                                             isPresentedCrop = true
                                         }
                                 }
@@ -317,7 +318,7 @@ struct UploadAssetsView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $isPresentedCrop) {
-            ImageCropper(image: $imageForCrop, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
+            ImageCropper(images: $uploadAssets.images, index: $index, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
                 .ignoresSafeArea()
         }
         .sheet(isPresented: $isPresentedSelect) {
@@ -338,7 +339,8 @@ struct UploadAssetsView: View {
 
 struct ImageCropper: UIViewControllerRepresentable {
 
-    @Binding var image: UIImage
+    @Binding var images: [UIImage]
+    @Binding var index: Int
     @Binding var cropShapeType: Mantis.CropShapeType
     @Binding var presetFixedRatioType: Mantis.PresetFixedRatioType
 
@@ -353,27 +355,21 @@ struct ImageCropper: UIViewControllerRepresentable {
         }
 
         func cropViewControllerDidCrop(_ cropViewController: CropViewController, cropped: UIImage, transformation: Transformation, cropInfo: CropInfo) {
-            parent.image = cropped
-            print("transformation is \(transformation)")
+            parent.images[parent.index] = cropped
             parent.presentationMode.wrappedValue.dismiss()
-        }
-
-        func cropViewControllerDidImageTransformed(_ cropViewController: Mantis.CropViewController) {
-
         }
 
         func cropViewControllerDidCancel(_ cropViewController: CropViewController, original: UIImage) {
             parent.presentationMode.wrappedValue.dismiss()
         }
 
-        func cropViewControllerDidFailToCrop(_ cropViewController: CropViewController, original: UIImage) {
-        }
+        func cropViewControllerDidFailToCrop(_ cropViewController: CropViewController, original: UIImage) { }
 
-        func cropViewControllerDidBeginResize(_ cropViewController: CropViewController) {
-        }
+        func cropViewControllerDidBeginResize(_ cropViewController: CropViewController) { }
 
-        func cropViewControllerDidEndResize(_ cropViewController: CropViewController, original: UIImage, cropInfo: CropInfo) {
-        }
+        func cropViewControllerDidEndResize(_ cropViewController: CropViewController, original: UIImage, cropInfo: CropInfo) { }
+
+        func cropViewControllerDidImageTransformed(_ cropViewController: Mantis.CropViewController) { }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -384,8 +380,8 @@ struct ImageCropper: UIViewControllerRepresentable {
         var config = Mantis.Config()
         config.cropViewConfig.cropShapeType = cropShapeType
         config.presetFixedRatioType = presetFixedRatioType
-        let cropViewController = Mantis.cropViewController(image: image,
-                                                           config: config)
+        let image = images[index]
+        let cropViewController = Mantis.cropViewController(image: image, config: config)
         cropViewController.delegate = context.coordinator
         return cropViewController
     }
