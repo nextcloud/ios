@@ -39,9 +39,9 @@ class NCHostingUploadAssetsView: NSObject {
 // MARK: - Class
 
 struct PreviewStore {
-    var image: UIImage
+    var originalImage: UIImage
+    var cropImage: UIImage?
     var localIdentifier: String
-    var modify: Bool
 }
 
 class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
@@ -66,7 +66,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard asset.type == .photo, let image = asset.fullResolutionImage, let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(image: image, localIdentifier: localIdentifier, modify: false))
+                self.previewStore.append(PreviewStore(originalImage: image, localIdentifier: localIdentifier))
             }
         }
     }
@@ -207,7 +207,7 @@ struct UploadAssetsView: View {
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
             // Modified
-            if let previewStore = uploadAssets.previewStore.first(where: {$0.localIdentifier == asset.localIdentifier && $0.modify == true }), let data = previewStore.image.jpegData(compressionQuality: 1) {
+            if let previewStore = uploadAssets.previewStore.first(where: { $0.localIdentifier == asset.localIdentifier }), let image = previewStore.cropImage, let data = image.jpegData(compressionQuality: 1) {
                 if metadata.contentType == "image/heic" {
                     let fileNameNoExtension = (fileName as NSString).deletingPathExtension
                     metadata.contentType = "image/jpeg"
@@ -251,7 +251,7 @@ struct UploadAssetsView: View {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     VStack {
-                                        Image(uiImage: uploadAssets.previewStore[index].image)
+                                        Image(uiImage: uploadAssets.previewStore[index].cropImage ?? uploadAssets.previewStore[index].originalImage)
                                             .resizable()
                                             .frame(width: 100, height: 100, alignment: .center)
                                             .cornerRadius(10)
@@ -381,8 +381,7 @@ struct ImageCropper: UIViewControllerRepresentable {
         }
 
         func cropViewControllerDidCrop(_ cropViewController: CropViewController, cropped: UIImage, transformation: Transformation, cropInfo: CropInfo) {
-            parent.previewStore[parent.index].image = cropped
-            parent.previewStore[parent.index].modify = true
+            parent.previewStore[parent.index].cropImage = cropped
             parent.presentationMode.wrappedValue.dismiss()
         }
 
@@ -411,7 +410,7 @@ struct ImageCropper: UIViewControllerRepresentable {
         }
         config.cropViewConfig.cropShapeType = cropShapeType
         config.presetFixedRatioType = presetFixedRatioType
-        let image = previewStore[index].image
+        let image = previewStore[index].originalImage
         let cropViewController = Mantis.cropViewController(image: image, config: config)
         cropViewController.delegate = context.coordinator
         return cropViewController
