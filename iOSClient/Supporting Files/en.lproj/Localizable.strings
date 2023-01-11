@@ -976,3 +976,10 @@
 "_already_plan_"                = "The selected plan has already been bought.";
 "_change_billing_"              = "Change Billing";
 "_payment_method_"              = "Payment Method";
+
+// MARK: Mantis library
+"Mantis.Done"                   = "Done";
+"Mantis.Cancel"                 = "Cancel";
+"Mantis.Reset"                  = "Reset";
+"Mantis.Original"               = "Original";
+"Mantis.Square"                 = "Square";

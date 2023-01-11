@@ -405,6 +405,10 @@ struct ImageCropper: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> CropViewController {
         var config = Mantis.Config()
+        if let bundleIdentifier = Bundle.main.bundleIdentifier {
+            config.localizationConfig.bundle = Bundle(identifier: bundleIdentifier)
+            config.localizationConfig.tableName = "Localizable"
+        }
         config.cropViewConfig.cropShapeType = cropShapeType
         config.presetFixedRatioType = presetFixedRatioType
         let image = previewStore[index].image
