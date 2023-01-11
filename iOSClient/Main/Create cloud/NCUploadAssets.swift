@@ -38,13 +38,19 @@ class NCHostingUploadAssetsView: NSObject {
 
 // MARK: - Class
 
+struct PreviewStore {
+    var image: UIImage
+    var localIdentifier: String
+    var modify: Bool
+}
+
 class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
 
     @Published var serverUrl: String
     @Published var assets: [TLPHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var dismiss = false
-    @Published var images: [UIImage] = []
+    @Published var previewStore: [PreviewStore] = []
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
@@ -59,8 +65,8 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func loadImages() {
         DispatchQueue.global().async {
             for asset in self.assets {
-                guard asset.type == .photo, let image = asset.fullResolutionImage else { continue }
-                self.images.append(image)
+                guard asset.type == .photo, let image = asset.fullResolutionImage, let localIdentifier = asset.phAsset?.localIdentifier else { continue }
+                self.previewStore.append(PreviewStore(image: image, localIdentifier: localIdentifier, modify: false))
             }
         }
     }
@@ -200,6 +206,18 @@ struct UploadAssetsView: View {
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
+            // Modified
+            if let previewStore = uploadAssets.previewStore.first(where: {$0.localIdentifier == asset.localIdentifier && $0.modify == true }), let data = previewStore.image.jpegData(compressionQuality: 1) {
+                let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                do {
+                    try data.write(to: URL(fileURLWithPath: fileNamePath))
+                    metadata.isExtractFile = true
+                    metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
+                    metadata.creationDate = asset.creationDate as? NSDate ?? (Date() as NSDate)
+                    metadata.date = asset.modificationDate as? NSDate ?? (Date() as NSDate)
+                } catch {  }
+            }
+
             if let result = NCManageDatabase.shared.getMetadataConflict(account: uploadAssets.userBaseUrl.account, serverUrl: serverUrl, fileNameView: fileName) {
                 metadata.fileName = result.fileName
                 metadatasUploadInConflict.append(metadata)
@@ -221,13 +239,13 @@ struct UploadAssetsView: View {
         NavigationView {
             List {
 
-                if !uploadAssets.images.isEmpty {
-                    Section(header: Text(NSLocalizedString("_crop_", comment: "")), footer: Text(NSLocalizedString("_crop_description_", comment: ""))) {
+                if !uploadAssets.previewStore.isEmpty {
+                    Section(header: Text(NSLocalizedString("_crop_", comment: "")), footer: Text(NSLocalizedString("_modify_crop_desc_", comment: ""))) {
                         ScrollView(.horizontal) {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
-                                ForEach(0..<uploadAssets.images.count, id: \.self) { index in
+                                ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     VStack {
-                                        Image(uiImage: uploadAssets.images[index])
+                                        Image(uiImage: uploadAssets.previewStore[index].image)
                                             .resizable()
                                             .frame(width: 100, height: 100, alignment: .center)
                                             .cornerRadius(10)
@@ -320,7 +338,7 @@ struct UploadAssetsView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $isPresentedCrop) {
-            ImageCropper(images: $uploadAssets.images, index: $index, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
+            ImageCropper(previewStore: $uploadAssets.previewStore, index: $index, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
                 .ignoresSafeArea()
         }
         .sheet(isPresented: $isPresentedSelect) {
@@ -341,7 +359,7 @@ struct UploadAssetsView: View {
 
 struct ImageCropper: UIViewControllerRepresentable {
 
-    @Binding var images: [UIImage]
+    @Binding var previewStore: [PreviewStore]
     @Binding var index: Int
     @Binding var cropShapeType: Mantis.CropShapeType
     @Binding var presetFixedRatioType: Mantis.PresetFixedRatioType
@@ -357,7 +375,8 @@ struct ImageCropper: UIViewControllerRepresentable {
         }
 
         func cropViewControllerDidCrop(_ cropViewController: CropViewController, cropped: UIImage, transformation: Transformation, cropInfo: CropInfo) {
-            parent.images[parent.index] = cropped
+            parent.previewStore[parent.index].image = cropped
+            parent.previewStore[parent.index].modify = true
             parent.presentationMode.wrappedValue.dismiss()
         }
 
@@ -382,15 +401,13 @@ struct ImageCropper: UIViewControllerRepresentable {
         var config = Mantis.Config()
         config.cropViewConfig.cropShapeType = cropShapeType
         config.presetFixedRatioType = presetFixedRatioType
-        let image = images[index]
+        let image = previewStore[index].image
         let cropViewController = Mantis.cropViewController(image: image, config: config)
         cropViewController.delegate = context.coordinator
         return cropViewController
     }
 
-    func updateUIViewController(_ uiViewController: CropViewController, context: Context) {
-
-    }
+    func updateUIViewController(_ uiViewController: CropViewController, context: Context) { }
 }
 
 // MARK: - Preview

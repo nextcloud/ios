@@ -917,6 +917,8 @@
 "_mobile_config_"           = "Download the configuration profile";
 "_calendar_contacts_footer_"    = "After the downloading you need to go to the Settings app to install it. If a profile is not installed within 8 minutes of downloading it, it is automatically deleted";
 "_preview_"                 = "Preview";
+"_crop_"                    = "Crop photo";
+"_modify_crop_desc_"        = "Tap the image for cropping";
 
 // Video
 "_select_trace_"            = "Select the trace";
