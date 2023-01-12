@@ -413,6 +413,7 @@
 		F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
+		F7A48413297022E000BD1B49 /* ViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A48412297022E000BD1B49 /* ViewerQuickLook.swift */; };
 		F7A60F86292D215000FCE1F2 /* NCTalkAccounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A60F84292D215000FCE1F2 /* NCTalkAccounts.swift */; };
 		F7A60F87292D215000FCE1F2 /* NCTalkAccounts.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7A60F85292D215000FCE1F2 /* NCTalkAccounts.storyboard */; };
 		F7A76DC8256A71CD00119AB3 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */; };
@@ -986,6 +987,7 @@
 		F7A0D1342591FBC5008F8A13 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
+		F7A48412297022E000BD1B49 /* ViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerQuickLook.swift; sourceTree = "<group>"; };
 		F7A60F84292D215000FCE1F2 /* NCTalkAccounts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTalkAccounts.swift; sourceTree = "<group>"; };
 		F7A60F85292D215000FCE1F2 /* NCTalkAccounts.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCTalkAccounts.storyboard; sourceTree = "<group>"; };
 		F7A7FA6229265CF4000603EF /* NCManageE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCManageE2EE.swift; sourceTree = "<group>"; };
@@ -1471,6 +1473,7 @@
 			isa = PBXGroup;
 			children = (
 				F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */,
+				F7A48412297022E000BD1B49 /* ViewerQuickLook.swift */,
 			);
 			path = NCViewerQuickLook;
 			sourceTree = "<group>";
@@ -3206,6 +3209,7 @@
 				F7D68FCC28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */,
 				F75CA1472962F13700B01130 /* HUDView.swift in Sources */,
+				F7A48413297022E000BD1B49 /* ViewerQuickLook.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F7A7FA6329265CF4000603EF /* NCManageE2EE.swift in Sources */,

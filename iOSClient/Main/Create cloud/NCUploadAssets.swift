@@ -99,6 +99,8 @@ struct UploadAssetsView: View {
     @State private var imageForCrop: UIImage = UIImage()
     @State private var cropShapeType: Mantis.CropShapeType = .rect
     @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
+    @State private var fileNamePath = NSTemporaryDirectory() + "QLTmp.jpg"
+    @State private var metadata: tableMetadata?
 
     var gridItems: [GridItem] = [GridItem()]
 
@@ -241,6 +243,13 @@ struct UploadAssetsView: View {
         }
     }
 
+    func copyImageforQL() {
+        let image = uploadAssets.previewStore[index].originalImage
+        if let data = image.jpegData(compressionQuality: 1) {
+            try? data.write(to: URL(fileURLWithPath: fileNamePath))
+        }
+    }
+
     var body: some View {
         NavigationView {
             List {
@@ -259,8 +268,9 @@ struct UploadAssetsView: View {
                                             .onTapGesture {
                                                 self.index = index
                                                 isPresentedCrop = true
+                                                copyImageforQL()
                                             }.fullScreenCover(isPresented: $isPresentedCrop) {
-                                                ImageCropper(previewStore: $uploadAssets.previewStore, index: $index, cropShapeType: $cropShapeType, presetFixedRatioType: $presetFixedRatioType)
+                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresented: $isPresentedCrop)
                                                     .ignoresSafeArea()
                                             }
                                     }
@@ -358,71 +368,6 @@ struct UploadAssetsView: View {
             }
         }
     }
-}
-
-// MARK: - ImageCropper
-
-struct ImageCropper: UIViewControllerRepresentable {
-
-    @Binding var previewStore: [PreviewStore]
-    @Binding var index: Int
-    @Binding var cropShapeType: Mantis.CropShapeType
-    @Binding var presetFixedRatioType: Mantis.PresetFixedRatioType
-
-    @Environment(\.presentationMode) var presentationMode
-
-    class Coordinator: CropViewControllerDelegate {
-
-        var parent: ImageCropper
-        var isModified: Bool = false
-
-        init(_ parent: ImageCropper) {
-            self.parent = parent
-        }
-
-        func cropViewControllerDidCrop(_ cropViewController: CropViewController, cropped: UIImage, transformation: Transformation, cropInfo: CropInfo) {
-            if isModified {
-                parent.previewStore[parent.index].cropImage = cropped
-            } else {
-                parent.previewStore[parent.index].cropImage = nil
-            }
-            parent.presentationMode.wrappedValue.dismiss()
-        }
-
-        func cropViewControllerDidCancel(_ cropViewController: CropViewController, original: UIImage) {
-            parent.presentationMode.wrappedValue.dismiss()
-        }
-
-        func cropViewControllerDidImageTransformed(_ cropViewController: Mantis.CropViewController) {
-            isModified = true
-        }
-
-        func cropViewControllerDidFailToCrop(_ cropViewController: CropViewController, original: UIImage) { }
-
-        func cropViewControllerDidBeginResize(_ cropViewController: CropViewController) { }
-
-        func cropViewControllerDidEndResize(_ cropViewController: CropViewController, original: UIImage, cropInfo: CropInfo) { }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    func makeUIViewController(context: Context) -> CropViewController {
-        var config = Mantis.Config()
-        if let bundleIdentifier = Bundle.main.bundleIdentifier {
-            config.localizationConfig.bundle = Bundle(identifier: bundleIdentifier)
-            config.localizationConfig.tableName = "Localizable"
-        }
-        config.cropViewConfig.cropShapeType = cropShapeType
-        config.presetFixedRatioType = presetFixedRatioType
-        let image = previewStore[index].originalImage
-        let cropViewController = Mantis.cropViewController(image: image, config: config)
-        cropViewController.delegate = context.coordinator
-        return cropViewController
-    }
-
-    func updateUIViewController(_ uiViewController: CropViewController, context: Context) { }
 }
 
 // MARK: - Preview
