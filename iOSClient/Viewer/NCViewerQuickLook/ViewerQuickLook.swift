@@ -23,12 +23,12 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         controller.delegate = context.coordinator
         context.coordinator.viewController = controller
 
-        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
+        controller.navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .done, target: context.coordinator,
             action: #selector(context.coordinator.dismiss)
         )
 
-        controller.navigationItem.rightBarButtonItem = UIBarButtonItem(
+        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: NSLocalizedString("_crop_", comment: ""), style: UIBarButtonItem.Style.plain, target: context.coordinator,
             action: #selector(context.coordinator.crop)
         )
