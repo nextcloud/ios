@@ -108,6 +108,5 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
 
             viewController?.present(cropViewController, animated: true)
         }
-
     }
 }
