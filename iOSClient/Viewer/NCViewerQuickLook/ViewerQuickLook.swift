@@ -35,7 +35,6 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             action: #selector(context.coordinator.crop)
         )
 
-        /*
         timer.schedule(deadline: .now(), repeating: 0.3)
         timer.setEventHandler {
             let numItemsRight = controller.navigationItem.rightBarButtonItems?.count ?? 0
@@ -55,7 +54,6 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             }
         }
         timer.resume()
-        */
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController
@@ -80,15 +78,12 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
 
         @objc func dismiss() {
-            self.viewController?.dismiss(animated: true)
-
-            /*
+            parent.timer.suspend()
             parent.isPresentedQuickLook = false
             if let image = image {
                 parent.previewStore.image = image
             }
             parent.previewStore.hasChanges = hasChange
-            */
         }
 
         // MARK: -
