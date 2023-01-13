@@ -97,6 +97,7 @@ struct UploadAssetsView: View {
     @State private var isPresentedQuickLook = false
     @State private var fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
     @State private var metadata: tableMetadata?
+    @State private var timer = DispatchSource.makeTimerSource(queue: .main)
 
     var gridItems: [GridItem] = [GridItem()]
 
@@ -267,7 +268,7 @@ struct UploadAssetsView: View {
                                             .onTapGesture {
                                                 presentedQuickLook(uploadAssets.previewStore[index].image)
                                             }.fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath))
+                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index], timer: $timer)
                                                     .ignoresSafeArea()
                                             }
                                     }

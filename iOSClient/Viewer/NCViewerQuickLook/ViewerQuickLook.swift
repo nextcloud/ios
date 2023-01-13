@@ -13,10 +13,10 @@ import Mantis
 struct ViewerQuickLook: UIViewControllerRepresentable {
 
     let url: URL
-    //var timer: DispatchSourceTimer = DispatchSource.makeTimerSource(queue: .main)
 
-    // @Binding var isPresentedQuickLook: Bool
-    // @Binding var previewStore: PreviewStore
+    @Binding var isPresentedQuickLook: Bool
+    @Binding var previewStore: PreviewStore
+    @Binding var timer: DispatchSourceTimer
 
     func makeUIViewController(context: Context) -> UINavigationController {
         let controller = QLPreviewController()
