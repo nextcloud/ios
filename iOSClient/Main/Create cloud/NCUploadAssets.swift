@@ -38,9 +38,9 @@ class NCHostingUploadAssetsView: NSObject {
 
 // MARK: - Class
 
-struct PreviewStore {
+struct PreviewStore: Hashable {
+    var id: String
     var image: UIImage
-    var localIdentifier: String
     var hasChanges: Bool
 }
 
@@ -66,7 +66,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard asset.type == .photo, let image = asset.fullResolutionImage, let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(image: image, localIdentifier: localIdentifier, hasChanges: false))
+                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, hasChanges: false))
             }
         }
     }
@@ -204,7 +204,7 @@ struct UploadAssetsView: View {
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
             // Modified
-            if let previewStore = uploadAssets.previewStore.first(where: { $0.localIdentifier == asset.localIdentifier }), previewStore.hasChanges, let data = previewStore.image.jpegData(compressionQuality: 1) {
+            if let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }), previewStore.hasChanges, let data = previewStore.image.jpegData(compressionQuality: 1) {
                 if metadata.contentType == "image/heic" {
                     let fileNameNoExtension = (fileName as NSString).deletingPathExtension
                     metadata.contentType = "image/jpeg"
@@ -238,9 +238,10 @@ struct UploadAssetsView: View {
         }
     }
 
-    func writeImage(_ image: UIImage) {
-        if let data = image.jpegData(compressionQuality: 1) {
+    func presentedQuickLook(previeStore: PreviewStore) {
+        if let data = previeStore.image.jpegData(compressionQuality: 1) {
             try? data.write(to: URL(fileURLWithPath: fileNamePath))
+            isPresentedQuickLook = true
         }
     }
 
@@ -252,19 +253,15 @@ struct UploadAssetsView: View {
                     Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
                         ScrollView(.horizontal) {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
-                                ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
+                                ForEach(uploadAssets.previewStore, id: \.self) { element in
                                     VStack {
-                                        Image(uiImage: uploadAssets.previewStore[index].image)
+                                        Image(uiImage: element.image)
                                             .resizable()
                                             .frame(width: 100, height: 100, alignment: .center)
                                             .cornerRadius(10)
                                             .scaledToFit()
                                             .onTapGesture {
-                                                isPresentedQuickLook = true
-                                                writeImage(uploadAssets.previewStore[index].image)
-                                            }.fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index])
-                                                    .ignoresSafeArea()
+                                                presentedQuickLook(previeStore: element)
                                             }
                                     }
                                 }
@@ -354,6 +351,10 @@ struct UploadAssetsView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
+        }
+        .sheet(isPresented: $isPresentedQuickLook) {
+            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook)
+                .ignoresSafeArea()
         }
         .onReceive(uploadAssets.$dismiss) { newValue in
             if newValue {
