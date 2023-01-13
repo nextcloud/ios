@@ -14,9 +14,9 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
 
     let url: URL
 
+    @Binding var index: Int
     @Binding var isPresentedQuickLook: Bool
-    @Binding var previewStore: PreviewStore
-    @Binding var timer: DispatchSourceTimer
+    @ObservedObject var uploadAssets: NCUploadAssets
 
     func makeUIViewController(context: Context) -> UINavigationController {
         let controller = QLPreviewController()
@@ -35,6 +35,8 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             action: #selector(context.coordinator.crop)
         )
 
+        /*
+        var timer = DispatchSource.makeTimerSource(queue: .main)
         timer.schedule(deadline: .now(), repeating: 0.3)
         timer.setEventHandler {
             let numItemsRight = controller.navigationItem.rightBarButtonItems?.count ?? 0
@@ -54,6 +56,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             }
         }
         timer.resume()
+        */
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController
@@ -78,12 +81,12 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
 
         @objc func dismiss() {
-            parent.timer.suspend()
+            // parent.timer.suspend()
             parent.isPresentedQuickLook = false
             if let image = image {
-                parent.previewStore.image = image
+                parent.uploadAssets.previewStore[parent.index].image = image
+                parent.uploadAssets.previewStore[parent.index].hasChanges = hasChange
             }
-            parent.previewStore.hasChanges = hasChange
         }
 
         // MARK: -

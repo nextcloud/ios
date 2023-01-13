@@ -83,7 +83,6 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
             self.dismiss = true
         }
     }
-
 }
 
 // MARK: - View
@@ -98,7 +97,7 @@ struct UploadAssetsView: View {
     @State private var isPresentedQuickLook = false
     @State private var fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
     @State private var metadata: tableMetadata?
-    @State private var timer = DispatchSource.makeTimerSource(queue: .main)
+    @State private var index: Int = 0
 
     var gridItems: [GridItem] = [GridItem()]
 
@@ -241,8 +240,9 @@ struct UploadAssetsView: View {
         }
     }
 
-    func presentedQuickLook(previewStore: PreviewStore, size: CGFloat) {
-        if let image = previewStore.asset.fullResolutionImage?.resizeImage(size: CGSize(width: size, height: size)) {
+    func presentedQuickLook(size: CGFloat, index: Int) {
+        self.index = index
+        if let image = uploadAssets.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: size, height: size)) {
             if let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
@@ -270,9 +270,9 @@ struct UploadAssetsView: View {
                                                 .cornerRadius(10)
                                                 .scaledToFit()
                                                 .onTapGesture {
-                                                    presentedQuickLook(previewStore: uploadAssets.previewStore[index], size: max(geo.size.height, geo.size.height))
+                                                    presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
                                                 }.fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                                    ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index], timer: $timer)
+                                                    ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
                                                         .ignoresSafeArea()
                                                 }
                                         }
