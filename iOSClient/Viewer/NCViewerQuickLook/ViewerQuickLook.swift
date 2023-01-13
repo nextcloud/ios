@@ -70,11 +70,18 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         weak var viewController: QLPreviewController?
         let parent: ViewerQuickLook
 
+        var image: UIImage?
+        var hasChange = false
+
         init(parent: ViewerQuickLook) {
             self.parent = parent
         }
 
         @objc func dismiss() {
+            if let image = image {
+                parent.previewStore.image = image
+            }
+            parent.previewStore.hasChanges = hasChange
             parent.isPresented = false
         }
 
@@ -90,9 +97,9 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
 
         func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {
             guard NCUtilityFileSystem.shared.moveFile(atPath: modifiedContentsURL.path, toPath: parent.url.path) else { return }
-            parent.previewStore.hasChanges = true
             if let image = UIImage(contentsOfFile: parent.url.path) {
-                parent.previewStore.image = image
+                self.image = image
+                self.hasChange = true
             }
         }
 
@@ -107,8 +114,8 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             guard let data = cropped.jpegData(compressionQuality: 1) else { return }
             do {
                 try data.write(to: parent.url)
-                parent.previewStore.hasChanges = true
-                parent.previewStore.image = cropped
+                self.image = cropped
+                self.hasChange = true
                 viewController?.reloadData()
             } catch {  }
         }
