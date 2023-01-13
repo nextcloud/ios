@@ -44,6 +44,7 @@ excluded:
   - Pods
 
   # iOS Files Quarantine
+
   - File Provider Extension/FileProviderData.swift
   - File Provider Extension/FileProviderDomain.swift
   - File Provider Extension/FileProviderEnumerator.swift
@@ -60,6 +61,7 @@ excluded:
   - Widget/Lockscreen/LockscreenData.swift
   - Widget/Lockscreen/LockscreenWidgetView.swift
   - Widget/Lockscreen/LockscreenWidgetProvider.swift
+  - iOSClient/GUI
   - iOSClient/ExternalResources
   - iOSClient/Activity/NCActivity.swift
   - iOSClient/Activity/NCActivityTableViewCell.swift

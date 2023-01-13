@@ -5,6 +5,7 @@
 //  Created by Marino Faggiana on 03/05/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2023 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
@@ -26,6 +27,12 @@
 import UIKit
 import QuickLook
 import NextcloudKit
+import Mantis
+import SwiftUI
+
+protocol NCViewerQuickLookDelegate: AnyObject {
+    func dismiss(url: URL, hasChanges: Bool)
+}
 
 @objc class NCViewerQuickLook: QLPreviewController {
 
@@ -33,12 +40,16 @@ import NextcloudKit
     var previewItems: [PreviewItem] = []
     var isEditingEnabled: Bool
     var metadata: tableMetadata?
+    var delegateViewer: NCViewerQuickLookDelegate?
 
     // if the document has any changes (annotations)
     var hasChanges = false
 
     // used to display the save alert
     var parentVC: UIViewController?
+
+    // if the Crop is presented
+    var isPresentCrop = false
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -70,6 +81,8 @@ import NextcloudKit
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
             NCContentPresenter.shared.showInfo(error: error)
         }
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_crop_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(crop))
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -81,6 +94,8 @@ import NextcloudKit
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
+        guard !isPresentCrop else { return }
+        delegateViewer?.dismiss(url: url, hasChanges: hasChanges)
         guard isEditingEnabled, hasChanges, let metadata = metadata else { return }
 
         let alertController = UIAlertController(title: NSLocalizedString("_save_", comment: ""), message: nil, preferredStyle: .alert)
@@ -101,6 +116,24 @@ import NextcloudKit
         })
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in })
         parentVC?.present(alertController, animated: true)
+    }
+
+    @objc func crop() {
+
+        guard let image = UIImage(contentsOfFile: url.path) else { return }
+        let config = Mantis.Config()
+
+        if let bundleIdentifier = Bundle.main.bundleIdentifier {
+            config.localizationConfig.bundle = Bundle(identifier: bundleIdentifier)
+            config.localizationConfig.tableName = "Localizable"
+        }
+        let cropViewController = Mantis.cropViewController(image: image, config: config)
+
+        cropViewController.delegate = self
+        cropViewController.modalPresentationStyle = .fullScreen
+
+        self.isPresentCrop = true
+        self.present(cropViewController, animated: true)
     }
 }
 
@@ -162,6 +195,29 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         // needs to be moved otherwise it will only be called once!
         guard NCUtilityFileSystem.shared.moveFile(atPath: modifiedContentsURL.path, toPath: url.path) else { return }
         hasChanges = true
+    }
+}
+
+extension NCViewerQuickLook: CropViewControllerDelegate {
+
+    func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
+        cropViewController.dismiss(animated: true) {
+            self.isPresentCrop = false
+        }
+
+        guard let data = cropped.jpegData(compressionQuality: 1) else { return }
+
+        do {
+            try data.write(to: self.url)
+            reloadData()
+        } catch {  }
+    }
+
+    func cropViewControllerDidCancel(_ cropViewController: Mantis.CropViewController, original: UIImage) {
+
+        cropViewController.dismiss(animated: true) {
+            self.isPresentCrop = false
+        }
     }
 }
 
