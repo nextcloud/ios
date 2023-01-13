@@ -94,7 +94,6 @@ struct UploadAssetsView: View {
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
     @State private var isPresentedQuickLook = false
-    @State private var index: Int = 0
     @State private var fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
     @State private var metadata: tableMetadata?
 
@@ -239,8 +238,7 @@ struct UploadAssetsView: View {
         }
     }
 
-    func copyImageforQL() {
-        let image = uploadAssets.previewStore[index].image
+    func writeImage(_ image: UIImage) {
         if let data = image.jpegData(compressionQuality: 1) {
             try? data.write(to: URL(fileURLWithPath: fileNamePath))
         }
@@ -262,9 +260,8 @@ struct UploadAssetsView: View {
                                             .cornerRadius(10)
                                             .scaledToFit()
                                             .onTapGesture {
-                                                self.index = index
                                                 isPresentedQuickLook = true
-                                                copyImageforQL()
+                                                writeImage(uploadAssets.previewStore[index].image)
                                             }.fullScreenCover(isPresented: $isPresentedQuickLook) {
                                                 ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index])
                                                     .ignoresSafeArea()
