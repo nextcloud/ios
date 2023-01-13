@@ -58,6 +58,13 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     var metadatasUploadInConflict: [tableMetadata] = []
     var timer: Timer?
 
+    /*
+
+     */
+    let resizeImagePreview: Double = 200
+    let sizeImagePreview: Double = 100
+    let compressionQuality: CGFloat = 0.5
+
     init(assets: [TLPHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
 
         self.assets = assets
@@ -68,7 +75,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func loadImages() {
         DispatchQueue.global().async {
             for asset in self.assets {
-                guard asset.type == .photo, let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 200, height: 200), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
+                guard asset.type == .photo, let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: self.resizeImagePreview, height: self.resizeImagePreview), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
                 self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset, hasChanges: false))
             }
         }
@@ -276,7 +283,7 @@ struct UploadAssetsView: View {
             }
         }
 
-        if let data = image.jpegData(compressionQuality: 0.5) {
+        if let data = image.jpegData(compressionQuality: uploadAssets.compressionQuality) {
             do {
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
                 self.index = index
@@ -300,7 +307,7 @@ struct UploadAssetsView: View {
                                         VStack {
                                             Image(uiImage: uploadAssets.previewStore[index].image)
                                                 .resizable()
-                                                .frame(width: 100, height: 100, alignment: .center)
+                                                .frame(width: uploadAssets.sizeImagePreview, height: uploadAssets.sizeImagePreview, alignment: .center)
                                                 .cornerRadius(10)
                                                 .scaledToFit()
                                                 .onTapGesture {
