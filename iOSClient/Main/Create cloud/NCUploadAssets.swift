@@ -56,6 +56,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
+    var timer: Timer?
 
     init(assets: [TLPHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
 
@@ -71,6 +72,31 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
                 self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset, hasChanges: false))
             }
         }
+    }
+
+    func startTimer(navigationItem: UINavigationItem) {
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true, block: { _ in
+            print("XX")
+            let numItemsRight = navigationItem.rightBarButtonItems?.count ?? 0
+            if let buttonCrop = navigationItem.leftBarButtonItems?.first {
+                if numItemsRight > 1 && buttonCrop.isEnabled {
+                    buttonCrop.isEnabled = false
+                    if let buttonDone = navigationItem.rightBarButtonItems?.last {
+                        buttonDone.isEnabled = false
+                    }
+                }
+                if numItemsRight == 1 && !buttonCrop.isEnabled {
+                    buttonCrop.isEnabled = true
+                    if let buttonDone = navigationItem.rightBarButtonItems?.first {
+                        buttonDone.isEnabled = true
+                    }
+                }
+            }
+        })
+    }
+
+    func stopTimer() {
+        self.timer?.invalidate()
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {

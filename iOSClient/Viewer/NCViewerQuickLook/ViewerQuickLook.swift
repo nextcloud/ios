@@ -35,28 +35,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             action: #selector(context.coordinator.crop)
         )
 
-        /*
-        var timer = DispatchSource.makeTimerSource(queue: .main)
-        timer.schedule(deadline: .now(), repeating: 0.3)
-        timer.setEventHandler {
-            let numItemsRight = controller.navigationItem.rightBarButtonItems?.count ?? 0
-            if let buttonCrop = controller.navigationItem.leftBarButtonItems?.first {
-                if numItemsRight > 1 && buttonCrop.isEnabled {
-                    buttonCrop.isEnabled = false
-                    if let buttonDone = controller.navigationItem.rightBarButtonItems?.last {
-                        buttonDone.isEnabled = false
-                    }
-                }
-                if numItemsRight == 1 && !buttonCrop.isEnabled {
-                    buttonCrop.isEnabled = true
-                    if let buttonDone = controller.navigationItem.rightBarButtonItems?.first {
-                        buttonDone.isEnabled = true
-                    }
-                }
-            }
-        }
-        timer.resume()
-        */
+        uploadAssets.startTimer(navigationItem: controller.navigationItem)
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController
@@ -81,7 +60,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
 
         @objc func dismiss() {
-            // parent.timer.suspend()
+            parent.uploadAssets.stopTimer()
             parent.isPresentedQuickLook = false
             if let image = image {
                 parent.uploadAssets.previewStore[parent.index].image = image
