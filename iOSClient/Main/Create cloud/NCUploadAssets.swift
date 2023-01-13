@@ -76,7 +76,6 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
     func startTimer(navigationItem: UINavigationItem) {
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true, block: { _ in
-            print("XX")
             let numItemsRight = navigationItem.rightBarButtonItems?.count ?? 0
             if let buttonCrop = navigationItem.leftBarButtonItems?.first {
                 if numItemsRight > 1 && buttonCrop.isEnabled {
@@ -267,19 +266,28 @@ struct UploadAssetsView: View {
     }
 
     func presentedQuickLook(size: CGFloat, index: Int) {
-        self.index = index
-        if let image = uploadAssets.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: size, height: size)) {
-            if let data = image.jpegData(compressionQuality: 0.5) {
-                do {
-                    try data.write(to: URL(fileURLWithPath: fileNamePath))
-                    isPresentedQuickLook = true
-                } catch {
-                }
+
+        let previewStore = uploadAssets.previewStore[index]
+        var image = previewStore.image
+
+        if !previewStore.hasChanges {
+            if let fullResolutionImage = previewStore.asset.fullResolutionImage?.resizeImage(size: CGSize(width: size, height: size)) {
+                image = fullResolutionImage
+            }
+        }
+
+        if let data = image.jpegData(compressionQuality: 0.5) {
+            do {
+                try data.write(to: URL(fileURLWithPath: fileNamePath))
+                self.index = index
+                isPresentedQuickLook = true
+            } catch {
             }
         }
     }
 
     var body: some View {
+
         GeometryReader { geo in
             NavigationView {
                 List {
