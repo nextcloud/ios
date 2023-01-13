@@ -25,6 +25,7 @@ import SwiftUI
 import NextcloudKit
 import TLPhotoPicker
 import Mantis
+import Photos
 
 class NCHostingUploadAssetsView: NSObject {
 
@@ -41,6 +42,7 @@ class NCHostingUploadAssetsView: NSObject {
 struct PreviewStore: Hashable {
     var id: String
     var image: UIImage
+    var imagePreview: UIImage
     var hasChanges: Bool
 }
 
@@ -66,7 +68,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard asset.type == .photo, let image = asset.fullResolutionImage, let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, hasChanges: false))
+                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, imagePreview: UIImage(named: "pencil")!, hasChanges: false))
             }
         }
     }
@@ -238,10 +240,13 @@ struct UploadAssetsView: View {
         }
     }
 
-    func presentedQuickLook(previeStore: PreviewStore) {
-        if let data = previeStore.image.jpegData(compressionQuality: 1) {
-            try? data.write(to: URL(fileURLWithPath: fileNamePath))
-            isPresentedQuickLook = true
+    func presentedQuickLook(_ image: UIImage) {
+        if let data = image.jpegData(compressionQuality: 1) {
+            do {
+                try data.write(to: URL(fileURLWithPath: fileNamePath))
+                isPresentedQuickLook = true
+            } catch {
+            }
         }
     }
 
@@ -253,15 +258,18 @@ struct UploadAssetsView: View {
                     Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
                         ScrollView(.horizontal) {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
-                                ForEach(uploadAssets.previewStore, id: \.self) { element in
+                                ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     VStack {
-                                        Image(uiImage: element.image)
+                                        Image(uiImage: uploadAssets.previewStore[index].imagePreview)
                                             .resizable()
                                             .frame(width: 100, height: 100, alignment: .center)
                                             .cornerRadius(10)
                                             .scaledToFit()
                                             .onTapGesture {
-                                                presentedQuickLook(previeStore: element)
+                                                presentedQuickLook(uploadAssets.previewStore[index].image)
+                                            }.fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index])
+                                                    .ignoresSafeArea()
                                             }
                                     }
                                 }
@@ -351,10 +359,6 @@ struct UploadAssetsView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
-        }
-        .sheet(isPresented: $isPresentedQuickLook) {
-            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook)
-                .ignoresSafeArea()
         }
         .onReceive(uploadAssets.$dismiss) { newValue in
             if newValue {
