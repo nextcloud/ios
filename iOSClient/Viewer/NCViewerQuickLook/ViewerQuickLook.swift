@@ -13,6 +13,8 @@ import Mantis
 struct ViewerQuickLook: UIViewControllerRepresentable {
 
     let url: URL
+    var timer: DispatchSourceTimer = DispatchSource.makeTimerSource(queue: .main)
+
     @Binding var isPresented: Bool
     @Binding var previewStore: PreviewStore
 
@@ -32,6 +34,25 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             title: NSLocalizedString("_crop_", comment: ""), style: UIBarButtonItem.Style.plain, target: context.coordinator,
             action: #selector(context.coordinator.crop)
         )
+
+        timer.schedule(deadline: .now(), repeating: 0.1)
+        timer.setEventHandler {
+            let numItemsRight = controller.navigationItem.rightBarButtonItems?.count ?? 0
+            if let buttonCrop = controller.navigationItem.leftBarButtonItems?.first {
+                if numItemsRight > 1 && buttonCrop.isEnabled {
+                    buttonCrop.isEnabled = false
+                    if let buttonDone = controller.navigationItem.rightBarButtonItems?.last {
+                        buttonDone.isEnabled = false
+                    }
+                }
+                if numItemsRight == 1 && !buttonCrop.isEnabled {
+                    buttonCrop.isEnabled = true
+                    if let buttonDone = controller.navigationItem.rightBarButtonItems?.first {
+                        buttonDone.isEnabled = true
+                    }
+                }
+            }
+        }
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController
@@ -53,7 +74,6 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
 
         @objc func dismiss() {
-
             parent.isPresented = false
         }
 
@@ -82,7 +102,10 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         // MARK: -
 
         func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
-            cropViewController.dismiss(animated: true)
+            cropViewController.dismiss(animated: true) {
+                // Resume timer verify navigationItem
+                self.parent.timer.resume()
+            }
             guard let data = cropped.jpegData(compressionQuality: 1) else { return }
             do {
                 try data.write(to: parent.url)
@@ -92,7 +115,10 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             } catch {  }
         }
         func cropViewControllerDidCancel(_ cropViewController: Mantis.CropViewController, original: UIImage) {
-            cropViewController.dismiss(animated: true)
+            cropViewController.dismiss(animated: true) {
+                // Resume timer verify navigationItem
+                self.parent.timer.resume()
+            }
         }
 
         func cropViewControllerDidFailToCrop(_ cropViewController: Mantis.CropViewController, original: UIImage) {}
@@ -113,6 +139,9 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
 
             cropViewController.delegate = self
             cropViewController.modalPresentationStyle = .fullScreen
+
+            // Suspend timer verify navigationItem
+            parent.timer.suspend()
 
             viewController?.present(cropViewController, animated: true)
         }
