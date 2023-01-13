@@ -42,7 +42,6 @@ class NCHostingUploadAssetsView: NSObject {
 struct PreviewStore: Hashable {
     var id: String
     var image: UIImage
-    var imagePreview: UIImage
     var hasChanges: Bool
 }
 
@@ -67,8 +66,8 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func loadImages() {
         DispatchQueue.global().async {
             for asset in self.assets {
-                guard asset.type == .photo, let image = asset.fullResolutionImage, let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, imagePreview: UIImage(named: "pencil")!, hasChanges: false))
+                guard asset.type == .photo, let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 200, height: 200), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
+                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, hasChanges: false))
             }
         }
     }
@@ -260,7 +259,7 @@ struct UploadAssetsView: View {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     VStack {
-                                        Image(uiImage: uploadAssets.previewStore[index].imagePreview)
+                                        Image(uiImage: uploadAssets.previewStore[index].image)
                                             .resizable()
                                             .frame(width: 100, height: 100, alignment: .center)
                                             .cornerRadius(10)
