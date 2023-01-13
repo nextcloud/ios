@@ -15,7 +15,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
     let url: URL
     var timer: DispatchSourceTimer = DispatchSource.makeTimerSource(queue: .main)
 
-    @Binding var isPresented: Bool
+    @Binding var isPresentedQuickLook: Bool
     @Binding var previewStore: PreviewStore
 
     func makeUIViewController(context: Context) -> UINavigationController {
@@ -82,7 +82,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
                 parent.previewStore.image = image
             }
             parent.previewStore.hasChanges = hasChange
-            parent.isPresented = false
+            parent.isPresentedQuickLook = false
         }
 
         // MARK: -

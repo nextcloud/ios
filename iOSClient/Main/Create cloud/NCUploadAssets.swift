@@ -93,13 +93,9 @@ struct UploadAssetsView: View {
     @State private var isAddFilenametype: Bool = CCUtility.getFileNameType(NCGlobal.shared.keyFileNameType)
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
-    // Crop
-    @State private var isPresentedCrop = false
+    @State private var isPresentedQuickLook = false
     @State private var index: Int = 0
-    @State private var imageForCrop: UIImage = UIImage()
-    @State private var cropShapeType: Mantis.CropShapeType = .rect
-    @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
-    @State private var fileNamePath = NSTemporaryDirectory() + "QLTmp.jpg"
+    @State private var fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
     @State private var metadata: tableMetadata?
 
     var gridItems: [GridItem] = [GridItem()]
@@ -267,10 +263,10 @@ struct UploadAssetsView: View {
                                             .scaledToFit()
                                             .onTapGesture {
                                                 self.index = index
-                                                isPresentedCrop = true
+                                                isPresentedQuickLook = true
                                                 copyImageforQL()
-                                            }.fullScreenCover(isPresented: $isPresentedCrop) {
-                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresented: $isPresentedCrop, previewStore: $uploadAssets.previewStore[index])
+                                            }.fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index])
                                                     .ignoresSafeArea()
                                             }
                                     }
