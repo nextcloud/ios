@@ -39,9 +39,10 @@ class NCHostingUploadAssetsView: NSObject {
 
 // MARK: - Class
 
-struct PreviewStore: Hashable {
+struct PreviewStore {
     var id: String
     var image: UIImage
+    var asset: TLPHAsset
     var hasChanges: Bool
 }
 
@@ -67,7 +68,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard asset.type == .photo, let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 200, height: 200), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, hasChanges: false))
+                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset, hasChanges: false))
             }
         }
     }
@@ -240,129 +241,133 @@ struct UploadAssetsView: View {
         }
     }
 
-    func presentedQuickLook(_ image: UIImage) {
-        if let data = image.jpegData(compressionQuality: 1) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath))
-                isPresentedQuickLook = true
-            } catch {
+    func presentedQuickLook(previewStore: PreviewStore, size: CGFloat) {
+        if let image = previewStore.asset.fullResolutionImage?.resizeImage(size: CGSize(width: size, height: size)) {
+            if let data = image.jpegData(compressionQuality: 0.5) {
+                do {
+                    try data.write(to: URL(fileURLWithPath: fileNamePath))
+                    isPresentedQuickLook = true
+                } catch {
+                }
             }
         }
     }
 
     var body: some View {
-        NavigationView {
-            List {
+        GeometryReader { geo in
+            NavigationView {
+                List {
 
-                if !uploadAssets.previewStore.isEmpty {
-                    Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
-                        ScrollView(.horizontal) {
-                            LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
-                                ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
-                                    VStack {
-                                        Image(uiImage: uploadAssets.previewStore[index].image)
-                                            .resizable()
-                                            .frame(width: 100, height: 100, alignment: .center)
-                                            .cornerRadius(10)
-                                            .scaledToFit()
-                                            .onTapGesture {
-                                                presentedQuickLook(uploadAssets.previewStore[index].image)
-                                            }.fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index], timer: $timer)
-                                                    .ignoresSafeArea()
-                                            }
+                    if !uploadAssets.previewStore.isEmpty {
+                        Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
+                            ScrollView(.horizontal) {
+                                LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
+                                    ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
+                                        VStack {
+                                            Image(uiImage: uploadAssets.previewStore[index].image)
+                                                .resizable()
+                                                .frame(width: 100, height: 100, alignment: .center)
+                                                .cornerRadius(10)
+                                                .scaledToFit()
+                                                .onTapGesture {
+                                                    presentedQuickLook(previewStore: uploadAssets.previewStore[index], size: max(geo.size.height, geo.size.height))
+                                                }.fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                                    ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index], timer: $timer)
+                                                        .ignoresSafeArea()
+                                                }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+                    Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
 
-                    Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
-
-                    if !isMaintainOriginalFilename {
-                        Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                        Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+
+                        if !isMaintainOriginalFilename {
+                            Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                        }
                     }
-                }
 
-                Section {
+                    Section {
 
-                    HStack {
-                        Label {
-                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
-                                Text("/")
+                        HStack {
+                            Label {
+                                if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
+                                    Text("/")
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                } else {
+                                    Text((uploadAssets.serverUrl as NSString).lastPathComponent)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                }
+                            } icon: {
+                                Image("folder")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(Color(NCBrandColor.shared.brand))
+                            }
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            isPresentedSelect = true
+                        }
+
+                        HStack {
+                            Text(NSLocalizedString("_filename_", comment: ""))
+                            if isMaintainOriginalFilename {
+                                Text(getOriginalFilename())
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             } else {
-                                Text((uploadAssets.serverUrl as NSString).lastPathComponent)
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
+                                    .modifier(TextFieldClearButton(text: $fileName))
+                                    .multilineTextAlignment(.trailing)
                             }
-                        } icon: {
-                            Image("folder")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(Color(NCBrandColor.shared.brand))
+                        }
+                        if !isMaintainOriginalFilename {
+                            Text(setFileNameMask(fileName: fileName))
+                                .font(.system(size: 12))
+                                .foregroundColor(Color.gray)
                         }
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        isPresentedSelect = true
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
                     }
 
-                    HStack {
-                        Text(NSLocalizedString("_filename_", comment: ""))
-                        if isMaintainOriginalFilename {
-                            Text(getOriginalFilename())
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        } else {
-                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
-                                .modifier(TextFieldClearButton(text: $fileName))
-                                .multilineTextAlignment(.trailing)
+                    Button(NSLocalizedString("_save_", comment: "")) {
+                        save { metadatasNOConflict, metadatasUploadInConflict in
+                            if metadatasUploadInConflict.isEmpty {
+                                uploadAssets.dismiss = true
+                            } else {
+                                uploadAssets.metadatasNOConflict = metadatasNOConflict
+                                uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
+                                isPresentedUploadConflict = true
+                            }
                         }
                     }
-                    if !isMaintainOriginalFilename {
-                        Text(setFileNameMask(fileName: fileName))
-                            .font(.system(size: 12))
-                            .foregroundColor(Color.gray)
-                    }
+                    .frame(maxWidth: .infinity)
+                    .buttonStyle(ButtonRounded(disabled: false))
+                    .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
-                .complexModifier { view in
-                    if #available(iOS 15, *) {
-                        view.listRowSeparator(.hidden)
-                    }
-                }
-
-                Button(NSLocalizedString("_save_", comment: "")) {
-                    save { metadatasNOConflict, metadatasUploadInConflict in
-                        if metadatasUploadInConflict.isEmpty {
-                            uploadAssets.dismiss = true
-                        } else {
-                            uploadAssets.metadatasNOConflict = metadatasNOConflict
-                            uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
-                            isPresentedUploadConflict = true
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .buttonStyle(ButtonRounded(disabled: false))
-                .listRowBackground(Color(UIColor.systemGroupedBackground))
+                .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
-            .navigationBarTitleDisplayMode(.inline)
-        }
-        .sheet(isPresented: $isPresentedSelect) {
-            SelectView(serverUrl: $uploadAssets.serverUrl)
-        }
-        .sheet(isPresented: $isPresentedUploadConflict) {
-            UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
-        }
-        .onReceive(uploadAssets.$dismiss) { newValue in
-            if newValue {
-                presentationMode.wrappedValue.dismiss()
+            .sheet(isPresented: $isPresentedSelect) {
+                SelectView(serverUrl: $uploadAssets.serverUrl)
+            }
+            .sheet(isPresented: $isPresentedUploadConflict) {
+                UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
+            }
+            .onReceive(uploadAssets.$dismiss) { newValue in
+                if newValue {
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
         }
     }
