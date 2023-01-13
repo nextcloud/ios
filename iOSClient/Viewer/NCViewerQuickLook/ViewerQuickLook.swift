@@ -102,10 +102,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         // MARK: -
 
         func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
-            cropViewController.dismiss(animated: true) {
-                // Resume timer verify navigationItem
-                self.parent.timer.resume()
-            }
+            cropViewController.dismiss(animated: true)
             guard let data = cropped.jpegData(compressionQuality: 1) else { return }
             do {
                 try data.write(to: parent.url)
@@ -115,8 +112,9 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             } catch {  }
         }
         func cropViewControllerDidCancel(_ cropViewController: Mantis.CropViewController, original: UIImage) {
-            cropViewController.dismiss(animated: true) {
-                // Resume timer verify navigationItem
+            cropViewController.dismiss(animated: true)
+            // Resume timer verify navigationItem
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.parent.timer.resume()
             }
         }
