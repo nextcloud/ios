@@ -53,6 +53,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
                 }
             }
         }
+        timer.resume()
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController
@@ -113,10 +114,6 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
         func cropViewControllerDidCancel(_ cropViewController: Mantis.CropViewController, original: UIImage) {
             cropViewController.dismiss(animated: true)
-            // Resume timer verify navigationItem
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.parent.timer.resume()
-            }
         }
 
         func cropViewControllerDidFailToCrop(_ cropViewController: Mantis.CropViewController, original: UIImage) {}
@@ -137,9 +134,6 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
 
             cropViewController.delegate = self
             cropViewController.modalPresentationStyle = .fullScreen
-
-            // Suspend timer verify navigationItem
-            parent.timer.suspend()
 
             viewController?.present(cropViewController, animated: true)
         }
