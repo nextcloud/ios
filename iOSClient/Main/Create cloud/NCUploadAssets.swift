@@ -267,7 +267,7 @@ struct UploadAssetsView: View {
                                             .onTapGesture {
                                                 presentedQuickLook(uploadAssets.previewStore[index].image)
                                             }.fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), isPresentedQuickLook: $isPresentedQuickLook, previewStore: $uploadAssets.previewStore[index])
+                                                ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath))
                                                     .ignoresSafeArea()
                                             }
                                     }

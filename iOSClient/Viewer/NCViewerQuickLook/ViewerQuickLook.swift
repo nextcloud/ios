@@ -13,10 +13,10 @@ import Mantis
 struct ViewerQuickLook: UIViewControllerRepresentable {
 
     let url: URL
-    var timer: DispatchSourceTimer = DispatchSource.makeTimerSource(queue: .main)
+    //var timer: DispatchSourceTimer = DispatchSource.makeTimerSource(queue: .main)
 
-    @Binding var isPresentedQuickLook: Bool
-    @Binding var previewStore: PreviewStore
+    // @Binding var isPresentedQuickLook: Bool
+    // @Binding var previewStore: PreviewStore
 
     func makeUIViewController(context: Context) -> UINavigationController {
         let controller = QLPreviewController()
@@ -35,7 +35,8 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             action: #selector(context.coordinator.crop)
         )
 
-        timer.schedule(deadline: .now(), repeating: 0.1)
+        /*
+        timer.schedule(deadline: .now(), repeating: 0.3)
         timer.setEventHandler {
             let numItemsRight = controller.navigationItem.rightBarButtonItems?.count ?? 0
             if let buttonCrop = controller.navigationItem.leftBarButtonItems?.first {
@@ -54,6 +55,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             }
         }
         timer.resume()
+        */
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController
@@ -78,11 +80,15 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         }
 
         @objc func dismiss() {
+            self.viewController?.dismiss(animated: true)
+
+            /*
             parent.isPresentedQuickLook = false
             if let image = image {
                 parent.previewStore.image = image
             }
             parent.previewStore.hasChanges = hasChange
+            */
         }
 
         // MARK: -
