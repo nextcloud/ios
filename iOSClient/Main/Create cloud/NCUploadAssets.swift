@@ -311,31 +311,6 @@ struct UploadAssetsView: View {
                                                 .frame(width: uploadAssets.sizeImagePreview, height: uploadAssets.sizeImagePreview, alignment: .center)
                                                 .cornerRadius(10)
                                                 .scaledToFit()
-                                                .onTapGesture {
-                                                    if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                                        presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
-                                                    }
-                                                }
-                                                .onLongPressGesture {
-
-                                                }
-                                                .fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                                    ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                                                        .ignoresSafeArea()
-                                                }
-                                                .contextMenu {
-                                                    Button {
-                                                        // print("Change country setting")
-                                                    } label: {
-                                                        Label("Choose Country", systemImage: "globe")
-                                                    }
-
-                                                    Button {
-                                                        // print("Enable geolocation")
-                                                    } label: {
-                                                        Label("Detect Location", systemImage: "location.circle")
-                                                    }
-                                                }
                                             if item.asset.type == .livePhoto {
                                                 Image(systemName: "livephoto")
                                                     .resizable()
@@ -353,6 +328,18 @@ struct UploadAssetsView: View {
                                                     .padding(.horizontal, 5)
                                                     .padding(.vertical, 5)
                                             }
+                                        }
+                                        .onTapGesture {
+                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                                presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
+                                            }
+                                        }
+                                        .onLongPressGesture {
+
+                                        }
+                                        .fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                                                .ignoresSafeArea()
                                         }
                                     }
                                 }
