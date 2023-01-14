@@ -84,18 +84,16 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func startTimer(navigationItem: UINavigationItem) {
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true, block: { _ in
             let numItemsRight = navigationItem.rightBarButtonItems?.count ?? 0
-            if let buttonCrop = navigationItem.leftBarButtonItems?.first {
-                if numItemsRight > 1 && buttonCrop.isEnabled {
+            if let buttonDone = navigationItem.leftBarButtonItems?.first, let buttonCrop = navigationItem.leftBarButtonItems?.last {
+
+                if numItemsRight > 2 && buttonCrop.isEnabled {
                     buttonCrop.isEnabled = false
-                    if let buttonDone = navigationItem.rightBarButtonItems?.last {
-                        buttonDone.isEnabled = false
-                    }
+                    buttonDone.isEnabled = false
                 }
-                if numItemsRight == 1 && !buttonCrop.isEnabled {
+
+                if numItemsRight < 3 && !buttonCrop.isEnabled {
                     buttonCrop.isEnabled = true
-                    if let buttonDone = navigationItem.rightBarButtonItems?.first {
-                        buttonDone.isEnabled = true
-                    }
+                    buttonDone.isEnabled = true
                 }
             }
         })
