@@ -75,7 +75,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func loadImages() {
         DispatchQueue.global().async {
             for asset in self.assets {
-                guard asset.type == .photo, let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: self.resizeImagePreview, height: self.resizeImagePreview), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
+                guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: self.resizeImagePreview, height: self.resizeImagePreview), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
                 self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset, hasChanges: false))
             }
         }
@@ -304,18 +304,37 @@ struct UploadAssetsView: View {
                             ScrollView(.horizontal) {
                                 LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                     ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
-                                        VStack {
+                                        ZStack(alignment: .bottomTrailing) {
                                             Image(uiImage: uploadAssets.previewStore[index].image)
                                                 .resizable()
                                                 .frame(width: uploadAssets.sizeImagePreview, height: uploadAssets.sizeImagePreview, alignment: .center)
                                                 .cornerRadius(10)
                                                 .scaledToFit()
                                                 .onTapGesture {
-                                                    presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
+                                                    if uploadAssets.previewStore[index].asset.type == .photo {
+                                                        presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
+                                                    }
                                                 }.fullScreenCover(isPresented: $isPresentedQuickLook) {
                                                     ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
                                                         .ignoresSafeArea()
                                                 }
+                                            if uploadAssets.previewStore[index].asset.type == .livePhoto {
+                                                Image(systemName: "livephoto")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 15, height: 15)
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 5)
+                                                    .padding(.vertical, 5)
+                                            } else if uploadAssets.previewStore[index].asset.type == .video {
+                                                Image(systemName: "video.fill")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 15, height: 15)
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 5)
+                                                    .padding(.vertical, 5)
+                                            }
                                         }
                                     }
                                 }
