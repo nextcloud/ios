@@ -9,6 +9,7 @@
 import SwiftUI
 import QuickLook
 import Mantis
+import NextcloudKit
 
 struct ViewerQuickLook: UIViewControllerRepresentable {
 
@@ -36,6 +37,13 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         )
 
         uploadAssets.startTimer(navigationItem: controller.navigationItem)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if uploadAssets.previewStore[index].asset.type == .livePhoto {
+                let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_livephoto_")
+                NCContentPresenter.shared.showInfo(error: error)
+            }
+        }
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController

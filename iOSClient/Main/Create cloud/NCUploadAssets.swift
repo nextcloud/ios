@@ -312,7 +312,7 @@ struct UploadAssetsView: View {
                                                 .cornerRadius(10)
                                                 .scaledToFit()
                                                 .onTapGesture {
-                                                    if item.asset.type == .photo {
+                                                    if item.asset.type == .photo || item.asset.type == .livePhoto {
                                                         presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
                                                     }
                                                 }.fullScreenCover(isPresented: $isPresentedQuickLook) {
