@@ -27,8 +27,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         context.coordinator.viewController = controller
 
         let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(context.coordinator.dismiss))
-        let buttonCrop = UIBarButtonItem(title: NSLocalizedString("_crop_", comment: ""), style: UIBarButtonItem.Style.plain, target: context.coordinator,
-            action: #selector(context.coordinator.crop))
+        let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: context.coordinator, action: #selector(context.coordinator.crop))
         controller.navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
 
         uploadAssets.startTimer(navigationItem: controller.navigationItem)
