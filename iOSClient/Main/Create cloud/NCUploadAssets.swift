@@ -61,7 +61,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     /*
 
      */
-    let resizeImagePreview: Double = 200
+    let resizeImagePreview: Double = 300
     let sizeImagePreview: Double = 100
     let compressionQuality: CGFloat = 0.5
 
@@ -315,9 +315,26 @@ struct UploadAssetsView: View {
                                                     if item.asset.type == .photo || item.asset.type == .livePhoto {
                                                         presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
                                                     }
-                                                }.fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                                }
+                                                .onLongPressGesture {
+
+                                                }
+                                                .fullScreenCover(isPresented: $isPresentedQuickLook) {
                                                     ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
                                                         .ignoresSafeArea()
+                                                }
+                                                .contextMenu {
+                                                    Button {
+                                                        // print("Change country setting")
+                                                    } label: {
+                                                        Label("Choose Country", systemImage: "globe")
+                                                    }
+
+                                                    Button {
+                                                        // print("Enable geolocation")
+                                                    } label: {
+                                                        Label("Detect Location", systemImage: "location.circle")
+                                                    }
                                                 }
                                             if item.asset.type == .livePhoto {
                                                 Image(systemName: "livephoto")
