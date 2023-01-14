@@ -207,7 +207,7 @@ struct UploadAssetsView: View {
         var metadatasUploadInConflict: [tableMetadata] = []
 
         for asset in uploadAssets.assets {
-            guard let asset = asset.phAsset else { continue }
+            guard let asset = asset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
 
             let serverUrl = uploadAssets.serverUrl
             var livePhoto: Bool = false
@@ -220,7 +220,7 @@ struct UploadAssetsView: View {
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: false)!
 
-            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
+            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && !previewStore.hasChanges {
                 livePhoto = true
             }
 
