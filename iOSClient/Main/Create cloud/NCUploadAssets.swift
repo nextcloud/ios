@@ -304,21 +304,22 @@ struct UploadAssetsView: View {
                             ScrollView(.horizontal) {
                                 LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                     ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
+                                        let item = uploadAssets.previewStore[index]
                                         ZStack(alignment: .bottomTrailing) {
-                                            Image(uiImage: uploadAssets.previewStore[index].image)
+                                            Image(uiImage: item.image)
                                                 .resizable()
                                                 .frame(width: uploadAssets.sizeImagePreview, height: uploadAssets.sizeImagePreview, alignment: .center)
                                                 .cornerRadius(10)
                                                 .scaledToFit()
                                                 .onTapGesture {
-                                                    if uploadAssets.previewStore[index].asset.type == .photo {
+                                                    if item.asset.type == .photo {
                                                         presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
                                                     }
                                                 }.fullScreenCover(isPresented: $isPresentedQuickLook) {
                                                     ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
                                                         .ignoresSafeArea()
                                                 }
-                                            if uploadAssets.previewStore[index].asset.type == .livePhoto {
+                                            if item.asset.type == .livePhoto {
                                                 Image(systemName: "livephoto")
                                                     .resizable()
                                                     .scaledToFit()
@@ -326,7 +327,7 @@ struct UploadAssetsView: View {
                                                     .foregroundColor(.white)
                                                     .padding(.horizontal, 5)
                                                     .padding(.vertical, 5)
-                                            } else if uploadAssets.previewStore[index].asset.type == .video {
+                                            } else if item.asset.type == .video {
                                                 Image(systemName: "video.fill")
                                                     .resizable()
                                                     .scaledToFit()
