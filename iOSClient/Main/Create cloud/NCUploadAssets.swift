@@ -334,9 +334,6 @@ struct UploadAssetsView: View {
                                                 presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
                                             }
                                         }
-                                        .onLongPressGesture {
-
-                                        }
                                         .fullScreenCover(isPresented: $isPresentedQuickLook) {
                                             ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
                                                 .ignoresSafeArea()

@@ -122,15 +122,31 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         @objc func crop() {
 
             guard let image = UIImage(contentsOfFile: parent.url.path) else { return }
-            let config = Mantis.Config()
 
+            var toolbarConfig = CropToolbarConfig()
+            toolbarConfig.heightForVerticalOrientation = 90
+            toolbarConfig.widthForHorizontalOrientation = 130
+            toolbarConfig.optionButtonFontSize = 16
+            toolbarConfig.optionButtonFontSizeForPad = 21
+            toolbarConfig.backgroundColor = .systemGray6
+            toolbarConfig.foregroundColor = .systemBlue
+
+            var viewConfig = CropViewConfig()
+            viewConfig.cropMaskVisualEffectType = .none
+            viewConfig.cropBorderColor = .red
+
+            var config = Mantis.Config()
             if let bundleIdentifier = Bundle.main.bundleIdentifier {
                 config.localizationConfig.bundle = Bundle(identifier: bundleIdentifier)
                 config.localizationConfig.tableName = "Localizable"
             }
+            config.cropToolbarConfig = toolbarConfig
+            config.cropViewConfig = viewConfig
+
             let cropViewController = Mantis.cropViewController(image: image, config: config)
 
             cropViewController.delegate = self
+            cropViewController.backgroundColor = .systemBackground
             cropViewController.modalPresentationStyle = .fullScreen
 
             viewController?.present(cropViewController, animated: true)

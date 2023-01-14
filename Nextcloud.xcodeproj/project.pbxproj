@@ -4094,7 +4094,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/marinofaggiana/Mantis";
 			requirement = {
-				branch = master;
+				branch = develop;
 				kind = branch;
 			};
 		};
