@@ -309,7 +309,7 @@ struct UploadAssetsView: View {
                                                 .frame(width: uploadAssets.sizeImagePreview, height: uploadAssets.sizeImagePreview, alignment: .center)
                                                 .cornerRadius(10)
                                                 .scaledToFit()
-                                            if item.asset.type == .livePhoto {
+                                            if item.asset.type == .livePhoto && !item.hasChanges {
                                                 Image(systemName: "livephoto")
                                                     .resizable()
                                                     .scaledToFit()
