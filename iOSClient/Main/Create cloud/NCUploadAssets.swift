@@ -431,6 +431,8 @@ struct UploadAssetsView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
             }
+        }.onTapGesture {
+            UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
         }
     }
 }
