@@ -118,8 +118,8 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             guard let image = UIImage(contentsOfFile: parent.url.path) else { return }
 
             var toolbarConfig = CropToolbarConfig()
-            toolbarConfig.heightForVerticalOrientation = 90
-            toolbarConfig.widthForHorizontalOrientation = 130
+            toolbarConfig.heightForVerticalOrientation = 80
+            toolbarConfig.widthForHorizontalOrientation = 100
             toolbarConfig.optionButtonFontSize = 16
             toolbarConfig.optionButtonFontSizeForPad = 21
             toolbarConfig.backgroundColor = .systemGray6
@@ -137,13 +137,26 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
             config.cropToolbarConfig = toolbarConfig
             config.cropViewConfig = viewConfig
 
-            let cropViewController = Mantis.cropViewController(image: image, config: config)
+            let toolbar = CropToolbar()
+            toolbar.iconProvider = CropToolbarIcon()
+
+            let cropViewController = Mantis.cropViewController(image: image, config: config, cropToolbar: toolbar)
 
             cropViewController.delegate = self
             cropViewController.backgroundColor = .systemBackground
             cropViewController.modalPresentationStyle = .fullScreen
 
             viewController?.present(cropViewController, animated: true)
+        }
+    }
+
+    class CropToolbarIcon: CropToolbarIconProvider {
+        func getCropIcon() -> UIImage? {
+           return UIImage(systemName: "checkmark.circle")
+        }
+
+        func getCancelIcon() -> UIImage? {
+            return UIImage(systemName: "xmark.circle")
         }
     }
 }
