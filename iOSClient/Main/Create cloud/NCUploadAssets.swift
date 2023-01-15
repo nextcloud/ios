@@ -26,6 +26,7 @@ import NextcloudKit
 import TLPhotoPicker
 import Mantis
 import Photos
+import QuickLook
 
 class NCHostingUploadAssetsView: NSObject {
 
@@ -82,18 +83,18 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     }
 
     func startTimer(navigationItem: UINavigationItem) {
-        self.timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true, block: { _ in
-            let numItemsRight = navigationItem.rightBarButtonItems?.count ?? 0
-            if let buttonDone = navigationItem.leftBarButtonItems?.first, let buttonCrop = navigationItem.leftBarButtonItems?.last {
-
-                if numItemsRight > 2 && buttonCrop.isEnabled {
-                    buttonCrop.isEnabled = false
-                    buttonDone.isEnabled = false
-                }
-
-                if numItemsRight < 3 && !buttonCrop.isEnabled {
-                    buttonCrop.isEnabled = true
-                    buttonDone.isEnabled = true
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
+            guard let buttonDone = navigationItem.leftBarButtonItems?.first, let buttonCrop = navigationItem.leftBarButtonItems?.last else { return }
+            buttonCrop.isEnabled = true
+            buttonDone.isEnabled = true
+            if let markup = navigationItem.rightBarButtonItems?.first(where: { $0.accessibilityIdentifier == "QLOverlayMarkupButtonAccessibilityIdentifier" }) {
+                if let originalButton = markup.value(forKey: "originalButton") as AnyObject? {
+                    if let symbolImageName = originalButton.value(forKey: "symbolImageName") as? String {
+                        if symbolImageName == "pencil.tip.crop.circle.on" {
+                            buttonCrop.isEnabled = false
+                            buttonDone.isEnabled = false
+                        }
+                    }
                 }
             }
         })
@@ -296,7 +297,6 @@ struct UploadAssetsView: View {
         GeometryReader { geo in
             NavigationView {
                 List {
-
                     if !uploadAssets.previewStore.isEmpty {
                         Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
                             ScrollView(.horizontal) {
