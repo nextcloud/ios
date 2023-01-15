@@ -145,7 +145,7 @@ struct UploadAssetsView: View {
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
 
         if let asset = uploadAssets.assets.first?.phAsset, let name = (asset.value(forKey: "filename") as? String) {
-            return name
+            return (name as NSString).deletingPathExtension
         } else {
             return ""
         }
@@ -198,7 +198,7 @@ struct UploadAssetsView: View {
                                                forcedNewFileName: false)
         }
 
-        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + preview
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (preview as NSString).deletingPathExtension
     }
 
     func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
@@ -382,6 +382,7 @@ struct UploadAssetsView: View {
                             if isMaintainOriginalFilename {
                                 Text(getOriginalFilename())
                                     .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundColor(Color.gray)
                             } else {
                                 TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                     .modifier(TextFieldClearButton(text: $fileName))
