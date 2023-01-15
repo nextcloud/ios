@@ -419,6 +419,7 @@ struct UploadAssetsView: View {
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
             }
+            .navigationViewStyle(StackNavigationViewStyle())
             .sheet(isPresented: $isPresentedSelect) {
                 SelectView(serverUrl: $uploadAssets.serverUrl)
             }
