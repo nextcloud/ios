@@ -36,7 +36,7 @@ struct HUDView: View {
             }
         }) {
             Label(textLabel, systemImage: image)
-                .foregroundColor(Color(NCBrandColor.shared.brandText))
+                .foregroundColor(.white)
                 .padding(.horizontal, 10)
                 .padding(14)
                 .background(

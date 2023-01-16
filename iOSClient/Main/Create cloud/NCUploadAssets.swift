@@ -271,13 +271,15 @@ struct UploadAssetsView: View {
         }
     }
 
-    func presentedQuickLook(size: CGFloat, index: Int) {
+    func presentedQuickLook(geoSizeWidth: CGFloat, geoSizeHeight: CGFloat, index: Int) {
 
         let previewStore = uploadAssets.previewStore[index]
         var image = previewStore.image
 
-        if !previewStore.hasChanges {
-            if let fullResolutionImage = previewStore.asset.fullResolutionImage?.resizeImage(size: CGSize(width: size, height: size)) {
+        if !previewStore.hasChanges, let sizePhotoWidth = previewStore.asset.phAsset?.pixelWidth, let sizePhotoHeight = previewStore.asset.phAsset?.pixelHeight {
+            let width = min(geoSizeWidth * 2, CGFloat(sizePhotoWidth))
+            let height = min(geoSizeHeight * 2, CGFloat(sizePhotoHeight))
+            if let fullResolutionImage = previewStore.asset.fullResolutionImage?.resizeImage(size: CGSize(width: width, height: height)) {
                 image = fullResolutionImage
             }
         }
@@ -329,7 +331,7 @@ struct UploadAssetsView: View {
                                         }
                                         .onTapGesture {
                                             if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                                presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
+                                                presentedQuickLook(geoSizeWidth: geo.size.width, geoSizeHeight: geo.size.height, index: index)
                                             }
                                         }
                                         .fullScreenCover(isPresented: $isPresentedQuickLook) {
