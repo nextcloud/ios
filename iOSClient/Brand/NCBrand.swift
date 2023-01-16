@@ -164,16 +164,14 @@ class NCBrandColor: NSObject {
     }
 
     // Color
-    @objc public let customer: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)     // BLU NC : #0082c9
+    @objc public let customer: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)         // BLU NC : #0082c9
     @objc public var customerText: UIColor = .white
 
-    @objc public var brand: UIColor                                                                                     // don't touch me
-    @objc public var brandElement: UIColor                                                                              // don't touch me
-    @objc public var brandText: UIColor                                                                                 // don't touch me
+    @objc public var brand: UIColor                                                                                         // don't touch me
+    @objc public var brandElement: UIColor                                                                                  // don't touch me
+    @objc public var brandText: UIColor                                                                                     // don't touch me
 
     @objc public let nextcloud: UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
-    @objc public let gray: UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
-    @objc public let lightGray: UIColor = UIColor(red: 229.0/255.0, green: 229.0/229.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let yellowFavorite: UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
 
     public var userColors: [CGColor] = []
@@ -184,12 +182,6 @@ class NCBrandColor: NSObject {
     @objc public var systemMint: UIColor {
         get {
             return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
-        }
-    }
-
-    @objc public var systemGray1: UIColor {
-        get {
-            return UIColor(red: 0.60, green: 0.60, blue: 0.60, alpha: 1.0)
         }
     }
 
@@ -205,16 +197,14 @@ class NCBrandColor: NSObject {
 
     func createImagesThemingColor() {
 
-        let gray: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
-
         cacheImages.file = UIImage(named: "file")!
 
-        cacheImages.shared = UIImage(named: "share")!.image(color: gray, size: 50)
-        cacheImages.canShare = UIImage(named: "share")!.image(color: gray, size: 50)
-        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: gray, size: 50)
+        cacheImages.shared = UIImage(named: "share")!.image(color: .systemGray, size: 50)
+        cacheImages.canShare = UIImage(named: "share")!.image(color: .systemGray, size: 50)
+        cacheImages.shareByLink = UIImage(named: "sharebylink")!.image(color: .systemGray, size: 50)
 
         cacheImages.favorite = NCUtility.shared.loadImage(named: "star.fill", color: yellowFavorite)
-        cacheImages.comment = UIImage(named: "comment")!.image(color: gray, size: 50)
+        cacheImages.comment = UIImage(named: "comment")!.image(color: .systemGray, size: 50)
         cacheImages.livePhoto = NCUtility.shared.loadImage(named: "livephoto", color: .label)
         cacheImages.offlineFlag = UIImage(named: "offlineFlag")!
         cacheImages.local = UIImage(named: "local")!
@@ -229,13 +219,13 @@ class NCBrandColor: NSObject {
         cacheImages.folder =  UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
 
         cacheImages.checkedYes = NCUtility.shared.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
-        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: gray)
+        cacheImages.checkedNo = NCUtility.shared.loadImage(named: "circle", color: .systemGray)
 
-        cacheImages.buttonMore = UIImage(named: "more")!.image(color: gray, size: 50)
-        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: gray, size: 50)
-        cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: gray, size: 50)
-        cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: gray, size: 50)
-        cacheImages.buttonTrash = UIImage(named: "trash")!.image(color: gray, size: 50)
+        cacheImages.buttonMore = UIImage(named: "more")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonStop = UIImage(named: "stop")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
+        cacheImages.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
 
         cacheImages.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
         cacheImages.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)

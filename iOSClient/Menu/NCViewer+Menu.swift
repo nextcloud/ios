@@ -220,7 +220,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_search_", comment: ""),
-                    icon: UIImage(named: "search")!.image(color: NCBrandColor.shared.gray, size: 50),
+                    icon: UIImage(named: "search")!.image(color: UIColor.systemGray, size: 50),
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuSearchTextPDF)
                     }

@@ -62,7 +62,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         self.title = NSLocalizedString("_voice_memo_title_", comment: "")
 
         // Button Play Stop
-        buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
+        buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: UIColor.systemGray, size: 100), for: .normal)
 
         // Progress view
         progressView.progress = 0
@@ -320,7 +320,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
 
-        buttonPlayStop.setImage(UIImage(named: "stop")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
+        buttonPlayStop.setImage(UIImage(named: "stop")!.image(color: UIColor.systemGray, size: 100), for: .normal)
     }
 
     func stop() {
@@ -333,7 +333,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         progressView.progress = 0
         updateTimerUI()
 
-        buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
+        buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: UIColor.systemGray, size: 100), for: .normal)
     }
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
@@ -343,6 +343,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         progressView.progress = 0
         updateTimerUI()
 
-        buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: NCBrandColor.shared.gray, size: 100), for: .normal)
+        buttonPlayStop.setImage(UIImage(named: "audioPlay")!.image(color: UIColor.systemGray, size: 100), for: .normal)
     }
 }

@@ -64,7 +64,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadDirectory" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_select_folder_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-    [row.cellConfig setObject:[[UIImage imageNamed:@"foldersOnTop"] imageWithColor:NCBrandColor.shared.gray size:25] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"foldersOnTop"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];

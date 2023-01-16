@@ -61,17 +61,17 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         backgroundColor = .clear
 
-        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray1, size: 25), for: .normal)
+        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: .systemGray, size: 25), for: .normal)
 
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
-        buttonMore.setImage(UIImage(named: "more")!.image(color: NCBrandColor.shared.systemGray1, size: 25), for: .normal)
+        buttonMore.setImage(UIImage(named: "more")!.image(color: .systemGray, size: 25), for: .normal)
 
         button1.setImage(nil, for: .normal)
         button1.isHidden = true
         button1.backgroundColor = .clear
         button1.setTitleColor(.systemBlue, for: .normal)
-        button1.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
+        button1.layer.borderColor = UIColor.systemGray.cgColor
         button1.layer.borderWidth = 0.4
         button1.layer.cornerRadius = 3
 
@@ -79,7 +79,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button2.isHidden = true
         button2.backgroundColor = .clear
         button2.setTitleColor(.systemBlue, for: .normal)
-        button2.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
+        button2.layer.borderColor = UIColor.systemGray.cgColor
         button2.layer.borderWidth = 0.4
         button2.layer.cornerRadius = 3
 
@@ -87,7 +87,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         button3.isHidden = true
         button3.backgroundColor = .clear
         button3.setTitleColor(.systemBlue, for: .normal)
-        button3.layer.borderColor = NCBrandColor.shared.systemGray1.cgColor
+        button3.layer.borderColor = UIColor.systemGray.cgColor
         button3.layer.borderWidth = 0.4
         button3.layer.cornerRadius = 3
 
@@ -147,19 +147,19 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         } else {
             viewButtonsView.isHidden = false
             if var image = imageButton1, let title = titleButton1 {
-                image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+                image = image.image(color: .systemGray, size: 25)
                 button1.setImage(image, for: .normal)
                 button1.isHidden = false
                 button1.setTitle(title.firstUppercased, for: .normal)
             }
             if var image = imageButton2, let title = titleButton2 {
-                image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+                image = image.image(color: .systemGray, size: 25)
                 button2.setImage(image, for: .normal)
                 button2.isHidden = false
                 button2.setTitle(title.firstUppercased, for: .normal)
             }
             if var image = imageButton3, let title = titleButton3 {
-                image = image.image(color: NCBrandColor.shared.systemGray1, size: 25)
+                image = image.image(color: .systemGray, size: 25)
                 button3.setImage(image, for: .normal)
                 button3.isHidden = false
                 button3.setTitle(title.firstUppercased, for: .normal)
@@ -183,12 +183,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     func setImageSwitchList() {
 
-        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
+        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: .systemGray, size: 50), for: .normal)
     }
 
     func setImageSwitchGrid() {
 
-        buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: NCBrandColor.shared.systemGray1, size: 50), for: .normal)
+        buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: .systemGray, size: 50), for: .normal)
     }
 
     func setButtonsView(heigt :CGFloat) {
@@ -331,7 +331,7 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
         super.awakeFromNib()
 
         self.backgroundColor = UIColor.clear
-        labelSection.textColor = NCBrandColor.shared.gray
+        labelSection.textColor = UIColor.systemGray
         labelSection.text = ""
 
         separator.backgroundColor = .separator

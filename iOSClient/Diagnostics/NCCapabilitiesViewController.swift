@@ -160,18 +160,18 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusLockFile.layer.masksToBounds = true
         statusLockFile.backgroundColor = .secondarySystemBackground
 
-        imageFileSharing.image = UIImage(named: "share")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageExternalSite.image = NCUtility.shared.loadImage(named: "network", color: NCBrandColor.shared.gray)
-        imageEndToEndEncryption.image = NCUtility.shared.loadImage(named: "lock", color: NCBrandColor.shared.gray)
-        imageActivity.image = UIImage(named: "bolt")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageNotification.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.gray)
-        imageDeletedFiles.image = NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray)
-        imageText.image = UIImage(named: "text")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageCollabora.image = UIImage(named: "collabora")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageOnlyOffice.image = UIImage(named: "onlyoffice")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageUserStatus.image = UIImage(named: "userStatusAway")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageComments.image = UIImage(named: "comments")!.image(color: NCBrandColor.shared.gray, size: 50)
-        imageLockFile.image = UIImage(named: "lock")!.image(color: NCBrandColor.shared.gray, size: 50)
+        imageFileSharing.image = UIImage(named: "share")!.image(color: UIColor.systemGray, size: 50)
+        imageExternalSite.image = NCUtility.shared.loadImage(named: "network", color: UIColor.systemGray)
+        imageEndToEndEncryption.image = NCUtility.shared.loadImage(named: "lock", color: UIColor.systemGray)
+        imageActivity.image = UIImage(named: "bolt")!.image(color: UIColor.systemGray, size: 50)
+        imageNotification.image = NCUtility.shared.loadImage(named: "bell", color: UIColor.systemGray)
+        imageDeletedFiles.image = NCUtility.shared.loadImage(named: "trash", color: UIColor.systemGray)
+        imageText.image = UIImage(named: "text")!.image(color: UIColor.systemGray, size: 50)
+        imageCollabora.image = UIImage(named: "collabora")!.image(color: UIColor.systemGray, size: 50)
+        imageOnlyOffice.image = UIImage(named: "onlyoffice")!.image(color: UIColor.systemGray, size: 50)
+        imageUserStatus.image = UIImage(named: "userStatusAway")!.image(color: UIColor.systemGray, size: 50)
+        imageComments.image = UIImage(named: "comments")!.image(color: UIColor.systemGray, size: 50)
+        imageLockFile.image = UIImage(named: "lock")!.image(color: UIColor.systemGray, size: 50)
 
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
         self.account = activeAccount.account
@@ -188,7 +188,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             }
         }
 
-        homeImage.image = UIImage(named: "home")!.image(color: NCBrandColor.shared.gray, size: 50)
+        homeImage.image = UIImage(named: "home")!.image(color: UIColor.systemGray, size: 50)
         homeServer.text = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + "/"
     }
 

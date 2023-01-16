@@ -65,7 +65,7 @@ extension NCLoginWeb {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_active_account_", comment: ""),
-                icon: NCUtility.shared.loadImage(named: "trash", color: NCBrandColor.shared.gray),
+                icon: NCUtility.shared.loadImage(named: "trash", color: UIColor.systemGray),
                 onTitle: NSLocalizedString("_delete_active_account_", comment: ""),
                 onIcon: avatar,
                 selected: false,
