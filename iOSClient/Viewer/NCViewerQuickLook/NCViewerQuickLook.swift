@@ -76,7 +76,7 @@ private var hasChangesQuickLook: Bool = false
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
             NCContentPresenter.shared.showInfo(error: error)
         }
-        
+
         startTimer(navigationItem: navigationItem)
     }
 
