@@ -26,6 +26,7 @@ import NextcloudKit
 import TLPhotoPicker
 import Mantis
 import Photos
+import QuickLook
 
 class NCHostingUploadAssetsView: NSObject {
 
@@ -61,7 +62,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     /*
 
      */
-    let resizeImagePreview: Double = 200
+    let resizeImagePreview: Double = 300
     let sizeImagePreview: Double = 100
     let compressionQuality: CGFloat = 0.5
 
@@ -75,26 +76,24 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func loadImages() {
         DispatchQueue.global().async {
             for asset in self.assets {
-                guard asset.type == .photo, let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: self.resizeImagePreview, height: self.resizeImagePreview), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
+                guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: self.resizeImagePreview, height: self.resizeImagePreview), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
                 self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset, hasChanges: false))
             }
         }
     }
 
     func startTimer(navigationItem: UINavigationItem) {
-        self.timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true, block: { _ in
-            let numItemsRight = navigationItem.rightBarButtonItems?.count ?? 0
-            if let buttonCrop = navigationItem.leftBarButtonItems?.first {
-                if numItemsRight > 1 && buttonCrop.isEnabled {
-                    buttonCrop.isEnabled = false
-                    if let buttonDone = navigationItem.rightBarButtonItems?.last {
-                        buttonDone.isEnabled = false
-                    }
-                }
-                if numItemsRight == 1 && !buttonCrop.isEnabled {
-                    buttonCrop.isEnabled = true
-                    if let buttonDone = navigationItem.rightBarButtonItems?.first {
-                        buttonDone.isEnabled = true
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { _ in
+            guard let buttonDone = navigationItem.leftBarButtonItems?.first, let buttonCrop = navigationItem.leftBarButtonItems?.last else { return }
+            buttonCrop.isEnabled = true
+            buttonDone.isEnabled = true
+            if let markup = navigationItem.rightBarButtonItems?.first(where: { $0.accessibilityIdentifier == "QLOverlayMarkupButtonAccessibilityIdentifier" }) {
+                if let originalButton = markup.value(forKey: "originalButton") as AnyObject? {
+                    if let symbolImageName = originalButton.value(forKey: "symbolImageName") as? String {
+                        if symbolImageName == "pencil.tip.crop.circle.on" {
+                            buttonCrop.isEnabled = false
+                            buttonDone.isEnabled = false
+                        }
                     }
                 }
             }
@@ -147,7 +146,7 @@ struct UploadAssetsView: View {
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
 
         if let asset = uploadAssets.assets.first?.phAsset, let name = (asset.value(forKey: "filename") as? String) {
-            return name
+            return (name as NSString).deletingPathExtension
         } else {
             return ""
         }
@@ -200,7 +199,7 @@ struct UploadAssetsView: View {
                                                forcedNewFileName: false)
         }
 
-        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + preview
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (preview as NSString).deletingPathExtension
     }
 
     func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
@@ -209,7 +208,7 @@ struct UploadAssetsView: View {
         var metadatasUploadInConflict: [tableMetadata] = []
 
         for asset in uploadAssets.assets {
-            guard let asset = asset.phAsset else { continue }
+            guard let asset = asset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
 
             let serverUrl = uploadAssets.serverUrl
             var livePhoto: Bool = false
@@ -222,7 +221,7 @@ struct UploadAssetsView: View {
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: false)!
 
-            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() {
+            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && !previewStore.hasChanges {
                 livePhoto = true
             }
 
@@ -272,13 +271,15 @@ struct UploadAssetsView: View {
         }
     }
 
-    func presentedQuickLook(size: CGFloat, index: Int) {
+    func presentedQuickLook(geoSizeWidth: CGFloat, geoSizeHeight: CGFloat, index: Int) {
 
         let previewStore = uploadAssets.previewStore[index]
         var image = previewStore.image
 
-        if !previewStore.hasChanges {
-            if let fullResolutionImage = previewStore.asset.fullResolutionImage?.resizeImage(size: CGSize(width: size, height: size)) {
+        if !previewStore.hasChanges, let sizePhotoWidth = previewStore.asset.phAsset?.pixelWidth, let sizePhotoHeight = previewStore.asset.phAsset?.pixelHeight {
+            let width = min(geoSizeWidth * 2, CGFloat(sizePhotoWidth))
+            let height = min(geoSizeHeight * 2, CGFloat(sizePhotoHeight))
+            if let fullResolutionImage = previewStore.asset.fullResolutionImage?.resizeImage(size: CGSize(width: width, height: height)) {
                 image = fullResolutionImage
             }
         }
@@ -298,24 +299,44 @@ struct UploadAssetsView: View {
         GeometryReader { geo in
             NavigationView {
                 List {
-
                     if !uploadAssets.previewStore.isEmpty {
                         Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
                             ScrollView(.horizontal) {
                                 LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                     ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
-                                        VStack {
-                                            Image(uiImage: uploadAssets.previewStore[index].image)
+                                        let item = uploadAssets.previewStore[index]
+                                        ZStack(alignment: .bottomTrailing) {
+                                            Image(uiImage: item.image)
                                                 .resizable()
                                                 .frame(width: uploadAssets.sizeImagePreview, height: uploadAssets.sizeImagePreview, alignment: .center)
                                                 .cornerRadius(10)
                                                 .scaledToFit()
-                                                .onTapGesture {
-                                                    presentedQuickLook(size: max(geo.size.height, geo.size.height), index: index)
-                                                }.fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                                    ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                                                        .ignoresSafeArea()
-                                                }
+                                            if item.asset.type == .livePhoto && !item.hasChanges {
+                                                Image(systemName: "livephoto")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 15, height: 15)
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 5)
+                                                    .padding(.vertical, 5)
+                                            } else if item.asset.type == .video {
+                                                Image(systemName: "video.fill")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 15, height: 15)
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 5)
+                                                    .padding(.vertical, 5)
+                                            }
+                                        }
+                                        .onTapGesture {
+                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                                presentedQuickLook(geoSizeWidth: geo.size.width, geoSizeHeight: geo.size.height, index: index)
+                                            }
+                                        }
+                                        .fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                                                .ignoresSafeArea()
                                         }
                                     }
                                 }
@@ -363,6 +384,7 @@ struct UploadAssetsView: View {
                             if isMaintainOriginalFilename {
                                 Text(getOriginalFilename())
                                     .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundColor(Color.gray)
                             } else {
                                 TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                     .modifier(TextFieldClearButton(text: $fileName))
@@ -399,6 +421,7 @@ struct UploadAssetsView: View {
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
             }
+            .navigationViewStyle(StackNavigationViewStyle())
             .sheet(isPresented: $isPresentedSelect) {
                 SelectView(serverUrl: $uploadAssets.serverUrl)
             }
@@ -410,6 +433,8 @@ struct UploadAssetsView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
             }
+        }.onTapGesture {
+            UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
         }
     }
 }

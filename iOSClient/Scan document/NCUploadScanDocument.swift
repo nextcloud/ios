@@ -502,12 +502,8 @@ struct UploadScanDocumentView: View {
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata], metadatasNOConflict: [])
         }.onTapGesture {
-            dismissKeyboard()
+            UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
         }
-    }
-
-    func dismissKeyboard() {
-        UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
     }
 }
 

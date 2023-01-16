@@ -9,6 +9,7 @@
 import SwiftUI
 import QuickLook
 import Mantis
+import NextcloudKit
 
 struct ViewerQuickLook: UIViewControllerRepresentable {
 
@@ -25,17 +26,18 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         controller.delegate = context.coordinator
         context.coordinator.viewController = controller
 
-        controller.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done, target: context.coordinator,
-            action: #selector(context.coordinator.dismiss)
-        )
-
-        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: NSLocalizedString("_crop_", comment: ""), style: UIBarButtonItem.Style.plain, target: context.coordinator,
-            action: #selector(context.coordinator.crop)
-        )
+        let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(context.coordinator.dismiss))
+        let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: context.coordinator, action: #selector(context.coordinator.crop))
+        controller.navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
 
         uploadAssets.startTimer(navigationItem: controller.navigationItem)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if uploadAssets.previewStore[index].asset.type == .livePhoto && !uploadAssets.previewStore[index].hasChanges {
+                let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_livephoto_")
+                NCContentPresenter.shared.showInfo(error: error)
+            }
+        }
 
         let navigationController = UINavigationController(rootViewController: controller)
         return navigationController
@@ -114,18 +116,47 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         @objc func crop() {
 
             guard let image = UIImage(contentsOfFile: parent.url.path) else { return }
-            let config = Mantis.Config()
 
+            var toolbarConfig = CropToolbarConfig()
+            toolbarConfig.heightForVerticalOrientation = 80
+            toolbarConfig.widthForHorizontalOrientation = 100
+            toolbarConfig.optionButtonFontSize = 16
+            toolbarConfig.optionButtonFontSizeForPad = 21
+            toolbarConfig.backgroundColor = .systemGray6
+            toolbarConfig.foregroundColor = .systemBlue
+
+            var viewConfig = CropViewConfig()
+            viewConfig.cropMaskVisualEffectType = .none
+            viewConfig.cropBorderColor = .red
+
+            var config = Mantis.Config()
             if let bundleIdentifier = Bundle.main.bundleIdentifier {
                 config.localizationConfig.bundle = Bundle(identifier: bundleIdentifier)
                 config.localizationConfig.tableName = "Localizable"
             }
-            let cropViewController = Mantis.cropViewController(image: image, config: config)
+            config.cropToolbarConfig = toolbarConfig
+            config.cropViewConfig = viewConfig
+
+            let toolbar = CropToolbar()
+            toolbar.iconProvider = CropToolbarIcon()
+
+            let cropViewController = Mantis.cropViewController(image: image, config: config, cropToolbar: toolbar)
 
             cropViewController.delegate = self
+            cropViewController.backgroundColor = .systemBackground
             cropViewController.modalPresentationStyle = .fullScreen
 
             viewController?.present(cropViewController, animated: true)
+        }
+    }
+
+    class CropToolbarIcon: CropToolbarIconProvider {
+        func getCropIcon() -> UIImage? {
+           return UIImage(systemName: "checkmark.circle")
+        }
+
+        func getCancelIcon() -> UIImage? {
+            return UIImage(systemName: "xmark.circle")
         }
     }
 }
