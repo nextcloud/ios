@@ -33,7 +33,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         uploadAssets.startTimer(navigationItem: controller.navigationItem)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if uploadAssets.previewStore[index].asset.type == .livePhoto && !uploadAssets.previewStore[index].hasChanges {
+            if uploadAssets.previewStore[index].asset.type == .livePhoto && uploadAssets.previewStore[index].data == nil {
                 let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_livephoto_")
                 NCContentPresenter.shared.showInfo(error: error)
             }
@@ -64,9 +64,9 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         @objc func dismiss() {
             parent.uploadAssets.stopTimer()
             parent.isPresentedQuickLook = false
-            if let image = image {
+            if let imageData = image, let image = image?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true) {
                 parent.uploadAssets.previewStore[parent.index].image = image
-                parent.uploadAssets.previewStore[parent.index].hasChanges = hasChange
+                parent.uploadAssets.previewStore[parent.index].data = imageData.jpegData(compressionQuality: 0.9)
             }
         }
 
@@ -96,7 +96,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
 
         func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
             cropViewController.dismiss(animated: true)
-            guard let data = cropped.jpegData(compressionQuality: 1) else { return }
+            guard let data = cropped.pngData() else { return }
             do {
                 try data.write(to: parent.url)
                 self.image = cropped

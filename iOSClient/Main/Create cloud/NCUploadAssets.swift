@@ -43,8 +43,8 @@ class NCHostingUploadAssetsView: NSObject {
 struct PreviewStore {
     var id: String
     var image: UIImage
+    var data: Data?
     var asset: TLPHAsset
-    var hasChanges: Bool
 }
 
 class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
@@ -59,13 +59,6 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     var metadatasUploadInConflict: [tableMetadata] = []
     var timer: Timer?
 
-    /*
-
-     */
-    let resizeImagePreview: Double = 300
-    let sizeImagePreview: Double = 100
-    let compressionQuality: CGFloat = 0.5
-
     init(assets: [TLPHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) {
 
         self.assets = assets
@@ -76,8 +69,8 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     func loadImages() {
         DispatchQueue.global().async {
             for asset in self.assets {
-                guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: self.resizeImagePreview, height: self.resizeImagePreview), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset, hasChanges: false))
+                guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
+                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset))
             }
         }
     }
@@ -221,7 +214,7 @@ struct UploadAssetsView: View {
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: false)!
 
-            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && !previewStore.hasChanges {
+            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && previewStore.data == nil {
                 livePhoto = true
             }
 
@@ -237,7 +230,7 @@ struct UploadAssetsView: View {
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
 
             // Modified
-            if let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }), previewStore.hasChanges, let data = previewStore.image.jpegData(compressionQuality: 1) {
+            if let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }), let data = previewStore.data {
                 if metadata.contentType == "image/heic" {
                     let fileNameNoExtension = (fileName as NSString).deletingPathExtension
                     metadata.contentType = "image/jpeg"
@@ -274,7 +267,7 @@ struct UploadAssetsView: View {
     func presentedQuickLook(index: Int) {
 
         if let image = uploadAssets.previewStore[index].asset.fullResolutionImage {
-            if let data = image.jpegData(compressionQuality: uploadAssets.compressionQuality) {
+            if let data = image.pngData() {
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     self.index = index
@@ -298,10 +291,10 @@ struct UploadAssetsView: View {
                                     ZStack(alignment: .bottomTrailing) {
                                         Image(uiImage: item.image)
                                             .resizable()
-                                            .frame(width: uploadAssets.sizeImagePreview, height: uploadAssets.sizeImagePreview, alignment: .center)
+                                            .frame(width: 100, height: 100, alignment: .center)
                                             .cornerRadius(10)
                                             .scaledToFit()
-                                        if item.asset.type == .livePhoto && !item.hasChanges {
+                                        if item.asset.type == .livePhoto && item.data == nil {
                                             Image(systemName: "livephoto")
                                                 .resizable()
                                                 .scaledToFit()
