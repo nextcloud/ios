@@ -73,7 +73,9 @@ import Photos
             let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
             CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: true, metadata: metadata)
-            self.appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
+            let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+            navigationController.modalPresentationStyle = .fullScreen
+            self.appDelegate.window?.rootViewController?.present(navigationController, animated: true)
 
         case NCGlobal.shared.selectorLoadFileView:
             guard UIApplication.shared.applicationState == .active else { break }
