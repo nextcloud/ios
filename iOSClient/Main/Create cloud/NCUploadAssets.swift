@@ -266,7 +266,15 @@ struct UploadAssetsView: View {
 
     func presentedQuickLook(index: Int) {
 
-        if let image = uploadAssets.previewStore[index].asset.fullResolutionImage {
+        var image: UIImage?
+
+        if let imageData = uploadAssets.previewStore[index].data {
+            image = UIImage(data: imageData)
+        } else if let imageFullResolution = uploadAssets.previewStore[index].asset.fullResolutionImage {
+            image = imageFullResolution
+        }
+
+        if let image = image {
             if let data = image.pngData() {
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
