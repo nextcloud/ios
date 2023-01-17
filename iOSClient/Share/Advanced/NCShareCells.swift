@@ -46,6 +46,7 @@ extension NCToggleCellConfig {
 
 protocol NCPermission: NCToggleCellConfig {
     static var forDirectory: [Self] { get }
+    static var forDirectoryE2EE: [Self] { get }
     static var forFile: [Self] { get }
     func hasResharePermission(for parentPermission: Int) -> Bool
 }
@@ -74,6 +75,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     case reshare, edit, create, delete
     static let forDirectory: [NCUserPermission] = NCUserPermission.allCases
+    static let forDirectoryE2EE: [NCUserPermission] = []
     static let forFile: [NCUserPermission] = [.reshare, .edit]
 
     var title: String {
@@ -129,6 +131,8 @@ enum NCLinkPermission: NCPermission {
                 andIsFolder: true)
         case .fileDrop:
             return NCGlobal.shared.permissionCreateShare
+        case .secureFileDrop:
+            return NCGlobal.shared.permissionCreateShare
         }
     }
 
@@ -138,6 +142,7 @@ enum NCLinkPermission: NCPermission {
         case .viewOnly: return !CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
         case .uploadEdit: return CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
         case .fileDrop: return share.permissions == NCGlobal.shared.permissionCreateShare
+        case .secureFileDrop: return share.permissions == NCGlobal.shared.permissionCreateShare
         }
     }
 
@@ -147,12 +152,14 @@ enum NCLinkPermission: NCPermission {
         case .viewOnly: return NSLocalizedString("_share_read_only_", comment: "")
         case .uploadEdit: return NSLocalizedString("_share_allow_upload_", comment: "")
         case .fileDrop: return NSLocalizedString("_share_file_drop_", comment: "")
+        case .secureFileDrop: return NSLocalizedString("_share_secure_file_drop_", comment: "")
         }
     }
 
-    case allowEdit, viewOnly, uploadEdit, fileDrop
+    case allowEdit, viewOnly, uploadEdit, fileDrop, secureFileDrop
     static let forDirectory: [NCLinkPermission] = [.viewOnly, .uploadEdit, .fileDrop]
     static let forFile: [NCLinkPermission] = [.allowEdit]
+    static let forDirectoryE2EE: [NCLinkPermission] = [.secureFileDrop]
 }
 
 enum NCShareDetails: CaseIterable, NCShareCellConfig {
@@ -210,7 +217,7 @@ struct NCShareConfig {
         self.share = share
         self.resharePermission = parentMetadata.sharePermissionsCollaborationServices
         let type: NCPermission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
-        self.permissions = parentMetadata.directory ? type.forDirectory : type.forFile
+        self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE : type.forDirectory) : type.forFile
         self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
     }
 
