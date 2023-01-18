@@ -144,6 +144,11 @@ class NCEndToEndMetadata: NSObject {
 
         let jsonDecoder = JSONDecoder()
         let data = e2eMetaDataJSON.data(using: .utf8)
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+            //let isShare = directory.permissions.contains(NCGlobal.shared.permissionShared) && !directory!.permissions.contains(NCGlobal.shared.permissionShared)
+            //let isMounted = directory.permissions.contains(NCGlobal.shared.permissionMounted) && !directory!.permissions.contains(NCGlobal.shared.permissionMounted)
+            print("")
+        }
         // let dataQuickLook = (data as! NSData)
 
         do {
