@@ -51,7 +51,9 @@ class NCDataSource: NSObject {
     init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, filterLivePhoto: Bool? = true, groupByField: String = "name", providers: [NKSearchProvider]? = nil, searchResults: [NKSearchResult]? = nil) {
         super.init()
 
-        self.metadatas = metadatas
+        self.metadatas = metadatas.filter({
+            !NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView)
+        })
         self.directory = directory
         self.shares = NCManageDatabase.shared.getTableShares(account: account)
         self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
