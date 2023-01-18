@@ -26,20 +26,19 @@ import NextcloudKit
 
 class NCEndToEndMetadata: NSObject {
 
-    struct e2eMetadata: Codable {
+    struct E2eMetadata: Codable {
 
-        struct metadataKeyCodable: Codable {
-
+        struct MetadataKeyCodable: Codable {
             let metadataKeys: [String: String]
             let version: Int
         }
 
-        struct sharingCodable: Codable {
+        struct SharingCodable: Codable {
 
             let recipient: [String: String]
         }
 
-        struct encryptedFileAttributes: Codable {
+        struct EncryptedFileAttributes: Codable {
 
             let key: String
             let filename: String
@@ -47,7 +46,7 @@ class NCEndToEndMetadata: NSObject {
             let version: Int
         }
 
-        struct filesCodable: Codable {
+        struct FilesCodable: Codable {
 
             let initializationVector: String
             let authenticationTag: String?
@@ -55,9 +54,9 @@ class NCEndToEndMetadata: NSObject {
             let encrypted: String               // encryptedFileAttributes
         }
 
-        let files: [String: filesCodable]
-        let metadata: metadataKeyCodable
-        let sharing: sharingCodable?
+        let files: [String: FilesCodable]
+        let metadata: MetadataKeyCodable
+        let sharing: SharingCodable?
     }
 
     @objc static let shared: NCEndToEndMetadata = {
@@ -72,7 +71,7 @@ class NCEndToEndMetadata: NSObject {
     @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, serverUrl: String) -> String? {
 
         let jsonEncoder = JSONEncoder()
-        var files: [String: e2eMetadata.filesCodable] = [:]
+        var files: [String: E2eMetadata.FilesCodable] = [:]
         var version = 1
         var metadataKeysDictionary: [String: String] = [:]
 
@@ -93,7 +92,7 @@ class NCEndToEndMetadata: NSObject {
 
             // *** File ***
 
-            let encrypted = e2eMetadata.encryptedFileAttributes(key: recordE2eEncryption.key, filename: recordE2eEncryption.fileName, mimetype: recordE2eEncryption.mimeType, version: recordE2eEncryption.version)
+            let encrypted = E2eMetadata.EncryptedFileAttributes(key: recordE2eEncryption.key, filename: recordE2eEncryption.fileName, mimetype: recordE2eEncryption.mimeType, version: recordE2eEncryption.version)
 
             do {
 
@@ -106,12 +105,12 @@ class NCEndToEndMetadata: NSObject {
                     return nil
                 }
 
-                let e2eMetadataFilesKey = e2eMetadata.filesCodable(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: encryptedEncryptedJson)
+                let e2eMetadataFilesKey = E2eMetadata.FilesCodable(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: encryptedEncryptedJson)
 
                 files.updateValue(e2eMetadataFilesKey, forKey: recordE2eEncryption.fileNameIdentifier)
 
             } catch let error {
-                print("Serious internal error in encoding metadata ("+error.localizedDescription+")")
+                print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
                 return nil
             }
 
@@ -120,10 +119,10 @@ class NCEndToEndMetadata: NSObject {
 
         // Create Json metadataKeys
         // e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":metadataKeyEncryptedBase64], version: version)
-        let e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: metadataKeysDictionary, version: version)
+        let e2eMetadataKey = E2eMetadata.MetadataKeyCodable(metadataKeys: metadataKeysDictionary, version: version)
 
         // Create final Json e2emetadata
-        let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
+        let e2emetadata = E2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
 
         do {
 
@@ -134,7 +133,7 @@ class NCEndToEndMetadata: NSObject {
             return jsonString
 
         } catch let error {
-            print("Serious internal error in encoding metadata ("+error.localizedDescription+")")
+            print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
             return nil
         }
     }
@@ -150,7 +149,7 @@ class NCEndToEndMetadata: NSObject {
 
             // *** metadataKey ***
 
-            let decode = try jsonDecoder.decode(e2eMetadata.self, from: data!)
+            let decode = try jsonDecoder.decode(E2eMetadata.self, from: data!)
 
             let files = decode.files
             let metadata = decode.metadata
@@ -179,7 +178,7 @@ class NCEndToEndMetadata: NSObject {
             for file in files {
 
                 let fileNameIdentifier = file.key
-                let filesCodable = file.value as e2eMetadata.filesCodable
+                let filesCodable = file.value as E2eMetadata.FilesCodable
 
                 let encrypted = filesCodable.encrypted
                 let metadataKey = metadataKeysDictionary["\(filesCodable.metadataKey)"]
@@ -189,7 +188,7 @@ class NCEndToEndMetadata: NSObject {
                 }
 
                 do {
-                    let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
+                    let encryptedFileAttributes = try jsonDecoder.decode(E2eMetadata.EncryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
                         let metadata = tableMetadata.init(value: metadata)
 
@@ -228,13 +227,13 @@ class NCEndToEndMetadata: NSObject {
                     }
 
                 } catch let error {
-                    print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
+                    print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
                     return false
                 }
             }
 
         } catch let error {
-            print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
+            print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
             return false
         }
 
