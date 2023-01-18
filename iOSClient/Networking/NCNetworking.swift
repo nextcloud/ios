@@ -764,7 +764,7 @@ import Photos
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
         
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), includeHiddenFiles: NCGlobal.shared.includeHiddenFiles ,options: options) { account, files, _, error in
             guard error == .success else {
                 completion(account, nil, nil, nil, nil, nil, error)
                 return

@@ -322,6 +322,10 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
+    //  Hidden files included in the read
+    //
+    let includeHiddenFiles: [String]                = [".LivePhoto"]
+
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
