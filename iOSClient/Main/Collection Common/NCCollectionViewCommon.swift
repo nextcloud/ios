@@ -1677,9 +1677,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.attributedText = attributedString
         }
 
-        // E2EE
         // ** IMPORT MUST BE AT THE END **
-        if metadata.e2eEncrypted || isDirectoryE2EE {
+        // if metadata.e2eEncrypted || isDirectoryE2EE {
+        //
+        // E2EE SECURE FILE DROP (DIR ONLY)
+        if !metadata.directory && (metadata.e2eEncrypted || isDirectoryE2EE) {
             cell.hideButtonShare(true)
         }
 

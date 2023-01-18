@@ -83,7 +83,12 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         guard let metadata = metadata else { return }
 
-        checkSharedWithYou()
+        if metadata.e2eEncrypted {
+            searchFieldTopConstraint.constant = -50
+            searchField.isHidden = true
+        } else {
+            checkSharedWithYou()
+        }
 
         reloadData()
 
@@ -293,21 +298,33 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // don't allow link creation if reshare is disabled
-        guard section != 0 else { return shares.firstShareLink != nil || canReshare ? 2 : 1 }
-        return shares.share?.count ?? 0
+        guard let metadata = self.metadata else { return 0}
+        var numRows = shares.share?.count ?? 0
+        if section == 0 {
+            if metadata.e2eEncrypted {
+                numRows = 1
+            } else {
+                // don't allow link creation if reshare is disabled
+                numRows = shares.firstShareLink != nil || canReshare ? 2 : 1
+            }
+        }
+        return numRows
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Setup default share cells
         guard indexPath.section != 0 else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell, let metadata = self.metadata
             else { return UITableViewCell() }
             cell.delegate = self
-            if indexPath.row == 0 {
-                cell.isInternalLink = true
-            } else if shares.firstShareLink?.isInvalidated != true {
+            if metadata.e2eEncrypted {
                 cell.tableShare = shares.firstShareLink
+            } else {
+                if indexPath.row == 0 {
+                    cell.isInternalLink = true
+                } else if shares.firstShareLink?.isInvalidated != true {
+                    cell.tableShare = shares.firstShareLink
+                }
             }
             cell.setupCellUI()
             return cell
