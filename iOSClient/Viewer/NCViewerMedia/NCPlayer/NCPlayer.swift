@@ -203,7 +203,7 @@ class NCPlayer: NSObject {
                         }))
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
                         self.viewController?.present(alertController, animated: true)
-                    } else if NCUtility.shared.isDirectoryE2EE(metadata: self.metadata) {
+                    } else if self.metadata.isDirectorE2EE {
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", value: "Info", comment: ""), message: NSLocalizedString("_video_not_streamed_e2ee_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
                             self.downloadVideo(isEncrypted: true)

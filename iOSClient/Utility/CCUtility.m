@@ -1135,12 +1135,11 @@
 {
     NSString *fileNameViewPath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];
     NSString *fileNamePath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
-    BOOL isFolderEncrypted = [[NCUtility shared] isDirectoryE2EEWithMetadata:metadata];
 
     unsigned long long fileNameViewSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNameViewPath error:nil] fileSize];
     unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
 
-    if (isFolderEncrypted == true) {
+    if (metadata.isDirectorE2EE == true) {
         if ((fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0) {
             return true;
         } else {

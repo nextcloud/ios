@@ -35,7 +35,6 @@ extension NCViewer {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let isOffline = localFile?.offline == true
 
         //
@@ -243,7 +242,7 @@ extension NCViewer {
         //
         // MODIFY
         //
-        if !isDirectoryE2EE && !metadata.isViewOnly && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if !metadata.isDirectorE2EE && !metadata.isViewOnly && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),

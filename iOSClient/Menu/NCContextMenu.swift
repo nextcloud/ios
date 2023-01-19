@@ -102,8 +102,7 @@ class NCContextMenu: NSObject {
 
         if metadata.directory {
 
-            let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
-            if isDirectoryE2EE || metadata.e2eEncrypted {
+            if metadata.isDirectorE2EE || metadata.e2eEncrypted {
                 menu.append(favorite)
             } else {
                 menu.append(favorite)

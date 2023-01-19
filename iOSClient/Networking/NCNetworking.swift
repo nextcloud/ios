@@ -393,10 +393,9 @@ import Photos
                 completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
-        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
-        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(isDirectoryE2EE)]")
+        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.isDirectorE2EE)]")
 
-        if isDirectoryE2EE {
+        if metadata.isDirectorE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
                 let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
@@ -1164,10 +1163,9 @@ import Photos
             return completion(NKError())
         }
 
-        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
-        if isDirectoryEncrypted {
+        if metadata.isDirectorE2EE {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
@@ -1325,12 +1323,11 @@ import Photos
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
-        if isDirectoryEncrypted {
+        if metadata.isDirectorE2EE {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
