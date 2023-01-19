@@ -115,6 +115,10 @@ extension tableMetadata {
         classFile == NKCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
     }
 
+    var isViewOnly: Bool {
+        sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.typeClassFile.document.rawValue
+    }
+
     var isDownloadUpload: Bool {
         status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
     }

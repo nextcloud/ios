@@ -272,8 +272,6 @@ class NCGlobal: NSObject {
     @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
     @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
 
-    @objc let permissionViewOnly: Int               = 1
-
     // Filename Mask and Type
     //
     let keyFileNameMask                             = "fileNameMask"

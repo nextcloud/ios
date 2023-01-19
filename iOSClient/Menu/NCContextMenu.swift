@@ -115,7 +115,7 @@ class NCContextMenu: NSObject {
 
             if metadata.lock {
                 menu.append(favorite)
-                if metadata.sharePermissionsCollaborationServices == NCGlobal.shared.permissionViewOnly {
+                if metadata.isViewOnly {
                     //
                 } else {
                     menu.append(openIn)
@@ -124,7 +124,7 @@ class NCContextMenu: NSObject {
                 }
             } else {
                 menu.append(favorite)
-                if (metadata.sharePermissionsCollaborationServices == NCGlobal.shared.permissionViewOnly) && (metadata.classFile == NKCommon.typeClassFile.document.rawValue) {
+                if metadata.isViewOnly {
                     if viewController is NCMedia {
                         menu.append(viewInFolder)
                     }
