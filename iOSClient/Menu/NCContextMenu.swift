@@ -115,7 +115,6 @@ class NCContextMenu: NSObject {
                 menu.append(favorite)
                 menu.append(delete)
             }
-
             return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
 
         } else {
