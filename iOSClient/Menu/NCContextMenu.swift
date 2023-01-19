@@ -61,13 +61,6 @@ class NCContextMenu: NSObject {
             NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
 
-        let copyPath = UIAction(title: NSLocalizedString("_copy_path_", comment: ""), image: UIImage(systemName: "doc.on.clipboard")) { _ in
-            let board = UIPasteboard.general
-            board.string = NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user, fileName: metadata.fileName)
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
-            NCContentPresenter.shared.showInfo(error: error)
-        }
-
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { _ in
             NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
         }
@@ -172,9 +165,9 @@ class NCContextMenu: NSObject {
         guard !metadata.directory else {
             var submenu = UIMenu()
             if !isDirectoryE2EE && metadata.e2eEncrypted {
-                submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath])
+                submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy])
             } else {
-                submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, copyPath, delete])
+                submenu = UIMenu(title: "", options: .displayInline, children: [favorite, offline, rename, moveCopy, delete])
             }
             guard appDelegate!.disableSharesView == false else { return submenu }
             return UIMenu(title: "", children: [detail, submenu])
@@ -182,7 +175,7 @@ class NCContextMenu: NSObject {
 
         // FILE
 
-        var children: [UIMenuElement] = [offline, openIn, moveCopy, copy, copyPath]
+        var children: [UIMenuElement] = [offline, openIn, moveCopy, copy]
 
         if !metadata.lock {
             // Workaround: PROPPATCH doesn't work (favorite)
