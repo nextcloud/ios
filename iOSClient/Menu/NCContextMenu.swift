@@ -33,22 +33,34 @@ class NCContextMenu: NSObject {
             return UIMenu()
         }
 
-        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
+
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         if metadataMOV != nil {
             titleSave = NSLocalizedString("_livephoto_save_", comment: "")
         }
-        let titleFavorite = metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: "")
-
-        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
-            NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
-        }
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { _ in
             NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+        }
+
+        let favorite = UIAction(title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
+                                image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
+            NCNetworking.shared.favoriteMetadata(metadata) { error in
+                if error != .success {
+                    NCContentPresenter.shared.showError(error: error)
+                }
+            }
+        }
+
+        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in
+            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+        }
+
+        let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
+            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
         }
 
         let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { _ in
@@ -63,25 +75,12 @@ class NCContextMenu: NSObject {
             }
         }
 
-        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in
-            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
-        }
-
-        let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
-            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
+            NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""), image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
             NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-        }
-
-        let favorite = UIAction(title: titleFavorite, image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
-
-            NCNetworking.shared.favoriteMetadata(metadata) { error in
-                if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
-                }
-            }
         }
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
@@ -91,17 +90,11 @@ class NCContextMenu: NSObject {
                 }
             }
         }
-
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in
             }
         }
-
-        var delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
-
-        if viewController is NCMedia || metadata.directory {
-            delete = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmFile])
-        }
+        let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
 
         // ------ MENU -----
 
@@ -109,11 +102,12 @@ class NCContextMenu: NSObject {
 
         if metadata.directory {
 
+            let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
             if isDirectoryE2EE || metadata.e2eEncrypted {
                 menu.append(favorite)
             } else {
                 menu.append(favorite)
-                menu.append(delete)
+                menu.append(deleteConfirmFile)
             }
             return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
 
@@ -143,7 +137,11 @@ class NCContextMenu: NSObject {
                     menu.append(copy)
                     menu.append(modify)
                 }
-                menu.append(delete)
+                if viewController is NCMedia {
+                    menu.append(deleteConfirmFile)
+                } else {
+                    menu.append(deleteSubMenu)
+                }
             }
             return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
         }
