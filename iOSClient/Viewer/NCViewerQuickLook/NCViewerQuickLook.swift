@@ -68,13 +68,18 @@ private var hasChangesQuickLook: Bool = false
         super.viewDidLoad()
         guard isEditingEnabled else { return }
 
-        let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
-        let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
-        navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
-
         if metadata?.livePhoto == true {
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
             NCContentPresenter.shared.showInfo(error: error)
+        }
+
+        let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
+
+        if metadata?.classFile == NKCommon.typeClassFile.image.rawValue {
+            let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
+            navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
+        } else {
+            navigationItem.leftBarButtonItems = [buttonDone]
         }
 
         startTimer(navigationItem: navigationItem)
