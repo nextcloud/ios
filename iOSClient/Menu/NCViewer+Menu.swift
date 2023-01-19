@@ -76,21 +76,21 @@ extension NCViewer {
         //
         // OFFLINE
         //
-        if metadata.session == "" && !webView {
+        if metadata.session == "" && !webView && !metadata.isViewOnly {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
         }
 
         //
         // OPEN IN
         //
-        if metadata.session == "" && !webView {
+        if metadata.session == "" && !webView && !metadata.isViewOnly {
             actions.append(.openInAction(selectedMetadatas: [metadata], viewController: viewController))
         }
 
         //
         // PRINT
         //
-        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || (!metadata.isViewOnly && (metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf")) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -147,7 +147,7 @@ extension NCViewer {
         //
         // RENAME
         //
-        if !webView, !metadata.lock {
+        if !webView, !metadata.lock, !metadata.isViewOnly {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -172,14 +172,16 @@ extension NCViewer {
         //
         // COPY - MOVE
         //
-        if !webView {
+        if !webView, !metadata.isViewOnly {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata]))
         }
 
         //
         // COPY
         //
-        actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
+        if !metadata.isViewOnly {
+            actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
+        }
 
         //
         // VIEW IN FOLDER
@@ -241,7 +243,7 @@ extension NCViewer {
         //
         // MODIFY
         //
-        if !isDirectoryE2EE && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if !isDirectoryE2EE && !metadata.isViewOnly && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
