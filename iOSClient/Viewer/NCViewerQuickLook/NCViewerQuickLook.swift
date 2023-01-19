@@ -125,7 +125,11 @@ private var hasChangesQuickLook: Bool = false
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
             self.saveModifiedFile(override: false)
         })
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in })
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in
+        })
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in
+            self.dismiss(animated: true)
+        })
         present(alertController, animated: true)
     }
 
