@@ -120,18 +120,30 @@ class NCContextMenu: NSObject {
         } else {
 
             if metadata.lock {
-                menu.append(openIn)
-                menu.append(save)
-                menu.append(copy)
+                menu.append(favorite)
+                if metadata.sharePermissionsCollaborationServices == NCGlobal.shared.permissionViewOnly {
+                    //
+                } else {
+                    menu.append(openIn)
+                    menu.append(save)
+                    menu.append(copy)
+                }
             } else {
                 menu.append(favorite)
-                menu.append(openIn)
-                menu.append(save)
-                if viewController is NCMedia {
-                    menu.append(viewInFolder)
+
+                if metadata.sharePermissionsCollaborationServices == NCGlobal.shared.permissionViewOnly {
+                    if viewController is NCMedia {
+                        menu.append(viewInFolder)
+                    }
+                } else {
+                    menu.append(openIn)
+                    menu.append(save)
+                    if viewController is NCMedia {
+                        menu.append(viewInFolder)
+                    }
+                    menu.append(copy)
+                    menu.append(modify)
                 }
-                menu.append(copy)
-                menu.append(modify)
                 menu.append(delete)
             }
             return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
