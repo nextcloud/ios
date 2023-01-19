@@ -130,8 +130,7 @@ class NCContextMenu: NSObject {
                 }
             } else {
                 menu.append(favorite)
-
-                if metadata.sharePermissionsCollaborationServices == NCGlobal.shared.permissionViewOnly {
+                if (metadata.sharePermissionsCollaborationServices == NCGlobal.shared.permissionViewOnly) && (metadata.classFile == NKCommon.typeClassFile.document.rawValue) {
                     if viewController is NCMedia {
                         menu.append(viewInFolder)
                     }
