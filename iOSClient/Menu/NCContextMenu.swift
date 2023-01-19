@@ -105,67 +105,37 @@ class NCContextMenu: NSObject {
 
         // ------ MENU -----
 
-        // DIR
-
-        guard !metadata.directory else {
-            var submenu = UIMenu()
-            if !isDirectoryE2EE && metadata.e2eEncrypted {
-                submenu = UIMenu(title: "", options: .displayInline, children: [favorite])
-            } else {
-                submenu = UIMenu(title: "", options: .displayInline, children: [favorite, delete])
-            }
-            guard appDelegate!.disableSharesView == false else { return submenu }
-            return UIMenu(title: "", children: [detail, submenu])
-        }
-
-        // FILE
-
         var menu: [UIMenuElement] = []
 
-        if metadata.lock {
-            menu.append(openIn)
-            menu.append(save)
-            menu.append(copy)
-        } else {
-            menu.append(favorite)
-            menu.append(openIn)
-            menu.append(save)
-            if viewController is NCMedia {
-                menu.append(viewInFolder)
+        if metadata.directory {
+
+            if isDirectoryE2EE || metadata.e2eEncrypted {
+                menu.append(favorite)
+            } else {
+                menu.append(favorite)
+                menu.append(delete)
             }
-            menu.append(copy)
-            menu.append(modify)
-            menu.append(delete)
+
+            return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
+
+        } else {
+
+            if metadata.lock {
+                menu.append(openIn)
+                menu.append(save)
+                menu.append(copy)
+            } else {
+                menu.append(favorite)
+                menu.append(openIn)
+                menu.append(save)
+                if viewController is NCMedia {
+                    menu.append(viewInFolder)
+                }
+                menu.append(copy)
+                menu.append(modify)
+                menu.append(delete)
+            }
+            return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
         }
-        return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
-
-        /*
-        var children: [UIMenuElement] = [openIn, copy]
-
-        if !metadata.lock {
-            // Workaround: PROPPATCH doesn't work (favorite)
-            // https://github.com/nextcloud/files_lock/issues/68
-            children.insert(favorite, at: 0)
-            children.append(delete)
-        } else if enableDeleteLocal {
-            children.append(deleteConfirmLocal)
-        }
-
-        if (metadata.contentType != "image/svg+xml") && (metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue) {
-            children.insert(save, at: 2)
-        }
-
-        if enableViewInFolder {
-            children.insert(viewInFolder, at: children.count - 1)
-        }
-
-        if (!isDirectoryE2EE && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml") && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
-            children.insert(modify, at: children.count - 1)
-        }
-
-        let submenu = UIMenu(title: "", options: .displayInline, children: children)
-        guard appDelegate!.disableSharesView == false else { return submenu }
-        return UIMenu(title: "", children: [detail, submenu])
-        */
     }
 }
