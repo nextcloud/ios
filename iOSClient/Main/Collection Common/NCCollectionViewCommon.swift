@@ -1474,7 +1474,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
-        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
         let tableDirectory = dataSource.metadatasForSection[indexPath.section].directories?.filter({ $0.ocId == metadata.ocId }).first
         var isShare = false
         var isMounted = false
@@ -1531,9 +1530,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderEncrypted
             } else if isShare {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
-            } else if tableShare != nil && tableShare?.shareType != 3 {
-                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
-            } else if tableShare != nil && tableShare?.shareType == 3 {
+            } else if !metadata.shareType.isEmpty {
+                metadata.shareType.contains(3) ?
+                (cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic) :
+                (cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe)
+            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(3)  {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic
             } else if metadata.mountType == "group" {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderGroup
@@ -1573,10 +1574,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Share image
         if isShare {
             cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
-        } else if tableShare != nil && tableShare?.shareType == 3 {
-            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shareByLink
-        } else if tableShare != nil && tableShare?.shareType != 3 {
-            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
+        } else if !metadata.shareType.isEmpty {
+            metadata.shareType.contains(3) ?
+            (cell.fileSharedImage?.image = NCBrandColor.cacheImages.shareByLink) :
+            (cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared)
         } else {
             cell.fileSharedImage?.image = NCBrandColor.cacheImages.canShare
         }
