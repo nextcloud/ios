@@ -247,102 +247,11 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Avatar
 
-    @objc func addAvatar(fileName: String, etag: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                // Add new
-                let addObject = tableAvatar()
-
-                addObject.date = NSDate()
-                addObject.etag = etag
-                addObject.fileName = fileName
-                addObject.loaded = true
-
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func getTableAvatar(fileName: String) -> tableAvatar? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else {
-            return nil
-        }
-
-        return tableAvatar.init(value: result)
-    }
-
-    func clearAllAvatarLoaded() {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                let results = realm.objects(tableAvatar.self)
-                for result in results {
-                    result.loaded = false
-                    realm.add(result, update: .all)
-                }
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @discardableResult
-    func setAvatarLoaded(fileName: String) -> UIImage? {
-
-        let realm = try! Realm()
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        var image: UIImage?
-
-        do {
-            try realm.write {
-                if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
-                    if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
-                        result.loaded = true
-                        image = imageAvatar
-                    } else {
-                        realm.delete(result)
-                    }
-                }
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-
-        return image
-    }
-
-    func getImageAvatarLoaded(fileName: String) -> UIImage? {
-
-        let realm = try! Realm()
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-
-        let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
-        if result == nil {
-            NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
-            return nil
-        } else if result?.loaded == false {
-            return nil
-        }
-
-        return UIImage(contentsOfFile: fileNameLocalPath)
-    }
-
+    
     // MARK: -
     // MARK: Table Capabilities
 
-    @objc func addCapabilitiesJSon(_ data: Data, account: String) {
+    func addCapabilitiesJSon(_ data: Data, account: String) {
 
         let realm = try! Realm()
 
@@ -360,7 +269,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getCapabilities(account: String) -> String? {
+    func getCapabilities(account: String) -> String? {
 
         let realm = try! Realm()
 
@@ -391,7 +300,7 @@ class NCManageDatabase: NSObject {
         return json[elements].string
     }
 
-    @objc func getCapabilitiesServerInt(account: String, elements: [String]) -> Int {
+    func getCapabilitiesServerInt(account: String, elements: [String]) -> Int {
 
         let realm = try! Realm()
 
@@ -423,7 +332,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getCapabilitiesServerArray(account: String, elements: [String]) -> [String]? {
+    func getCapabilitiesServerArray(account: String, elements: [String]) -> [String]? {
 
         let realm = try! Realm()
         var resultArray: [String] = []
@@ -546,7 +455,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Direct Editing
 
-    @objc func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
+    func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
 
         let realm = try! Realm()
 
@@ -601,7 +510,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
+    func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
 
         let realm = try! Realm()
         let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
@@ -613,7 +522,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
+    func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
 
         let realm = try! Realm()
 
@@ -626,7 +535,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
+    func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
 
         let realm = try! Realm()
         let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
@@ -795,7 +704,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table External Sites
 
-    @objc func addExternalSites(_ externalSite: NKExternalSite, account: String) {
+    func addExternalSites(_ externalSite: NKExternalSite, account: String) {
 
         let realm = try! Realm()
 
@@ -818,7 +727,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteExternalSites(account: String) {
+    func deleteExternalSites(account: String) {
 
         let realm = try! Realm()
 
@@ -832,7 +741,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getAllExternalSites(account: String) -> [tableExternalSites]? {
+    func getAllExternalSites(account: String) -> [tableExternalSites]? {
 
         let realm = try! Realm()
 
@@ -940,7 +849,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteLocalFile(predicate: NSPredicate) {
+    func deleteLocalFile(predicate: NSPredicate) {
 
         let realm = try! Realm()
 
@@ -954,7 +863,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setLocalFile(ocId: String, fileName: String?, etag: String?) {
+    func setLocalFile(ocId: String, fileName: String?, etag: String?) {
 
         let realm = try! Realm()
 
@@ -993,7 +902,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getTableLocalFile(account: String) -> [tableLocalFile] {
+    func getTableLocalFile(account: String) -> [tableLocalFile] {
 
         let realm = try! Realm()
 
@@ -1001,7 +910,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableLocalFile.init(value: $0) })
     }
 
-    @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
+    func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
 
         let realm = try! Realm()
 
@@ -1012,7 +921,7 @@ class NCManageDatabase: NSObject {
         return tableLocalFile.init(value: result)
     }
 
-    @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
+    func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
 
         let realm = try! Realm()
 
@@ -1020,7 +929,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableLocalFile.init(value: $0) })
     }
 
-    @objc func setLocalFile(ocId: String, offline: Bool) {
+    func setLocalFile(ocId: String, offline: Bool) {
 
         let realm = try! Realm()
 
@@ -1097,10 +1006,6 @@ class NCManageDatabase: NSObject {
 
         return Array(idsAsset)
     }
-
-    // MARK: -
-    // MARK: Table Share
-
     
     // MARK: -
     // MARK: Table Tag

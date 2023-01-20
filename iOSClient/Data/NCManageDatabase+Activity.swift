@@ -103,7 +103,7 @@ class tableActivitySubjectRich: Object {
 
 extension NCManageDatabase {
     
-    @objc func addActivity(_ activities: [NKActivity], account: String) {
+    func addActivity(_ activities: [NKActivity], account: String) {
 
         let realm = try! Realm()
 
@@ -208,7 +208,7 @@ extension NCManageDatabase {
         return (all: allActivity, filter: filtered)
     }
 
-    @objc func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
+    func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
 
         let realm = try! Realm()
 
@@ -217,7 +217,7 @@ extension NCManageDatabase {
         return results.map { tableActivitySubjectRich.init(value: $0) }
     }
 
-    @objc func getActivitySubjectRich(account: String, idActivity: Int, id: String) -> tableActivitySubjectRich? {
+    func getActivitySubjectRich(account: String, idActivity: Int, id: String) -> tableActivitySubjectRich? {
 
         let realm = try! Realm()
 
@@ -234,7 +234,7 @@ extension NCManageDatabase {
         return activitySubjectRich.map { tableActivitySubjectRich.init(value: $0) }
     }
 
-    @objc func getActivityPreview(account: String, idActivity: Int, orderKeysId: [String]) -> [tableActivityPreview] {
+    func getActivityPreview(account: String, idActivity: Int, orderKeysId: [String]) -> [tableActivityPreview] {
 
         let realm = try! Realm()
 
@@ -274,7 +274,7 @@ extension NCManageDatabase {
     // MARK: -
     // MARK: Table Comments
 
-    @objc func addComments(_ comments: [NKComments], account: String, objectId: String) {
+    func addComments(_ comments: [NKComments], account: String, objectId: String) {
 
         let realm = try! Realm()
 
@@ -309,7 +309,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getComments(account: String, objectId: String) -> [tableComments] {
+    func getComments(account: String, objectId: String) -> [tableComments] {
 
         let realm = try! Realm()
 
