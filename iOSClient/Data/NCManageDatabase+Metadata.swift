@@ -175,7 +175,15 @@ extension tableMetadata {
     var canOpenIn: Bool {
         return session.isEmpty && !isViewOnly && !directory && !NCBrandOptions.shared.disable_openin_file
     }
-    
+
+    var isDirectoySettableE2EE: Bool {
+        return directory && size == 0 && !e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+    }
+
+    var isDirectoryUnsettableE2EE: Bool {
+        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+    }
+
     var canOpenExternalEditor: Bool {
         if isViewOnly {
             return false

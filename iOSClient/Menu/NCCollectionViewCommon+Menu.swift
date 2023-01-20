@@ -132,7 +132,7 @@ extension NCCollectionViewCommon {
         //
         // SET FOLDER E2EE (ONLY ROOT)
         //
-        if metadata.serverUrl == serverUrlHome && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if metadata.serverUrl == serverUrlHome, metadata.isDirectoySettableE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
@@ -158,7 +158,7 @@ extension NCCollectionViewCommon {
         //
         // UNSET FOLDER E2EE
         //
-        if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+        if metadata.isDirectoryUnsettableE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
@@ -216,7 +216,7 @@ extension NCCollectionViewCommon {
         //
         // OPEN with external editor
         //
-        if !metadata.isViewOnly, metadata.classFile == NKCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument)) {
+        if metadata.canOpenExternalEditor {
 
             var editor = ""
             var title = ""
