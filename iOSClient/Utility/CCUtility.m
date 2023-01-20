@@ -1139,7 +1139,7 @@
     unsigned long long fileNameViewSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNameViewPath error:nil] fileSize];
     unsigned long long fileNameSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
 
-    if (metadata.isDirectorE2EE == true) {
+    if (metadata.isDirectoryE2EE == true) {
         if ((fileNameSize == metadata.size || fileNameViewSize == metadata.size) && fileNameViewSize > 0) {
             return true;
         } else {

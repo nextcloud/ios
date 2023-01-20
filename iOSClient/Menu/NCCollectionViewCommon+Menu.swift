@@ -72,6 +72,22 @@ extension NCCollectionViewCommon {
             )
         )
 
+        //
+        // DETAILS
+        //
+        if !appDelegate.disableSharesView {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_details_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "info"),
+                    order: 10,
+                    action: { _ in
+                        NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .activity)
+                    }
+                )
+            )
+        }
+
         if metadata.lock {
             var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
             var lockIcon = NCUtility.shared.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
@@ -100,7 +116,7 @@ extension NCCollectionViewCommon {
                     title: String(format: NSLocalizedString("_locked_by_", comment: ""), lockOwnerName),
                     details: lockTimeString,
                     icon: lockIcon,
-                    order: 10,
+                    order: 20,
                     action: nil)
             )
         }
@@ -110,19 +126,18 @@ extension NCCollectionViewCommon {
         //
         let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
         if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), hasLockCapability {
-            actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 15))
+            actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30))
         }
 
         //
         // SET FOLDER E2EE (ONLY ROOT)
         //
-        //if !isDirectoryE2EE && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
         if metadata.serverUrl == serverUrlHome && metadata.directory && metadata.size == 0 && !metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
-                    order: 15,
+                    order: 30,
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, error in
                             if error == .success {
@@ -148,7 +163,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
-                    order: 15,
+                    order: 30,
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { account, error in
                             if error == .success {
@@ -166,8 +181,7 @@ extension NCCollectionViewCommon {
             )
         }
 
-
-        actions.append(.seperator(order: 20))
+        actions.append(.seperator(order: 40))
 
         //
         // FAVORITE
@@ -178,7 +192,7 @@ extension NCCollectionViewCommon {
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite),
-                    order: 30,
+                    order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
                             if error != .success {
@@ -191,32 +205,18 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // DETAILS
-        //
-        if !appDelegate.disableSharesView {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_details_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "info"),
-                    order: 40,
-                    action: { _ in
-                        NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .activity)
-                    }
-                )
-            )
-        }
-
-        //
         // OFFLINE
         //
-        actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
-            self.reloadDataSource()
-        }))
+        if !metadata.isViewOnly {
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
+                self.reloadDataSource()
+            }))
+        }
 
         //
         // OPEN with external editor
         //
-        if metadata.classFile == NKCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument)) {
+        if !metadata.isViewOnly, metadata.classFile == NKCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument)) {
 
             var editor = ""
             var title = ""
@@ -249,7 +249,7 @@ extension NCCollectionViewCommon {
         //
         // OPEN IN
         //
-        if !metadata.directory && !NCBrandOptions.shared.disable_openin_file {
+        if !metadata.isViewOnly, !metadata.directory && !NCBrandOptions.shared.disable_openin_file {
             actions.append(.openInAction(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 
@@ -261,16 +261,16 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // SAVE
+        // SAVE CAMERA ROLL
         //
-        if (metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml") || metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+        if metadata.isSaveInCameraRoll {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata], order: 100))
         }
 
         //
         // SAVE AS SCAN
         //
-        if metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
+        if metadata.isSaveAsScan {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -286,9 +286,7 @@ extension NCCollectionViewCommon {
         //
         // RENAME
         //
-        if (!isDirectoryE2EE && metadata.e2eEncrypted) || metadata.lock {
-            print("Not possible rename")
-        } else {
+        if metadata.isRenameable {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -313,16 +311,14 @@ extension NCCollectionViewCommon {
         //
         // COPY - MOVE
         //
-        if isDirectoryE2EE || metadata.e2eEncrypted {
-            print("Not possible copy/move")
-        } else {
+        if metadata.isCopyableMovable {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], order: 130))
         }
 
         //
-        // COPY
+        // COPY IN PASTEBOARD
         //
-        if !metadata.directory {
+        if metadata.isCopyableInPasteboard {
             actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: self.view, order: 140))
         }
         

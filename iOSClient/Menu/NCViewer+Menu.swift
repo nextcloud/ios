@@ -122,16 +122,16 @@ extension NCViewer {
 #endif
         
         //
-        // SAVE IMAGE / VIDEO
+        // SAVE CAMERA ROLL
         //
-        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+        if metadata.isSaveInCameraRoll {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
         }
 
         //
         // SAVE AS SCAN
         //
-        if metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.contentType != "image/svg+xml" {
+        if metadata.isSaveAsScan {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -146,7 +146,7 @@ extension NCViewer {
         //
         // RENAME
         //
-        if !webView, !metadata.lock, !metadata.isViewOnly {
+        if !webView, metadata.isRenameable {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -171,14 +171,14 @@ extension NCViewer {
         //
         // COPY - MOVE
         //
-        if !webView, !metadata.isViewOnly {
+        if !webView, metadata.isCopyableMovable {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata]))
         }
 
         //
-        // COPY
+        // COPY IN PASTEBOARD
         //
-        if !metadata.isViewOnly {
+        if metadata.isCopyableInPasteboard {
             actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
         }
 
@@ -242,7 +242,7 @@ extension NCViewer {
         //
         // MODIFY
         //
-        if !metadata.isDirectorE2EE && !metadata.isViewOnly && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if !metadata.isDirectoryE2EE && !metadata.isViewOnly && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),

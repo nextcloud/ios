@@ -393,9 +393,9 @@ import Photos
                 completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
-        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.isDirectorE2EE)]")
+        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
 
-        if metadata.isDirectorE2EE {
+        if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
                 let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
@@ -1165,7 +1165,7 @@ import Photos
 
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
-        if metadata.isDirectorE2EE {
+        if metadata.isDirectoryE2EE {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
@@ -1327,7 +1327,7 @@ import Photos
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
-        if metadata.isDirectorE2EE {
+        if metadata.isDirectoryE2EE {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {

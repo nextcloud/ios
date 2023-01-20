@@ -33,7 +33,7 @@ class NCKTVHTTPCache: NSObject {
 
     func getVideoURL(metadata: tableMetadata) -> (url: URL?, isProxy: Bool) {
 
-        if CCUtility.fileProviderStorageExists(metadata) || metadata.isDirectorE2EE {
+        if CCUtility.fileProviderStorageExists(metadata) || metadata.isDirectoryE2EE {
 
             return (URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false)
 

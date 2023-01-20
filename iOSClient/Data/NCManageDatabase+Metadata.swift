@@ -111,12 +111,48 @@ extension tableMetadata {
 
     var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
 
+    var isRenameable: Bool {
+        if lock || isViewOnly {
+            return false
+        }
+        if !isDirectoryE2EE && e2eEncrypted {
+            return false
+        }
+        return true
+    }
+    
     var isPrintable: Bool {
-        classFile == NKCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+        if classFile == NKCommon.typeClassFile.image.rawValue {
+            return true
+        }
+        if isViewOnly {
+            return false
+        }
+        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") {
+            return true
+        }
+        return false
+    }
+
+    var isSaveInCameraRoll: Bool {
+        return (classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.typeClassFile.video.rawValue
     }
 
     var isViewOnly: Bool {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.typeClassFile.document.rawValue
+    }
+
+    var isSaveAsScan: Bool {
+        classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml"
+    }
+
+    var isCopyableInPasteboard: Bool {
+        !isViewOnly && !directory
+    }
+
+    var isCopyableMovable: Bool {
+
+        !isViewOnly && !isDirectoryE2EE && !e2eEncrypted
     }
 
     var isDownloadUpload: Bool {
@@ -131,7 +167,7 @@ extension tableMetadata {
         status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
     }
 
-    @objc var isDirectorE2EE: Bool {
+    @objc var isDirectoryE2EE: Bool {
         NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
     }
 
