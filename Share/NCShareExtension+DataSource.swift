@@ -114,16 +114,14 @@ extension NCShareExtension: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
         }
 
-        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
-
         if metadata.e2eEncrypted {
             cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
         } else if isShare {
             cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-        } else if tableShare != nil && tableShare?.shareType != 3 {
-            cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-        } else if tableShare != nil && tableShare?.shareType == 3 {
-            cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
+        } else if !metadata.shareType.isEmpty {
+            metadata.shareType.contains(3) ?
+            (cell.imageItem.image = NCBrandColor.cacheImages.folderPublic) :
+            (cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe)
         } else if metadata.mountType == "group" {
             cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
         } else if isMounted {

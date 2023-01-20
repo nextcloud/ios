@@ -405,8 +405,6 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
-
         // LAYOUT LIST
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -437,10 +435,10 @@ extension NCSelect: UICollectionViewDataSource {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
                 } else if isShare {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare?.shareType != 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare?.shareType == 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
+                } else if !metadata.shareType.isEmpty {
+                    metadata.shareType.contains(3) ?
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderPublic) :
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe)
                 } else if metadata.mountType == "group" {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
                 } else if isMounted {
@@ -474,10 +472,10 @@ extension NCSelect: UICollectionViewDataSource {
             // Share image
             if isShare {
                 cell.imageShared.image = NCBrandColor.cacheImages.shared
-            } else if tableShare != nil && tableShare?.shareType == 3 {
-                cell.imageShared.image = NCBrandColor.cacheImages.shareByLink
-            } else if tableShare != nil && tableShare?.shareType != 3 {
-                cell.imageShared.image = NCBrandColor.cacheImages.shared
+            } else if !metadata.shareType.isEmpty {
+                metadata.shareType.contains(3) ?
+                (cell.imageShared.image = NCBrandColor.cacheImages.shareByLink) :
+                (cell.imageShared.image = NCBrandColor.cacheImages.shared)
             } else {
                 cell.imageShared.image = NCBrandColor.cacheImages.canShare
             }
@@ -531,10 +529,10 @@ extension NCSelect: UICollectionViewDataSource {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
                 } else if isShare {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare!.shareType != 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare!.shareType == 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
+                } else if !metadata.shareType.isEmpty {
+                    metadata.shareType.contains(3) ?
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderPublic) :
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe)
                 } else if metadata.mountType == "group" {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
                 } else if isMounted {

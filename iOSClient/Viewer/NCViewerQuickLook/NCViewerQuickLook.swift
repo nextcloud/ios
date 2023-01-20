@@ -68,13 +68,18 @@ private var hasChangesQuickLook: Bool = false
         super.viewDidLoad()
         guard isEditingEnabled else { return }
 
-        let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
-        let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
-        navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
-
         if metadata?.livePhoto == true {
             let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_overwrite_livephoto_")
             NCContentPresenter.shared.showInfo(error: error)
+        }
+
+        let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
+
+        if metadata?.classFile == NKCommon.typeClassFile.image.rawValue {
+            let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
+            navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
+        } else {
+            navigationItem.leftBarButtonItems = [buttonDone]
         }
 
         startTimer(navigationItem: navigationItem)
@@ -125,7 +130,11 @@ private var hasChangesQuickLook: Bool = false
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_save_as_copy_", comment: ""), style: .default) { _ in
             self.saveModifiedFile(override: false)
         })
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in })
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in
+        })
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in
+            self.dismiss(animated: true)
+        })
         present(alertController, animated: true)
     }
 

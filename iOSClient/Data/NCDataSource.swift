@@ -35,7 +35,6 @@ class NCDataSource: NSObject {
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
-    private var shares: [tableShare] = []
     private var localFiles: [tableLocalFile] = []
 
     private var ascending: Bool = true
@@ -55,7 +54,6 @@ class NCDataSource: NSObject {
             !NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView)
         })
         self.directory = directory
-        self.shares = NCManageDatabase.shared.getTableShares(account: account)
         self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
         self.sort = sort ?? "none"
         self.ascending = ascending ?? false
@@ -80,7 +78,6 @@ class NCDataSource: NSObject {
         self.sectionsValue.removeAll()
         self.providers = nil
         self.searchResults = nil
-        self.shares.removeAll()
         self.localFiles.removeAll()
     }
 
@@ -178,7 +175,6 @@ class NCDataSource: NSObject {
         let metadatas = self.metadatas.filter({ getSectionValue(metadata: $0) == sectionValue})
         let metadataForSection = NCMetadataForSection.init(sectionValue: sectionValue,
                                                             metadatas: metadatas,
-                                                            shares: self.shares,
                                                             localFiles: self.localFiles,
                                                             lastSearchResult: searchResult,
                                                             sort: self.sort,
@@ -423,7 +419,6 @@ class NCMetadataForSection: NSObject {
 
     var sectionValue: String
     var metadatas: [tableMetadata]
-    var shares: [tableShare]
     var localFiles: [tableLocalFile]
     var lastSearchResult: NKSearchResult?
     var unifiedSearchInProgress: Bool = false
@@ -443,15 +438,13 @@ class NCMetadataForSection: NSObject {
     public var numDirectory: Int = 0
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
-    public let metadataShare  = ThreadSafeDictionary<String,tableShare>()
     public var metadataOffLine: [String] = []
     public var directories: [tableDirectory]?
 
-    init(sectionValue: String, metadatas: [tableMetadata], shares: [tableShare], localFiles: [tableLocalFile], lastSearchResult: NKSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], localFiles: [tableLocalFile], lastSearchResult: NKSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
 
         self.sectionValue = sectionValue
         self.metadatas = metadatas
-        self.shares = shares
         self.localFiles = localFiles
         self.lastSearchResult = lastSearchResult
         self.sort = sort
@@ -474,7 +467,6 @@ class NCMetadataForSection: NSObject {
         metadatasFavoriteFile.removeAll()
         metadatasDirectory.removeAll()
         metadatasFile.removeAll()
-        metadataShare.removeAll()
         metadataOffLine.removeAll()
 
         numDirectory = 0
@@ -536,11 +528,6 @@ class NCMetadataForSection: NSObject {
             // Upload [REPLACE] skip
             if metadata.session.isEmpty && !metadataInSession.filter({ $0.fileNameView == metadata.fileNameView }).isEmpty {
                 continue
-            }
-
-            // share
-            if let share = self.shares.filter({ $0.serverUrl == metadata.serverUrl && $0.fileName == metadata.fileName }).first {
-                metadataShare[metadata.ocId] = share
             }
 
             // Organized the metadata

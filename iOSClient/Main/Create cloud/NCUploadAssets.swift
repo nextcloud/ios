@@ -145,6 +145,15 @@ struct UploadAssetsView: View {
         }
     }
 
+    func getTextServerUrl(_ serverUrl: String) -> String {
+
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", uploadAssets.userBaseUrl.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
+            return (metadata.fileNameView)
+        } else {
+            return (serverUrl as NSString).lastPathComponent
+        }
+    }
+
     func setFileNameMask(fileName: String?) -> String {
 
         guard let asset = uploadAssets.assets.first?.phAsset else { return "" }
@@ -354,7 +363,7 @@ struct UploadAssetsView: View {
                                 Text("/")
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             } else {
-                                Text((uploadAssets.serverUrl as NSString).lastPathComponent)
+                                Text(self.getTextServerUrl(uploadAssets.serverUrl))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                         } icon: {
