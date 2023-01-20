@@ -249,7 +249,7 @@ extension NCCollectionViewCommon {
         //
         // OPEN IN
         //
-        if !metadata.isViewOnly, !metadata.directory && !NCBrandOptions.shared.disable_openin_file {
+        if metadata.canOpenIn {
             actions.append(.openInAction(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 

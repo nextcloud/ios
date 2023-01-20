@@ -172,6 +172,21 @@ extension tableMetadata {
         return session.isEmpty && !isViewOnly
     }
 
+    var canOpenIn: Bool {
+        return session.isEmpty && !isViewOnly && !directory && !NCBrandOptions.shared.disable_openin_file
+    }
+    
+    var canOpenExternalEditor: Bool {
+        if isViewOnly {
+            return false
+        }
+
+        let editors = NCUtility.shared.isDirectEditing(account: account, contentType: contentType)
+        let isRichDocument = NCUtility.shared.isRichDocument(self)
+
+        return classFile == NKCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
+    }
+
     var isDownloadUpload: Bool {
         status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
     }

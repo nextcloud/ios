@@ -38,6 +38,21 @@ extension NCViewer {
         let isOffline = localFile?.offline == true
 
         //
+        // DETAIL
+        //
+        if !appDelegate.disableSharesView {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_details_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "info"),
+                    action: { _ in
+                        NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+                    }
+                )
+            )
+        }
+
+        //
         // FAVORITE
         // Workaround: PROPPATCH doesn't work
         // https://github.com/nextcloud/files_lock/issues/68
@@ -58,38 +73,23 @@ extension NCViewer {
         }
 
         //
-        // DETAIL
-        //
-        if !appDelegate.disableSharesView {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_details_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "info"),
-                    action: { _ in
-                        NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
-                    }
-                )
-            )
-        }
-
-        //
         // OFFLINE
         //
-        if !webView, metadata.isSettableOnOffline { // metadata.session == "" && !webView && !metadata.isViewOnly {
+        if !webView, metadata.isSettableOnOffline {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
         }
 
         //
         // OPEN IN
         //
-        if metadata.session == "" && !webView && !metadata.isViewOnly {
+        if !webView, metadata.canOpenIn {
             actions.append(.openInAction(selectedMetadatas: [metadata], viewController: viewController))
         }
 
         //
         // PRINT
         //
-        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || (!metadata.isViewOnly && (metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf")) {
+        if !webView, metadata.isPrintable {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_print_", comment: ""),
@@ -124,14 +124,14 @@ extension NCViewer {
         //
         // SAVE CAMERA ROLL
         //
-        if metadata.isSaveInCameraRoll {
+        if !webView, metadata.isSaveInCameraRoll {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
         }
 
         //
         // SAVE AS SCAN
         //
-        if metadata.isSaveAsScan {
+        if !webView, metadata.isSaveAsScan {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -178,7 +178,7 @@ extension NCViewer {
         //
         // COPY IN PASTEBOARD
         //
-        if metadata.isCopyableInPasteboard {
+        if !webView, metadata.isCopyableInPasteboard {
             actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
         }
 
@@ -200,18 +200,16 @@ extension NCViewer {
         //
         // DOWNLOAD IMAGE MAX RESOLUTION
         //
-        if metadata.session == "" {
-            if metadata.classFile == NKCommon.typeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session == "" {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_download_image_max_", comment: ""),
-                        icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
-                        action: { _ in
-                            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
-                        }
-                    )
+        if !webView, metadata.session.isEmpty, metadata.classFile == NKCommon.typeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_download_image_max_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
+                    action: { _ in
+                        NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
+                    }
                 )
-            }
+            )
         }
 
         //
@@ -242,7 +240,7 @@ extension NCViewer {
         //
         // MODIFY WITH QUICK LOOK
         //
-        if metadata.isModifiableWithQuickLook {
+        if !webView, metadata.isModifiableWithQuickLook {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
