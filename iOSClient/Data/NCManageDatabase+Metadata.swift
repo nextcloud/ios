@@ -151,8 +151,21 @@ extension tableMetadata {
     }
 
     var isCopyableMovable: Bool {
-
         !isViewOnly && !isDirectoryE2EE && !e2eEncrypted
+    }
+
+    var isModifiableWithQuickLook: Bool {
+        if directory || isViewOnly || isDirectoryE2EE {
+            return false
+        }
+        return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.typeClassFile.image.rawValue
+    }
+
+    var isDeletable: Bool {
+        if !isDirectoryE2EE && e2eEncrypted {
+            return false
+        }
+        return true
     }
 
     var isDownloadUpload: Bool {

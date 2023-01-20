@@ -240,9 +240,9 @@ extension NCViewer {
         }
 
         //
-        // MODIFY
+        // MODIFY WITH QUICK LOOK
         //
-        if !metadata.isDirectoryE2EE && !metadata.isViewOnly && metadata.contentType != "image/gif" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if metadata.isModifiableWithQuickLook {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
@@ -257,7 +257,7 @@ extension NCViewer {
         //
         // DELETE
         //
-        if !webView {
+        if !webView, metadata.isDeletable {
             actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, viewController: viewController))
         }
 

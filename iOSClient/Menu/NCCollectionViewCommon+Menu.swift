@@ -323,9 +323,9 @@ extension NCCollectionViewCommon {
         }
         
         //
-        // MODIFY
+        // MODIFY WITH QUICK LOOK
         //
-        if !isDirectoryE2EE && metadata.contentType != "image/gif" && metadata.contentType != "image/svg+xml" && (metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" || metadata.classFile == NKCommon.typeClassFile.image.rawValue) {
+        if metadata.isModifiableWithQuickLook {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
@@ -362,9 +362,7 @@ extension NCCollectionViewCommon {
         //
         // DELETE
         //
-        if !isDirectoryE2EE && metadata.e2eEncrypted {
-            print("Not possible delete")
-        } else {
+        if metadata.isDeletable {
             actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 170))
         }
 
