@@ -168,6 +168,10 @@ extension tableMetadata {
         return true
     }
 
+    var isSettableOnOffline: Bool {
+        return session.isEmpty && !isViewOnly
+    }
+
     var isDownloadUpload: Bool {
         status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
     }
