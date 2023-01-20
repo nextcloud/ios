@@ -124,14 +124,14 @@ extension NCViewer {
         //
         // SAVE CAMERA ROLL
         //
-        if !webView, metadata.isSaveInCameraRoll {
+        if !webView, metadata.isSavebleInCameraRoll {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
         }
 
         //
         // SAVE AS SCAN
         //
-        if !webView, metadata.isSaveAsScan {
+        if !webView, metadata.isSavebleAsScan {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),

@@ -263,14 +263,14 @@ extension NCCollectionViewCommon {
         //
         // SAVE CAMERA ROLL
         //
-        if metadata.isSaveInCameraRoll {
+        if metadata.isSavebleInCameraRoll {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata], order: 100))
         }
 
         //
         // SAVE AS SCAN
         //
-        if metadata.isSaveAsScan {
+        if metadata.isSavebleAsScan {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),

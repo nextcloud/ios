@@ -114,7 +114,7 @@ class NCContextMenu: NSObject {
 
             if metadata.lock {
                 menu.append(favorite)
-                if metadata.isViewOnly {
+                if metadata.isViewableOnly {
                     //
                 } else {
                     menu.append(openIn)
@@ -123,7 +123,7 @@ class NCContextMenu: NSObject {
                 }
             } else {
                 menu.append(favorite)
-                if metadata.isViewOnly {
+                if metadata.isViewableOnly {
                     if viewController is NCMedia {
                         menu.append(viewInFolder)
                     }

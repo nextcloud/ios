@@ -112,7 +112,7 @@ extension tableMetadata {
     var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
 
     var isRenameable: Bool {
-        if lock || isViewOnly {
+        if lock || isViewableOnly {
             return false
         }
         if !isDirectoryE2EE && e2eEncrypted {
@@ -125,7 +125,7 @@ extension tableMetadata {
         if classFile == NKCommon.typeClassFile.image.rawValue {
             return true
         }
-        if isViewOnly {
+        if isViewableOnly {
             return false
         }
         if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") {
@@ -134,28 +134,28 @@ extension tableMetadata {
         return false
     }
 
-    var isSaveInCameraRoll: Bool {
+    var isSavebleInCameraRoll: Bool {
         return (classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.typeClassFile.video.rawValue
     }
 
-    var isViewOnly: Bool {
+    var isViewableOnly: Bool {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.typeClassFile.document.rawValue
     }
 
-    var isSaveAsScan: Bool {
+    var isSavebleAsScan: Bool {
         classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml"
     }
 
     var isCopyableInPasteboard: Bool {
-        !isViewOnly && !directory
+        !isViewableOnly && !directory
     }
 
     var isCopyableMovable: Bool {
-        !isViewOnly && !isDirectoryE2EE && !e2eEncrypted
+        !isViewableOnly && !isDirectoryE2EE && !e2eEncrypted
     }
 
     var isModifiableWithQuickLook: Bool {
-        if directory || isViewOnly || isDirectoryE2EE {
+        if directory || isViewableOnly || isDirectoryE2EE {
             return false
         }
         return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.typeClassFile.image.rawValue
@@ -169,11 +169,11 @@ extension tableMetadata {
     }
 
     var isSettableOnOffline: Bool {
-        return session.isEmpty && !isViewOnly
+        return session.isEmpty && !isViewableOnly
     }
 
     var canOpenIn: Bool {
-        return session.isEmpty && !isViewOnly && !directory && !NCBrandOptions.shared.disable_openin_file
+        return session.isEmpty && !isViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 
     var isDirectoySettableE2EE: Bool {
@@ -185,7 +185,7 @@ extension tableMetadata {
     }
 
     var canOpenExternalEditor: Bool {
-        if isViewOnly {
+        if isViewableOnly {
             return false
         }
 
