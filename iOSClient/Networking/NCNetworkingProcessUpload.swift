@@ -114,7 +114,7 @@ class NCNetworkingProcessUpload: NSObject {
             // E2EE
             let uniqueMetadatas = metadatasUpload.unique(map: { $0.serverUrl })
             for metadata in uniqueMetadatas {
-                if metadata.isDirectorE2EE {
+                if metadata.isDirectoryE2EE {
                     self.pauseProcess = false
                     return completition(counterUpload)
                 }
@@ -157,20 +157,20 @@ class NCNetworkingProcessUpload: NSObject {
                             for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
 
                                 // isE2EE
-                                let isInDirectorE2EE = metadata.isDirectorE2EE
+                                let isInDirectoryE2EE = metadata.isDirectoryE2EE
 
                                 // NO WiFi
                                 if !isWiFi && metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
                                     continue
                                 }
 
-                                if applicationState != .active && (isInDirectorE2EE || metadata.chunk) {
+                                if applicationState != .active && (isInDirectoryE2EE || metadata.chunk) {
                                     continue
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
-                                    if isInDirectorE2EE || metadata.chunk {
+                                    if isInDirectoryE2EE || metadata.chunk {
                                         maxConcurrentOperationUpload = 1
                                     }
                                     counterUpload += 1

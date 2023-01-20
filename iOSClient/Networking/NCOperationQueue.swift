@@ -82,7 +82,7 @@ import NextcloudKit
 
     func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
 
-        if metadata.isDirectorE2EE {
+        if metadata.isDirectoryE2EE {
             for case let operation as NCOperationDelete in deleteQueueE2EE.operations where operation.metadata.ocId == metadata.ocId {
                 return
             }

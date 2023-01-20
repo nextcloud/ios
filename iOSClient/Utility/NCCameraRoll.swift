@@ -117,7 +117,7 @@ class NCCameraRoll: NSObject {
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
             metadata.fileNameView = fileName
-            if !metadata.isDirectorE2EE {
+            if !metadata.isDirectoryE2EE {
                 metadata.fileName = fileName
             }
             compatibilityFormat = true
