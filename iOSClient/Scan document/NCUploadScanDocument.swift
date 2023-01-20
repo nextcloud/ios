@@ -372,6 +372,15 @@ struct UploadScanDocumentView: View {
         self.uploadScanDocument = uploadScanDocument
     }
 
+    func getTextServerUrl(_ serverUrl: String) -> String {
+
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", uploadScanDocument.userBaseUrl.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
+            return (metadata.fileNameView)
+        } else {
+            return (serverUrl as NSString).lastPathComponent
+        }
+    }
+
     var body: some View {
 
         GeometryReader { geo in
@@ -384,7 +393,7 @@ struct UploadScanDocumentView: View {
                                     Text("/")
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                 } else {
-                                    Text((uploadScanDocument.serverUrl as NSString).lastPathComponent)
+                                    Text(self.getTextServerUrl(uploadScanDocument.serverUrl))
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                 }
                             } icon: {

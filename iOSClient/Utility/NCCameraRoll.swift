@@ -87,7 +87,6 @@ class NCCameraRoll: NSObject {
         let metadata = tableMetadata.init(value: metadata)
         let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
-        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
 
         func callCompletionWithError(_ error: Bool = true) {
             if error {
@@ -118,7 +117,7 @@ class NCCameraRoll: NSObject {
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
             metadata.fileNameView = fileName
-            if !isDirectoryE2EE {
+            if !metadata.isDirectoryE2EE {
                 metadata.fileName = fileName
             }
             compatibilityFormat = true

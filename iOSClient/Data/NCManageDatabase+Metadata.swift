@@ -111,8 +111,88 @@ extension tableMetadata {
 
     var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
 
+    var isRenameable: Bool {
+        if lock || isViewOnly {
+            return false
+        }
+        if !isDirectoryE2EE && e2eEncrypted {
+            return false
+        }
+        return true
+    }
+    
     var isPrintable: Bool {
-        classFile == NKCommon.typeClassFile.image.rawValue || ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/")
+        if classFile == NKCommon.typeClassFile.image.rawValue {
+            return true
+        }
+        if isViewOnly {
+            return false
+        }
+        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") {
+            return true
+        }
+        return false
+    }
+
+    var isSaveInCameraRoll: Bool {
+        return (classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.typeClassFile.video.rawValue
+    }
+
+    var isViewOnly: Bool {
+        sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.typeClassFile.document.rawValue
+    }
+
+    var isSaveAsScan: Bool {
+        classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml"
+    }
+
+    var isCopyableInPasteboard: Bool {
+        !isViewOnly && !directory
+    }
+
+    var isCopyableMovable: Bool {
+        !isViewOnly && !isDirectoryE2EE && !e2eEncrypted
+    }
+
+    var isModifiableWithQuickLook: Bool {
+        if directory || isViewOnly || isDirectoryE2EE {
+            return false
+        }
+        return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.typeClassFile.image.rawValue
+    }
+
+    var isDeletable: Bool {
+        if !isDirectoryE2EE && e2eEncrypted {
+            return false
+        }
+        return true
+    }
+
+    var isSettableOnOffline: Bool {
+        return session.isEmpty && !isViewOnly
+    }
+
+    var canOpenIn: Bool {
+        return session.isEmpty && !isViewOnly && !directory && !NCBrandOptions.shared.disable_openin_file
+    }
+
+    var isDirectoySettableE2EE: Bool {
+        return directory && size == 0 && !e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+    }
+
+    var isDirectoryUnsettableE2EE: Bool {
+        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
+    }
+
+    var canOpenExternalEditor: Bool {
+        if isViewOnly {
+            return false
+        }
+
+        let editors = NCUtility.shared.isDirectEditing(account: account, contentType: contentType)
+        let isRichDocument = NCUtility.shared.isRichDocument(self)
+
+        return classFile == NKCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 
     var isDownloadUpload: Bool {
@@ -125,6 +205,10 @@ extension tableMetadata {
 
     var isUpload: Bool {
         status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+    }
+
+    @objc var isDirectoryE2EE: Bool {
+        NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
