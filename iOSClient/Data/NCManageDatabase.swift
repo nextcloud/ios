@@ -947,7 +947,7 @@ class NCManageDatabase: NSObject {
     // MARK: Table Photo Library
 
     @discardableResult
-    @objc func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
+    func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
 
         let realm = try! Realm()
 
@@ -982,7 +982,7 @@ class NCManageDatabase: NSObject {
         return true
     }
 
-    @objc func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
+    func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
 
         let realm = try! Realm()
         var predicate = NSPredicate()
@@ -1010,7 +1010,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Tag
 
-    @objc func addTag(_ ocId: String, tagIOS: Data?, account: String) {
+    func addTag(_ ocId: String, tagIOS: Data?, account: String) {
 
         let realm = try! Realm()
 
@@ -1031,7 +1031,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteTag(_ ocId: String) {
+    func deleteTag(_ ocId: String) {
 
         let realm = try! Realm()
 
@@ -1047,7 +1047,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getTags(predicate: NSPredicate) -> [tableTag] {
+    func getTags(predicate: NSPredicate) -> [tableTag] {
 
         let realm = try! Realm()
 
@@ -1056,7 +1056,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableTag.init(value: $0) })
     }
 
-    @objc func getTag(predicate: NSPredicate) -> tableTag? {
+    func getTag(predicate: NSPredicate) -> tableTag? {
 
         let realm = try! Realm()
 
@@ -1070,7 +1070,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Tip
 
-    @objc func tipExists(_ tipName: String) -> Bool {
+    func tipExists(_ tipName: String) -> Bool {
 
         let realm = try! Realm()
 
@@ -1083,7 +1083,7 @@ class NCManageDatabase: NSObject {
         return false
     }
 
-    @objc func addTip(_ tipName: String) {
+    func addTip(_ tipName: String) {
 
         let realm = try! Realm()
 
@@ -1101,7 +1101,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Trash
 
-    @objc func addTrash(account: String, items: [NKTrash]) {
+    func addTrash(account: String, items: [NKTrash]) {
 
         let realm = try! Realm()
 
@@ -1133,7 +1133,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteTrash(filePath: String?, account: String) {
+    func deleteTrash(filePath: String?, account: String) {
 
         let realm = try! Realm()
         var predicate = NSPredicate()
@@ -1155,7 +1155,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteTrash(fileId: String?, account: String) {
+    func deleteTrash(fileId: String?, account: String) {
 
         let realm = try! Realm()
         var predicate = NSPredicate()
@@ -1188,7 +1188,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableTrash.init(value: $0) })
     }
 
-    @objc func getTrashItem(fileId: String, account: String) -> tableTrash? {
+    func getTrashItem(fileId: String, account: String) -> tableTrash? {
 
         let realm = try! Realm()
 
@@ -1202,7 +1202,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table UserStatus
 
-    @objc func addUserStatus(_ userStatuses: [NKUserStatus], account: String, predefined: Bool) {
+    func addUserStatus(_ userStatuses: [NKUserStatus], account: String, predefined: Bool) {
 
         let realm = try! Realm()
 
