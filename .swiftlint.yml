@@ -78,6 +78,7 @@ excluded:
   - iOSClient/Data/NCManageDatabase.swift
   - iOSClient/Data/NCManageDatabase+Metadata.swift
   - iOSClient/Data/NCManageDatabase+Directory.swift
+  - iOSClient/Data/NCManageDatabase+Share.swift
   - iOSClient/Data/NCManageDatabase+Video.swift
   - iOSClient/Data/NCManageDatabase+LayoutForView.swift
   - iOSClient/Data/NCManageDatabase+DashboardWidget.swift
