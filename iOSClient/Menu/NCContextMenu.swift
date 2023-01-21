@@ -118,8 +118,8 @@ class NCContextMenu: NSObject {
                     //
                 } else {
                     menu.append(openIn)
+                    // SAVE CAMERA ROLL
                     menu.append(save)
-                    menu.append(copy)
                 }
             } else {
                 menu.append(favorite)
@@ -129,11 +129,11 @@ class NCContextMenu: NSObject {
                     }
                 } else {
                     menu.append(openIn)
+                    // SAVE CAMERA ROLL
                     menu.append(save)
                     if viewController is NCMedia {
                         menu.append(viewInFolder)
                     }
-                    menu.append(copy)
                     // MODIFY WITH QUICK LOOK
                     if metadata.isModifiableWithQuickLook {
                         menu.append(modify)
