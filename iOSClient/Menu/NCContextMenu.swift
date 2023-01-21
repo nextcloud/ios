@@ -27,26 +27,26 @@ import NextcloudKit
 class NCContextMenu: NSObject {
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
 
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
-            return UIMenu()
-        }
-
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
-        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
-
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
-        if metadataMOV != nil {
-            titleSave = NSLocalizedString("_livephoto_save_", comment: "")
-        }
 
-        let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { _ in
+        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
+        if metadataMOV != nil { titleSave = NSLocalizedString("_livephoto_save_", comment: "") }
+
+        // MENU ITEM
+
+        let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
+                              image: UIImage(systemName: "info")) { _ in
             NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
         }
 
-        let favorite = UIAction(title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
+        let favorite = UIAction(title: metadata.favorite ?
+                                NSLocalizedString("_remove_favorites_", comment: "") :
+                                NSLocalizedString("_add_favorites_", comment: ""),
                                 image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
             NCNetworking.shared.favoriteMetadata(metadata) { error in
                 if error != .success {
@@ -55,17 +55,20 @@ class NCContextMenu: NSObject {
             }
         }
 
-        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in
+        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
+                              image: UIImage(systemName: "square.and.arrow.up") ) { _ in
             NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
         }
 
-        let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
+        let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
+                                    image: UIImage(systemName: "arrow.forward.square")) { _ in
             NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
         }
 
-        let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { _ in
-            if metadataMOV != nil {
-                NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+        let save = UIAction(title: titleSave,
+                            image: UIImage(systemName: "square.and.arrow.down")) { _ in
+            if let metadataMOV = metadataMOV {
+                NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
             } else {
                 if CCUtility.fileProviderStorageExists(metadata) {
                     NCFunctionCenter.shared.saveAlbum(metadata: metadata)
@@ -75,26 +78,34 @@ class NCContextMenu: NSObject {
             }
         }
 
-        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
+        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""),
+                            image: UIImage(systemName: "doc.on.doc")) { _ in
             NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
 
-        let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""), image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
+        let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
+                              image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
             NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
         }
 
-        let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+        let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,
+                                         image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
                 if error != .success {
                     NCContentPresenter.shared.showError(error: error)
                 }
             }
         }
-        let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in
-            }
+
+        let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
+                                          image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in }
         }
-        let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
+
+        let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""),
+                                   image: UIImage(systemName: "trash"),
+                                   options: .destructive,
+                                   children: [deleteConfirmLocal, deleteConfirmFile])
 
         // ------ MENU -----
 
