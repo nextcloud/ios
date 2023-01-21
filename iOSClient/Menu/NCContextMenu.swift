@@ -134,7 +134,10 @@ class NCContextMenu: NSObject {
                         menu.append(viewInFolder)
                     }
                     menu.append(copy)
-                    menu.append(modify)
+                    // MODIFY WITH QUICK LOOK
+                    if metadata.isModifiableWithQuickLook {
+                        menu.append(modify)
+                    }
                 }
                 if viewController is NCMedia {
                     menu.append(deleteConfirmFile)
