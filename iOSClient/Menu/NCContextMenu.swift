@@ -37,7 +37,7 @@ class NCContextMenu: NSObject {
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         if metadataMOV != nil { titleSave = NSLocalizedString("_livephoto_save_", comment: "") }
 
-        // MENU ITEM
+        // MENU ITEMS
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
                               image: UIImage(systemName: "info")) { _ in
@@ -90,11 +90,16 @@ class NCContextMenu: NSObject {
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,
                                          image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
-                if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
+                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
                 }
-            }
+            })
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
+            viewController.present(alertController, animated: true, completion: nil)
         }
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
