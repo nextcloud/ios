@@ -20,8 +20,8 @@ function_body_length:
    warning: 200
 
 type_body_length:
-  warning: 350
-  error: 500
+  warning: 500
+  error: 700
   
 file_length:
   warning: 1000
@@ -76,9 +76,11 @@ excluded:
   - iOSClient/Data/NCElementsJSON.swift
   - iOSClient/Data/NCManageDatabase+Account.swift
   - iOSClient/Data/NCManageDatabase+Activity.swift
+  - iOSClient/Data/NCManageDatabase+Avatar.swift
   - iOSClient/Data/NCManageDatabase.swift
   - iOSClient/Data/NCManageDatabase+Metadata.swift
   - iOSClient/Data/NCManageDatabase+Directory.swift
+  - iOSClient/Data/NCManageDatabase+Share.swift
   - iOSClient/Data/NCManageDatabase+Video.swift
   - iOSClient/Data/NCManageDatabase+LayoutForView.swift
   - iOSClient/Data/NCManageDatabase+DashboardWidget.swift

@@ -112,7 +112,7 @@ extension tableMetadata {
     var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
 
     var isRenameable: Bool {
-        if lock || isViewOnly {
+        if lock || isViewableOnly {
             return false
         }
         if !isDirectoryE2EE && e2eEncrypted {
@@ -125,7 +125,7 @@ extension tableMetadata {
         if classFile == NKCommon.typeClassFile.image.rawValue {
             return true
         }
-        if isViewOnly {
+        if isViewableOnly {
             return false
         }
         if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") {
@@ -134,28 +134,28 @@ extension tableMetadata {
         return false
     }
 
-    var isSaveInCameraRoll: Bool {
+    var isSavebleInCameraRoll: Bool {
         return (classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.typeClassFile.video.rawValue
     }
 
-    var isViewOnly: Bool {
+    var isViewableOnly: Bool {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.typeClassFile.document.rawValue
     }
 
-    var isSaveAsScan: Bool {
+    var isSavebleAsScan: Bool {
         classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml"
     }
 
     var isCopyableInPasteboard: Bool {
-        !isViewOnly && !directory
+        !isViewableOnly && !directory
     }
 
     var isCopyableMovable: Bool {
-        !isViewOnly && !isDirectoryE2EE && !e2eEncrypted
+        !isViewableOnly && !isDirectoryE2EE && !e2eEncrypted
     }
 
     var isModifiableWithQuickLook: Bool {
-        if directory || isViewOnly || isDirectoryE2EE {
+        if directory || isViewableOnly || isDirectoryE2EE {
             return false
         }
         return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.typeClassFile.image.rawValue
@@ -169,11 +169,11 @@ extension tableMetadata {
     }
 
     var isSettableOnOffline: Bool {
-        return session.isEmpty && !isViewOnly
+        return session.isEmpty && !isViewableOnly
     }
 
     var canOpenIn: Bool {
-        return session.isEmpty && !isViewOnly && !directory && !NCBrandOptions.shared.disable_openin_file
+        return session.isEmpty && !isViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 
     var isDirectoySettableE2EE: Bool {
@@ -185,7 +185,7 @@ extension tableMetadata {
     }
 
     var canOpenExternalEditor: Bool {
-        if isViewOnly {
+        if isViewableOnly {
             return false
         }
 
@@ -219,11 +219,7 @@ extension tableMetadata {
 
 extension NCManageDatabase {
 
-    @objc func copyObject(metadata: tableMetadata) -> tableMetadata {
-        return tableMetadata.init(value: metadata)
-    }
-
-    @objc func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
+    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
 
         let metadata = tableMetadata()
 
@@ -304,7 +300,7 @@ extension NCManageDatabase {
         return metadata
     }
 
-    @objc func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
+    func convertFilesToMetadatas(_ files: [NKFile], useMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata]) -> Void) {
 
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
@@ -357,7 +353,7 @@ extension NCManageDatabase {
         completion(metadataFolder, metadataFolders, metadataOutput)
     }
 
-    @objc func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
+    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isLivePhoto: Bool = false, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
 
         let metadata = tableMetadata()
         if isUrl {
@@ -413,7 +409,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+    func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
 
         let realm = try! Realm()
         let result = tableMetadata.init(value: metadata)
@@ -429,7 +425,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    @objc func addMetadatas(_ metadatas: [tableMetadata]) {
+    func addMetadatas(_ metadatas: [tableMetadata]) {
 
         let realm = try! Realm()
 
@@ -444,7 +440,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func deleteMetadata(predicate: NSPredicate) {
+    func deleteMetadata(predicate: NSPredicate) {
 
         let realm = try! Realm()
 
@@ -458,7 +454,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func moveMetadata(ocId: String, serverUrlTo: String) {
+    func moveMetadata(ocId: String, serverUrlTo: String) {
 
         let realm = try! Realm()
 
@@ -473,7 +469,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func renameMetadata(fileNameTo: String, ocId: String) {
+    func renameMetadata(fileNameTo: String, ocId: String) {
 
         let realm = try! Realm()
 
@@ -647,7 +643,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setMetadataFavorite(ocId: String, favorite: Bool) {
+    func setMetadataFavorite(ocId: String, favorite: Bool) {
 
         let realm = try! Realm()
 
@@ -661,7 +657,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {
+    func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {
 
         let realm = try! Realm()
 
@@ -680,7 +676,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setMetadataEncrypted(ocId: String, encrypted: Bool) {
+    func setMetadataEncrypted(ocId: String, encrypted: Bool) {
 
         let realm = try! Realm()
 
@@ -694,7 +690,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
+    func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
 
         let realm = try! Realm()
 
@@ -708,7 +704,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {
+    func getMetadata(predicate: NSPredicate) -> tableMetadata? {
 
         let realm = try! Realm()
         realm.refresh()
@@ -720,7 +716,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
+    func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
 
         let realm = try! Realm()
         realm.refresh()
@@ -732,7 +728,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
+    func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
 
         let realm = try! Realm()
         realm.refresh()
@@ -771,7 +767,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
+    func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
 
         let realm = try! Realm()
         realm.refresh()
@@ -781,7 +777,7 @@ extension NCManageDatabase {
         return Array(results.map { tableMetadata.init(value: $0) })
     }
 
-    @objc func getAdvancedMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String, ascending: Bool) -> [tableMetadata] {
+    func getAdvancedMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String, ascending: Bool) -> [tableMetadata] {
 
         let realm = try! Realm()
         realm.refresh()
@@ -808,7 +804,7 @@ extension NCManageDatabase {
         return metadatas
     }
 
-    @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
+    func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
 
         let realm = try! Realm()
         realm.refresh()
@@ -822,7 +818,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
+    func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
 
         let realm = try! Realm()
         realm.refresh()
@@ -833,7 +829,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    @objc func getMetadataFolder(account: String, urlBase: String, userId: String, serverUrl: String) -> tableMetadata? {
+    func getMetadataFolder(account: String, urlBase: String, userId: String, serverUrl: String) -> tableMetadata? {
 
         let realm = try! Realm()
         realm.refresh()
@@ -856,7 +852,7 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
-    @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
+    func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
 
         var listIdentifierRank: [String: NSNumber] = [:]
         let realm = try! Realm()
@@ -888,7 +884,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func readMarkerMetadata(account: String, fileId: String) {
+    func readMarkerMetadata(account: String, fileId: String) {
 
         let realm = try! Realm()
 
@@ -904,7 +900,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getAssetLocalIdentifiersUploaded(account: String) -> [String] {
+    func getAssetLocalIdentifiersUploaded(account: String) -> [String] {
 
         let realm = try! Realm()
         realm.refresh()
@@ -919,7 +915,7 @@ extension NCManageDatabase {
         return assetLocalIdentifiers
     }
 
-    @objc func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], account: String) {
+    func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], account: String) {
 
         let realm = try! Realm()
 
@@ -936,7 +932,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
+    func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
 
         let realm = try! Realm()
         var classFile = metadata.classFile

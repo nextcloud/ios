@@ -30,18 +30,6 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-class tableAvatar: Object {
-
-    @objc dynamic var date = NSDate()
-    @objc dynamic var etag = ""
-    @objc dynamic var fileName = ""
-    @objc dynamic var loaded: Bool = false
-
-    override static func primaryKey() -> String {
-        return "fileName"
-    }
-}
-
 class tableCapabilities: Object {
 
     @objc dynamic var account = ""
@@ -193,54 +181,6 @@ class tablePhotoLibrary: Object {
 
     override static func primaryKey() -> String {
         return "idAsset"
-    }
-}
-
-typealias tableShare = tableShareV2
-class tableShareV2: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var canEdit: Bool = false
-    @objc dynamic var canDelete: Bool = false
-    @objc dynamic var date: NSDate?
-    @objc dynamic var displaynameFileOwner = ""
-    @objc dynamic var displaynameOwner = ""
-    @objc dynamic var expirationDate: NSDate?
-    @objc dynamic var fileName = ""
-    @objc dynamic var fileParent: Int = 0
-    @objc dynamic var fileSource: Int = 0
-    @objc dynamic var fileTarget = ""
-    @objc dynamic var hideDownload: Bool = false
-    @objc dynamic var idShare: Int = 0
-    @objc dynamic var itemSource: Int = 0
-    @objc dynamic var itemType = ""
-    @objc dynamic var label = ""
-    @objc dynamic var mailSend: Bool = false
-    @objc dynamic var mimeType = ""
-    @objc dynamic var note = ""
-    @objc dynamic var parent: String = ""
-    @objc dynamic var password: String = ""
-    @objc dynamic var path = ""
-    @objc dynamic var permissions: Int = 0
-    @objc dynamic var primaryKey = ""
-    @objc dynamic var sendPasswordByTalk: Bool = false
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var shareType: Int = 0
-    @objc dynamic var shareWith = ""
-    @objc dynamic var shareWithDisplayname = ""
-    @objc dynamic var storage: Int = 0
-    @objc dynamic var storageId = ""
-    @objc dynamic var token = ""
-    @objc dynamic var uidFileOwner = ""
-    @objc dynamic var uidOwner = ""
-    @objc dynamic var url = ""
-    @objc dynamic var userClearAt: NSDate?
-    @objc dynamic var userIcon = ""
-    @objc dynamic var userMessage = ""
-    @objc dynamic var userStatus = ""
-
-    override static func primaryKey() -> String {
-        return "primaryKey"
     }
 }
 

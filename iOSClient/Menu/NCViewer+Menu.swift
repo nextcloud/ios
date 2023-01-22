@@ -46,7 +46,7 @@ extension NCViewer {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { _ in
-                        NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+                        NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
                     }
                 )
             )
@@ -95,7 +95,11 @@ extension NCViewer {
                     title: NSLocalizedString("_print_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "printer"),
                     action: { _ in
-                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
+                        if CCUtility.fileProviderStorageExists(metadata) {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorPrint, "error": NKError(), "account": metadata.account])
+                        } else {
+                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint) { _, _ in }
+                        }
                     }
                 )
             )
@@ -124,20 +128,24 @@ extension NCViewer {
         //
         // SAVE CAMERA ROLL
         //
-        if !webView, metadata.isSaveInCameraRoll {
+        if !webView, metadata.isSavebleInCameraRoll {
             actions.append(.saveMediaAction(selectedMediaMetadatas: [metadata]))
         }
 
         //
         // SAVE AS SCAN
         //
-        if !webView, metadata.isSaveAsScan {
+        if !webView, metadata.isSavebleAsScan {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "viewfinder.circle"),
                     action: { _ in
-                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan)
+                        if CCUtility.fileProviderStorageExists(metadata) {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorSaveAsScan, "error": NKError(), "account": metadata.account])
+                        } else {
+                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAsScan) { _, _ in }
+                        }
                     }
                 )
             )
@@ -191,7 +199,7 @@ extension NCViewer {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
                     action: { menuAction in
-                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
                     }
                 )
             )
@@ -246,7 +254,11 @@ extension NCViewer {
                     title: NSLocalizedString("_modify_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "pencil.tip.crop.circle"),
                     action: { _ in
-                        NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+                        if CCUtility.fileProviderStorageExists(metadata) {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+                        } else {
+                            NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook) { _, _ in }
+                        }
                     }
                 )
             )

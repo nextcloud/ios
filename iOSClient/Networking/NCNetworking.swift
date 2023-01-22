@@ -323,9 +323,12 @@ import Photos
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
         }
     }
-    
-    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true, progressHandler: @escaping (_ progress: Progress) -> Void = { _ in }, completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
-        
+
+    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true,
+                  requestHandler: @escaping (_ request: DownloadRequest) -> () = { _ in },
+                  progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
+                  completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
+
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
 
@@ -339,6 +342,8 @@ import Photos
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NKCommon.shared.backgroundQueue, requestHandler: { request in
 
+            requestHandler(request)
+            
             self.downloadRequest[fileNameLocalPath] = request
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)

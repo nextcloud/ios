@@ -22,31 +22,43 @@
 //
 
 import Foundation
+import Alamofire
 import NextcloudKit
+import JGProgressHUD
 
 class NCContextMenu: NSObject {
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
 
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
-            return UIMenu()
-        }
-
+        var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
-        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
-
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
-        if metadataMOV != nil {
-            titleSave = NSLocalizedString("_livephoto_save_", comment: "")
+
+        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
+        if metadataMOV != nil { titleSave = NSLocalizedString("_livephoto_save_", comment: "") }
+
+        let hud = JGProgressHUD()
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView { indicatorView.ringWidth = 1.5 }
+        hud.tapOnHUDViewBlock = { _ in
+            if let request = downloadRequest {
+                request.cancel()
+            }
         }
 
-        let detail = UIAction(title: NSLocalizedString("_details_", comment: ""), image: UIImage(systemName: "info")) { _ in
-            NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+        // MENU ITEMS
+
+        let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
+                              image: UIImage(systemName: "info")) { _ in
+            NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
         }
 
-        let favorite = UIAction(title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
+        let favorite = UIAction(title: metadata.favorite ?
+                                NSLocalizedString("_remove_favorites_", comment: "") :
+                                NSLocalizedString("_add_favorites_", comment: ""),
                                 image: NCUtility.shared.loadImage(named: "star.fill", color: NCBrandColor.shared.yellowFavorite)) { _ in
             NCNetworking.shared.favoriteMetadata(metadata) { error in
                 if error != .success {
@@ -55,46 +67,109 @@ class NCContextMenu: NSObject {
             }
         }
 
-        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""), image: UIImage(systemName: "square.and.arrow.up") ) { _ in
-            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+        let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
+                              image: UIImage(systemName: "square.and.arrow.up") ) { _ in
+            if CCUtility.fileProviderStorageExists(metadata) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
+            } else {
+                hud.show(in: viewController.view)
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { request in
+                    downloadRequest = request
+                } progressHandler: { progress in
+                    hud.progress = Float(progress.fractionCompleted)
+                } completion: { afError, error in
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.description
+                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                    }
+                }
+            }
         }
 
-        let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""), image: UIImage(systemName: "arrow.forward.square")) { _ in
-            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+        let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
+                                    image: UIImage(systemName: "arrow.forward.square")) { _ in
+            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
         }
 
-        let save = UIAction(title: titleSave, image: UIImage(systemName: "square.and.arrow.down")) { _ in
-            if metadataMOV != nil {
-                NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV!)
+        let save = UIAction(title: titleSave,
+                            image: UIImage(systemName: "square.and.arrow.down")) { _ in
+            if let metadataMOV = metadataMOV {
+                NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
             } else {
                 if CCUtility.fileProviderStorageExists(metadata) {
-                    NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                    NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
+                    hud.show(in: viewController.view)
+                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { request in
+                        downloadRequest = request
+                    } progressHandler: { progress in
+                        hud.progress = Float(progress.fractionCompleted)
+                    } completion: { afError, error in
+                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = error.description
+                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                        }
+                    }
                 }
             }
         }
 
-        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { _ in
-            NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
+        let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""),
+                            image: UIImage(systemName: "doc.on.doc")) { _ in
+            NCActionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
 
-        let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""), image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
-            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
-        }
-
-        let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile, image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
-                if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
+        let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
+                              image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
+            if CCUtility.fileProviderStorageExists(metadata) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+            } else {
+                hud.show(in: viewController.view)
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { request in
+                    downloadRequest = request
+                } progressHandler: { progress in
+                    hud.progress = Float(progress.fractionCompleted)
+                } completion: { afError, error in
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.description
+                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                    }
                 }
             }
         }
-        let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""), image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in
-            }
+
+        let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,
+                                         image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
+                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                }
+            })
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
+            viewController.present(alertController, animated: true, completion: nil)
         }
-        let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""), image: UIImage(systemName: "trash"), options: .destructive, children: [deleteConfirmLocal, deleteConfirmFile])
+
+        let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
+                                          image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in }
+        }
+
+        let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""),
+                                   image: UIImage(systemName: "trash"),
+                                   options: .destructive,
+                                   children: [deleteConfirmLocal, deleteConfirmFile])
 
         // ------ MENU -----
 
@@ -114,27 +189,30 @@ class NCContextMenu: NSObject {
 
             if metadata.lock {
                 menu.append(favorite)
-                if metadata.isViewOnly {
+                if metadata.isViewableOnly {
                     //
                 } else {
                     menu.append(openIn)
+                    // SAVE CAMERA ROLL
                     menu.append(save)
-                    menu.append(copy)
                 }
             } else {
                 menu.append(favorite)
-                if metadata.isViewOnly {
+                if metadata.isViewableOnly {
                     if viewController is NCMedia {
                         menu.append(viewInFolder)
                     }
                 } else {
                     menu.append(openIn)
+                    // SAVE CAMERA ROLL
                     menu.append(save)
                     if viewController is NCMedia {
                         menu.append(viewInFolder)
                     }
-                    menu.append(copy)
-                    menu.append(modify)
+                    // MODIFY WITH QUICK LOOK
+                    if metadata.isModifiableWithQuickLook {
+                        menu.append(modify)
+                    }
                 }
                 if viewController is NCMedia {
                     menu.append(deleteConfirmFile)
