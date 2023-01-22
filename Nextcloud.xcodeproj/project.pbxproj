@@ -251,7 +251,7 @@
 		F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
-		F75B0ABD244C4DBB00E58DCA /* NCFunctionCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCFunctionCenter.swift */; };
+		F75B0ABD244C4DBB00E58DCA /* NCActionCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */; };
 		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
 		F75CA1472962F13700B01130 /* HUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75CA1462962F13700B01130 /* HUDView.swift */; };
 		F75CA1482962F13700B01130 /* HUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75CA1462962F13700B01130 /* HUDView.swift */; };
@@ -875,7 +875,7 @@
 		F758B45F212C56A400515F55 /* NCScan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCScan.swift; sourceTree = "<group>"; };
 		F75A9EE523796C6F0044CFCE /* NCNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCNetworking.swift; sourceTree = "<group>"; };
 		F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageAutoUploadFileName.swift; sourceTree = "<group>"; };
-		F75B0ABC244C4DBB00E58DCA /* NCFunctionCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFunctionCenter.swift; sourceTree = "<group>"; };
+		F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActionCenter.swift; sourceTree = "<group>"; };
 		F75B91E21ECAE17800199C96 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F75B91F71ECAE26300199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F75B923D1ECAE55E00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1386,7 +1386,7 @@
 				370D26AE248A3D7A00121797 /* NCCellProtocol.swift */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
-				F75B0ABC244C4DBB00E58DCA /* NCFunctionCenter.swift */,
+				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 			);
 			path = Main;
@@ -3088,7 +3088,7 @@
 				F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
-				F75B0ABD244C4DBB00E58DCA /* NCFunctionCenter.swift in Sources */,
+				F75B0ABD244C4DBB00E58DCA /* NCActionCenter.swift in Sources */,
 				AF935067276B84E700BD078F /* NCMenu+FloatingPanel.swift in Sources */,
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,

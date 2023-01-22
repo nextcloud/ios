@@ -153,7 +153,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             }
 
             if message.body as? String == "share" {
-                NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
+                NCActionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
             }
 
             if message.body as? String == "loading" {

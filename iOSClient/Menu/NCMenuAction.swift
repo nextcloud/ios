@@ -89,7 +89,7 @@ extension NCMenuAction {
             icon: NCUtility.shared.loadImage(named: "doc.on.doc"),
             order: order,
             action: { _ in
-                NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId, hudView: hudView)
+                NCActionCenter.shared.copyPasteboard(pasteboardOcIds: selectOcId, hudView: hudView)
                 completion?()
             }
         )
@@ -161,7 +161,7 @@ extension NCMenuAction {
             icon: NCUtility.shared.loadImage(named: "square.and.arrow.up"),
             order: order,
             action: { _ in
-                NCFunctionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
+                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas)
                 completion?()
             }
         )
@@ -183,10 +183,10 @@ extension NCMenuAction {
             action: { _ in
                 for metadata in selectedMediaMetadatas {
                     if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-                        NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                        NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
                     } else {
                         if CCUtility.fileProviderStorageExists(metadata) {
-                            NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                            NCActionCenter.shared.saveAlbum(metadata: metadata)
                         } else {
                             NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
                         }
@@ -210,13 +210,13 @@ extension NCMenuAction {
                         message: NSLocalizedString("_select_offline_warning_", comment: ""),
                         preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-                        selectedMetadatas.forEach { NCFunctionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                        selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
                         completion?()
                     }))
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
                     viewController.present(alert, animated: true)
                 } else {
-                    selectedMetadatas.forEach { NCFunctionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                    selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
                     completion?()
                 }
             }
@@ -230,7 +230,7 @@ extension NCMenuAction {
             icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
             order: order,
             action: { _ in
-                NCFunctionCenter.shared.openSelectView(items: selectedMetadatas)
+                NCActionCenter.shared.openSelectView(items: selectedMetadatas)
                 completion?()
             }
         )

@@ -46,7 +46,7 @@ extension NCViewer {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { _ in
-                        NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+                        NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
                     }
                 )
             )
@@ -199,7 +199,7 @@ extension NCViewer {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
                     action: { menuAction in
-                        NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
                     }
                 )
             )

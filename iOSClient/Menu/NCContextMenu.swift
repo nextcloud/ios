@@ -53,7 +53,7 @@ class NCContextMenu: NSObject {
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
                               image: UIImage(systemName: "info")) { _ in
-            NCFunctionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+            NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
         }
 
         let favorite = UIAction(title: metadata.favorite ?
@@ -91,16 +91,16 @@ class NCContextMenu: NSObject {
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
                                     image: UIImage(systemName: "arrow.forward.square")) { _ in
-            NCFunctionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+            NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
         }
 
         let save = UIAction(title: titleSave,
                             image: UIImage(systemName: "square.and.arrow.down")) { _ in
             if let metadataMOV = metadataMOV {
-                NCFunctionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
+                NCActionCenter.shared.saveLivePhoto(metadata: metadata, metadataMOV: metadataMOV)
             } else {
                 if CCUtility.fileProviderStorageExists(metadata) {
-                    NCFunctionCenter.shared.saveAlbum(metadata: metadata)
+                    NCActionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
                     hud.show(in: viewController.view)
                     NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { request in
@@ -122,7 +122,7 @@ class NCContextMenu: NSObject {
 
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""),
                             image: UIImage(systemName: "doc.on.doc")) { _ in
-            NCFunctionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
+            NCActionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),

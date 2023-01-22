@@ -891,7 +891,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
-        NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
+        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
     }
 
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
@@ -989,7 +989,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCFunctionCenter.shared.pastePasteboard(serverUrl: serverUrl)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl)
     }
 
     // MARK: - DataSource + NC Endpoint
