@@ -1982,10 +1982,13 @@
 		F7C30DF8291BCBF00017149B /* E2EE */ = {
 			isa = PBXGroup;
 			children = (
+				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
+				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
+				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
 				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
-				F7C30DFF291BD2610017149B /* NCNetworkingE2EERename.swift */,
-				F7C30DFC291BD0B80017149B /* NCNetworkingE2EEDelete.swift */,
 				F7C30DF9291BCF790017149B /* NCNetworkingE2EECreateFolder.swift */,
+				F7C30DFC291BD0B80017149B /* NCNetworkingE2EEDelete.swift */,
+				F7C30DFF291BD2610017149B /* NCNetworkingE2EERename.swift */,
 				F7C30DF5291BC0CA0017149B /* NCNetworkingE2EEUpload.swift */,
 			);
 			path = E2EE;
@@ -2335,9 +2338,6 @@
 		F7FE125B1BAC03FB0041924B /* Security */ = {
 			isa = PBXGroup;
 			children = (
-				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
-				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
-				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
 				F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */,
 				F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */,
 				F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */,

@@ -112,7 +112,7 @@ extension tableMetadata {
     var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
 
     var isRenameable: Bool {
-        if lock || isViewableOnly {
+        if lock {
             return false
         }
         if !isDirectoryE2EE && e2eEncrypted {
@@ -122,13 +122,10 @@ extension tableMetadata {
     }
     
     var isPrintable: Bool {
-        if classFile == NKCommon.typeClassFile.image.rawValue {
-            return true
-        }
-        if isViewableOnly {
+        if isDocumentViewableOnly {
             return false
         }
-        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") {
+        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") || classFile == NKCommon.typeClassFile.image.rawValue {
             return true
         }
         return false
@@ -138,7 +135,7 @@ extension tableMetadata {
         return (classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.typeClassFile.video.rawValue
     }
 
-    var isViewableOnly: Bool {
+    var isDocumentViewableOnly: Bool {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.typeClassFile.document.rawValue
     }
 
@@ -147,15 +144,15 @@ extension tableMetadata {
     }
 
     var isCopyableInPasteboard: Bool {
-        !isViewableOnly && !directory
+        !isDocumentViewableOnly && !directory
     }
 
     var isCopyableMovable: Bool {
-        !isViewableOnly && !isDirectoryE2EE && !e2eEncrypted
+        !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
     }
 
     var isModifiableWithQuickLook: Bool {
-        if directory || isViewableOnly || isDirectoryE2EE {
+        if directory || isDocumentViewableOnly || isDirectoryE2EE {
             return false
         }
         return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.typeClassFile.image.rawValue
@@ -169,11 +166,11 @@ extension tableMetadata {
     }
 
     var isSettableOnOffline: Bool {
-        return session.isEmpty && !isViewableOnly
+        return session.isEmpty && !isDocumentViewableOnly
     }
 
     var canOpenIn: Bool {
-        return session.isEmpty && !isViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
+        return session.isEmpty && !isDocumentViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 
     var isDirectoySettableE2EE: Bool {
@@ -185,7 +182,7 @@ extension tableMetadata {
     }
 
     var canOpenExternalEditor: Bool {
-        if isViewableOnly {
+        if isDocumentViewableOnly {
             return false
         }
 
