@@ -196,6 +196,12 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             return
         }
 
+        // Document VIEW ONLY
+        if metadata.isViewableOnly {
+            completionHandler(NSFileProviderError(.noSuchItem))
+            return
+        }
+
         let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata) && tableLocalFile?.etag == metadata.etag {
             completionHandler(nil)
