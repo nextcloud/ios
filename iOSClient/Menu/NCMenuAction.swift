@@ -24,6 +24,7 @@
 
 import Foundation
 import UIKit
+import NextcloudKit
 
 class NCMenuAction {
     let title: String
@@ -242,7 +243,11 @@ extension NCMenuAction {
             icon: NCUtility.shared.loadImage(named: "printer"),
             order: order,
             action: { _ in
-                NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorPrint)
+                if CCUtility.fileProviderStorageExists(metadata) {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorPrint, "error": NKError(), "account": metadata.account])
+                } else {
+                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorPrint) { _, _ in }
+                }
             }
         )
     }

@@ -22,20 +22,32 @@
 //
 
 import Foundation
+import Alamofire
 import NextcloudKit
+import JGProgressHUD
 
 class NCContextMenu: NSObject {
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return UIMenu() }
 
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         var titleSave: String = NSLocalizedString("_save_selected_files_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
         if metadataMOV != nil { titleSave = NSLocalizedString("_livephoto_save_", comment: "") }
+
+        let hud = JGProgressHUD()
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView { indicatorView.ringWidth = 1.5 }
+        hud.tapOnHUDViewBlock = { _ in
+            if let request = downloadRequest {
+                request.cancel()
+            }
+        }
 
         // MENU ITEMS
 
@@ -57,7 +69,24 @@ class NCContextMenu: NSObject {
 
         let openIn = UIAction(title: NSLocalizedString("_open_in_", comment: ""),
                               image: UIImage(systemName: "square.and.arrow.up") ) { _ in
-            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn)
+            if CCUtility.fileProviderStorageExists(metadata) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorOpenIn, "error": NKError(), "account": metadata.account])
+            } else {
+                hud.show(in: viewController.view)
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenIn, notificationCenterProgressTask: false) { request in
+                    downloadRequest = request
+                } progressHandler: { progress in
+                    hud.progress = Float(progress.fractionCompleted)
+                } completion: { afError, error in
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.description
+                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                    }
+                }
+            }
         }
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
@@ -73,7 +102,20 @@ class NCContextMenu: NSObject {
                 if CCUtility.fileProviderStorageExists(metadata) {
                     NCFunctionCenter.shared.saveAlbum(metadata: metadata)
                 } else {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum)
+                    hud.show(in: viewController.view)
+                    NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorSaveAlbum, notificationCenterProgressTask: false) { request in
+                        downloadRequest = request
+                    } progressHandler: { progress in
+                        hud.progress = Float(progress.fractionCompleted)
+                    } completion: { afError, error in
+                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                            hud.textLabel.text = error.description
+                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                        }
+                    }
                 }
             }
         }
@@ -85,7 +127,24 @@ class NCContextMenu: NSObject {
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in
-            NCFunctionCenter.shared.openDownload(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook)
+            if CCUtility.fileProviderStorageExists(metadata) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": NCGlobal.shared.selectorLoadFileQuickLook, "error": NKError(), "account": metadata.account])
+            } else {
+                hud.show(in: viewController.view)
+                NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadFileQuickLook, notificationCenterProgressTask: false) { request in
+                    downloadRequest = request
+                } progressHandler: { progress in
+                    hud.progress = Float(progress.fractionCompleted)
+                } completion: { afError, error in
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
+                        hud.textLabel.text = error.description
+                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                    }
+                }
+            }
         }
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,

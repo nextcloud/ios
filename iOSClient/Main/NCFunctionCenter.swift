@@ -194,20 +194,6 @@ import Photos
         }
     }
 
-    // MARK: -
-
-    func openDownload(metadata: tableMetadata, selector: String) {
-
-        if CCUtility.fileProviderStorageExists(metadata) {
-
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "selector": selector, "error": NKError(), "account": metadata.account])
-
-        } else {
-
-            NCNetworking.shared.download(metadata: metadata, selector: selector) { _, _ in }
-        }
-    }
-
     // MARK: - Open in ...
 
     func openDocumentController(metadata: tableMetadata) {
@@ -220,6 +206,7 @@ import Photos
     }
 
     func openActivityViewController(selectedMetadata: [tableMetadata]) {
+
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
@@ -271,9 +258,11 @@ import Photos
     // MARK: - Print
 
     func printDocument(metadata: tableMetadata) {
+
         let fileNameURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
         let printController = UIPrintInteractionController.shared
         let printInfo = UIPrintInfo(dictionary: nil)
+
         printInfo.jobName = fileNameURL.lastPathComponent
         printInfo.outputType = metadata.classFile == NKCommon.typeClassFile.image.rawValue ? .photo : .general
         printController.printInfo = printInfo
