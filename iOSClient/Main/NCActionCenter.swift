@@ -28,8 +28,8 @@ import JGProgressHUD
 import SVGKit
 import Photos
 
-@objc class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
-    @objc public static let shared: NCActionCenter = {
+class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
+    public static let shared: NCActionCenter = {
         let instance = NCActionCenter()
         NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
@@ -218,8 +218,11 @@ import Photos
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            if CCUtility.fileProviderStorageExists(metadata) { items.append(fileURL) }
-            else { downloadMetadata.append((metadata, fileURL)) }
+            if CCUtility.fileProviderStorageExists(metadata) {
+                items.append(fileURL)
+            } else {
+                downloadMetadata.append((metadata, fileURL))
+            }
         }
 
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
@@ -410,8 +413,11 @@ import Photos
             var downloadMetadatas: [tableMetadata] = []
             for ocid in pasteboardOcIds {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocid) else { continue }
-                if let pasteboardItem = metadata.toPasteBoardItem() { items.append(pasteboardItem) }
-                else { downloadMetadatas.append(metadata) }
+                if let pasteboardItem = metadata.toPasteBoardItem() {
+                    items.append(pasteboardItem)
+                } else {
+                    downloadMetadatas.append(metadata)
+                }
             }
 
             DispatchQueue.main.async(execute: hud.dismiss)
