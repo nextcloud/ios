@@ -112,7 +112,7 @@ extension tableMetadata {
     var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
 
     var isRenameable: Bool {
-        if lock || isViewableOnly {
+        if lock {
             return false
         }
         if !isDirectoryE2EE && e2eEncrypted {
@@ -122,13 +122,10 @@ extension tableMetadata {
     }
     
     var isPrintable: Bool {
-        if classFile == NKCommon.typeClassFile.image.rawValue {
-            return true
-        }
         if isViewableOnly {
             return false
         }
-        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") {
+        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") || classFile == NKCommon.typeClassFile.image.rawValue {
             return true
         }
         return false
