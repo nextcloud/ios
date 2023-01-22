@@ -39,6 +39,7 @@ disabled_rules:
   - for_where
   - cyclomatic_complexity
   - nesting
+  - shorthand_operator
   
 excluded:
   - Carthage
