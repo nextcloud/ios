@@ -178,7 +178,9 @@ class NCEndToEndMetadata: NSObject {
                 let index = subJson["metadataKey"].intValue
                 let authenticationTag = subJson["authenticationTag"].stringValue
                 let encrypted = subJson["encrypted"].string
-                if let metadataKey = metadataKeys[index], let jsonString = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey), let data = jsonString.data(using: .utf8) {
+                if let metadataKey = metadataKeys[index],
+                   let jsonString = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
+                   let data = jsonString.data(using: .utf8) {
                     do {
                         let json = try JSON(data: data)
                         let object = tableE2eEncryption()
@@ -236,10 +238,10 @@ class NCEndToEndMetadata: NSObject {
                 let authenticationTag = subJson["authenticationTag"].stringValue
 
                 if let encrypted = subJson["encrypted"].string,
-                   let metadataKeyEncryptedData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0)),
-                   let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyEncryptedData as Data?, privateKey: privateKey),
-                   let metadataKeyBase64Data = Data(base64Encoded: metadataKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0)),
-                   let jsonString = String(data: metadataKeyBase64Data, encoding: .utf8),
+                   let encryptedData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                   let encryptedBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encryptedData as Data?, privateKey: privateKey),
+                   let encryptedBase64Data = Data(base64Encoded: encryptedBase64, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                   let jsonString = String(data: encryptedBase64Data, encoding: .utf8),
                    let data = jsonString.data(using: .utf8) {
                     do {
                         let json = try JSON(data: data)
