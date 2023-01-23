@@ -197,7 +197,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }
 
         // Document VIEW ONLY
-        if metadata.isViewableOnly {
+        if metadata.isDocumentViewableOnly {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
