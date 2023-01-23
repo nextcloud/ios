@@ -234,16 +234,13 @@ class NCEndToEndMetadata: NSObject {
                 let initializationVector = subJson["initializationVector"].stringValue
                 let index = subJson["metadataKey"].intValue
                 let authenticationTag = subJson["authenticationTag"].stringValue
-                do {
-                    let encrypted = try subJson["encrypted"].rawData()
-                    let jsonString = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encrypted, privateKey: privateKey)
-                    print("")
-                } catch {
-                    print("Error \(error)")
-                }
 
-                /*
-                if let metadataKey = metadataKeys[index], let jsonString = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey), let data = jsonString.data(using: .utf8) {
+                if let encrypted = subJson["encrypted"].string,
+                   let metadataKeyEncryptedData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                   let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyEncryptedData as Data?, privateKey: privateKey),
+                   let metadataKeyBase64Data = Data(base64Encoded: metadataKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                   let jsonString = String(data: metadataKeyBase64Data, encoding: .utf8),
+                   let data = jsonString.data(using: .utf8) {
                     do {
                         let json = try JSON(data: data)
                         let object = tableE2eEncryption()
@@ -262,7 +259,7 @@ class NCEndToEndMetadata: NSObject {
                             object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
                             object.key = key
                             object.initializationVector = initializationVector
-                            object.metadataKey = metadataKey
+                            object.metadataKey = encrypted
                             object.metadataKeyIndex = index
                             object.metadataVersion = metadataVersion
                             object.mimeType = mimetype
@@ -289,7 +286,6 @@ class NCEndToEndMetadata: NSObject {
                         }
                     } catch { }
                 }
-                */
             }
 
         } catch let error {
