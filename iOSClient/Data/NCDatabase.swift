@@ -96,39 +96,6 @@ class tableDirectEditingEditors: Object {
     @objc dynamic var secure: Int = 0
 }
 
-class tableE2eEncryption: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var authenticationTag: String?
-    @objc dynamic var fileName = ""
-    @objc dynamic var fileNameIdentifier = ""
-    @objc dynamic var fileNamePath = ""
-    @objc dynamic var key = ""
-    @objc dynamic var initializationVector = ""
-    @objc dynamic var metadataKey = ""
-    @objc dynamic var metadataKeyIndex: Int = 0
-    @objc dynamic var mimeType = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var version: Int = 1
-
-    override static func primaryKey() -> String {
-        return "fileNamePath"
-    }
-}
-
-class tableE2eEncryptionLock: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var date = NSDate()
-    @objc dynamic var fileId = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var e2eToken = ""
-
-    override static func primaryKey() -> String {
-        return "fileId"
-    }
-}
-
 class tableExternalSites: Object {
 
     @objc dynamic var account = ""

@@ -246,10 +246,10 @@ struct NCViewE2EE: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            if CCUtility.getPasscode().isEmpty {
-                                NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
-                            } else {
+                            if let passcode = CCUtility.getPasscode(), !passcode.isEmpty {
                                 manageE2EE.requestPasscodeType("startE2E")
+                            } else {
+                                NCContentPresenter.shared.showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
                             }
                         }
                     }

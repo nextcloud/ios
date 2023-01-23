@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import SwiftyJSON
 
 class NCEndToEndMetadata: NSObject {
 
@@ -140,96 +141,155 @@ class NCEndToEndMetadata: NSObject {
 
     @discardableResult
     @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
-
-        let jsonDecoder = JSONDecoder()
-        let data = e2eMetaDataJSON.data(using: .utf8)
-        // let dataQuickLook = (data as! NSData)
+        guard let data = e2eMetaDataJSON.data(using: .utf8) else { return false }
 
         do {
+            let json = try JSON(data: data)
 
-            // *** metadataKey ***
+            let metadata = json["metadata"]
+            var metadataKeys: [Int: String] = [:]
 
-            let decode = try jsonDecoder.decode(E2eMetadata.self, from: data!)
+            let files = json["files"]
+            let filedrop = json["filedrop"]
 
-            let files = decode.files
-            let metadata = decode.metadata
-            // let sharing = decode.sharing ---> V 2.0
-            var metadataKeysDictionary: [String: String] = [:]
-
-            for metadataKeyDictionaryEncrypted in metadata.metadataKeys {
-
-                guard let metadataKeyEncryptedData: NSData = NSData(base64Encoded: metadataKeyDictionaryEncrypted.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
-                    return false
+            //
+            // ---[ metadata ]---
+            //
+            let metadataVersion = metadata["version"].intValue
+            // metadataKeys
+            let metadataMetadataKeys = metadata["metadataKeys"]
+            for (key, value): (String, JSON) in metadataMetadataKeys {
+                if let encryptedMetadataKey = value.string,
+                   let index = Int(key),
+                   let metadataKeyEncryptedData = NSData(base64Encoded: encryptedMetadataKey, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                   let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyEncryptedData as Data?, privateKey: privateKey),
+                   let metadataKeyBase64Data = Data(base64Encoded: metadataKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                   let metadataKey = String(data: metadataKeyBase64Data, encoding: .utf8) {
+                    metadataKeys[index] = metadataKey
                 }
-
-                guard let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyEncryptedData as Data?, privateKey: privateKey) else {
-                    return false
-                }
-
-                // Initialize a `Data` from a Base-64 encoded String
-                let metadataKeyBase64Data = Data(base64Encoded: metadataKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0))!
-                let metadataKey = String(data: metadataKeyBase64Data, encoding: .utf8)
-
-                metadataKeysDictionary[metadataKeyDictionaryEncrypted.key] = metadataKey
             }
 
-            // *** File ***
-
-            for file in files {
-
-                let fileNameIdentifier = file.key
-                let filesCodable = file.value as E2eMetadata.FilesCodable
-
-                let encrypted = filesCodable.encrypted
-                let metadataKey = metadataKeysDictionary["\(filesCodable.metadataKey)"]
-
-                guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey) else {
-                    return false
-                }
-
-                do {
-                    let encryptedFileAttributes = try jsonDecoder.decode(E2eMetadata.EncryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
-                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
-                        let metadata = tableMetadata.init(value: metadata)
-
+            //
+            // ---[ files ]---
+            //
+            for (key, subJson): (String, JSON) in files {
+                let fileNameIdentifier = key
+                let initializationVector = subJson["initializationVector"].stringValue
+                let index = subJson["metadataKey"].intValue
+                let authenticationTag = subJson["authenticationTag"].stringValue
+                let encrypted = subJson["encrypted"].string
+                if let metadataKey = metadataKeys[index], let jsonString = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey), let data = jsonString.data(using: .utf8) {
+                    do {
+                        let json = try JSON(data: data)
                         let object = tableE2eEncryption()
 
-                        object.account = account
-                        object.authenticationTag = filesCodable.authenticationTag ?? ""
-                        object.fileName = encryptedFileAttributes.filename
-                        object.fileNameIdentifier = fileNameIdentifier
-                        object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
-                        object.key = encryptedFileAttributes.key
-                        object.initializationVector = filesCodable.initializationVector
-                        object.metadataKey = metadataKey!
-                        object.metadataKeyIndex = filesCodable.metadataKey
-                        object.mimeType = encryptedFileAttributes.mimetype
-                        object.serverUrl = serverUrl
-                        object.version = encryptedFileAttributes.version
+                        if let key = json["key"].string,
+                           let filename = json["filename"].string,
+                           let mimetype = json["mimetype"].string,
+                           let version = json["version"].int,
+                           let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
-                        // If exists remove records
-                        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
-                        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
+                            object.account = account
+                            object.authenticationTag = authenticationTag
+                            object.blob = "files"
+                            object.fileName = filename
+                            object.fileNameIdentifier = fileNameIdentifier
+                            object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
+                            object.key = key
+                            object.initializationVector = initializationVector
+                            object.metadataKey = metadataKey
+                            object.metadataKeyIndex = index
+                            object.metadataVersion = metadataVersion
+                            object.mimeType = mimetype
+                            object.serverUrl = serverUrl
+                            object.version = version
 
-                        // Write file parameter for decrypted on DB
-                        NCManageDatabase.shared.addE2eEncryption(object)
+                            // If exists remove records
+                            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
+                            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
 
-                        // Update metadata on tableMetadata
-                        metadata.fileNameView = encryptedFileAttributes.filename
+                            // Write file parameter for decrypted on DB
+                            NCManageDatabase.shared.addE2eEncryption(object)
 
-                        let results = NKCommon.shared.getInternalType(fileName: encryptedFileAttributes.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                            // Update metadata on tableMetadata
+                            metadata.fileNameView = filename
 
-                        metadata.contentType = results.mimeType
-                        metadata.iconName = results.iconName
-                        metadata.classFile = results.classFile
+                            let results = NKCommon.shared.getInternalType(fileName: filename, mimeType: metadata.contentType, directory: metadata.directory)
 
-                        NCManageDatabase.shared.addMetadata(metadata)
-                    }
+                            metadata.contentType = results.mimeType
+                            metadata.iconName = results.iconName
+                            metadata.classFile = results.classFile
 
-                } catch let error {
-                    print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
-                    return false
+                            NCManageDatabase.shared.addMetadata(metadata)
+                        }
+                    } catch { }
                 }
+            }
+
+            //
+            // ---[ filedrop ]---
+            //
+            for (key, subJson): (String, JSON) in filedrop {
+                let fileNameIdentifier = key
+                let initializationVector = subJson["initializationVector"].stringValue
+                let index = subJson["metadataKey"].intValue
+                let authenticationTag = subJson["authenticationTag"].stringValue
+                do {
+                    let encrypted = try subJson["encrypted"].rawData()
+                    let jsonString = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encrypted, privateKey: privateKey)
+                    print("")
+                } catch {
+                    print("Error \(error)")
+                }
+
+                /*
+                if let metadataKey = metadataKeys[index], let jsonString = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey), let data = jsonString.data(using: .utf8) {
+                    do {
+                        let json = try JSON(data: data)
+                        let object = tableE2eEncryption()
+
+                        if let key = json["key"].string,
+                           let filename = json["filename"].string,
+                           let mimetype = json["mimetype"].string,
+                           let version = json["version"].int,
+                           let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+
+                            object.account = account
+                            object.authenticationTag = authenticationTag
+                            object.blob = "filedrop"
+                            object.fileName = filename
+                            object.fileNameIdentifier = fileNameIdentifier
+                            object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
+                            object.key = key
+                            object.initializationVector = initializationVector
+                            object.metadataKey = metadataKey
+                            object.metadataKeyIndex = index
+                            object.metadataVersion = metadataVersion
+                            object.mimeType = mimetype
+                            object.serverUrl = serverUrl
+                            object.version = version
+
+                            // If exists remove records
+                            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
+                            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
+
+                            // Write file parameter for decrypted on DB
+                            NCManageDatabase.shared.addE2eEncryption(object)
+
+                            // Update metadata on tableMetadata
+                            metadata.fileNameView = filename
+
+                            let results = NKCommon.shared.getInternalType(fileName: filename, mimeType: metadata.contentType, directory: metadata.directory)
+
+                            metadata.contentType = results.mimeType
+                            metadata.iconName = results.iconName
+                            metadata.classFile = results.classFile
+
+                            NCManageDatabase.shared.addMetadata(metadata)
+                        }
+                    } catch { }
+                }
+                */
             }
 
         } catch let error {
