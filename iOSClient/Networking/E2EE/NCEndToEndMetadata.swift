@@ -69,7 +69,7 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Encode / Decode JSON Metadata
     // --------------------------------------------------------------------------------------------
 
-    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, serverUrl: String) -> String? {
+    func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, serverUrl: String) -> String? {
 
         let jsonEncoder = JSONEncoder()
         var files: [String: E2eMetadata.FilesCodable] = [:]
@@ -139,8 +139,7 @@ class NCEndToEndMetadata: NSObject {
         }
     }
 
-    @discardableResult
-    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
+    func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
         guard let data = e2eMetaDataJSON.data(using: .utf8) else { return false }
 
         do {
