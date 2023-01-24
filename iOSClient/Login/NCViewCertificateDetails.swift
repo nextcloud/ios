@@ -23,7 +23,7 @@
 
 import UIKit
 
-public protocol NCViewCertificateDetailsDelegate {
+public protocol NCViewCertificateDetailsDelegate: AnyObject {
     func viewCertificateDetailsDismiss(host: String)
 }
 
@@ -86,7 +86,6 @@ class NCViewCertificateDetails: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         self.delegate?.viewCertificateDetailsDismiss(host: host)
     }
 
