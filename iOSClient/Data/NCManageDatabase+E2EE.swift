@@ -30,7 +30,7 @@ class tableE2eEncryption: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var authenticationTag: String = ""
-    @objc dynamic var blob = ""
+    @objc dynamic var blob = "files"
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameIdentifier = ""
     @objc dynamic var fileNamePath = ""
@@ -41,7 +41,7 @@ class tableE2eEncryption: Object {
     @objc dynamic var metadataVersion: Int = 0
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
-    @objc dynamic var version: Int = 0
+    @objc dynamic var version: Int = 1
 
     override static func primaryKey() -> String {
         return "fileNamePath"
