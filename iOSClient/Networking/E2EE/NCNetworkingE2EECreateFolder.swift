@@ -121,7 +121,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // Add new metadata
         NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
         object.account = account
-        object.authenticationTag = nil
+        object.authenticationTag = ""
         object.fileName = fileNameFolder
         object.fileNameIdentifier = fileNameIdentifier
         object.fileNamePath = ""

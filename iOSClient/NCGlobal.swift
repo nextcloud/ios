@@ -114,7 +114,7 @@ class NCGlobal: NSObject {
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 261
+    let databaseSchemaVersion: UInt64               = 265
     let fileAccounts: String                        = "accounts.json"
 
     // Intro selector

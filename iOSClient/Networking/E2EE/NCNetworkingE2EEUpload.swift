@@ -159,7 +159,7 @@ class NCNetworkingE2EEUpload: NSObject {
             objectE2eEncryption.metadataKeyIndex = 0
         }
         objectE2eEncryption.account = metadata.account
-        objectE2eEncryption.authenticationTag = authenticationTag as String?
+        objectE2eEncryption.authenticationTag = authenticationTag! as String
         objectE2eEncryption.fileName = metadata.fileNameView
         objectE2eEncryption.fileNameIdentifier = metadata.fileName
         objectE2eEncryption.fileNamePath = fileNameLocalPath

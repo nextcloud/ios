@@ -29,7 +29,7 @@ import SwiftyJSON
 class tableE2eEncryption: Object {
 
     @objc dynamic var account = ""
-    @objc dynamic var authenticationTag: String?
+    @objc dynamic var authenticationTag: String = ""
     @objc dynamic var blob = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameIdentifier = ""
