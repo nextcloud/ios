@@ -117,7 +117,7 @@ class NCEndToEndMetadata: NSObject {
             if item.blob == "filedrop" {
                 let encrypted = E2ee.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
                 do {
-
+                    // Create "encrypted"
                     let json = try jsonEncoder.encode(encrypted)
                     let encryptedString = (json.base64EncodedString())
                     if let encryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedString, publicKey: nil, privateKey: privateKey) {
