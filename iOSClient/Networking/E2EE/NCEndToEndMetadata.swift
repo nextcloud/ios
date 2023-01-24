@@ -142,8 +142,8 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Decode JSON Metadata
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
-        guard let data = e2eMetaDataJSON.data(using: .utf8) else { return false }
+    func decoderMetadata(_ json: String, privateKey: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
+        guard let data = json.data(using: .utf8) else { return false }
 
         let jsonDecoder = JSONDecoder()
         // let dataQuickLook = (data as! NSData)
