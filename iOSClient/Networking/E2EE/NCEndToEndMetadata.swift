@@ -34,6 +34,7 @@ class NCEndToEndMetadata: NSObject {
         }
 
         /*
+        Version 2
         struct Sharing: Codable {
             let recipient: [String: String]
         }
@@ -100,8 +101,8 @@ class NCEndToEndMetadata: NSObject {
                     let encryptedData = try jsonEncoder.encode(encrypted)
                     let encryptedString = String(data: encryptedData, encoding: .utf8)
                     if let encrypted = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedString, key: item.metadataKey) {
-                        let file = E2ee.Files(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, metadataKey: 0, encrypted: encrypted)
-                        files.updateValue(file, forKey: item.fileNameIdentifier)
+                        let record = E2ee.Files(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, metadataKey: 0, encrypted: encrypted)
+                        files.updateValue(record, forKey: item.fileNameIdentifier)
                     }
                 } catch let error {
                     print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
@@ -113,6 +114,19 @@ class NCEndToEndMetadata: NSObject {
             // filedrop
             //
             if item.blob == "filedrop" {
+                let encrypted = E2ee.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
+                do {
+                    // Create "encrypted"
+                    let encryptedData = try jsonEncoder.encode(encrypted)
+                    let encryptedString = String(data: encryptedData, encoding: .utf8)
+                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedString, key: item.metadataKey) {
+                        let record = E2ee.Filedrop(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, metadataKey: 0, encrypted: encrypted)
+                        filedrop.updateValue(record, forKey: item.fileNameIdentifier)
+                    }
+                } catch let error {
+                    print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
+                    return nil
+                }
             }
         }
 
