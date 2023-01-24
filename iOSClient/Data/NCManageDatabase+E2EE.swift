@@ -38,7 +38,7 @@ class tableE2eEncryption: Object {
     @objc dynamic var initializationVector = ""
     @objc dynamic var metadataKey = ""
     @objc dynamic var metadataKeyIndex: Int = 0
-    @objc dynamic var metadataVersion: Int = 0
+    @objc dynamic var metadataVersion: Int = 1
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var version: Int = 1

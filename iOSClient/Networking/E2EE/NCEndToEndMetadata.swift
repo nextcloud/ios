@@ -72,7 +72,7 @@ class NCEndToEndMetadata: NSObject {
 
     func encoderMetadata(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> String? {
 
-        let jsonEncoder = JSONEncoder()
+        let encoder = JSONEncoder()
         var metadataKeys: [String: String] = [:]
         var metadataVersion: Int = 1
         var files: [String: E2ee.Files] = [:]
@@ -99,7 +99,7 @@ class NCEndToEndMetadata: NSObject {
                 let encrypted = E2ee.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
                 do {
                     // Create "encrypted"
-                    let json = try jsonEncoder.encode(encrypted)
+                    let json = try encoder.encode(encrypted)
                     let encryptedString = String(data: json, encoding: .utf8)
                     if let encrypted = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedString, key: item.metadataKey) {
                         let record = E2ee.Files(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, metadataKey: 0, encrypted: encrypted)
@@ -118,7 +118,7 @@ class NCEndToEndMetadata: NSObject {
                 let encrypted = E2ee.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
                 do {
                     // Create "encrypted"
-                    let json = try jsonEncoder.encode(encrypted)
+                    let json = try encoder.encode(encrypted)
                     let encryptedString = (json.base64EncodedString())
                     if let encryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedString, publicKey: nil, privateKey: privateKey) {
                         let encrypted = encryptedData.base64EncodedString()
@@ -138,8 +138,9 @@ class NCEndToEndMetadata: NSObject {
         if !filedrop.isEmpty { filedropCodable = filedrop }
         let e2ee = E2ee(metadata: metadata, files: filesCodable, filedrop: filedropCodable)
         do {
-            let json = try jsonEncoder.encode(e2ee)
-            let jsonString = String(data: json, encoding: .utf8)
+            let data = try encoder.encode(e2ee)
+            data.printJson()
+            let jsonString = String(data: data, encoding: .utf8)
             return jsonString
         } catch let error {
             print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
@@ -154,16 +155,16 @@ class NCEndToEndMetadata: NSObject {
     func decoderMetadata(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
         guard let data = json.data(using: .utf8) else { return false }
 
-        let jsonDecoder = JSONDecoder()
+        let decoder = JSONDecoder()
         let privateKey = CCUtility.getEndToEndPrivateKey(account)
 
         do {
+            data.printJson()
+            let json = try decoder.decode(E2ee.self, from: data)
 
-            let decode = try jsonDecoder.decode(E2ee.self, from: data)
-
-            let metadata = decode.metadata
-            let files = decode.files
-            let filedrop = decode.filedrop
+            let metadata = json.metadata
+            let files = json.files
+            let filedrop = json.filedrop
             var metadataKeys: [String: String] = [:]
             let metadataVersion: Int = metadata.version
 
@@ -196,7 +197,7 @@ class NCEndToEndMetadata: NSObject {
                     if let encrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
                        let encryptedData = encrypted.data(using: .utf8) {
                         do {
-                            let encrypted = try jsonDecoder.decode(E2ee.Encrypted.self, from: encryptedData)
+                            let encrypted = try decoder.decode(E2ee.Encrypted.self, from: encryptedData)
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
@@ -265,7 +266,7 @@ class NCEndToEndMetadata: NSObject {
                        let encryptedData = encrypted.data(using: .utf8) {
 
                         do {
-                            let encrypted = try jsonDecoder.decode(E2ee.Encrypted.self, from: encryptedData)
+                            let encrypted = try decoder.decode(E2ee.Encrypted.self, from: encryptedData)
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
