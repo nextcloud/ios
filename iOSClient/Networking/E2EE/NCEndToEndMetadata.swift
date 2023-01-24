@@ -53,7 +53,7 @@ class NCEndToEndMetadata: NSObject {
 
         struct Filedrop: Codable {
             let initializationVector: String
-            let authenticationTag: String?
+            let authenticationTag: String
             let metadataKey: Int                // Number of metadataKey
             let encrypted: String               // encryptedFileAttributes
         }
@@ -173,23 +173,22 @@ class NCEndToEndMetadata: NSObject {
             // files
 
             if let files = files {
-                for file in files {
+                for files in files {
+                    let fileNameIdentifier = files.key
+                    let files = files.value as E2ee.Files
 
-                    let files = file.value as E2ee.Files
-
-                    let fileNameIdentifier = file.key
                     let encrypted = files.encrypted
                     let authenticationTag = files.authenticationTag
                     guard let metadataKey = metadataKeys["\(files.metadataKey)"] else { continue }
                     let metadataKeyIndex = files.metadataKey
                     let initializationVector = files.initializationVector
 
-                    if let encrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey), let encryptedData = encrypted.data(using: .utf8) {
+                    if let encrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
+                       let encryptedData = encrypted.data(using: .utf8) {
                         do {
                             let encrypted = try jsonDecoder.decode(E2ee.Encrypted.self, from: encryptedData)
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
-                                let metadata = tableMetadata.init(value: metadata)
 
                                 let object = tableE2eEncryption()
 
@@ -238,6 +237,69 @@ class NCEndToEndMetadata: NSObject {
             // filedrop
 
             if let filedrop = filedrop {
+                for filedrop in filedrop {
+                    let fileNameIdentifier = filedrop.key
+                    let filedrop = filedrop.value as E2ee.Filedrop
+
+                    let encrypted = filedrop.encrypted
+                    let authenticationTag = filedrop.authenticationTag
+                    guard let metadataKey = metadataKeys["\(filedrop.metadataKey)"] else { continue }
+                    let metadataKeyIndex = filedrop.metadataKey
+                    let initializationVector = filedrop.initializationVector
+
+                    if let encryptedData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                       let encryptedBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encryptedData as Data?, privateKey: privateKey),
+                       let encryptedBase64Data = Data(base64Encoded: encryptedBase64, options: NSData.Base64DecodingOptions(rawValue: 0)),
+                       let encrypted = String(data: encryptedBase64Data, encoding: .utf8),
+                       let encryptedData = encrypted.data(using: .utf8) {
+
+                        do {
+                            let encrypted = try jsonDecoder.decode(E2ee.Encrypted.self, from: encryptedData)
+
+                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+
+                                let object = tableE2eEncryption()
+
+                                object.account = account
+                                object.authenticationTag = authenticationTag
+                                object.blob = "files"
+                                object.fileName = encrypted.filename
+                                object.fileNameIdentifier = fileNameIdentifier
+                                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
+                                object.key = encrypted.key
+                                object.initializationVector = initializationVector
+                                object.metadataKey = metadataKey
+                                object.metadataKeyIndex = metadataKeyIndex
+                                object.metadataVersion = 1
+                                object.mimeType = encrypted.mimetype
+                                object.serverUrl = serverUrl
+                                object.version = encrypted.version
+
+                                // If exists remove records
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
+
+                                // Write file parameter for decrypted on DB
+                                NCManageDatabase.shared.addE2eEncryption(object)
+
+                                // Update metadata on tableMetadata
+                                metadata.fileNameView = encrypted.filename
+
+                                let results = NKCommon.shared.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
+
+                                metadata.contentType = results.mimeType
+                                metadata.iconName = results.iconName
+                                metadata.classFile = results.classFile
+
+                                NCManageDatabase.shared.addMetadata(metadata)
+                            }
+
+                        } catch let error {
+                            print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
+                            return false
+                        }
+                    }
+                }
             }
 
         } catch let error {
