@@ -74,7 +74,7 @@ class NCEndToEndMetadata: NSObject {
 
         let encoder = JSONEncoder()
         var metadataKeys: [String: String] = [:]
-        var metadataVersion: Int = 1
+        let metadataVersion: Int = 1
         var files: [String: E2ee.Files] = [:]
         var filesCodable: [String: E2ee.Files]?
         var filedrop: [String: E2ee.Filedrop] = [:]
