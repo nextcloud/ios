@@ -157,9 +157,11 @@ class NCEndToEndMetadata: NSObject {
             let files = decode.files
             let filedrop = decode.filedrop
             var metadataKeys: [String: String] = [:]
+            var metadataVersion: Int = metadata.version
 
+            //
             // metadata
-
+            //
             for metadataKey in metadata.metadataKeys {
 
                 if let metadataKeyData: NSData = NSData(base64Encoded: metadataKey.value, options: NSData.Base64DecodingOptions(rawValue: 0)),
@@ -170,14 +172,16 @@ class NCEndToEndMetadata: NSObject {
                 }
             }
 
+            //
             // sharing
-
+            //
             if let sharing = sharing {
                 print(sharing)
             }
 
+            //
             // files
-
+            //
             if let files = files {
                 for files in files {
                     let fileNameIdentifier = files.key
@@ -208,7 +212,7 @@ class NCEndToEndMetadata: NSObject {
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataKeyIndex = metadataKeyIndex
-                                object.metadataVersion = 1
+                                object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
                                 object.version = encrypted.version
@@ -240,8 +244,9 @@ class NCEndToEndMetadata: NSObject {
                 }
             }
 
+            //
             // filedrop
-
+            //
             if let filedrop = filedrop {
                 for filedrop in filedrop {
                     let fileNameIdentifier = filedrop.key
@@ -276,7 +281,7 @@ class NCEndToEndMetadata: NSObject {
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataKeyIndex = metadataKeyIndex
-                                object.metadataVersion = 1
+                                object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
                                 object.version = encrypted.version
