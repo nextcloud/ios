@@ -146,7 +146,6 @@ class NCEndToEndMetadata: NSObject {
         guard let data = json.data(using: .utf8) else { return false }
 
         let jsonDecoder = JSONDecoder()
-        // let dataQuickLook = (data as! NSData)
 
         do {
 
@@ -163,7 +162,6 @@ class NCEndToEndMetadata: NSObject {
             // metadata
             //
             for metadataKey in metadata.metadataKeys {
-
                 if let metadataKeyData: NSData = NSData(base64Encoded: metadataKey.value, options: NSData.Base64DecodingOptions(rawValue: 0)),
                    let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyData as Data?, privateKey: privateKey),
                    let metadataKeyBase64Data = Data(base64Encoded: metadataKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0)),
@@ -273,7 +271,7 @@ class NCEndToEndMetadata: NSObject {
 
                                 object.account = account
                                 object.authenticationTag = authenticationTag
-                                object.blob = "files"
+                                object.blob = "filedrop"
                                 object.fileName = encrypted.filename
                                 object.fileNameIdentifier = fileNameIdentifier
                                 object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
