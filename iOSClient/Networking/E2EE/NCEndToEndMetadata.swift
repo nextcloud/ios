@@ -47,15 +47,15 @@ class NCEndToEndMetadata: NSObject {
         struct Files: Codable {
             let initializationVector: String
             let authenticationTag: String
-            let metadataKey: Int                // Number of metadataKey
-            let encrypted: String               // encryptedFileAttributes
+            let metadataKey: Int
+            let encrypted: String
         }
 
         struct Filedrop: Codable {
             let initializationVector: String
             let authenticationTag: String
-            let metadataKey: Int                // Number of metadataKey
-            let encrypted: String               // encryptedFileAttributes
+            let metadataKey: Int
+            let encrypted: String
         }
 
         let metadata: Metadata
