@@ -233,7 +233,7 @@ class NCEndToEndMetadata: NSObject {
                             }
 
                         } catch let error {
-                            print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
+                            print("Serious internal error in decoding files (" + error.localizedDescription + ")")
                             return false
                         }
                     }
@@ -301,7 +301,7 @@ class NCEndToEndMetadata: NSObject {
                             }
 
                         } catch let error {
-                            print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
+                            print("Serious internal error in decoding filedrop (" + error.localizedDescription + ")")
                             return false
                         }
                     }
