@@ -78,6 +78,7 @@ excluded:
   - iOSClient/Data/NCManageDatabase+Account.swift
   - iOSClient/Data/NCManageDatabase+Activity.swift
   - iOSClient/Data/NCManageDatabase+Avatar.swift
+  - iOSClient/Data/NCManageDatabase+E2EE.swift
   - iOSClient/Data/NCManageDatabase.swift
   - iOSClient/Data/NCManageDatabase+Metadata.swift
   - iOSClient/Data/NCManageDatabase+Directory.swift
