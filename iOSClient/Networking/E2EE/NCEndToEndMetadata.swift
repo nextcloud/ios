@@ -168,7 +168,9 @@ class NCEndToEndMetadata: NSObject {
 
             // sharing
 
-            if let sharing = sharing { }
+            if let sharing = sharing {
+                print(sharing)
+            }
 
             // files
 
