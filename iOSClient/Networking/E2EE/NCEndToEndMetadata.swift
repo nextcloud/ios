@@ -37,7 +37,7 @@ class NCEndToEndMetadata: NSObject {
             let recipient: [String: String]
         }
 
-        struct EncryptedFileAttributes: Codable {
+        struct Encrypted: Codable {
             let key: String
             let filename: String
             let mimetype: String
@@ -85,7 +85,7 @@ class NCEndToEndMetadata: NSObject {
 
             // *** File ***
 
-            let encrypted = E2ee.EncryptedFileAttributes(key: recordE2eEncryption.key, filename: recordE2eEncryption.fileName, mimetype: recordE2eEncryption.mimeType, version: recordE2eEncryption.version)
+            let encrypted = E2ee.Encrypted(key: recordE2eEncryption.key, filename: recordE2eEncryption.fileName, mimetype: recordE2eEncryption.mimeType, version: recordE2eEncryption.version)
 
             do {
 
@@ -170,59 +170,56 @@ class NCEndToEndMetadata: NSObject {
 
                     let fileNameIdentifier = file.key
                     let filesCodable = file.value as E2ee.FilesCodable
-
                     let encrypted = filesCodable.encrypted
                     let metadataKey = metadataKeys["\(filesCodable.metadataKey)"]
 
-                    guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey) else {
-                        return false
-                    }
+                    if let encrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey), let encryptedData = encrypted.data(using: .utf8) {
+                        do {
+                            let encrypted = try jsonDecoder.decode(E2ee.Encrypted.self, from: encryptedData)
 
-                    do {
-                        let encryptedFileAttributes = try jsonDecoder.decode(E2ee.EncryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
+                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+                                let metadata = tableMetadata.init(value: metadata)
 
-                        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
-                            let metadata = tableMetadata.init(value: metadata)
+                                let object = tableE2eEncryption()
 
-                            let object = tableE2eEncryption()
+                                object.account = account
+                                object.authenticationTag = filesCodable.authenticationTag ?? ""
+                                object.blob = "files"
+                                object.fileName = encrypted.filename
+                                object.fileNameIdentifier = fileNameIdentifier
+                                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
+                                object.key = encrypted.key
+                                object.initializationVector = filesCodable.initializationVector
+                                object.metadataKey = metadataKey!
+                                object.metadataKeyIndex = filesCodable.metadataKey
+                                object.metadataVersion = 1
+                                object.mimeType = encrypted.mimetype
+                                object.serverUrl = serverUrl
+                                object.version = encrypted.version
 
-                            object.account = account
-                            object.authenticationTag = filesCodable.authenticationTag ?? ""
-                            object.blob = "files"
-                            object.fileName = encryptedFileAttributes.filename
-                            object.fileNameIdentifier = fileNameIdentifier
-                            object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
-                            object.key = encryptedFileAttributes.key
-                            object.initializationVector = filesCodable.initializationVector
-                            object.metadataKey = metadataKey!
-                            object.metadataKeyIndex = filesCodable.metadataKey
-                            object.metadataVersion = 1
-                            object.mimeType = encryptedFileAttributes.mimetype
-                            object.serverUrl = serverUrl
-                            object.version = encryptedFileAttributes.version
+                                // If exists remove records
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
 
-                            // If exists remove records
-                            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
-                            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
+                                // Write file parameter for decrypted on DB
+                                NCManageDatabase.shared.addE2eEncryption(object)
 
-                            // Write file parameter for decrypted on DB
-                            NCManageDatabase.shared.addE2eEncryption(object)
+                                // Update metadata on tableMetadata
+                                metadata.fileNameView = encrypted.filename
 
-                            // Update metadata on tableMetadata
-                            metadata.fileNameView = encryptedFileAttributes.filename
+                                let results = NKCommon.shared.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
 
-                            let results = NKCommon.shared.getInternalType(fileName: encryptedFileAttributes.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                                metadata.contentType = results.mimeType
+                                metadata.iconName = results.iconName
+                                metadata.classFile = results.classFile
 
-                            metadata.contentType = results.mimeType
-                            metadata.iconName = results.iconName
-                            metadata.classFile = results.classFile
+                                NCManageDatabase.shared.addMetadata(metadata)
+                            }
 
-                            NCManageDatabase.shared.addMetadata(metadata)
+                        } catch let error {
+                            print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
+                            return false
                         }
-
-                    } catch let error {
-                        print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
-                        return false
                     }
                 }
             }
