@@ -79,8 +79,6 @@ class NCEndToEndMetadata: NSObject {
         var filesCodable: [String: E2ee.Files]?
         var filedrop: [String: E2ee.Filedrop] = [:]
         var filedropCodable: [String: E2ee.Filedrop]?
-
-        let publicKey = CCUtility.getEndToEndPublicKey(account)
         let privateKey = CCUtility.getEndToEndPrivateKey(account)
 
         for item in items {
@@ -101,8 +99,8 @@ class NCEndToEndMetadata: NSObject {
                 let encrypted = E2ee.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
                 do {
                     // Create "encrypted"
-                    let encryptedData = try jsonEncoder.encode(encrypted)
-                    let encryptedString = String(data: encryptedData, encoding: .utf8)
+                    let json = try jsonEncoder.encode(encrypted)
+                    let encryptedString = String(data: json, encoding: .utf8)
                     if let encrypted = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedString, key: item.metadataKey) {
                         let record = E2ee.Files(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, metadataKey: 0, encrypted: encrypted)
                         files.updateValue(record, forKey: item.fileNameIdentifier)
@@ -120,26 +118,13 @@ class NCEndToEndMetadata: NSObject {
                 let encrypted = E2ee.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
                 do {
 
-                    /*
-                     if let encryptedData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0)),
-                        let encryptedBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encryptedData as Data?, privateKey: privateKey),
-                        let encryptedBase64Data = Data(base64Encoded: encryptedBase64, options: NSData.Base64DecodingOptions(rawValue: 0)),
-                        let encrypted = String(data: encryptedBase64Data, encoding: .utf8),
-                        let encryptedData = encrypted.data(using: .utf8)
-                     */
-
-                    // Create "encrypted"
-                    let encryptedData = try jsonEncoder.encode(encrypted)
-                    let encryptedString = String(data: encryptedData, encoding: .utf8)
-                    let x = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedString, publicKey: publicKey, privateKey: privateKey)
-
-
-                    /*
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedString, key: item.metadataKey) {
+                    let json = try jsonEncoder.encode(encrypted)
+                    let encryptedString = (json.base64EncodedString())
+                    if let encryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedString, publicKey: nil, privateKey: privateKey) {
+                        let encrypted = encryptedData.base64EncodedString()
                         let record = E2ee.Filedrop(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, metadataKey: 0, encrypted: encrypted)
                         filedrop.updateValue(record, forKey: item.fileNameIdentifier)
                     }
-                    */
                 } catch let error {
                     print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
                     return nil
