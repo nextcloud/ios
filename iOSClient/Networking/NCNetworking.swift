@@ -1030,7 +1030,7 @@ import Photos
 
     // MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, completion: @escaping (_ error: NKError) -> Void) {
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, withPush:Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1038,16 +1038,16 @@ import Photos
         if isDirectoryEncrypted {
 #if !EXTENSION
             Task {
-                let error = await NCNetworkingE2EECreateFolder.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+                let error = await NCNetworkingE2EECreateFolder.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush)
                 completion(error)
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, withPush: withPush, completion: completion)
         }
     }
 
-    private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, withPush:Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
 
@@ -1077,7 +1077,7 @@ import Photos
                         NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
                     }
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "e2ee": false])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "e2ee": false, "withPush": withPush])
                     }
                 }
                 completion(error)
@@ -1085,7 +1085,7 @@ import Photos
         }
     }
 
-    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String) -> Bool {
+    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String, withPush:Bool) -> Bool {
 
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
         let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
@@ -1094,7 +1094,7 @@ import Photos
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
+            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true, withPush: withPush) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }

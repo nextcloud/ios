@@ -117,7 +117,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         if isUseAutoUploadFolder {
             DispatchQueue.global().async {
                 let assets = self.assets.compactMap { $0.phAsset }
-                let result = NCNetworking.shared.createFolder(assets: assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: self.isUseAutoUploadSubFolder, account: self.userBaseUrl.account, urlBase: self.userBaseUrl.urlBase, userId: self.userBaseUrl.userId)
+                let result = NCNetworking.shared.createFolder(assets: assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: self.isUseAutoUploadSubFolder, account: self.userBaseUrl.account, urlBase: self.userBaseUrl.urlBase, userId: self.userBaseUrl.userId, withPush: false)
                 DispatchQueue.main.async {
                     self.showHUD.toggle()
                     self.uploadInProgress.toggle()

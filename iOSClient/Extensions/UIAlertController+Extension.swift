@@ -44,7 +44,7 @@ extension UIAlertController {
                     }
                 }
             } else {
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account, urlBase: urlBase.urlBase, userId: urlBase.userId, overwrite: false) { error in
+                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account, urlBase: urlBase.urlBase, userId: urlBase.userId, overwrite: false, withPush: true) { error in
                     if let completion = completion {
                         completion(error)
                     } else if error != .success {

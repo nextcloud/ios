@@ -61,7 +61,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return error
     }
 
-    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) async -> (NKError) {
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool) async -> (NKError) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var serverUrlFileName = ""
@@ -97,7 +97,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
         
         if error == .success, let ocId = ocId {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true, "withPush": withPush])
         }
         return error
     }
