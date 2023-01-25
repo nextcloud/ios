@@ -71,10 +71,14 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     }
 
     func loadImages() {
+        var previewStore: [PreviewStore] = []
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset))
+                previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset))
+            }
+            DispatchQueue.main.async {
+                self.previewStore = previewStore
             }
         }
     }
