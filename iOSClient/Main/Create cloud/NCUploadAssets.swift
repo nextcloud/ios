@@ -53,7 +53,10 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     @Published var assets: [TLPHAsset]
     @Published var userBaseUrl: NCUserBaseUrl
     @Published var dismiss = false
+    @Published var isUseAutoUploadFolder: Bool = false
+    @Published var isUseAutoUploadSubFolder: Bool = false
     @Published var previewStore: [PreviewStore] = []
+    @Published var showHUD: Bool = false
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
@@ -98,13 +101,30 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        guard let metadatas = metadatas else { return }
 
-        if let metadatas = metadatas {
+        func createProcessUploads() {
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
-                self.dismiss = true
+                    self.dismiss = true
             })
+        }
+
+        if isUseAutoUploadFolder {
+            DispatchQueue.global().async {
+                let assets = self.assets.compactMap { $0.phAsset }
+                let result = NCNetworking.shared.createFolder(assets: assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: self.isUseAutoUploadSubFolder, account: self.userBaseUrl.account, urlBase: self.userBaseUrl.urlBase, userId: self.userBaseUrl.userId)
+                DispatchQueue.main.async {
+                    self.showHUD.toggle()
+                    if result {
+                        createProcessUploads()
+                    } else {
+                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                }
+            }
         } else {
-            self.dismiss = true
+            createProcessUploads()
         }
     }
 }
@@ -208,11 +228,12 @@ struct UploadAssetsView: View {
 
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
+        var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
 
         for asset in uploadAssets.assets {
             guard let asset = asset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
 
-            let serverUrl = uploadAssets.serverUrl
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
@@ -225,6 +246,16 @@ struct UploadAssetsView: View {
 
             if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && previewStore.data == nil {
                 livePhoto = true
+            }
+
+            // Auto upload with subfolder
+            if uploadAssets.isUseAutoUploadSubFolder {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy"
+                let yearString = dateFormatter.string(from: creationDate)
+                dateFormatter.dateFormat = "MM"
+                let monthString = dateFormatter.string(from: creationDate)
+                serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
             }
 
             // Check if is in upload
@@ -264,13 +295,7 @@ struct UploadAssetsView: View {
             }
         }
 
-        // Verify if file(s) exists
-        if !metadatasUploadInConflict.isEmpty {
-            completion(metadatasNOConflict, metadatasUploadInConflict)
-        } else {
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatasNOConflict, completion: { _ in })
-            completion(metadatasNOConflict, metadatasUploadInConflict)
-        }
+        completion(metadatasNOConflict, metadatasUploadInConflict)
     }
 
     func presentedQuickLook(index: Int) {
@@ -298,128 +323,161 @@ struct UploadAssetsView: View {
     var body: some View {
 
         NavigationView {
-            List {
-                if !uploadAssets.previewStore.isEmpty {
-                    Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
-                        ScrollView(.horizontal) {
-                            LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
-                                ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
-                                    let item = uploadAssets.previewStore[index]
-                                    ZStack(alignment: .bottomTrailing) {
-                                        Image(uiImage: item.image)
-                                            .resizable()
-                                            .frame(width: 100, height: 100, alignment: .center)
-                                            .cornerRadius(10)
-                                            .scaledToFit()
-                                        if item.asset.type == .livePhoto && item.data == nil {
-                                            Image(systemName: "livephoto")
+            ZStack(alignment: .top) {
+                List {
+                    if !uploadAssets.previewStore.isEmpty {
+                        Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
+                            ScrollView(.horizontal) {
+                                LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
+                                    ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
+                                        let item = uploadAssets.previewStore[index]
+                                        ZStack(alignment: .bottomTrailing) {
+                                            Image(uiImage: item.image)
                                                 .resizable()
+                                                .frame(width: 100, height: 100, alignment: .center)
+                                                .cornerRadius(10)
                                                 .scaledToFit()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(.white)
-                                                .padding(.horizontal, 5)
-                                                .padding(.vertical, 5)
-                                        } else if item.asset.type == .video {
-                                            Image(systemName: "video.fill")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(.white)
-                                                .padding(.horizontal, 5)
-                                                .padding(.vertical, 5)
+                                            if item.asset.type == .livePhoto && item.data == nil {
+                                                Image(systemName: "livephoto")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 15, height: 15)
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 5)
+                                                    .padding(.vertical, 5)
+                                            } else if item.asset.type == .video {
+                                                Image(systemName: "video.fill")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 15, height: 15)
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 5)
+                                                    .padding(.vertical, 5)
+                                            }
                                         }
-                                    }
-                                    .onTapGesture {
-                                        if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                            presentedQuickLook(index: index)
+                                        .onTapGesture {
+                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                                presentedQuickLook(index: index)
+                                            }
                                         }
-                                    }
-                                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                                            .ignoresSafeArea()
+                                        .fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                                                .ignoresSafeArea()
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+                    Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
 
-                    Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $isMaintainOriginalFilename)
+                        Toggle(isOn: $isMaintainOriginalFilename, label: {
+                            Text(NSLocalizedString("_maintain_original_filename_", comment: ""))
+                                .font(.system(size: 15))
+                        })
                         .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
 
-                    if !isMaintainOriginalFilename {
-                        Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $isAddFilenametype)
+                        if !isMaintainOriginalFilename {
+                            Toggle(isOn: $isAddFilenametype, label: {
+                                Text(NSLocalizedString("_add_filenametype_", comment: ""))
+                                    .font(.system(size: 15))
+                            })
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                        }
                     }
-                }
 
-                Section {
+                    Section {
 
-                    HStack {
-                        Label {
-                            if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
-                                Text("/")
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                            } else {
-                                Text(self.getTextServerUrl(uploadAssets.serverUrl))
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                        Toggle(isOn: $uploadAssets.isUseAutoUploadFolder, label: {
+                            Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
+                                .font(.system(size: 15))
+                        })
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+
+                        if uploadAssets.isUseAutoUploadFolder {
+                            Toggle(isOn: $uploadAssets.isUseAutoUploadSubFolder, label: {
+                                Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
+                                    .font(.system(size: 15))
+                            })
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
+                        }
+
+                        if !uploadAssets.isUseAutoUploadFolder {
+                            HStack {
+                                Label {
+                                    if NCUtilityFileSystem.shared.getHomeServer(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId) == uploadAssets.serverUrl {
+                                        Text("/")
+                                            .font(.system(size: 15))
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                    } else {
+                                        Text(self.getTextServerUrl(uploadAssets.serverUrl))
+                                            .font(.system(size: 15))
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                    }
+                                } icon: {
+                                    Image("folder")
+                                        .renderingMode(.template)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(Color(NCBrandColor.shared.brand))
+                                }
                             }
-                        } icon: {
-                            Image("folder")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(Color(NCBrandColor.shared.brand))
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                isPresentedSelect = true
+                            }
                         }
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        isPresentedSelect = true
-                    }
 
-                    HStack {
-                        Text(NSLocalizedString("_filename_", comment: ""))
-                        if isMaintainOriginalFilename {
-                            Text(getOriginalFilename())
-                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        HStack {
+                            Text(NSLocalizedString("_filename_", comment: ""))
+                            if isMaintainOriginalFilename {
+                                Text(getOriginalFilename())
+                                    .font(.system(size: 15))
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundColor(Color.gray)
+                            } else {
+                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
+                                    .font(.system(size: 15))
+                                    .modifier(TextFieldClearButton(text: $fileName))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        if !isMaintainOriginalFilename {
+                            Text(setFileNameMask(fileName: fileName))
+                                .font(.system(size: 11))
                                 .foregroundColor(Color.gray)
-                        } else {
-                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
-                                .modifier(TextFieldClearButton(text: $fileName))
-                                .multilineTextAlignment(.trailing)
                         }
                     }
-                    if !isMaintainOriginalFilename {
-                        Text(setFileNameMask(fileName: fileName))
-                            .font(.system(size: 12))
-                            .foregroundColor(Color.gray)
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
                     }
-                }
-                .complexModifier { view in
-                    if #available(iOS 15, *) {
-                        view.listRowSeparator(.hidden)
-                    }
-                }
 
-                Button(NSLocalizedString("_save_", comment: "")) {
-                    save { metadatasNOConflict, metadatasUploadInConflict in
-                        if metadatasUploadInConflict.isEmpty {
-                            uploadAssets.dismiss = true
-                        } else {
-                            uploadAssets.metadatasNOConflict = metadatasNOConflict
-                            uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
-                            isPresentedUploadConflict = true
+                    Button(NSLocalizedString("_save_", comment: "")) {
+                        uploadAssets.showHUD.toggle()
+                        save { metadatasNOConflict, metadatasUploadInConflict in
+                            if metadatasUploadInConflict.isEmpty {
+                                uploadAssets.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
+                            } else {
+                                uploadAssets.metadatasNOConflict = metadatasNOConflict
+                                uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
+                                isPresentedUploadConflict = true
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity)
+                    .buttonStyle(ButtonRounded(disabled: false))
+                    .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
-                .frame(maxWidth: .infinity)
-                .buttonStyle(ButtonRounded(disabled: false))
-                .listRowBackground(Color(UIColor.systemGroupedBackground))
+                .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
+                .navigationBarTitleDisplayMode(.inline)
+
+                HUDView(showHUD: $uploadAssets.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
+                    .offset(y: uploadAssets.showHUD ? 5 : -200)
+                    .animation(.easeOut)
             }
-            .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
-            .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $isPresentedSelect) {
