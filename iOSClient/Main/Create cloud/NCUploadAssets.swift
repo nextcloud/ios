@@ -109,9 +109,11 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         }
 
         func createProcessUploads() {
-            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
+            if !self.dismiss {
+                NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
                     self.dismiss = true
-            })
+                })
+            }
         }
 
         if isUseAutoUploadFolder {
@@ -513,6 +515,9 @@ struct UploadAssetsView: View {
         }
         .onTapGesture {
             UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.endEditing(true)
+        }
+        .onDisappear {
+            uploadAssets.dismiss = true
         }
     }
 }
