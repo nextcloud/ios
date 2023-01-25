@@ -462,23 +462,22 @@ struct UploadAssetsView: View {
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {
-                        if !uploadAssets.uploadInProgress {
-                            uploadAssets.showHUD.toggle()
-                            uploadAssets.uploadInProgress.toggle()
-                            save { metadatasNOConflict, metadatasUploadInConflict in
-                                if metadatasUploadInConflict.isEmpty {
-                                    uploadAssets.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-                                } else {
-                                    uploadAssets.metadatasNOConflict = metadatasNOConflict
-                                    uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
-                                    isPresentedUploadConflict = true
-                                }
+                        uploadAssets.showHUD.toggle()
+                        uploadAssets.uploadInProgress.toggle()
+                        save { metadatasNOConflict, metadatasUploadInConflict in
+                            if metadatasUploadInConflict.isEmpty {
+                                uploadAssets.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
+                            } else {
+                                uploadAssets.metadatasNOConflict = metadatasNOConflict
+                                uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
+                                isPresentedUploadConflict = true
                             }
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .buttonStyle(ButtonRounded(disabled: uploadAssets.uploadInProgress))
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
+                    .disabled(uploadAssets.uploadInProgress)
                 }
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
                 .navigationBarTitleDisplayMode(.inline)
