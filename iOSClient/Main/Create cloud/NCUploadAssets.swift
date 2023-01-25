@@ -57,6 +57,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     @Published var isUseAutoUploadSubFolder: Bool = false
     @Published var previewStore: [PreviewStore] = []
     @Published var showHUD: Bool = false
+    @Published var uploadInProgress: Bool = false
 
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
@@ -101,7 +102,11 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
-        guard let metadatas = metadatas else { return }
+        guard let metadatas = metadatas else {
+            self.showHUD.toggle()
+            self.uploadInProgress.toggle()
+            return
+        }
 
         func createProcessUploads() {
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
@@ -115,6 +120,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
                 let result = NCNetworking.shared.createFolder(assets: assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: self.isUseAutoUploadSubFolder, account: self.userBaseUrl.account, urlBase: self.userBaseUrl.urlBase, userId: self.userBaseUrl.userId)
                 DispatchQueue.main.async {
                     self.showHUD.toggle()
+                    self.uploadInProgress.toggle()
                     if result {
                         createProcessUploads()
                     } else {
@@ -456,19 +462,22 @@ struct UploadAssetsView: View {
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {
-                        uploadAssets.showHUD.toggle()
-                        save { metadatasNOConflict, metadatasUploadInConflict in
-                            if metadatasUploadInConflict.isEmpty {
-                                uploadAssets.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-                            } else {
-                                uploadAssets.metadatasNOConflict = metadatasNOConflict
-                                uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
-                                isPresentedUploadConflict = true
+                        if !uploadAssets.uploadInProgress {
+                            uploadAssets.showHUD.toggle()
+                            uploadAssets.uploadInProgress.toggle()
+                            save { metadatasNOConflict, metadatasUploadInConflict in
+                                if metadatasUploadInConflict.isEmpty {
+                                    uploadAssets.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
+                                } else {
+                                    uploadAssets.metadatasNOConflict = metadatasNOConflict
+                                    uploadAssets.metadatasUploadInConflict = metadatasUploadInConflict
+                                    isPresentedUploadConflict = true
+                                }
                             }
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .buttonStyle(ButtonRounded(disabled: false))
+                    .buttonStyle(ButtonRounded(disabled: uploadAssets.uploadInProgress))
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
                 }
                 .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
