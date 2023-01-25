@@ -451,6 +451,11 @@ struct UploadScanDocumentView: View {
                                 }
                         }
                     }
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
+                    }
 
                     VStack(spacing: 20) {
 
