@@ -376,7 +376,7 @@ struct UploadAssetsView: View {
                         }
                     }
 
-                    Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
+                    Section {
 
                         Toggle(isOn: $isMaintainOriginalFilename, label: {
                             Text(NSLocalizedString("_maintain_original_filename_", comment: ""))
