@@ -392,6 +392,11 @@ struct UploadAssetsView: View {
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                         }
                     }
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
+                    }
 
                     Section {
 
@@ -434,7 +439,14 @@ struct UploadAssetsView: View {
                                 isPresentedSelect = true
                             }
                         }
+                    }
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
+                    }
 
+                    Section {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             if isMaintainOriginalFilename {
