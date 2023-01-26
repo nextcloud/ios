@@ -107,7 +107,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas else {
-            self.showHUD.toggle()
+            self.showHUD = false
             self.uploadInProgress.toggle()
             return
         }
@@ -125,7 +125,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
                 let assets = self.assets.compactMap { $0.phAsset }
                 let result = NCNetworking.shared.createFolder(assets: assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: self.isUseAutoUploadSubFolder, account: self.userBaseUrl.account, urlBase: self.userBaseUrl.urlBase, userId: self.userBaseUrl.userId, withPush: false)
                 DispatchQueue.main.async {
-                    self.showHUD.toggle()
+                    self.showHUD = false
                     self.uploadInProgress.toggle()
                     if result {
                         createProcessUploads()
@@ -480,7 +480,9 @@ struct UploadAssetsView: View {
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {
-                        uploadAssets.showHUD.toggle()
+                        if uploadAssets.isUseAutoUploadFolder, uploadAssets.isUseAutoUploadSubFolder {
+                            uploadAssets.showHUD = true
+                        }
                         uploadAssets.uploadInProgress.toggle()
                         save { metadatasNOConflict, metadatasUploadInConflict in
                             if metadatasUploadInConflict.isEmpty {
