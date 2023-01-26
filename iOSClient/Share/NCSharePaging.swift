@@ -54,7 +54,9 @@ class NCSharePaging: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+
         setupCapabilities()
+
         // *** MUST BE THE FIRST ONE ***
         pagingViewController.metadata = metadata
 
@@ -111,8 +113,7 @@ class NCSharePaging: UIViewController {
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 && comments == false {
             commentsEnabled = false
         }
-        let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-        sharingEnabled = sharing
+        sharingEnabled = metadata.isSharable
         let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesActivity)
         activityEnabled = activity != nil
         if indexPage == .sharing && !sharingEnabled {

@@ -110,6 +110,7 @@ class NCGlobal: NSObject {
     let nextcloudVersion23: Int                     =  23
     let nextcloudVersion24: Int                     =  24
     let nextcloudVersion25: Int                     =  25
+    let nextcloudVersion26: Int                     =  26
 
     // Database Realm
     //
