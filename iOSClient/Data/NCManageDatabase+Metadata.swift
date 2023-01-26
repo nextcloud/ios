@@ -177,6 +177,19 @@ extension tableMetadata {
         return directory && size == 0 && !e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
     }
 
+    var isSharable: Bool {
+        let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+        if !sharing { return false }
+        if !e2eEncrypted && !isDirectoryE2EE { return true }
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
+            // E2EE DIRECTORY SECURE FILE DROP (SHARE AVAILABLE)
+            return true
+        } else {
+            return false
+        }
+    }
+
     var isDirectoryUnsettableE2EE: Bool {
         return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
     }

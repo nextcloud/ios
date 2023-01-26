@@ -1682,13 +1682,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // ** IMPORT MUST BE AT THE END **
-        // if metadata.e2eEncrypted || isDirectoryE2EE {
         //
-        // E2EE SECURE FILE DROP (DIR ONLY)
-        if !metadata.directory && (metadata.e2eEncrypted || isDirectoryE2EE) {
+        if !metadata.isSharable {
             cell.hideButtonShare(true)
         }
-
+        
         return cell
     }
 
