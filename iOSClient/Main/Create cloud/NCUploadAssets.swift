@@ -337,50 +337,49 @@ struct UploadAssetsView: View {
         NavigationView {
             ZStack(alignment: .top) {
                 List {
-                    if !uploadAssets.previewStore.isEmpty {
-                        Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
-                            ScrollView(.horizontal) {
-                                LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
-                                    ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
-                                        let item = uploadAssets.previewStore[index]
-                                        ZStack(alignment: .bottomTrailing) {
-                                            Image(uiImage: item.image)
+                    Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
+                        ScrollView(.horizontal) {
+                            LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
+                                ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
+                                    let item = uploadAssets.previewStore[index]
+                                    ZStack(alignment: .bottomTrailing) {
+                                        Image(uiImage: item.image)
+                                            .resizable()
+                                            .frame(width: 100, height: 100, alignment: .center)
+                                            .cornerRadius(10)
+                                            .scaledToFit()
+                                        if item.asset.type == .livePhoto && item.data == nil {
+                                            Image(systemName: "livephoto")
                                                 .resizable()
-                                                .frame(width: 100, height: 100, alignment: .center)
-                                                .cornerRadius(10)
                                                 .scaledToFit()
-                                            if item.asset.type == .livePhoto && item.data == nil {
-                                                Image(systemName: "livephoto")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 15, height: 15)
-                                                    .foregroundColor(.white)
-                                                    .padding(.horizontal, 5)
-                                                    .padding(.vertical, 5)
-                                            } else if item.asset.type == .video {
-                                                Image(systemName: "video.fill")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 15, height: 15)
-                                                    .foregroundColor(.white)
-                                                    .padding(.horizontal, 5)
-                                                    .padding(.vertical, 5)
-                                            }
+                                                .frame(width: 15, height: 15)
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 5)
+                                                .padding(.vertical, 5)
+                                        } else if item.asset.type == .video {
+                                            Image(systemName: "video.fill")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 15, height: 15)
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 5)
+                                                .padding(.vertical, 5)
                                         }
-                                        .onTapGesture {
-                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                                presentedQuickLook(index: index)
-                                            }
+                                    }
+                                    .onTapGesture {
+                                        if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                            presentedQuickLook(index: index)
                                         }
-                                        .fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                                                .ignoresSafeArea()
-                                        }
+                                    }
+                                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
+                                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                                            .ignoresSafeArea()
                                     }
                                 }
                             }
                         }
                     }
+                    .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
 
