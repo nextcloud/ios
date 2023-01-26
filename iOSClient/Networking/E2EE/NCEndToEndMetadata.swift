@@ -49,14 +49,14 @@ class NCEndToEndMetadata: NSObject {
 
         struct Files: Codable {
             let initializationVector: String
-            let authenticationTag: String
+            let authenticationTag: String?
             let metadataKey: Int
             let encrypted: String
         }
 
         struct Filedrop: Codable {
             let initializationVector: String
-            let authenticationTag: String
+            let authenticationTag: String?
             let metadataKey: Int
             let encrypted: String
         }
@@ -204,7 +204,7 @@ class NCEndToEndMetadata: NSObject {
                                 let object = tableE2eEncryption()
 
                                 object.account = account
-                                object.authenticationTag = authenticationTag
+                                object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "files"
                                 object.fileName = encrypted.filename
                                 object.fileNameIdentifier = fileNameIdentifier
@@ -273,7 +273,7 @@ class NCEndToEndMetadata: NSObject {
                                 let object = tableE2eEncryption()
 
                                 object.account = account
-                                object.authenticationTag = authenticationTag
+                                object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "filedrop"
                                 object.fileName = encrypted.filename
                                 object.fileNameIdentifier = fileNameIdentifier
