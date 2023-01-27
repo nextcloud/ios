@@ -209,8 +209,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if activeAccount.account != account {
             settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
         } else {
-            // Unlock E2EE
-            NCNetworkingE2EE.shared.unlockAll(account: self.account)
             // Request Service Server Nextcloud
             NCService.shared.startRequestServicesServer()
         }

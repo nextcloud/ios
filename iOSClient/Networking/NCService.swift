@@ -159,6 +159,8 @@ class NCService: NSObject {
 
             self.requestServerCapabilities()
             self.requestDashboardWidget()
+            // Unlock E2EE
+            NCNetworkingE2EE.shared.unlockAll(account: account)
         }
     }
 

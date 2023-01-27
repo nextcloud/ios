@@ -119,10 +119,6 @@ import Photos
         if typeReachability == NKCommon.typeReachability.reachableCellular || typeReachability == NKCommon.typeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
                 NCService.shared.startRequestServicesServer()
-                // Unlock E2EE
-                if let account = (UIApplication.shared.delegate as? AppDelegate)?.account {
-                    NCNetworkingE2EE.shared.unlockAll(account: account)
-                }
             }
             lastReachability = true
         } else {
