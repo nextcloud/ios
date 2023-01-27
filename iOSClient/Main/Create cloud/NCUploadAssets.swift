@@ -345,9 +345,9 @@ struct UploadAssetsView: View {
                                     ZStack(alignment: .bottomTrailing) {
                                         Image(uiImage: item.image)
                                             .resizable()
-                                            .frame(width: 100, height: 100, alignment: .center)
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 80, height: 80, alignment: .center)
                                             .cornerRadius(10)
-                                            .scaledToFit()
                                         if item.asset.type == .livePhoto && item.data == nil {
                                             Image(systemName: "livephoto")
                                                 .resizable()
