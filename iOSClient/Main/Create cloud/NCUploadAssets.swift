@@ -316,7 +316,7 @@ struct UploadAssetsView: View {
 
         if let imageData = uploadAssets.previewStore[index].data {
             image = UIImage(data: imageData)
-        } else if let imageFullResolution = uploadAssets.previewStore[index].asset.fullResolutionImage {
+        } else if let imageFullResolution = uploadAssets.previewStore[index].asset.fullResolutionImage?.fixedOrientation() {
             image = imageFullResolution
         }
 
