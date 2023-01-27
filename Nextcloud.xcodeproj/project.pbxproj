@@ -4134,8 +4134,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rechsteiner/Parchment";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
 			};
 		};
 		F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */ = {

@@ -99,7 +99,11 @@ class NCSharePaging: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
 
-        pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
+        if sharingEnabled {
+            pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
+        } else {
+            pagingViewController.indicatorColor = .clear
+        }
         (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
     }
@@ -241,12 +245,17 @@ extension NCSharePaging: PagingViewControllerDataSource {
 
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
 
-        switch NCGlobal.NCSharePagingIndex(rawValue: index) {
-        case .activity:
-            return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
-        case .sharing:
-            return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
-        default:
+        if sharingEnabled {
+            switch NCGlobal.NCSharePagingIndex(rawValue: index) {
+            case .activity:
+                return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
+            case .sharing:
+                return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
+            default:
+                return PagingIndexItem(index: index, title: "")
+            }
+        } else {
+            self.title = NSLocalizedString("_activity_", comment: "")
             return PagingIndexItem(index: index, title: "")
         }
     }
