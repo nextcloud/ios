@@ -152,7 +152,9 @@ struct UploadAssetsView: View {
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
     @State private var isPresentedQuickLook = false
+    @State private var isPresentedAlert = false
     @State private var fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
+    @State private var renameFileName: String = ""
     @State private var metadata: tableMetadata?
     @State private var index: Int = 0
 
@@ -352,10 +354,10 @@ struct UploadAssetsView: View {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     let item = uploadAssets.previewStore[index]
-                                    if #available(iOS 15, *) {
+                                    if #available(iOS 16, *) {
                                         Menu {
                                             Button(action: {
-
+                                                isPresentedAlert = true
                                             }) {
                                                 Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
                                             }
@@ -373,6 +375,13 @@ struct UploadAssetsView: View {
                                             }
                                         } label: {
                                             ImageAsset(uploadAssets: uploadAssets, index: index)
+                                            .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $isPresentedAlert) {
+                                                TextField("Filename", text: $renameFileName)
+                                                Button(NSLocalizedString("_rename_", comment: ""), action: {
+                                                    uploadAssets.previewStore[index].fileName = renameFileName
+                                                })
+                                                Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
+                                            }
                                         }
                                     } else {
                                         ImageAsset(uploadAssets: uploadAssets, index: index)
