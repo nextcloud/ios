@@ -397,11 +397,7 @@ struct UploadAssetsView: View {
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                         }
                     }
-                    .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
-                    }
+
 
                     Section {
 
@@ -443,11 +439,6 @@ struct UploadAssetsView: View {
                             .onTapGesture {
                                 isPresentedSelect = true
                             }
-                        }
-                    }
-                    .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
                         }
                     }
 
