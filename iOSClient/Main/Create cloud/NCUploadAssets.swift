@@ -333,6 +333,15 @@ struct UploadAssetsView: View {
         }
     }
 
+    func deleteAsset(index: Int) {
+
+        uploadAssets.assets.remove(at: index)
+        uploadAssets.previewStore.remove(at: index)
+        if uploadAssets.previewStore.isEmpty {
+            uploadAssets.dismiss = true
+        }
+    }
+
     var body: some View {
 
         NavigationView {
@@ -358,7 +367,7 @@ struct UploadAssetsView: View {
                                                 }
                                             }
                                             Button(action: {
-
+                                                deleteAsset(index: index)
                                             }) {
                                                 Label(NSLocalizedString("_remove_", comment: ""), systemImage: "trash")
                                             }
@@ -525,28 +534,30 @@ struct UploadAssetsView: View {
 
         var body: some View {
             ZStack(alignment: .bottomTrailing) {
-                let item = uploadAssets.previewStore[index]
-                Image(uiImage: item.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 80, height: 80, alignment: .center)
-                    .cornerRadius(10)
-                if item.asset.type == .livePhoto && item.data == nil {
-                    Image(systemName: "livephoto")
+                if index < uploadAssets.previewStore.count {
+                    let item = uploadAssets.previewStore[index]
+                    Image(uiImage: item.image)
                         .resizable()
-                        .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 5)
-                } else if item.asset.type == .video {
-                    Image(systemName: "video.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 5)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80, alignment: .center)
+                        .cornerRadius(10)
+                    if item.asset.type == .livePhoto && item.data == nil {
+                        Image(systemName: "livephoto")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 15, height: 15)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 5)
+                    } else if item.asset.type == .video {
+                        Image(systemName: "video.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 15, height: 15)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 5)
+                    }
                 }
             }
         }
