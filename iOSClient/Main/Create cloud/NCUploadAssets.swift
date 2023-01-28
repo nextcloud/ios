@@ -44,7 +44,7 @@ struct PreviewStore {
     var id: String
     var asset: TLPHAsset
     var data: Data?
-    var fileName: String?
+    var fileName: String
     var image: UIImage
 }
 
@@ -76,7 +76,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                previewStore.append(PreviewStore(id: localIdentifier, asset: asset, image: image))
+                previewStore.append(PreviewStore(id: localIdentifier, asset: asset, fileName: "", image: image))
             }
             DispatchQueue.main.async {
                 self.previewStore = previewStore
@@ -248,17 +248,22 @@ struct UploadAssetsView: View {
         var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
 
         for asset in uploadAssets.assets {
-            guard let asset = asset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
+            guard let asset = asset.phAsset,
+                  let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }),
+                  let assetFileName = asset.value(forKey: "filename") as? NSString else { continue }
 
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
-            let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+            let ext = assetFileName.pathExtension.lowercased()
+            let fileName = previewStore.fileName.isEmpty
+            ? CCUtility.createFileName(assetFileName as String,
                                                     fileDate: creationDate,
                                                     fileType: asset.mediaType,
                                                     keyFileName: NCGlobal.shared.keyFileNameMask,
                                                     keyFileNameType: NCGlobal.shared.keyFileNameType,
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: false)!
+            : (previewStore.fileName + "." + ext)
 
             if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && previewStore.data == nil {
                 livePhoto = true
@@ -358,7 +363,7 @@ struct UploadAssetsView: View {
                                     if #available(iOS 16, *) {
                                         Menu {
                                             Button(action: {
-                                                renameFileName = uploadAssets.previewStore[index].fileName ?? ""
+                                                renameFileName = uploadAssets.previewStore[index].fileName
                                                 renameIndex = index
                                                 isPresentedAlert = true
                                             }) {
