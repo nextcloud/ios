@@ -155,6 +155,7 @@ struct UploadAssetsView: View {
     @State private var isPresentedAlert = false
     @State private var fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
     @State private var renameFileName: String = ""
+    @State private var renameIndex: Int = 0
     @State private var metadata: tableMetadata?
     @State private var index: Int = 0
 
@@ -357,6 +358,8 @@ struct UploadAssetsView: View {
                                     if #available(iOS 16, *) {
                                         Menu {
                                             Button(action: {
+                                                renameFileName = uploadAssets.previewStore[index].fileName ?? ""
+                                                renameIndex = index
                                                 isPresentedAlert = true
                                             }) {
                                                 Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
@@ -378,7 +381,7 @@ struct UploadAssetsView: View {
                                             .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $isPresentedAlert) {
                                                 TextField("Filename", text: $renameFileName)
                                                 Button(NSLocalizedString("_rename_", comment: ""), action: {
-                                                    uploadAssets.previewStore[index].fileName = renameFileName
+                                                    uploadAssets.previewStore[renameIndex].fileName = renameFileName
                                                 })
                                                 Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
                                             }
