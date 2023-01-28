@@ -405,7 +405,6 @@ struct UploadAssetsView: View {
                     .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
-
                         Toggle(isOn: $isMaintainOriginalFilename, label: {
                             Text(NSLocalizedString("_maintain_original_filename_", comment: ""))
                                 .font(.system(size: 15))
@@ -422,7 +421,6 @@ struct UploadAssetsView: View {
                     }
 
                     Section {
-
                         Toggle(isOn: $uploadAssets.isUseAutoUploadFolder, label: {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
