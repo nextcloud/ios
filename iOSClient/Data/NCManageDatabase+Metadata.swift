@@ -107,9 +107,13 @@ class tableMetadata: Object, NCUserBaseUrl {
 
 extension tableMetadata {
 
-    var fileExtension: String { (fileNameView as NSString).pathExtension }
+    var fileExtension: String {
+        (fileNameView as NSString).pathExtension
+    }
 
-    var fileNoExtension: String { (fileNameView as NSString).deletingPathExtension }
+    var fileNoExtension: String {
+        (fileNameView as NSString).deletingPathExtension
+    }
 
     var isRenameable: Bool {
         if lock {
