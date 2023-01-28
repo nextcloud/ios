@@ -42,9 +42,10 @@ class NCHostingUploadAssetsView: NSObject {
 
 struct PreviewStore {
     var id: String
-    var image: UIImage
-    var data: Data?
     var asset: TLPHAsset
+    var data: Data?
+    var fileName: String?
+    var image: UIImage
 }
 
 class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
@@ -75,7 +76,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset))
+                previewStore.append(PreviewStore(id: localIdentifier, asset: asset, image: image))
             }
             DispatchQueue.main.async {
                 self.previewStore = previewStore
@@ -342,42 +343,43 @@ struct UploadAssetsView: View {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     let item = uploadAssets.previewStore[index]
-                                    ZStack(alignment: .bottomTrailing) {
-                                        Image(uiImage: item.image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 80, height: 80, alignment: .center)
-                                            .cornerRadius(10)
-                                        if item.asset.type == .livePhoto && item.data == nil {
-                                            Image(systemName: "livephoto")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(.white)
-                                                .padding(.horizontal, 5)
-                                                .padding(.vertical, 5)
-                                        } else if item.asset.type == .video {
-                                            Image(systemName: "video.fill")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(.white)
-                                                .padding(.horizontal, 5)
-                                                .padding(.vertical, 5)
+                                    if #available(iOS 15, *) {
+                                        Menu {
+                                            Button(action: {
+
+                                            }) {
+                                                Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
+                                            }
+                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                                Button(action: {
+                                                    presentedQuickLook(index: index)
+                                                }) {
+                                                    Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
+                                                }
+                                            }
+                                            Button(action: {
+
+                                            }) {
+                                                Label(NSLocalizedString("_remove_", comment: ""), systemImage: "trash")
+                                            }
+                                        } label: {
+                                            ImageAsset(uploadAssets: uploadAssets, index: index)
                                         }
-                                    }
-                                    .onTapGesture {
-                                        if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                            presentedQuickLook(index: index)
+                                    } else {
+                                        ImageAsset(uploadAssets: uploadAssets, index: index)
+                                        .onTapGesture {
+                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                                presentedQuickLook(index: index)
+                                            }
                                         }
-                                    }
-                                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                                            .ignoresSafeArea()
                                     }
                                 }
                             }
                         }
+                    }
+                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
+                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                            .ignoresSafeArea()
                     }
                     .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
@@ -397,7 +399,6 @@ struct UploadAssetsView: View {
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brand)))
                         }
                     }
-
 
                     Section {
 
@@ -514,6 +515,40 @@ struct UploadAssetsView: View {
         }
         .onDisappear {
             uploadAssets.dismiss = true
+        }
+    }
+
+    struct ImageAsset: View {
+
+        @ObservedObject var uploadAssets: NCUploadAssets
+        @State var index: Int
+
+        var body: some View {
+            ZStack(alignment: .bottomTrailing) {
+                let item = uploadAssets.previewStore[index]
+                Image(uiImage: item.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 80, height: 80, alignment: .center)
+                    .cornerRadius(10)
+                if item.asset.type == .livePhoto && item.data == nil {
+                    Image(systemName: "livephoto")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 5)
+                } else if item.asset.type == .video {
+                    Image(systemName: "video.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 5)
+                }
+            }
         }
     }
 }
