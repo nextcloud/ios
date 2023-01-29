@@ -42,9 +42,11 @@ class NCHostingUploadAssetsView: NSObject {
 
 struct PreviewStore {
     var id: String
-    var image: UIImage
-    var data: Data?
     var asset: TLPHAsset
+    var assetType: TLPHAsset.AssetType
+    var data: Data?
+    var fileName: String
+    var image: UIImage
 }
 
 class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
@@ -75,7 +77,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                previewStore.append(PreviewStore(id: localIdentifier, image: image, asset: asset))
+                previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
             }
             DispatchQueue.main.async {
                 self.previewStore = previewStore
@@ -151,7 +153,10 @@ struct UploadAssetsView: View {
     @State private var isPresentedSelect = false
     @State private var isPresentedUploadConflict = false
     @State private var isPresentedQuickLook = false
+    @State private var isPresentedAlert = false
     @State private var fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
+    @State private var renameFileName: String = ""
+    @State private var renameIndex: Int = 0
     @State private var metadata: tableMetadata?
     @State private var index: Int = 0
 
@@ -243,20 +248,25 @@ struct UploadAssetsView: View {
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
         var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
 
-        for asset in uploadAssets.assets {
-            guard let asset = asset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
+        for tlAsset in uploadAssets.assets {
+            guard let asset = tlAsset.phAsset,
+                  let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }),
+                  let assetFileName = asset.value(forKey: "filename") as? NSString else { continue }
 
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
-            let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
+            let ext = assetFileName.pathExtension.lowercased()
+            let fileName = previewStore.fileName.isEmpty ?
+            CCUtility.createFileName(assetFileName as String,
                                                     fileDate: creationDate,
                                                     fileType: asset.mediaType,
                                                     keyFileName: NCGlobal.shared.keyFileNameMask,
                                                     keyFileNameType: NCGlobal.shared.keyFileNameType,
                                                     keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
                                                     forcedNewFileName: false)!
+            : (previewStore.fileName + "." + ext)
 
-            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && previewStore.data == nil {
+            if previewStore.assetType == .livePhoto && CCUtility.getLivePhoto() && previewStore.data == nil {
                 livePhoto = true
             }
 
@@ -332,57 +342,90 @@ struct UploadAssetsView: View {
         }
     }
 
+    func deleteAsset(index: Int) {
+
+        uploadAssets.assets.remove(at: index)
+        uploadAssets.previewStore.remove(at: index)
+        if uploadAssets.previewStore.isEmpty {
+            uploadAssets.dismiss = true
+        }
+    }
+
     var body: some View {
 
         NavigationView {
             ZStack(alignment: .top) {
                 List {
-                    Section(header: Text(NSLocalizedString("_modify_photo_", comment: "")), footer: Text(NSLocalizedString("_modify_photo_desc_", comment: ""))) {
+                    Section(footer: Text(NSLocalizedString("_modify_image_desc_", comment: ""))) {
                         ScrollView(.horizontal) {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     let item = uploadAssets.previewStore[index]
-                                    ZStack(alignment: .bottomTrailing) {
-                                        Image(uiImage: item.image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 80, height: 80, alignment: .center)
-                                            .cornerRadius(10)
-                                        if item.asset.type == .livePhoto && item.data == nil {
-                                            Image(systemName: "livephoto")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(.white)
-                                                .padding(.horizontal, 5)
-                                                .padding(.vertical, 5)
-                                        } else if item.asset.type == .video {
-                                            Image(systemName: "video.fill")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(.white)
-                                                .padding(.horizontal, 5)
-                                                .padding(.vertical, 5)
+                                    if #available(iOS 16, *) {
+                                        Menu {
+                                            Button(action: {
+                                                renameFileName = uploadAssets.previewStore[index].fileName
+                                                renameIndex = index
+                                                isPresentedAlert = true
+                                            }) {
+                                                Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
+                                            }
+                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                                Button(action: {
+                                                    presentedQuickLook(index: index)
+                                                }) {
+                                                    Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
+                                                }
+                                            }
+                                            if item.data == nil && item.asset.type == .livePhoto && item.assetType == .livePhoto {
+                                                Button(action: {
+                                                    uploadAssets.previewStore[index].assetType = .photo
+                                                }) {
+                                                    Label(NSLocalizedString("_disable_livephoto_", comment: ""), systemImage: "livephoto.slash")
+                                                }
+                                            } else if item.data == nil && item.asset.type == .livePhoto && item.assetType == .photo {
+                                                Button(action: {
+                                                    uploadAssets.previewStore[index].assetType = .livePhoto
+                                                }) {
+                                                    Label(NSLocalizedString("_enable_livephoto_", comment: ""), systemImage: "livephoto")
+                                                }
+                                            }
+                                            Button(role: .destructive, action: {
+                                                deleteAsset(index: index)
+                                            }) {
+                                                Label(NSLocalizedString("_remove_", comment: ""), systemImage: "trash")
+                                            }
+                                        } label: {
+                                            ImageAsset(uploadAssets: uploadAssets, index: index)
+                                            .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $isPresentedAlert) {
+                                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $renameFileName)
+                                                    .autocapitalization(.none)
+                                                    .autocorrectionDisabled()
+                                                Button(NSLocalizedString("_rename_", comment: ""), action: {
+                                                    uploadAssets.previewStore[renameIndex].fileName = renameFileName.trimmingCharacters(in: .whitespacesAndNewlines)
+                                                })
+                                                Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
+                                            }
                                         }
-                                    }
-                                    .onTapGesture {
-                                        if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                            presentedQuickLook(index: index)
+                                    } else {
+                                        ImageAsset(uploadAssets: uploadAssets, index: index)
+                                        .onTapGesture {
+                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
+                                                presentedQuickLook(index: index)
+                                            }
                                         }
-                                    }
-                                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
-                                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                                            .ignoresSafeArea()
                                     }
                                 }
                             }
                         }
                     }
+                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
+                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                            .ignoresSafeArea()
+                    }
                     .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
-
                         Toggle(isOn: $isMaintainOriginalFilename, label: {
                             Text(NSLocalizedString("_maintain_original_filename_", comment: ""))
                                 .font(.system(size: 15))
@@ -398,9 +441,7 @@ struct UploadAssetsView: View {
                         }
                     }
 
-
                     Section {
-
                         Toggle(isOn: $uploadAssets.isUseAutoUploadFolder, label: {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
@@ -514,6 +555,42 @@ struct UploadAssetsView: View {
         }
         .onDisappear {
             uploadAssets.dismiss = true
+        }
+    }
+
+    struct ImageAsset: View {
+
+        @ObservedObject var uploadAssets: NCUploadAssets
+        @State var index: Int
+
+        var body: some View {
+            ZStack(alignment: .bottomTrailing) {
+                if index < uploadAssets.previewStore.count {
+                    let item = uploadAssets.previewStore[index]
+                    Image(uiImage: item.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80, alignment: .center)
+                        .cornerRadius(10)
+                    if item.assetType == .livePhoto && item.data == nil {
+                        Image(systemName: "livephoto")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 15, height: 15)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 5)
+                    } else if item.assetType == .video {
+                        Image(systemName: "video.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 15, height: 15)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 5)
+                    }
+                }
+            }
         }
     }
 }
