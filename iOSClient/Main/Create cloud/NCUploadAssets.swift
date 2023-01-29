@@ -248,8 +248,8 @@ struct UploadAssetsView: View {
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
         var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
 
-        for asset in uploadAssets.assets {
-            guard let asset = asset.phAsset,
+        for tlAsset in uploadAssets.assets {
+            guard let asset = tlAsset.phAsset,
                   let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }),
                   let assetFileName = asset.value(forKey: "filename") as? NSString else { continue }
 
