@@ -69,9 +69,17 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         switch selector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
-            let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-            CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: true, metadata: metadata)
+            let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
+            guard let image = UIImage(contentsOfFile: fileNamePath) else { return }
+            if let data = image.jpegData(compressionQuality: 1) {
+                do {
+                    try data.write(to: URL(fileURLWithPath: fileNameTemp))
+                } catch {
+                    return
+                }
+            }
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
             let navigationController = UINavigationController(rootViewController: viewerQuickLook)
             navigationController.modalPresentationStyle = .fullScreen
             appDelegate.window?.rootViewController?.present(navigationController, animated: true)
