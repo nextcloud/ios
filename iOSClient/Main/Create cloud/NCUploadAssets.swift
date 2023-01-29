@@ -376,7 +376,7 @@ struct UploadAssetsView: View {
                                                     Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
                                                 }
                                             }
-                                            Button(action: {
+                                            Button(role: .destructive, action: {
                                                 deleteAsset(index: index)
                                             }) {
                                                 Label(NSLocalizedString("_remove_", comment: ""), systemImage: "trash")
@@ -384,8 +384,9 @@ struct UploadAssetsView: View {
                                         } label: {
                                             ImageAsset(uploadAssets: uploadAssets, index: index)
                                             .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $isPresentedAlert) {
-                                                TextField("Filename", text: $renameFileName)
+                                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $renameFileName)
                                                     .autocapitalization(.none)
+                                                    .autocorrectionDisabled()
                                                 Button(NSLocalizedString("_rename_", comment: ""), action: {
                                                     uploadAssets.previewStore[renameIndex].fileName = renameFileName.trimmingCharacters(in: .whitespacesAndNewlines)
                                                 })
