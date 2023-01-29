@@ -255,8 +255,8 @@ struct UploadAssetsView: View {
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
-            let fileName = previewStore.fileName.isEmpty
-            ? CCUtility.createFileName(assetFileName as String,
+            let fileName = previewStore.fileName.isEmpty ?
+            CCUtility.createFileName(assetFileName as String,
                                                     fileDate: creationDate,
                                                     fileType: asset.mediaType,
                                                     keyFileName: NCGlobal.shared.keyFileNameMask,
@@ -385,8 +385,9 @@ struct UploadAssetsView: View {
                                             ImageAsset(uploadAssets: uploadAssets, index: index)
                                             .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $isPresentedAlert) {
                                                 TextField("Filename", text: $renameFileName)
+                                                    .autocapitalization(.none)
                                                 Button(NSLocalizedString("_rename_", comment: ""), action: {
-                                                    uploadAssets.previewStore[renameIndex].fileName = renameFileName
+                                                    uploadAssets.previewStore[renameIndex].fileName = renameFileName.trimmingCharacters(in: .whitespacesAndNewlines)
                                                 })
                                                 Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
                                             }
