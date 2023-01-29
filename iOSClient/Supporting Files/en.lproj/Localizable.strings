@@ -923,6 +923,7 @@
 "_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live effect";
 "_enable_livephoto_"        = "Enable Live Photo";
 "_disable_livephoto_"       = "Disable Live Photo";
+"_undo_modify_"             = "Undo the modify";
 
 // Video
 "_select_trace_"            = "Select the trace";

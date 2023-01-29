@@ -377,6 +377,17 @@ struct UploadAssetsView: View {
                                                     Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
                                                 }
                                             }
+                                            if item.data != nil {
+                                                Button(action: {
+                                                    if let image = uploadAssets.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true) {
+                                                        uploadAssets.previewStore[index].image = image
+                                                        uploadAssets.previewStore[index].data = nil
+                                                        uploadAssets.previewStore[index].assetType = uploadAssets.previewStore[index].asset.type
+                                                    }
+                                                }) {
+                                                    Label(NSLocalizedString("_undo_modify_", comment: ""), systemImage: "arrow.uturn.backward.circle")
+                                                }
+                                            }
                                             if item.data == nil && item.asset.type == .livePhoto && item.assetType == .livePhoto {
                                                 Button(action: {
                                                     uploadAssets.previewStore[index].assetType = .photo
