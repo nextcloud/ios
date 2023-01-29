@@ -921,6 +921,8 @@
 "_crop_"                    = "Crop";
 "_modify_photo_desc_"       = "Tap the image for modify photo";
 "_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live effect";
+"_enable_livephoto_"        = "Enable Live Photo";
+"_disable_livephoto_"       = "Disable Live Photo";
 
 // Video
 "_select_trace_"            = "Select the trace";

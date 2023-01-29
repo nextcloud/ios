@@ -43,6 +43,7 @@ class NCHostingUploadAssetsView: NSObject {
 struct PreviewStore {
     var id: String
     var asset: TLPHAsset
+    var assetType: TLPHAsset.AssetType
     var data: Data?
     var fileName: String
     var image: UIImage
@@ -76,7 +77,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         DispatchQueue.global().async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true), let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                previewStore.append(PreviewStore(id: localIdentifier, asset: asset, fileName: "", image: image))
+                previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
             }
             DispatchQueue.main.async {
                 self.previewStore = previewStore
@@ -265,7 +266,7 @@ struct UploadAssetsView: View {
                                                     forcedNewFileName: false)!
             : (previewStore.fileName + "." + ext)
 
-            if asset.mediaSubtypes.contains(.photoLive) && CCUtility.getLivePhoto() && previewStore.data == nil {
+            if previewStore.assetType == .livePhoto && CCUtility.getLivePhoto() && previewStore.data == nil {
                 livePhoto = true
             }
 
@@ -558,7 +559,7 @@ struct UploadAssetsView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 80, height: 80, alignment: .center)
                         .cornerRadius(10)
-                    if item.asset.type == .livePhoto && item.data == nil {
+                    if item.assetType == .livePhoto && item.data == nil {
                         Image(systemName: "livephoto")
                             .resizable()
                             .scaledToFit()
@@ -566,7 +567,7 @@ struct UploadAssetsView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 5)
-                    } else if item.asset.type == .video {
+                    } else if item.assetType == .video {
                         Image(systemName: "video.fill")
                             .resizable()
                             .scaledToFit()
