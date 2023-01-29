@@ -33,7 +33,7 @@ struct ViewerQuickLook: UIViewControllerRepresentable {
         uploadAssets.startTimer(navigationItem: controller.navigationItem)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if uploadAssets.previewStore[index].asset.type == .livePhoto && uploadAssets.previewStore[index].data == nil {
+            if uploadAssets.previewStore[index].assetType == .livePhoto && uploadAssets.previewStore[index].asset.type == .livePhoto && uploadAssets.previewStore[index].data == nil {
                 let error = NKError(errorCode: NCGlobal.shared.errorCharactersForbidden, errorDescription: "_message_disable_livephoto_")
                 NCContentPresenter.shared.showInfo(error: error)
             }
