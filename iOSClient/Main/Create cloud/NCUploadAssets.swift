@@ -377,6 +377,19 @@ struct UploadAssetsView: View {
                                                     Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
                                                 }
                                             }
+                                            if item.data == nil && item.asset.type == .livePhoto && item.assetType == .livePhoto {
+                                                Button(action: {
+                                                    uploadAssets.previewStore[index].assetType = .photo
+                                                }) {
+                                                    Label(NSLocalizedString("_disable_livephoto_", comment: ""), systemImage: "livephoto.slash")
+                                                }
+                                            } else if item.data == nil && item.asset.type == .livePhoto && item.assetType == .photo {
+                                                Button(action: {
+                                                    uploadAssets.previewStore[index].assetType = .livePhoto
+                                                }) {
+                                                    Label(NSLocalizedString("_enable_livephoto_", comment: ""), systemImage: "livephoto")
+                                                }
+                                            }
                                             Button(role: .destructive, action: {
                                                 deleteAsset(index: index)
                                             }) {
