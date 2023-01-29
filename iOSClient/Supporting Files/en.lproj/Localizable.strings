@@ -919,7 +919,7 @@
 "_calendar_contacts_footer_"    = "After the downloading you need to go to the Settings app to install it. If a profile is not installed within 8 minutes of downloading it, it is automatically deleted";
 "_preview_"                 = "Preview";
 "_crop_"                    = "Crop";
-"_modify_photo_desc_"       = "Tap the image for modify photo";
+"_modify_image_desc_"       = "Tap the image for modify";
 "_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live effect";
 "_enable_livephoto_"        = "Enable Live Photo";
 "_disable_livephoto_"       = "Disable Live Photo";
