@@ -331,7 +331,7 @@ struct UploadAssetsView: View {
         }
 
         if let image = image {
-            if let data = image.pngData() {
+            if let data = image.jpegData(compressionQuality: 1) {
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     self.index = index
