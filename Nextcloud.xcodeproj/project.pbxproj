@@ -102,7 +102,7 @@
 		F70716E62987F81500E72C1D /* DocumentActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70716E52987F81500E72C1D /* DocumentActionViewController.swift */; };
 		F70716E92987F81500E72C1D /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70716E72987F81500E72C1D /* MainInterface.storyboard */; };
 		F70716ED2987F81500E72C1D /* File Provider Extension UI.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F70716F32987F8CE00E72C1D /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F70716F22987F8CE00E72C1D /* UICKeyChainStore */; };
+		F70716F929881CFA00E72C1D /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F70716F829881CFA00E72C1D /* UICKeyChainStore */; };
 		F70753EB2542A99800972D44 /* NCViewerMediaPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */; };
 		F70753F12542A9A200972D44 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerMedia.swift */; };
 		F70753F72542A9C000972D44 /* NCViewerMediaPage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */; };
@@ -756,9 +756,9 @@
 		F70716E32987F81500E72C1D /* File Provider Extension UI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension UI.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F70716E52987F81500E72C1D /* DocumentActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentActionViewController.swift; sourceTree = "<group>"; };
 		F70716E82987F81500E72C1D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		F70716EA2987F81500E72C1D /* File_Provider_Extension_UI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = File_Provider_Extension_UI.plist; sourceTree = "<group>"; };
 		F70716F42987F8E100E72C1D /* File_Provider_Extension_UI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = File_Provider_Extension_UI.entitlements; sourceTree = "<group>"; };
 		F70716F52987FA2F00E72C1D /* FileProviderExtensionUI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtensionUI-Bridging-Header.h"; sourceTree = "<group>"; };
+		F70716F729881BD800E72C1D /* File_Provider_Extension_UI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = File_Provider_Extension_UI.plist; sourceTree = "<group>"; };
 		F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerMediaPage.swift; sourceTree = "<group>"; };
 		F70753F02542A9A200972D44 /* NCViewerMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerMedia.swift; sourceTree = "<group>"; };
 		F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerMediaPage.storyboard; sourceTree = "<group>"; };
@@ -1260,7 +1260,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F70716F32987F8CE00E72C1D /* UICKeyChainStore in Frameworks */,
+				F70716F929881CFA00E72C1D /* UICKeyChainStore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1465,7 +1465,6 @@
 				F70716F52987FA2F00E72C1D /* FileProviderExtensionUI-Bridging-Header.h */,
 				F70716E52987F81500E72C1D /* DocumentActionViewController.swift */,
 				F70716E72987F81500E72C1D /* MainInterface.storyboard */,
-				F70716EA2987F81500E72C1D /* File_Provider_Extension_UI.plist */,
 			);
 			path = "File Provider Extension UI";
 			sourceTree = "<group>";
@@ -2064,6 +2063,7 @@
 			isa = PBXGroup;
 			children = (
 				F70716F42987F8E100E72C1D /* File_Provider_Extension_UI.entitlements */,
+				F70716F729881BD800E72C1D /* File_Provider_Extension_UI.plist */,
 				F771E3FB20E23A8700AFB62D /* File_Provider_Extension.entitlements */,
 				F771E3FC20E23A8800AFB62D /* File_Provider_Extension.plist */,
 				F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */,
@@ -2454,7 +2454,7 @@
 			);
 			name = "File Provider Extension UI";
 			packageProductDependencies = (
-				F70716F22987F8CE00E72C1D /* UICKeyChainStore */,
+				F70716F829881CFA00E72C1D /* UICKeyChainStore */,
 			);
 			productName = "File Provider Extension UI";
 			productReference = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */;
@@ -3669,8 +3669,7 @@
 					EXTENSION,
 					EXTENSION_FILE_PROVIDER_EXTENSION_UI,
 				);
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "File Provider Extension UI/File_Provider_Extension_UI.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -3690,8 +3689,7 @@
 					EXTENSION,
 					EXTENSION_FILE_PROVIDER_EXTENSION_UI,
 				);
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "File Provider Extension UI/File_Provider_Extension_UI.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -4279,8 +4277,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rechsteiner/Parchment";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				branch = main;
+				kind = branch;
 			};
 		};
 		F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */ = {
@@ -4302,7 +4300,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F70716F22987F8CE00E72C1D /* UICKeyChainStore */ = {
+		F70716F829881CFA00E72C1D /* UICKeyChainStore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
 			productName = UICKeyChainStore;
