@@ -219,6 +219,34 @@
 		F746EC52273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F746EC53273906C50052598D /* NCViewCertificateDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */; };
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
+		F7490E6B29882A92009DCE94 /* NCGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */; };
+		F7490E6C29882AEA009DCE94 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
+		F7490E6E29882B56009DCE94 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F7490E6F29882B67009DCE94 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */; };
+		F7490E7029882B9B009DCE94 /* NCManageDatabase+Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61827562A4B0081CEEF /* NCManageDatabase+Metadata.swift */; };
+		F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7490E7129882BB4009DCE94 /* RealmSwift */; };
+		F7490E7329882BC8009DCE94 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
+		F7490E7429882BCC009DCE94 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
+		F7490E7529882BE2009DCE94 /* NCManageDatabase+Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A10BE29322E8A008499B8 /* NCManageDatabase+Directory.swift */; };
+		F7490E7629882BF3009DCE94 /* NCUserBaseUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */; };
+		F7490E7729882C10009DCE94 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
+		F7490E7829882C28009DCE94 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F7490E7929882C2F009DCE94 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
+		F7490E7B29882C49009DCE94 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7490E7A29882C49009DCE94 /* SVGKitSwift */; };
+		F7490E7D29882C59009DCE94 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F7490E7C29882C59009DCE94 /* JGProgressHUD */; };
+		F7490E7E29882C6E009DCE94 /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
+		F7490E7F29882C73009DCE94 /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
+		F7490E8029882C76009DCE94 /* NCManageDatabase+Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749B650297B0F2400087535 /* NCManageDatabase+Avatar.swift */; };
+		F7490E8129882C79009DCE94 /* NCManageDatabase+DashboardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */; };
+		F7490E8229882C80009DCE94 /* NCManageDatabase+E2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72FD3B4297ED49A00075D28 /* NCManageDatabase+E2EE.swift */; };
+		F7490E8329882C84009DCE94 /* NCManageDatabase+LayoutForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */; };
+		F7490E8429882C89009DCE94 /* NCManageDatabase+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */; };
+		F7490E8529882C8C009DCE94 /* NCManageDatabase+Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */; };
+		F7490E8629882C99009DCE94 /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
+		F7490E8729882CA8009DCE94 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
+		F7490E8929882CC8009DCE94 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7490E8829882CC8009DCE94 /* SwiftEntryKit */; };
+		F7490E8B29882CE4009DCE94 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7490E8A29882CE4009DCE94 /* NextcloudKit */; };
+		F7490E8C29882D02009DCE94 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */; };
 		F749B64B297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */; };
 		F749B64C297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */; };
@@ -1260,6 +1288,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7490E8B29882CE4009DCE94 /* NextcloudKit in Frameworks */,
+				F7490E7D29882C59009DCE94 /* JGProgressHUD in Frameworks */,
+				F7490E7B29882C49009DCE94 /* SVGKitSwift in Frameworks */,
+				F7490E8929882CC8009DCE94 /* SwiftEntryKit in Frameworks */,
+				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
 				F70716F929881CFA00E72C1D /* UICKeyChainStore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2455,6 +2488,11 @@
 			name = "File Provider Extension UI";
 			packageProductDependencies = (
 				F70716F829881CFA00E72C1D /* UICKeyChainStore */,
+				F7490E7129882BB4009DCE94 /* RealmSwift */,
+				F7490E7A29882C49009DCE94 /* SVGKitSwift */,
+				F7490E7C29882C59009DCE94 /* JGProgressHUD */,
+				F7490E8829882CC8009DCE94 /* SwiftEntryKit */,
+				F7490E8A29882CE4009DCE94 /* NextcloudKit */,
 			);
 			productName = "File Provider Extension UI";
 			productReference = F70716E32987F81500E72C1D /* File Provider Extension UI.appex */;
@@ -3001,7 +3039,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7490E8329882C84009DCE94 /* NCManageDatabase+LayoutForView.swift in Sources */,
+				F7490E7629882BF3009DCE94 /* NCUserBaseUrl.swift in Sources */,
+				F7490E8029882C76009DCE94 /* NCManageDatabase+Avatar.swift in Sources */,
+				F7490E7429882BCC009DCE94 /* NCManageDatabase.swift in Sources */,
+				F7490E6E29882B56009DCE94 /* NCBrand.swift in Sources */,
+				F7490E8129882C79009DCE94 /* NCManageDatabase+DashboardWidget.swift in Sources */,
+				F7490E8629882C99009DCE94 /* NCUtilityFileSystem.swift in Sources */,
+				F7490E8529882C8C009DCE94 /* NCManageDatabase+Video.swift in Sources */,
+				F7490E8C29882D02009DCE94 /* CCUtility.m in Sources */,
+				F7490E7729882C10009DCE94 /* UIColor+Extension.swift in Sources */,
 				F70716E62987F81500E72C1D /* DocumentActionViewController.swift in Sources */,
+				F7490E8429882C89009DCE94 /* NCManageDatabase+Share.swift in Sources */,
+				F7490E6F29882B67009DCE94 /* UIImage+Extension.swift in Sources */,
+				F7490E7E29882C6E009DCE94 /* NCManageDatabase+Account.swift in Sources */,
+				F7490E7329882BC8009DCE94 /* NCDatabase.swift in Sources */,
+				F7490E7029882B9B009DCE94 /* NCManageDatabase+Metadata.swift in Sources */,
+				F7490E6C29882AEA009DCE94 /* String+Extension.swift in Sources */,
+				F7490E6B29882A92009DCE94 /* NCGlobal.swift in Sources */,
+				F7490E7529882BE2009DCE94 /* NCManageDatabase+Directory.swift in Sources */,
+				F7490E7929882C2F009DCE94 /* NCElementsJSON.swift in Sources */,
+				F7490E8729882CA8009DCE94 /* ThreadSafeDictionary.swift in Sources */,
+				F7490E8229882C80009DCE94 /* NCManageDatabase+E2EE.swift in Sources */,
+				F7490E7829882C28009DCE94 /* NCUtility.swift in Sources */,
+				F7490E7F29882C73009DCE94 /* NCManageDatabase+Activity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4419,6 +4480,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
 			productName = SwiftEntryKit;
+		};
+		F7490E7129882BB4009DCE94 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		F7490E7A29882C49009DCE94 /* SVGKitSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKitSwift;
+		};
+		F7490E7C29882C59009DCE94 /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
+		};
+		F7490E8829882CC8009DCE94 /* SwiftEntryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
+			productName = SwiftEntryKit;
+		};
+		F7490E8A29882CE4009DCE94 /* NextcloudKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
+			productName = NextcloudKit;
 		};
 		F74E771F277A2EF40013B958 /* XLForm */ = {
 			isa = XCSwiftPackageProductDependency;

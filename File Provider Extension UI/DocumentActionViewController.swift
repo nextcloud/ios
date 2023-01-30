@@ -20,8 +20,14 @@ class DocumentActionViewController: FPUIActionExtensionViewController {
     }
 
     override func prepare(forError error: Error) {
-        identifierLabel?.text = error.localizedDescription
-        actionTypeLabel?.text = "Authenticate"
+        if let userInfo = (error as NSError).userInfo as NSDictionary?,
+           let code = userInfo["code"] as? Int {
+            if code == NCGlobal.shared.errorUnauthorizedFilesPasscode {
+                identifierLabel?.text = "AAAAAAAA"
+            }
+        } else {
+            identifierLabel?.text = error.localizedDescription
+        }
     }
 
     @IBAction func doneButtonTapped(_ sender: Any) {
