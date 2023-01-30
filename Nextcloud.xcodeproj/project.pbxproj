@@ -757,7 +757,7 @@
 		F70716E52987F81500E72C1D /* DocumentActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentActionViewController.swift; sourceTree = "<group>"; };
 		F70716E82987F81500E72C1D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		F70716EA2987F81500E72C1D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F70716F42987F8E100E72C1D /* File Provider Extension UI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "File Provider Extension UI.entitlements"; sourceTree = "<group>"; };
+		F70716F42987F8E100E72C1D /* File_Provider_Extension_UI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = File_Provider_Extension_UI.entitlements; sourceTree = "<group>"; };
 		F70716F52987FA2F00E72C1D /* FileProviderExtensionUI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtensionUI-Bridging-Header.h"; sourceTree = "<group>"; };
 		F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerMediaPage.swift; sourceTree = "<group>"; };
 		F70753F02542A9A200972D44 /* NCViewerMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerMedia.swift; sourceTree = "<group>"; };
@@ -1463,7 +1463,6 @@
 			isa = PBXGroup;
 			children = (
 				F70716F52987FA2F00E72C1D /* FileProviderExtensionUI-Bridging-Header.h */,
-				F70716F42987F8E100E72C1D /* File Provider Extension UI.entitlements */,
 				F70716E52987F81500E72C1D /* DocumentActionViewController.swift */,
 				F70716E72987F81500E72C1D /* MainInterface.storyboard */,
 				F70716EA2987F81500E72C1D /* Info.plist */,
@@ -2064,6 +2063,7 @@
 		F7C742D31E7BD36600D9C973 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F70716F42987F8E100E72C1D /* File_Provider_Extension_UI.entitlements */,
 				F771E3FB20E23A8700AFB62D /* File_Provider_Extension.entitlements */,
 				F771E3FC20E23A8800AFB62D /* File_Provider_Extension.plist */,
 				F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */,
@@ -3663,7 +3663,7 @@
 		F70716EE2987F81600E72C1D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "File Provider Extension UI/File Provider Extension UI.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
@@ -3684,7 +3684,7 @@
 		F70716EF2987F81600E72C1D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "File Provider Extension UI/File Provider Extension UI.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,

@@ -33,12 +33,12 @@
 #import "File_Provider_Extension-Swift.h"
 #endif
 
-#if defined(EXTENSION_NOTIFICATION_SERVICE)
-#import "Notification_Service_Extension-Swift.h"
+#if defined(EXTENSION_FILE_PROVIDER_EXTENSION_UI)
+#import "File_Provider_Extension_UI-Swift.h"
 #endif
 
-#if defined(EXTENSION_NOTIFICATION_SERVICE_UI)
-#import "Notification_Service_ExtensionUI-Swift.h"
+#if defined(EXTENSION_NOTIFICATION_SERVICE)
+#import "Notification_Service_Extension-Swift.h"
 #endif
 
 #if defined(EXTENSION_WIDGET)
