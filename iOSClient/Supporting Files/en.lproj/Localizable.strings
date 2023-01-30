@@ -408,7 +408,7 @@
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
-"_upload_mov_livephoto_footer_" = "\"Live Photo\" will save the selected photo in \"Live Photo\" format, if possible.";
+"_upload_mov_livephoto_footer_" = "Live Photo will save the selected photo in Live Photo format, if possible.";
 "_view_capabilities_"           = "View the capabilities";
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
