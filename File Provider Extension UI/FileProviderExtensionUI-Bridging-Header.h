@@ -1,8 +1,8 @@
 //
-//  NCBridgeSwift.h
+//  PickerFileProvider-Bridging-Header.h
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 11/05/17.
+//  Created by Marino Faggiana on 24/05/17.
 //  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -21,30 +21,4 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#if !defined(EXTENSION)
-#import "Nextcloud-Swift.h"
-#endif
-
-#if defined(EXTENSION_SHARE)
-#import "Share-Swift.h"
-#endif
-
-#if defined(EXTENSION_FILE_PROVIDER_EXTENSION)
-#import "File_Provider_Extension-Swift.h"
-#endif
-
-#if defined(EXTENSION_NOTIFICATION_SERVICE)
-#import "Notification_Service_Extension-Swift.h"
-#endif
-
-#if defined(EXTENSION_NOTIFICATION_SERVICE_UI)
-#import "Notification_Service_ExtensionUI-Swift.h"
-#endif
-
-#if defined(EXTENSION_WIDGET)
-#import "Widget-Swift.h"
-#endif
-
-#if defined(EXTENSION_WIDGETDASHBOARDINTENTHANDLER)
-#import "WidgetDashboardIntentHandler-Swift.h"
-#endif
+#import "CCUtility.h"
