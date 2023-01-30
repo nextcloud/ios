@@ -756,7 +756,7 @@
 		F70716E32987F81500E72C1D /* File Provider Extension UI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension UI.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F70716E52987F81500E72C1D /* DocumentActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentActionViewController.swift; sourceTree = "<group>"; };
 		F70716E82987F81500E72C1D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		F70716EA2987F81500E72C1D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F70716EA2987F81500E72C1D /* File_Provider_Extension_UI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = File_Provider_Extension_UI.plist; sourceTree = "<group>"; };
 		F70716F42987F8E100E72C1D /* File_Provider_Extension_UI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = File_Provider_Extension_UI.entitlements; sourceTree = "<group>"; };
 		F70716F52987FA2F00E72C1D /* FileProviderExtensionUI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtensionUI-Bridging-Header.h"; sourceTree = "<group>"; };
 		F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerMediaPage.swift; sourceTree = "<group>"; };
@@ -1465,7 +1465,7 @@
 				F70716F52987FA2F00E72C1D /* FileProviderExtensionUI-Bridging-Header.h */,
 				F70716E52987F81500E72C1D /* DocumentActionViewController.swift */,
 				F70716E72987F81500E72C1D /* MainInterface.storyboard */,
-				F70716EA2987F81500E72C1D /* Info.plist */,
+				F70716EA2987F81500E72C1D /* File_Provider_Extension_UI.plist */,
 			);
 			path = "File Provider Extension UI";
 			sourceTree = "<group>";
@@ -3670,7 +3670,7 @@
 					EXTENSION_FILE_PROVIDER_EXTENSION_UI,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "File Provider Extension UI/Info.plist";
+				INFOPLIST_FILE = "File Provider Extension UI/File_Provider_Extension_UI.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -3691,7 +3691,7 @@
 					EXTENSION_FILE_PROVIDER_EXTENSION_UI,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "File Provider Extension UI/Info.plist";
+				INFOPLIST_FILE = "File Provider Extension UI/File_Provider_Extension_UI.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
