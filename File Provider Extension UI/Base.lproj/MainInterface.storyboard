@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13153" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="J6p-g8-CHO">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="J6p-g8-CHO">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13133"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,19 +11,16 @@
         <!--Document Action View Controller-->
         <scene sceneID="Q8I-MS-tKG">
             <objects>
-                <viewController id="J6p-g8-CHO" customClass="DocumentActionViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="J6p-g8-CHO" customClass="DocumentActionViewController" customModule="File_Provider_Extension_UI" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Vdh-Gp-eV6">
                         <rect key="frame" x="0.0" y="0.0" width="350" height="400"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Type:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g6k-sp-jtu">
-                                <rect key="frame" x="106" y="34" width="43" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdj-d0-nZ2">
-                                <rect key="frame" x="157" y="34" width="177" height="21"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="kiS-ZU-Z4Y">
+                                <rect key="frame" x="47" y="136" width="256" height="128"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdj-d0-nZ2">
+                                <rect key="frame" x="10" y="305.5" width="330" height="20.5"/>
                                 <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionContentLabelIdentifier"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="177" id="56f-VY-qXp"/>
@@ -34,63 +29,35 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Action name:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lAh-Rn-dzR">
-                                <rect key="frame" x="49" y="80" width="100" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fwj-fa-AqO">
-                                <rect key="frame" x="157" y="80" width="177" height="21"/>
-                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionTypeLabelIdentifier"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="177" id="JPE-hi-Vng"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k6y-tY-87X">
-                                <rect key="frame" x="157" y="301" width="37" height="30"/>
-                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionDoneButtonIdentifier"/>
-                                <state key="normal" title="Done"/>
-                                <connections>
-                                    <action selector="doneButtonTapped:" destination="J6p-g8-CHO" eventType="touchUpInside" id="1zB-YS-foT"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3gV-2h-5zD">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3gV-2h-5zD">
                                 <rect key="frame" x="151" y="350" width="48" height="30"/>
                                 <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionCancelButtonIdentifier"/>
-                                <state key="normal" title="Cancel"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                                 <connections>
                                     <action selector="cancelButtonTapped:" destination="J6p-g8-CHO" eventType="touchUpInside" id="rCq-0k-2gc"/>
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="g6k-sp-jtu" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="20" symbolic="YES" id="6bZ-zO-taJ"/>
-                            <constraint firstItem="lAh-Rn-dzR" firstAttribute="top" secondItem="g6k-sp-jtu" secondAttribute="bottom" constant="25" id="8eA-2P-54S"/>
-                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="leading" secondItem="g6k-sp-jtu" secondAttribute="trailing" constant="8" id="9hE-J3-3O5"/>
-                            <constraint firstItem="lAh-Rn-dzR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="20" symbolic="YES" id="Ded-HC-OcR"/>
-                            <constraint firstItem="zTo-CZ-ppy" firstAttribute="bottom" secondItem="3gV-2h-5zD" secondAttribute="bottom" constant="20" id="FPz-JC-wtu"/>
-                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="leading" secondItem="lAh-Rn-dzR" secondAttribute="trailing" constant="8" id="LJH-hs-IBG"/>
-                            <constraint firstItem="g6k-sp-jtu" firstAttribute="top" secondItem="zTo-CZ-ppy" secondAttribute="top" constant="34" id="MQg-cl-zCF"/>
-                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="trailing" secondItem="Vdh-Gp-eV6" secondAttribute="trailingMargin" id="YW6-xe-IRG"/>
-                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="baseline" secondItem="g6k-sp-jtu" secondAttribute="baseline" id="eGj-Jh-4QB"/>
-                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="width" secondItem="gdj-d0-nZ2" secondAttribute="width" id="gWx-d0-ASK"/>
-                            <constraint firstItem="k6y-tY-87X" firstAttribute="centerX" secondItem="zTo-CZ-ppy" secondAttribute="centerX" id="kOA-Yz-GXs"/>
-                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="baseline" secondItem="lAh-Rn-dzR" secondAttribute="baseline" id="ms5-gI-BPI"/>
-                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="trailing" secondItem="Vdh-Gp-eV6" secondAttribute="trailingMargin" id="o5I-zu-nnu"/>
-                            <constraint firstItem="3gV-2h-5zD" firstAttribute="centerX" secondItem="zTo-CZ-ppy" secondAttribute="centerX" id="pcx-0T-WJc"/>
-                            <constraint firstItem="3gV-2h-5zD" firstAttribute="top" secondItem="k6y-tY-87X" secondAttribute="bottom" constant="19" id="zYE-Sl-0Xi"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="zTo-CZ-ppy"/>
+                        <color key="backgroundColor" red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="leading" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="10" id="BRI-CF-hj6"/>
+                            <constraint firstItem="zTo-CZ-ppy" firstAttribute="bottom" secondItem="3gV-2h-5zD" secondAttribute="bottom" constant="20" id="FPz-JC-wtu"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="centerX" secondItem="zTo-CZ-ppy" secondAttribute="centerX" id="Itg-ba-qVK"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="centerY" secondItem="zTo-CZ-ppy" secondAttribute="centerY" id="XGS-xL-84k"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="height" relation="lessThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="height" id="bwc-bK-ais"/>
+                            <constraint firstItem="zTo-CZ-ppy" firstAttribute="trailing" secondItem="gdj-d0-nZ2" secondAttribute="trailing" constant="10" id="dN2-Z5-GAe"/>
+                            <constraint firstItem="kiS-ZU-Z4Y" firstAttribute="width" relation="lessThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="width" id="ivT-Jj-SZi"/>
+                            <constraint firstItem="3gV-2h-5zD" firstAttribute="centerX" secondItem="zTo-CZ-ppy" secondAttribute="centerX" id="pcx-0T-WJc"/>
+                            <constraint firstItem="3gV-2h-5zD" firstAttribute="top" secondItem="gdj-d0-nZ2" secondAttribute="bottom" constant="24" id="q3R-KL-jWu"/>
+                        </constraints>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="350" height="400"/>
                     <connections>
-                        <outlet property="actionTypeLabel" destination="Fwj-fa-AqO" id="cqr-bL-fOs"/>
+                        <outlet property="cancelButton" destination="3gV-2h-5zD" id="TGM-bK-FdL"/>
                         <outlet property="identifierLabel" destination="gdj-d0-nZ2" id="Gjq-Rr-4sd"/>
                     </connections>
                 </viewController>
@@ -99,4 +66,7 @@
             <point key="canvasLocation" x="-80" y="63.868065967016499"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="logo" width="256" height="128"/>
+    </resources>
 </document>
