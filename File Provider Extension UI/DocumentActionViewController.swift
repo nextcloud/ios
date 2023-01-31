@@ -11,15 +11,20 @@ import FileProviderUI
 
 class DocumentActionViewController: FPUIActionExtensionViewController {
 
-    @IBOutlet weak var identifierLabel: UILabel!
     @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var titleError: UILabel!
+    @IBOutlet weak var descriptionError: UILabel!
 
     override func loadView() {
         super.loadView()
 
         view.backgroundColor = NCBrandColor.shared.brand
-        identifierLabel.textColor = NCBrandColor.shared.brandText
+        titleError.textColor = NCBrandColor.shared.brandText
+        descriptionError.textColor = NCBrandColor.shared.brandText
         cancelButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+
+        titleError.text = ""
+        descriptionError.text = ""
     }
     override func prepare(forAction actionIdentifier: String, itemIdentifiers: [NSFileProviderItemIdentifier]) {
     }
@@ -28,10 +33,10 @@ class DocumentActionViewController: FPUIActionExtensionViewController {
         if let userInfo = (error as NSError).userInfo as NSDictionary?,
            let code = userInfo["code"] as? Int {
             if code == NCGlobal.shared.errorUnauthorizedFilesPasscode {
-                identifierLabel?.text = NSLocalizedString("_unauthorizedFilesPasscode_", comment: "")
+                titleError?.text = NSLocalizedString("_unauthorizedFilesPasscode_", comment: "")
             }
         } else {
-            identifierLabel?.text = error.localizedDescription
+            titleError?.text = error.localizedDescription
         }
     }
 
