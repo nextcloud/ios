@@ -28,6 +28,7 @@ import Mantis
 import Photos
 import QuickLook
 
+@available(iOS 15, *)
 class NCHostingUploadAssetsView: NSObject {
 
     func makeShipDetailsUI(assets: [TLPHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) -> UIViewController {
@@ -145,6 +146,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
 // MARK: - View
 
+@available(iOS 15, *)
 struct UploadAssetsView: View {
 
     @State private var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
@@ -361,69 +363,60 @@ struct UploadAssetsView: View {
                             LazyHGrid(rows: gridItems, alignment: .center, spacing: 10) {
                                 ForEach(0..<uploadAssets.previewStore.count, id: \.self) { index in
                                     let item = uploadAssets.previewStore[index]
-                                    if #available(iOS 16, *) {
-                                        Menu {
+                                    Menu {
+                                        Button(action: {
+                                            renameFileName = uploadAssets.previewStore[index].fileName
+                                            renameIndex = index
+                                            isPresentedAlert = true
+                                        }) {
+                                            Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
+                                        }
+                                        if item.asset.type == .photo || item.asset.type == .livePhoto {
                                             Button(action: {
-                                                renameFileName = uploadAssets.previewStore[index].fileName
-                                                renameIndex = index
-                                                isPresentedAlert = true
+                                                presentedQuickLook(index: index)
                                             }) {
-                                                Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
-                                            }
-                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                                Button(action: {
-                                                    presentedQuickLook(index: index)
-                                                }) {
-                                                    Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
-                                                }
-                                            }
-                                            if item.data != nil {
-                                                Button(action: {
-                                                    if let image = uploadAssets.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true) {
-                                                        uploadAssets.previewStore[index].image = image
-                                                        uploadAssets.previewStore[index].data = nil
-                                                        uploadAssets.previewStore[index].assetType = uploadAssets.previewStore[index].asset.type
-                                                    }
-                                                }) {
-                                                    Label(NSLocalizedString("_undo_modify_", comment: ""), systemImage: "arrow.uturn.backward.circle")
-                                                }
-                                            }
-                                            if item.data == nil && item.asset.type == .livePhoto && item.assetType == .livePhoto {
-                                                Button(action: {
-                                                    uploadAssets.previewStore[index].assetType = .photo
-                                                }) {
-                                                    Label(NSLocalizedString("_disable_livephoto_", comment: ""), systemImage: "livephoto.slash")
-                                                }
-                                            } else if item.data == nil && item.asset.type == .livePhoto && item.assetType == .photo {
-                                                Button(action: {
-                                                    uploadAssets.previewStore[index].assetType = .livePhoto
-                                                }) {
-                                                    Label(NSLocalizedString("_enable_livephoto_", comment: ""), systemImage: "livephoto")
-                                                }
-                                            }
-                                            Button(role: .destructive, action: {
-                                                deleteAsset(index: index)
-                                            }) {
-                                                Label(NSLocalizedString("_remove_", comment: ""), systemImage: "trash")
-                                            }
-                                        } label: {
-                                            ImageAsset(uploadAssets: uploadAssets, index: index)
-                                            .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $isPresentedAlert) {
-                                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $renameFileName)
-                                                    .autocapitalization(.none)
-                                                    .autocorrectionDisabled()
-                                                Button(NSLocalizedString("_rename_", comment: ""), action: {
-                                                    uploadAssets.previewStore[renameIndex].fileName = renameFileName.trimmingCharacters(in: .whitespacesAndNewlines)
-                                                })
-                                                Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
+                                                Label(NSLocalizedString("_modify_", comment: ""), systemImage: "pencil.tip.crop.circle")
                                             }
                                         }
-                                    } else {
-                                        ImageAsset(uploadAssets: uploadAssets, index: index)
-                                        .onTapGesture {
-                                            if item.asset.type == .photo || item.asset.type == .livePhoto {
-                                                presentedQuickLook(index: index)
+                                        if item.data != nil {
+                                            Button(action: {
+                                                if let image = uploadAssets.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true) {
+                                                    uploadAssets.previewStore[index].image = image
+                                                    uploadAssets.previewStore[index].data = nil
+                                                    uploadAssets.previewStore[index].assetType = uploadAssets.previewStore[index].asset.type
+                                                }
+                                            }) {
+                                                Label(NSLocalizedString("_undo_modify_", comment: ""), systemImage: "arrow.uturn.backward.circle")
                                             }
+                                        }
+                                        if item.data == nil && item.asset.type == .livePhoto && item.assetType == .livePhoto {
+                                            Button(action: {
+                                                uploadAssets.previewStore[index].assetType = .photo
+                                            }) {
+                                                Label(NSLocalizedString("_disable_livephoto_", comment: ""), systemImage: "livephoto.slash")
+                                            }
+                                        } else if item.data == nil && item.asset.type == .livePhoto && item.assetType == .photo {
+                                            Button(action: {
+                                                uploadAssets.previewStore[index].assetType = .livePhoto
+                                            }) {
+                                                Label(NSLocalizedString("_enable_livephoto_", comment: ""), systemImage: "livephoto")
+                                            }
+                                        }
+                                        Button(role: .destructive, action: {
+                                            deleteAsset(index: index)
+                                        }) {
+                                            Label(NSLocalizedString("_remove_", comment: ""), systemImage: "trash")
+                                        }
+                                    } label: {
+                                        ImageAsset(uploadAssets: uploadAssets, index: index)
+                                        .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $isPresentedAlert) {
+                                            TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $renameFileName)
+                                                .autocapitalization(.none)
+                                                .autocorrectionDisabled()
+                                            Button(NSLocalizedString("_rename_", comment: ""), action: {
+                                                uploadAssets.previewStore[renameIndex].fileName = renameFileName.trimmingCharacters(in: .whitespacesAndNewlines)
+                                            })
+                                            Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
                                         }
                                     }
                                 }
@@ -608,6 +601,7 @@ struct UploadAssetsView: View {
 
 // MARK: - Preview
 
+@available(iOS 15, *)
 struct UploadAssetsView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
