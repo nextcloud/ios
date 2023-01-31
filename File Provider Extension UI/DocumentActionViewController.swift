@@ -13,18 +13,15 @@ class DocumentActionViewController: FPUIActionExtensionViewController {
 
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var titleError: UILabel!
-    @IBOutlet weak var descriptionError: UILabel!
 
     override func loadView() {
         super.loadView()
 
         view.backgroundColor = NCBrandColor.shared.brand
         titleError.textColor = NCBrandColor.shared.brandText
-        descriptionError.textColor = NCBrandColor.shared.brandText
         cancelButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         titleError.text = ""
-        descriptionError.text = ""
     }
     override func prepare(forAction actionIdentifier: String, itemIdentifiers: [NSFileProviderItemIdentifier]) {
     }
