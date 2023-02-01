@@ -64,10 +64,6 @@ class fileProviderData: NSObject {
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
 
-        if NCBrandOptions.shared.disable_openin_file {
-            return nil
-        }
-
         self.domain = domain
         if domain != nil {
             if let fileProviderManager = NSFileProviderManager(for: domain!) {
