@@ -245,6 +245,7 @@ class NCGlobal: NSObject {
     @objc let errorCreationFile: Int                = -99992
     @objc let errorReadFile: Int                    = -99991
     @objc let errorUnauthorizedFilesPasscode: Int   = -99990
+    @objc let errorDisableFilesApp: Int             = -99989
 
     // Constants to identify the different permissions of a file
     //

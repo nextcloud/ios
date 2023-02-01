@@ -924,7 +924,8 @@
 "_enable_livephoto_"        = "Enable Live Photo";
 "_disable_livephoto_"       = "Disable Live Photo";
 "_undo_modify_"             = "Undo the modify";
-"_unauthorizedFilesPasscode_" = "You cannot use Files with an activated passcode";
+"_unauthorizedFilesPasscode_" = "Files cannot be used with an activated passcode";
+"_disableFilesApp_"         = "Files cannot be used because is disabled";
 
 // Video
 "_select_trace_"            = "Select the trace";
