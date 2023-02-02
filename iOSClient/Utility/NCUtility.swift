@@ -27,7 +27,6 @@ import PDFKit
 import Accelerate
 import CoreMedia
 import Photos
-import JGProgressHUD
 
 #if !EXTENSION
 import KTVHTTPCache
