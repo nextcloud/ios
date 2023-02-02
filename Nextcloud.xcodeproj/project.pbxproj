@@ -467,7 +467,6 @@
 		F7A7FA6329265CF4000603EF /* NCManageE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7FA6229265CF4000603EF /* NCManageE2EE.swift */; };
 		F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72328F1771B008BBE1C /* NextcloudKit */; };
 		F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72728F17728008BBE1C /* RealmSwift */; };
-		F7A8D72C28F17742008BBE1C /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72B28F17742008BBE1C /* SwiftEntryKit */; };
 		F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72D28F17764008BBE1C /* UICKeyChainStore */; };
 		F7A8D73428F17E12008BBE1C /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7A8D73528F17E16008BBE1C /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1357,7 +1356,6 @@
 			files = (
 				F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */,
 				F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */,
-				F7A8D72C28F17742008BBE1C /* SwiftEntryKit in Frameworks */,
 				F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */,
 				F7C9739228F17131002C43E2 /* Intents.framework in Frameworks */,
 			);
@@ -2606,7 +2604,6 @@
 			packageProductDependencies = (
 				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
-				F7A8D72B28F17742008BBE1C /* SwiftEntryKit */,
 				F7A8D72D28F17764008BBE1C /* UICKeyChainStore */,
 			);
 			productName = WidgetDashboardIntentHandler;
@@ -4523,11 +4520,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7A8D72B28F17742008BBE1C /* SwiftEntryKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
-			productName = SwiftEntryKit;
 		};
 		F7A8D72D28F17764008BBE1C /* UICKeyChainStore */ = {
 			isa = XCSwiftPackageProductDependency;
