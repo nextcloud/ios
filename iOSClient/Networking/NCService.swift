@@ -257,7 +257,28 @@ class NCService: NSObject {
     // MARK: -
 
     private func requestDashboardWidget() {
-        
+
+        @Sendable func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) {
+
+            guard let data = data else { return }
+            var imageData: UIImage?
+
+            if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
+                imageData = image
+            } else if let image = SVGKImage(data: data) {
+                image.size = size
+                imageData = image.uiImage
+            } else {
+                print("error")
+            }
+            if let fileName = fileNameToWrite, let image = imageData {
+                do {
+                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                    try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                } catch { }
+            }
+        }
+
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
         
         NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
@@ -268,7 +289,7 @@ class NCService: NSObject {
                         if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
                             let (_, data, error) = await NextcloudKit.shared.getPreview(url: url)
                             if error == .success {
-                                NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
+                                convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
                             }
                         }
                     }

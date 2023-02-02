@@ -228,7 +228,6 @@
 		F7490E7729882C10009DCE94 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F7490E7829882C28009DCE94 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F7490E7929882C2F009DCE94 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
-		F7490E7B29882C49009DCE94 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7490E7A29882C49009DCE94 /* SVGKitSwift */; };
 		F7490E7D29882C59009DCE94 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F7490E7C29882C59009DCE94 /* JGProgressHUD */; };
 		F7490E7E29882C6E009DCE94 /* NCManageDatabase+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */; };
 		F7490E7F29882C73009DCE94 /* NCManageDatabase+Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */; };
@@ -292,10 +291,6 @@
 		F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
 		F75DD767290ABB25002EB562 /* Intent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = F75DD769290ABB25002EB562 /* Intent.intentdefinition */; };
-		F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BC25BF0EC1002B72C2 /* SVGKit */; };
-		F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57BE25BF0EC8002B72C2 /* SVGKit */; };
-		F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57C025BF0ECD002B72C2 /* SVGKit */; };
-		F75E57C325BF0ED2002B72C2 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F75E57C225BF0ED2002B72C2 /* SVGKit */; };
 		F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = F75EAED726D2552E00F4320E /* MarqueeLabel */; };
 		F760329F252F0F8E0015A421 /* NCTransferCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760329D252F0F8E0015A421 /* NCTransferCell.swift */; };
 		F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F760329E252F0F8E0015A421 /* NCTransferCell.xib */; };
@@ -405,7 +400,6 @@
 		F783030128B4C49700B84583 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */; };
 		F783030228B4C4B800B84583 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F783030328B4C4DD00B84583 /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
-		F783030528B4C50600B84583 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783030428B4C50600B84583 /* SVGKit */; };
 		F783030628B4C51E00B84583 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F783030728B4C52800B84583 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783030C28B4C59A00B84583 /* SwiftEntryKit */; };
@@ -417,6 +411,8 @@
 		F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F785EEA62461A4FB00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
+		F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F787AC08298BCB4A0001BB00 /* SVGKitSwift */; };
+		F787AC0B298BCB540001BB00 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F787AC0A298BCB540001BB00 /* SVGKitSwift */; };
 		F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = F788ECC6263AAAFA00ADC67F /* MarkdownKit */; };
 		F78A10BF29322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A10BE29322E8A008499B8 /* NCManageDatabase+Directory.swift */; };
 		F78A10C029322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A10BE29322E8A008499B8 /* NCManageDatabase+Directory.swift */; };
@@ -476,7 +472,6 @@
 		F7A7FA6329265CF4000603EF /* NCManageE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7FA6229265CF4000603EF /* NCManageE2EE.swift */; };
 		F7A8D72428F1771B008BBE1C /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72328F1771B008BBE1C /* NextcloudKit */; };
 		F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72728F17728008BBE1C /* RealmSwift */; };
-		F7A8D72A28F17733008BBE1C /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72928F17733008BBE1C /* SVGKit */; };
 		F7A8D72C28F17742008BBE1C /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72B28F17742008BBE1C /* SwiftEntryKit */; };
 		F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = F7A8D72D28F17764008BBE1C /* UICKeyChainStore */; };
 		F7A8D73428F17E12008BBE1C /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
@@ -1271,7 +1266,6 @@
 				F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */,
 				F7EBCDD3277B821700A4EF67 /* UICKeyChainStore in Frameworks */,
 				F78D0C852912725600D706AB /* JGProgressHUD in Frameworks */,
-				F75E57C325BF0ED2002B72C2 /* SVGKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1288,7 +1282,6 @@
 			files = (
 				F7490E8B29882CE4009DCE94 /* NextcloudKit in Frameworks */,
 				F7490E7D29882C59009DCE94 /* JGProgressHUD in Frameworks */,
-				F7490E7B29882C49009DCE94 /* SVGKitSwift in Frameworks */,
 				F7490E8929882CC8009DCE94 /* SwiftEntryKit in Frameworks */,
 				F7490E7229882BB4009DCE94 /* RealmSwift in Frameworks */,
 				F70716F929881CFA00E72C1D /* UICKeyChainStore in Frameworks */,
@@ -1304,7 +1297,6 @@
 				F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */,
 				F73ADD2126554F8E0069EA0D /* SwiftEntryKit in Frameworks */,
 				F7EBCDCF277B81FF00A4EF67 /* UICKeyChainStore in Frameworks */,
-				F75E57BF25BF0EC8002B72C2 /* SVGKit in Frameworks */,
 				F72D7EB7263B1207000B3DFC /* MarkdownKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1313,7 +1305,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F783030528B4C50600B84583 /* SVGKit in Frameworks */,
+				F787AC0B298BCB540001BB00 /* SVGKitSwift in Frameworks */,
 				F7346E2528B0FEFA006CE2D2 /* UICKeyChainStore in Frameworks */,
 				F783034428B5142B00B84583 /* NextcloudKit in Frameworks */,
 				F7346E1328B0EF5B006CE2D2 /* SwiftUI.framework in Frameworks */,
@@ -1330,7 +1322,6 @@
 			files = (
 				F7EBCDD1277B820D00A4EF67 /* UICKeyChainStore in Frameworks */,
 				F78D0C7F2912722100D706AB /* JGProgressHUD in Frameworks */,
-				F75E57C125BF0ECD002B72C2 /* SVGKit in Frameworks */,
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
 				F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */,
 				F72AD71328C24BCC006CB92D /* NextcloudKit in Frameworks */,
@@ -1348,6 +1339,7 @@
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
+				F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
@@ -1357,7 +1349,6 @@
 				F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */,
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
-				F75E57BD25BF0EC1002B72C2 /* SVGKit in Frameworks */,
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
@@ -1373,7 +1364,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7A8D72A28F17733008BBE1C /* SVGKit in Frameworks */,
 				F7A8D72828F17728008BBE1C /* RealmSwift in Frameworks */,
 				F7A8D72E28F17764008BBE1C /* UICKeyChainStore in Frameworks */,
 				F7A8D72C28F17742008BBE1C /* SwiftEntryKit in Frameworks */,
@@ -2439,7 +2429,6 @@
 			);
 			name = "Notification Service Extension";
 			packageProductDependencies = (
-				F75E57C225BF0ED2002B72C2 /* SVGKit */,
 				F710FC87277B7D3F00AA9FBF /* RealmSwift */,
 				F7EBCDD2277B821700A4EF67 /* UICKeyChainStore */,
 				F72AD71028C24BBB006CB92D /* NextcloudKit */,
@@ -2483,7 +2472,6 @@
 			packageProductDependencies = (
 				F70716F829881CFA00E72C1D /* UICKeyChainStore */,
 				F7490E7129882BB4009DCE94 /* RealmSwift */,
-				F7490E7A29882C49009DCE94 /* SVGKitSwift */,
 				F7490E7C29882C59009DCE94 /* JGProgressHUD */,
 				F7490E8829882CC8009DCE94 /* SwiftEntryKit */,
 				F7490E8A29882CE4009DCE94 /* NextcloudKit */,
@@ -2506,7 +2494,6 @@
 			);
 			name = Share;
 			packageProductDependencies = (
-				F75E57BE25BF0EC8002B72C2 /* SVGKit */,
 				F72D7EB6263B1207000B3DFC /* MarkdownKit */,
 				F73ADD2026554F8E0069EA0D /* SwiftEntryKit */,
 				F710FC7F277B7D2700AA9FBF /* RealmSwift */,
@@ -2534,10 +2521,10 @@
 			packageProductDependencies = (
 				F7346E2428B0FEFA006CE2D2 /* UICKeyChainStore */,
 				F7346E2828B0FFF2006CE2D2 /* RealmSwift */,
-				F783030428B4C50600B84583 /* SVGKit */,
 				F783030C28B4C59A00B84583 /* SwiftEntryKit */,
 				F783034328B5142B00B84583 /* NextcloudKit */,
 				F78D0C822912724F00D706AB /* JGProgressHUD */,
+				F787AC0A298BCB540001BB00 /* SVGKitSwift */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -2557,7 +2544,6 @@
 			);
 			name = "File Provider Extension";
 			packageProductDependencies = (
-				F75E57C025BF0ECD002B72C2 /* SVGKit */,
 				F73ADD2326554FE20069EA0D /* SwiftEntryKit */,
 				F710FC83277B7D3500AA9FBF /* RealmSwift */,
 				F7EBCDD0277B820D00A4EF67 /* UICKeyChainStore */,
@@ -2591,7 +2577,6 @@
 			);
 			name = Nextcloud;
 			packageProductDependencies = (
-				F75E57BC25BF0EC1002B72C2 /* SVGKit */,
 				F7ED547B25EEA65400956C55 /* QRCodeReader */,
 				F72DA9B325F53E4E00B87DB1 /* SwiftRichString */,
 				F770768D263A8C3400A1BA94 /* FloatingPanel */,
@@ -2613,6 +2598,7 @@
 				F77333872927A72100466E35 /* OpenSSL */,
 				F77BC3EA293E5268005F2B08 /* Swifter */,
 				F7D56B192972405500FA46C4 /* Mantis */,
+				F787AC08298BCB4A0001BB00 /* SVGKitSwift */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -2634,7 +2620,6 @@
 			packageProductDependencies = (
 				F7A8D72328F1771B008BBE1C /* NextcloudKit */,
 				F7A8D72728F17728008BBE1C /* RealmSwift */,
-				F7A8D72928F17733008BBE1C /* SVGKit */,
 				F7A8D72B28F17742008BBE1C /* SwiftEntryKit */,
 				F7A8D72D28F17764008BBE1C /* UICKeyChainStore */,
 				F78D0C802912723900D706AB /* JGProgressHUD */,
@@ -4459,11 +4444,6 @@
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
 		};
-		F7490E7A29882C49009DCE94 /* SVGKitSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKitSwift;
-		};
 		F7490E7C29882C59009DCE94 /* JGProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
@@ -4493,26 +4473,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
 			productName = JGProgressHUD;
-		};
-		F75E57BC25BF0EC1002B72C2 /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
-		};
-		F75E57BE25BF0EC8002B72C2 /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
-		};
-		F75E57C025BF0ECD002B72C2 /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
-		};
-		F75E57C225BF0ED2002B72C2 /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
 		};
 		F75EAED726D2552E00F4320E /* MarqueeLabel */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -4549,11 +4509,6 @@
 			package = F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */;
 			productName = Swifter;
 		};
-		F783030428B4C50600B84583 /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
-		};
 		F783030C28B4C59A00B84583 /* SwiftEntryKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F73ADD1A265546880069EA0D /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
@@ -4563,6 +4518,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F783034028B511D200B84583 /* XCRemoteSwiftPackageReference "NextcloudKit" */;
 			productName = NextcloudKit;
+		};
+		F787AC08298BCB4A0001BB00 /* SVGKitSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKitSwift;
+		};
+		F787AC0A298BCB540001BB00 /* SVGKitSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKitSwift;
 		};
 		F788ECC6263AAAFA00ADC67F /* MarkdownKit */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -4598,11 +4563,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7A8D72928F17733008BBE1C /* SVGKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
-			productName = SVGKit;
 		};
 		F7A8D72B28F17742008BBE1C /* SwiftEntryKit */ = {
 			isa = XCSwiftPackageProductDependency;

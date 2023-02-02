@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import SVGKit
 import NextcloudKit
 import PDFKit
 import Accelerate
@@ -32,6 +31,7 @@ import JGProgressHUD
 
 #if !EXTENSION
 import KTVHTTPCache
+import SVGKit
 #endif
 
 class NCUtility: NSObject {
@@ -40,6 +40,7 @@ class NCUtility: NSObject {
         return instance
     }()
 
+#if !EXTENSION
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
 
         var fileNamePNG = ""
@@ -120,6 +121,7 @@ class NCUtility: NSObject {
             return completion(imageNamePath, id)
         }
     }
+#endif
 
     @objc func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
@@ -750,29 +752,6 @@ class NCUtility: NSObject {
         }
 
         return imagePreview
-    }
-
-    @discardableResult
-    func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) -> UIImage? {
-
-        guard let data = data else { return nil }
-        var returnImage: UIImage?
-
-        if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
-            returnImage = image
-        } else if let image = SVGKImage(data: data) {
-            image.size = size
-            returnImage = image.uiImage
-        } else {
-            print("error")
-        }
-        if let fileName = fileNameToWrite, let image = returnImage {
-            do {
-                let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
-                try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-            } catch { }
-        }
-        return returnImage
     }
 
     func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {

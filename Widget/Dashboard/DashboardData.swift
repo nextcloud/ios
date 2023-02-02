@@ -81,6 +81,28 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     }
 }
 
+func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) -> UIImage? {
+
+    guard let data = data else { return nil }
+    var imageData: UIImage?
+
+    if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
+        imageData = image
+    } else if let image = SVGKImage(data: data) {
+        image.size = size
+        imageData = image.uiImage
+    } else {
+        print("error")
+    }
+    if let fileName = fileNameToWrite, let image = imageData {
+        do {
+            let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+            try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+        } catch { }
+    }
+    return imageData
+}
+
 func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
 
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
@@ -211,7 +233,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                         icon = image
                                     } else {
                                         let (_, data, _) = await NextcloudKit.shared.getPreview(url: url)
-                                        if let image = NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
+                                        if let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
                                             icon = image
                                         }
                                     }
