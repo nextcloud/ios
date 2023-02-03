@@ -107,6 +107,10 @@ class NCGlobal: NSObject {
     let nextcloudVersion25: Int                     =  25
     let nextcloudVersion26: Int                     =  26
 
+    // Nextcloud unsupported
+    //
+    let nextcloud_unsupported_version: Int          = 16
+
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
@@ -150,10 +154,6 @@ class NCGlobal: NSObject {
     //
     let maxAutoDownload: UInt64                     = 50000000      // 50MB
     let maxAutoDownloadCellular: UInt64             = 10000000      // 10MB
-
-    // Nextcloud unsupported
-    //
-    let nextcloud_unsupported_version: Int          = 16
 
     // Layout
     //
