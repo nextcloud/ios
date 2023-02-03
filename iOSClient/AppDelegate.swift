@@ -905,7 +905,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     return false
                 }
 
-                let davFiles = NCGlobal.shared.davfiles + self.userId
+                let davFiles = NKCommon.shared.dav + "/files/" + self.userId
                 if pathScheme.contains("/") {
                     fileName = (pathScheme as NSString).lastPathComponent
                     serverUrl = matchedAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
