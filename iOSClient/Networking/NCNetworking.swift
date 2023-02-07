@@ -1563,65 +1563,60 @@ import Photos
 
     public class NKAccountFile: NSObject {
 
-        struct AccountData: Codable {
+        struct Account: Codable {
             let url: String
             let user: String
             let alias: String?
             let avatar: String?
         }
 
-        struct Accounts: Codable {
-            let metadata: [String: [AccountData]]?
-        }
-
-        let encoder = JSONEncoder()
-
-        func decoder(at url: URL) -> Accounts? {
-            let decoder = JSONDecoder()
-
-            do {
-                let data = try Data(contentsOf: url)
-                data.printJson()
-                let json = try decoder.decode(Accounts.self, from: data)
-                return json
-            } catch let error {
-                return nil
-            }
-        }
-
-        func getShareAccount(at url: URL) {
-
+        struct Apps: Codable {
+            let apps: [String: [Account]]?
         }
 
         func putShareAccounts(at url: URL, app: String, items: [NKDataAccountFile]) -> Error? {
 
-            var itemAccount: [AccountData] = []
-            var apps: [String : [AccountData]] = [:]
+            var apps: [String : [Account]] = [:]
+            var accounts: [Account] = []
 
             for item in items {
-                let account = AccountData(url: item.url, user: item.user, alias: item.alias, avatar: item.avatar)
-                itemAccount.append(account)
+                let account = Account(url: item.url, user: item.user, alias: item.alias, avatar: item.avatar)
+                accounts.append(account)
             }
-            apps[app] = itemAccount
+            apps[app] = accounts
 
-            if let accountsDecoder = decoder(at: url), let metadata = accountsDecoder.metadata {
-                let otherApps = metadata.filter({ $0.key != app })
-                apps.merge(otherApps){(current, _) in current}
-            }
-            let accounts = Accounts(metadata:apps)
-
-
-            /*
+            // Decode
             do {
-                let data = try encoder.encode(accounts)
+                let data = try Data(contentsOf: url)
+                let json = try JSONDecoder().decode(Apps.self, from: data)
+                if let appsDecoder = json.apps {
+                    let otherApps = appsDecoder.filter({ $0.key != app })
+                    apps.merge(otherApps){(current, _) in current}
+                }
+            } catch { }
+
+            // Encode
+            do {
+                let data = try JSONEncoder().encode(Apps(apps: apps))
                 try data.write(to: url)
                 data.printJson()
             } catch let error {
                 return error
             }
-            */
-
             return nil
+        }
+
+        func getShareAccount(at url: URL) {
+
+            do {
+                let data = try Data(contentsOf: url)
+                let json = try JSONDecoder().decode(Apps.self, from: data)
+                if let appsDecoder = json.apps {
+                    print("")
+                }
+            } catch { }
+
+
         }
     }
 
