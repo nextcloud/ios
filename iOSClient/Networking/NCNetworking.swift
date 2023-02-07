@@ -1612,7 +1612,9 @@ import Photos
                 let data = try Data(contentsOf: url)
                 let json = try JSONDecoder().decode(Apps.self, from: data)
                 if let appsDecoder = json.apps {
-                    print("")
+                    for app in appsDecoder {
+                        print("")
+                    }
                 }
             } catch { }
 
