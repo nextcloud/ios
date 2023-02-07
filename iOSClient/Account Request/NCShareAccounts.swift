@@ -39,7 +39,7 @@ class NCShareAccounts: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    public var accounts: [NKDataAccountFile] = []
+    public var accounts: [NKShareAccounts.DataAccounts] = []
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var dismissDidEnterBackground: Bool = true

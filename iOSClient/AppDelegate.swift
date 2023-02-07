@@ -632,7 +632,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         try? FileManager.default.createDirectory(at: dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts), withIntermediateDirectories: true)
         let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + NCGlobal.shared.fileShareAccounts)
         let tableAccount = NCManageDatabase.shared.getAllAccount()
-        var accounts = [NKDataAccountFile]()
+        var accounts = [NKShareAccounts.DataAccounts]()
         for account in tableAccount {
             let alias = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
@@ -641,12 +641,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let toPathAvatar = (dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + avatarFileName)).path
             if FileManager.default.fileExists(atPath: atPathAvatar) {
                 NCUtilityFileSystem.shared.copyFile(atPath: atPathAvatar, toPath: toPathAvatar)
-                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias, avatar: toPathAvatar))
+                accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, alias: alias, avatar: toPathAvatar))
             } else {
-                accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias))
+                accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, alias: alias))
             }
         }
-        return NKAccountFile().putShareAccounts(at: url, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
+        return NKShareAccounts().putShareAccounts(at: url, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
     }
 
     // MARK: - Account Request
