@@ -126,7 +126,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
                 if !accountTemp.isEmpty {
                     self.shareAccounts = accountTemp
-                    let navigationItemTalk = UIBarButtonItem(image: UIImage(named: "talk_bar"), style: .plain, target: self, action: #selector(openShareAccountsViewController))
+                    let image = UIImage(systemName: "person.line.dotted.person")
+                    let navigationItemTalk = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController))
                     navigationItemTalk.tintColor = textColor
                     self.navigationItem.rightBarButtonItem = navigationItemTalk
                 }
@@ -145,8 +146,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         appDelegate.timerErrorNetworking?.invalidate()
 
-        if self.shareAccounts != nil, let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
-            NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "_apps_nextcloud_detect_", description: "_add_existing_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
+        if self.shareAccounts != nil, let image = UIImage(systemName: "person.line.dotted.person")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
+            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, backgroundColor: backgroundColor, textColor: textColor, title: "_apps_nextcloud_detect_", description: "_add_existing_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
                     self.openShareAccountsViewController()
                 }

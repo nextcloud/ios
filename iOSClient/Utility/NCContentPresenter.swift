@@ -150,7 +150,7 @@ class NCContentPresenter: NSObject {
 
     // MARK: -
 
-    func alertAction(image: UIImage, backgroundColor: UIColor, textColor: UIColor, title: String, description: String, textCancelButton: String, textOkButton: String, attributes: EKAttributes, completion: @escaping (_ identifier: String) -> Void) {
+    func alertAction(image: UIImage, contentModeImage: UIView.ContentMode = .scaleToFill, backgroundColor: UIColor, textColor: UIColor, title: String, description: String, textCancelButton: String, textOkButton: String, attributes: EKAttributes, completion: @escaping (_ identifier: String) -> Void) {
 
         var buttonAttributes: EKAttributes {
             var attributes = attributes
@@ -172,7 +172,7 @@ class NCContentPresenter: NSObject {
             return attributes
         }
 
-        let simpleMessage = EKSimpleMessage(image: EKProperty.ImageContent(image: image, size: CGSize(width: 34, height: 34)),
+        let simpleMessage = EKSimpleMessage(image: EKProperty.ImageContent(image: image, size: CGSize(width: 34, height: 34), contentMode: contentModeImage),
                                             title: EKProperty.LabelContent(text: NSLocalizedString(title, comment: ""), style: .init(font: MainFont.medium.with(size: 15), color: EKColor(textColor)), accessibilityIdentifier: "title"),
                                             description: EKProperty.LabelContent(text: NSLocalizedString(description, comment: ""), style: .init( font: MainFont.light.with(size: 13), color: EKColor(textColor)), accessibilityIdentifier: "description"))
 
