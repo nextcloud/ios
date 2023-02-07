@@ -646,7 +646,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias))
             }
         }
-        return NKCommon.shared.createDataAccountFile(at: url, accounts: accounts)
+        let obj = NKAccountFile().putShareAccounts(at: url, app: "nextcloud", items: accounts)
+        return nil
+
+        // return NKCommon.shared.createDataAccountFile(at: url, accounts: accounts)
     }
 
     // MARK: - Account Request

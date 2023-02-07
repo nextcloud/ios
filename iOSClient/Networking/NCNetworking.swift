@@ -1561,24 +1561,7 @@ import Photos
 
 // MARK: - *** TEST ***
 
-extension NCNetworking {
-
-    @objc public class DataAccountFile: NSObject {
-
-        @objc public var url: String
-        @objc public var user: String
-        @objc public var alias: String?
-        @objc public var avatar: String?
-
-        @objc public init(withUrl url: String, user: String, alias: String? = nil, avatar: String? = nil) {
-            self.url = url
-            self.user = user
-            self.alias = alias
-            self.avatar = avatar
-        }
-    }
-
-    class NKAccountFile: NSObject {
+    public class NKAccountFile: NSObject {
 
         struct AccountData: Codable {
             let url: String
@@ -1593,11 +1576,11 @@ extension NCNetworking {
 
         let encoder = JSONEncoder()
 
-        func decoder(json: String) -> Accounts? {
-            guard let data = json.data(using: .utf8) else { return nil }
+        func decoder(at url: URL) -> Accounts? {
             let decoder = JSONDecoder()
 
             do {
+                let data = try Data(contentsOf: url)
                 data.printJson()
                 let json = try decoder.decode(Accounts.self, from: data)
                 return json
@@ -1606,34 +1589,44 @@ extension NCNetworking {
             }
         }
 
-        func encoder(app: String, items: [DataAccountFile]) -> String? {
+        func getShareAccount(at url: URL) {
+
+        }
+
+        func putShareAccounts(at url: URL, app: String, items: [NKDataAccountFile]) -> Error? {
 
             var itemAccount: [AccountData] = []
+            var apps: [String : [AccountData]] = [:]
 
             for item in items {
                 let account = AccountData(url: item.url, user: item.user, alias: item.alias, avatar: item.avatar)
                 itemAccount.append(account)
             }
+            apps[app] = itemAccount
 
-            let accounts = Accounts(metadata: [app:itemAccount])
+            if let accountsDecoder = decoder(at: url), let metadata = accountsDecoder.metadata {
+                let otherApps = metadata.filter({ $0.key != app })
+                apps.merge(otherApps){(current, _) in current}
+            }
+            let accounts = Accounts(metadata:apps)
 
+
+            /*
             do {
                 let data = try encoder.encode(accounts)
+                try data.write(to: url)
                 data.printJson()
-                let jsonString = String(data: data, encoding: .utf8)
-                return jsonString
             } catch let error {
-                return nil
+                return error
             }
+            */
+
+            return nil
         }
     }
 
-    func testEncoder(app: String, item:[DataAccountFile]) {
+    
 
-
-        
-    }
-}
 
 extension Array where Element == URLQueryItem {
     subscript(name: String) -> URLQueryItem? {
