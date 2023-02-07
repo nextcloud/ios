@@ -905,8 +905,8 @@
 "_no_items_"                = "No items";
 "_check_back_later_"        = "Check back later";
 "_exporting_video_"         = "Exporting video … Tap to cancel.";
-"_talk_detect_"             = "Detected Nextcloud Talk";
-"_talk_add_account_"        = "Nextcloud Talk has been detected, do you want to add an existing account?";
+"_apps_nextcloud_detect_"   = "Detected Nextcloud apps";
+"_add_existing_account_"    = "Other Nextcloud Apps has been detected, do you want to add an existing account?";
 "_status_in_progress_"      = "Status reading in progress …";
 "_status_e2ee_on_server_"   = "The end-to-end encryption is already configured in the server but not yet enabled on this device";
 "_status_e2ee_not_setup_"   = "The end-to-end encryption is not yet configured on the server";
