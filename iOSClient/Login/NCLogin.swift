@@ -42,7 +42,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var activeTextfieldDiff: CGFloat = 0
     private var activeTextField = UITextField()
 
-    private var talkAccounts: [NKDataAccountFile]?
+    private var shareAccounts: [NKDataAccountFile]?
 
     // MARK: - View Life Cycle
 
@@ -116,7 +116,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         if NCBrandOptions.shared.use_GroupApps, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps), let url = URL(string: "nextcloudtalk://"), UIApplication.shared.canOpenURL(url) {
-            let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareTalk + "/" + NCGlobal.shared.fileAccounts)
+            let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + NCGlobal.shared.fileShareAccounts)
             if FileManager.default.fileExists(atPath: url.path), let talkAccounts = NKCommon.shared.readDataAccountFile(at: url) {
                 var accountTemp = [NKDataAccountFile]()
                 for talkAccount in talkAccounts {
@@ -125,7 +125,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     }
                 }
                 if !accountTemp.isEmpty {
-                    self.talkAccounts = accountTemp
+                    self.shareAccounts = accountTemp
                     let navigationItemTalk = UIBarButtonItem(image: UIImage(named: "talk_bar"), style: .plain, target: self, action: #selector(openTalkAccountsViewController))
                     navigationItemTalk.tintColor = textColor
                     self.navigationItem.rightBarButtonItem = navigationItemTalk
@@ -145,7 +145,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         appDelegate.timerErrorNetworking?.invalidate()
 
-        if self.talkAccounts != nil, let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
+        if self.shareAccounts != nil, let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
             NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "_talk_detect_", description: "_talk_add_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
                     self.openTalkAccountsViewController()
@@ -230,15 +230,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     @objc func openTalkAccountsViewController() {
 
-        if let talkAccounts = self.talkAccounts, let vc = UIStoryboard(name: "NCTalkAccounts", bundle: nil).instantiateInitialViewController() as? NCTalkAccounts {
+        if let shareAccounts = self.shareAccounts, let vc = UIStoryboard(name: "NCShareAccounts", bundle: nil).instantiateInitialViewController() as? NCShareAccounts {
 
-            vc.accounts = talkAccounts
+            vc.accounts = shareAccounts
             vc.enableTimerProgress = false
             vc.dismissDidEnterBackground = false
             vc.delegate = self
 
             let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
-            let numberCell = talkAccounts.count
+            let numberCell = shareAccounts.count
             let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
 
             let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
@@ -439,7 +439,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 }
 
-extension NCLogin: NCTalkAccountsDelegate {
+extension NCLogin: NCShareAccountsDelegate {
 
     func selected(url: String, user: String) {
         isUrlValid(url: url, user: user)

@@ -629,8 +629,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func createDataAccountFile() -> Error? {
         guard !account.isEmpty, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
 
-        try? FileManager.default.createDirectory(at: dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud), withIntermediateDirectories: true)
-        let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud + "/" + NCGlobal.shared.fileAccounts)
+        try? FileManager.default.createDirectory(at: dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts), withIntermediateDirectories: true)
+        let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + NCGlobal.shared.fileShareAccounts)
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKDataAccountFile]()
         for account in tableAccount {
@@ -638,7 +638,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
             let atPathAvatar = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
-            let toPathAvatar = (dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareNextcloud + "/" + avatarFileName)).path
+            let toPathAvatar = (dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + avatarFileName)).path
             if FileManager.default.fileExists(atPath: atPathAvatar) {
                 NCUtilityFileSystem.shared.copyFile(atPath: atPathAvatar, toPath: toPathAvatar)
                 accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias, avatar: toPathAvatar))
@@ -646,10 +646,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias))
             }
         }
-        let obj = NKAccountFile().putShareAccounts(at: url, app: "nextcloud", items: accounts)
-        return nil
-
-        // return NKCommon.shared.createDataAccountFile(at: url, accounts: accounts)
+        return NKAccountFile().putShareAccounts(at: url, app: NCGlobal.shared.appScheme, items: accounts)
     }
 
     // MARK: - Account Request
@@ -811,7 +808,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        if !account.isEmpty && scheme == "nextcloud" && action == "open-action" {
+        if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -887,7 +884,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
-        else if !account.isEmpty && scheme == "nextcloud" && action == "open-file" {
+        else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-file" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 

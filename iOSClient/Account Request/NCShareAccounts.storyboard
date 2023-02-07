@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Talk Accounts-->
+        <!--Share Accounts-->
         <scene sceneID="L90-uG-f4z">
             <objects>
-                <viewController id="V0q-CP-xMJ" customClass="NCTalkAccounts" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="V0q-CP-xMJ" customClass="NCShareAccounts" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="4vK-ua-S0e"/>
                         <viewControllerLayoutGuide type="bottom" id="hTI-Bw-Fws"/>

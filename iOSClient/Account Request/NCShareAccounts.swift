@@ -1,5 +1,5 @@
 //
-//  NCTalkAccounts.swift
+//  NCShareAccounts.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 22/11/22.
@@ -24,16 +24,16 @@
 import UIKit
 import NextcloudKit
 
-public protocol NCTalkAccountsDelegate: AnyObject {
+public protocol NCShareAccountsDelegate: AnyObject {
     func selected(url: String, user: String)
 }
 
 // optional func
-public extension NCTalkAccountsDelegate {
+public extension NCShareAccountsDelegate {
     func selected(url: String, user: String) {}
 }
 
-class NCTalkAccounts: UIViewController {
+class NCShareAccounts: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
@@ -43,7 +43,7 @@ class NCTalkAccounts: UIViewController {
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var dismissDidEnterBackground: Bool = true
-    public weak var delegate: NCTalkAccountsDelegate?
+    public weak var delegate: NCShareAccountsDelegate?
 
     private var timer: Timer?
     private var time: Float = 0
@@ -128,7 +128,7 @@ class NCTalkAccounts: UIViewController {
     }
 }
 
-extension NCTalkAccounts: UITableViewDelegate {
+extension NCShareAccounts: UITableViewDelegate {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
@@ -149,7 +149,7 @@ extension NCTalkAccounts: UITableViewDelegate {
     }
 }
 
-extension NCTalkAccounts: UITableViewDataSource {
+extension NCShareAccounts: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return accounts.count

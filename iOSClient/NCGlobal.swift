@@ -78,10 +78,9 @@ class NCGlobal: NSObject {
     @objc let appScan                               = "Library/Application Support/Scan"
     @objc let appUserData                           = "Library/Application Support/UserData"
 
-    // Directory on Group data share Nextcloud apps
+    // Directory on Nextcloud Group data share accounts
     //
-    @objc let appDataShareTalk                      = "Library/Application Support/Talk"
-    @objc let appDataShareNextcloud                 = "Library/Application Support/Nextcloud"
+    @objc let directoryNextcloudAccounts            = "Library/Application Support/NextcloudAccounts"
 
     // Service
     //
@@ -94,6 +93,7 @@ class NCGlobal: NSObject {
     //
     @objc let appName                               = "files"
     @objc let talkName                              = "talk-message"
+    @objc let appScheme                             = "nextcloud"
 
     // Nextcloud version
     //
@@ -115,7 +115,7 @@ class NCGlobal: NSObject {
     //
     let databaseDefault                             = "nextcloud.realm"
     let databaseSchemaVersion: UInt64               = 266
-    let fileAccounts: String                        = "accounts.json"
+    let fileShareAccounts: String                   = "accounts.json"
 
     // Intro selector
     //
