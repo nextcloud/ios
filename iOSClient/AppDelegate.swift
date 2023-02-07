@@ -646,7 +646,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 accounts.append(NKDataAccountFile(withUrl: account.urlBase, user: account.user, alias: alias))
             }
         }
-        return NKAccountFile().putShareAccounts(at: url, app: NCGlobal.shared.appScheme, items: accounts)
+        return NKAccountFile().putShareAccounts(at: url, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
     }
 
     // MARK: - Account Request

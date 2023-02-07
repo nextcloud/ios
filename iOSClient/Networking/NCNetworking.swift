@@ -1574,13 +1574,13 @@ import Photos
             let apps: [String: [Account]]?
         }
 
-        func putShareAccounts(at url: URL, app: String, items: [NKDataAccountFile]) -> Error? {
+        @objc func putShareAccounts(at url: URL, app: String, dataAccounts: [NKDataAccountFile]) -> Error? {
 
             var apps: [String : [Account]] = [:]
             var accounts: [Account] = []
 
-            for item in items {
-                let account = Account(url: item.url, user: item.user, alias: item.alias, avatar: item.avatar)
+            for dataAccount in dataAccounts {
+                let account = Account(url: dataAccount.url, user: dataAccount.user, alias: dataAccount.alias, avatar: dataAccount.avatar)
                 accounts.append(account)
             }
             apps[app] = accounts
@@ -1606,20 +1606,30 @@ import Photos
             return nil
         }
 
-        func getShareAccount(at url: URL) -> [NKDataAccountFile]? {
+        @objc func getShareAccount(at url: URL, application: UIApplication?) -> [NKDataAccountFile]? {
+
+            var dataAccounts: [NKDataAccountFile] = []
 
             do {
                 let data = try Data(contentsOf: url)
                 let json = try JSONDecoder().decode(Apps.self, from: data)
                 if let appsDecoder = json.apps {
-                    for app in appsDecoder {
-                        print("")
+                    for appDecoder in appsDecoder {
+                        let app = appDecoder.key
+                        let accounts = appDecoder.value
+                        if let url = URL(string: app + "://"), let application = application, application.canOpenURL(url) {
+                            for account in accounts {
+                                if dataAccounts.first(where: { $0.url == account.url && $0.user == account.user }) == nil {
+                                    let account = NKDataAccountFile(withUrl: account.url, user: account.user, alias: account.alias, avatar: account.avatar)
+                                    dataAccounts.append(account)
+                                }
+                            }
+                        }
                     }
                 }
             } catch { }
 
-
-            return nil
+            return dataAccounts.isEmpty ? nil : dataAccounts
         }
     }
 

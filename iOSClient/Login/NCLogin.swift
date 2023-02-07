@@ -117,7 +117,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         if NCBrandOptions.shared.use_GroupApps, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + NCGlobal.shared.fileShareAccounts)
-            if FileManager.default.fileExists(atPath: url.path), let shareAccounts = NKAccountFile().getShareAccount(at: url) {
+            if FileManager.default.fileExists(atPath: url.path), let shareAccounts = NKAccountFile().getShareAccount(at: url, application: UIApplication.shared) {
                 var accountTemp = [NKDataAccountFile]()
                 for shareAccount in shareAccounts {
                     if NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", shareAccount.url, shareAccount.user)) == nil {
