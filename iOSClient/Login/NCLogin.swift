@@ -147,7 +147,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         appDelegate.timerErrorNetworking?.invalidate()
 
         if self.shareAccounts != nil, let image = UIImage(systemName: "person.line.dotted.person")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
-            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, backgroundColor: backgroundColor, textColor: textColor, title: "_apps_nextcloud_detect_", description: "_add_existing_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
+            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45),backgroundColor: backgroundColor, textColor: textColor, title: "_apps_nextcloud_detect_", description: "_add_existing_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
                     self.openShareAccountsViewController()
                 }
