@@ -1559,6 +1559,82 @@ import Photos
     }
 }
 
+// MARK: - *** TEST ***
+
+extension NCNetworking {
+
+    @objc public class DataAccountFile: NSObject {
+
+        @objc public var url: String
+        @objc public var user: String
+        @objc public var alias: String?
+        @objc public var avatar: String?
+
+        @objc public init(withUrl url: String, user: String, alias: String? = nil, avatar: String? = nil) {
+            self.url = url
+            self.user = user
+            self.alias = alias
+            self.avatar = avatar
+        }
+    }
+
+    class NKAccountFile: NSObject {
+
+        struct AccountData: Codable {
+            let url: String
+            let user: String
+            let alias: String?
+            let avatar: String?
+        }
+
+        struct Accounts: Codable {
+            let metadata: [String: [AccountData]]?
+        }
+
+        let encoder = JSONEncoder()
+
+        func decoder(json: String) -> Accounts? {
+            guard let data = json.data(using: .utf8) else { return nil }
+            let decoder = JSONDecoder()
+
+            do {
+                data.printJson()
+                let json = try decoder.decode(Accounts.self, from: data)
+                return json
+            } catch let error {
+                return nil
+            }
+        }
+
+        func encoder(app: String, items: [DataAccountFile]) -> String? {
+
+            var itemAccount: [AccountData] = []
+
+            for item in items {
+                let account = AccountData(url: item.url, user: item.user, alias: item.alias, avatar: item.avatar)
+                itemAccount.append(account)
+            }
+
+            let accounts = Accounts(metadata: [app:itemAccount])
+
+            do {
+                let data = try encoder.encode(accounts)
+                data.printJson()
+                let jsonString = String(data: data, encoding: .utf8)
+                return jsonString
+            } catch let error {
+                return nil
+            }
+        }
+    }
+
+    func testEncoder(app: String, item:[DataAccountFile]) {
+
+
+        
+    }
+}
+
 extension Array where Element == URLQueryItem {
     subscript(name: String) -> URLQueryItem? {
         first(where: { $0.name == name })
