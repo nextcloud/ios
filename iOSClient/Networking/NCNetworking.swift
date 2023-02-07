@@ -1606,7 +1606,7 @@ import Photos
             return nil
         }
 
-        func getShareAccount(at url: URL) {
+        func getShareAccount(at url: URL) -> [NKDataAccountFile]? {
 
             do {
                 let data = try Data(contentsOf: url)
@@ -1617,6 +1617,7 @@ import Photos
             } catch { }
 
 
+            return nil
         }
     }
 
