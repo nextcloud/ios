@@ -37,7 +37,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("_notification_", comment: "")
+        title = NSLocalizedString("_notifications_", comment: "")
         view.backgroundColor = .systemBackground
 
         tableView.tableFooterView = UIView()
