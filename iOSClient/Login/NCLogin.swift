@@ -126,9 +126,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if !accountTemp.isEmpty {
                     self.shareAccounts = accountTemp
                     let image = UIImage(systemName: "person.line.dotted.person")
-                    let navigationItemTalk = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController))
-                    navigationItemTalk.tintColor = textColor
-                    self.navigationItem.rightBarButtonItem = navigationItemTalk
+                    let navigationItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController))
+                    navigationItem.tintColor = textColor
+                    self.navigationItem.rightBarButtonItem = navigationItem
                 }
             }
         }
@@ -228,7 +228,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     }
 
-    // MARK: - Talk accounts View Controller
+    // MARK: - Share accounts View Controller
 
     @objc func openShareAccountsViewController() {
 
