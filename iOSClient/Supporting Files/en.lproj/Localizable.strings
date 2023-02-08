@@ -682,7 +682,7 @@
 "_filenametype_photo_video_"        = "Photo/Video";
 "_maintain_original_filename_"      = "Maintain original filename";
 "_modify_photo_"                    = "Modify photo";
-"_notification_"                    = "Notification";
+"_notifications_"                   = "Notifications";
 "_no_notification_"                 = "No notifications yet";
 "_autoupload_filename_title_"       = "Auto upload filename";
 "_untitled_txt_"                    = "Untitled.txt";
