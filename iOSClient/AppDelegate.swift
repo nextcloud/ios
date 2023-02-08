@@ -226,8 +226,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
-        // Nextcloud share accounts
-        if let error = shareAccounts() {
+        // Nextcloud update share accounts
+        if let error = updateShareAccounts() {
             NKCommon.shared.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
         NKCommon.shared.writeLog("[INFO] Application will resign active")
@@ -624,7 +624,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func shareAccounts() -> Error? {
+    func updateShareAccounts() -> Error? {
         guard let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
 
         let tableAccount = NCManageDatabase.shared.getAllAccount()
