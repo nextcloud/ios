@@ -226,18 +226,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione si dimetterà dallo stato di attivo
     func applicationWillResignActive(_ application: UIApplication) {
-        guard !account.isEmpty else { return }
-
-        NKCommon.shared.writeLog("[INFO] Application will resign active")
-
-        // STOP OBSERVE/TIMER UPLOAD PROCESS
-        NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
-        NCNetworkingProcessUpload.shared.stopTimer()
-
         // Nextcloud share accounts
         if let error = shareAccounts() {
             NKCommon.shared.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
+        NKCommon.shared.writeLog("[INFO] Application will resign active")
+        guard !account.isEmpty else { return }
+
+        // STOP OBSERVE/TIMER UPLOAD PROCESS
+        NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
+        NCNetworkingProcessUpload.shared.stopTimer()
 
         if CCUtility.getPrivacyScreenEnabled() {
             // Privacy
@@ -627,7 +625,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func shareAccounts() -> Error? {
-        guard !account.isEmpty, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
+        guard let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
 
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKShareAccounts.DataAccounts]()
