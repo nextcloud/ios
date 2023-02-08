@@ -169,17 +169,12 @@ extension NCShareAccounts: UITableViewDataSource {
 
         let account = accounts[indexPath.row]
 
-        if let avatarPath = account.avatar, !avatarPath.isEmpty, let avatarImage = avatarImage {
-            do {
-                let data = try Data(contentsOf: URL(fileURLWithPath: avatarPath))
-                if let image = UIImage(data: data) {
-                    avatarImage.image = image
-                }
-            } catch { print("Error: \(error)") }
+        if let image = account.image {
+            avatarImage?.image = image
         }
 
-        if let alias = account.alias, !alias.isEmpty {
-            userLabel?.text = alias.uppercased() + " (\(account.user))"
+        if let name = account.name, !name.isEmpty {
+            userLabel?.text = name.uppercased() + " (\(account.user))"
         } else {
             userLabel?.text = account.user.uppercased()
         }

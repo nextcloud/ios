@@ -629,24 +629,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func createDataAccountFile() -> Error? {
         guard !account.isEmpty, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
 
-        try? FileManager.default.createDirectory(at: dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts), withIntermediateDirectories: true)
-        let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + NCGlobal.shared.fileShareAccounts)
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKShareAccounts.DataAccounts]()
         for account in tableAccount {
             let alias = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
-            let atPathAvatar = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
-            let toPathAvatar = (dirGroupApps.appendingPathComponent(NCGlobal.shared.directoryNextcloudAccounts + "/" + avatarFileName)).path
-            if FileManager.default.fileExists(atPath: atPathAvatar) {
-                NCUtilityFileSystem.shared.copyFile(atPath: atPathAvatar, toPath: toPathAvatar)
-                accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, alias: alias, avatar: toPathAvatar))
-            } else {
-                accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, alias: alias))
-            }
+            let pathAvatarFileName = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
+            let image = UIImage(contentsOfFile: pathAvatarFileName)
+            accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: alias, image: image))
         }
-        return NKShareAccounts().putShareAccounts(at: url, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
+        return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
     }
 
     // MARK: - Account Request
