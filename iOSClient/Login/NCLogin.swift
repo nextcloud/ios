@@ -42,7 +42,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var activeTextfieldDiff: CGFloat = 0
     private var activeTextField = UITextField()
 
-    private var talkAccounts: [NKDataAccountFile]?
+    private var shareAccounts: [NKShareAccounts.DataAccounts]?
 
     // MARK: - View Life Cycle
 
@@ -115,18 +115,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             navigationItem.leftBarButtonItem = navigationItemCancel
         }
 
-        if NCBrandOptions.shared.use_GroupApps, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps), let url = URL(string: "nextcloudtalk://"), UIApplication.shared.canOpenURL(url) {
-            let url = dirGroupApps.appendingPathComponent(NCGlobal.shared.appDataShareTalk + "/" + NCGlobal.shared.fileAccounts)
-            if FileManager.default.fileExists(atPath: url.path), let talkAccounts = NKCommon.shared.readDataAccountFile(at: url) {
-                var accountTemp = [NKDataAccountFile]()
-                for talkAccount in talkAccounts {
-                    if NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", talkAccount.url, talkAccount.user)) == nil {
-                        accountTemp.append(talkAccount)
+        if NCBrandOptions.shared.use_GroupApps, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
+            if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
+                var accountTemp = [NKShareAccounts.DataAccounts]()
+                for shareAccount in shareAccounts {
+                    if NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", shareAccount.url, shareAccount.user)) == nil {
+                        accountTemp.append(shareAccount)
                     }
                 }
                 if !accountTemp.isEmpty {
-                    self.talkAccounts = accountTemp
-                    let navigationItemTalk = UIBarButtonItem(image: UIImage(named: "talk_bar"), style: .plain, target: self, action: #selector(openTalkAccountsViewController))
+                    self.shareAccounts = accountTemp
+                    let image = UIImage(systemName: "person.line.dotted.person")
+                    let navigationItemTalk = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController))
                     navigationItemTalk.tintColor = textColor
                     self.navigationItem.rightBarButtonItem = navigationItemTalk
                 }
@@ -145,10 +145,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         appDelegate.timerErrorNetworking?.invalidate()
 
-        if self.talkAccounts != nil, let image = UIImage(named: "talk"), let backgroundColor =  NCBrandColor.shared.brandElement.lighter(by: 10) {
-            NCContentPresenter.shared.alertAction(image: image, backgroundColor: backgroundColor, textColor: textColor, title: "_talk_detect_", description: "_talk_add_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
+        if self.shareAccounts != nil, let image = UIImage(systemName: "person.line.dotted.person")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
+            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45),backgroundColor: backgroundColor, textColor: textColor, title: "_apps_nextcloud_detect_", description: "_add_existing_account_", textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
-                    self.openTalkAccountsViewController()
+                    self.openShareAccountsViewController()
                 }
             }
         }
@@ -228,17 +228,17 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     // MARK: - Talk accounts View Controller
 
-    @objc func openTalkAccountsViewController() {
+    @objc func openShareAccountsViewController() {
 
-        if let talkAccounts = self.talkAccounts, let vc = UIStoryboard(name: "NCTalkAccounts", bundle: nil).instantiateInitialViewController() as? NCTalkAccounts {
+        if let shareAccounts = self.shareAccounts, let vc = UIStoryboard(name: "NCShareAccounts", bundle: nil).instantiateInitialViewController() as? NCShareAccounts {
 
-            vc.accounts = talkAccounts
+            vc.accounts = shareAccounts
             vc.enableTimerProgress = false
             vc.dismissDidEnterBackground = false
             vc.delegate = self
 
             let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
-            let numberCell = talkAccounts.count
+            let numberCell = shareAccounts.count
             let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
 
             let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
@@ -439,7 +439,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 }
 
-extension NCLogin: NCTalkAccountsDelegate {
+extension NCLogin: NCShareAccountsDelegate {
 
     func selected(url: String, user: String) {
         isUrlValid(url: url, user: user)

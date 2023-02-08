@@ -227,7 +227,6 @@
 + (void)removeDocumentsDirectory;
 + (void)removeTemporaryDirectory;
 + (void)emptyTemporaryDirectory;
-+ (void)removeGroupDataShareAppsNextcloud;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

@@ -1,5 +1,5 @@
 //
-//  NCTalkAccounts.swift
+//  NCShareAccounts.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 22/11/22.
@@ -24,26 +24,26 @@
 import UIKit
 import NextcloudKit
 
-public protocol NCTalkAccountsDelegate: AnyObject {
+public protocol NCShareAccountsDelegate: AnyObject {
     func selected(url: String, user: String)
 }
 
 // optional func
-public extension NCTalkAccountsDelegate {
+public extension NCShareAccountsDelegate {
     func selected(url: String, user: String) {}
 }
 
-class NCTalkAccounts: UIViewController {
+class NCShareAccounts: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    public var accounts: [NKDataAccountFile] = []
+    public var accounts: [NKShareAccounts.DataAccounts] = []
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var dismissDidEnterBackground: Bool = true
-    public weak var delegate: NCTalkAccountsDelegate?
+    public weak var delegate: NCShareAccountsDelegate?
 
     private var timer: Timer?
     private var time: Float = 0
@@ -128,7 +128,7 @@ class NCTalkAccounts: UIViewController {
     }
 }
 
-extension NCTalkAccounts: UITableViewDelegate {
+extension NCShareAccounts: UITableViewDelegate {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 
@@ -149,7 +149,7 @@ extension NCTalkAccounts: UITableViewDelegate {
     }
 }
 
-extension NCTalkAccounts: UITableViewDataSource {
+extension NCShareAccounts: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return accounts.count
@@ -169,17 +169,12 @@ extension NCTalkAccounts: UITableViewDataSource {
 
         let account = accounts[indexPath.row]
 
-        if let avatarPath = account.avatar, !avatarPath.isEmpty, let avatarImage = avatarImage {
-            do {
-                let data = try Data(contentsOf: URL(fileURLWithPath: avatarPath))
-                if let image = UIImage(data: data) {
-                    avatarImage.image = image
-                }
-            } catch { print("Error: \(error)") }
+        if let image = account.image {
+            avatarImage?.image = image
         }
 
-        if let alias = account.alias, !alias.isEmpty {
-            userLabel?.text = alias.uppercased() + " (\(account.user))"
+        if let name = account.name, !name.isEmpty {
+            userLabel?.text = name.uppercased() + " (\(account.user))"
         } else {
             userLabel?.text = account.user.uppercased()
         }
