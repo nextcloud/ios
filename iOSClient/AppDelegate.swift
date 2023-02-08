@@ -234,9 +234,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworkingProcessUpload.shared.invalidateObserveTableMetadata()
         NCNetworkingProcessUpload.shared.stopTimer()
 
-        // Create file account for Nextcloud data share
-        if let error = createDataAccountFile() {
-            NKCommon.shared.writeLog("[ERROR] Create account file for Talk \(error.localizedDescription)")
+        // Nextcloud share accounts
+        if let error = shareAccounts() {
+            NKCommon.shared.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
         if CCUtility.getPrivacyScreenEnabled() {
@@ -626,18 +626,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func createDataAccountFile() -> Error? {
+    func shareAccounts() -> Error? {
         guard !account.isEmpty, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
 
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKShareAccounts.DataAccounts]()
         for account in tableAccount {
-            let alias = account.alias.isEmpty ? account.displayName : account.alias
+            let name = account.alias.isEmpty ? account.displayName : account.alias
             let userBaseUrl = account.user + "-" + (URL(string: account.urlBase)?.host ?? "")
             let avatarFileName = userBaseUrl + "-\(account.user).png"
             let pathAvatarFileName = String(CCUtility.getDirectoryUserData()) + "/" + avatarFileName
             let image = UIImage(contentsOfFile: pathAvatarFileName)
-            accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: alias, image: image))
+            accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
         return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
     }
