@@ -84,8 +84,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 navigationController.modalPresentationStyle = .fullScreen
                 appDelegate.window?.rootViewController?.present(navigationController, animated: true)
             } else {
-                CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: true, isCropEnabled: false, metadata: metadata)
+                CCUtility.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
+                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, isCropEnabled: false, metadata: metadata)
                 appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
             }
 
