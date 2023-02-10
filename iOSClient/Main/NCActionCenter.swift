@@ -71,24 +71,23 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorLoadFileQuickLook:
             let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
-            var isCropEnabled: Bool = true
             if let image = UIImage(contentsOfFile: fileNamePath) {
                 if let data = image.jpegData(compressionQuality: 1) {
                     do {
                         try data.write(to: URL(fileURLWithPath: fileNameTemp))
-                        isCropEnabled = true
                     } catch {
                         return
                     }
                 }
+                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, isCropEnabled: true, metadata: metadata)
+                let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+                navigationController.modalPresentationStyle = .fullScreen
+                appDelegate.window?.rootViewController?.present(navigationController, animated: true)
             } else {
                 CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-                isCropEnabled = false
+                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: true, isCropEnabled: false, metadata: metadata)
+                appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
             }
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, isCropEnabled: isCropEnabled, metadata: metadata)
-            let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-            navigationController.modalPresentationStyle = .fullScreen
-            appDelegate.window?.rootViewController?.present(navigationController, animated: true)
 
         case NCGlobal.shared.selectorLoadFileView:
             guard UIApplication.shared.applicationState == .active else { break }
