@@ -38,6 +38,7 @@ private var hasChangesQuickLook: Bool = false
     let url: URL
     var previewItems: [PreviewItem] = []
     var isEditingEnabled: Bool
+    var isCropEnabled: Bool
     var metadata: tableMetadata?
     var timer: Timer?
 
@@ -45,9 +46,10 @@ private var hasChangesQuickLook: Bool = false
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc init(with url: URL, isEditingEnabled: Bool, metadata: tableMetadata?) {
+    @objc init(with url: URL, isEditingEnabled: Bool, isCropEnabled: Bool, metadata: tableMetadata?) {
         self.url = url
         self.isEditingEnabled = isEditingEnabled
+        self.isCropEnabled = isCropEnabled
         if let metadata = metadata {
             self.metadata = tableMetadata.init(value: metadata)
         }
@@ -73,16 +75,16 @@ private var hasChangesQuickLook: Bool = false
             NCContentPresenter.shared.showInfo(error: error)
         }
 
-        let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
-
-        if metadata?.classFile == NKCommon.typeClassFile.image.rawValue {
-            let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
-            navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
-        } else {
-            navigationItem.leftBarButtonItems = [buttonDone]
+        if isCropEnabled {
+            let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
+            if metadata?.classFile == NKCommon.typeClassFile.image.rawValue {
+                let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
+                navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
+            } else {
+                navigationItem.leftBarButtonItems = [buttonDone]
+            }
+            startTimer(navigationItem: navigationItem)
         }
-
-        startTimer(navigationItem: navigationItem)
     }
 
     func startTimer(navigationItem: UINavigationItem) {
