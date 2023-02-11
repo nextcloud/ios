@@ -75,19 +75,17 @@ private var hasChangesQuickLook: Bool = false
             NCContentPresenter.shared.showInfo(error: error)
         }
 
-        //if isImage {
+        if let metadata = metadata, metadata.classFile == NKCommon.typeClassFile.image.rawValue {
             let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
-            if metadata?.classFile == NKCommon.typeClassFile.image.rawValue {
-                let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
-                navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
-            } else {
-                navigationItem.leftBarButtonItems = [buttonDone]
-            }
+            let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
+            navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
             startTimer(navigationItem: navigationItem)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
         // needs to be saved bc in didDisappear presentingVC is already nil
         parentVC = presentingViewController
     }
@@ -95,7 +93,9 @@ private var hasChangesQuickLook: Bool = false
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        dismission()
+        if let metadata = metadata, metadata.classFile != NKCommon.typeClassFile.image.rawValue {
+            dismission()
+        }
     }
 
     func startTimer(navigationItem: UINavigationItem) {
@@ -114,10 +114,6 @@ private var hasChangesQuickLook: Bool = false
                 }
             }
         })
-    }
-
-    func stopTimer() {
-        self.timer?.invalidate()
     }
 
     @objc func dismission() {
@@ -148,7 +144,12 @@ private var hasChangesQuickLook: Bool = false
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in
             self.dismiss(animated: true)
         })
-        present(alertController, animated: true)
+
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+            present(alertController, animated: true)
+        } else {
+            parentVC?.present(alertController, animated: true)
+        }
     }
 
     @objc func crop() {
