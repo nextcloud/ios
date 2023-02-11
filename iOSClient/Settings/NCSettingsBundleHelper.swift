@@ -25,8 +25,19 @@ import Foundation
 
 class NCSettingsBundleHelper: NSObject {
 
-    @objc class func setVersionAndBuildNumber() {
+    struct SettingsBundleKeys {
+        static let Reset = "reset_application"
+        static let BuildVersionKey = "version_preference"
+    }
+
+    class func setVersionAndBuildNumber() {
         let version = NCUtility.shared.getVersionApp() as String
-        UserDefaults.standard.set(version, forKey: "version_preference")
+        UserDefaults.standard.set(version, forKey: SettingsBundleKeys.BuildVersionKey)
+    }
+
+    class func checkAndExecuteSettings() {
+        if UserDefaults.standard.bool(forKey: SettingsBundleKeys.Reset) {
+            UserDefaults.standard.set(false, forKey: SettingsBundleKeys.Reset)
+        }
     }
 }

@@ -8,9 +8,19 @@
 	<array>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>_reset_application_</string>
+			<key>Key</key>
+			<string>reset_application</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
-			<string>Version</string>
+			<string>_version_</string>
 			<key>Key</key>
 			<string>version_preference</string>
 			<key>DefaultValue</key>

@@ -176,6 +176,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application did become active")
 
+        NCSettingsBundleHelper.setVersionAndBuildNumber()
+        NCSettingsBundleHelper.checkAndExecuteSettings()
+        
         // START OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.observeTableMetadata()
         NCNetworkingProcessUpload.shared.startTimer()
@@ -185,8 +188,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if !NCAskAuthorization.shared.isRequesting {
             hidePrivacyProtectionWindow()
         }
-
-        NCSettingsBundleHelper.setVersionAndBuildNumber()
 
         if !account.isEmpty {
             NCNetworkingProcessUpload.shared.verifyUploadZombie()
