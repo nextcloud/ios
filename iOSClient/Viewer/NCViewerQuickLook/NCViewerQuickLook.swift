@@ -40,6 +40,8 @@ private var hasChangesQuickLook: Bool = false
     var isEditingEnabled: Bool
     var metadata: tableMetadata?
     var timer: Timer?
+    // used to display the save alert
+    var parentVC: UIViewController?
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -73,16 +75,27 @@ private var hasChangesQuickLook: Bool = false
             NCContentPresenter.shared.showInfo(error: error)
         }
 
-        let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
-
-        if metadata?.classFile == NKCommon.typeClassFile.image.rawValue {
+        if let metadata = metadata, metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+            let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
             let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
             navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
-        } else {
-            navigationItem.leftBarButtonItems = [buttonDone]
+            startTimer(navigationItem: navigationItem)
         }
+    }
 
-        startTimer(navigationItem: navigationItem)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // needs to be saved bc in didDisappear presentingVC is already nil
+        parentVC = presentingViewController
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if let metadata = metadata, metadata.classFile != NKCommon.typeClassFile.image.rawValue {
+            dismission()
+        }
     }
 
     func startTimer(navigationItem: UINavigationItem) {
@@ -101,10 +114,6 @@ private var hasChangesQuickLook: Bool = false
                 }
             }
         })
-    }
-
-    func stopTimer() {
-        self.timer?.invalidate()
     }
 
     @objc func dismission() {
@@ -135,7 +144,12 @@ private var hasChangesQuickLook: Bool = false
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive) { _ in
             self.dismiss(animated: true)
         })
-        present(alertController, animated: true)
+
+        if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+            present(alertController, animated: true)
+        } else {
+            parentVC?.present(alertController, animated: true)
+        }
     }
 
     @objc func crop() {

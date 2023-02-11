@@ -61,6 +61,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
+        NCSettingsBundleHelper.checkAndExecuteSettings()
+
         let userAgent = CCUtility.getUserAgent() as String
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
@@ -176,6 +178,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NKCommon.shared.writeLog("[INFO] Application did become active")
 
+        NCSettingsBundleHelper.setVersionAndBuildNumber()
+        NCSettingsBundleHelper.checkAndExecuteSettings()
+        
         // START OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.observeTableMetadata()
         NCNetworkingProcessUpload.shared.startTimer()
@@ -185,8 +190,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if !NCAskAuthorization.shared.isRequesting {
             hidePrivacyProtectionWindow()
         }
-
-        NCSettingsBundleHelper.setVersionAndBuildNumber()
 
         if !account.isEmpty {
             NCNetworkingProcessUpload.shared.verifyUploadZombie()

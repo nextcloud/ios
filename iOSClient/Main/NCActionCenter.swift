@@ -71,18 +71,22 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorLoadFileQuickLook:
             let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
-            guard let image = UIImage(contentsOfFile: fileNamePath) else { return }
-            if let data = image.jpegData(compressionQuality: 1) {
-                do {
-                    try data.write(to: URL(fileURLWithPath: fileNameTemp))
-                } catch {
-                    return
-                }
-            }
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
-            let navigationController = UINavigationController(rootViewController: viewerQuickLook)
-            navigationController.modalPresentationStyle = .fullScreen
-            appDelegate.window?.rootViewController?.present(navigationController, animated: true)
+            if let image = UIImage(contentsOfFile: fileNamePath) {
+                if let data = image.jpegData(compressionQuality: 1) {
+                    do {
+                        try data.write(to: URL(fileURLWithPath: fileNameTemp))
+                    } catch {
+                        return
+                    }
+                }
+                let navigationController = UINavigationController(rootViewController: viewerQuickLook)
+                navigationController.modalPresentationStyle = .fullScreen
+                appDelegate.window?.rootViewController?.present(navigationController, animated: true)
+            } else {
+                CCUtility.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
+                appDelegate.window?.rootViewController?.present(viewerQuickLook, animated: true)
+            }
 
         case NCGlobal.shared.selectorLoadFileView:
             guard UIApplication.shared.applicationState == .active else { break }
