@@ -39,13 +39,6 @@ class NCSettingsBundleHelper: NSObject {
         if UserDefaults.standard.bool(forKey: SettingsBundleKeys.Reset) {
             UserDefaults.standard.set(false, forKey: SettingsBundleKeys.Reset)
 
-            let content = UNMutableNotificationContent()
-            content.title = NCBrandOptions.shared.brand
-            content.body = NSLocalizedString("_reset_application_done_", comment: "")
-            let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-            let notificationCenter = UNUserNotificationCenter.current()
-            notificationCenter.add(req)
-
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
@@ -56,6 +49,8 @@ class NCSettingsBundleHelper: NSObject {
 
             CCUtility.deleteAllChainStore()
             NCManageDatabase.shared.removeDB()
+
+            exit(0)
         }
     }
 }
