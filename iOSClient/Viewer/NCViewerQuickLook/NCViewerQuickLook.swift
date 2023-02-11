@@ -38,18 +38,18 @@ private var hasChangesQuickLook: Bool = false
     let url: URL
     var previewItems: [PreviewItem] = []
     var isEditingEnabled: Bool
-    var isCropEnabled: Bool
     var metadata: tableMetadata?
     var timer: Timer?
+    // used to display the save alert
+    var parentVC: UIViewController?
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc init(with url: URL, isEditingEnabled: Bool, isCropEnabled: Bool, metadata: tableMetadata?) {
+    @objc init(with url: URL, isEditingEnabled: Bool, metadata: tableMetadata?) {
         self.url = url
         self.isEditingEnabled = isEditingEnabled
-        self.isCropEnabled = isCropEnabled
         if let metadata = metadata {
             self.metadata = tableMetadata.init(value: metadata)
         }
@@ -75,7 +75,7 @@ private var hasChangesQuickLook: Bool = false
             NCContentPresenter.shared.showInfo(error: error)
         }
 
-        if isCropEnabled {
+        //if isImage {
             let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
             if metadata?.classFile == NKCommon.typeClassFile.image.rawValue {
                 let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
@@ -84,7 +84,18 @@ private var hasChangesQuickLook: Bool = false
                 navigationItem.leftBarButtonItems = [buttonDone]
             }
             startTimer(navigationItem: navigationItem)
-        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // needs to be saved bc in didDisappear presentingVC is already nil
+        parentVC = presentingViewController
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        dismission()
     }
 
     func startTimer(navigationItem: UINavigationItem) {

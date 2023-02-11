@@ -153,7 +153,7 @@
         row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                     
             [self deselectFormRow:sender];
-            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NKCommon.shared.filenamePathLog] isEditingEnabled:false isCropEnabled:false metadata:nil];
+            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NKCommon.shared.filenamePathLog] isEditingEnabled:false metadata:nil];
             [self presentViewController:viewerQuickLook animated:YES completion:nil];
         };
         [section addFormRow:row];
