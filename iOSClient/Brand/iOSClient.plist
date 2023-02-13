@@ -49,6 +49,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>nextcloudtalk</string>
+		<string>nextcloudnotes</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
