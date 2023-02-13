@@ -35,7 +35,7 @@ class NCSettingsBundleHelper: NSObject {
         UserDefaults.standard.set(version, forKey: SettingsBundleKeys.BuildVersionKey)
     }
 
-    class func checkAndExecuteSettings() {
+    class func checkAndExecuteSettings(delay: Double) {
         if UserDefaults.standard.bool(forKey: SettingsBundleKeys.Reset) {
             UserDefaults.standard.set(false, forKey: SettingsBundleKeys.Reset)
 
@@ -50,7 +50,9 @@ class NCSettingsBundleHelper: NSObject {
             CCUtility.deleteAllChainStore()
             NCManageDatabase.shared.removeDB()
 
-            exit(0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                exit(0)
+            }
         }
     }
 }
