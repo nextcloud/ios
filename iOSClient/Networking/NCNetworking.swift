@@ -57,6 +57,11 @@ import Photos
     @objc public let sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
     @objc public let sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
+    @objc public lazy var ncKitBackground: NKBackground = {
+        let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
+        return nckb
+    }()
+
     @objc public lazy var sessionManagerBackground: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackground)
         configuration.allowsCellularAccess = true
@@ -64,7 +69,7 @@ import Photos
         configuration.isDiscretionary = false
         configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        let session = URLSession(configuration: configuration, delegate: NKBackground.shared, delegateQueue: OperationQueue.main)
+        let session = URLSession(configuration: configuration, delegate: self.ncKitBackground, delegateQueue: OperationQueue.main)
         return session
     }()
 
@@ -75,7 +80,7 @@ import Photos
         configuration.isDiscretionary = false
         configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        let session = URLSession(configuration: configuration, delegate: NKBackground.shared, delegateQueue: OperationQueue.main)
+        let session = URLSession(configuration: configuration, delegate: self.ncKitBackground, delegateQueue: OperationQueue.main)
         return session
     }()
 
@@ -88,7 +93,7 @@ import Photos
         configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
         configuration.sharedContainerIdentifier = NCBrandOptions.shared.capabilitiesGroups
-        let session = URLSession(configuration: configuration, delegate: NKBackground.shared, delegateQueue: OperationQueue.main)
+        let session = URLSession(configuration: configuration, delegate: self.ncKitBackground, delegateQueue: OperationQueue.main)
         return session
     }()
 #endif
@@ -494,7 +499,7 @@ import Photos
 
         } else {
 
-            if let task = NKBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
+            if let task = self.ncKitBackground.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
