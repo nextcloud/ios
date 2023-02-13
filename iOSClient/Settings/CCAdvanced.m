@@ -168,15 +168,15 @@
                     
             [self deselectFormRow:sender];
 
-            [[NKCommon shared] clearFileLog];
+            [NextcloudKit.shared.nkCommonInstance clearFileLog];
             
             NSInteger logLevel = [CCUtility getLogLevel];
             BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
             NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
             if (isSimulatorOrTestFlight) {
-                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
+                [NextcloudKit.shared.nkCommonInstance writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
             } else {
-                [[NKCommon shared] writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
+                [NextcloudKit.shared.nkCommonInstance writeLog:[NSString stringWithFormat:@"[INFO] Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
             }
         };
         [section addFormRow:row];
@@ -359,7 +359,7 @@
         
         NSInteger levelLog = [[rowDescriptor.value valueData] intValue];
         [CCUtility setLogLevel:levelLog];
-        [[NKCommon shared] setLevelLog:levelLog];
+        [NextcloudKit.shared.nkCommonInstance setLevelLog:levelLog];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
