@@ -304,7 +304,7 @@ extension NCManageDatabase {
         if isDirectoryE2EE || file.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
+                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile
@@ -379,7 +379,7 @@ extension NCManageDatabase {
             }
             metadata.classFile = NKCommon.typeClassFile.url.rawValue
         } else {
-            let (mimeType, classFile, iconName, _, _, _) = NKCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+            let (mimeType, classFile, iconName, _, _, _) = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
             metadata.contentType = mimeType
             metadata.iconName = iconName
             metadata.classFile = classFile
@@ -433,7 +433,7 @@ extension NCManageDatabase {
                 realm.add(result, update: .all)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
             return nil
         }
         return tableMetadata.init(value: result)
@@ -450,7 +450,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -464,7 +464,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -479,7 +479,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -490,7 +490,7 @@ extension NCManageDatabase {
         do {
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    let resultsType = NKCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
+                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
                     result.iconName = resultsType.iconName
@@ -499,7 +499,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -566,7 +566,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         for ocId in ocIdsUdate {
@@ -615,7 +615,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -631,7 +631,7 @@ extension NCManageDatabase {
                 result?.status = status
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         if let result = result {
@@ -653,7 +653,7 @@ extension NCManageDatabase {
                 result?.etagResource = etagResource
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -667,7 +667,7 @@ extension NCManageDatabase {
                 result?.favorite = favorite
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -686,7 +686,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -700,7 +700,7 @@ extension NCManageDatabase {
                 result?.e2eEncrypted = encrypted
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -714,7 +714,7 @@ extension NCManageDatabase {
                 result?.fileNameView = newFileNameView
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -894,7 +894,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -910,7 +910,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -942,7 +942,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -1005,7 +1005,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         return metadatas

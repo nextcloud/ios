@@ -142,7 +142,7 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_diagnostics_", nil)];
     [form addFormSection:section];
         
-    if ([[NSFileManager defaultManager] fileExistsAtPath:NKCommon.shared.filenamePathLog] && NCBrandOptions.shared.disable_log == false) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:NextcloudKit.shared.nkCommonInstance.filenamePathLog] && NCBrandOptions.shared.disable_log == false) {
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"log" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_view_log_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
@@ -153,7 +153,7 @@
         row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                     
             [self deselectFormRow:sender];
-            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NKCommon.shared.filenamePathLog] isEditingEnabled:false metadata:nil];
+            NCViewerQuickLook *viewerQuickLook = [[NCViewerQuickLook alloc] initWith:[NSURL fileURLWithPath:NextcloudKit.shared.nkCommonInstance.filenamePathLog] isEditingEnabled:false metadata:nil];
             [self presentViewController:viewerQuickLook animated:YES completion:nil];
         };
         [section addFormRow:row];

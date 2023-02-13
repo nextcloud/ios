@@ -150,7 +150,7 @@ import Photos
 
 #if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
-            NKCommon.shared.writeLog("[INFO] Called urlSessionDidFinishEvents for Background URLSession")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Called urlSessionDidFinishEvents for Background URLSession")
             appDelegate.backgroundSessionCompletionHandler = nil
             completionHandler()
         }
@@ -208,7 +208,7 @@ import Photos
         let certificateToPath = directoryCertificate + "/" + host + ".der"
 
         if !NCUtilityFileSystem.shared.copyFile(atPath: certificateAtPath, toPath: certificateToPath) {
-            NKCommon.shared.writeLog("[ERROR] Write certificare error")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Write certificare error")
         }
     }
     
@@ -220,7 +220,7 @@ import Photos
         let x509cert = d2i_X509_bio(mem, nil)
 
         if x509cert == nil {
-            NKCommon.shared.writeLog("[ERROR] OpenSSL couldn't parse X509 Certificate")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] OpenSSL couldn't parse X509 Certificate")
         } else {
             // save details
             if FileManager.default.fileExists(atPath: certNamePathTXT) {
@@ -338,9 +338,9 @@ import Photos
 
         if metadata.isDownloadUpload { return }
 
-        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NKCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
+        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
 
-        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NKCommon.shared.backgroundQueue, requestHandler: { request in
+        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue, requestHandler: { request in
 
             requestHandler(request)
             
@@ -398,7 +398,7 @@ import Photos
                 completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
-        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
@@ -411,7 +411,7 @@ import Photos
             uploadChunkedFile(metadata: metadata, start: start, progressHandler: progressHandler) { error in
                 completion(error)
             }
-        } else if metadata.session == NKCommon.shared.sessionIdentifierUpload {
+        } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             uploadFile(metadata: metadata, fileNameLocalPath:fileNameLocalPath, start: start, progressHandler: progressHandler) { account, ocId, etag, date, size, allHeaderFields, afError, error in
                 completion(error)
@@ -496,7 +496,7 @@ import Photos
 
             if let task = NKBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
 
-                NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadStartFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "sessionSelector": metadata.sessionSelector])
@@ -555,7 +555,7 @@ import Photos
                     NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp))
                 }
 
-                NKCommon.shared.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[SUCCESS] Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
 
             } else {
@@ -662,13 +662,13 @@ import Photos
             return completion()
         }
 
-        if metadata.session == NKCommon.shared.sessionIdentifierDownload {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
 
             NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
             return completion()
         }
 
-        if metadata.session == NKCommon.shared.sessionIdentifierUpload || metadata.chunk {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload || metadata.chunk {
 
             guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
 
@@ -752,7 +752,7 @@ import Photos
             if metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloadError {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
             }
-            if metadata.status == NCGlobal.shared.metadataStatusDownloading && metadata.session == NKCommon.shared.sessionIdentifierDownload {
+            if metadata.status == NCGlobal.shared.metadataStatusDownloading && metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
                 cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
             }
         }
@@ -766,7 +766,7 @@ import Photos
 
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasLocalUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
 
-        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), includeHiddenFiles: NCGlobal.shared.includeHiddenFiles ,options: options) { account, files, _, error in
             guard error == .success else {
@@ -797,7 +797,7 @@ import Photos
         }
     }
 
-    @objc func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NKCommon.shared.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
+    @objc func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
 
         let options = NKRequestOptions(queue: queue)
 
@@ -839,7 +839,7 @@ import Photos
             <d:prop></d:prop>
         </d:propfind>
         """
-        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8), options: options) { account, files, _, error in
             if error == .success, let file = files.first {
@@ -857,7 +857,7 @@ import Photos
     /// WebDAV search
     @objc func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> ()) {
 
-        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { (account, files, data, error) in
             guard error == .success else {
@@ -1284,7 +1284,7 @@ import Photos
 
     @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         
-        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
             guard error == .success else {

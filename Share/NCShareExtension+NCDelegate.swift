@@ -121,7 +121,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
     func renameFile(named fileName: String) {
         guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
 
-        let resultInternalType = NKCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+        let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
         vcRename.delegate = self
         vcRename.fileName = fileName
         if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
