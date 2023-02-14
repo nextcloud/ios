@@ -71,21 +71,6 @@ class NCShareAccounts: UIViewController {
             tableView.isScrollEnabled = false
         }
     }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        tableView.reloadData()
-    }
-
-    // MARK: - NotificationCenter
-
-    @objc func applicationDidEnterBackground() {
-
-        if dismissDidEnterBackground {
-            dismiss(animated: false)
-        }
-    }
 }
 
 extension NCShareAccounts: UITableViewDelegate {
