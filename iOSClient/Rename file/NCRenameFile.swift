@@ -231,6 +231,12 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
 
+        // verify if already exists
+        if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
+            NCContentPresenter.shared.showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+            return
+        }
+
         NCActivityIndicator.shared.start()
 
         NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, viewController: self) { error in
