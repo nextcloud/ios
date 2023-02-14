@@ -89,32 +89,21 @@
                                     <outlet property="delegate" destination="V0q-CP-xMJ" id="j64-3x-N2u"/>
                                 </connections>
                             </tableView>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="e8R-j7-ObS">
-                                <rect key="frame" x="0.0" y="308" width="300" height="2"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="2" id="G3U-2x-imL"/>
-                                </constraints>
-                                <color key="progressTintColor" systemColor="systemBlueColor"/>
-                            </progressView>
                         </subviews>
                         <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="e8R-j7-ObS" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" id="1gS-Ca-1Ov"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="top" secondItem="nZr-nE-ths" secondAttribute="bottom" constant="5" id="5vV-YC-uzH"/>
                             <constraint firstAttribute="trailing" secondItem="Pdo-MB-AhU" secondAttribute="trailing" constant="7" id="819-yV-vz7"/>
-                            <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="e8R-j7-ObS" secondAttribute="bottom" id="Cko-PC-TiW"/>
                             <constraint firstAttribute="trailing" secondItem="nZr-nE-ths" secondAttribute="trailing" constant="5" id="DPW-MV-oKc"/>
                             <constraint firstItem="hTI-Bw-Fws" firstAttribute="top" secondItem="Pdo-MB-AhU" secondAttribute="bottom" id="Ife-Ku-hGQ"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="5" id="SI9-xL-6s8"/>
                             <constraint firstItem="Pdo-MB-AhU" firstAttribute="leading" secondItem="gzh-6E-hc4" secondAttribute="leading" constant="7" id="Y5n-ju-hts"/>
-                            <constraint firstAttribute="trailing" secondItem="e8R-j7-ObS" secondAttribute="trailing" id="chh-t9-vJN"/>
                             <constraint firstItem="nZr-nE-ths" firstAttribute="top" secondItem="4vK-ua-S0e" secondAttribute="bottom" constant="5" id="oyJ-sj-j5N"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Zon-2j-rsc"/>
                     <size key="freeformSize" width="300" height="310"/>
                     <connections>
-                        <outlet property="progressView" destination="e8R-j7-ObS" id="2gM-MB-IhE"/>
                         <outlet property="tableView" destination="Pdo-MB-AhU" id="AcD-SW-2ga"/>
                         <outlet property="titleLabel" destination="nZr-nE-ths" id="UbA-Dl-0Ad"/>
                     </connections>
@@ -132,9 +121,6 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

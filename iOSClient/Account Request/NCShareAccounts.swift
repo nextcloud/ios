@@ -37,17 +37,12 @@ class NCShareAccounts: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var progressView: UIProgressView!
 
     public var accounts: [NKShareAccounts.DataAccounts] = []
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var dismissDidEnterBackground: Bool = true
     public weak var delegate: NCShareAccountsDelegate?
-
-    private var timer: Timer?
-    private var time: Float = 0
-    private let secondsAutoDismiss: Float = 3
 
     // MARK: - View Life Cycle
 
@@ -57,21 +52,10 @@ class NCShareAccounts: UIViewController {
         titleLabel.text = NSLocalizedString("_account_select_to_add_", comment: "")
 
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
-        // tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 
         view.backgroundColor = .secondarySystemBackground
         tableView.backgroundColor = .secondarySystemBackground
-
-        progressView.trackTintColor = .clear
-        progressView.progress = 1
-        if enableTimerProgress {
-            progressView.isHidden = false
-        } else {
-            progressView.isHidden = true
-        }
-
-        NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -88,10 +72,10 @@ class NCShareAccounts: UIViewController {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
 
-        timer?.invalidate()
+        tableView.reloadData()
     }
 
     // MARK: - NotificationCenter
@@ -102,39 +86,9 @@ class NCShareAccounts: UIViewController {
             dismiss(animated: false)
         }
     }
-
-    // MARK: - Progress
-
-    @objc func startTimer() {
-
-        if enableTimerProgress {
-            time = 0
-            timer?.invalidate()
-            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
-            progressView.isHidden = false
-        } else {
-            progressView.isHidden = true
-        }
-    }
-
-    @objc func updateProgress() {
-
-        time += 0.1
-        if time >= secondsAutoDismiss {
-            dismiss(animated: true)
-        } else {
-            progressView.progress = 1 - (time / secondsAutoDismiss)
-        }
-    }
 }
 
 extension NCShareAccounts: UITableViewDelegate {
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-
-        timer?.invalidate()
-        progressView.progress = 0
-    }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightCell
