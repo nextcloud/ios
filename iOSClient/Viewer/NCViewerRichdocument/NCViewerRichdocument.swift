@@ -191,7 +191,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
                             browserWebVC.urlBase = urlString
                             browserWebVC.isHiddenButtonExit = false
-
                             self.present(browserWebVC, animated: true)
 
                             return
