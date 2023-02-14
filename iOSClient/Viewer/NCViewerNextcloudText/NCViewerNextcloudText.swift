@@ -63,10 +63,10 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         view.addSubview(webView)
 
         webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+        webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
+        webView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0).isActive = true
+        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         bottomConstraint?.isActive = true
 
         var request = URLRequest(url: URL(string: link)!)
