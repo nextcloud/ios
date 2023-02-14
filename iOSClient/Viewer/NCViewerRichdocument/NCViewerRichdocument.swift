@@ -186,51 +186,66 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let url = URL(string: urlString) else { return }
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + (metadata.fileName as NSString).deletingPathExtension
 
-                        NCActivityIndicator.shared.start(backgroundView: view)
+                        if type == "slideshow" {
 
-                        NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+                            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+                            browserWebVC.urlBase = urlString
+                            browserWebVC.isHiddenButtonExit = false
 
-                        }, taskHandler: { _ in
+                            self.present(browserWebVC, animated: true)
 
-                        }, progressHandler: { _ in
+                            return
+                            
+                        } else {
 
-                        }, completionHandler: { account, _, _, _, allHeaderFields, afError, error in
+                            // TYPE PRINT - DOWNLOAD
 
-                            NCActivityIndicator.shared.stop()
+                            NCActivityIndicator.shared.start(backgroundView: view)
 
-                            if error == .success && account == self.metadata.account {
+                            NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
 
-                                var item = fileNameLocalPath
+                            }, taskHandler: { _ in
 
-                                if let allHeaderFields = allHeaderFields {
-                                    if let disposition = allHeaderFields["Content-Disposition"] as? String {
-                                        let components = disposition.components(separatedBy: "filename=")
-                                        if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
-                                            item = CCUtility.getDirectoryUserData() + "/" + filename
-                                            _ = NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: item)
+                            }, progressHandler: { _ in
+
+                            }, completionHandler: { account, _, _, _, allHeaderFields, afError, error in
+
+                                NCActivityIndicator.shared.stop()
+
+                                if error == .success && account == self.metadata.account {
+
+                                    var item = fileNameLocalPath
+
+                                    if let allHeaderFields = allHeaderFields {
+                                        if let disposition = allHeaderFields["Content-Disposition"] as? String {
+                                            let components = disposition.components(separatedBy: "filename=")
+                                            if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
+                                                item = CCUtility.getDirectoryUserData() + "/" + filename
+                                                _ = NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: item)
+                                            }
                                         }
                                     }
-                                }
 
-                                if type == "print" {
-                                    let pic = UIPrintInteractionController.shared
-                                    let printInfo = UIPrintInfo.printInfo()
-                                    printInfo.outputType = UIPrintInfo.OutputType.general
-                                    printInfo.orientation = UIPrintInfo.Orientation.portrait
-                                    printInfo.jobName = "Document"
-                                    pic.printInfo = printInfo
-                                    pic.printingItem = URL(fileURLWithPath: item)
-                                    pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { _, _, _ in })
+                                    if type == "print" {
+                                        let pic = UIPrintInteractionController.shared
+                                        let printInfo = UIPrintInfo.printInfo()
+                                        printInfo.outputType = UIPrintInfo.OutputType.general
+                                        printInfo.orientation = UIPrintInfo.Orientation.portrait
+                                        printInfo.jobName = "Document"
+                                        pic.printInfo = printInfo
+                                        pic.printingItem = URL(fileURLWithPath: item)
+                                        pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { _, _, _ in })
+                                    } else {
+                                        self.documentController = UIDocumentInteractionController()
+                                        self.documentController?.url = URL(fileURLWithPath: item)
+                                        self.documentController?.presentOptionsMenu(from: CGRect.zero, in: self.view, animated: true)
+                                    }
                                 } else {
-                                    self.documentController = UIDocumentInteractionController()
-                                    self.documentController?.url = URL(fileURLWithPath: item)
-                                    self.documentController?.presentOptionsMenu(from: CGRect.zero, in: self.view, animated: true)
-                                }
-                            } else {
 
-                                NCContentPresenter.shared.showError(error: error)
-                            }
-                        })
+                                    NCContentPresenter.shared.showError(error: error)
+                                }
+                            })
+                        }
                     }
                 } else if param["MessageName"] as? String == "fileRename" {
                     if let values = param["Values"] as? [AnyHashable: Any] {
