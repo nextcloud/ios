@@ -26,7 +26,7 @@ import NextcloudKit
 
 class NCApplicationHandle: NSObject {
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // class: AppDelegate
     // func: application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
