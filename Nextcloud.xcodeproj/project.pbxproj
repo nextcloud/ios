@@ -121,7 +121,6 @@
 		F70D8D8124A4A9BF000A5756 /* NCNetworkingProcessUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingProcessUpload.swift */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
 		F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCViewer+Menu.swift */; };
-		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
 		F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC79277B7D0000AA9FBF /* Realm */; };
 		F710FC7C277B7D0000AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC7B277B7D0000AA9FBF /* RealmSwift */; };
 		F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC7F277B7D2700AA9FBF /* RealmSwift */; };
@@ -807,7 +806,6 @@
 		F710C5EF2471A6D1009AD8B7 /* Sentry.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sentry.framework; path = Carthage/Build/iOS/Sentry.framework; sourceTree = "<group>"; };
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCViewer+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCViewer+Menu.swift"; sourceTree = "<group>"; };
-		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
 		F7134184259747BA00768D21 /* NCPushNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCPushNotification.h; sourceTree = "<group>"; };
 		F7134185259747BA00768D21 /* NCPushNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCPushNotification.m; sourceTree = "<group>"; };
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
@@ -1493,7 +1491,6 @@
 		F710E80C1EF95C9C00DC2427 /* Intro */ = {
 			isa = PBXGroup;
 			children = (
-				F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */,
 				F749C10923C4A5330027D966 /* NCIntro.storyboard */,
 				F749C10723C4A5330027D966 /* NCIntroCollectionViewCell.swift */,
 				F749C10A23C4A5340027D966 /* NCIntroCollectionViewCell.xib */,
@@ -1714,8 +1711,8 @@
 		F769CA1B2966EF4F00039397 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
-				F75CA1462962F13700B01130 /* HUDView.swift */,
 				F769CA182966EA3C00039397 /* ComponentView.swift */,
+				F75CA1462962F13700B01130 /* HUDView.swift */,
 			);
 			path = GUI;
 			sourceTree = "<group>";
@@ -2026,11 +2023,9 @@
 			isa = PBXGroup;
 			children = (
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
-				F710E80C1EF95C9C00DC2427 /* Intro */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
 				F7B8B82F25681C3400967775 /* GoogleService-Info.plist */,
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
-				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 			);
@@ -2206,6 +2201,7 @@
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
+				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F771E3D120E2392D00AFB62D /* File Provider Extension */,
@@ -2232,9 +2228,9 @@
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
+				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F769CA1B2966EF4F00039397 /* GUI */,
-				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7CA213725F1372B00826ABB /* Account Request */,
 				F7A321621E9E37960069AD1B /* Activity */,
@@ -2246,6 +2242,7 @@
 				F7A0D14E259229FA008F8A13 /* Extensions */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7725A5D251F33BB00D125E0 /* Files */,
+				F710E80C1EF95C9C00DC2427 /* Intro */,
 				F7BFFA621A24D7300044ED85 /* Login */,
 				F7EC9CB921185F2000F1C5CE /* Media */,
 				371B5A2F23D0B04B00FAFAE9 /* Menu */,
@@ -2851,7 +2848,6 @@
 				3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */,
 				AF93471C27E2361E002537EE /* NCShareAdvancePermissionHeader.xib in Resources */,
 				F7F1E54C2492369A00E42386 /* NCMediaCommandView.xib in Resources */,
-				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */,
 				F7F4F10527ECDBDB008676F9 /* Inconsolata-SemiBold.ttf in Resources */,
 				F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */,
@@ -3620,13 +3616,13 @@
 		2C33C48723E2C475005F963B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Notification_Service_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_NOTIFICATION_SERVICE,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/Notification_Service_Extension.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_NOTIFICATION_SERVICE";
@@ -3637,13 +3633,13 @@
 		2C33C48823E2C475005F963B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Notification_Service_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_NOTIFICATION_SERVICE,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/Notification_Service_Extension.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_NOTIFICATION_SERVICE";
@@ -3660,6 +3656,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/Nextcloud";
 			};
 			name = Debug;
@@ -3673,6 +3670,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/Nextcloud";
 			};
 			name = Release;
@@ -3680,13 +3678,13 @@
 		F70716EE2987F81600E72C1D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension_UI.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_FILE_PROVIDER_EXTENSION_UI,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/File_Provider_Extension_UI.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -3700,13 +3698,13 @@
 		F70716EF2987F81600E72C1D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension_UI.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_FILE_PROVIDER_EXTENSION_UI,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension_UI.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/File_Provider_Extension_UI.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -3720,13 +3718,13 @@
 		F7145A261D12E3B700CAFEEC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Share.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_SHARE,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/Share.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_SHARE";
@@ -3737,13 +3735,13 @@
 		F7145A271D12E3B700CAFEEC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Share.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_SHARE,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/Share.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_SHARE";
@@ -3759,14 +3757,14 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Widget.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Widget.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_WIDGET,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/Widget.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -3786,14 +3784,14 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Widget.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/Widget.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_WIDGET,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Widget.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/Widget.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Nextcloud;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -3809,13 +3807,13 @@
 		F771E3F020E2392E00AFB62D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_FILE_PROVIDER_EXTENSION,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/File_Provider_Extension.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION";
@@ -3826,13 +3824,13 @@
 		F771E3F120E2392E00AFB62D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/File_Provider_Extension.entitlements";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					EXTENSION,
 					EXTENSION_FILE_PROVIDER_EXTENSION,
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/File_Provider_Extension.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) EXTENSION EXTENSION_FILE_PROVIDER_EXTENSION";
@@ -3845,10 +3843,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
 			};
 			name = Debug;
 		};
@@ -3857,10 +3856,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -3875,7 +3875,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand//WidgetDashboardIntentHandler.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand//WidgetDashboardIntentHandler.entitlements";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -3885,7 +3885,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/WidgetDashboardIntentHandler.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/WidgetDashboardIntentHandler.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = WidgetDashboardIntentHandler;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -3909,7 +3909,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand//WidgetDashboardIntentHandler.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand//WidgetDashboardIntentHandler.entitlements";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3920,7 +3920,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/WidgetDashboardIntentHandler.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Brand/WidgetDashboardIntentHandler.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = WidgetDashboardIntentHandler;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Nextcloud. All rights reserved.";
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -3990,7 +3990,7 @@
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC DEBUG";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Brand/Nextcloud-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Brand/Nextcloud-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -4052,7 +4052,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Brand/Nextcloud-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Brand/Nextcloud-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

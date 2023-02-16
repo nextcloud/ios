@@ -47,6 +47,7 @@ excluded:
 
   # iOS Files Quarantine
 
+  - Brand/NCBrand.swift
   - File Provider Extension/FileProviderData.swift
   - File Provider Extension/FileProviderDomain.swift
   - File Provider Extension/FileProviderEnumerator.swift
@@ -69,8 +70,6 @@ excluded:
   - iOSClient/Activity/NCActivityTableViewCell.swift
   - iOSClient/AppDelegate.swift
   - iOSClient/BackgroundImageColor/NCBackgroundImageColor.swift
-  - iOSClient/Brand/Intro/NCIntroViewController.swift
-  - iOSClient/Brand/NCBrand.swift
   - iOSClient/BrowserWeb/NCBrowserWeb.swift
   - iOSClient/Data/NCDataSource.swift
   - iOSClient/Data/NCDatabase.swift
