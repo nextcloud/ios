@@ -127,7 +127,7 @@
 "_no_permission_add_file_"  = "You don't have permission to add files";
 "_no_permission_delete_file_" = "You don't have permission to delete files";
 "_no_permission_modify_file_" = "You don't have permission to modify files";
-"_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version ?";
+"_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
 "_search_"                  = "Search";
@@ -313,7 +313,7 @@
 "_want_exit_"                   = "Attention! Will be reset to initial state. Continue?";
 "_proceed_"                     = "Proceed";
 "_delete_cache_"                = "Delete cache";
-"_want_delete_cache_"           = "Do you want to delete the cache (this also removes the transfers in progress) ?";
+"_want_delete_cache_"           = "Do you want to delete the cache (this also removes the transfers in progress)?";
 "_want_delete_thumbnails_"      = "Do you want to delete all thumbnails too?";
 "_mail_deleted_"                = "Email deleted";
 "_mail_saved_"                  = "Email saved";
@@ -912,7 +912,7 @@
 "_status_e2ee_on_server_"   = "The end-to-end encryption is already configured in the server but not yet enabled on this device";
 "_status_e2ee_not_setup_"   = "The end-to-end encryption is not yet configured on the server";
 "_status_e2ee_configured_"  = "The end-to-end encryption is correctly configured";
-"_change_upload_filename_"  = "Do you want to save the file with a different name ?";
+"_change_upload_filename_"  = "Do you want to save the file with a different name?";
 "_save_file_as_"            = "Save file as %@";
 "_password_ascii_"          = "The password cannot contain special characters";
 "_calendar_contacts_"       = "Calendar and Contacts";
@@ -931,7 +931,7 @@
 "_rename_already_exists_"   = "A file with this name already exists";
 "_created_"                 = "Created";
 "_recipients_"              = "Recipients";
-"_are_sure_"                = "Are you sure";
+"_are_sure_"                = "Are you sure?";
 
 // Video
 "_select_trace_"            = "Select the trace";
