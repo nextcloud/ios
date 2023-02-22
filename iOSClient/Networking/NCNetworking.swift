@@ -38,8 +38,9 @@ import Photos
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
-@objc class NCNetworking: NSObject, NKCommonDelegate {
-    @objc public static let shared: NCNetworking = {
+@objcMembers
+class NCNetworking: NSObject, NKCommonDelegate {
+    public static let shared: NCNetworking = {
         let instance = NCNetworking()
         return instance
     }()
@@ -57,12 +58,12 @@ import Photos
         return nckb
     }()
     
-    @objc public let sessionMaximumConnectionsPerHost = 5
-    @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
-    @objc public let sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    @objc public let sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
+    public let sessionMaximumConnectionsPerHost = 5
+    public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
+    public let sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    public let sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
-    @objc public lazy var sessionManagerBackground: URLSession = {
+    public lazy var sessionManagerBackground: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackground)
         configuration.allowsCellularAccess = true
         configuration.sessionSendsLaunchEvents = true
@@ -73,7 +74,7 @@ import Photos
         return session
     }()
 
-    @objc public lazy var sessionManagerBackgroundWWan: URLSession = {
+    public lazy var sessionManagerBackgroundWWan: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundWWan)
         configuration.allowsCellularAccess = false
         configuration.sessionSendsLaunchEvents = true
@@ -85,7 +86,7 @@ import Photos
     }()
 
 #if EXTENSION
-    @objc public lazy var sessionManagerBackgroundExtension: URLSession = {
+    public lazy var sessionManagerBackgroundExtension: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundExtension)
         configuration.allowsCellularAccess = true
         configuration.sessionSendsLaunchEvents = true
@@ -99,9 +100,7 @@ import Photos
 #endif
 
     // REQUESTS
-
     var requestsUnifiedSearch: [DataRequest] = []
-
 
     // MARK: - init
 
@@ -109,10 +108,10 @@ import Photos
         super.init()
 
 #if EXTENSION
-        _ = sessionIdentifierBackgroundExtension
+        print("Start Background Extension: ", sessionIdentifierBackgroundExtension)
 #else
-        _ = sessionManagerBackground
-        _ = sessionManagerBackgroundWWan
+        print("Start Background: ", sessionManagerBackground)
+        print("Start BackgroundWWan: ", sessionManagerBackgroundWWan)
 #endif
     }
 
@@ -317,7 +316,7 @@ import Photos
 
     // MARK: - Download
 
-    @objc func cancelDownload(ocId: String, serverUrl: String, fileNameView: String) {
+    func cancelDownload(ocId: String, serverUrl: String, fileNameView: String) {
 
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView) else { return }
 
@@ -802,7 +801,7 @@ import Photos
         }
     }
 
-    @objc func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
+    func readFile(serverUrlFileName: String, showHiddenFiles: Bool = CCUtility.getShowHiddenFiles(), queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
 
         let options = NKRequestOptions(queue: queue)
 
@@ -860,7 +859,7 @@ import Photos
     //MARK: - Search
     
     /// WebDAV search
-    @objc func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> ()) {
+    func searchFiles(urlBase: NCUserBaseUrl, literal: String, completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> ()) {
 
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
@@ -1035,7 +1034,7 @@ import Photos
 
     // MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, withPush:Bool, completion: @escaping (_ error: NKError) -> Void) {
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, withPush:Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1146,7 +1145,7 @@ import Photos
 
     // MARK: - WebDav Delete
 
-    @objc func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         if onlyLocalCache {
 
@@ -1252,7 +1251,7 @@ import Photos
 
     // MARK: - WebDav Favorite
 
-    @objc func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
+    func favoriteMetadata(_ metadata: tableMetadata, completion: @escaping (_ error: NKError) -> Void) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             favoriteMetadataPlain(metadataLive) { error in
@@ -1287,7 +1286,7 @@ import Photos
         }
     }
 
-    @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+    func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
@@ -1313,7 +1312,7 @@ import Photos
 
     // MARK: - Lock Files
 
-    @objc func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
+    func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
         NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { account, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
@@ -1331,7 +1330,7 @@ import Photos
 
     // MARK: - WebDav Rename
 
-    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1478,7 +1477,7 @@ import Photos
 
     // MARK: - WebDav Copy
 
-    @objc func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
             copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { error in
