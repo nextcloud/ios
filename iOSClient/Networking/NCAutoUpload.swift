@@ -87,11 +87,11 @@ class NCAutoUpload: NSObject {
 
         self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
             guard let assets = assets, !assets.isEmpty else {
-                NKCommon.shared.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 completion(0)
                 return
             }
-            NKCommon.shared.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
             if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
@@ -122,7 +122,7 @@ class NCAutoUpload: NSObject {
                 }
 
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    session = NKCommon.shared.sessionIdentifierUpload
+                    session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
                 } else {
                     if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false {
                         session = NCNetworking.shared.sessionIdentifierBackground
@@ -165,7 +165,7 @@ class NCAutoUpload: NSObject {
                         metadata.classFile = NKCommon.typeClassFile.image.rawValue
                     }
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                        NKCommon.shared.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                     }
                     metadatas.append(metadata)
@@ -174,7 +174,7 @@ class NCAutoUpload: NSObject {
 
             self.endForAssetToUpload = true
 
-            NKCommon.shared.writeLog("[INFO] Start createProcessUploads")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start createProcessUploads")
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: completion)
         }
     }
@@ -189,7 +189,7 @@ class NCAutoUpload: NSObject {
             guard let assets = assets else { return }
 
             NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
-            NKCommon.shared.writeLog("[INFO] Align Photo Library \(assets.count)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Align Photo Library \(assets.count)")
         }
     }
 

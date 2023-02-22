@@ -42,7 +42,7 @@ class NCViewer: NSObject {
         self.metadatas = metadatas
 
         var editor = editor
-        var xxxxxxx = NKCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
+        var xxxxxxx = NextcloudKit.shared.nkCommonInstance.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
 
         // URL
         if metadata.classFile == NKCommon.typeClassFile.url.rawValue {

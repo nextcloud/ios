@@ -88,7 +88,7 @@ class NCShares: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        NKCommon.shared.writeLog("[TEST] READSHARES")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[TEST] READSHARES")
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, data, error in
 

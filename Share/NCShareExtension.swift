@@ -116,14 +116,14 @@ class NCShareExtension: UIViewController {
         let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
-        NKCommon.shared.levelLog = levelLog
+        NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
         if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-            NKCommon.shared.pathLog = pathDirectoryGroup
+            NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
         }
         if isSimulatorOrTestFlight {
-            NKCommon.shared.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
         } else {
-            NKCommon.shared.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
         }
 
         // Colors
@@ -306,7 +306,7 @@ extension NCShareExtension {
                 ocId: ocId,
                 serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "",
                 contentType: "")
-            metadata.session = NKCommon.shared.sessionIdentifierUpload
+            metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
@@ -333,7 +333,7 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
         let metadata = uploadMetadata[counterUploaded]
-        let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
+        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile

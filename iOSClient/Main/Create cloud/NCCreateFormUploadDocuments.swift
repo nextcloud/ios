@@ -263,7 +263,7 @@ import XLForm
             //Trim whitespaces after checks above
             fileNameForm = (fileNameForm as! String).trimmingCharacters(in: .whitespacesAndNewlines)
 
-            let result = NKCommon.shared.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
+            let result = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameForm as! String, mimeType: "", directory: false)
             if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.mimeType).count == 0 {
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
@@ -329,7 +329,7 @@ import XLForm
                     return
                 }
 
-                var results = NKCommon.shared.getInternalType(fileName: fileName, mimeType: "", directory: false)
+                var results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
                 //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
                 if results.mimeType.isEmpty {
                     results.mimeType = "text/x-markdown"

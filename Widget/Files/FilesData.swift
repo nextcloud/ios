@@ -196,17 +196,17 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let isSimulatorOrTestFlight = NCUtility.shared.isSimulatorOrTestFlight()
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility.shared.getVersionApp())
 
-    NKCommon.shared.levelLog = levelLog
+    NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
     if let pathDirectoryGroup = CCUtility.getDirectoryGroup()?.path {
-        NKCommon.shared.pathLog = pathDirectoryGroup
+        NextcloudKit.shared.nkCommonInstance.pathLog = pathDirectoryGroup
     }
     if isSimulatorOrTestFlight {
-        NKCommon.shared.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
     } else {
-        NKCommon.shared.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    let options = NKRequestOptions(timeout: 90, queue: NKCommon.shared.backgroundQueue)
+    let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []

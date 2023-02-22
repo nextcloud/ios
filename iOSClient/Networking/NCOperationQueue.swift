@@ -347,7 +347,7 @@ class NCOperationSynchronization: ConcurrentOperation {
 
                     if (error == .success) && (directory?.etag != files.first?.etag || self.selector == NCGlobal.shared.selectorDownloadAllFile) {
 
-                        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+                        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
                         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
@@ -453,7 +453,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
                 etagResource = metadata.etagResource
             }
-            let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             NextcloudKit.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePath,
                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
@@ -513,7 +513,7 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
             self.finish()
         } else {
 
-            let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
             NextcloudKit.shared.downloadPreview(
                 fileNamePathOrFileId: fileNamePathOrFileId,
@@ -571,7 +571,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
             self.finish()
         } else {
             
-            let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
             NextcloudKit.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, options: options) { _, imageAvatar, _, etag, error in
 

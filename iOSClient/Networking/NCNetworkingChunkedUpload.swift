@@ -33,7 +33,7 @@ extension NCNetworking {
 
         let directoryProviderStorageOcId = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
-        let chunkFolderPath = metadata.urlBase + "/" + NKCommon.shared.dav + "/uploads/" + metadata.userId + "/" + chunkFolder
+        let chunkFolderPath = metadata.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/uploads/" + metadata.userId + "/" + chunkFolder
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let chunkSize = CCUtility.getChunkSize()
         let fileSizeInGB = Double(metadata.size) / 1e9
@@ -44,7 +44,7 @@ extension NCNetworking {
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
             NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
-            filesNames = NKCommon.shared.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
+            filesNames = NextcloudKit.shared.nkCommonInstance.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
             } else {
@@ -91,7 +91,7 @@ extension NCNetworking {
                 }, taskHandler: { task in
 
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
-                    NKCommon.shared.writeLog("[INFO] Upload chunk: " + fileName)
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload chunk: " + fileName)
 
                 }, progressHandler: { progress in
 
@@ -141,7 +141,7 @@ extension NCNetworking {
             // Assembling the chunks
             let serverUrlFileNameSource = chunkFolderPath + "/.file"
             let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
-            let serverUrlFileNameDestination = metadata.urlBase + "/" + NKCommon.shared.dav + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
+            let serverUrlFileNameDestination = metadata.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
 
             var customHeader: [String: String] = [:]
             let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
@@ -160,7 +160,7 @@ extension NCNetworking {
             
             NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, error in
 
-                NKCommon.shared.writeLog("[ERROR] Assembling chunk with error code: \(error.errorCode)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Assembling chunk with error code: \(error.errorCode)")
 
                 guard error == .success else {
                     self.uploadChunkFileError(metadata: metadata, chunkFolderPath: chunkFolderPath, directoryProviderStorageOcId: directoryProviderStorageOcId, error: error)
@@ -213,7 +213,7 @@ extension NCNetworking {
 
     private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: NKError) -> Void) {
 
-        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, _, _, error in
 
@@ -233,7 +233,7 @@ extension NCNetworking {
 
         var errorDescription = error.errorDescription
 
-        NKCommon.shared.writeLog("[ERROR] Upload chunk error code: \(error.errorCode)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload chunk error code: \(error.errorCode)")
 
         if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 

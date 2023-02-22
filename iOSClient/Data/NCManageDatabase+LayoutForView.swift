@@ -88,7 +88,7 @@ extension NCManageDatabase {
                 realm.add(addObject, update: .all)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         return NCDBLayoutForView.init(value: addObject)
@@ -105,7 +105,7 @@ extension NCManageDatabase {
                 realm.add(result, update: .all)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
             return nil
         }
         return NCDBLayoutForView.init(value: result)
