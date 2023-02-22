@@ -24,7 +24,7 @@
 import UIKit
 import WebKit
 
-class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
+class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var webView = WKWebView()
@@ -60,6 +60,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView.navigationDelegate = self
+        webView.uiDelegate = self
         view.addSubview(webView)
 
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -193,6 +194,16 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
     }
+
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil {
+            if let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) {
+               UIApplication.shared.open(url)
+            }
+        }
+        return nil
+    }
+
 }
 
 extension NCViewerNextcloudText: UINavigationControllerDelegate {
