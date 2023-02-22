@@ -262,7 +262,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
         if self.trashPath.isEmpty {
             guard let userId = (appDelegate.userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return nil }
-            let trashPath = appDelegate.urlBase + "/" + NCGlobal.shared.dav + "/trashbin/" + userId + "/trash/"
+            let trashPath = appDelegate.urlBase + "/" + NKCommon.shared.dav + "/trashbin/" + userId + "/trash/"
             return trashPath
         } else {
             return self.trashPath
@@ -296,7 +296,7 @@ extension NCTrash {
 
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = appDelegate.urlBase + "/" + NCGlobal.shared.dav + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
+        let fileNameTo = appDelegate.urlBase + "/" + NKCommon.shared.dav + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
 
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, error in
 
@@ -312,7 +312,7 @@ extension NCTrash {
 
     func emptyTrash() {
 
-        let serverUrlFileName = appDelegate.urlBase + "/" + NCGlobal.shared.dav + "/trashbin/" + appDelegate.userId + "/trash"
+        let serverUrlFileName = appDelegate.urlBase + "/" + NKCommon.shared.dav + "/trashbin/" + appDelegate.userId + "/trash"
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
 

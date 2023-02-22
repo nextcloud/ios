@@ -54,7 +54,9 @@ class NCSharePaging: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+
         setupCapabilities()
+
         // *** MUST BE THE FIRST ONE ***
         pagingViewController.metadata = metadata
 
@@ -97,7 +99,11 @@ class NCSharePaging: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
 
-        pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
+        if sharingEnabled {
+            pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
+        } else {
+            pagingViewController.indicatorColor = .clear
+        }
         (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
     }
@@ -111,13 +117,9 @@ class NCSharePaging: UIViewController {
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 && comments == false {
             commentsEnabled = false
         }
-        let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-        sharingEnabled = sharing
+        sharingEnabled = metadata.isSharable
         let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesActivity)
         activityEnabled = activity != nil
-        if metadata.e2eEncrypted || NCUtility.shared.isDirectoryE2EE(metadata: metadata) {
-            sharingEnabled = false
-        }
         if indexPage == .sharing && !sharingEnabled {
             indexPage = .activity
         }
@@ -243,12 +245,17 @@ extension NCSharePaging: PagingViewControllerDataSource {
 
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
 
-        switch NCGlobal.NCSharePagingIndex(rawValue: index) {
-        case .activity:
-            return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
-        case .sharing:
-            return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
-        default:
+        if sharingEnabled {
+            switch NCGlobal.NCSharePagingIndex(rawValue: index) {
+            case .activity:
+                return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
+            case .sharing:
+                return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
+            default:
+                return PagingIndexItem(index: index, title: "")
+            }
+        } else {
+            self.title = NSLocalizedString("_activity_", comment: "")
             return PagingIndexItem(index: index, title: "")
         }
     }
@@ -315,7 +322,7 @@ class NCSharePagingView: PagingView {
             headerView.imageView.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
         } else {
             if metadata.directory {
-                let image = UIImage(named: "folder")
+                let image = metadata.e2eEncrypted ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
                 headerView.imageView.image = image?.image(color: NCBrandColor.shared.brandElement, size: image?.size.width ?? 0)
                 headerView.imageView.image = headerView.imageView.image?.colorizeFolder(metadata: metadata)
             } else if !metadata.iconName.isEmpty {

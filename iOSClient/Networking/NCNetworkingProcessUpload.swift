@@ -114,7 +114,7 @@ class NCNetworkingProcessUpload: NSObject {
             // E2EE
             let uniqueMetadatas = metadatasUpload.unique(map: { $0.serverUrl })
             for metadata in uniqueMetadatas {
-                if NCUtility.shared.isDirectoryE2EE(metadata: metadata) {
+                if metadata.isDirectoryE2EE {
                     self.pauseProcess = false
                     return completition(counterUpload)
                 }
@@ -149,27 +149,28 @@ class NCNetworkingProcessUpload: NSObject {
                         }
 
                         let semaphore = DispatchSemaphore(value: 0)
-                        NCUtility.shared.extractFiles(from: metadata, viewController: viewController, hud: hud) { metadatas in
+                        let cameraRoll = NCCameraRoll()
+                        cameraRoll.extractCameraRoll(from: metadata, viewController: viewController, hud: hud) { metadatas in
                             if metadatas.isEmpty {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             }
                             for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
 
                                 // isE2EE
-                                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
+                                let isInDirectoryE2EE = metadata.isDirectoryE2EE
 
                                 // NO WiFi
                                 if !isWiFi && metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
                                     continue
                                 }
 
-                                if applicationState != .active && (isDirectoryE2EE || metadata.chunk) {
+                                if applicationState != .active && (isInDirectoryE2EE || metadata.chunk) {
                                     continue
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
-                                    if isDirectoryE2EE || metadata.chunk {
+                                    if isInDirectoryE2EE || metadata.chunk {
                                         maxConcurrentOperationUpload = 1
                                     }
                                     counterUpload += 1
@@ -189,8 +190,8 @@ class NCNetworkingProcessUpload: NSObject {
                     }
 
                     // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
-                    if applicationState == .active && metadatas.isEmpty && !self.appDelegate.isPasscodePresented() {
-                        self.deleteAssetLocalIdentifiers {
+                    if applicationState == .active && metadatas.isEmpty {
+                        self.deleteAssetLocalIdentifiers(account: self.appDelegate.account) {
                             self.pauseProcess = false
                         }
                     } else {
@@ -205,22 +206,29 @@ class NCNetworkingProcessUpload: NSObject {
         }
     }
 
-    private func deleteAssetLocalIdentifiers(completition: @escaping () -> Void) {
+    private func deleteAssetLocalIdentifiers(account: String, completition: @escaping () -> Void) {
 
-        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", appDelegate.account, "upload"))
-        if !metadatasSessionUpload.isEmpty { return completition() }
+        DispatchQueue.main.async {
 
-        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: appDelegate.account)
-        if localIdentifiers.isEmpty { return completition() }
+            guard !self.appDelegate.isPasscodePresented() else {
+                return completition()
+            }
 
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+            let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
+            if !metadatasSessionUpload.isEmpty { return completition() }
 
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
-        }, completionHandler: { _, _ in
-            NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
-            completition()
-        })
+            let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account)
+            if localIdentifiers.isEmpty { return completition() }
+
+            let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+            }, completionHandler: { _, _ in
+                NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
+                completition()
+            })
+        }
     }
 
     // MARK: -

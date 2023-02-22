@@ -115,7 +115,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : Notification
         item = NKExternalSite()
-        item.name = "_notification_"
+        item.name = "_notifications_"
         item.icon = "bell"
         item.url = "segueNotification"
         item.order = 30

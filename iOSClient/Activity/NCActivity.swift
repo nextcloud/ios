@@ -134,7 +134,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 15)
-        label.textColor = NCBrandColor.shared.gray
+        label.textColor = UIColor.systemGray
         label.textAlignment = .center
         label.text = NSLocalizedString("_no_activity_footer_", comment: "")
         label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
@@ -504,7 +504,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: UIImage(named: "pencil")!.image(color: NCBrandColor.shared.gray, size: 50),
+                icon: UIImage(named: "pencil")!.image(color: UIColor.systemGray, size: 50),
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 

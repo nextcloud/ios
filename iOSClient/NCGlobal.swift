@@ -78,11 +78,6 @@ class NCGlobal: NSObject {
     @objc let appScan                               = "Library/Application Support/Scan"
     @objc let appUserData                           = "Library/Application Support/UserData"
 
-    // Directory on Group data share Nextcloud apps
-    //
-    @objc let appDataShareTalk                      = "Library/Application Support/Talk"
-    @objc let appDataShareNextcloud                 = "Library/Application Support/Nextcloud"
-
     // Service
     //
     @objc let serviceShareKeyChain                  = "Crypto Cloud"
@@ -94,11 +89,7 @@ class NCGlobal: NSObject {
     //
     @objc let appName                               = "files"
     @objc let talkName                              = "talk-message"
-
-    // DAV -
-    //
-    @objc let dav                                   = "remote.php/dav"
-    @objc let davfiles                              = "remote.php/dav/files/"
+    @objc let appScheme                             = "nextcloud"
 
     // Nextcloud version
     //
@@ -110,12 +101,16 @@ class NCGlobal: NSObject {
     let nextcloudVersion23: Int                     =  23
     let nextcloudVersion24: Int                     =  24
     let nextcloudVersion25: Int                     =  25
+    let nextcloudVersion26: Int                     =  26
+
+    // Nextcloud unsupported
+    //
+    let nextcloud_unsupported_version: Int          = 16
 
     // Database Realm
     //
     let databaseDefault                             = "nextcloud.realm"
-    let databaseSchemaVersion: UInt64               = 259
-    let fileAccounts: String                        = "accounts.json"
+    let databaseSchemaVersion: UInt64               = 266
 
     // Intro selector
     //
@@ -154,10 +149,6 @@ class NCGlobal: NSObject {
     //
     let maxAutoDownload: UInt64                     = 50000000      // 50MB
     let maxAutoDownloadCellular: UInt64             = 10000000      // 10MB
-
-    // Nextcloud unsupported
-    //
-    let nextcloud_unsupported_version: Int          = 16
 
     // Layout
     //
@@ -243,6 +234,8 @@ class NCGlobal: NSObject {
     @objc let errorCharactersForbidden: Int         = -99993
     @objc let errorCreationFile: Int                = -99992
     @objc let errorReadFile: Int                    = -99991
+    @objc let errorUnauthorizedFilesPasscode: Int   = -99990
+    @objc let errorDisableFilesApp: Int             = -99989
 
     // Constants to identify the different permissions of a file
     //
@@ -322,6 +315,10 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int                = 3
     let metadataStatusUploadError: Int              = 4
 
+    //  Hidden files included in the read
+    //
+    let includeHiddenFiles: [String]                = [".LivePhoto"]
+
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
@@ -353,7 +350,7 @@ class NCGlobal: NSObject {
 
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, serverUrl, account, classFile, onlyLocalCache
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
@@ -373,6 +370,9 @@ class NCGlobal: NSObject {
     let notificationCenterReloadMediaPage                       = "reloadMediaPage"
     let notificationCenterPlayMedia                             = "playMedia"
     let notificationCenterPauseMedia                            = "pauseMedia"
+
+    let notificationCenterDismissScanDocument                   = "dismissScanDocument"
+    let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
     // TIP
     //

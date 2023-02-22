@@ -111,10 +111,10 @@ class NCManageDatabase: NSObject {
             } catch {
                 if let databaseFileUrlPath = databaseFileUrlPath {
                     do {
-                        #if !EXTENSION
+#if !EXTENSION
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_database_corrupt_")
                         NCContentPresenter.shared.showError(error: error, priority: .max)
-                        #endif
+#endif
                         NKCommon.shared.writeLog("DATABASE CORRUPT: removed")
                         try FileManager.default.removeItem(at: databaseFileUrlPath)
                     } catch {}
@@ -135,10 +135,10 @@ class NCManageDatabase: NSObject {
         } catch {
             if let databaseFileUrlPath = databaseFileUrlPath {
                 do {
-                    #if !EXTENSION
+#if !EXTENSION
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_database_corrupt_")
                     NCContentPresenter.shared.showError(error: error, priority: .max)
-                    #endif
+#endif
                     NKCommon.shared.writeLog("DATABASE CORRUPT: removed")
                     try FileManager.default.removeItem(at: databaseFileUrlPath)
                 } catch {}
@@ -192,6 +192,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableE2eEncryptionLock.self, account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
+        self.clearTable(NCDBLayoutForView.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tablePhotoLibrary.self, account: account)
@@ -247,102 +248,11 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Avatar
 
-    @objc func addAvatar(fileName: String, etag: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                // Add new
-                let addObject = tableAvatar()
-
-                addObject.date = NSDate()
-                addObject.etag = etag
-                addObject.fileName = fileName
-                addObject.loaded = true
-
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func getTableAvatar(fileName: String) -> tableAvatar? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else {
-            return nil
-        }
-
-        return tableAvatar.init(value: result)
-    }
-
-    func clearAllAvatarLoaded() {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                let results = realm.objects(tableAvatar.self)
-                for result in results {
-                    result.loaded = false
-                    realm.add(result, update: .all)
-                }
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @discardableResult
-    func setAvatarLoaded(fileName: String) -> UIImage? {
-
-        let realm = try! Realm()
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-        var image: UIImage?
-
-        do {
-            try realm.write {
-                if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
-                    if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
-                        result.loaded = true
-                        image = imageAvatar
-                    } else {
-                        realm.delete(result)
-                    }
-                }
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-
-        return image
-    }
-
-    func getImageAvatarLoaded(fileName: String) -> UIImage? {
-
-        let realm = try! Realm()
-        let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-
-        let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
-        if result == nil {
-            NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
-            return nil
-        } else if result?.loaded == false {
-            return nil
-        }
-
-        return UIImage(contentsOfFile: fileNameLocalPath)
-    }
-
+    
     // MARK: -
     // MARK: Table Capabilities
 
-    @objc func addCapabilitiesJSon(_ data: Data, account: String) {
+    func addCapabilitiesJSon(_ data: Data, account: String) {
 
         let realm = try! Realm()
 
@@ -360,7 +270,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getCapabilities(account: String) -> String? {
+    func getCapabilities(account: String) -> String? {
 
         let realm = try! Realm()
 
@@ -391,7 +301,7 @@ class NCManageDatabase: NSObject {
         return json[elements].string
     }
 
-    @objc func getCapabilitiesServerInt(account: String, elements: [String]) -> Int {
+    func getCapabilitiesServerInt(account: String, elements: [String]) -> Int {
 
         let realm = try! Realm()
 
@@ -423,7 +333,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getCapabilitiesServerArray(account: String, elements: [String]) -> [String]? {
+    func getCapabilitiesServerArray(account: String, elements: [String]) -> [String]? {
 
         let realm = try! Realm()
         var resultArray: [String] = []
@@ -546,7 +456,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Direct Editing
 
-    @objc func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
+    func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
 
         let realm = try! Realm()
 
@@ -601,7 +511,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
+    func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
 
         let realm = try! Realm()
         let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
@@ -613,7 +523,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
+    func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
 
         let realm = try! Realm()
 
@@ -626,7 +536,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
+    func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
 
         let realm = try! Realm()
         let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
@@ -639,163 +549,9 @@ class NCManageDatabase: NSObject {
     }
 
     // MARK: -
-    // MARK: Table e2e Encryption
-
-    @objc func addE2eEncryption(_ e2e: tableE2eEncryption) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                realm.add(e2e, update: .all)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func deleteE2eEncryption(predicate: NSPredicate) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                let results = realm.objects(tableE2eEncryption.self).filter(predicate)
-                realm.delete(results)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else {
-            return nil
-        }
-
-        return tableE2eEncryption.init(value: result)
-    }
-
-    @objc func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption]? {
-
-        guard self.getActiveAccount() != nil else {
-            return nil
-        }
-
-        let realm = try! Realm()
-
-        let results: Results<tableE2eEncryption>
-
-        results = realm.objects(tableE2eEncryption.self).filter(predicate)
-
-        if results.count > 0 {
-            return Array(results.map { tableE2eEncryption.init(value: $0) })
-        } else {
-            return nil
-        }
-    }
-
-    @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
-
-        guard let activeAccount = self.getActiveAccount() else {
-            return
-        }
-
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", activeAccount.account, serverUrl, fileNameIdentifier).first else {
-            realm.cancelWrite()
-            return
-        }
-
-        let object = tableE2eEncryption.init(value: result)
-
-        realm.delete(result)
-
-        object.fileName = newFileName
-        object.fileNamePath = newFileNamePath
-
-        realm.add(object)
-
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    // MARK: -
-    // MARK: Table e2e Encryption Lock
-
-    @objc func getE2ETokenLock(account: String, serverUrl: String) -> tableE2eEncryptionLock? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-            return nil
-        }
-
-        return tableE2eEncryptionLock.init(value: result)
-    }
-
-    @objc func getE2EAllTokenLock(account: String) -> [tableE2eEncryptionLock] {
-
-        let realm = try! Realm()
-
-        let results = realm.objects(tableE2eEncryptionLock.self).filter("account == %@", account)
-
-        if results.count > 0 {
-            return Array(results.map { tableE2eEncryptionLock.init(value: $0) })
-        } else {
-            return []
-        }
-    }
-
-    @objc func setE2ETokenLock(account: String, serverUrl: String, fileId: String, e2eToken: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                let addObject = tableE2eEncryptionLock()
-
-                addObject.account = account
-                addObject.fileId = fileId
-                addObject.serverUrl = serverUrl
-                addObject.e2eToken = e2eToken
-
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func deleteE2ETokenLock(account: String, serverUrl: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                if let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first {
-                    realm.delete(result)
-                }
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    // MARK: -
     // MARK: Table External Sites
 
-    @objc func addExternalSites(_ externalSite: NKExternalSite, account: String) {
+    func addExternalSites(_ externalSite: NKExternalSite, account: String) {
 
         let realm = try! Realm()
 
@@ -818,7 +574,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteExternalSites(account: String) {
+    func deleteExternalSites(account: String) {
 
         let realm = try! Realm()
 
@@ -832,7 +588,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getAllExternalSites(account: String) -> [tableExternalSites]? {
+    func getAllExternalSites(account: String) -> [tableExternalSites]? {
 
         let realm = try! Realm()
 
@@ -940,7 +696,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteLocalFile(predicate: NSPredicate) {
+    func deleteLocalFile(predicate: NSPredicate) {
 
         let realm = try! Realm()
 
@@ -954,7 +710,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setLocalFile(ocId: String, fileName: String?, etag: String?) {
+    func setLocalFile(ocId: String, fileName: String?, etag: String?) {
 
         let realm = try! Realm()
 
@@ -993,7 +749,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getTableLocalFile(account: String) -> [tableLocalFile] {
+    func getTableLocalFile(account: String) -> [tableLocalFile] {
 
         let realm = try! Realm()
 
@@ -1001,7 +757,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableLocalFile.init(value: $0) })
     }
 
-    @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
+    func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
 
         let realm = try! Realm()
 
@@ -1012,7 +768,7 @@ class NCManageDatabase: NSObject {
         return tableLocalFile.init(value: result)
     }
 
-    @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
+    func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
 
         let realm = try! Realm()
 
@@ -1020,7 +776,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableLocalFile.init(value: $0) })
     }
 
-    @objc func setLocalFile(ocId: String, offline: Bool) {
+    func setLocalFile(ocId: String, offline: Bool) {
 
         let realm = try! Realm()
 
@@ -1038,7 +794,7 @@ class NCManageDatabase: NSObject {
     // MARK: Table Photo Library
 
     @discardableResult
-    @objc func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
+    func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
 
         let realm = try! Realm()
 
@@ -1073,7 +829,7 @@ class NCManageDatabase: NSObject {
         return true
     }
 
-    @objc func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
+    func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
 
         let realm = try! Realm()
         var predicate = NSPredicate()
@@ -1097,170 +853,11 @@ class NCManageDatabase: NSObject {
 
         return Array(idsAsset)
     }
-
-    // MARK: -
-    // MARK: Table Share
-
-    @objc func addShare(account: String, home: String, shares: [NKShare]) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                for share in shares {
-
-                    let serverUrlPath = home + share.path
-                    guard let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else {
-                        continue
-                    }
-
-                    let object = tableShare()
-
-                    object.account = account
-                    if let fileName = share.path.components(separatedBy: "/").last {
-                        object.fileName = fileName
-                    }
-                    object.serverUrl = serverUrl
-
-                    object.canEdit = share.canEdit
-                    object.canDelete = share.canDelete
-                    object.date = share.date
-                    object.displaynameFileOwner = share.displaynameFileOwner
-                    object.displaynameOwner = share.displaynameOwner
-                    object.expirationDate = share.expirationDate
-                    object.fileParent = share.fileParent
-                    object.fileSource = share.fileSource
-                    object.fileTarget = share.fileTarget
-                    object.hideDownload = share.hideDownload
-                    object.idShare = share.idShare
-                    object.itemSource = share.itemSource
-                    object.itemType = share.itemType
-                    object.label = share.label
-                    object.mailSend = share.mailSend
-                    object.mimeType = share.mimeType
-                    object.note = share.note
-                    object.parent = share.parent
-                    object.password = share.password
-                    object.path = share.path
-                    object.permissions = share.permissions
-                    object.primaryKey = account + " " + String(share.idShare)
-                    object.sendPasswordByTalk = share.sendPasswordByTalk
-                    object.shareType = share.shareType
-                    object.shareWith = share.shareWith
-                    object.shareWithDisplayname = share.shareWithDisplayname
-                    object.storage = share.storage
-                    object.storageId = share.storageId
-                    object.token = share.token
-                    object.uidOwner = share.uidOwner
-                    object.uidFileOwner = share.uidFileOwner
-                    object.url = share.url
-                    object.userClearAt = share.userClearAt
-                    object.userIcon = share.userIcon
-                    object.userMessage = share.userMessage
-                    object.userStatus = share.userStatus
-
-                    realm.add(object, update: .all)
-                }
-            }
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func getTableShares(account: String) -> [tableShare] {
-
-        let realm = try! Realm()
-
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(by: sortProperties)
-
-        return Array(results.map { tableShare.init(value: $0) })
-    }
-
-    func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?, share: [tableShare]?) {
-
-        let realm = try! Realm()
-
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == 3", metadata.account, metadata.serverUrl, metadata.fileName).first
-
-        if let firstShareLink = firstShareLink {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idShare != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink.idShare).sorted(by: sortProperties)
-            return(firstShareLink: tableShare.init(value: firstShareLink), share: Array(results.map { tableShare.init(value: $0) }))
-        } else {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(by: sortProperties)
-            return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value: $0) }))
-        }
-    }
-
-    func getTableShare(account: String, idShare: Int) -> tableShare? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableShare.self).filter("account = %@ AND idShare = %d", account, idShare).first else {
-            return nil
-        }
-
-        return tableShare.init(value: result)
-    }
-
-    @objc func getTableShares(account: String, serverUrl: String) -> [tableShare] {
-
-        let realm = try! Realm()
-
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
-
-        return Array(results.map { tableShare.init(value: $0) })
-    }
-
-    @objc func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
-
-        let realm = try! Realm()
-
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).sorted(by: sortProperties)
-
-        return Array(results.map { tableShare.init(value: $0) })
-    }
-
-    @objc func deleteTableShare(account: String, idShare: Int) {
-
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let result = realm.objects(tableShare.self).filter("account == %@ AND idShare == %d", account, idShare)
-        realm.delete(result)
-
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func deleteTableShare(account: String) {
-
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let result = realm.objects(tableShare.self).filter("account == %@", account)
-        realm.delete(result)
-
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
+    
     // MARK: -
     // MARK: Table Tag
 
-    @objc func addTag(_ ocId: String, tagIOS: Data?, account: String) {
+    func addTag(_ ocId: String, tagIOS: Data?, account: String) {
 
         let realm = try! Realm()
 
@@ -1281,7 +878,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteTag(_ ocId: String) {
+    func deleteTag(_ ocId: String) {
 
         let realm = try! Realm()
 
@@ -1297,7 +894,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getTags(predicate: NSPredicate) -> [tableTag] {
+    func getTags(predicate: NSPredicate) -> [tableTag] {
 
         let realm = try! Realm()
 
@@ -1306,7 +903,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableTag.init(value: $0) })
     }
 
-    @objc func getTag(predicate: NSPredicate) -> tableTag? {
+    func getTag(predicate: NSPredicate) -> tableTag? {
 
         let realm = try! Realm()
 
@@ -1320,7 +917,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Tip
 
-    @objc func tipExists(_ tipName: String) -> Bool {
+    func tipExists(_ tipName: String) -> Bool {
 
         let realm = try! Realm()
 
@@ -1333,7 +930,7 @@ class NCManageDatabase: NSObject {
         return false
     }
 
-    @objc func addTip(_ tipName: String) {
+    func addTip(_ tipName: String) {
 
         let realm = try! Realm()
 
@@ -1351,7 +948,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table Trash
 
-    @objc func addTrash(account: String, items: [NKTrash]) {
+    func addTrash(account: String, items: [NKTrash]) {
 
         let realm = try! Realm()
 
@@ -1383,7 +980,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteTrash(filePath: String?, account: String) {
+    func deleteTrash(filePath: String?, account: String) {
 
         let realm = try! Realm()
         var predicate = NSPredicate()
@@ -1405,7 +1002,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func deleteTrash(fileId: String?, account: String) {
+    func deleteTrash(fileId: String?, account: String) {
 
         let realm = try! Realm()
         var predicate = NSPredicate()
@@ -1438,7 +1035,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableTrash.init(value: $0) })
     }
 
-    @objc func getTrashItem(fileId: String, account: String) -> tableTrash? {
+    func getTrashItem(fileId: String, account: String) -> tableTrash? {
 
         let realm = try! Realm()
 
@@ -1452,7 +1049,7 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Table UserStatus
 
-    @objc func addUserStatus(_ userStatuses: [NKUserStatus], account: String, predefined: Bool) {
+    func addUserStatus(_ userStatuses: [NKUserStatus], account: String, predefined: Bool) {
 
         let realm = try! Realm()
 

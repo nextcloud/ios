@@ -24,7 +24,7 @@
 import UIKit
 import WebKit
 
-class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
+class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var webView = WKWebView()
@@ -60,13 +60,14 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView.navigationDelegate = self
+        webView.uiDelegate = self
         view.addSubview(webView)
 
         webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+        webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
+        webView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0).isActive = true
+        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         bottomConstraint?.isActive = true
 
         var request = URLRequest(url: URL(string: link)!)
@@ -153,7 +154,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             }
 
             if message.body as? String == "share" {
-                NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
+                NCActionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
             }
 
             if message.body as? String == "loading" {
@@ -192,6 +193,15 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
+    }
+
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil {
+            if let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) {
+               UIApplication.shared.open(url)
+            }
+        }
+        return nil
     }
 }
 

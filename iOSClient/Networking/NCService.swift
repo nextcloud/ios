@@ -39,7 +39,6 @@ class NCService: NSObject {
     @objc public func startRequestServicesServer() {
 
         NCManageDatabase.shared.clearAllAvatarLoaded()
-
         guard !appDelegate.account.isEmpty else { return }
 
         addInternalTypeIdentifier()
@@ -160,6 +159,8 @@ class NCService: NSObject {
 
             self.requestServerCapabilities()
             self.requestDashboardWidget()
+            // Unlock E2EE
+            NCNetworkingE2EE.shared.unlockAll(account: account)
         }
     }
 
@@ -181,7 +182,7 @@ class NCService: NSObject {
 
             // Setup communication
             if serverVersionMajor > 0 {
-                NKCommon.shared.setup(nextcloudVersion: serverVersionMajor)
+                NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
             }
 
             // Theming
@@ -192,19 +193,8 @@ class NCService: NSObject {
                 NCBrandColor.shared.settingThemingColor(account: account)
             }
 
-            // File Sharing
+            // Sharing & Comments
             let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-            if isFilesSharingEnabled {
-                NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, data, error in
-                    if error == .success, let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
-                        NCManageDatabase.shared.deleteTableShare(account: account)
-                        if let shares = shares, !shares.isEmpty {
-                            let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId)
-                            NCManageDatabase.shared.addShare(account: account, home: home, shares: shares)
-                        }
-                    }
-                }
-            }
             let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
             let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
             if !isFilesSharingEnabled && !comments && activity == nil {
@@ -267,7 +257,28 @@ class NCService: NSObject {
     // MARK: -
 
     private func requestDashboardWidget() {
-        
+
+        @Sendable func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) {
+
+            guard let data = data else { return }
+            var imageData: UIImage?
+
+            if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
+                imageData = image
+            } else if let image = SVGKImage(data: data) {
+                image.size = size
+                imageData = image.uiImage
+            } else {
+                print("error")
+            }
+            if let fileName = fileNameToWrite, let image = imageData {
+                do {
+                    let fileNamePath: String = CCUtility.getDirectoryUserData() + "/" + fileName + ".png"
+                    try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                } catch { }
+            }
+        }
+
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
         
         NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
@@ -278,7 +289,7 @@ class NCService: NSObject {
                         if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
                             let (_, data, error) = await NextcloudKit.shared.getPreview(url: url)
                             if error == .success {
-                                NCUtility.shared.convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
+                                convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
                             }
                         }
                     }

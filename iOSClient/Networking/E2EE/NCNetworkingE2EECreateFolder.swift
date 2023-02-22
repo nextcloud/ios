@@ -61,7 +61,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return error
     }
 
-    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String) async -> (NKError) {
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool) async -> (NKError) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var serverUrlFileName = ""
@@ -97,7 +97,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
         
         if error == .success, let ocId = ocId {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true, "withPush": withPush])
         }
         return error
     }
@@ -112,7 +112,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // Get last metadata
         let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken)
         if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata {
-            if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId) {
+            if !NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId) {
                 return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
             }
             method = "PUT"
@@ -121,7 +121,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // Add new metadata
         NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
         object.account = account
-        object.authenticationTag = nil
+        object.authenticationTag = ""
         object.fileName = fileNameFolder
         object.fileNameIdentifier = fileNameIdentifier
         object.fileNamePath = ""
@@ -140,7 +140,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         NCManageDatabase.shared.addE2eEncryption(object)
 
         // Rebuild metadata for send it
-        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)), let e2eMetadataNew = NCEndToEndMetadata.shared.encoderMetadata(tableE2eEncryption, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl) else {
+        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)), let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: account, serverUrl: serverUrl) else {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
         }
 

@@ -79,7 +79,7 @@ import Photos
         return session
     }()
 
-    #if EXTENSION
+#if EXTENSION
     @objc public lazy var sessionManagerBackgroundExtension: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundExtension)
         configuration.allowsCellularAccess = true
@@ -91,7 +91,7 @@ import Photos
         let session = URLSession(configuration: configuration, delegate: NKBackground.shared, delegateQueue: OperationQueue.main)
         return session
     }()
-    #endif
+#endif
 
     // REQUESTS
 
@@ -103,19 +103,19 @@ import Photos
     override init() {
         super.init()
 
-        #if EXTENSION
+#if EXTENSION
         _ = sessionIdentifierBackgroundExtension
-        #else
+#else
         _ = sessionManagerBackground
         _ = sessionManagerBackgroundWWan
-        #endif
+#endif
     }
 
     // MARK: - Communication Delegate
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.typeReachability) {
 
-        #if !EXTENSION
+#if !EXTENSION
         if typeReachability == NKCommon.typeReachability.reachableCellular || typeReachability == NKCommon.typeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
                 NCService.shared.startRequestServicesServer()
@@ -129,7 +129,7 @@ import Photos
             lastReachability = false
         }
         networkReachability = typeReachability
-        #endif
+#endif
     }
 
     func authenticationChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -148,13 +148,13 @@ import Photos
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
 
-        #if !EXTENSION
+#if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
             NKCommon.shared.writeLog("[INFO] Called urlSessionDidFinishEvents for Background URLSession")
             appDelegate.backgroundSessionCompletionHandler = nil
             completionHandler()
         }
-        #endif
+#endif
     }
 
     // MARK: - Pinning check
@@ -194,9 +194,9 @@ import Photos
         if isTrusted {
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
         } else {
-            #if !EXTENSION
+#if !EXTENSION
             DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
-            #endif
+#endif
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
     }
@@ -323,9 +323,12 @@ import Photos
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
         }
     }
-    
-    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true, progressHandler: @escaping (_ progress: Progress) -> Void = { _ in }, completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
-        
+
+    func download(metadata: tableMetadata, selector: String, notificationCenterProgressTask: Bool = true,
+                  requestHandler: @escaping (_ request: DownloadRequest) -> () = { _ in },
+                  progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
+                  completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void) {
+
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
 
@@ -339,6 +342,8 @@ import Photos
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, queue: NKCommon.shared.backgroundQueue, requestHandler: { request in
 
+            requestHandler(request)
+            
             self.downloadRequest[fileNameLocalPath] = request
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
@@ -366,12 +371,12 @@ import Photos
 
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal, etag: etag)
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                #if !EXTENSION
+#if !EXTENSION
                 if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
                 CCUtility.setExif(metadata) { _, _, _, _, _ in }
-                #endif
+#endif
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "selector": selector, "error": error])
 
             } else {
@@ -393,16 +398,15 @@ import Photos
                 completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
-        let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
-        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(isDirectoryE2EE)]")
+        NKCommon.shared.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
 
-        if isDirectoryE2EE {
-            #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
+        if metadata.isDirectoryE2EE {
+#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
                 let error = await NCNetworkingE2EEUpload.shared.upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate)
                 completion(error)
             }
-            #endif
+#endif
         } else if metadata.chunk {
             uploadChunkedFile(metadata: metadata, start: start, progressHandler: progressHandler) { error in
                 completion(error)
@@ -508,9 +512,9 @@ import Photos
 
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: NKError) {
         var isApplicationStateActive = false
-        #if !EXTENSION
+#if !EXTENSION
         isApplicationStateActive = UIApplication.shared.applicationState == .active
-        #endif
+#endif
         DispatchQueue.global().async {
             guard self.delegate == nil, let metadata = NCManageDatabase.shared.getMetadataFromOcId(description) else {
                 self.delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task, error: error)
@@ -578,10 +582,10 @@ import Photos
                             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
                         }))
-                        #if !EXTENSION
+#if !EXTENSION
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate
                         appDelegate.window?.rootViewController?.present(alertController, animated: true)
-                        #endif
+#endif
                     }
 
                 } else {
@@ -736,9 +740,9 @@ import Photos
             }
         }
 
-        #if !EXTENSION
+#if !EXTENSION
         NCOperationQueue.shared.downloadCancelAll()
-        #endif
+#endif
     }
 
     func cancelAllDownloadTransfer() {
@@ -753,9 +757,9 @@ import Photos
             }
         }
 
-        #if !EXTENSION
+#if !EXTENSION
         NCOperationQueue.shared.downloadCancelAll()
-        #endif
+#endif
     }
 
     // MARK: - WebDav Read file, folder
@@ -764,7 +768,7 @@ import Photos
 
         let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
         
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), includeHiddenFiles: NCGlobal.shared.includeHiddenFiles ,options: options) { account, files, _, error in
             guard error == .success else {
                 completion(account, nil, nil, nil, nil, nil, error)
                 return
@@ -1026,24 +1030,24 @@ import Photos
 
     // MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, completion: @escaping (_ error: NKError) -> Void) {
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, withPush:Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if isDirectoryEncrypted {
-            #if !EXTENSION
+#if !EXTENSION
             Task {
-                let error = await NCNetworkingE2EECreateFolder.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+                let error = await NCNetworkingE2EECreateFolder.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush)
                 completion(error)
             }
-            #endif
+#endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, withPush: withPush, completion: completion)
         }
     }
 
-    private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    private func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, withPush:Bool, completion: @escaping (_ error: NKError) -> Void) {
 
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
 
@@ -1073,7 +1077,7 @@ import Photos
                         NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, account: account)
                     }
                     if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "e2ee": false])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "e2ee": false, "withPush": withPush])
                     }
                 }
                 completion(error)
@@ -1081,7 +1085,7 @@ import Photos
         }
     }
 
-    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String) -> Bool {
+    func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String, userId: String, withPush:Bool) -> Bool {
 
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
         let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
@@ -1090,7 +1094,7 @@ import Photos
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true) { error in
+            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true, withPush: withPush) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }
@@ -1164,11 +1168,10 @@ import Photos
             return completion(NKError())
         }
 
-        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
 
-        if isDirectoryEncrypted {
-            #if !EXTENSION
+        if metadata.isDirectoryE2EE {
+#if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
                     let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
@@ -1183,7 +1186,7 @@ import Photos
                     completion(error)
                 }
             }
-            #endif
+#endif
         } else {
             if metadataLive == nil {
                 self.deleteMetadataPlain(metadata, customHeader: nil, completion: completion)
@@ -1268,11 +1271,11 @@ import Photos
         NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite) { account, error in
             if error == .success && metadata.account == account {
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
-                #if !EXTENSION
+#if !EXTENSION
                 if favorite {
                     NCOperationQueue.shared.synchronizationMetadata(metadata, selector: NCGlobal.shared.selectorReadFile)
                 }
-                #endif
+#endif
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
             }
             completion(error)
@@ -1292,11 +1295,11 @@ import Photos
             NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
                 if selector != NCGlobal.shared.selectorListingFavorite {
-                    #if !EXTENSION
+#if !EXTENSION
                     for metadata in metadatas {
                         NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
                     }
-                    #endif
+#endif
                 }
                 completion(account, metadatas, error)
             }
@@ -1325,13 +1328,12 @@ import Photos
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(metadata: metadata)
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
-        if isDirectoryEncrypted {
-            #if !EXTENSION
+        if metadata.isDirectoryE2EE {
+#if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
                     let error = await NCNetworkingE2EERename.shared.rename(metadata: metadataLive, fileNameNew: fileNameNew)
@@ -1346,7 +1348,7 @@ import Photos
                     DispatchQueue.main.async { completion(error) }
                 }
             }
-            #endif
+#endif
         } else {
             if metadataLive == nil {
                 renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)

@@ -46,7 +46,7 @@ class tableDirectory: Object {
 
 extension NCManageDatabase {
 
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
+    func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
 
         let realm = try! Realm()
 
@@ -80,7 +80,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
+    func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 
         let realm = try! Realm()
 
@@ -103,7 +103,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
+    func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
 
         let realm = try! Realm()
 
@@ -142,7 +142,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
+    func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
 
         let realm = try! Realm()
 
@@ -153,7 +153,7 @@ extension NCManageDatabase {
         return tableDirectory.init(value: result)
     }
 
-    @objc func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
+    func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
 
         let realm = try! Realm()
 
@@ -166,7 +166,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func renameDirectory(ocId: String, serverUrl: String) {
+    func renameDirectory(ocId: String, serverUrl: String) {
 
         let realm = try! Realm()
 
@@ -180,7 +180,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setDirectory(serverUrl: String, offline: Bool, account: String) {
+    func setDirectory(serverUrl: String, offline: Bool, account: String) {
 
         let realm = try! Realm()
 
@@ -195,7 +195,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    @objc func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
+    func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
 
         let realm = try! Realm()
         var result: tableDirectory?
@@ -217,7 +217,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    @objc func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
+    func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
 
         let realm = try! Realm()
         var result: tableDirectory?

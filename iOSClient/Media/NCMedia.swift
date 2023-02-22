@@ -329,7 +329,7 @@ extension NCMedia: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image)
         }, actionProvider: { _ in
-            return NCFunctionCenter.shared.contextMenuConfiguration(ocId: metadata.ocId, viewController: self, enableDeleteLocal: false, enableViewInFolder: true, image: image)
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
         })
     }
 

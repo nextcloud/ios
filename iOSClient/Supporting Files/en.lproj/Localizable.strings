@@ -127,7 +127,7 @@
 "_no_permission_add_file_"  = "You don't have permission to add files";
 "_no_permission_delete_file_" = "You don't have permission to delete files";
 "_no_permission_modify_file_" = "You don't have permission to modify files";
-"_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version ?";
+"_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
 "_search_"                  = "Search";
@@ -176,6 +176,7 @@
 "_automatic_Download_Image_" = "Use images in full resolution";
 "_automatic_Download_Image_footer_" = "When viewing images always download, if not available locally, the images in full resolution";
 "_size_"                    = "Size";
+"_file_size_"               = "Exported file size";
 "_dimension_"               = "Dimension";
 "_duration_"                = "Duration";
 "_model_"                   = "Model";
@@ -287,6 +288,7 @@
 "_acknowledgements_"            = "Acknowledgements";
 "_settings_"                    = "Settings";
 "_passcode_"                    = "Password";
+"_enter_password_"              = "Enter password …";
 "_lock_"                        = "Lock";
 "_lock_active_"                 = "Lock: On";
 "_lock_not_active_"             = "Lock: Off";
@@ -311,7 +313,7 @@
 "_want_exit_"                   = "Attention! Will be reset to initial state. Continue?";
 "_proceed_"                     = "Proceed";
 "_delete_cache_"                = "Delete cache";
-"_want_delete_cache_"           = "Do you want to delete the cache (this also removes the transfers in progress) ?";
+"_want_delete_cache_"           = "Do you want to delete the cache (this also removes the transfers in progress)?";
 "_want_delete_thumbnails_"      = "Do you want to delete all thumbnails too?";
 "_mail_deleted_"                = "Email deleted";
 "_mail_saved_"                  = "Email saved";
@@ -624,6 +626,7 @@
 "_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 "_shared_with_you_by_"          = "Shared with you by";
 "_shareLinksearch_placeholder_" = "Type a name and press Enter";
+"_shareLinksearch_mail_placeholder_" = "Type a name or an email and press Enter";
 "_new_comment_"                 = "New comment …";
 "_edit_comment_"                = "Edit comment";
 "_delete_comment_"              = "Delete comment";
@@ -632,6 +635,7 @@
 "_share_editing_"               = "Editing";
 "_share_allow_upload_"          = "Allow upload and editing";
 "_share_file_drop_"             = "File drop (upload only)";
+"_share_secure_file_drop_"      = "Secure file drop (upload only)";
 "_share_hide_download_"         = "Hide download";
 "_share_password_protect_"      = "Password protect";
 "_share_expiration_date_"       = "Set expiration date";
@@ -672,13 +676,14 @@
 "_use_folder_auto_upload_"          = "Use the \"Auto upload\" folder as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
+"_enter_filename_"                  = "Enter filename …";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
 "_forbidden_characters_"            = "Invalid character in filename";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
 "_maintain_original_filename_"      = "Maintain original filename";
 "_modify_photo_"                    = "Modify photo";
-"_notification_"                    = "Notification";
+"_notifications_"                   = "Notifications";
 "_no_notification_"                 = "No notifications yet";
 "_autoupload_filename_title_"       = "Auto upload filename";
 "_untitled_txt_"                    = "Untitled.txt";
@@ -723,14 +728,14 @@
 "_filter_original_"                 = "Original";
 "_filter_bn_"                       = "Black & White";
 "_filter_grayscale_"                = "Grayscale";
-"_quality_image_title_"             = "Image quality";
+"_quality_image_title_"             = "Preview image quality";
 "_quality_high_"                    = "Large file size of high quality";
 "_quality_medium_"                  = "Average file size of medium quality";
 "_quality_low_"                     = "Small file size of low quality";
 "_file_type_"                       = "File type";
 "_pdf_password_"                    = "PDF Password";
 "_file_creation_"                   = "File creation";
-"_delete_all_scanned_images_"       = "Do you want to delete all scanned images?";
+"_delete_all_scanned_images_"       = "Delete all scanned images";
 "_text_recognition_"                = "Text recognition";
 
 /* The title on the navigation bar of the Scanning screen. */
@@ -901,17 +906,32 @@
 "_no_items_"                = "No items";
 "_check_back_later_"        = "Check back later";
 "_exporting_video_"         = "Exporting video … Tap to cancel.";
-"_talk_detect_"             = "Detected Nextcloud Talk";
-"_talk_add_account_"        = "Nextcloud Talk has been detected, do you want to add an existing account?";
+"_apps_nextcloud_detect_"   = "Detected %@ apps";
+"_add_existing_account_"    = "Other %@ Apps has been detected, do you want to add an existing account?";
 "_status_in_progress_"      = "Status reading in progress …";
 "_status_e2ee_on_server_"   = "The end-to-end encryption is already configured in the server but not yet enabled on this device";
 "_status_e2ee_not_setup_"   = "The end-to-end encryption is not yet configured on the server";
-"_change_upload_filename_"  = "Do you want to save the file with a different name ?";
+"_status_e2ee_configured_"  = "The end-to-end encryption is correctly configured";
+"_change_upload_filename_"  = "Do you want to save the file with a different name?";
 "_save_file_as_"            = "Save file as %@";
 "_password_ascii_"          = "The password cannot contain special characters";
 "_calendar_contacts_"       = "Calendar and Contacts";
 "_mobile_config_"           = "Download the configuration profile";
 "_calendar_contacts_footer_"    = "After the downloading you need to go to the Settings app to install it. If a profile is not installed within 8 minutes of downloading it, it is automatically deleted";
+"_preview_"                 = "Preview";
+"_crop_"                    = "Crop";
+"_modify_image_desc_"       = "Tap the image for modify";
+"_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live effect";
+"_enable_livephoto_"        = "Enable Live Photo";
+"_disable_livephoto_"       = "Disable Live Photo";
+"_undo_modify_"             = "Undo the modify";
+"_unauthorizedFilesPasscode_" = "Files cannot be used with an activated passcode";
+"_disableFilesApp_"         = "Files cannot be used because it is disabled";
+"_reset_application_done_"  = "Reset application, done.";
+"_rename_already_exists_"   = "A file with this name already exists";
+"_created_"                 = "Created";
+"_recipients_"              = "Recipients";
+"_are_sure_"                = "Are you sure?";
 
 // Video
 "_select_trace_"            = "Select the trace";
@@ -969,3 +989,10 @@
 "_already_plan_"                = "The selected plan has already been bought.";
 "_change_billing_"              = "Change Billing";
 "_payment_method_"              = "Payment Method";
+
+// MARK: Mantis library
+"Mantis.Done"                   = "Done";
+"Mantis.Cancel"                 = "Cancel";
+"Mantis.Reset"                  = "Reset";
+"Mantis.Original"               = "Original";
+"Mantis.Square"                 = "Square";

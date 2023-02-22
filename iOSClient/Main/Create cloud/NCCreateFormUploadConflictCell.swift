@@ -52,5 +52,4 @@ protocol NCCreateFormUploadConflictCellDelegate: AnyObject {
 
     func valueChangedSwitchNewFile(with ocId: String, isOn: Bool)
     func valueChangedSwitchAlreadyExistingFile(with ocId: String, isOn: Bool)
-
 }

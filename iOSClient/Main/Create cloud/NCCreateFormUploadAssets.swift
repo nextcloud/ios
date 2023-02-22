@@ -27,10 +27,6 @@ import NextcloudKit
 import XLForm
 import Photos
 
-protocol createFormUploadAssetsDelegate: AnyObject {
-    func dismissFormUploadAssets()
-}
-
 class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
     var serverUrl: String = ""
@@ -38,7 +34,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     var assets: [PHAsset] = []
     var cryptated: Bool = false
     var session: String = ""
-    weak var delegate: createFormUploadAssetsDelegate?
     let requestOptions = PHImageRequestOptions()
     var imagePreview: UIImage?
     let targetSizeImagePreview = CGSize(width: 100, height: 100)
@@ -48,7 +43,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
     // MARK: - View Life Cycle
 
-    convenience init(serverUrl: String, assets: [PHAsset], cryptated: Bool, session: String, delegate: createFormUploadAssetsDelegate?) {
+    convenience init(serverUrl: String, assets: [PHAsset], cryptated: Bool, session: String) {
 
         self.init()
 
@@ -66,7 +61,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         self.assets = assets
         self.cryptated = cryptated
         self.session = session
-        self.delegate = delegate
 
         requestOptions.resizeMode = PHImageRequestOptionsResizeMode.exact
         requestOptions.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
@@ -96,12 +90,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
         initializeForm()
         reloadForm()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        self.delegate?.dismissFormUploadAssets()
     }
 
     // MARK: XLForm
@@ -338,7 +326,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             }
 
             if autoUploadPath == self.serverUrl {
-                if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId) {
+                if !NCNetworking.shared.createFolder(assets: self.assets, selector: NCGlobal.shared.selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, withPush: false) {
                     
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
                     NCContentPresenter.shared.showError(error: error)

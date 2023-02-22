@@ -88,14 +88,12 @@ class NCShares: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        let options = NKRequestOptions(queue: NKCommon.shared.backgroundQueue)
+        NKCommon.shared.writeLog("[TEST] READSHARES")
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter(), options: options) { account, shares, data, error in
+        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, data, error in
 
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-            }
+            self.refreshControl.endRefreshing()
+            self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)
@@ -107,10 +105,8 @@ class NCShares: NCCollectionViewCommon {
 
             } else {
 
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                    NCContentPresenter.shared.showError(error: error)
-                }
+                self.collectionView?.reloadData()
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }

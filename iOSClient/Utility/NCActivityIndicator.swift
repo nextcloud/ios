@@ -62,7 +62,7 @@ class NCActivityIndicator: NSObject {
             self.viewActivityIndicator?.layer.masksToBounds = true
             self.viewActivityIndicator?.backgroundColor = .clear
 
-            #if !EXTENSION
+#if !EXTENSION
             if backgroundView == nil {
                 if let window = (UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }) {
                     self.viewBackgroundActivityIndicator?.removeFromSuperview()
@@ -74,9 +74,9 @@ class NCActivityIndicator: NSObject {
             } else {
                 self.viewBackgroundActivityIndicator = backgroundView
             }
-            #else
+#else
             self.viewBackgroundActivityIndicator = backgroundView
-            #endif
+#endif
 
             // VIEW ACTIVITY INDICATOR
 

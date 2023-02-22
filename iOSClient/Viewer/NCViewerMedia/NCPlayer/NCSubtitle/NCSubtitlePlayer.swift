@@ -250,7 +250,7 @@ extension NCPlayer {
     private func adjustLabelBottom(label: UILabel) {
         var bottomConstant: CGFloat = bottomConstantPortrait
 
-        switch UIApplication.shared.statusBarOrientation {
+        switch UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
         case .portrait:
             bottomConstant = bottomConstantLandscape
         case .landscapeLeft, .landscapeRight, .portraitUpsideDown:
@@ -319,7 +319,7 @@ extension NCPlayer {
 
         var bottomConstant: CGFloat = bottomConstantPortrait
 
-        switch UIApplication.shared.statusBarOrientation {
+        switch UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
         case .portrait, .portraitUpsideDown:
             bottomConstant = bottomConstantLandscape
         case .landscapeLeft, .landscapeRight:

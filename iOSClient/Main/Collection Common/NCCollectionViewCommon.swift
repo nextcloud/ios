@@ -435,14 +435,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              let e2ee = userInfo["e2ee"] as? Bool
+              let e2ee = userInfo["e2ee"] as? Bool,
+              let withPush = userInfo["withPush"] as? Bool
         else { return }
 
         if e2ee {
             reloadDataSourceNetwork(forced: true)
         } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)  {
             reloadDataSource()
-            pushMetadata(metadata)
+            if withPush {
+                pushMetadata(metadata)
+            }
         }
     }
 
@@ -878,7 +881,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapButton3(_ sender: Any) {
 
         if let viewController = appDelegate.window?.rootViewController {
-            NCCreateScanDocument.shared.openScannerDocument(viewController: viewController)
+            NCDocumentCamera.shared.openScannerDocument(viewController: viewController)
         }
     }
 
@@ -891,7 +894,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
-        NCFunctionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
+        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
     }
 
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
@@ -972,8 +975,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if listMenuItems.count > 0 {
             UIMenuController.shared.menuItems = listMenuItems
-            UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
-            UIMenuController.shared.setMenuVisible(true, animated: true)
+            UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
         }
     }
 
@@ -982,7 +984,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
 
         if #selector(pasteFilesMenu) == action {
-            if UIPasteboard.general.items.count > 0 {
+            if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
                 return true
             }
         }
@@ -990,7 +992,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCFunctionCenter.shared.pastePasteboard(serverUrl: serverUrl)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1122,7 +1124,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
                         NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, data, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
-                                if NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId) {
+                                if NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId) {
                                     self.reloadDataSource()
                                 } else {
                                     let error = NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_")
@@ -1367,7 +1369,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         }, actionProvider: { _ in
 
-            return NCFunctionCenter.shared.contextMenuConfiguration(ocId: metadata.ocId, viewController: self, enableDeleteLocal: true, enableViewInFolder: false, image: image)
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
         })
     }
 
@@ -1475,7 +1477,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
-        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
         let tableDirectory = dataSource.metadatasForSection[indexPath.section].directories?.filter({ $0.ocId == metadata.ocId }).first
         var isShare = false
         var isMounted = false
@@ -1532,9 +1533,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderEncrypted
             } else if isShare {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
-            } else if tableShare != nil && tableShare?.shareType != 3 {
-                cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe
-            } else if tableShare != nil && tableShare?.shareType == 3 {
+            } else if !metadata.shareType.isEmpty {
+                metadata.shareType.contains(3) ?
+                (cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic) :
+                (cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe)
+            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(3)  {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic
             } else if metadata.mountType == "group" {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderGroup
@@ -1574,10 +1577,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Share image
         if isShare {
             cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
-        } else if tableShare != nil && tableShare?.shareType == 3 {
-            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shareByLink
-        } else if tableShare != nil && tableShare?.shareType != 3 {
-            cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared
+        } else if !metadata.shareType.isEmpty {
+            metadata.shareType.contains(3) ?
+            (cell.fileSharedImage?.image = NCBrandColor.cacheImages.shareByLink) :
+            (cell.fileSharedImage?.image = NCBrandColor.cacheImages.shared)
         } else {
             cell.fileSharedImage?.image = NCBrandColor.cacheImages.canShare
         }
@@ -1678,12 +1681,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.attributedText = attributedString
         }
 
-        // E2EE
         // ** IMPORT MUST BE AT THE END **
-        if metadata.e2eEncrypted || isDirectoryE2EE {
+        //
+        if !metadata.isSharable {
             cell.hideButtonShare(true)
         }
-
+        
         return cell
     }
 

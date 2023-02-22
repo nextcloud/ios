@@ -124,8 +124,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             becomeFirstResponder()
             let startTaskItem = UIMenuItem(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
             UIMenuController.shared.menuItems = [startTaskItem]
-            UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
-            UIMenuController.shared.setMenuVisible(true, animated: true)
+            UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
         }
     }
 
@@ -136,7 +135,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard let metadata = metadataTemp else { return }
         guard appDelegate.account == metadata.account else { return }
 
-        NCUtility.shared.extractFiles(from: metadata, viewController: self, hud: JGProgressHUD()) { metadatas in
+        let cameraRoll = NCCameraRoll()
+        cameraRoll.extractCameraRoll(from: metadata, viewController: self, hud: JGProgressHUD()) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                     NCNetworking.shared.upload(metadata: metadata)
@@ -149,7 +149,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         if action != #selector(startTask(_:)) { return false }
         guard let metadata = metadataTemp else { return false }
-        if NCUtility.shared.isDirectoryE2EE(metadata: metadata) { return false }
+        if metadata.isDirectoryE2EE { return false }
 
         if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.isUpload {
             return true

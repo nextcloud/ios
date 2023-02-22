@@ -76,7 +76,11 @@ class NCTableShareOptions: NCTableShareable {
     var shareWithDisplayname: String = ""
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
-        self.permissions = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]) & metadata.sharePermissionsCollaborationServices
+        if metadata.e2eEncrypted {
+            self.permissions = NCGlobal.shared.permissionCreateShare
+        } else {
+            self.permissions = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]) & metadata.sharePermissionsCollaborationServices
+        }
         self.shareType = shareType
         if let password = password {
             self.password = password

@@ -154,10 +154,14 @@
 + (NSString *)getMediaSortDate;
 + (void)setMediaSortDate:(NSString *)value;
 
-+ (NSInteger)getTextRecognitionStatus;
-+ (void)setTextRecognitionStatus:(NSInteger)value;
-+ (NSString *)getDirectoryScanDocuments;
-+ (void)setDirectoryScanDocuments:(NSString *)value;
++ (BOOL)getTextRecognitionStatus;
++ (void)setTextRecognitionStatus:(BOOL)value;
++ (BOOL)getDeleteAllScanImages;
++ (void)setDeleteAllScanImages:(BOOL)value;
++ (NSString *)getDirectoryScanDocument;
++ (void)setDirectoryScanDocument:(NSString *)value;
++ (double)getQualityScanDocument;
++ (void)setQualityScanDocument:(double)value;
 
 + (NSInteger)getLogLevel;
 + (void)setLogLevel:(NSInteger)value;
@@ -223,7 +227,6 @@
 + (void)removeDocumentsDirectory;
 + (void)removeTemporaryDirectory;
 + (void)emptyTemporaryDirectory;
-+ (void)removeGroupDataShareAppsNextcloud;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

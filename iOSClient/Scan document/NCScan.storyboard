@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bdK-eL-mz4">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Scan-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController extendedLayoutIncludesOpaqueBars="YES" id="BYZ-38-t0r" customClass="NCScan" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="jwq-kF-6Nq" userLabel="collectionViewSource">
+                                <rect key="frame" x="57" y="44" width="318" height="160"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="160" id="0Wb-eO-Qiu"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="Dhy-fV-Qmr">
+                                    <size key="itemSize" width="140" height="140"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell1" id="Lca-vD-NY2" customClass="NCScanCell" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="10" width="140" height="140"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                            <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sam-7M-bIk">
+                                                    <rect key="frame" x="20" y="20" width="100" height="100"/>
+                                                </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="06r-jm-ARX">
+                                                    <rect key="frame" x="0.0" y="0.0" width="23" height="23"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="23" id="BFu-CG-dUZ" userLabel="height = 23"/>
+                                                        <constraint firstAttribute="width" constant="23" id="ccc-Kb-48t" userLabel="width = 23"/>
+                                                    </constraints>
+                                                    <state key="normal" image="deleteScan"/>
+                                                </button>
+                                            </subviews>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="sam-7M-bIk" secondAttribute="trailing" constant="20" id="8AX-l8-Lm0"/>
+                                            <constraint firstItem="06r-jm-ARX" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" id="Wsp-Ec-BCg"/>
+                                            <constraint firstItem="sam-7M-bIk" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" constant="20" id="YId-9R-Qgw"/>
+                                            <constraint firstItem="06r-jm-ARX" firstAttribute="leading" secondItem="Lca-vD-NY2" secondAttribute="leading" id="ffX-tw-upp"/>
+                                            <constraint firstItem="sam-7M-bIk" firstAttribute="leading" secondItem="Lca-vD-NY2" secondAttribute="leading" constant="20" id="pbq-jr-YKl"/>
+                                            <constraint firstAttribute="bottom" secondItem="sam-7M-bIk" secondAttribute="bottom" constant="20" id="zD5-jG-EEP"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="customImageView" destination="sam-7M-bIk" id="mgQ-wh-sSH"/>
+                                            <outlet property="delete" destination="06r-jm-ARX" id="gbZ-kz-MoL"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="NZe-jU-1hk"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="B55-sR-2nI"/>
+                                </connections>
+                            </collectionView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fGo-qU-AYi" userLabel="collectionViewDestination">
+                                <rect key="frame" x="0.0" y="239" width="375" height="378"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="9Sn-Y3-S86">
+                                    <size key="itemSize" width="120" height="120"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell2" id="Pph-tY-PGX" customClass="NCScanCell" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                            <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sdV-W7-Hkd">
+                                                    <rect key="frame" x="20" y="20" width="80" height="80"/>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Page" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wcM-U8-GLh">
+                                                    <rect key="frame" x="20" y="100" width="80" height="20"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.39940068490000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="20" id="8He-ef-19r"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="11"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wSg-Gm-0s3">
+                                                    <rect key="frame" x="0.0" y="0.0" width="23" height="23"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="23" id="HRg-KR-tfA"/>
+                                                        <constraint firstAttribute="height" constant="23" id="QOj-Nj-nAA"/>
+                                                    </constraints>
+                                                    <state key="normal" image="deleteScan"/>
+                                                    <connections>
+                                                        <action selector="touchUpInsideDelete:" destination="Pph-tY-PGX" eventType="touchUpInside" id="KcT-WM-s1K"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XEo-o0-dSF" userLabel="Rotate">
+                                                    <rect key="frame" x="98" y="0.0" width="22" height="22"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="22" id="fQB-AX-aUH"/>
+                                                        <constraint firstAttribute="height" constant="22" id="fd5-QY-wlr"/>
+                                                    </constraints>
+                                                    <state key="normal" image="rotate"/>
+                                                    <connections>
+                                                        <action selector="touchUpInsideRotate:" destination="Pph-tY-PGX" eventType="touchUpInside" id="x5z-go-m4Y"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstItem="wSg-Gm-0s3" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" id="0ev-wb-Tsh"/>
+                                            <constraint firstItem="sdV-W7-Hkd" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" constant="20" id="G76-6T-Zpt"/>
+                                            <constraint firstItem="XEo-o0-dSF" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" id="Hax-sJ-buG"/>
+                                            <constraint firstItem="wcM-U8-GLh" firstAttribute="leading" secondItem="sdV-W7-Hkd" secondAttribute="leading" id="Ier-5Q-PmP"/>
+                                            <constraint firstAttribute="trailing" secondItem="sdV-W7-Hkd" secondAttribute="trailing" constant="20" id="Jia-SE-8bu"/>
+                                            <constraint firstAttribute="bottom" secondItem="sdV-W7-Hkd" secondAttribute="bottom" constant="20" id="Ljw-b9-Sp8"/>
+                                            <constraint firstItem="wSg-Gm-0s3" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" id="T23-0j-7ed"/>
+                                            <constraint firstItem="wcM-U8-GLh" firstAttribute="trailing" secondItem="sdV-W7-Hkd" secondAttribute="trailing" id="h6k-Kk-edu"/>
+                                            <constraint firstItem="sdV-W7-Hkd" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" constant="20" id="kwQ-gl-6Bj"/>
+                                            <constraint firstAttribute="trailing" secondItem="XEo-o0-dSF" secondAttribute="trailing" id="m9Z-SN-0go"/>
+                                            <constraint firstAttribute="bottom" secondItem="wcM-U8-GLh" secondAttribute="bottom" id="qat-UY-DBH"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="customImageView" destination="sdV-W7-Hkd" id="edM-S1-vkM"/>
+                                            <outlet property="customLabel" destination="wcM-U8-GLh" id="BhF-OG-y3p"/>
+                                            <outlet property="delete" destination="wSg-Gm-0s3" id="x0Y-P4-EXF"/>
+                                            <outlet property="rotate" destination="XEo-o0-dSF" id="cEY-b8-2tb"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="8ul-vH-HVX"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="ljh-bt-3WA"/>
+                                </connections>
+                            </collectionView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PDF" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHy-9G-ngy">
+                                <rect key="frame" x="0.0" y="204" width="375" height="30"/>
+                                <color key="backgroundColor" white="1" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="vrg-ki-2Lk"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Gy-eG-A0f">
+                                <rect key="frame" x="20" y="74" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="A6e-zC-q5t"/>
+                                    <constraint firstAttribute="width" constant="30" id="U2p-ow-Iad"/>
+                                </constraints>
+                                <state key="normal" image="add"/>
+                                <connections>
+                                    <action selector="addWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bkr-97-4RR"/>
+                                </connections>
+                            </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="b3i-bF-ITj">
+                                <rect key="frame" x="24" y="629" width="327" height="28"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="27" id="Kx0-Zp-wJh"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="First"/>
+                                    <segment title="Second"/>
+                                    <segment title="Third"/>
+                                </segments>
+                                <connections>
+                                    <action selector="indexChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="yeI-C2-uGJ"/>
+                                </connections>
+                            </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fqr-e6-s3n" userLabel="transferDown">
+                                <rect key="frame" x="20" y="144" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="YPl-DJ-aNS"/>
+                                    <constraint firstAttribute="width" constant="30" id="yGb-Y2-8Oj"/>
+                                </constraints>
+                                <state key="normal" image="transferDown"/>
+                                <connections>
+                                    <action selector="transferDownWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IXg-q4-MB7"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="YHy-9G-ngy" secondAttribute="trailing" id="3ff-G8-wiq"/>
+                            <constraint firstItem="Fqr-e6-s3n" firstAttribute="top" secondItem="jwq-kF-6Nq" secondAttribute="bottom" constant="-60" id="5FJ-rD-ncI"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jwq-kF-6Nq" secondAttribute="trailing" id="6EM-YK-lEy"/>
+                            <constraint firstItem="jwq-kF-6Nq" firstAttribute="top" secondItem="0Gy-eG-A0f" secondAttribute="bottom" constant="-60" id="8D3-HY-PIM"/>
+                            <constraint firstItem="YHy-9G-ngy" firstAttribute="top" secondItem="jwq-kF-6Nq" secondAttribute="bottom" id="90f-NC-udY"/>
+                            <constraint firstItem="0Gy-eG-A0f" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="BNZ-HM-6yi"/>
+                            <constraint firstItem="jwq-kF-6Nq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="57" id="ELU-RG-o16"/>
+                            <constraint firstItem="fGo-qU-AYi" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Ew2-9q-DKl"/>
+                            <constraint firstItem="YHy-9G-ngy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="FvJ-EK-Evb"/>
+                            <constraint firstItem="b3i-bF-ITj" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="8" id="NML-4o-wAO"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="b3i-bF-ITj" secondAttribute="trailing" constant="8" id="Ogg-xT-qyc"/>
+                            <constraint firstItem="Fqr-e6-s3n" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="UJ4-nd-oV8"/>
+                            <constraint firstItem="fGo-qU-AYi" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="aU0-Bn-B6T"/>
+                            <constraint firstItem="jwq-kF-6Nq" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="dyH-ym-lrb"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="b3i-bF-ITj" secondAttribute="bottom" constant="11" id="iCt-vj-sDA"/>
+                            <constraint firstItem="b3i-bF-ITj" firstAttribute="top" secondItem="fGo-qU-AYi" secondAttribute="bottom" constant="12" id="kGQ-oN-ccm"/>
+                            <constraint firstItem="b3i-bF-ITj" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="p4i-a8-soi"/>
+                            <constraint firstItem="fGo-qU-AYi" firstAttribute="top" secondItem="YHy-9G-ngy" secondAttribute="bottom" constant="5" id="x2i-aj-hzf"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="zeb-Ex-mE8">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="9KU-yn-lBS" userLabel="Cancel">
+                            <connections>
+                                <action selector="cancelActionWithSender:" destination="BYZ-38-t0r" id="NrA-pA-mQ4"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Save" id="LAS-W8-RG6">
+                            <connections>
+                                <action selector="saveActionWithSender:" destination="BYZ-38-t0r" id="k1e-Qy-ks2"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="add" destination="0Gy-eG-A0f" id="Rjq-mB-EBd"/>
+                        <outlet property="cancel" destination="9KU-yn-lBS" id="zw7-9b-sq4"/>
+                        <outlet property="collectionViewDestination" destination="fGo-qU-AYi" id="ATh-9Q-SWs"/>
+                        <outlet property="collectionViewSource" destination="jwq-kF-6Nq" id="6hn-7D-P8K"/>
+                        <outlet property="labelTitlePDFzone" destination="YHy-9G-ngy" id="hQk-4n-stD"/>
+                        <outlet property="save" destination="LAS-W8-RG6" id="Dan-xp-JAB"/>
+                        <outlet property="segmentControlFilter" destination="b3i-bF-ITj" id="lPr-xp-LVI"/>
+                        <outlet property="transferDown" destination="Fqr-e6-s3n" id="8e4-CK-FQQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="476" y="130.88455772113943"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="CuH-8W-IGw">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" id="bdK-eL-mz4" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="xl6-fB-rBw">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="byl-bn-jhW">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="3p3-I3-fyK"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="93C-Sa-crZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-290" y="131"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="add" width="25" height="25"/>
+        <image name="deleteScan" width="25" height="25"/>
+        <image name="rotate" width="25" height="25"/>
+        <image name="transferDown" width="330" height="330"/>
+    </resources>
+</document>

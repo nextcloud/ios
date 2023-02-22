@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 import NextcloudKit
 
 @objc protocol NCSelectDelegate {
@@ -404,8 +405,6 @@ extension NCSelect: UICollectionViewDataSource {
         isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
         isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
 
-        let tableShare = dataSource.metadatasForSection[indexPath.section].metadataShare[metadata.ocId]
-
         // LAYOUT LIST
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -436,10 +435,10 @@ extension NCSelect: UICollectionViewDataSource {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
                 } else if isShare {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare?.shareType != 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare?.shareType == 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
+                } else if !metadata.shareType.isEmpty {
+                    metadata.shareType.contains(3) ?
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderPublic) :
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe)
                 } else if metadata.mountType == "group" {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
                 } else if isMounted {
@@ -473,10 +472,10 @@ extension NCSelect: UICollectionViewDataSource {
             // Share image
             if isShare {
                 cell.imageShared.image = NCBrandColor.cacheImages.shared
-            } else if tableShare != nil && tableShare?.shareType == 3 {
-                cell.imageShared.image = NCBrandColor.cacheImages.shareByLink
-            } else if tableShare != nil && tableShare?.shareType != 3 {
-                cell.imageShared.image = NCBrandColor.cacheImages.shared
+            } else if !metadata.shareType.isEmpty {
+                metadata.shareType.contains(3) ?
+                (cell.imageShared.image = NCBrandColor.cacheImages.shareByLink) :
+                (cell.imageShared.image = NCBrandColor.cacheImages.shared)
             } else {
                 cell.imageShared.image = NCBrandColor.cacheImages.canShare
             }
@@ -530,10 +529,10 @@ extension NCSelect: UICollectionViewDataSource {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderEncrypted
                 } else if isShare {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare!.shareType != 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe
-                } else if tableShare != nil && tableShare!.shareType == 3 {
-                    cell.imageItem.image = NCBrandColor.cacheImages.folderPublic
+                } else if !metadata.shareType.isEmpty {
+                    metadata.shareType.contains(3) ?
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderPublic) :
+                    (cell.imageItem.image = NCBrandColor.cacheImages.folderSharedWithMe)
                 } else if metadata.mountType == "group" {
                     cell.imageItem.image = NCBrandColor.cacheImages.folderGroup
                 } else if isMounted {
@@ -784,6 +783,7 @@ class NCSelectCommandView: UIView {
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
+        overwriteSwitch?.onTintColor = NCBrandColor.shared.brand
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
         selectButton?.layer.cornerRadius = 15
@@ -835,3 +835,69 @@ class NCSelectCommandView: UIView {
         selectView?.valueChangedSwitchOverwrite(sender)
     }
 }
+
+// MARK: - UIViewControllerRepresentable
+
+struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = UINavigationController
+    var delegate: NCSelectDelegate
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController?.topViewController as? NCSelect
+
+        viewController?.delegate = delegate
+        viewController?.typeOfCommandView = .selectCreateFolder
+        viewController?.includeDirectoryE2EEncryption = true
+
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+}
+
+struct SelectView: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = UINavigationController
+
+    @Binding var serverUrl: String
+
+    class Coordinator: NSObject, NCSelectDelegate {
+
+        var parent: SelectView
+
+        init(_ parent: SelectView) {
+            self.parent = parent
+        }
+
+        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+            if let serverUrl = serverUrl {
+                self.parent.serverUrl = serverUrl
+            }
+        }
+    }
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+
+        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController?.topViewController as? NCSelect
+
+        viewController?.delegate = context.coordinator
+        viewController?.typeOfCommandView = .selectCreateFolder
+        viewController?.includeDirectoryE2EEncryption = true
+
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+}
+
+

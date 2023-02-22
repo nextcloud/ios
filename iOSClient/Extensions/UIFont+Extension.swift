@@ -1,5 +1,5 @@
 //
-//  UIFont+Extensions.swift
+//  UIFont+Extension.swift
 //  Nextcloud
 //
 //  Created by Federico Malagoni on 23/02/22.

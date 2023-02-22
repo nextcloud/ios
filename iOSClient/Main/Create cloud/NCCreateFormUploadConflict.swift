@@ -22,19 +22,16 @@
 //
 
 import UIKit
+import SwiftUI
 import NextcloudKit
 import Photos
 import JGProgressHUD
 
-@objc protocol NCCreateFormUploadConflictDelegate {
-    @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
+protocol NCCreateFormUploadConflictDelegate {
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
 }
 
-extension NCCreateFormUploadConflictDelegate {
-    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {}
-}
-
-@objc class NCCreateFormUploadConflict: UIViewController {
+class NCCreateFormUploadConflict: UIViewController {
 
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelSubTitle: UILabel!
@@ -52,12 +49,12 @@ extension NCCreateFormUploadConflictDelegate {
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
 
-    @objc var metadatasNOConflict: [tableMetadata]
-    @objc var metadatasUploadInConflict: [tableMetadata]
-    @objc var serverUrl: String?
-    @objc weak var delegate: NCCreateFormUploadConflictDelegate?
-    @objc var alwaysNewFileNameNumber: Bool = false
-    @objc var textLabelDetailNewFile: String?
+    var metadatasNOConflict: [tableMetadata]
+    var metadatasUploadInConflict: [tableMetadata]
+    var serverUrl: String?
+    var delegate: NCCreateFormUploadConflictDelegate?
+    var alwaysNewFileNameNumber: Bool = false
+    var textLabelDetailNewFile: String?
 
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
@@ -66,7 +63,7 @@ extension NCCreateFormUploadConflictDelegate {
 
     // MARK: - View Life Cycle
 
-    @objc required init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         self.metadatasNOConflict = []
         self.metadatasUploadInConflict = []
         super.init(coder: aDecoder)
@@ -99,7 +96,9 @@ extension NCCreateFormUploadConflictDelegate {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
+        switchNewFiles.onTintColor = NCBrandColor.shared.brand
         switchNewFiles.isOn = false
+        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brand
         switchAlreadyExistingFiles.isOn = false
 
         buttonCancel.layer.cornerRadius = 20
@@ -255,7 +254,7 @@ extension NCCreateFormUploadConflictDelegate {
                 metadata.fileNameView = newFileName
 
                 // This is not an asset - [file]
-                if metadata.assetLocalIdentifier == "" {
+                if metadata.assetLocalIdentifier == "" || metadata.isExtractFile {
                     let newPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: newFileName)
                     CCUtility.moveFile(atPath: oldPath, toPath: newPath)
                 }
@@ -308,7 +307,9 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
 
             cell.backgroundColor = tableView.backgroundColor
-
+            cell.switchNewFile.onTintColor = NCBrandColor.shared.brand
+            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brand
+            
             let metadataNewFile =  tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
             cell.ocId = metadataNewFile.ocId
@@ -384,7 +385,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
 
                     // PREVIEW
-                    NCUtility.shared.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { metadata, fileNamePath, error in
+                    let cameraRoll = NCCameraRoll()
+                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { metadata, fileNamePath, error in
                         if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {
@@ -502,7 +504,35 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
             buttonContinue.setTitleColor(.label, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(NCBrandColor.shared.gray, for: .normal)
+            buttonContinue.setTitleColor(UIColor.systemGray, for: .normal)
         }
     }
+}
+
+// MARK: - UIViewControllerRepresentable
+
+struct UploadConflictView: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = NCCreateFormUploadConflict
+    var delegate: NCCreateFormUploadConflictDelegate
+    var serverUrl: String
+    var metadatasUploadInConflict: [tableMetadata]
+    var metadatasNOConflict: [tableMetadata]
+
+
+    func makeUIViewController(context: Context) -> UIViewControllerType {
+
+        let storyboard = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as? NCCreateFormUploadConflict
+
+        viewController?.delegate = delegate
+        viewController?.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+        viewController?.serverUrl = serverUrl
+        viewController?.metadatasUploadInConflict = metadatasUploadInConflict
+        viewController?.metadatasNOConflict = metadatasNOConflict
+
+        return viewController!
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) { }
 }
