@@ -203,7 +203,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
         return nil
     }
-
 }
 
 extension NCViewerNextcloudText: UINavigationControllerDelegate {
