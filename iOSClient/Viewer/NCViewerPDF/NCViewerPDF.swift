@@ -83,6 +83,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin]
         pdfView.document = pdfDocument
+        pdfView.document?.page(at: 0)?.annotations.forEach({
+            $0.isReadOnly = true
+        })
         pdfView.autoScales = true
         pdfView.displayMode = .singlePageContinuous
         pdfView.displayDirection = .vertical

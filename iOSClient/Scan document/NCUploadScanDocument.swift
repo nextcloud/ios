@@ -542,6 +542,9 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
         uploadScanDocument.createPDFPreview(quality: quality, isTextRecognition: isTextRecognition) { data in
             uiView.document = PDFDocument(data: data)
+            uiView.document?.page(at: 0)?.annotations.forEach({
+                $0.isReadOnly = true
+            })
             uiView.autoScales = true
         }
     }
