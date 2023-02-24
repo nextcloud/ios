@@ -160,9 +160,9 @@ class NCAutoUpload: NSObject {
                     metadata.sessionSelector = selector
                     metadata.status = NCGlobal.shared.metadataStatusWaitUpload
                     if assetMediaType == PHAssetMediaType.video {
-                        metadata.classFile = NKCommon.typeClassFile.video.rawValue
+                        metadata.classFile = NKCommon.TypeClassFile.video.rawValue
                     } else if assetMediaType == PHAssetMediaType.image {
-                        metadata.classFile = NKCommon.typeClassFile.image.rawValue
+                        metadata.classFile = NKCommon.TypeClassFile.image.rawValue
                     }
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")

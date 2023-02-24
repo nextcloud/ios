@@ -106,7 +106,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
         for ocId in selectOcId {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
             selectedMetadatas.append(metadata)
-            if [NKCommon.typeClassFile.image.rawValue, NKCommon.typeClassFile.video.rawValue].contains(metadata.classFile) {
+            if [NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue].contains(metadata.classFile) {
                 selectedMediaMetadatas.append(metadata)
             }
             if metadata.directory { isAnyFolder = true }

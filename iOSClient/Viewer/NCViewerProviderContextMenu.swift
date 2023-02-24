@@ -80,7 +80,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // VIEW IMAGE
-            if metadata.classFile == NKCommon.typeClassFile.image.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue && CCUtility.fileProviderStorageExists(metadata) {
                 viewImage(metadata: metadata)
             }
 
@@ -90,22 +90,22 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // VIEW VIDEO
-            if metadata.classFile == NKCommon.typeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata) {
                 viewVideo(metadata: metadata)
             }
 
             // PLAY SOUND
-            if metadata.classFile == NKCommon.typeClassFile.audio.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue && CCUtility.fileProviderStorageExists(metadata) {
                 playSound(metadata: metadata)
             }
 
             // AUTO DOWNLOAD VIDEO / AUDIO
-            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue || metadata.contentType == "application/pdf") {
-            if !CCUtility.fileProviderStorageExists(metadata) && (metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue) {
+            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue || metadata.contentType == "application/pdf") {
+            if !CCUtility.fileProviderStorageExists(metadata) && (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue) {
 
                 var maxDownload: UInt64 = 0
 
-                if NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableCellular {
+                if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableCellular {
                     maxDownload = NCGlobal.shared.maxAutoDownloadCellular
                 } else {
                     maxDownload = NCGlobal.shared.maxAutoDownload
@@ -191,11 +191,11 @@ class NCViewerProviderContextMenu: UIViewController {
         else { return }
 
         if error == .success && metadata.ocId == self.metadata?.ocId {
-            if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
                 viewImage(metadata: metadata)
-            } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+            } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 viewVideo(metadata: metadata)
-            } else if metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+            } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
                 playSound(metadata: metadata)
             }
         }

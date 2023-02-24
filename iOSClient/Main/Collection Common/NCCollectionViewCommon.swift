@@ -1320,10 +1320,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
-            if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
                 var metadatas: [tableMetadata] = []
                 for metadata in metadataSourceForAllSections {
-                    if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+                    if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
                         metadatas.append(metadata)
                     }
                 }
@@ -1352,7 +1352,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
-        if isEditMode || metadata.classFile == NKCommon.typeClassFile.url.rawValue { return nil }
+        if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
 
         let identifier = indexPath as NSCopying
         var image: UIImage?
@@ -1636,7 +1636,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // URL
-        if metadata.classFile == NKCommon.typeClassFile.url.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
             cell.fileLocalImage?.image = nil
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)

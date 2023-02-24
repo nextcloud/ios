@@ -109,7 +109,7 @@ extension NCViewer {
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
 #if MFFFLIB
-        if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
             
             actions.append(
                 NCMenuAction(
@@ -208,7 +208,7 @@ extension NCViewer {
         //
         // DOWNLOAD IMAGE MAX RESOLUTION
         //
-        if !webView, metadata.session.isEmpty, metadata.classFile == NKCommon.typeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata) {
+        if !webView, metadata.session.isEmpty, metadata.classFile == NKCommon.TypeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_download_image_max_", comment: ""),

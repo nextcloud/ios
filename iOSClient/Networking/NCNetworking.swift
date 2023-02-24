@@ -48,7 +48,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     weak var delegate: NCNetworkingDelegate?
 
     var lastReachability: Bool = true
-    var networkReachability: NKCommon.typeReachability?
+    var networkReachability: NKCommon.TypeReachability?
     let downloadRequest = ThreadSafeDictionary<String,DownloadRequest>()
     let uploadRequest = ThreadSafeDictionary<String,UploadRequest>()
     let uploadMetadataInBackground = ThreadSafeDictionary<String,tableMetadata>()
@@ -117,10 +117,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Communication Delegate
 
-    func networkReachabilityObserver(_ typeReachability: NKCommon.typeReachability) {
+    func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
 
 #if !EXTENSION
-        if typeReachability == NKCommon.typeReachability.reachableCellular || typeReachability == NKCommon.typeReachability.reachableEthernetOrWiFi {
+        if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
                 NCService.shared.startRequestServicesServer()
             }

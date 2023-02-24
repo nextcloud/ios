@@ -385,9 +385,9 @@ class NCUtility: NSObject {
         let fileNamePathIcon = CCUtility.getDirectoryProviderStorageIconOcId(ocId, etag: etag)!
 
         if CCUtility.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
-        if classFile != NKCommon.typeClassFile.image.rawValue && classFile != NKCommon.typeClassFile.video.rawValue { return }
+        if classFile != NKCommon.TypeClassFile.image.rawValue && classFile != NKCommon.TypeClassFile.video.rawValue { return }
 
-        if classFile == NKCommon.typeClassFile.image.rawValue {
+        if classFile == NKCommon.TypeClassFile.image.rawValue {
 
             originalImage = UIImage(contentsOfFile: fileNamePath)
 
@@ -397,7 +397,7 @@ class NCUtility: NSObject {
             try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
             try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
 
-        } else if classFile == NKCommon.typeClassFile.video.rawValue {
+        } else if classFile == NKCommon.TypeClassFile.video.rawValue {
 
             let videoPath = NSTemporaryDirectory()+"tempvideo.mp4"
             NCUtilityFileSystem.shared.linkItem(atPath: fileNamePath, toPath: videoPath)
@@ -734,14 +734,14 @@ class NCUtility: NSObject {
             imagePreview = UIImage(contentsOfFile: iconImagePath)
         } else if !createPreviewMedia {
             return nil
-        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
             if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)
                     imagePreview = image
                 } catch { }
             }
-        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.typeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
+        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
             if let image = NCUtility.shared.imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: URL.init(fileURLWithPath: iconImagePath), options: .atomic)

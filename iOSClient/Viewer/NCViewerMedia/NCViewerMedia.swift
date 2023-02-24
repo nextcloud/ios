@@ -97,7 +97,7 @@ class NCViewerMedia: UIViewController {
             statusLabel.text = ""
         }
         
-        if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
@@ -147,7 +147,7 @@ class NCViewerMedia: UIViewController {
         viewerMediaPage?.navigationController?.navigationBar.prefersLargeTitles = false
         viewerMediaPage?.navigationItem.title = metadata.fileNameView
 
-        if metadata.classFile == NKCommon.typeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
+        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
             viewerMediaPage.currentScreenMode = viewerMediaPage.saveScreenModeImage
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
                 viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
@@ -180,14 +180,14 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
 
             if let ncplayer = self.ncplayer {
                 ncplayer.openAVPlayer()
                 self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
             }
             
-        } else if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+        } else if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
 
             viewerMediaPage?.clearCommandCenter()
         }
@@ -242,7 +242,7 @@ class NCViewerMedia: UIViewController {
     func loadImage(metadata: tableMetadata) {
 
         // Download image
-        if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadata.session == "" {
+        if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.TypeClassFile.image.rawValue && metadata.session == "" {
 
             if metadata.livePhoto {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
@@ -273,7 +273,7 @@ class NCViewerMedia: UIViewController {
                 return image
             }
 
-            if metadata.classFile == NKCommon.typeClassFile.video.rawValue && !metadata.hasPreview {
+            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.hasPreview {
                 NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
             }
 
@@ -283,9 +283,9 @@ class NCViewerMedia: UIViewController {
                 }
             }
 
-            if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 return UIImage(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
-            } else if metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+            } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
                 return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             } else {
                 return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
@@ -297,7 +297,7 @@ class NCViewerMedia: UIViewController {
             let ext = CCUtility.getExtension(metadata.fileNameView)
             var image: UIImage?
 
-            if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+            if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
 
                 let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
                 let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -339,7 +339,7 @@ class NCViewerMedia: UIViewController {
 
         if detailView.isShow() { return }
         // NO ZOOM for Audio
-        if metadata.classFile == NKCommon.typeClassFile.audio.rawValue { return }
+        if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
 
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
@@ -483,7 +483,7 @@ extension NCViewerMedia {
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
-        if metadata.classFile == NKCommon.typeClassFile.video.rawValue && !metadata.livePhoto && ncplayer?.player?.timeControlStatus == .paused {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.livePhoto && ncplayer?.player?.timeControlStatus == .paused {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
         }
     }

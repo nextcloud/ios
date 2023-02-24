@@ -123,7 +123,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             metadata.fileName = "root"
             metadata.fileNameView = "root"
             metadata.serverUrl = fileProviderData.shared.homeServerUrl
-            metadata.classFile = NKCommon.typeClassFile.directory.rawValue
+            metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
 
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
 

@@ -93,7 +93,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                 self.openDocumentController(metadata: metadata)
-            } else if metadata.classFile == NKCommon.typeClassFile.compress.rawValue || metadata.classFile == NKCommon.typeClassFile.unknow.rawValue {
+            } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 self.openDocumentController(metadata: metadata)
             } else {
                 if let viewController = appDelegate.activeViewController {
@@ -285,7 +285,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let printInfo = UIPrintInfo(dictionary: nil)
 
         printInfo.jobName = fileNameURL.lastPathComponent
-        printInfo.outputType = metadata.classFile == NKCommon.typeClassFile.image.rawValue ? .photo : .general
+        printInfo.outputType = metadata.classFile == NKCommon.TypeClassFile.image.rawValue ? .photo : .general
         printController.printInfo = printInfo
         printController.showsNumberOfCopies = true
 
@@ -330,7 +330,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             let errorSave = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
 
             do {
-                if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+                if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
                     PHPhotoLibrary.shared().performChanges({
                         let assetRequest = PHAssetCreationRequest.forAsset()
@@ -340,7 +340,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                             NCContentPresenter.shared.messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                         }
                     }
-                } else if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+                } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                     PHPhotoLibrary.shared().performChanges({
                         PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: fileNamePath))
                     }) { success, _ in
