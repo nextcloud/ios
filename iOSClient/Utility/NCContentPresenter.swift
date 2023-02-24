@@ -81,6 +81,10 @@ class NCContentPresenter: NSObject {
             priority: priority)
     }
 
+    func showInfo(title: String = "", description: String = "") {
+        self.flatTop(title: NSLocalizedString(title, comment: ""), description: NSLocalizedString(description, comment: ""), delay: NCGlobal.shared.dismissAfterSecond, imageName: nil, type: .info, priority: .normal)
+    }
+
     func showWarning(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
         messageNotification(
             "_warning_",

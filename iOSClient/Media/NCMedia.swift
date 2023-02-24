@@ -551,7 +551,7 @@ extension NCMedia {
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
             } else if error != .success {
-                NKCommon.shared.writeLog("[INFO] Media search old media error code \(error.errorCode) " + error.errorDescription)
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Media search old media error code \(error.errorCode) " + error.errorDescription)
             }
         }
     }
@@ -627,7 +627,7 @@ extension NCMedia {
                 } else if error == .success && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldMedia()
                 } else if error != .success {
-                    NKCommon.shared.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
             }
         }

@@ -228,7 +228,7 @@ class NCEndToEndMetadata: NSObject {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NKCommon.shared.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
@@ -297,7 +297,7 @@ class NCEndToEndMetadata: NSObject {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NKCommon.shared.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName

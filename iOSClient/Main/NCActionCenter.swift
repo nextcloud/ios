@@ -476,7 +476,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let results = NKCommon.shared.getFileProperties(inUTI: item.key as CFString)
+                let results = NextcloudKit.shared.nkCommonInstance.getFileProperties(inUTI: item.key as CFString)
                 guard !results.ext.isEmpty,
                       let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
                 else { continue }

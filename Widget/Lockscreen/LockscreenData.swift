@@ -72,7 +72,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
         nextcloudVersion: 0,
         delegate: NCNetworking.shared)
 
-    let options = NKRequestOptions(timeout: 90, queue: NKCommon.shared.backgroundQueue)
+    let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     if #available(iOSApplicationExtension 16.0, *) {
         if family == .accessoryCircular {
             NextcloudKit.shared.getUserProfile(options: options) { _, userProfile, _, error in

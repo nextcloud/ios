@@ -61,7 +61,7 @@ class NCNetworkingE2EEUpload: NSObject {
         } else {
             metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
         }
-        metadata.session = NKCommon.shared.sessionIdentifierUpload
+        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
         metadata.sessionError = ""
         guard let result = NCManageDatabase.shared.addMetadata(metadata) else { return errorCreateEncrypted }
         metadata = result
