@@ -423,10 +423,6 @@ struct UploadAssetsView: View {
                             }
                         }
                     }
-                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
-                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                            .ignoresSafeArea()
-                    }
                     .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
@@ -548,6 +544,10 @@ struct UploadAssetsView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
+        }
+        .fullScreenCover(isPresented: $isPresentedQuickLook) {
+            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                .ignoresSafeArea()
         }
         .onReceive(uploadAssets.$dismiss) { newValue in
             if newValue {
