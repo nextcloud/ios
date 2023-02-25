@@ -505,9 +505,7 @@ struct UploadAssetsView: View {
                         }
                     }
                     .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
+                        view.listRowSeparator(.hidden)
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {

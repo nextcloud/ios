@@ -109,7 +109,6 @@ extension UIImage {
             ctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: size.height, height: size.width))
         default:
             ctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-            break
         }
 
         guard let newCGImage = ctx.makeImage() else { return nil }
@@ -136,7 +135,7 @@ extension UIImage {
         let newImage = UIGraphicsGetImageFromCurrentImageContext() ?? self
         UIGraphicsEndImageContext()
 
-        return newImage        
+        return newImage
     }
 
     func isEqualToImage(image: UIImage?) -> Bool {
@@ -191,10 +190,10 @@ extension UIImage {
         // Return the downsampled image as UIImage
         return UIImage(cgImage: downsampledImage)
     }
-    
+
     // Source:
     // https://stackoverflow.com/questions/27092354/rotating-uiimage-in-swift/47402811#47402811
-    
+
     func rotate(radians: Float) -> UIImage? {
         var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
         // Trim off the extremely small float value to prevent core graphics from rounding it up
