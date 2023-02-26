@@ -135,7 +135,7 @@ extension NCViewer {
         //
         // SAVE AS SCAN
         //
-        if !webView, metadata.isSavebleAsScan {
+        if !webView, metadata.isSavebleAsImage {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),

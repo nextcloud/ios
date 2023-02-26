@@ -143,7 +143,7 @@ extension tableMetadata {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
     }
 
-    var isSavebleAsScan: Bool {
+    var isSavebleAsImage: Bool {
         classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml"
     }
 

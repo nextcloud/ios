@@ -270,7 +270,7 @@ extension NCCollectionViewCommon {
         //
         // SAVE AS SCAN
         //
-        if metadata.isSavebleAsScan {
+        if metadata.isSavebleAsImage {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
