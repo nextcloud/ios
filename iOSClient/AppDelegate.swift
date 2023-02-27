@@ -787,8 +787,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.privacyProtectionWindow = nil
         }
     }
-    
-    // MARK: - Open URL
+
+    // MARK: - Universal Links
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+
+        let applicationHandle = NCApplicationHandle()
+        return applicationHandle.applicationOpenUserActivity(userActivity)
+    }
+
+    // MARK: - Scheme URL
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
 

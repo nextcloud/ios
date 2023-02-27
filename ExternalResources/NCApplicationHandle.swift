@@ -29,6 +29,12 @@ class NCApplicationHandle: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // class: AppDelegate
+    // func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void)
+    func applicationOpenUserActivity(_ userActivity: NSUserActivity) -> Bool {
+        return false
+    }
+
+    // class: AppDelegate
     // func: application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     func applicationOpenURL(_ url: URL) -> Bool {
         return false
