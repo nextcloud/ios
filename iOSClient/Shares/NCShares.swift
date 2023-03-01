@@ -54,7 +54,7 @@ class NCShares: NCCollectionViewCommon {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            let sharess = tableShare().getTableShares(account: self.appDelegate.account)
+            let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
             var metadatas: [tableMetadata] = []
             for share in sharess {
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
@@ -96,10 +96,10 @@ class NCShares: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
-                tableShare().deleteTableShare(account: account)
+                NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
                     let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-                    tableShare().addShare(account: self.appDelegate.account, home: home, shares: shares)
+                    NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
                 }
                 self.reloadDataSource()
 

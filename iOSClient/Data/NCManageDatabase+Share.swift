@@ -71,6 +71,9 @@ class tableShareV2: Object {
     override static func primaryKey() -> String {
         return "primaryKey"
     }
+}
+
+extension NCManageDatabase {
 
     func addShare(account: String, home: String, shares: [NKShare]) {
 
