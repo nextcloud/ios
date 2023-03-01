@@ -159,9 +159,9 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                userBaseUrl: baseUrl)
 
         let fileName = baseUrl.userBaseUrl + "-" + sharee.shareWith + ".png"
-        if tableAvatar().getImageAvatarLoaded(fileName: fileName) == nil {
+        if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-            let etag = tableAvatar().getTableAvatar(fileName: fileName)?.etag
+            let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(
                 user: sharee.shareWith,
@@ -171,9 +171,9 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 etag: etag) { _, imageAvatar, _, etag, error in
 
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
-                        tableAvatar().addAvatar(fileName: fileName, etag: etag)
+                        NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.imageItem.image = imageAvatar
-                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = tableAvatar().setAvatarLoaded(fileName: fileName) {
+                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
                         self.imageItem.image = imageAvatar
                     }
                 }

@@ -35,6 +35,9 @@ class tableAvatar: Object {
     override static func primaryKey() -> String {
         return "fileName"
     }
+}
+
+extension NCManageDatabase {
 
     func addAvatar(fileName: String, etag: String) {
 
