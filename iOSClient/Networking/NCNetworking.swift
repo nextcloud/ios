@@ -1158,7 +1158,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             for metadata in metadatas {
 
-                NCManageDatabase.shared.deleteVideo(metadata: metadata)
+                tableVideo().deleteVideo(metadata: metadata)
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
 
@@ -1225,7 +1225,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 } catch { }
 
-                NCManageDatabase.shared.deleteVideo(metadata: metadata)
+                tableVideo().deleteVideo(metadata: metadata)
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
