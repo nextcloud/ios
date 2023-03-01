@@ -125,7 +125,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     }
 
     // Default widget
-    let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
+    let result = tableDashboardWidget().getDashboardWidgetApplications(account: account.account).first
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
     let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -160,7 +160,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
     
-    let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
+    let (tableDashboard, tableButton) = tableDashboardWidget().getDashboardWidget(account: account.account, id: id)
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true
     let title = tableDashboard?.title ?? id
 

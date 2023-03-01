@@ -25,6 +25,16 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
+class tableDashboardWidgetButton: Object {
+
+    @Persisted(primaryKey: true) var index = ""
+    @Persisted var account = ""
+    @Persisted var id = ""
+    @Persisted var type = ""
+    @Persisted var text = ""
+    @Persisted var link = ""
+}
+
 class tableDashboardWidget: Object {
 
     @Persisted(primaryKey: true) var index = ""
@@ -36,19 +46,6 @@ class tableDashboardWidget: Object {
     @Persisted var iconUrl: String?
     @Persisted var widgetUrl: String?
     @Persisted var itemIconsRound: Bool = false
-}
-
-class tableDashboardWidgetButton: Object {
-
-    @Persisted(primaryKey: true) var index = ""
-    @Persisted var account = ""
-    @Persisted var id = ""
-    @Persisted var type = ""
-    @Persisted var text = ""
-    @Persisted var link = ""
-}
-
-extension NCManageDatabase {
 
     func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, [tableDashboardWidgetButton]?) {
      

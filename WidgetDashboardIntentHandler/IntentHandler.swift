@@ -65,7 +65,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
             return completion(nil, nil)
         }
 
-        let results = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account)
+        let results = tableDashboardWidget().getDashboardWidgetApplications(account: account.account)
         for result in results {
             let application = Applications(identifier: result.id, display: result.title)
             applications.append(application)
@@ -79,7 +79,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
         guard let account = NCManageDatabase.shared.getActiveAccount() else {
             return nil
         }
-        if let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first {
+        if let result = tableDashboardWidget().getDashboardWidgetApplications(account: account.account).first {
             return Applications(identifier: result.id, display: result.title)
         }
         return nil

@@ -284,7 +284,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
             Task {
                 if error == .success, let dashboardWidgets = dashboardWidgets  {
-                    NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
+                    tableDashboardWidget().addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
                     for widget in dashboardWidgets {
                         if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
                             let (_, data, error) = await NextcloudKit.shared.getPreview(url: url)
