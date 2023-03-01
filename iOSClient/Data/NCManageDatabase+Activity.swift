@@ -26,35 +26,6 @@ import RealmSwift
 import NextcloudKit
 import SwiftyJSON
 
-class tableActivity: Object, DateCompareable {
-    var dateKey: Date { date as Date }
-
-    @objc dynamic var account = ""
-    @objc dynamic var idPrimaryKey = ""
-    @objc dynamic var action = "Activity"
-    @objc dynamic var date = NSDate()
-    @objc dynamic var idActivity: Int = 0
-    @objc dynamic var app = ""
-    @objc dynamic var type = ""
-    @objc dynamic var user = ""
-    @objc dynamic var subject = ""
-    @objc dynamic var subjectRich = ""
-    let subjectRichItem = List<tableActivitySubjectRich>()
-    @objc dynamic var icon = ""
-    @objc dynamic var link = ""
-    @objc dynamic var message = ""
-    @objc dynamic var objectType = ""
-    @objc dynamic var objectId: Int = 0
-    @objc dynamic var objectName = ""
-    @objc dynamic var note = ""
-    @objc dynamic var selector = ""
-    @objc dynamic var verbose: Bool = false
-
-    override static func primaryKey() -> String {
-        return "idPrimaryKey"
-    }
-}
-
 class tableActivityLatestId: Object {
 
     @objc dynamic var account = ""
@@ -101,8 +72,34 @@ class tableActivitySubjectRich: Object {
     }
 }
 
-extension NCManageDatabase {
-    
+class tableActivity: Object, DateCompareable {
+    var dateKey: Date { date as Date }
+
+    @objc dynamic var account = ""
+    @objc dynamic var idPrimaryKey = ""
+    @objc dynamic var action = "Activity"
+    @objc dynamic var date = NSDate()
+    @objc dynamic var idActivity: Int = 0
+    @objc dynamic var app = ""
+    @objc dynamic var type = ""
+    @objc dynamic var user = ""
+    @objc dynamic var subject = ""
+    @objc dynamic var subjectRich = ""
+    let subjectRichItem = List<tableActivitySubjectRich>()
+    @objc dynamic var icon = ""
+    @objc dynamic var link = ""
+    @objc dynamic var message = ""
+    @objc dynamic var objectType = ""
+    @objc dynamic var objectId: Int = 0
+    @objc dynamic var objectName = ""
+    @objc dynamic var note = ""
+    @objc dynamic var selector = ""
+    @objc dynamic var verbose: Bool = false
+
+    override static func primaryKey() -> String {
+        return "idPrimaryKey"
+    }
+
     func addActivity(_ activities: [NKActivity], account: String) {
 
         let realm = try! Realm()
