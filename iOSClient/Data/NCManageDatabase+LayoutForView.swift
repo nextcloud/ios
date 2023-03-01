@@ -37,9 +37,6 @@ class NCDBLayoutForView: Object {
     @Persisted var directoryOnTop: Bool = true
     @Persisted var titleButtonHeader: String = "_sorted_by_name_a_z_"
     @Persisted var itemForLine: Int = 3
-}
-
-extension NCManageDatabase {
 
     @discardableResult
     func setLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil, sort: String? = nil, ascending: Bool? = nil, groupBy: String? = nil, directoryOnTop: Bool? = nil, titleButtonHeader: String? = nil, itemForLine: Int? = nil) -> NCDBLayoutForView? {

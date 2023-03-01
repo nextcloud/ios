@@ -29,7 +29,7 @@ extension NCShareExtension {
 
         var groupByField = "name"
 
-        layoutForView = NCManageDatabase.shared.setLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
+        layoutForView = NCDBLayoutForView().setLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
 
         // set GroupField for Grid
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {

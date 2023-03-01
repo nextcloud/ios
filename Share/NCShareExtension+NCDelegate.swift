@@ -97,7 +97,7 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
 
         serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
+        layoutForView = NCDBLayoutForView().getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
 
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)

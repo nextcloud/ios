@@ -88,7 +88,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
         navigationController?.setFileAppreance()
         navigationItem.title = titleCurrentFolder
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCDBLayoutForView().getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
@@ -130,7 +130,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
             // list layout
             layoutForView?.layout = NCGlobal.shared.layoutList
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
+            NCDBLayoutForView().setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -140,7 +140,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
             // grid layout
             layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
+            NCDBLayoutForView().setLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -232,7 +232,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     @objc func reloadDataSource(forced: Bool = true) {
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCDBLayoutForView().getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         datasource.removeAll()
         guard let trashPath = self.getTrashPath(), let tashItems = NCManageDatabase.shared.getTrash(filePath: trashPath, sort: layoutForView?.sort, ascending: layoutForView?.ascending, account: appDelegate.account) else {
             return

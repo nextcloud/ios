@@ -49,7 +49,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        NCDBLayoutForView().setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
