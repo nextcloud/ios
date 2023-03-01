@@ -450,7 +450,7 @@ class NCUtility: NSObject {
 
         if let localImage = UIImage(contentsOfFile: localFilePath) {
             return createAvatar(image: localImage, size: 30)
-        } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+        } else if let loadedAvatar = tableAvatar().getImageAvatarLoaded(fileName: fileName) {
             return loadedAvatar
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg

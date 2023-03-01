@@ -188,7 +188,7 @@ import NextcloudKit
 
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
-        if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+        if let image = tableAvatar().getImageAvatarLoaded(fileName: fileName) {
             cellImageView?.image = image
             cell.fileAvatarImageView?.image = image
             return
@@ -561,7 +561,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         self.fileNameLocalPath = fileNameLocalPath
         self.cell = cell
         self.view = view
-        self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+        self.etag = tableAvatar().getTableAvatar(fileName: fileName)?.etag
         self.cellImageView = cellImageView
     }
 
@@ -576,7 +576,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
             NextcloudKit.shared.downloadAvatar(user: user, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: self.etag, options: options) { _, imageAvatar, _, etag, error in
 
                 if error == .success, let imageAvatar = imageAvatar, let etag = etag {
-                    NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag)
+                    tableAvatar().addAvatar(fileName: self.fileName, etag: etag)
                     DispatchQueue.main.async {
                         if self.user == self.cell.fileUser, let avatarImageView = self.cellImageView {
                             UIView.transition(with: avatarImageView,
@@ -593,7 +593,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
                         }
                     }
                 } else if error.errorCode == NCGlobal.shared.errorNotModified {
-                    NCManageDatabase.shared.setAvatarLoaded(fileName: self.fileName)
+                    tableAvatar().setAvatarLoaded(fileName: self.fileName)
                 }
                 self.finish()
             }

@@ -38,7 +38,7 @@ class NCService: NSObject {
 
     @objc public func startRequestServicesServer() {
 
-        NCManageDatabase.shared.clearAllAvatarLoaded()
+        tableAvatar().clearAllAvatarLoaded()
         guard !appDelegate.account.isEmpty else { return }
 
         addInternalTypeIdentifier()
@@ -143,17 +143,17 @@ class NCService: NSObject {
             // Get Avatar
             let fileName = tableAccount.userBaseUrl + "-" + self.appDelegate.user + ".png"
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-            let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+            let etag = tableAvatar().getTableAvatar(fileName: fileName)?.etag
             let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
             NextcloudKit.shared.downloadAvatar(user: tableAccount.userId, fileNameLocalPath: fileNameLocalPath, sizeImage: NCGlobal.shared.avatarSize, avatarSizeRounded: NCGlobal.shared.avatarSizeRounded, etag: etag, options: options) { _, _, _, etag, error in
                 guard let etag = etag, error == .success else {
                     if error.errorCode == NCGlobal.shared.errorNotModified {
-                        NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
+                        tableAvatar().setAvatarLoaded(fileName: fileName)
                     }
                     return
                 }
-                NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
+                tableAvatar().addAvatar(fileName: fileName, etag: etag)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: nil)
             }
 
