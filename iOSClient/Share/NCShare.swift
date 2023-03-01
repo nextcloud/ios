@@ -181,7 +181,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     @objc func reloadData() {
         if let metadata = metadata {
-            shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
+            shares = tableShare().getTableShares(metadata: metadata)
         }
         tableView.reloadData()
     }
