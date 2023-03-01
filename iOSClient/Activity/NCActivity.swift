@@ -304,7 +304,7 @@ extension NCActivity: UITableViewDataSource {
             }
 
             for key in keys {
-                if let result = tableActivity().getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
+                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
                     subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                 }
@@ -324,7 +324,7 @@ extension NCActivity: UITableViewDataSource {
         }
 
         // CollectionView
-        cell.activityPreviews = tableActivity().getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
+        cell.activityPreviews = NCManageDatabase.shared.getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
         if cell.activityPreviews.count == 0 {
             cell.collectionViewHeightConstraint.constant = 0
         } else {
@@ -386,11 +386,11 @@ extension NCActivity {
 
         var newItems = [DateCompareable]()
         if showComments, let metadata = metadata, let account = NCManageDatabase.shared.getActiveAccount() {
-            let comments = tableActivity().getComments(account: account.account, objectId: metadata.fileId)
+            let comments = NCManageDatabase.shared.getComments(account: account.account, objectId: metadata.fileId)
             newItems += comments
         }
 
-        let activities = tableActivity().getActivity(
+        let activities = NCManageDatabase.shared.getActivity(
             predicate: NSPredicate(format: "account == %@", appDelegate.account),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
@@ -409,7 +409,7 @@ extension NCActivity {
 
         NextcloudKit.shared.getComments(fileId: metadata.fileId) { account, comments, data, error in
             if error == .success, let comments = comments {
-                tableActivity().addComments(comments, account: metadata.account, objectId: metadata.fileId)
+                NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 NCContentPresenter.shared.showError(error: error)
             }
@@ -424,7 +424,7 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        guard let result = tableActivity().getLatestActivityId(account: appDelegate.account), metadata == nil, hasActivityToLoad else {
+        guard let result = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
         let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
@@ -472,15 +472,15 @@ extension NCActivity {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
                     return
                 }
-                tableActivity().addActivity(activities, account: account)
+                NCManageDatabase.shared.addActivity(activities, account: account)
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                if let result = tableActivity().getLatestActivityId(account: self.appDelegate.account) {
+                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.appDelegate.account) {
                     resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
                 }
                 if self.metadata == nil, largestActivityId > resultActivityId {
-                    tableActivity().updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
+                    NCManageDatabase.shared.updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
                 }
             }
     }

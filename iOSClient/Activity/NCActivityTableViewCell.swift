@@ -120,7 +120,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
 
         if activityPreview.view == NCGlobal.shared.appName && activityPreview.mimeType != "dir" {
 
-            guard let activitySubjectRich = tableActivity().getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
+            guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
             }
 
@@ -229,7 +229,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
 
             } else {
 
-                if let activitySubjectRich = tableActivity().getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
+                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
 
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
                     
