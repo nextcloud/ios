@@ -40,7 +40,7 @@ class NCSortMenu: NSObject {
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
 
-        guard let layoutForView = NCDBLayoutForView().getLayoutForView(account: account, key: key, serverUrl: serverUrl) else { return }
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: account, key: key, serverUrl: serverUrl) else { return }
         var actions = [NCMenuAction]()
         var title = ""
         var icon = UIImage()
@@ -143,7 +143,7 @@ class NCSortMenu: NSObject {
         }
 
         self.sortButton?.setTitle(NSLocalizedString(layoutForView.titleButtonHeader, comment: ""), for: .normal)
-        NCDBLayoutForView().setLayoutForView(layoutForView: layoutForView)
+        NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
     }
 }
