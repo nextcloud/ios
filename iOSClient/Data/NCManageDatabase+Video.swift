@@ -41,6 +41,9 @@ class tableVideo: Object {
     override static func primaryKey() -> String {
         return "ocId"
     }
+}
+
+extension NCManageDatabase {
 
     func addVideoTime(metadata: tableMetadata, time: CMTime?, durationTime: CMTime?) {
 

@@ -125,7 +125,7 @@ class NCPlayer: NSObject {
             player?.isMuted = CCUtility.getAudioMute()
         } else {
             player?.isMuted = CCUtility.getAudioMute()
-            if let time = tableVideo().getVideoTime(metadata: metadata) {
+            if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
                 player?.seek(to: time)
             }
         }
@@ -168,7 +168,7 @@ class NCPlayer: NSObject {
                 case .loaded:
 
                     self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
-                    tableVideo().addVideoTime(metadata: self.metadata, time: nil, durationTime: self.durationTime)
+                    NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: nil, durationTime: self.durationTime)
 
                     self.videoLayer = AVPlayerLayer(player: self.player)
                     self.videoLayer!.frame = self.imageVideoContainer?.bounds ?? .zero
@@ -375,7 +375,7 @@ class NCPlayer: NSObject {
 
         if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
 
-        tableVideo().addVideoTime(metadata: metadata, time: time, durationTime: nil)
+        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
         generatorImagePreview()
     }
 
