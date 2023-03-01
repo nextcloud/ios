@@ -171,7 +171,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
 
+        NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Start")
+
         if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
+
+            NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Extarct certificate txt")
 
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
@@ -185,13 +189,17 @@ class NCNetworking: NSObject, NKCommonDelegate {
             certificateData.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
             
             if isServerTrusted {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server trusted")
                 isTrusted = true
             } else if let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server trusted (data saved)")
                 isTrusted = true
             } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server not trusted")
                 isTrusted = false
             }
         } else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] not certificate, server not trusted ")
             isTrusted = false
         }
 
