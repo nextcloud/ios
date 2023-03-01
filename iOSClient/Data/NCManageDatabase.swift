@@ -38,7 +38,7 @@ class NCManageDatabase: NSObject {
     override init() {
 
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
-        let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault)
+        let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
@@ -68,8 +68,8 @@ class NCManageDatabase: NSObject {
             // App Extension config
 
             let config = Realm.Configuration(
-                fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault),
-                schemaVersion: NCGlobal.shared.databaseSchemaVersion,
+                fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
+                schemaVersion: databaseSchemaVersion,
                 objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tablePhotoLibrary.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableShare.self, tableChunk.self, tableAvatar.self, tableDashboardWidget.self, tableDashboardWidgetButton.self, NCDBLayoutForView.self]
             )
 
@@ -82,7 +82,7 @@ class NCManageDatabase: NSObject {
             let configCompact = Realm.Configuration(
 
                 fileURL: databaseFileUrlPath,
-                schemaVersion: NCGlobal.shared.databaseSchemaVersion,
+                schemaVersion: databaseSchemaVersion,
 
                 migrationBlock: { migration, oldSchemaVersion in
 
@@ -122,8 +122,8 @@ class NCManageDatabase: NSObject {
             }
 
             let config = Realm.Configuration(
-                fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + NCGlobal.shared.databaseDefault),
-                schemaVersion: NCGlobal.shared.databaseSchemaVersion
+                fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
+                schemaVersion: databaseSchemaVersion
             )
 
             Realm.Configuration.defaultConfiguration = config
