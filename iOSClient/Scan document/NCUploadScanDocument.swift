@@ -355,7 +355,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var fileName = "Scan"
+    @State var fileName = CCUtility.createFileNameDate("scan", extension: "") ?? "scan"
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
