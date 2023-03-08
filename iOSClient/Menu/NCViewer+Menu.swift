@@ -53,6 +53,21 @@ extension NCViewer {
         }
 
         //
+        // VIEW IN FOLDER
+        //
+        if !webView {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_view_in_folder_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "questionmark.folder"),
+                    action: { menuAction in
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                    }
+                )
+            )
+        }
+
+        //
         // FAVORITE
         // Workaround: PROPPATCH doesn't work
         // https://github.com/nextcloud/files_lock/issues/68
@@ -188,21 +203,6 @@ extension NCViewer {
         //
         if !webView, metadata.isCopyableInPasteboard {
             actions.append(.copyAction(selectOcId: [metadata.ocId], hudView: viewController.view))
-        }
-
-        //
-        // VIEW IN FOLDER
-        //
-        if !webView {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
-                    action: { menuAction in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
-                    }
-                )
-            )
         }
 
         //

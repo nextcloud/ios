@@ -122,6 +122,22 @@ extension NCCollectionViewCommon {
         }
 
         //
+        // VIEW IN FOLDER
+        //
+        if layoutKey != NCGlobal.shared.layoutViewFiles {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_view_in_folder_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "questionmark.folder"),
+                    order: 21,
+                    action: { menuAction in
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                    }
+                )
+            )
+        }
+
+        //
         // LOCK / UNLOCK
         //
         let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
