@@ -238,10 +238,10 @@ class NCEndToEndMetadata: NSObject {
                     let metadataKeyIndex = files.metadataKey
                     let initializationVector = files.initializationVector
 
-                    if let encrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
-                       let encryptedData = encrypted.data(using: .utf8) {
+                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
+                       let decryptedData = Data(base64Encoded: decrypted) {
                         do {
-                            let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: encryptedData)
+                            let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
@@ -406,7 +406,7 @@ class NCEndToEndMetadata: NSObject {
                     let authenticationTag = files.authenticationTag
                     let initializationVector = files.initializationVector
 
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJsonV12(encrypted, key: metadataKey),
+                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
                             let encrypted = try decoder.decode(E2eeV12.Encrypted.self, from: decryptedData)

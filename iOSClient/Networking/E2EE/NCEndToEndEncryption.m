@@ -456,47 +456,8 @@
     return nil;
 }
 
-- (NSString *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key
-{
-    NSMutableData *plainData;
-    NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
-    if (range.location == NSNotFound) {
-        range = [encrypted rangeOfString:IV_DELIMITER_ENCODED_OLD];
-        if (range.location == NSNotFound) {
-            return nil;
-        }
-    }
 
-    // Cipher
-    NSString *cipher = [encrypted substringToIndex:(range.location)];
-    NSData *cipherData = [[NSData alloc] initWithBase64EncodedString:cipher options:0];
-
-    // Key
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
-
-    // IV
-    NSString *iv  = [encrypted substringWithRange:NSMakeRange(range.location + range.length, encrypted.length - (range.location + range.length))];
-    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:iv options:0];
-
-    // TAG
-    NSString *tag = [cipher substringWithRange:NSMakeRange(cipher.length - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
-    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
-
-    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
-
-    if (plainData != nil && result) {
-
-        /* DENCODE 64 JAVA compatibility            */
-        NSString *plain = [self base64DecodeData:plainData];
-        /* ---------------------------------------- */
-
-        return plain;
-    }
-
-    return nil;
-}
-
-- (NSData *)decryptEncryptedJsonV12:(NSString *)encrypted key:(NSString *)key
+- (NSData *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key
 {
     NSMutableData *plainData;
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];

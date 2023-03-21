@@ -41,8 +41,7 @@
 - (NSData *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
 - (NSString *)encryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
-- (NSString *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
-- (NSData *)decryptEncryptedJsonV12:(NSString *)encrypted key:(NSString *)key;
+- (NSData *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
 
 - (void)encryptkey:(NSString **)key initializationVector:(NSString **)initializationVector;
 - (BOOL)encryptFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
