@@ -35,7 +35,7 @@
 
 - (NSString *)createCSR:(NSString *)userId directory:(NSString *)directory;
 - (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
+- (NSData *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
 - (NSData *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
