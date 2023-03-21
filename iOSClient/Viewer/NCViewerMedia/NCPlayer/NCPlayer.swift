@@ -453,7 +453,7 @@ class NCPlayer: NSObject {
                 NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
                 if isEncrypted {
                     if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", self.metadata.fileName, self.metadata.serverUrl)) {
-                        NCEndToEndEncryption.sharedManager()?.decryptFileName(self.metadata.fileName, fileNameView: self.metadata.fileNameView, ocId: self.metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                        NCEndToEndEncryption.sharedManager()?.decryptFile(self.metadata.fileName, fileNameView: self.metadata.fileNameView, ocId: self.metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                     }
                 }
                 let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
