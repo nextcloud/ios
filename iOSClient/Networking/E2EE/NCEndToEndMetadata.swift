@@ -366,7 +366,7 @@ class NCEndToEndMetadata: NSObject {
     }
 
     // --------------------------------------------------------------------------------------------
-    // MARK: Decode JSON Metadata V2
+    // MARK: Decode JSON Metadata V12
     // --------------------------------------------------------------------------------------------
 
     func decoderMetadataV12(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> Bool {
@@ -389,8 +389,12 @@ class NCEndToEndMetadata: NSObject {
             //
             let data = Data(base64Encoded: metadata.metadataKey)
             if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey),
-                let keyData = Data(base64Encoded: decrypted) {
-                metadataKey = String(data: keyData, encoding: .utf8) ?? ""
+                let keyData = Data(base64Encoded: decrypted),
+                let key = String(data: keyData, encoding: .utf8) {
+                metadataKey = key
+            } else {
+                print("Serious internal error in decoding metadataKey")
+                return false
             }
 
             //
