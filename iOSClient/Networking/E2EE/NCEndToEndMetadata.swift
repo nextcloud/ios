@@ -63,13 +63,14 @@ class NCEndToEndMetadata: NSObject {
 
         struct Metadata: Codable {
             let metadataKey: String
-            //let version: Int?
+            // let version: Int
         }
 
         struct Encrypted: Codable {
             let key: String
             let filename: String
             let mimetype: String
+            // let version: Int
         }
 
         struct Files: Codable {
