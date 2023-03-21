@@ -70,7 +70,7 @@ class NCEndToEndMetadata: NSObject {
             let key: String
             let filename: String
             let mimetype: String
-            let version: Int
+           // let version: Int
         }
 
         struct Files: Codable {
@@ -428,7 +428,7 @@ class NCEndToEndMetadata: NSObject {
                                 object.metadataVersion = 0
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
-                                object.version = encrypted.version
+                                object.version = 0 // encrypted.version
 
                                 // If exists remove records
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
