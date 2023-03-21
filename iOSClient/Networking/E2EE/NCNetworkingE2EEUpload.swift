@@ -167,7 +167,6 @@ class NCNetworkingE2EEUpload: NSObject {
         objectE2eEncryption.initializationVector = initializationVector! as String
         objectE2eEncryption.mimeType = metadata.contentType
         objectE2eEncryption.serverUrl = metadata.serverUrl
-        objectE2eEncryption.version = 1
         NCManageDatabase.shared.addE2eEncryption(objectE2eEncryption)
 
         // Rebuild metadata

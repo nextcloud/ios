@@ -30,14 +30,14 @@ class NCEndToEndMetadata: NSObject {
 
         struct Metadata: Codable {
             let metadataKeys: [String: String]
-            let version: Int
+            let version: Double
         }
 
         struct Encrypted: Codable {
             let key: String
             let filename: String
             let mimetype: String
-            let version: Int
+            let version: Double
         }
 
         struct Files: Codable {
@@ -55,14 +55,14 @@ class NCEndToEndMetadata: NSObject {
 
         struct Metadata: Codable {
             let metadataKey: String
-            let version: Int
+            let version: Double
         }
 
         struct Encrypted: Codable {
             let key: String
             let filename: String
             let mimetype: String
-            let version: Int
+            let version: Double
         }
 
         struct Files: Codable {
@@ -90,7 +90,7 @@ class NCEndToEndMetadata: NSObject {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
-        let metadataVersion: Int = Int(1.2)
+        let metadataVersion = 1.2
         var files: [String: E2eeV12.Files] = [:]
         var filesCodable: [String: E2eeV12.Files]?
         var filedrop: [String: E2eeV12.Filedrop] = [:]
@@ -200,7 +200,7 @@ class NCEndToEndMetadata: NSObject {
             let metadata = json.metadata
             let files = json.files
             var metadataKeys: [String: String] = [:]
-            let metadataVersion: Int = metadata.version
+            let metadataVersion = metadata.version
 
             //
             // metadata
@@ -304,6 +304,7 @@ class NCEndToEndMetadata: NSObject {
             let files = json.files
             let filedrop = json.filedrop
             var metadataKey = ""
+            let metadataVersion = metadata.version
 
             //
             // metadata
@@ -349,11 +350,10 @@ class NCEndToEndMetadata: NSObject {
                                 object.key = encrypted.key
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
-                                object.metadataKeyIndex = 0
-                                object.metadataVersion = 0
+                                object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
-                                object.version = 0 // encrypted.version
+                                object.version = encrypted.version
 
                                 // If exists remove records
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
@@ -421,8 +421,7 @@ class NCEndToEndMetadata: NSObject {
                                 object.key = encrypted.key
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
-                                object.metadataKeyIndex = 0
-                                object.metadataVersion = 0
+                                object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
                                 object.version = encrypted.version
