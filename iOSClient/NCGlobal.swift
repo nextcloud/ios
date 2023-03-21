@@ -127,7 +127,7 @@ class NCGlobal: NSObject {
     //
     let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    @objc let e2eeVersion                           = "2"
+    @objc let e2eeVersion                           = ["1.1", "1.2", "2"]
 
     // Video
     //
