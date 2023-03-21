@@ -70,7 +70,6 @@ class NCEndToEndMetadata: NSObject {
             let key: String
             let filename: String
             let mimetype: String
-           // let version: Int
         }
 
         struct Files: Codable {
@@ -409,6 +408,7 @@ class NCEndToEndMetadata: NSObject {
                     if let decrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
+                            decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV12.Encrypted.self, from: decryptedData)
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
