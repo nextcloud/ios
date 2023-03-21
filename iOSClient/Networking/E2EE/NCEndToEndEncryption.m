@@ -472,7 +472,7 @@
     NSString *tag = [cipher substringWithRange:NSMakeRange(cipher.length - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
     NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
 
-    // REMOVE IV
+    // REMOVE TAG
     cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - AES_GCM_TAG_LENGTH)];
 
     BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
