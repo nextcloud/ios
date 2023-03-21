@@ -350,12 +350,10 @@
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
     NSData *tagData = [NSData new];
     
-    /* ENCODE 64 privateKey JAVA compatibility */
-    NSString *privateKeyBase64 = [_privateKeyData base64EncodedStringWithOptions:0];
-    NSData *privateKeyBase64Data = [privateKeyBase64 dataUsingEncoding:NSUTF8StringEncoding];
-    /* --------------------------------------- */
-    
-    BOOL result = [self encryptData:privateKeyBase64Data cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:&tagData];
+    NSString *pkEncoded = [_privateKeyData base64EncodedStringWithOptions:0];
+    NSData *pkEncodedData = [pkEncoded dataUsingEncoding:NSUTF8StringEncoding];
+
+    BOOL result = [self encryptData:pkEncodedData cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:&tagData];
     
     if (result && privateKeyCipherData) {
         
