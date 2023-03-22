@@ -35,17 +35,17 @@
 
 - (NSString *)createCSR:(NSString *)userId directory:(NSString *)directory;
 - (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
+- (NSData *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
-- (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
+- (NSData *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
 - (NSString *)encryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
-- (NSString *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
+- (NSData *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
 
 - (void)encryptkey:(NSString **)key initializationVector:(NSString **)initializationVector;
-- (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
-- (BOOL)decryptFileName:(NSString *)fileName fileNameView:(NSString *)fileNameView ocId:(NSString *)ocId key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
+- (BOOL)encryptFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
+- (BOOL)decryptFile:(NSString *)fileName fileNameView:(NSString *)fileNameView ocId:(NSString *)ocId key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
 
 - (NSData *)generateKey:(int)length;
 - (NSString *)createSHA512:(NSString *)string;
