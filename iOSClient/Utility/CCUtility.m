@@ -372,7 +372,7 @@
     NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
             
-    if (passphrase.length > 0 && privateKey.length > 0 && certificate.length > 0 && publicKey.length > 0 && isE2EEEnabled && [NCGlobal.shared.e2eeVersion containsObject:versionE2EE]) {
+    if (passphrase.length > 0 && privateKey.length > 0 && certificate.length > 0 && publicKey.length > 0 && isE2EEEnabled && [NCGlobal.shared.e2eeReadVersions containsObject:versionE2EE]) {
         return YES;
     } else {
         return NO;

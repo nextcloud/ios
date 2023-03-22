@@ -32,7 +32,11 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return instance
     }()
 
-    func createFolderAndMarkE2EE(fileName: String, serverUrl: String) async -> NKError {
+    func createFolderAndMarkE2EE(fileName: String, serverUrl: String, account: String) async -> NKError {
+
+        if let error = NCNetworkingE2EE.shared.isE2EEVersionWriteable(account: account) {
+            return error
+        }
 
         let serverUrlFileName = serverUrl + "/" + fileName
         var error = NKError()
@@ -63,6 +67,10 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
     func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, withPush: Bool) async -> (NKError) {
 
+        if let error = NCNetworkingE2EE.shared.isE2EEVersionWriteable(account: account) {
+            return error
+        }
+        
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var serverUrlFileName = ""
         var fileNameIdentifier = ""
@@ -136,7 +144,6 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
         object.mimeType = "httpd/unix-directory"
         object.serverUrl = serverUrl
-        object.version = 1
         NCManageDatabase.shared.addE2eEncryption(object)
 
         // Rebuild metadata for send it

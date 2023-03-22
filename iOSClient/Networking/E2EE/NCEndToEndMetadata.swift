@@ -37,7 +37,6 @@ class NCEndToEndMetadata: NSObject {
             let key: String
             let filename: String
             let mimetype: String
-            let version: Double
         }
 
         struct Files: Codable {
@@ -62,7 +61,6 @@ class NCEndToEndMetadata: NSObject {
             let key: String
             let filename: String
             let mimetype: String
-            let version: Double
         }
 
         struct Files: Codable {
@@ -111,7 +109,7 @@ class NCEndToEndMetadata: NSObject {
             // files
             //
             if item.blob == "files" {
-                let encrypted = E2eeV12.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
+                let encrypted = E2eeV12.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType)
                 do {
                     // Create "encrypted"
                     let json = try encoder.encode(encrypted)
@@ -130,7 +128,7 @@ class NCEndToEndMetadata: NSObject {
             // filedrop
             //
             if item.blob == "filedrop" {
-                let encrypted = E2eeV12.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType, version: item.version)
+                let encrypted = E2eeV12.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType)
                 do {
                     // Create "encrypted"
                     let json = try encoder.encode(encrypted)
@@ -170,6 +168,7 @@ class NCEndToEndMetadata: NSObject {
     func decoderMetadata(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> Bool {
         guard let data = json.data(using: .utf8) else { return false }
 
+        let versionE2EE = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) ?? ""
         data.printJson()
 
         let decoder = JSONDecoder()
@@ -179,6 +178,8 @@ class NCEndToEndMetadata: NSObject {
         } else if (try? decoder.decode(E2eeV12.self, from: data)) != nil {
             return decoderMetadataV12(json, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else {
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Server E2EE version " + versionE2EE + ", not compatible")
+            NCContentPresenter.shared.showError(error: error)
             return false
         }
     }
@@ -250,7 +251,6 @@ class NCEndToEndMetadata: NSObject {
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
-                                object.version = encrypted.version
 
                                 // If exists remove records
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
@@ -353,7 +353,6 @@ class NCEndToEndMetadata: NSObject {
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
-                                object.version = encrypted.version
 
                                 // If exists remove records
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
@@ -424,7 +423,6 @@ class NCEndToEndMetadata: NSObject {
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
                                 object.serverUrl = serverUrl
-                                object.version = encrypted.version
 
                                 // If exists remove records
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))

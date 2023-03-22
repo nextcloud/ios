@@ -721,6 +721,7 @@
 "_e2e_error_mark_folder_"           = "Encrypt folder";
 "_e2e_error_directory_not_empty_"   = "The directory is not empty";
 "_e2e_error_not_move_"              = "It is not possible move files to encrypted directory";
+"_e2e_error_not_versionwriteable_"  = "The server e2ee version is not compatible with this client";
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";

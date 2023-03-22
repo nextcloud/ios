@@ -41,7 +41,6 @@ class tableE2eEncryption: Object {
     @objc dynamic var metadataVersion: Double = 0
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
-    @objc dynamic var version: Double = 1.2
 
     override static func primaryKey() -> String {
         return "fileNamePath"
