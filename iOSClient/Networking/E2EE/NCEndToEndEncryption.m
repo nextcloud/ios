@@ -411,10 +411,10 @@
 }
 
 #
-#pragma mark - Encrypt / Decrypt Encrypted Json
+#pragma mark - Encrypt / Decrypt file material
 #
 
-- (NSString *)encryptEncryptedJson:(NSString *)encrypted key:(NSString *)key
+- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key
 {
     NSMutableData *cipherData;
     NSData *tagData = [NSData new];
@@ -444,7 +444,7 @@
 }
 
 
-- (NSData *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key
+- (NSData *)decryptPayloadFile:(NSString *)encrypted key:(NSString *)key
 {
     NSMutableData *plainData;
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
@@ -485,16 +485,6 @@
 #
 #pragma mark - Encrypt / Decrypt file
 #
-
-- (void)encryptkey:(NSString **)key initializationVector:(NSString **)initializationVector
-{
-    NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
-    NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
-    
-    *key = [keyData base64EncodedStringWithOptions:0];
-    *initializationVector = [ivData base64EncodedStringWithOptions:0];
-}
-
 
 - (BOOL)encryptFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
@@ -558,7 +548,7 @@
 
 
 #
-#pragma mark - Asymmetric Encrypt/Decrypt String
+#pragma mark - Encrypt/Decrypt asymmetric
 #
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey
@@ -840,6 +830,15 @@
 #pragma mark - Utility
 #
 
+- (void)Encodedkey:(NSString **)key initializationVector:(NSString **)initializationVector
+{
+    NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
+    NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
+
+    *key = [keyData base64EncodedStringWithOptions:0];
+    *initializationVector = [ivData base64EncodedStringWithOptions:0];
+}
+
 - (NSString *)createSHA512:(NSString *)string
 {
     const char *cstr = [string cStringUsingEncoding:NSUTF8StringEncoding];
@@ -857,7 +856,7 @@
 {
     NSMutableData *ivData = [NSMutableData dataWithLength:length];
     (void)SecRandomCopyBytes(kSecRandomDefault, length, ivData.mutableBytes);
-    
+
     return ivData;
 }
 
@@ -875,7 +874,17 @@
     unsigned char *pKeyData = [keyData mutableBytes];
 
     RAND_bytes(pKeyData, length);
-    
+
+    return keyData;
+}
+
+- (NSData *)generateKey
+{
+    NSMutableData *keyData = [NSMutableData dataWithLength:AES_KEY_128_LENGTH];
+    unsigned char *pKeyData = [keyData mutableBytes];
+
+    RAND_bytes(pKeyData, AES_KEY_128_LENGTH);
+
     return keyData;
 }
 

@@ -160,7 +160,7 @@ class NCNetworkingE2EEUpload: NSObject {
             objectE2eEncryption.metadataKey = result.metadataKey
             objectE2eEncryption.metadataKeyIndex = result.metadataKeyIndex
         } else {
-            let key = NCEndToEndEncryption.sharedManager()?.generateKey(16) as NSData?
+            let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData?
             objectE2eEncryption.metadataKey = key!.base64EncodedString()
             objectE2eEncryption.metadataKeyIndex = 0
         }

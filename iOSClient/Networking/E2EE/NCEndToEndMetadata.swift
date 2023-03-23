@@ -114,7 +114,7 @@ class NCEndToEndMetadata: NSObject {
                     // Create "encrypted"
                     let json = try encoder.encode(encrypted)
                     let encryptedString = String(data: json, encoding: .utf8)
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedString, key: item.metadataKey) {
+                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(encryptedString, key: item.metadataKey) {
                         let record = E2eeV12.Files(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, encrypted: encrypted)
                         files.updateValue(record, forKey: item.fileNameIdentifier)
                     }
@@ -229,7 +229,7 @@ class NCEndToEndMetadata: NSObject {
                     let metadataKeyIndex = files.metadataKey
                     let initializationVector = files.initializationVector
 
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
+                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
@@ -331,7 +331,7 @@ class NCEndToEndMetadata: NSObject {
                     let authenticationTag = files.authenticationTag
                     let initializationVector = files.initializationVector
 
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey),
+                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
                             decryptedData.printJson()

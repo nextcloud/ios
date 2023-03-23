@@ -127,7 +127,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
 
         // Add new metadata
-        NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
+        NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
         object.account = account
         object.authenticationTag = ""
         object.fileName = fileNameFolder
@@ -139,7 +139,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             object.metadataKey = result.metadataKey
             object.metadataKeyIndex = result.metadataKeyIndex
         } else {
-            object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
+            object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey()?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
             object.metadataKeyIndex = 0
         }
         object.mimeType = "httpd/unix-directory"
