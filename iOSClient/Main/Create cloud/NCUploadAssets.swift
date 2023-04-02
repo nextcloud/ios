@@ -71,6 +71,7 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         self.assets = assets
         self.serverUrl = serverUrl
         self.userBaseUrl = userBaseUrl
+        
     }
 
     func loadImages() {
@@ -249,6 +250,8 @@ struct UploadAssetsView: View {
         var metadatasUploadInConflict: [tableMetadata] = []
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
         var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
+        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
+
 
         for tlAsset in uploadAssets.assets {
             guard let asset = tlAsset.phAsset,
@@ -279,7 +282,17 @@ struct UploadAssetsView: View {
                 let yearString = dateFormatter.string(from: creationDate)
                 dateFormatter.dateFormat = "MM"
                 let monthString = dateFormatter.string(from: creationDate)
-                serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                dateFormatter.dateFormat = "dd"
+                let dayString = dateFormatter.string(from: creationDate)
+                if (autoUploadSubfolderGranularity == 0) {
+                    serverUrl = autoUploadPath + "/" + yearString
+                }
+                else if (autoUploadSubfolderGranularity == 2) {
+                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString + "/" + dayString
+                }
+                else {  // Month Granularity is default
+                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                }
             }
 
             // Check if is in upload
