@@ -33,6 +33,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var alias = ""
     @objc dynamic var autoUpload: Bool = false
     @objc dynamic var autoUploadCreateSubfolder: Bool = false
+    @objc dynamic var autoUploadSubfolderGranularity: Int64 = 1
     @objc dynamic var autoUploadDirectory = ""
     @objc dynamic var autoUploadFileName = ""
     @objc dynamic var autoUploadFull: Bool = false
@@ -259,6 +260,17 @@ extension NCManageDatabase {
         return folderPhotos
     }
 
+    @objc func getAccountAutoUploadSubfolderGranularity() -> Int64 {
+
+        let realm = try! Realm()
+
+        guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
+            return 1
+        }
+
+        return result.autoUploadSubfolderGranularity
+    }
+    
     @discardableResult
     @objc func setAccountActive(_ account: String) -> tableAccount? {
 
@@ -319,6 +331,21 @@ extension NCManageDatabase {
         }
     }
 
+    @objc func setAccountAutoUploadGranularity(_ property: String, state: Int64) {
+
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+                if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                    result.autoUploadSubfolderGranularity = state
+                }
+            }
+        } catch let error {
+            NKCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     @objc func setAccountAutoUploadFileName(_ fileName: String?) {
 
         let realm = try! Realm()
