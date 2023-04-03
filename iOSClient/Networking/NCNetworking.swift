@@ -1128,13 +1128,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 let month = dateFormatter.string(from: date)
                 dateFormatter.dateFormat = "dd"
                 let day = dateFormatter.string(from: date)
-                if (autoUploadSubfolderGranularity == 0) {
+                if autoUploadSubfolderGranularity == 0 {
                     datesSubFolder.append("\(year)")
-                }
-                else if (autoUploadSubfolderGranularity == 2) {
+                } else if autoUploadSubfolderGranularity == 2 {
                     datesSubFolder.append("\(year)/\(month)/\(day)")
-                }
-                else {  // Month Granularity is default
+                } else {  // Month Granularity is default
                     datesSubFolder.append("\(year)/\(month)")
                 }
             }
@@ -1150,11 +1148,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 let year = subfolderArray[0]
                 let serverUrlYear = autoUploadPath
                 result = createFolder(fileName: String(year), serverUrl: serverUrlYear)  // Year always present independently of preference value
-                if result && (autoUploadSubfolderGranularity >= 1) {
+                if result && autoUploadSubfolderGranularity >= 1 {
                     let month = subfolderArray[1]
                     let serverUrlMonth = autoUploadPath + "/" + year
                     result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
-                    if result && (autoUploadSubfolderGranularity == 2) {
+                    if result && autoUploadSubfolderGranularity == 2 {
                         let day = subfolderArray[2]
                         let serverUrlDay = autoUploadPath + "/" + year + "/" + month
                         result = createFolder(fileName: String(day), serverUrl: serverUrlDay)

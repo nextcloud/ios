@@ -71,7 +71,6 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
         self.assets = assets
         self.serverUrl = serverUrl
         self.userBaseUrl = userBaseUrl
-        
     }
 
     func loadImages() {
@@ -252,7 +251,6 @@ struct UploadAssetsView: View {
         var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
         let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
-
         for tlAsset in uploadAssets.assets {
             guard let asset = tlAsset.phAsset,
                   let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }),
@@ -284,13 +282,11 @@ struct UploadAssetsView: View {
                 let monthString = dateFormatter.string(from: creationDate)
                 dateFormatter.dateFormat = "dd"
                 let dayString = dateFormatter.string(from: creationDate)
-                if (autoUploadSubfolderGranularity == 0) {
+                if autoUploadSubfolderGranularity == 0 {
                     serverUrl = autoUploadPath + "/" + yearString
-                }
-                else if (autoUploadSubfolderGranularity == 2) {
+                } else if autoUploadSubfolderGranularity == 2 {
                     serverUrl = autoUploadPath + "/" + yearString + "/" + monthString + "/" + dayString
-                }
-                else {  // Month Granularity is default
+                } else {  // Month Granularity is default
                     serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
                 }
             }
