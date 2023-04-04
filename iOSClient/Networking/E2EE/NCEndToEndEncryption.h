@@ -37,12 +37,14 @@
 
 - (NSString *)createCSR:(NSString *)userId directory:(NSString *)directory;
 - (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
-- (NSData *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
+- (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
 // Encrypt / Decrypt file material
 
 - (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key;
+- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
 - (NSData *)decryptPayloadFile:(NSString *)encrypted key:(NSString *)key;
+- (NSData *)decryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
 
 // Encrypt/Decrypt asymmetric
 
@@ -59,6 +61,7 @@
 - (void)Encodedkey:(NSString **)key initializationVector:(NSString **)initializationVector;
 - (NSData *)generateKey;
 - (NSString *)createSHA512:(NSString *)string;
+- (NSString *)createSHA256:(NSString *)string;
 - (NSString *)extractPublicKeyFromCertificate:(NSString *)pemCertificate;
 
 @end

@@ -43,13 +43,16 @@ class NCNetworkingE2EEDelete: NSObject {
         func sendE2EMetadata(e2eToken: String, fileId: String) async -> (NKError) {
 
             var e2eMetadataNew: String?
-            var method = "PUT"
 
             // Get last metadata
             let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
-            guard getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata, NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId) else {
-                    return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+
+            guard getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata else {
+                return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
             }
+
+            let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+            if result.error != .success { return result.error }
 
             // delete
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))
@@ -58,11 +61,11 @@ class NCNetworkingE2EEDelete: NSObject {
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
                 e2eMetadataNew = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: metadata.account, serverUrl: metadata.serverUrl)
             } else {
-                method = "DELETE"
+                e2eMetadataNew = NCEndToEndMetadata().encoderMetadata([], account: metadata.account, serverUrl: metadata.serverUrl)
             }
 
             // Send metadata
-            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: method)
+            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: "PUT")
             
             return putE2EEMetadataResults.error
         }
