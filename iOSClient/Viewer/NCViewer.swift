@@ -42,10 +42,10 @@ class NCViewer: NSObject {
         self.metadatas = metadatas
 
         var editor = editor
-        var xxxxxxx = NKCommon.shared.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
+        var xxxxxxx = NextcloudKit.shared.nkCommonInstance.getInternalTypeIdentifier(typeIdentifier: metadata.contentType)
 
         // URL
-        if metadata.classFile == NKCommon.typeClassFile.url.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
 
             // nextcloudtalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
             if metadata.name == NCGlobal.shared.talkName {
@@ -69,7 +69,7 @@ class NCViewer: NSObject {
         }
 
         // IMAGE AUDIO VIDEO
-        if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
 
             if let navigationController = viewController.navigationController {
 
@@ -90,7 +90,7 @@ class NCViewer: NSObject {
         }
 
         // DOCUMENTS
-        if metadata.classFile == NKCommon.typeClassFile.document.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
 
             // PDF
             if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {

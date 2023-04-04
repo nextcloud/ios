@@ -83,15 +83,16 @@ class NCAutoUpload: NSObject {
         }
 
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
+        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
         var metadatas: [tableMetadata] = []
 
         self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
             guard let assets = assets, !assets.isEmpty else {
-                NKCommon.shared.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 completion(0)
                 return
             }
-            NKCommon.shared.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
             if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
@@ -113,6 +114,8 @@ class NCAutoUpload: NSObject {
                 let year = dateFormatter.string(from: assetDate)
                 dateFormatter.dateFormat = "MM"
                 let month = dateFormatter.string(from: assetDate)
+                dateFormatter.dateFormat = "dd"
+                let day = dateFormatter.string(from: assetDate)
                 let assetMediaType = asset.mediaType
                 var serverUrl: String = ""
                 let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
@@ -122,7 +125,7 @@ class NCAutoUpload: NSObject {
                 }
 
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    session = NKCommon.shared.sessionIdentifierUpload
+                    session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
                 } else {
                     if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false {
                         session = NCNetworking.shared.sessionIdentifierBackground
@@ -136,7 +139,15 @@ class NCAutoUpload: NSObject {
                 }
 
                 if account.autoUploadCreateSubfolder {
-                    serverUrl = autoUploadPath + "/" + year + "/" + month
+                    if (autoUploadSubfolderGranularity == 0) {
+                        serverUrl = autoUploadPath + "/" + year
+                    }
+                    else if (autoUploadSubfolderGranularity == 2) {
+                        serverUrl = autoUploadPath + "/" + year + "/" + month + "/" + day
+                    }
+                    else {  // Month Granularity is default
+                        serverUrl = autoUploadPath + "/" + year + "/" + month
+                    }
                 } else {
                     serverUrl = autoUploadPath
                 }
@@ -160,12 +171,12 @@ class NCAutoUpload: NSObject {
                     metadata.sessionSelector = selector
                     metadata.status = NCGlobal.shared.metadataStatusWaitUpload
                     if assetMediaType == PHAssetMediaType.video {
-                        metadata.classFile = NKCommon.typeClassFile.video.rawValue
+                        metadata.classFile = NKCommon.TypeClassFile.video.rawValue
                     } else if assetMediaType == PHAssetMediaType.image {
-                        metadata.classFile = NKCommon.typeClassFile.image.rawValue
+                        metadata.classFile = NKCommon.TypeClassFile.image.rawValue
                     }
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                        NKCommon.shared.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: account.account)
                     }
                     metadatas.append(metadata)
@@ -174,7 +185,7 @@ class NCAutoUpload: NSObject {
 
             self.endForAssetToUpload = true
 
-            NKCommon.shared.writeLog("[INFO] Start createProcessUploads")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start createProcessUploads")
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: completion)
         }
     }
@@ -189,7 +200,7 @@ class NCAutoUpload: NSObject {
             guard let assets = assets else { return }
 
             NCManageDatabase.shared.addPhotoLibrary(assets, account: activeAccount.account)
-            NKCommon.shared.writeLog("[INFO] Align Photo Library \(assets.count)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Align Photo Library \(assets.count)")
         }
     }
 

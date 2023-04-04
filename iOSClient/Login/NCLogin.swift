@@ -118,7 +118,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if NCBrandOptions.shared.use_GroupApps, let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
             if let error = appDelegate.updateShareAccounts() {
-                NKCommon.shared.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
             }
             // Nextcloud get share accounts
             if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
@@ -366,7 +366,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let serverUrl = urlBase + "/" + NKCommon.shared.dav
+                let serverUrl = urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav
 
                 loginButton.isEnabled = false
 

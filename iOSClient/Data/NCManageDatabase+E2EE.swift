@@ -37,11 +37,11 @@ class tableE2eEncryption: Object {
     @objc dynamic var key = ""
     @objc dynamic var initializationVector = ""
     @objc dynamic var metadataKey = ""
+    @objc dynamic var metadataKeyFiledrop = ""
     @objc dynamic var metadataKeyIndex: Int = 0
-    @objc dynamic var metadataVersion: Int = 1
+    @objc dynamic var metadataVersion: Double = 0
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
-    @objc dynamic var version: Int = 1
 
     override static func primaryKey() -> String {
         return "fileNamePath"
@@ -61,6 +61,14 @@ class tableE2eEncryptionLock: Object {
     }
 }
 
+class tableE2eMetadata: Object {
+
+    @Persisted(primaryKey: true) var serverUrl = ""
+    @Persisted var account = ""
+    @Persisted var metadataKey = ""
+    @Persisted var version: Double = 0
+}
+
 extension NCManageDatabase {
 
     // MARK: -
@@ -75,7 +83,7 @@ extension NCManageDatabase {
                 realm.add(e2e, update: .all)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -90,7 +98,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -151,7 +159,7 @@ extension NCManageDatabase {
         do {
             try realm.commitWrite()
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -198,7 +206,7 @@ extension NCManageDatabase {
                 realm.add(addObject, update: .all)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -213,7 +221,41 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    // MARK: -
+    // MARK: Table e2ee Metadata
+
+    func getE2eMetadata(account: String, serverUrl: String) -> tableE2eMetadata? {
+
+        let realm = try! Realm()
+
+        guard let result = realm.objects(tableE2eMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
+            return nil
+        }
+
+        return tableE2eMetadata.init(value: result)
+    }
+
+    func setE2eMetadata(account: String, serverUrl: String, metadataKey: String, version: Double) {
+
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+                let addObject = tableE2eMetadata()
+
+                addObject.account = account
+                addObject.metadataKey = metadataKey
+                addObject.serverUrl = serverUrl
+                addObject.version = version
+
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 }

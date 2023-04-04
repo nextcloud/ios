@@ -249,6 +249,7 @@ struct UploadAssetsView: View {
         var metadatasUploadInConflict: [tableMetadata] = []
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: uploadAssets.userBaseUrl.urlBase, userId: uploadAssets.userBaseUrl.userId, account: uploadAssets.userBaseUrl.account)
         var serverUrl = uploadAssets.isUseAutoUploadFolder ? autoUploadPath : uploadAssets.serverUrl
+        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
         for tlAsset in uploadAssets.assets {
             guard let asset = tlAsset.phAsset,
@@ -279,7 +280,15 @@ struct UploadAssetsView: View {
                 let yearString = dateFormatter.string(from: creationDate)
                 dateFormatter.dateFormat = "MM"
                 let monthString = dateFormatter.string(from: creationDate)
-                serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                dateFormatter.dateFormat = "dd"
+                let dayString = dateFormatter.string(from: creationDate)
+                if autoUploadSubfolderGranularity == 0 {
+                    serverUrl = autoUploadPath + "/" + yearString
+                } else if autoUploadSubfolderGranularity == 2 {
+                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString + "/" + dayString
+                } else {  // Month Granularity is default
+                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                }
             }
 
             // Check if is in upload
@@ -423,10 +432,6 @@ struct UploadAssetsView: View {
                             }
                         }
                     }
-                    .fullScreenCover(isPresented: $isPresentedQuickLook) {
-                        ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
-                            .ignoresSafeArea()
-                    }
                     .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
@@ -509,9 +514,7 @@ struct UploadAssetsView: View {
                         }
                     }
                     .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
+                        view.listRowSeparator(.hidden)
                     }
 
                     Button(NSLocalizedString("_save_", comment: "")) {
@@ -548,6 +551,10 @@ struct UploadAssetsView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadAssets, serverUrl: uploadAssets.serverUrl, metadatasUploadInConflict: uploadAssets.metadatasUploadInConflict, metadatasNOConflict: uploadAssets.metadatasNOConflict)
+        }
+        .fullScreenCover(isPresented: $isPresentedQuickLook) {
+            ViewerQuickLook(url: URL(fileURLWithPath: fileNamePath), index: $index, isPresentedQuickLook: $isPresentedQuickLook, uploadAssets: uploadAssets)
+                .ignoresSafeArea()
         }
         .onReceive(uploadAssets.$dismiss) { newValue in
             if newValue {

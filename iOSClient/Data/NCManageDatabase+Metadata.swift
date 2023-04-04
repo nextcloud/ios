@@ -129,22 +129,22 @@ extension tableMetadata {
         if isDocumentViewableOnly {
             return false
         }
-        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") || classFile == NKCommon.typeClassFile.image.rawValue {
+        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") || classFile == NKCommon.TypeClassFile.image.rawValue {
             return true
         }
         return false
     }
 
     var isSavebleInCameraRoll: Bool {
-        return (classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.typeClassFile.video.rawValue
+        return (classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.TypeClassFile.video.rawValue
     }
 
     var isDocumentViewableOnly: Bool {
-        sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.typeClassFile.document.rawValue
+        sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
     }
 
-    var isSavebleAsScan: Bool {
-        classFile == NKCommon.typeClassFile.image.rawValue && contentType != "image/svg+xml"
+    var isSavebleAsImage: Bool {
+        classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml"
     }
 
     var isCopyableInPasteboard: Bool {
@@ -159,7 +159,7 @@ extension tableMetadata {
         if directory || isDocumentViewableOnly || isDirectoryE2EE {
             return false
         }
-        return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.typeClassFile.image.rawValue
+        return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.TypeClassFile.image.rawValue
     }
 
     var isDeletable: Bool {
@@ -206,7 +206,7 @@ extension tableMetadata {
         let editors = NCUtility.shared.isDirectEditing(account: account, contentType: contentType)
         let isRichDocument = NCUtility.shared.isRichDocument(self)
 
-        return classFile == NKCommon.typeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
+        return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 
     var isDownloadUpload: Bool {
@@ -288,8 +288,8 @@ extension NCManageDatabase {
         metadata.size = file.size
         metadata.classFile = file.classFile
         //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
-        if (metadata.contentType == "text/markdown" || metadata.contentType == "text/x-markdown") && metadata.classFile == NKCommon.typeClassFile.unknow.rawValue {
-            metadata.classFile = NKCommon.typeClassFile.document.rawValue
+        if (metadata.contentType == "text/markdown" || metadata.contentType == "text/x-markdown") && metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
+            metadata.classFile = NKCommon.TypeClassFile.document.rawValue
         }
         if let date = file.uploadDate {
             metadata.uploadDate = date
@@ -304,7 +304,7 @@ extension NCManageDatabase {
         if isDirectoryE2EE || file.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NKCommon.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
+                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile
@@ -357,7 +357,7 @@ extension NCManageDatabase {
             let metadata = metadatas[index]
             if index < metadatas.count - 1,
                 metadata.fileNoExtension == metadatas[index+1].fileNoExtension,
-                ((metadata.classFile == NKCommon.typeClassFile.image.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.video.rawValue) || (metadata.classFile == NKCommon.typeClassFile.video.rawValue && metadatas[index+1].classFile == NKCommon.typeClassFile.image.rawValue)){
+                ((metadata.classFile == NKCommon.TypeClassFile.image.rawValue && metadatas[index+1].classFile == NKCommon.TypeClassFile.video.rawValue) || (metadata.classFile == NKCommon.TypeClassFile.video.rawValue && metadatas[index+1].classFile == NKCommon.TypeClassFile.image.rawValue)){
                 metadata.livePhoto = true
                 metadatas[index+1].livePhoto = true
             }
@@ -375,18 +375,18 @@ extension NCManageDatabase {
             if let iconName = iconName {
                 metadata.iconName = iconName
             } else {
-                metadata.iconName = NKCommon.typeIconFile.url.rawValue
+                metadata.iconName = NKCommon.TypeClassFile.url.rawValue
             }
-            metadata.classFile = NKCommon.typeClassFile.url.rawValue
+            metadata.classFile = NKCommon.TypeClassFile.url.rawValue
         } else {
-            let (mimeType, classFile, iconName, _, _, _) = NKCommon.shared.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
+            let (mimeType, classFile, iconName, _, _, _) = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: contentType, directory: false)
             metadata.contentType = mimeType
             metadata.iconName = iconName
             metadata.classFile = classFile
             //FIXME: iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
-            if classFile == NKCommon.typeClassFile.unknow.rawValue && (mimeType == "text/x-markdown" || mimeType == "text/markdown") {
-                metadata.iconName = NKCommon.typeIconFile.txt.rawValue
-                metadata.classFile = NKCommon.typeClassFile.document.rawValue
+            if classFile == NKCommon.TypeClassFile.unknow.rawValue && (mimeType == "text/x-markdown" || mimeType == "text/markdown") {
+                metadata.iconName = NKCommon.TypeIconFile.txt.rawValue
+                metadata.classFile = NKCommon.TypeClassFile.document.rawValue
             }
         }
         if let iconUrl = iconUrl {
@@ -433,7 +433,7 @@ extension NCManageDatabase {
                 realm.add(result, update: .all)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
             return nil
         }
         return tableMetadata.init(value: result)
@@ -450,7 +450,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -464,7 +464,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -479,7 +479,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -490,7 +490,7 @@ extension NCManageDatabase {
         do {
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    let resultsType = NKCommon.shared.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
+                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory)
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
                     result.iconName = resultsType.iconName
@@ -499,7 +499,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -566,7 +566,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         for ocId in ocIdsUdate {
@@ -615,7 +615,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -631,7 +631,7 @@ extension NCManageDatabase {
                 result?.status = status
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         if let result = result {
@@ -653,7 +653,7 @@ extension NCManageDatabase {
                 result?.etagResource = etagResource
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -667,7 +667,7 @@ extension NCManageDatabase {
                 result?.favorite = favorite
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -686,7 +686,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -700,7 +700,7 @@ extension NCManageDatabase {
                 result?.e2eEncrypted = encrypted
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -714,7 +714,7 @@ extension NCManageDatabase {
                 result?.fileNameView = newFileNameView
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -758,7 +758,7 @@ extension NCManageDatabase {
 
         // For Live Photo
         var fileNameImages: [String] = []
-        let filtered = results.filter { $0.classFile.contains(NKCommon.typeClassFile.image.rawValue) }
+        let filtered = results.filter { $0.classFile.contains(NKCommon.TypeClassFile.image.rawValue) }
         filtered.forEach { print($0)
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
             fileNameImages.append(fileName)
@@ -894,7 +894,7 @@ extension NCManageDatabase {
                 realm.delete(results)
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -910,7 +910,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -942,7 +942,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -956,11 +956,11 @@ extension NCManageDatabase {
             return nil
         }
 
-        if classFile == NKCommon.typeClassFile.image.rawValue {
-            classFile = NKCommon.typeClassFile.video.rawValue
+        if classFile == NKCommon.TypeClassFile.image.rawValue {
+            classFile = NKCommon.TypeClassFile.video.rawValue
             fileName = fileName + ".mov"
         } else {
-            classFile = NKCommon.typeClassFile.image.rawValue
+            classFile = NKCommon.TypeClassFile.image.rawValue
             fileName = fileName + ".jpg"
         }
 
@@ -992,7 +992,7 @@ extension NCManageDatabase {
                             }
                         }
                         if metadata.livePhoto {
-                            if metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+                            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
                                 metadatas.append(tableMetadata.init(value: metadata))
                             }
                             continue
@@ -1005,7 +1005,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         return metadatas

@@ -111,8 +111,8 @@
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
             [[NextcloudKit shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent queue:dispatch_get_main_queue() completion:^(NKError *error) {
                 if (error == NKError.success) {
-                    
-                    [[NKCommon shared] writeLog:@"[INFO] Subscribed to Push Notification server & proxy successfully"];
+
+                    [[[NextcloudKit shared] nkCommonInstance] writeLog:@"[INFO] Subscribed to Push Notification server & proxy successfully"];
 
                     [CCUtility setPushNotificationToken:account token:self.pushKitToken];
                     [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
@@ -139,7 +139,7 @@
             [[NextcloudKit shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent queue:dispatch_get_main_queue() completion:^(NKError *error) {
                 if (error == NKError.success) {
                 
-                    [[NKCommon shared] writeLog:@"[INFO] Unsubscribed to Push Notification server & proxy successfully."];
+                    [[[NextcloudKit shared] nkCommonInstance] writeLog:@"[INFO] Unsubscribed to Push Notification server & proxy successfully."];
                     
                     [CCUtility setPushNotificationPublicKey:account data:nil];
                     [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:nil];

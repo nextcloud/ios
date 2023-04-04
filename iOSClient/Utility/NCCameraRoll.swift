@@ -37,7 +37,7 @@ class NCCameraRoll: NSObject {
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = CCUtility.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)!
             metadataSource.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-            let results = NKCommon.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
+            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
@@ -252,7 +252,7 @@ class NCCameraRoll: NSObject {
                                                                                url: "",
                                                                                contentType: "",
                                                                                isLivePhoto: true)
-                metadataLivePhoto.classFile = NKCommon.typeClassFile.video.rawValue
+                metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector

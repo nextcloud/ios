@@ -147,14 +147,6 @@ class NCCreateFormUploadConflict: UIViewController {
 
         let conflictAlert = UIAlertController(title: tile, message: "", preferredStyle: .alert)
 
-        // REPLACE
-        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
-            for metadata in self.metadatasUploadInConflict {
-                self.metadatasNOConflict.append(metadata)
-            }
-            self.buttonContinueTouch(action)
-        }))
-
         // KEEP BOTH
         conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { action in
 
@@ -166,14 +158,24 @@ class NCCreateFormUploadConflict: UIViewController {
             self.buttonContinueTouch(action)
         }))
 
+        // REPLACE
+        conflictAlert.addAction(UIAlertAction(title: titleReplace, style: .default, handler: { action in
+            for metadata in self.metadatasUploadInConflict {
+                self.metadatasNOConflict.append(metadata)
+            }
+            self.buttonContinueTouch(action)
+        }))
+
+        // MORE
+        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
+            self.blurView.removeFromSuperview()
+        }))
+
+        // CANCEL
         conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_keep_existing_action_title_", comment: ""), style: .cancel, handler: { _ in
             self.dismiss(animated: true) {
                 self.delegate?.dismissCreateFormUploadConflict(metadatas: nil)
             }
-        }))
-
-        conflictAlert.addAction(UIAlertAction(title: NSLocalizedString("_more_action_title_", comment: ""), style: .default, handler: { _ in
-            self.blurView.removeFromSuperview()
         }))
 
         self.present(conflictAlert, animated: true, completion: nil)
@@ -411,7 +413,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
 
                 do {
-                    if metadataNewFile.classFile ==  NKCommon.typeClassFile.image.rawValue {
+                    if metadataNewFile.classFile ==  NKCommon.TypeClassFile.image.rawValue {
                         // preserver memory especially for very large files in Share extension
                         if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: filePathNewFile), to: cell.imageNewFile.frame.size) {
                             cell.imageNewFile.image = image

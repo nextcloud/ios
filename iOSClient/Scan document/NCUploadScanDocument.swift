@@ -355,7 +355,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
 
-    @State var fileName = "Scan"
+    @State var fileName = CCUtility.createFileNameDate("scan", extension: "") ?? "scan"
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
     @State var isTextRecognition: Bool = CCUtility.getTextRecognitionStatus()
@@ -542,6 +542,9 @@ struct PDFKitRepresentedView: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
         uploadScanDocument.createPDFPreview(quality: quality, isTextRecognition: isTextRecognition) { data in
             uiView.document = PDFDocument(data: data)
+            uiView.document?.page(at: 0)?.annotations.forEach({
+                $0.isReadOnly = true
+            })
             uiView.autoScales = true
         }
     }

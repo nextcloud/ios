@@ -216,7 +216,7 @@ class NCViewerMediaPage: UIViewController {
 
         currentScreenMode = mode
 
-        if currentViewController.metadata.classFile == NKCommon.typeClassFile.image.rawValue {
+        if currentViewController.metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
             saveScreenModeImage = mode
         }
 
@@ -395,7 +395,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         // VIDEO / AUDIO () ()
-        if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in

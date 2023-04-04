@@ -9,7 +9,7 @@
 import SwiftUI
 
 extension View {
-    
+
     func complexModifier<V: View>(@ViewBuilder _ closure: (Self) -> V) -> some View {
         closure(self)
     }

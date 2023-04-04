@@ -1124,15 +1124,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
                         NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, data, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
-                                if NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId) {
+                                let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
+                                if result.error == .success {
                                     self.reloadDataSource()
                                 } else {
-                                    let error = NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_")
-                                    NCContentPresenter.shared.messageNotification("_error_e2ee_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                                    NCContentPresenter.shared.showError(error: result.error)
                                 }
                             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                                let error = NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_")
-                                NCContentPresenter.shared.messageNotification("_error_e2ee_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                                NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_"))
                             }
                             completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                         }
@@ -1320,10 +1319,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
-            if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
                 var metadatas: [tableMetadata] = []
                 for metadata in metadataSourceForAllSections {
-                    if metadata.classFile == NKCommon.typeClassFile.image.rawValue || metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+                    if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
                         metadatas.append(metadata)
                     }
                 }
@@ -1352,7 +1351,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
-        if isEditMode || metadata.classFile == NKCommon.typeClassFile.url.rawValue { return nil }
+        if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
 
         let identifier = indexPath as NSCopying
         var image: UIImage?
@@ -1636,7 +1635,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // URL
-        if metadata.classFile == NKCommon.typeClassFile.url.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
             cell.fileLocalImage?.image = nil
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)

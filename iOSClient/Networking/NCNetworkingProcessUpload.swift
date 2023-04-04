@@ -56,7 +56,7 @@ class NCNetworkingProcessUpload: NSObject {
                     })
                 }
             case .error(let error):
-                NKCommon.shared.writeLog("[ERROR] Could not write to TableMetadata: \(error)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to TableMetadata: \(error)")
             }
         }
     }
@@ -102,7 +102,7 @@ class NCNetworkingProcessUpload: NSObject {
         queue.async {
 
             let metadatasUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-            let isWiFi = NCNetworking.shared.networkReachability == NKCommon.typeReachability.reachableEthernetOrWiFi
+            let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
             var counterUpload = metadatasUpload.count
             let sessionSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
 
@@ -132,14 +132,14 @@ class NCNetworkingProcessUpload: NSObject {
                     let limit = maxConcurrentOperationUpload - counterUpload
                     let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
-                        NKCommon.shared.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS-UPLOAD find \(metadatas.count) items")
                     }
 
                     for metadata in metadatas where counterUpload < maxConcurrentOperationUpload {
 
                         // Is already in upload background? skipped
                         if listOcId.contains(metadata.ocId) {
-                            NKCommon.shared.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
+                            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                             continue
                         }
 
@@ -255,7 +255,7 @@ class NCNetworkingProcessUpload: NSObject {
         var session: URLSession?
 
         // remove leaning upload share extension
-        let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NKCommon.shared.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
+        let metadatasUploadShareExtension = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.selectorUploadFileShareExtension))
         for metadata in metadatasUploadShareExtension {
             let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -307,7 +307,7 @@ class NCNetworkingProcessUpload: NSObject {
         }
 
         // metadataStatusUploading OR metadataStatusInUpload (FOREGROUND)
-        let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d OR status == %d)", NKCommon.shared.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusInUpload))
+        let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d OR status == %d)", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusInUpload))
         for metadata in metadatasUploading {
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
@@ -316,7 +316,7 @@ class NCNetworkingProcessUpload: NSObject {
         }
 
         // download
-        let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@", NKCommon.shared.sessionIdentifierDownload))
+        let metadatasDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload))
         for metadata in metadatasDownload {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
         }

@@ -53,14 +53,14 @@ class NCEndToEndInitialize: NSObject {
 
     @objc func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
 
-        NextcloudKit.shared.getE2EECertificate { account, certificate, data, error in
+        NextcloudKit.shared.getE2EECertificate { _, _, _, _, error in
             completion(error)
         }
     }
 
     func getPublicKey() {
 
-        NextcloudKit.shared.getE2EECertificate { account, certificate, data, error in
+        NextcloudKit.shared.getE2EECertificate { account, certificate, _, _, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -153,18 +153,19 @@ class NCEndToEndInitialize: NSObject {
 
                     let publicKey = CCUtility.getEndToEndCertificate(self.appDelegate.account)
 
-                    guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey)) else {
+                    if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey)),
+                       let keyData = Data(base64Encoded: privateKeyData) {
+                        let privateKey = String(data: keyData, encoding: .utf8)
+                        CCUtility.setEndToEndPrivateKey(self.appDelegate.account, privateKey: privateKey)
+                    } else {
+
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Serious internal error to decrypt Private Key")
                         NCContentPresenter.shared.messageNotification("E2E decrypt privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
                         return
                     }
 
-                    // privateKey
-                    print(privateKey)
-
                     // Save to keychain
-                    CCUtility.setEndToEndPrivateKey(self.appDelegate.account, privateKey: privateKey)
                     CCUtility.setEndToEndPassphrase(self.appDelegate.account, passphrase: passphrase)
 
                     // request server publicKey

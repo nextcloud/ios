@@ -393,7 +393,7 @@ extension NCMedia: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
 
-            if metadata.classFile == NKCommon.typeClassFile.video.rawValue || metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.livePhoto && livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
@@ -450,12 +450,12 @@ extension NCMedia {
         }
         let startServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) + mediaPath
 
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.typeClassFile.image.rawValue, NKCommon.typeClassFile.video.rawValue)
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == %@ OR classFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue, NKCommon.TypeClassFile.video.rawValue)
 
         if filterClassTypeImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.typeClassFile.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else if filterClassTypeVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.typeClassFile.image.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else {
             predicate = predicateDefault
         }
@@ -551,7 +551,7 @@ extension NCMedia {
                     self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
             } else if error != .success {
-                NKCommon.shared.writeLog("[INFO] Media search old media error code \(error.errorCode) " + error.errorDescription)
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Media search old media error code \(error.errorCode) " + error.errorDescription)
             }
         }
     }
@@ -627,7 +627,7 @@ extension NCMedia {
                 } else if error == .success && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldMedia()
                 } else if error != .success {
-                    NKCommon.shared.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
             }
         }

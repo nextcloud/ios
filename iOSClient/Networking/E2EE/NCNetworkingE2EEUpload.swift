@@ -44,6 +44,12 @@ class NCNetworkingE2EEUpload: NSObject {
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (NKError) {
 
+        if let error = NCNetworkingE2EE.shared.isE2EEVersionWriteable(account: metadata.account) {
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCContentPresenter.shared.showError(error: error)
+            return error
+        }
+
         var metadata = tableMetadata.init(value: metadata)
         let ocIdTemp = metadata.ocId
         let errorCreateEncrypted = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_create_encrypted_")
@@ -61,7 +67,7 @@ class NCNetworkingE2EEUpload: NSObject {
         } else {
             metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
         }
-        metadata.session = NKCommon.shared.sessionIdentifierUpload
+        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
         metadata.sessionError = ""
         guard let result = NCManageDatabase.shared.addMetadata(metadata) else { return errorCreateEncrypted }
         metadata = result
@@ -133,16 +139,15 @@ class NCNetworkingE2EEUpload: NSObject {
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         var method = "POST"
 
-        if NCEndToEndEncryption.sharedManager()?.encryptFileName(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
+        if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_create_encrypted_")
         }
 
         // Get last metadata
         let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
         if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata {
-            if !NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId) {
-                return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
-            }
+            let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+            if result.error != .success { return result.error }
             method = "PUT"
         }
 
@@ -154,7 +159,7 @@ class NCNetworkingE2EEUpload: NSObject {
             objectE2eEncryption.metadataKey = result.metadataKey
             objectE2eEncryption.metadataKeyIndex = result.metadataKeyIndex
         } else {
-            let key = NCEndToEndEncryption.sharedManager()?.generateKey(16) as NSData?
+            let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData?
             objectE2eEncryption.metadataKey = key!.base64EncodedString()
             objectE2eEncryption.metadataKeyIndex = 0
         }
@@ -167,11 +172,11 @@ class NCNetworkingE2EEUpload: NSObject {
         objectE2eEncryption.initializationVector = initializationVector! as String
         objectE2eEncryption.mimeType = metadata.contentType
         objectE2eEncryption.serverUrl = metadata.serverUrl
-        objectE2eEncryption.version = 1
         NCManageDatabase.shared.addE2eEncryption(objectE2eEncryption)
 
         // Rebuild metadata
-        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)), let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: metadata.account, serverUrl: metadata.serverUrl) else {
+        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)),
+              let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: metadata.account, serverUrl: metadata.serverUrl) else {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
         }
 

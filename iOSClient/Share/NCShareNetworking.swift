@@ -47,7 +47,7 @@ class NCShareNetworking: NSObject {
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
         let parameter = NKShareParameter(path: filenamePath)
 
-        NKCommon.shared.writeLog("[TEST] READSHARES")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[TEST] READSHARES")
         
         NextcloudKit.shared.readShares(parameters: parameter) { account, shares, data, error in
             if showLoadingIndicator {

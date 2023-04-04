@@ -123,8 +123,8 @@ extension NCManageDatabase {
                     addObjectActivity.user = activity.user
                     addObjectActivity.subject = activity.subject
 
-                    if let subject_rich = activity.subject_rich,
-                       let json = JSON(subject_rich).array {
+                    if let subjectRich = activity.subjectRich,
+                       let json = JSON(subjectRich).array {
 
                         addObjectActivity.subjectRich = json[0].stringValue
                         if json.count > 1,
@@ -181,15 +181,15 @@ extension NCManageDatabase {
                     addObjectActivity.icon = activity.icon
                     addObjectActivity.link = activity.link
                     addObjectActivity.message = activity.message
-                    addObjectActivity.objectType = activity.object_type
-                    addObjectActivity.objectId = activity.object_id
-                    addObjectActivity.objectName = activity.object_name
+                    addObjectActivity.objectType = activity.objectType
+                    addObjectActivity.objectId = activity.objectId
+                    addObjectActivity.objectName = activity.objectName
 
                     realm.add(addObjectActivity, update: .all)
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -261,7 +261,7 @@ extension NCManageDatabase {
                 realm.add(newRecentActivity, update: .all)
             }
         } catch {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -305,7 +305,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error {
-            NKCommon.shared.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 

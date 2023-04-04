@@ -121,7 +121,7 @@ class NCPlayer: NSObject {
 
         if metadata.livePhoto {
             player?.isMuted = false
-        } else if metadata.classFile == NKCommon.typeClassFile.audio.rawValue {
+        } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
             player?.isMuted = CCUtility.getAudioMute()
         } else {
             player?.isMuted = CCUtility.getAudioMute()
@@ -174,7 +174,7 @@ class NCPlayer: NSObject {
                     self.videoLayer!.frame = self.imageVideoContainer?.bounds ?? .zero
                     self.videoLayer!.videoGravity = .resizeAspect
 
-                    if self.metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+                    if self.metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                         self.imageVideoContainer?.layer.addSublayer(self.videoLayer!)
                         self.imageVideoContainer?.playerLayer = self.videoLayer
                         self.imageVideoContainer?.metadata = self.metadata
@@ -324,7 +324,7 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
 
-        if metadata.classFile == NKCommon.typeClassFile.video.rawValue, let playerToolBar = self.playerToolBar {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue, let playerToolBar = self.playerToolBar {
             if !playerToolBar.isPictureInPictureActive() {
                 playerPause()
             }
@@ -373,7 +373,7 @@ class NCPlayer: NSObject {
 
     func saveTime(_ time: CMTime) {
 
-        if metadata.classFile == NKCommon.typeClassFile.audio.rawValue { return }
+        if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
 
         NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
         generatorImagePreview()
@@ -388,7 +388,7 @@ class NCPlayer: NSObject {
 
     @objc func generatorImagePreview() {
 
-        guard let time = player?.currentTime(), !metadata.livePhoto, metadata.classFile != NKCommon.typeClassFile.audio.rawValue  else { return }
+        guard let time = player?.currentTime(), !metadata.livePhoto, metadata.classFile != NKCommon.TypeClassFile.audio.rawValue  else { return }
 
         var image: UIImage?
 
@@ -453,7 +453,7 @@ class NCPlayer: NSObject {
                 NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
                 if isEncrypted {
                     if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", self.metadata.fileName, self.metadata.serverUrl)) {
-                        NCEndToEndEncryption.sharedManager()?.decryptFileName(self.metadata.fileName, fileNameView: self.metadata.fileNameView, ocId: self.metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                        NCEndToEndEncryption.sharedManager()?.decryptFile(self.metadata.fileName, fileNameView: self.metadata.fileNameView, ocId: self.metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                     }
                 }
                 let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)

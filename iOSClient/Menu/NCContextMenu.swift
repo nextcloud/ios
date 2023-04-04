@@ -90,7 +90,7 @@ class NCContextMenu: NSObject {
         }
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
-                                    image: UIImage(systemName: "arrow.forward.square")) { _ in
+                                    image: UIImage(systemName: "questionmark.folder")) { _ in
             NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
         }
 
@@ -120,10 +120,12 @@ class NCContextMenu: NSObject {
             }
         }
 
+        /*
         let copy = UIAction(title: NSLocalizedString("_copy_file_", comment: ""),
                             image: UIImage(systemName: "doc.on.doc")) { _ in
             NCActionCenter.shared.copyPasteboard(pasteboardOcIds: [metadata.ocId], hudView: viewController.view)
         }
+        */
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: UIImage(systemName: "pencil.tip.crop.circle")) { _ in

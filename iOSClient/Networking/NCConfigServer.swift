@@ -37,7 +37,7 @@ import NextcloudKit
         let defaultSession = URLSession(configuration: defaultSessionConfiguration, delegate: self, delegateQueue: .main)
 
         var urlRequest = URLRequest(url: url)
-        urlRequest.headers = NKCommon.shared.getStandardHeaders()
+        urlRequest.headers = NextcloudKit.shared.nkCommonInstance.getStandardHeaders()
 
         let dataTask = defaultSession.dataTask(with: urlRequest) { (data, response, error) in
             if let error = error {

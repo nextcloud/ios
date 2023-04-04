@@ -53,6 +53,21 @@ extension NCViewer {
         }
 
         //
+        // VIEW IN FOLDER
+        //
+        if !webView {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_view_in_folder_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "questionmark.folder"),
+                    action: { menuAction in
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
+                    }
+                )
+            )
+        }
+
+        //
         // FAVORITE
         // Workaround: PROPPATCH doesn't work
         // https://github.com/nextcloud/files_lock/issues/68
@@ -109,7 +124,7 @@ extension NCViewer {
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
 #if MFFFLIB
-        if metadata.classFile == NKCommon.typeClassFile.video.rawValue {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
             
             actions.append(
                 NCMenuAction(
@@ -135,7 +150,7 @@ extension NCViewer {
         //
         // SAVE AS SCAN
         //
-        if !webView, metadata.isSavebleAsScan {
+        if !webView, metadata.isSavebleAsImage {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -191,24 +206,9 @@ extension NCViewer {
         }
 
         //
-        // VIEW IN FOLDER
-        //
-        if !webView {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "arrow.forward.square"),
-                    action: { menuAction in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil)
-                    }
-                )
-            )
-        }
-
-        //
         // DOWNLOAD IMAGE MAX RESOLUTION
         //
-        if !webView, metadata.session.isEmpty, metadata.classFile == NKCommon.typeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata) {
+        if !webView, metadata.session.isEmpty, metadata.classFile == NKCommon.TypeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_download_image_max_", comment: ""),
