@@ -853,7 +853,7 @@
 "_message_disable_overwrite_livephoto_" = "This image is a Live Photo, overwrite will not be possible";
 "_discard_changes_info_"    = "Your changes will be discarded.";
 "_delete_files_desc_"       = "Delete files to free up space";
-"_delete_old_files_"        = "Delete all files older than";
+"_delete_old_files_"        = "Delete, in the cache, all files older than";
 "_never_"                   = "Never";
 "_1_year_"                  = "1 year";
 "_6_months_"                = "6 months";
