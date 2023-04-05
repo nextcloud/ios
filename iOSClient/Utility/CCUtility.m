@@ -700,7 +700,8 @@
     NSString *size = [UICKeyChainStore stringForKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
     
     if (size == nil) {
-        return 0;
+        NSInteger days = [[NCBrandOptions shared] cleanUpDay];
+        return days;
     } else {
         return [size integerValue];
     }

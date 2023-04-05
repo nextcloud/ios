@@ -79,6 +79,8 @@ import UIKit
     @objc public var disable_log:                       Bool = false
     @objc public var disable_mobileconfig:              Bool = false
 
+    @objc public var cleanUpDay:                        Int = 0                                                     // Set default "Delete all file older than " possible value are: 0, 1, 7, 30, 90, 180, 365
+
     override init() {
 
         if folderBrandAutoUpload != "" {
