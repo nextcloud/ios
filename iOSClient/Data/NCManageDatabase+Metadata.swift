@@ -91,6 +91,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var subline: String?
+    let tags = List<String>()
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
@@ -284,6 +285,9 @@ extension NCManageDatabase {
         }
         for element in file.shareType {
             metadata.shareType.append(element)
+        }
+        for element in file.tags {
+            metadata.tags.append(element)
         }
         metadata.size = file.size
         metadata.classFile = file.classFile
