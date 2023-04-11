@@ -26,6 +26,7 @@ import UIKit
 import Parchment
 import NextcloudKit
 import MarqueeLabel
+import TagListView
 
 protocol NCSharePagingContent {
     var textField: UITextField? { get }
@@ -216,7 +217,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
 
     func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
 
-        let height = pagingViewController.options.menuHeight + NCSharePagingView.headerHeight
+        let height = pagingViewController.options.menuHeight + NCSharePagingView.headerHeight + NCSharePagingView.tagHeaderHeight
 
         switch NCGlobal.NCSharePagingIndex(rawValue: index) {
         case .activity:
@@ -295,6 +296,7 @@ class NCShareHeaderViewController: PagingViewController {
 class NCSharePagingView: PagingView {
 
     static let headerHeight: CGFloat = 90
+    static var tagHeaderHeight: CGFloat = 0
     var metadata = tableMetadata()
 
     public var headerHeightConstraint: NSLayoutConstraint?
@@ -356,6 +358,16 @@ class NCSharePagingView: PagingView {
         headerView.details.layer.masksToBounds = true
         headerView.details.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
 
+        for tag in metadata.tags {
+            headerView.tagListView.addTag(tag)
+        }
+
+        if metadata.tags.isEmpty {
+            NCSharePagingView.tagHeaderHeight = 0
+        } else {
+            NCSharePagingView.tagHeaderHeight = headerView.tagListView.intrinsicContentSize.height + 10
+        }
+
         addSubview(headerView)
 
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -371,7 +383,7 @@ class NCSharePagingView: PagingView {
             headerView.topAnchor.constraint(equalTo: topAnchor),
             headerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: NCSharePagingView.headerHeight),
+            headerView.heightAnchor.constraint(equalToConstant: NCSharePagingView.headerHeight + NCSharePagingView.tagHeaderHeight),
 
             pageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             pageView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -390,6 +402,7 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var upload: UILabel!
     @IBOutlet weak var favorite: UIButton!
     @IBOutlet weak var details: UIButton!
+    @IBOutlet weak var tagListView: TagListView!
 
     var ocId = ""
 

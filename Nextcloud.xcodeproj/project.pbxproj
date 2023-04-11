@@ -464,6 +464,7 @@
 		F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
+		F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F7A1050D29E587AF00FFD92B /* TagListView */; };
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
 		F7A48413297022E000BD1B49 /* ViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A48412297022E000BD1B49 /* ViewerQuickLook.swift */; };
 		F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */ = {isa = PBXBuildFile; fileRef = F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */; };
@@ -1331,6 +1332,7 @@
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
+				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
 				F76DA969277B77EA0082465B /* DropDown in Frameworks */,
 				F75EAED826D2552E00F4320E /* MarqueeLabel in Frameworks */,
 				F710FC7A277B7D0000AA9FBF /* Realm in Frameworks */,
@@ -2551,6 +2553,7 @@
 				F77BC3EA293E5268005F2B08 /* Swifter */,
 				F7D56B192972405500FA46C4 /* Mantis */,
 				F787AC08298BCB4A0001BB00 /* SVGKitSwift */,
+				F7A1050D29E587AF00FFD92B /* TagListView */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -2709,6 +2712,7 @@
 				F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */,
 				F77BC3E9293E5268005F2B08 /* XCRemoteSwiftPackageReference "swifter" */,
 				F7D56B182972405400FA46C4 /* XCRemoteSwiftPackageReference "Mantis" */,
+				F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4270,6 +4274,14 @@
 				minimumVersion = 1.7.1;
 			};
 		};
+		F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ElaWorkshop/TagListView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rechsteiner/Parchment";
@@ -4486,6 +4498,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */;
 			productName = MarkdownKit;
+		};
+		F7A1050D29E587AF00FFD92B /* TagListView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7A1050C29E587AF00FFD92B /* XCRemoteSwiftPackageReference "TagListView" */;
+			productName = TagListView;
 		};
 		F7A8D72328F1771B008BBE1C /* NextcloudKit */ = {
 			isa = XCSwiftPackageProductDependency;
