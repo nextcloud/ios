@@ -462,9 +462,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         } else if openLoginWeb {
 
+            // Used also for reinsert the account (change passwd)
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = urlBase
+                activeLoginWeb?.user = user
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
 
