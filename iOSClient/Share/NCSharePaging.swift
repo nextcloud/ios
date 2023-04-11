@@ -97,8 +97,6 @@ class NCSharePaging: UIViewController {
         let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: indexPage.rawValue) as? PagingIndexItem
         self.title = pagingIndexItem?.title
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
-
         if sharingEnabled {
             pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
         } else {
@@ -150,18 +148,19 @@ class NCSharePaging: UIViewController {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
-    // MARK: - NotificationCenter
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
 
-    @objc func orientationDidChange() {
-        pagingViewController.menuItemSize = .fixed(
-            width: self.view.bounds.width / CGFloat(NCGlobal.NCSharePagingIndex.allCases.count),
-            height: 40)
-        currentVC?.textField?.resignFirstResponder()
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.pagingViewController.menuItemSize = .fixed(
+                width: self.view.bounds.width / CGFloat(NCGlobal.NCSharePagingIndex.allCases.count),
+                height: 40)
+            self.currentVC?.textField?.resignFirstResponder()
+        }
     }
 
     // MARK: - Keyboard & TextField
