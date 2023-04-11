@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import TagListView
 
 protocol NCCellProtocol {
 
@@ -39,6 +40,7 @@ protocol NCCellProtocol {
     var fileSharedImage: UIImageView? { get set }
     var fileMoreImage: UIImageView? { get set }
     var cellSeparatorView: UIView? { get set }
+    var cellTagListView: TagListView? { get set }
 
     func titleInfoTrailingDefault()
     func titleInfoTrailingFull()
@@ -49,6 +51,7 @@ protocol NCCellProtocol {
     func selectMode(_ status: Bool)
     func selected(_ status: Bool)
     func setAccessibility(label: String, value: String)
+    func setTags(tags: [String])
 }
 
 extension NCCellProtocol {
@@ -104,6 +107,10 @@ extension NCCellProtocol {
         get { return nil }
         set {}
     }
+    var cellTagListView: TagListView? {
+        get { return nil }
+        set {}
+    }
 
     func titleInfoTrailingDefault() {}
     func titleInfoTrailingFull() {}
@@ -114,4 +121,5 @@ extension NCCellProtocol {
     func selectMode(_ status: Bool) {}
     func selected(_ status: Bool) {}
     func setAccessibility(label: String, value: String) {}
+    func setTags(tags: [String]) { }
 }

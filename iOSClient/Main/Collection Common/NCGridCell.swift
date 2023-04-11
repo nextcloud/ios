@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import TagListView
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol, NCTrashCellProtocol {
 
@@ -35,6 +36,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
+    var tagListView: TagListView?
 
     internal var objectId = ""
     private var user = ""
@@ -81,6 +83,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var fileFavoriteImage: UIImageView? {
         get { return imageFavorite }
         set { imageFavorite = newValue }
+    }
+    var cellTagListView: TagListView? {
+        get { return nil}
+        set { tagListView = nil }
     }
 
     override func awakeFromNib() {

@@ -1680,6 +1680,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.attributedText = attributedString
         }
 
+        // Add TAGS
+        cell.setTags(tags: Array(metadata.tags))
+
         // ** IMPORT MUST BE AT THE END **
         //
         if !metadata.isSharable {
