@@ -295,10 +295,10 @@ class NCShareHeaderViewController: PagingViewController {
 
 class NCSharePagingView: PagingView {
 
-    static let headerHeight: CGFloat = 100
+    static let headerHeight: CGFloat = 90
     var metadata = tableMetadata()
 
-    var headerHeightConstraint: NSLayoutConstraint?
+    public var headerHeightConstraint: NSLayoutConstraint?
 
     // MARK: - View Life Cycle
 
@@ -317,6 +317,11 @@ class NCSharePagingView: PagingView {
         guard let headerView = Bundle.main.loadNibNamed("NCShareHeaderView", owner: self, options: nil)?.first as? NCShareHeaderView else { return }
         headerView.backgroundColor = .systemBackground
         headerView.ocId = metadata.ocId
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .short
+        dateFormatter.locale = Locale.current
 
         if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             headerView.imageView.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
@@ -339,15 +344,24 @@ class NCSharePagingView: PagingView {
         } else {
             headerView.favorite.setImage(NCUtility.shared.loadImage(named: "star.fill", color: .systemGray, size: 20), for: .normal)
         }
-        headerView.info.text = CCUtility.transformedSize(metadata.size) + ", " + CCUtility.dateDiff(metadata.date as Date)
+        headerView.info.text = CCUtility.transformedSize(metadata.size) + ", " + NSLocalizedString("_modified_", comment: "") + " " + dateFormatter.string(from: metadata.date as Date)
+        headerView.info.textColor = .systemGray
+        headerView.creation.text = NSLocalizedString("_creation_", comment: "") + " " + dateFormatter.string(from: metadata.creationDate as Date)
+        headerView.creation.textColor = .systemGray
+        headerView.upload.text = NSLocalizedString("_upload_", comment: "") + " " + dateFormatter.string(from: metadata.uploadDate as Date)
+        headerView.upload.textColor = .systemGray
+
+        headerView.details.setTitleColor(.label, for: .normal)
+        headerView.details.setTitle(NSLocalizedString("_details_", comment: ""), for: .normal)
+        headerView.details.layer.cornerRadius = 9
+        headerView.details.layer.masksToBounds = true
+        headerView.details.layer.backgroundColor = UIColor(red: 152.0 / 255.0, green: 167.0 / 255.0, blue: 181.0 / 255.0, alpha: 0.8).cgColor
+
         addSubview(headerView)
 
-        pageView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         headerView.translatesAutoresizingMaskIntoConstraints = false
-
-        headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: NCSharePagingView.headerHeight)
-        headerHeightConstraint?.isActive = true
+        pageView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -358,6 +372,7 @@ class NCSharePagingView: PagingView {
             headerView.topAnchor.constraint(equalTo: topAnchor),
             headerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: NCSharePagingView.headerHeight),
 
             pageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             pageView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -372,7 +387,11 @@ class NCShareHeaderView: UIView {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var path: MarqueeLabel!
     @IBOutlet weak var info: UILabel!
+    @IBOutlet weak var creation: UILabel!
+    @IBOutlet weak var upload: UILabel!
     @IBOutlet weak var favorite: UIButton!
+    @IBOutlet weak var details: UIButton!
+
     var ocId = ""
 
     override func awakeFromNib() {
@@ -385,6 +404,7 @@ class NCShareHeaderView: UIView {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
         NCNetworking.shared.favoriteMetadata(metadata) { error in
             if error == .success {
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
                 self.favorite.setImage(NCUtility.shared.loadImage(
                     named: "star.fill",
                     color: metadata.favorite ? NCBrandColor.shared.yellowFavorite : .systemGray,
@@ -393,6 +413,12 @@ class NCShareHeaderView: UIView {
                 NCContentPresenter.shared.showError(error: error)
             }
         }
+    }
+
+    @IBAction func touchUpInsideDetails(_ sender: UIButton) {
+
+        creation.isHidden = !creation.isHidden
+        upload.isHidden = !upload.isHidden
     }
 
     @objc func longTap(sender: UIGestureRecognizer) {

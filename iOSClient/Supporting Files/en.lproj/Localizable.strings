@@ -935,6 +935,10 @@
 "_created_"                 = "Created";
 "_recipients_"              = "Recipients";
 "_are_sure_"                = "Are you sure?";
+"_creation_"                = "Creation";
+"_modified_"                = "Modified";
+
+
 
 // Video
 "_select_trace_"            = "Select the trace";
