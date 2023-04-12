@@ -44,8 +44,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var infoTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var labelTitleTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var labelInfoBottomConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var tagListView: TagListView!
 
@@ -287,20 +285,18 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func setTags(tags: [String]) {
         tagListView.removeAllTags()
-        if tags.isEmpty || progressView.progress > 0 {
+        if tags.isEmpty {
             tagListView.isHidden = true
-            labelTitleTopConstraint.constant = 13
-            labelInfoBottomConstraint.constant = 13
+            labelInfo.isHidden = false
         } else {
             tagListView.isHidden = false
+            labelInfo.isHidden = true
             if let tag = tags.first {
                 tagListView.addTag(tag)
                 if tags.count > 1 {
                     tagListView.addTag("+\(tags.count-1)")
                 }
             }
-            labelTitleTopConstraint.constant = 1
-            labelInfoBottomConstraint.constant = 22
         }
     }
 }
