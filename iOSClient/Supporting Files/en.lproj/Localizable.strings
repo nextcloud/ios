@@ -436,6 +436,7 @@
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
 "_tutorial_offline_view_"       = "Files copied here will be available offline.\n\nThey will be synchronized with your cloud.";
+"_tutorial_groupfolders_view_"  = "No Group folders yet";
 "_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
 "_favorite_no_files_"           = "No favorites yet";
@@ -937,7 +938,7 @@
 "_are_sure_"                = "Are you sure?";
 "_creation_"                = "Creation";
 "_modified_"                = "Modified";
-
+"_group_folders_"           = "Group folders";
 
 
 // Video

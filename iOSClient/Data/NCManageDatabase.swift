@@ -192,6 +192,8 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableE2eEncryptionLock.self, account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
+        self.clearTable(TableGroupfolders.self, account: account)
+        self.clearTable(TableGroupfoldersGroups.self, account: account)
         self.clearTable(NCDBLayoutForView.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)

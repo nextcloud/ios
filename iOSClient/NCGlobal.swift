@@ -160,6 +160,7 @@ class NCGlobal: NSObject {
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
     let layoutViewShareExtension                    = "LayoutShareExtension"
+    let layoutViewGroupfolders                      = "LayoutGroupfolders"
 
     // Button Type in Cell list/grid
     //
