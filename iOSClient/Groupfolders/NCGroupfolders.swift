@@ -55,7 +55,13 @@ class NCGroupfolders: NCCollectionViewCommon {
 
         DispatchQueue.global().async {
 
-            let metadatas = NCManageDatabase.shared.getGroupFoldersMetadata(account: self.appDelegate.account)
+            var metadatas: [tableMetadata] = []
+
+            if self.serverUrl.isEmpty {
+                metadatas = NCManageDatabase.shared.getGroupFoldersMetadata(account: self.appDelegate.account)
+            } else {
+                metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+            }
 
             self.dataSource = NCDataSource(
                 metadatas: metadatas,
