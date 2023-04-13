@@ -1085,11 +1085,11 @@ extension NCManageDatabase {
         return num
     }
 
-    func getGroupFoldersMetadata(account: String) -> [tableMetadata] {
+    func getGroupFoldersMetadata(account: String, serverUrl: String) -> [tableMetadata] {
 
         let realm = try! Realm()
 
-        let result = realm.objects(tableMetadata.self).filter("mountType == 'group'")
+        let result = realm.objects(tableMetadata.self).filter("mountType == 'group' && directory == true && serverUrl == %@", serverUrl)
         return Array(result.map { tableMetadata.init(value: $0) })
     } 
 }
