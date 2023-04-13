@@ -49,35 +49,28 @@ class NCShareNetworking: NSObject {
         let parameter = NKShareParameter(path: filenamePath)
 
         NextcloudKit.shared.readShares(parameters: parameter) { account, shares, data, error in
-            if showLoadingIndicator {
-                NCActivityIndicator.shared.stop()
-            }
             if error == .success, let shares = shares {
                 let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
                 NCManageDatabase.shared.addShare(account: self.metadata.account, home:home, shares: shares)
+                NextcloudKit.shared.getGroupfolders() { account, results, data, error in
+                    if showLoadingIndicator {
+                        NCActivityIndicator.shared.stop()
+                    }
+                    if error == .success, let groupfolders = results {
+                        NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
+                    }
+                    self.delegate?.readShareCompleted()
+                }
             } else {
+                if showLoadingIndicator {
+                    NCActivityIndicator.shared.stop()
+                }
                 NCContentPresenter.shared.showError(error: error)
-            }
-            self.delegate?.readShareCompleted()
-        }
-    }
-
-    func readGroupfolders(showLoadingIndicator: Bool) {
-
-        if showLoadingIndicator {
-            NCActivityIndicator.shared.start(backgroundView: view)
-        }
-
-        NextcloudKit.shared.getGroupfolders() { account, results, data, error in
-            if showLoadingIndicator {
-                NCActivityIndicator.shared.stop()
-            }
-            if error == .success, let groupfolders = results {
-                NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
+                self.delegate?.readShareCompleted()
             }
         }
     }
-    
+
     func createShare(option: NCTableShareable) {
         // NOTE: Permissions don't work for creating with file drop!
         // https://github.com/nextcloud/server/issues/17504

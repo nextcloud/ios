@@ -96,7 +96,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         if sharingEnabled {
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.indexPage == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
-            networking?.readGroupfolders(showLoadingIndicator: isVisible)
         }
     }
 
