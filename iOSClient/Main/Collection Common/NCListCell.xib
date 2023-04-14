@@ -66,10 +66,10 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z1r-ZA-ft8" customClass="TagListView" customModule="TagListView">
-                        <rect key="frame" x="60" y="121" width="519" height="14"/>
+                        <rect key="frame" x="60" y="130" width="519" height="5"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="14" id="9NQ-gM-wQ6"/>
+                            <constraint firstAttribute="height" constant="5" id="9NQ-gM-wQ6"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
