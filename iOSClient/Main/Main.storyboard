@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -136,6 +136,7 @@
                         <segue destination="z7i-Sl-6Di" kind="show" identifier="segueShares" id="c59-fC-R3W"/>
                         <segue destination="3YH-o1-17m" kind="relationship" relationship="rootViewController" id="les-zO-92u"/>
                         <segue destination="rhU-g7-7AK" kind="show" identifier="segueSettings" id="jMB-ji-wIR"/>
+                        <segue destination="hGk-eR-32T" kind="show" identifier="segueGroupfolders" id="Sfw-Dn-3uD"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -180,7 +181,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EoH-78-6Yh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10209" y="291"/>
+            <point key="canvasLocation" x="10204" y="265"/>
         </scene>
         <!--NCTransfers.storyboard-->
         <scene sceneID="IDy-4E-Qqv">
@@ -190,7 +191,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10201" y="366"/>
+            <point key="canvasLocation" x="10196" y="327"/>
         </scene>
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">
@@ -200,7 +201,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rsS-r1-oFg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10190" y="445"/>
+            <point key="canvasLocation" x="10184" y="382"/>
         </scene>
         <!--NCShares.storyboard-->
         <scene sceneID="eRk-6B-fMu">
@@ -210,7 +211,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="olY-7a-lXK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10190" y="538"/>
+            <point key="canvasLocation" x="10183" y="437"/>
         </scene>
         <!--NCSettings.storyboard-->
         <scene sceneID="FRF-y9-mZJ">
@@ -220,7 +221,17 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bcK-1B-gxh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10190" y="619"/>
+            <point key="canvasLocation" x="10191" y="488"/>
+        </scene>
+        <!--NCGroupfolders.storyboard-->
+        <scene sceneID="kED-94-ouZ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCGroupfolders" referencedIdentifier="NCGroupfolders.storyboard" id="hGk-eR-32T" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="vBT-eK-wJG"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="R0O-cD-1ke" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10212" y="536"/>
         </scene>
         <!--NCFiles.storyboard-->
         <scene sceneID="xwl-IR-lkD">

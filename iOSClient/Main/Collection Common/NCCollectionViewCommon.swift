@@ -1269,6 +1269,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             }
         }
+
+        // GROUPFOLDERS
+        if layoutKey == NCGlobal.shared.layoutViewGroupfolders && !pushed {
+
+            if let viewController = appDelegate.listGroupfoldersVC[serverUrlPush] {
+
+                if viewController.isViewLoaded {
+                    pushViewController(viewController: viewController)
+                }
+
+            } else {
+
+                if let viewController: NCGroupfolders = UIStoryboard(name: "NCGroupfolders", bundle: nil).instantiateInitialViewController() as? NCGroupfolders {
+
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadata.fileNameView
+
+                    appDelegate.listGroupfoldersVC[serverUrlPush] = viewController
+
+                    pushViewController(viewController: viewController)
+                }
+            }
+        }
     }
 }
 

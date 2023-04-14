@@ -148,6 +148,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 60
         functionMenu.append(item)
 
+        // ITEM : Groupfolders
+        item = NKExternalSite()
+        item.name = "_group_folders_"
+        item.icon = "groupfolders"
+        item.url = "segueGroupfolders"
+        item.order = 61
+        functionMenu.append(item)
+
         // ITEM : Scan
         item = NKExternalSite()
         item.name = "_scanned_images_"

@@ -251,13 +251,6 @@ class NCService: NSObject {
                     NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document")
                 }
             }
-
-            // Added Groupfolders
-            NextcloudKit.shared.getGroupfolders(options: options) { account, results, data, error in
-                if error == .success, let groupfolders = results {
-                    NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
-                }
-            }
         }
     }
 
