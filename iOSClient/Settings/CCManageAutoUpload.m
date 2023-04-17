@@ -422,7 +422,7 @@
 
         NSString* home = [[NCUtilityFileSystem shared] getHomeServerWithUrlBase:appDelegate.urlBase userId:appDelegate.userId];
         if ([serverUrl isEqualToString:home]) {
-            NKError *error = [[NKError alloc] initWithErrorCode:NCGlobal.shared.errorInternalError errorDescription:@"_autoupload_error_select_folder_"];
+            NKError *error = [[NKError alloc] initWithErrorCode:NCGlobal.shared.errorInternalError errorDescription:@"_autoupload_error_select_folder_" responseData:nil];
             [[NCContentPresenter shared] messageNotification:@"_error_" error:error delay:[[NCGlobal shared] dismissAfterSecond] type:messageTypeError];
             return;
         }

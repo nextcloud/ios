@@ -110,9 +110,20 @@ class NCContentPresenter: NSObject {
                 let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
                 self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
             default:
+                var responseMessage = ""
+                if let data = error.responseData {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:Any],
+                           let message = json["message"] as? String {
+                            responseMessage = "\n\n" + message
+                        }
+                    } catch {
+                        print("Something went wrong")
+                    }
+                }
                 if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
                 let description = NSLocalizedString(error.errorDescription, comment: "")
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description + responseMessage, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
             }
         }
     }

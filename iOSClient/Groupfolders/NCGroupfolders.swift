@@ -131,6 +131,8 @@ class NCGroupfolders: NCCollectionViewCommon {
                             NCOperationQueue.shared.readFile(serverUrlFileName: serverUrlFileName)
                         }
                     }
+                } else if error != .success {
+                    NCContentPresenter.shared.showError(error: error)
                 }
                 self.reloadDataSource()
             }
