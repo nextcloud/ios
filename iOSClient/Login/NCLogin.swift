@@ -370,7 +370,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                 loginButton.isEnabled = false
 
-                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { data, error in
+                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
 
                     self.loginButton.isEnabled = true
                     self.standardLogin(url: urlBase, user: user, password: password, error: error)

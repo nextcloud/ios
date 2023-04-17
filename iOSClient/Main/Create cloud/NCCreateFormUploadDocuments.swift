@@ -325,7 +325,7 @@ import XLForm
             NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, options: options) { account, url, data, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    NCContentPresenter.shared.showError(error: error, data: data)
+                    NCContentPresenter.shared.showError(error: error)
                     return
                 }
 
@@ -349,7 +349,7 @@ import XLForm
             NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { account, url, data, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
-                    NCContentPresenter.shared.showError(error: error, data: data)
+                    NCContentPresenter.shared.showError(error: error)
                     return
                 }
 

@@ -100,7 +100,7 @@ class NCShareNetworking: NSObject {
 
     func unShare(idShare: Int) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NextcloudKit.shared.deleteShare(idShare: idShare) { account, data, error in
+        NextcloudKit.shared.deleteShare(idShare: idShare) { account, error in
             NCActivityIndicator.shared.stop()
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)

@@ -1128,7 +1128,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                 if result.error == .success {
                                     self.reloadDataSource()
                                 } else {
-                                    NCContentPresenter.shared.showError(error: result.error, data: data)
+                                    NCContentPresenter.shared.showError(error: result.error)
                                 }
                             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                                 NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_"))

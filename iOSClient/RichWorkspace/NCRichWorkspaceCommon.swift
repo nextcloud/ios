@@ -56,7 +56,7 @@ import NextcloudKit
                 }
 
             } else if error != .success {
-                NCContentPresenter.shared.showError(error: error, data: data)
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }
@@ -92,7 +92,7 @@ import NextcloudKit
                         }
 
                     } else if error != .success {
-                        NCContentPresenter.shared.showError(error: error, data: data)
+                        NCContentPresenter.shared.showError(error: error)
                     }
                 }
 

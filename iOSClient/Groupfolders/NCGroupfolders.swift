@@ -116,7 +116,7 @@ class NCGroupfolders: NCCollectionViewCommon {
             let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
             let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-            NextcloudKit.shared.getGroupfolders(options: options) { account, results, data, error in
+            NextcloudKit.shared.getGroupfolders(options: options) { account, results, _, error in
 
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
@@ -131,12 +131,9 @@ class NCGroupfolders: NCCollectionViewCommon {
                             NCOperationQueue.shared.readFile(serverUrlFileName: serverUrlFileName)
                         }
                     }
-                } else if error != .success {
-                    NCContentPresenter.shared.showError(error: error, data: data)
                 }
                 self.reloadDataSource()
             }
-
         } else {
 
             networkReadFolder(forced: forced) { _, _, metadatasUpdate, metadatasDelete, _ in
