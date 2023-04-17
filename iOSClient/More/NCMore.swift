@@ -150,7 +150,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Groupfolders
-
         let hasAccessibleGroupFolders = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesGroupfoldersEnabled, exists: false)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion27 && hasAccessibleGroupFolders {
             item = NKExternalSite()
@@ -170,7 +169,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : Trash
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
-
             item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"
