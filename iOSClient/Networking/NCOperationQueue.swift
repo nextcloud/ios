@@ -40,8 +40,7 @@ import NextcloudKit
     private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-
-    private var timerReadFileForMediaQueue: Timer?
+    private let readFileQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
@@ -52,6 +51,7 @@ import NextcloudKit
         downloadThumbnailActivityCancelAll()
         downloadAvatarCancelAll()
         unifiedSearchCancelAll()
+        readFileCancelAll()
     }
 
     // MARK: - Download file
@@ -225,6 +225,21 @@ import NextcloudKit
 
     func unifiedSearchCancelAll() {
         unifiedSearchQueue.cancelAll()
+    }
+
+    // MARK: - Read file
+
+    func readFile(serverUrlFileName: String) {
+
+        for case let operation as NCOperationReadFile in readFileQueue.operations where operation.serverUrlFileName == serverUrlFileName {
+            return
+        }
+
+        readFileQueue.addOperation(NCOperationReadFile(serverUrlFileName: serverUrlFileName))
+    }
+
+    func readFileCancelAll() {
+        readFileQueue.cancelAll()
     }
 }
 
@@ -633,6 +648,35 @@ class NCOperationUnifiedSearch: ConcurrentOperation {
             self.collectionViewCommon.searchResults?.append(self.searchResult)
             reloadDataThenPerform {
                 self.finish()
+            }
+        }
+    }
+}
+
+// MARK: -
+
+class NCOperationReadFile: ConcurrentOperation {
+
+    var serverUrlFileName: String
+
+    init(serverUrlFileName: String) {
+        self.serverUrlFileName = serverUrlFileName
+    }
+
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+
+            NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, error in
+                if error == .success, let metadata = metadata {
+                    NCManageDatabase.shared.addMetadata(metadata)
+                    if metadata.directory {
+                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: self.serverUrlFileName, account: account)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOperationReadFile, userInfo: ["ocId": metadata.ocId])
+                }
             }
         }
     }

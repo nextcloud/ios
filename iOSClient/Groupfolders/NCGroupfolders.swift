@@ -46,6 +46,29 @@ class NCGroupfolders: NCCollectionViewCommon {
         super.viewWillAppear(animated)
 
         navigationController?.setFileAppreance()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(readFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOperationReadFile), object: nil)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOperationReadFile), object: nil)
+    }
+
+    // MARK: - NotificationCenter
+
+    @objc func readFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        else {
+            return
+        }
+
+        dataSource.addMetadata(metadata)
+        self.collectionView?.reloadData()
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -58,8 +81,7 @@ class NCGroupfolders: NCCollectionViewCommon {
             var metadatas: [tableMetadata] = []
 
             if self.serverUrl.isEmpty {
-                let serverUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-                metadatas = NCManageDatabase.shared.getGroupFoldersMetadata(account: self.appDelegate.account, serverUrl: serverUrl)
+                metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
             } else {
                 metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
             }
@@ -86,29 +108,45 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
 
-        guard !serverUrl.isEmpty else {
-            self.reloadDataSource()
-            return
-        }
-
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
-            if error == .success, let metadatas = metadatas {
-                for metadata in metadatas where (!metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: true)) {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
-                }
-            }
+        if serverUrl.isEmpty {
 
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-                self.richWorkspaceText = tableDirectory?.richWorkspace
-                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
-                    self.reloadDataSource()
-                } else {
-                    self.collectionView?.reloadData()
+            let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+            NextcloudKit.shared.getGroupfolders(options: options) { account, results, _, error in
+
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                    self.isReloadDataSourceNetworkInProgress = false
+                }
+
+                if error == .success, let groupfolders = results {
+                    NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
+                    for groupfolder in groupfolders {
+                        let serverUrlFileName = homeServerUrl + "/" + groupfolder.mountPoint
+                        if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
+                            NCOperationQueue.shared.readFile(serverUrlFileName: serverUrlFileName)
+                        }
+                    }
+                }
+                self.reloadDataSource()
+            }
+        } else {
+
+            networkReadFolder(forced: forced) { _, _, metadatasUpdate, metadatasDelete, _ in
+
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                    self.isReloadDataSourceNetworkInProgress = false
+
+                    if !(metadatasUpdate?.isEmpty ?? true) || !(metadatasDelete?.isEmpty ?? true) || forced {
+                        self.reloadDataSource()
+                    } else {
+                        self.collectionView?.reloadData()
+                    }
                 }
             }
         }

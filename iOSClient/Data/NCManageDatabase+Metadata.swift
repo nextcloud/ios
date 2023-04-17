@@ -1085,11 +1085,31 @@ extension NCManageDatabase {
         return num
     }
 
-    func getGroupFoldersMetadata(account: String, serverUrl: String) -> [tableMetadata] {
+    func getMetadataFromDirectory(account: String, serverUrl: String) -> tableMetadata? {
 
         let realm = try! Realm()
 
-        let result = realm.objects(tableMetadata.self).filter("mountType == 'group' && directory == true && serverUrl == %@", serverUrl)
-        return Array(result.map { tableMetadata.init(value: $0) })
-    } 
+        guard let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
+        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first else { return nil }
+
+        return tableMetadata.init(value: result)
+    }
+
+    func getMetadatasFromGroupfolders(account: String, urlBase: String, userId: String) -> [tableMetadata] {
+
+        let realm = try! Realm()
+        var metadatas: [tableMetadata] = []
+        let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+
+        let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
+        for groupfolder in groupfolders {
+            let serverUrlFileName = homeServerUrl + "/" + groupfolder.mountPoint
+            if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrlFileName).first,
+               let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
+                metadatas.append(tableMetadata(value: metadata))
+            }
+        }
+
+        return metadatas
+    }
 }
