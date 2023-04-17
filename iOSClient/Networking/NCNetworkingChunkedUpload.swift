@@ -158,7 +158,7 @@ extension NCNetworking {
 
             let options = NKRequestOptions(customHeader: customHeader, timeout: timeout, queue: DispatchQueue.global())
             
-            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, error in
+            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, data, error in
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Assembling chunk with error code: \(error.errorCode)")
 
@@ -220,7 +220,7 @@ extension NCNetworking {
             if error == .success {
                 completion(NKError())
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                NextcloudKit.shared.createFolder(serverUrlFileName: chunkFolderPath, options: options) { _, _, _, error in
+                NextcloudKit.shared.createFolder(serverUrlFileName: chunkFolderPath, options: options) { _, _, _, data, error in
                     completion(error)
                 }
             } else {
@@ -238,13 +238,13 @@ extension NCNetworking {
         if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
 
             // Delete chunk folder
-            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: chunkFolderPath) { _, _ in }
+            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: chunkFolderPath) { _, _, _ in }
 
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
             NCUtilityFileSystem.shared.deleteFile(filePath: directoryProviderStorageOcId)
 
-            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: chunkFolderPath) { _, _ in }
+            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: chunkFolderPath) { _, _, _ in }
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account])
 

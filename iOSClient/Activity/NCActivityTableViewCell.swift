@@ -173,7 +173,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                     }
                 } else {
                     hud.dismiss()
-                    NCContentPresenter.shared.showError(error: error)
+                    NCContentPresenter.shared.showError(error: error, data: data)
                 }
             }
         }

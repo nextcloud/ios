@@ -136,7 +136,7 @@ class NCViewer: NSObject {
 
                         } else if error != .success {
 
-                            NCContentPresenter.shared.showError(error: error)
+                            NCContentPresenter.shared.showError(error: error, data: data)
                         }
                     }
 
@@ -202,7 +202,7 @@ class NCViewer: NSObject {
 
                             } else if error != .success {
 
-                                NCContentPresenter.shared.showError(error: error)
+                                NCContentPresenter.shared.showError(error: error, data: data)
                             }
                         }
 

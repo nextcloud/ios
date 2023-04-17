@@ -88,7 +88,7 @@ class NCFavorite: NCCollectionViewCommon {
 
         if serverUrl.isEmpty {
 
-            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { _, _, error in
+            NCNetworking.shared.listingFavoritescompletion(selector: NCGlobal.shared.selectorListingFavorite) { _, data, error in
                 if error != .success {
                     NCContentPresenter.shared.showError(error: error)
                 }

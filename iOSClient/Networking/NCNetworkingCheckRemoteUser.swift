@@ -55,7 +55,7 @@ class NCNetworkingCheckRemoteUser {
                     appDelegate.deleteAccount(account, wipe: true)
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
                     NCContentPresenter.shared.messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
-                    NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _ in print("wipe") }
+                    NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { _, _ ,_ in print("wipe") }
 
                 } else {
 

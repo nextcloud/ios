@@ -256,7 +256,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
-        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in
+        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { data, error in
             guard error == .success else {
                 completion(.success)
                 return
@@ -1071,7 +1071,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl) { account, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl) { account, ocId, _, data, error in
             guard error == .success else {
                 if error.errorCode == NCGlobal.shared.errordMethodNotSupported && overwrite {
                     completion(NKError())
@@ -1239,7 +1239,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
         
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options) { account, data, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
@@ -1294,7 +1294,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
 
-        NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite) { account, error in
+        NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite) { account, data, error in
             if error == .success && metadata.account == account {
                 NCManageDatabase.shared.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
 #if !EXTENSION
@@ -1335,7 +1335,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { account, error in
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock) { account, data, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
@@ -1407,7 +1407,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
         let ocId = metadata.ocId
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false) { account, data, error in
 
             if error == .success {
 
@@ -1483,7 +1483,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { account, data, error in
 
             if error == .success {
                 if metadata.directory {
@@ -1524,7 +1524,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { _, error in
+        NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { _, data, error in
 
             if error == .success {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": metadata.ocId, "serverUrlTo": serverUrlTo])

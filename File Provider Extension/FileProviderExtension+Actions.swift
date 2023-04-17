@@ -37,7 +37,7 @@ extension FileProviderExtension {
         let directoryName = NCUtilityFileSystem.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
-        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { account, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { account, ocId, _, data, error in
 
             if error == .success {
 
@@ -90,7 +90,7 @@ extension FileProviderExtension {
         let serverUrl = metadata.serverUrl
         let fileName = metadata.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, data, error in
 
             if error == .success { // || error == kOCErrorServerPathNotFound {
 
@@ -140,7 +140,7 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false) { account, data, error in
 
             if error == .success {
 
@@ -182,7 +182,7 @@ extension FileProviderExtension {
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         let ocId = metadata.ocId
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { account, data, error in
 
             if error == .success {
 
@@ -249,7 +249,7 @@ extension FileProviderExtension {
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
 
-            NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, error in
+            NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, data, error in
 
                 if error == .success {
 

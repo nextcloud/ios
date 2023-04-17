@@ -63,10 +63,11 @@ class NCContentPresenter: NSObject {
 
     // MARK: - Message
 
-    func showError(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
+    func showError(error: NKError, data: Data? = nil, priority: EKAttributes.Precedence.Priority = .normal) {
         messageNotification(
             "_error_",
             error: error,
+            data: data,
             delay: NCGlobal.shared.dismissAfterSecond,
             type: .error,
             priority: priority)
@@ -98,7 +99,7 @@ class NCContentPresenter: NSObject {
         messageNotification(title, error: error, delay: delay, type: type, priority: .normal, dropEnqueuedEntries: false)
     }
 
-    func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
+    func messageNotification(_ title: String, error: NKError, data: Data? = nil, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
 
         // No notification message for:
         if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return }
@@ -110,6 +111,17 @@ class NCContentPresenter: NSObject {
                 let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
                 self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
             default:
+                if let data = data {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:Any],
+                           let message = json["message"] as? String {
+                            self.flatTop(title: NSLocalizedString(title, comment: ""), description: message, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+                            return
+                        }
+                    } catch {
+                        print("Something went wrong")
+                    }
+                }
                 if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
                 let description = NSLocalizedString(error.errorDescription, comment: "")
                 self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)

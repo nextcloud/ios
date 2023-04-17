@@ -283,7 +283,7 @@ struct DeleteCerificateSection: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EECertificate { account, error in
+                NextcloudKit.shared.deleteE2EECertificate { account, data, error in
                     if error == .success {
                         NCContentPresenter.shared.messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
@@ -305,7 +305,7 @@ struct DeleteCerificateSection: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EEPrivateKey { account, error in
+                NextcloudKit.shared.deleteE2EEPrivateKey { account, data, error in
                     if error == .success {
                         NCContentPresenter.shared.messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {

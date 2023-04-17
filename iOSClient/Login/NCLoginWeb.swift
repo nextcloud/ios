@@ -189,7 +189,7 @@ class NCLoginWeb: UIViewController {
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
-                NCContentPresenter.shared.showError(error: error)
+                NCContentPresenter.shared.showError(error: error, data: data)
                 self.dismiss(animated: true, completion: nil)
             }
         }
