@@ -57,8 +57,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AF8ED1F82757821000B8DBC4"
-               BuildableName = "NextcloudUnitTests.xctest"
-               BlueprintName = "NextcloudUnitTests"
+               BuildableName = "NextcloudTests.xctest"
+               BlueprintName = "NextcloudTests"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -137,7 +137,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES"
-      askForAppToLaunch = "Yes"
       launchAutomaticallySubstyle = "2">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
