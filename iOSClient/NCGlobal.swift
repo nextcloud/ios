@@ -102,6 +102,7 @@ class NCGlobal: NSObject {
     let nextcloudVersion24: Int                     =  24
     let nextcloudVersion25: Int                     =  25
     let nextcloudVersion26: Int                     =  26
+    let nextcloudVersion27: Int                     =  27
 
     // Nextcloud unsupported
     //

@@ -88,6 +88,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         var item = NKExternalSite()
         var quota: String = ""
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
         // Clear
         functionMenu.removeAll()
@@ -149,13 +150,16 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Groupfolders
-        item = NKExternalSite()
-        item.name = "_group_folders_"
-        item.icon = "groupfolders"
-        item.url = "segueGroupfolders"
-        item.order = 61
-        functionMenu.append(item)
 
+        let hasAccessibleGroupFolders = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesGroupfoldersEnabled, exists: false)
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion27 && hasAccessibleGroupFolders {
+            item = NKExternalSite()
+            item.name = "_group_folders_"
+            item.icon = "groupfolders"
+            item.url = "segueGroupfolders"
+            item.order = 61
+            functionMenu.append(item)
+        }
         // ITEM : Scan
         item = NKExternalSite()
         item.name = "_scanned_images_"
@@ -165,7 +169,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
 
             item = NKExternalSite()
