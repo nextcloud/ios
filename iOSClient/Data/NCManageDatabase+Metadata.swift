@@ -537,7 +537,19 @@ extension NCManageDatabase {
                         // update
                         // Workaround: check lock bc no etag changes if lock runs out in directory
                         // https://github.com/nextcloud/server/issues/8477
-                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note || result.lock != metadata.lock || result.shareType != metadata.shareType || result.sharePermissionsCloudMesh != metadata.sharePermissionsCloudMesh || result.sharePermissionsCollaborationServices != metadata.sharePermissionsCollaborationServices || result.favorite != metadata.favorite) {
+                        if result.status == NCGlobal.shared.metadataStatusNormal &&
+                            (result.etag != metadata.etag ||
+                             result.fileNameView != metadata.fileNameView ||
+                             result.date != metadata.date ||
+                             result.permissions != metadata.permissions ||
+                             result.hasPreview != metadata.hasPreview ||
+                             result.note != metadata.note ||
+                             result.lock != metadata.lock ||
+                             result.shareType != metadata.shareType ||
+                             result.sharePermissionsCloudMesh != metadata.sharePermissionsCloudMesh ||
+                             result.sharePermissionsCollaborationServices != metadata.sharePermissionsCollaborationServices ||
+                             result.favorite != metadata.favorite ||
+                             result.tags != metadata.tags) {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(tableMetadata.init(value: metadata), update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
