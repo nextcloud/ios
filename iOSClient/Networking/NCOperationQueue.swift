@@ -40,7 +40,7 @@ import NextcloudKit
     private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    private let readFileQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private let readFileQueue = Queuer(name: "readFileQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     @objc func cancelAllQueue() {
         downloadCancelAll()

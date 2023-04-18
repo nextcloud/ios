@@ -151,7 +151,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : Groupfolders
         let hasAccessibleGroupFolders = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesGroupfoldersEnabled, exists: false)
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion27 && hasAccessibleGroupFolders {
+        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion26 && hasAccessibleGroupFolders {
             item = NKExternalSite()
             item.name = "_group_folders_"
             item.icon = "groupfolders"

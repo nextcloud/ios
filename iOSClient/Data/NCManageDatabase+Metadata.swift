@@ -1115,7 +1115,7 @@ extension NCManageDatabase {
 
         let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
         for groupfolder in groupfolders {
-            let serverUrlFileName = homeServerUrl + "/" + groupfolder.mountPoint
+            let serverUrlFileName = homeServerUrl + groupfolder.mountPoint
             if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrlFileName).first,
                let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
                 metadatas.append(tableMetadata(value: metadata))
