@@ -29,7 +29,6 @@ import CoreMedia
 import Photos
 
 #if !EXTENSION
-import KTVHTTPCache
 import SVGKit
 #endif
 
@@ -213,7 +212,6 @@ class NCUtility: NSObject {
 
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
-        KTVHTTPCache.cacheDeleteAllCaches()
 
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
 

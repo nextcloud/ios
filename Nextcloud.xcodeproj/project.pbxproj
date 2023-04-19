@@ -140,7 +140,6 @@
 		F7148059262ED52200693E51 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */; };
 		F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F7148063262ED66200693E51 /* NCEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7239876253D86D300257F49 /* NCEmptyView.xib */; };
-		F716B75F26F09DF600D37EFC /* NCKTVHTTPCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F716B75E26F09DF600D37EFC /* NCKTVHTTPCache.swift */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
 		F718C24E254D507B00C5C256 /* NCViewerMediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */; };
@@ -328,10 +327,6 @@
 		F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */; };
 		F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */; };
 		F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */; };
-		F76DA93F277B75870082465B /* KTVCocoaHTTPServer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; };
-		F76DA940277B75870082465B /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B867E2642CF5400ED5349 /* KTVCocoaHTTPServer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F76DA941277B75870082465B /* KTVHTTPCache.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; };
-		F76DA942277B75870082465B /* KTVHTTPCache.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86792642CF5300ED5349 /* KTVHTTPCache.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F76DA95B277B75A90082465B /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
 		F76DA95C277B75A90082465B /* TOPasscodeViewController.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F76DA963277B760E0082465B /* Queuer in Frameworks */ = {isa = PBXBuildFile; productRef = F76DA962277B760E0082465B /* Queuer */; };
@@ -668,9 +663,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F7792DE629EEE02D005930CE /* MobileVLCKit.xcframework in Embed Frameworks */,
-				F76DA942277B75870082465B /* KTVHTTPCache.xcframework in Embed Frameworks */,
 				F76DA95C277B75A90082465B /* TOPasscodeViewController.xcframework in Embed Frameworks */,
-				F76DA940277B75870082465B /* KTVCocoaHTTPServer.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -837,7 +830,6 @@
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A301EE59BB70086BD69 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A4C1EE59C640086BD69 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F716B75E26F09DF600D37EFC /* NCKTVHTTPCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCKTVHTTPCache.swift; sourceTree = "<group>"; };
 		F716FE7723795E5000FABE50 /* NCCommunication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NCCommunication.framework; path = Carthage/Build/iOS/NCCommunication.framework; sourceTree = "<group>"; };
 		F717402B24F699A5000C87D5 /* NCFavorite.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCFavorite.storyboard; sourceTree = "<group>"; };
 		F717402C24F699A5000C87D5 /* NCFavorite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFavorite.swift; sourceTree = "<group>"; };
@@ -1333,7 +1325,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */,
-				F76DA941277B75870082465B /* KTVHTTPCache.xcframework in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
@@ -1358,7 +1349,6 @@
 				F72DA9B425F53E4E00B87DB1 /* SwiftRichString in Frameworks */,
 				F74E7720277A2EF40013B958 /* XLForm in Frameworks */,
 				F73ADD1C265546890069EA0D /* SwiftEntryKit in Frameworks */,
-				F76DA93F277B75870082465B /* KTVCocoaHTTPServer.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1882,7 +1872,6 @@
 				F79EDAA126B004980007D134 /* NCPlayer.swift */,
 				F732D23227CF8AED000B0F1B /* NCPlayerToolBar.xib */,
 				F79EDA9F26B004980007D134 /* NCPlayerToolBar.swift */,
-				F716B75E26F09DF600D37EFC /* NCKTVHTTPCache.swift */,
 			);
 			path = NCPlayer;
 			sourceTree = "<group>";
@@ -3247,7 +3236,6 @@
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */,
-				F716B75F26F09DF600D37EFC /* NCKTVHTTPCache.swift in Sources */,
 				AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */,
 				AF36077127BFA4E8001A243D /* ParallelWorker.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,

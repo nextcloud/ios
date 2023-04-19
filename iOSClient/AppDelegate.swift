@@ -580,7 +580,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if serverVersionMajor > 0 {
             NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
         }
-        NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
 
         DispatchQueue.main.async {
             if UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
