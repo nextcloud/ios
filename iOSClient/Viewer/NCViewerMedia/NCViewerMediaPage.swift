@@ -618,11 +618,11 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
                 AudioServicesPlaySystemSound(1519) // peek feedback
 
-                let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
-                
-                if let url = urlVideo.url {
-                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, isProxy: urlVideo.isProxy, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
-                    self.ncplayerLivePhoto?.openAVPlayer()
+                NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+                    if let url = url {
+                        self.ncplayerLivePhoto = NCPlayer.init(autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
+                        self.ncplayerLivePhoto?.openAVPlayer(url: url)
+                    }
                 }
             }
 
