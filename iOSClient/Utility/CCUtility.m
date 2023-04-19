@@ -656,15 +656,21 @@
     [UICKeyChainStore setString:valueString forKey:@"logLevel" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getAudioMute
++ (NSInteger)getAudioVolume
 {
-    return [[UICKeyChainStore stringForKey:@"audioMute" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
+    NSString *volume = [UICKeyChainStore stringForKey:@"audioVolume" service:NCGlobal.shared.serviceShareKeyChain];
+
+    if (volume == nil) {
+        return 100;
+    } else {
+        return [volume integerValue];
+    }
 }
 
-+ (void)setAudioMute:(BOOL)set
++ (void)setAudioVolume:(NSInteger)volume
 {
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"audioMute" service:NCGlobal.shared.serviceShareKeyChain];
+    NSString *volumeString = [@(volume) stringValue];
+    [UICKeyChainStore setString:volumeString forKey:@"audioVolume" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 + (BOOL)getAccountRequest
