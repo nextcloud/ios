@@ -110,10 +110,7 @@ class NCViewerMedia: UIViewController {
                 playerToolBar.viewerMediaPage = viewerMediaPage
             }
 
-            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
-            if let url = urlVideo.url {
-                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
-            }
+            self.ncplayer = NCPlayer.init(autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
         }
 
         // TIP
@@ -183,8 +180,13 @@ class NCViewerMedia: UIViewController {
         if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
 
             if let ncplayer = self.ncplayer {
-                ncplayer.openAVPlayer()
-                self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+
+                NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+                    if let url = url {
+                        ncplayer.openAVPlayer(url: url)
+                        self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+                    }
+                }
             }
             
         } else if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
@@ -483,7 +485,7 @@ extension NCViewerMedia {
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.livePhoto && ncplayer?.player?.timeControlStatus == .paused {
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.livePhoto && !(ncplayer?.isPlay() ?? false) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
         }
     }
