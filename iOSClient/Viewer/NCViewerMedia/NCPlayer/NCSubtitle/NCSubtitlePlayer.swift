@@ -213,6 +213,7 @@ extension NCPlayer {
     func addPeriodicNotification(parsedPayload: NSDictionary) {
         // Add periodic notifications
         let interval = CMTimeMake(value: 1, timescale: 60)
+        /*
         self.player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let strongSelf = self, let label = strongSelf.subtitleLabel, let containerView = strongSelf.subtitleContainerView else {
                 return
@@ -223,6 +224,7 @@ extension NCPlayer {
                 strongSelf.adjustLabelHeight(label: label)
             }
         }
+        */
     }
 
     @objc private func deviceRotated(_ notification: Notification) {
