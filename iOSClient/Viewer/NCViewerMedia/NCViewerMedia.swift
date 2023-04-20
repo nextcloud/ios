@@ -110,7 +110,7 @@ class NCViewerMedia: UIViewController {
                 playerToolBar.viewerMediaPage = viewerMediaPage
             }
 
-            self.ncplayer = NCPlayer.init(autoPlay: self.autoPlay, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
+            self.ncplayer = NCPlayer.init(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
         }
 
         // TIP
@@ -183,7 +183,7 @@ class NCViewerMedia: UIViewController {
 
                 NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
                     if let url = url {
-                        ncplayer.openAVPlayer(url: url)
+                        ncplayer.openAVPlayer(url: url, autoplay: self.autoPlay)
                         self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
                     }
                 }

@@ -400,7 +400,7 @@ class NCViewerMediaPage: UIViewController {
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
 
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+                let seconds = Float((event as! MPSkipIntervalCommandEvent).interval)
                 self.currentViewController.playerToolBar?.skip(seconds: seconds)
                 return.success
             }
@@ -408,14 +408,14 @@ class NCViewerMediaPage: UIViewController {
             MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
             skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
 
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
+                let seconds = Float((event as! MPSkipIntervalCommandEvent).interval)
                 self.currentViewController.playerToolBar?.skip(seconds: -seconds)
                 return.success
             }
         }
 
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = 0 // ncplayer.durationTime.seconds
         if let image = currentViewController.image {
             nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
                 return image
@@ -535,7 +535,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         if completed && nextIndex != nil {
             previousViewControllers.forEach { viewController in
                 let viewerMedia = viewController as! NCViewerMedia
-                viewerMedia.ncplayer?.deactivateObserver()
+                // viewerMedia.ncplayer?.deactivateObserver()
             }
             currentIndex = nextIndex!
         }
@@ -620,8 +620,8 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
                 NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
                     if let url = url {
-                        self.ncplayerLivePhoto = NCPlayer.init(autoPlay: true, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
-                        self.ncplayerLivePhoto?.openAVPlayer(url: url)
+                        self.ncplayerLivePhoto = NCPlayer.init(imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
+                        self.ncplayerLivePhoto?.openAVPlayer(url: url, autoplay: true)
                     }
                 }
             }
@@ -631,8 +631,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             currentViewController.statusViewImage.isHidden = false
             currentViewController.statusLabel.isHidden = false
             currentViewController.imageVideoContainer.image = currentViewController.image
-            ncplayerLivePhoto?.videoLayer?.removeFromSuperlayer()
-            ncplayerLivePhoto?.deactivateObserver()
+            // ncplayerLivePhoto?.deactivateObserver()
         }
     }
 }

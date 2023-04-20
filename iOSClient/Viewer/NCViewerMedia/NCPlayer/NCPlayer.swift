@@ -28,15 +28,14 @@ import AVFoundation
 import MediaPlayer
 import JGProgressHUD
 import Alamofire
+import MobileVLCKit
 
 class NCPlayer: NSObject {
 
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    internal var url: URL
+    internal var url: URL?
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewController: UIViewController?
-    internal var autoPlay: Bool
-    internal var isProxy: Bool
     internal var isStartPlayer: Bool
     internal var isStartObserver: Bool
     internal var subtitleUrls: [URL] = []
@@ -47,19 +46,13 @@ class NCPlayer: NSObject {
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var observerAVPlayertTime: Any?
 
-    var kvoPlayerObserver: NSKeyValueObservation?
-    var player: AVPlayer?
-    var durationTime: CMTime = .zero
+    var player: VLCMediaPlayer?
     var metadata: tableMetadata
-    var videoLayer: AVPlayerLayer?
 
     // MARK: - View Life Cycle
 
-    init(url: URL, autoPlay: Bool, isProxy: Bool, imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
+    init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
 
-        self.url = url
-        self.autoPlay = autoPlay
-        self.isProxy = isProxy
         self.isStartPlayer = false
         self.isStartObserver = false
         self.imageVideoContainer = imageVideoContainer
@@ -82,10 +75,10 @@ class NCPlayer: NSObject {
     deinit {
 
         print("deinit NCPlayer with ocId \(metadata.ocId)")
-        deactivateObserver()
     }
 
-    func openAVPlayer() {
+    func openAVPlayer(url: URL, autoplay: Bool) {
+        self.url = url
 
 #if MFFFLIB
         MFFF.shared.setDelegate = self
@@ -101,223 +94,34 @@ class NCPlayer: NSObject {
         }
 #endif
 
-        // Check already started
-        if isStartPlayer {
-            if !isStartObserver {
-                print("Play already started - URL: \(self.url)")
-                activateObserver()
-                playerToolBar?.show()
-            }
-            return
-        }
-
-        print("Play URL: \(self.url)")
-        player = AVPlayer(url: self.url)
+        print("Play URL: \(url)")
+        player = VLCMediaPlayer()
+        player?.media = VLCMedia(url: url)
+        player?.media?.addOption("--network-caching=10000")
+        player?.delegate = self
         playerToolBar?.show()
         playerToolBar?.setMetadata(self.metadata)
 #if MFFFLIB
         setUpForSubtitle()
 #endif
 
+        let volume = CCUtility.getAudioVolume()
         if metadata.livePhoto {
-            player?.isMuted = false
+            player?.audio?.volume = 0
         } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
-            player?.isMuted = CCUtility.getAudioMute()
+            player?.audio?.volume = Int32(volume)
         } else {
-            player?.isMuted = CCUtility.getAudioMute()
-            if let time = NCManageDatabase.shared.getVideoTime(metadata: metadata) {
-                player?.seek(to: time)
+            player?.audio?.volume = Int32(volume)
+            if let position = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
+                player?.position = position
             }
         }
 
-        let observerAVPlayertStatus = self.player?.currentItem?.observe(\.status, options: [.new,.initial]) { player, change in
-
-            if let player = self.player,
-               let playerItem = player.currentItem,
-               let object = player.currentItem,
-               playerItem === object,
-               self.viewController != nil {
-
-                if self.isStartPlayer {
-                    return
-                }
-                if (playerItem.status == .readyToPlay || playerItem.status == .failed) {
-                    print("Player ready")
-                    self.startPlayer()
-                } else {
-                    print("Player not ready")
-                }
-            }
+        player?.drawable = self.imageVideoContainer
+        if autoplay {
+            player?.play()
         }
-
-        if let observerAVPlayertStatus = observerAVPlayertStatus{
-            kvoPlayerObserver = observerAVPlayertStatus
-        }
-    }
-
-    func startPlayer() {
-
-        player?.currentItem?.asset.loadValuesAsynchronously(forKeys: ["playable"], completionHandler: {
-
-            var error: NSError? = nil
-            let status = self.player?.currentItem?.asset.statusOfValue(forKey: "playable", error: &error) ?? .unknown
-
-            DispatchQueue.main.async {
-
-                switch status {
-                case .loaded:
-
-                    self.durationTime = self.player?.currentItem?.asset.duration ?? .zero
-                    NCManageDatabase.shared.addVideoTime(metadata: self.metadata, time: nil, durationTime: self.durationTime)
-
-                    self.videoLayer = AVPlayerLayer(player: self.player)
-                    self.videoLayer!.frame = self.imageVideoContainer?.bounds ?? .zero
-                    self.videoLayer!.videoGravity = .resizeAspect
-
-                    if self.metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
-                        self.imageVideoContainer?.layer.addSublayer(self.videoLayer!)
-                        self.imageVideoContainer?.playerLayer = self.videoLayer
-                        self.imageVideoContainer?.metadata = self.metadata
-                        self.imageVideoContainer?.image = self.imageVideoContainer?.image?.image(alpha: 0)
-                    }
-
-                    self.playerToolBar?.setBarPlayer(ncplayer: self)
-                    self.generatorImagePreview()
-                    if !(self.detailView?.isShow() ?? false) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId":self.metadata.ocId, "enableTimerAutoHide": false])
-                    }
-                    self.activateObserver()
-                    if self.autoPlay || CCUtility.getPlayerPlay() {
-                        self.player?.play()
-                    }
-                    self.isStartPlayer = true
-                    break
-
-                case .failed:
-
-                    self.playerToolBar?.hide()
-                    if self.isProxy && NCKTVHTTPCache.shared.getDownloadStatusCode(metadata: self.metadata) == 200 {
-                        let alertController = UIAlertController(title: NSLocalizedString("_error_", value: "Error", comment: ""), message: NSLocalizedString("_video_not_streamed_", comment: ""), preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
-                            self.downloadVideo()
-                        }))
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
-                        self.viewController?.present(alertController, animated: true)
-                    } else if self.metadata.isDirectoryE2EE {
-                        let alertController = UIAlertController(title: NSLocalizedString("_info_", value: "Info", comment: ""), message: NSLocalizedString("_video_not_streamed_e2ee_", comment: ""), preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", value: "Yes", comment: ""), style: .default, handler: { _ in
-                            self.downloadVideo(isEncrypted: true)
-                        }))
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", value: "No", comment: ""), style: .default, handler: { _ in }))
-                        self.viewController?.present(alertController, animated: true)
-                    } else {
-#if MFFFLIB
-                        if error?.code == AVError.Code.fileFormatNotRecognized.rawValue {
-                            self.convertVideo(withAlert: true)
-                            break
-                        }
-#endif
-                        if let title = error?.localizedDescription, let description = error?.localizedFailureReason {
-                            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: description)
-                            NCContentPresenter.shared.messageNotification(title, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                        } else {
-                            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
-                            NCContentPresenter.shared.showError(error: error, priority: .max)
-                        }
-                    }
-                    break
-
-                case .cancelled:
-                    break
-
-                default:
-                    break
-                }
-            }
-        })
-    }
-
-    func activateObserver() {
-        print("activating Observer ocId \(metadata.ocId)")
-
-        observerAVPlayerItemDidPlayToEndTime = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) {  [weak self] notification in
-
-            guard let self = self else {
-                return
-            }
-
-            if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
-
-                NCKTVHTTPCache.shared.saveCache(metadata: self.metadata)
-
-                self.videoSeek(time: .zero)
-
-                if !(self.detailView?.isShow() ?? false) {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
-                }
-
-                self.playerToolBar?.updateToolBar()
-            }
-        }
-
-        // Evey 1 second update toolbar
-        observerAVPlayertTime = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: .main, using: { [weak self] _ in
-
-            guard let self = self else {
-                return
-            }
-
-            if self.player?.currentItem?.status == .readyToPlay {
-                self.playerToolBar?.updateToolBar()
-            }
-        })
-
-        NotificationCenter.default.addObserver(self, selector: #selector(generatorImagePreview), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(playerPause), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(playerPlay), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
-
-        if let player = self.player {
-            NotificationCenter.default.addObserver(self, selector: #selector(playerStalled), name: NSNotification.Name.AVPlayerItemPlaybackStalled, object: player.currentItem)
-        }
-
-        isStartObserver = true
-    }
-
-    func deactivateObserver() {
-
-        print("deactivating Observer ocId \(metadata.ocId)")
-
-        if isPlay() {
-            playerPause()
-        }
-        
-        self.kvoPlayerObserver?.invalidate()
-        self.kvoPlayerObserver = nil
-
-        if let observerAVPlayerItemDidPlayToEndTime = self.observerAVPlayerItemDidPlayToEndTime {
-            NotificationCenter.default.removeObserver(observerAVPlayerItemDidPlayToEndTime)
-        }
-        observerAVPlayerItemDidPlayToEndTime = nil
-
-        if let observerAVPlayertTime = self.observerAVPlayertTime,
-           let player = player {
-            player.removeTimeObserver(observerAVPlayertTime)
-        }
-        observerAVPlayertTime = nil
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemPlaybackStalled, object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
-        
-        isStartObserver = false
+        self.playerToolBar?.setBarPlayer(ncplayer: self)
     }
 
     // MARK: - NotificationCenter
@@ -340,13 +144,7 @@ class NCPlayer: NSObject {
 
     func isPlay() -> Bool {
 
-        if player?.rate == 1 { return true } else { return false }
-    }
-
-    @objc func playerStalled() {
-
-        print("current player \(String(describing: player)) stalled.\nCalling playerPlay()")
-        playerPlay()
+        return player?.isPlaying ?? false
     }
 
     @objc func playerPlay() {
@@ -365,30 +163,41 @@ class NCPlayer: NSObject {
         }
     }
 
-    func videoSeek(time: CMTime) {
+    func videoSeek(position: Float) {
 
-        player?.seek(to: time)
-        saveTime(time)
+        player?.position = position
+        savePosition(position)
     }
 
-    func saveTime(_ time: CMTime) {
+    func videoStop() {
+        if let url = self.url {
+            if !(self.detailView?.isShow() ?? false) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
+            }
+            self.openAVPlayer(url: url, autoplay: false)
+        }
+    }
+
+    func savePosition(_ position: Float) {
 
         if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
+        let length = Int(player?.media?.length.intValue ?? 0)
 
-        NCManageDatabase.shared.addVideoTime(metadata: metadata, time: time, durationTime: nil)
+        NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length)
         generatorImagePreview()
     }
 
     func saveCurrentTime() {
 
         if let player = self.player {
-            saveTime(player.currentTime())
+            savePosition(player.position)
         }
     }
 
     @objc func generatorImagePreview() {
 
-        guard let time = player?.currentTime(), !metadata.livePhoto, metadata.classFile != NKCommon.TypeClassFile.audio.rawValue  else { return }
+        /*
+        guard let time = player.time, !metadata.livePhoto, metadata.classFile != NKCommon.TypeClassFile.audio.rawValue  else { return }
 
         var image: UIImage?
 
@@ -421,6 +230,7 @@ class NCPlayer: NSObject {
                 print(error.localizedDescription)
             }
         }
+        */
     }
 
     internal func downloadVideo(isEncrypted: Bool = false, requiredConvert: Bool = false) {
@@ -456,20 +266,88 @@ class NCPlayer: NSObject {
                         NCEndToEndEncryption.sharedManager()?.decryptFile(self.metadata.fileName, fileNameView: self.metadata.fileNameView, ocId: self.metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                     }
                 }
-                let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: self.metadata)
-                if let url = urlVideo.url {
-                    self.url = url
-                    self.isProxy = urlVideo.isProxy
+                if CCUtility.fileProviderStorageExists(self.metadata) || self.metadata.isDirectoryE2EE {
+                    let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                     if requiredConvert {
 #if MFFFLIB
                         self.convertVideo(withAlert: false)
 #endif
                     } else {
-                        self.openAVPlayer()
+                        self.openAVPlayer(url: url, autoplay: true)
                     }
                 }
             }
             hud.dismiss()
         }
     }
+}
+
+extension NCPlayer: VLCMediaPlayerDelegate {
+
+    func mediaPlayerStateChanged(_ aNotification: Notification) {
+        guard let player = self.player else { return }
+
+        switch player.state {
+        case .stopped:
+            videoStop()
+            print("Played mode: STOPPED")
+            break
+        case .opening:
+            print("Played mode: OPENING")
+            break
+        case .buffering:
+            print("Played mode: BUFFERING")
+            break
+        case .ended:
+            print("Played mode: ENDED")
+            break
+        case .error:
+            print("Played mode: ERROR")
+            break
+        case .playing:
+            print("Played mode: PLAYING")
+            break
+        case .paused:
+            print("Played mode: PAUSED")
+            break
+        default: break
+        }
+
+        print(player.state)
+    }
+
+    func mediaPlayerTimeChanged(_ aNotification: Notification) {
+
+        self.playerToolBar?.updateToolBar()
+    }
+
+    func mediaPlayerTitleChanged(_ aNotification: Notification) {
+        guard let player = self.player else { return }
+        print(".")
+    }
+
+    func mediaPlayerChapterChanged(_ aNotification: Notification) {
+        guard let player = self.player else { return }
+        print(".")
+    }
+
+    func mediaPlayerLoudnessChanged(_ aNotification: Notification) {
+        guard let player = self.player else { return }
+        print(".")
+    }
+
+    func mediaPlayerSnapshot(_ aNotification: Notification) {
+        guard let player = self.player else { return }
+        print(".")
+    }
+
+    func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {
+        // Handle other states...
+    }
+
+    func mediaPlayer(_ player: VLCMediaPlayer, recordingStoppedAtPath path: String) {
+        // Handle other states...
+    }
+
+
 }

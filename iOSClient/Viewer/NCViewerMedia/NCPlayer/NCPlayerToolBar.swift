@@ -27,6 +27,7 @@ import CoreMedia
 import UIKit
 import AVKit
 import MediaPlayer
+import MobileVLCKit
 
 class NCPlayerToolBar: UIView {
 
@@ -103,7 +104,7 @@ class NCPlayerToolBar: UIView {
 
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = 0
+        playbackSlider.maximumValue = 1
         playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
         playbackSlider.isEnabled = false
@@ -148,13 +149,11 @@ class NCPlayerToolBar: UIView {
 
         self.ncplayer = ncplayer
 
-        playbackSlider.value = 0
-        playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = Float(ncplayer.durationTime.seconds)
+        playbackSlider.value = ncplayer.player?.position ?? 0
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
-        labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
-        labelLeftTime.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime)
+        labelCurrentTime.text = ncplayer.player?.time.stringValue
+        labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
         updateToolBar()
     }
@@ -165,7 +164,8 @@ class NCPlayerToolBar: UIView {
 
         // MUTE
         if let muteButton = muteButton {
-            if CCUtility.getAudioMute() {
+            let audio = CCUtility.getAudioVolume()
+            if audio == 0 {
                 muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
             } else {
                 muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
@@ -185,12 +185,10 @@ class NCPlayerToolBar: UIView {
         }
 
         // SLIDER TIME (START - END)
-        let time = (ncplayer.player?.currentTime() ?? .zero).convertScale(1000, method: .default)
-        playbackSlider.value = Float(time.seconds)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time.seconds
+        playbackSlider.value = ncplayer.player?.position ?? 0
         playbackSlider.isEnabled = true
-        labelCurrentTime.text = NCUtility.shared.stringFromTime(time)
-        labelLeftTime.text = "-" + NCUtility.shared.stringFromTime(ncplayer.durationTime - time)
+        labelCurrentTime.text = ncplayer.player?.time.stringValue
+        labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
         // BACK
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
@@ -322,32 +320,15 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    func skip(seconds: Float64) {
-
+    func skip(seconds: Float) {
         guard let ncplayer = ncplayer, let player = ncplayer.player else { return }
 
-        let currentTime = player.currentTime()
-        var newTime: CMTime = .zero
-        let timeToAdd: CMTime = CMTimeMakeWithSeconds(abs(seconds), preferredTimescale: 1)
+        let lengthInSeconds = Float((player.media?.length.intValue ?? 0) / 1000)
+        let currentInSeconds = player.position * lengthInSeconds
+        let newPositionSeconds = currentInSeconds + seconds
+        let newPosition = newPositionSeconds / lengthInSeconds
 
-        if seconds > 0 {
-            newTime = CMTimeAdd(currentTime, timeToAdd)
-            if newTime < ncplayer.durationTime {
-                ncplayer.videoSeek(time: newTime)
-            } else if newTime >= ncplayer.durationTime {
-                let timeToSubtract: CMTime = CMTimeMakeWithSeconds(3, preferredTimescale: 1)
-                newTime = CMTimeSubtract(ncplayer.durationTime, timeToSubtract)
-                if newTime > currentTime {
-                    ncplayer.videoSeek(time: newTime)
-                }
-            }
-        } else {
-            newTime = CMTimeSubtract(currentTime, timeToAdd)
-            if newTime.seconds < 0 {
-                newTime = .zero
-            }
-            ncplayer.videoSeek(time: newTime)
-        }
+        ncplayer.videoSeek(position: newPosition)
 
         updateToolBar()
         reStartTimerAutoHide()
@@ -373,8 +354,7 @@ class NCPlayerToolBar: UIView {
 
         if let touchEvent = event.allTouches?.first, let ncplayer = ncplayer {
 
-            let seconds: Int64 = Int64(self.playbackSlider.value)
-            let targetTime: CMTime = CMTimeMake(value: seconds, timescale: 1)
+            let newPosition = self.playbackSlider.value
 
             switch touchEvent.phase {
             case .began:
@@ -382,10 +362,10 @@ class NCPlayerToolBar: UIView {
                 ncplayer.playerPause()
                 playbackSliderEvent = .began
             case .moved:
-                ncplayer.videoSeek(time: targetTime)
+                ncplayer.videoSeek(position: newPosition)
                 playbackSliderEvent = .moved
             case .ended:
-                ncplayer.videoSeek(time: targetTime)
+                ncplayer.videoSeek(position: newPosition)
                 if wasInPlay {
                     ncplayer.playerPlay()
                 }
@@ -405,46 +385,39 @@ class NCPlayerToolBar: UIView {
     @objc func tapToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
+        guard let ncplayer = ncplayer else { return }
 
-        if ncplayer?.player?.timeControlStatus == .playing {
+        if ncplayer.isPlay() {
+            ncplayer.playerPause()
             CCUtility.setPlayerPlay(false)
-            ncplayer?.playerPause()
-            ncplayer?.saveCurrentTime()
+            ncplayer.saveCurrentTime()
             timerAutoHide?.invalidate()
-        } else if ncplayer?.player?.timeControlStatus == .paused {
+        } else {
+            ncplayer.playerPlay()
             CCUtility.setPlayerPlay(true)
-            ncplayer?.playerPlay()
             startTimerAutoHide()
-        } else if ncplayer?.player?.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-            print("timeControlStatus.waitingToPlayAtSpecifiedRate")
-            if let reason = ncplayer?.player?.reasonForWaitingToPlay {
-                switch reason {
-                case .evaluatingBufferingRate:
-                    self.ncplayer?.player?.playImmediately(atRate: 1)
-                    print("reasonForWaitingToPlay.evaluatingBufferingRate")
-                case .toMinimizeStalls:
-                    print("reasonForWaitingToPlay.toMinimizeStalls")
-                case .noItemToPlay:
-                    print("reasonForWaitingToPlay.noItemToPlay")
-                default:
-                    print("Unknown \(reason)")
-                }
-            }
         }
     }
 
     @IBAction func tapMute(_ sender: Any) {
 
-        let mute = CCUtility.getAudioMute()
+        let volume = CCUtility.getAudioVolume()
 
-        CCUtility.setAudioMute(!mute)
-        ncplayer?.player?.isMuted = !mute
+        if volume > 0 {
+            CCUtility.setAudioVolume(0)
+            ncplayer?.player?.audio?.volume = 0
+        } else {
+            CCUtility.setAudioVolume(100)
+            ncplayer?.player?.audio?.volume = 100
+        }
+
         updateToolBar()
         reStartTimerAutoHide()
     }
 
     @IBAction func tapPip(_ sender: Any) {
 
+        /*
         guard let videoLayer = ncplayer?.videoLayer else { return }
 
         if let pictureInPictureController = self.pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
@@ -462,6 +435,7 @@ class NCPlayerToolBar: UIView {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId": metadata.ocId])
             }
         }
+        */
     }
 
     @IBAction func tapForward(_ sender: Any) {
