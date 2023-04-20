@@ -160,7 +160,7 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
-        playerToolBar?.updateToolBar()
+        playerToolBar?.update()
     }
 
     // MARK: -
@@ -176,14 +176,14 @@ class NCPlayer: NSObject {
         if let position = NCManageDatabase.shared.getVideoPosition(metadata: self.metadata) {
             player?.position = position
         }
-        playerToolBar?.updateToolBar()
+        playerToolBar?.update()
     }
 
     @objc func playerPause() {
 
         if let position = player?.position {
             player?.pause()
-            playerToolBar?.updateToolBar()
+            playerToolBar?.update()
         }
 
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
@@ -203,7 +203,7 @@ class NCPlayer: NSObject {
     func videoSeek(position: Float) {
 
         player?.position = position
-        playerToolBar?.updateToolBar()
+        playerToolBar?.update()
     }
 
     func videoStop() {
@@ -331,15 +331,18 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             break
         case .ended:
             print("Played mode: ENDED")
+            playerToolBar?.update()
             break
         case .error:
             print("Played mode: ERROR")
             break
         case .playing:
             print("Played mode: PLAYING")
+            playerToolBar?.update()
             break
         case .paused:
             print("Played mode: PAUSED")
+            playerToolBar?.update()
             break
         default: break
         }
@@ -349,7 +352,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
 
-        self.playerToolBar?.updateToolBar()
+        self.playerToolBar?.update()
     }
 
     func mediaPlayerTitleChanged(_ aNotification: Notification) {

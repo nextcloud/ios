@@ -65,9 +65,6 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-
-// NCUtility.shared.isSimulatorOrTestFlight()
-
     var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
 
@@ -152,10 +149,10 @@ class NCPlayerToolBar: UIView {
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
-        updateToolBar()
+        update()
     }
 
-    public func updateToolBar() {
+    public func update() {
 
         guard let ncplayer = self.ncplayer else { return }
 
@@ -238,7 +235,7 @@ class NCPlayerToolBar: UIView {
             self.isHidden = false
         })
 
-        updateToolBar()
+        update()
     }
 
     func isShow() -> Bool {
@@ -285,7 +282,7 @@ class NCPlayerToolBar: UIView {
 
         ncplayer.videoSeek(position: newPosition)
 
-        updateToolBar()
+        update()
         reStartTimerAutoHide()
     }
 
@@ -359,7 +356,7 @@ class NCPlayerToolBar: UIView {
             ncplayer?.player?.audio?.volume = 100
         }
 
-        updateToolBar()
+        update()
         reStartTimerAutoHide()
     }
 
