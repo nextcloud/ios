@@ -39,7 +39,6 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
 
-    private var _autoPlay: Bool = false
     private var tipView: EasyTipView?
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -53,16 +52,6 @@ class NCViewerMedia: UIViewController {
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
 
-    var autoPlay: Bool {
-        get {
-            let temp = _autoPlay
-            _autoPlay = false
-            return temp
-        }
-        set(newVal) {
-            _autoPlay = newVal
-        }
-    }
 
     // MARK: - View Life Cycle
 
@@ -181,10 +170,16 @@ class NCViewerMedia: UIViewController {
 
             if let ncplayer = self.ncplayer {
 
-                NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
-                    if let url = url {
-                        ncplayer.openAVPlayer(url: url, autoplay: self.autoPlay)
-                        self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+                if ncplayer.url == nil {
+                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+                        if let url = url {
+                            ncplayer.openAVPlayer(url: url)
+                            self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+                        }
+                    }
+                } else {
+                    if NCManageDatabase.shared.getVideoAutoplay(metadata: self.metadata) {
+                        ncplayer.playerPlay()
                     }
                 }
             }

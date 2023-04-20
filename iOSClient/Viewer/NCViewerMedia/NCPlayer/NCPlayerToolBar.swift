@@ -122,9 +122,6 @@ class NCPlayerToolBar: UIView {
 
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
-
-        NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleRouteChange), name: AVAudioSession.routeChangeNotification, object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -162,6 +159,12 @@ class NCPlayerToolBar: UIView {
 
         guard let ncplayer = self.ncplayer else { return }
 
+        // SAVE POSITION
+        let position = ncplayer.player?.position ?? 0
+        if position > 0 {
+            ncplayer.savePosition(position)
+        }
+
         // MUTE
         if let muteButton = muteButton {
             let audio = CCUtility.getAudioVolume()
@@ -185,7 +188,7 @@ class NCPlayerToolBar: UIView {
         }
 
         // SLIDER TIME (START - END)
-        playbackSlider.value = ncplayer.player?.position ?? 0
+        playbackSlider.value = position
         playbackSlider.isEnabled = true
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
@@ -207,54 +210,6 @@ class NCPlayerToolBar: UIView {
         // FORWARD
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
         forwardButton.isEnabled = true
-    }
-
-    // MARK: Handle Notifications
-
-    @objc func handleRouteChange(notification: Notification) {
-
-        guard let userInfo = notification.userInfo, let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt, let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
-
-        switch reason {
-        case .newDeviceAvailable:
-            let session = AVAudioSession.sharedInstance()
-            for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.headphones {
-                print("headphones connected")
-                ncplayer?.playerPlay()
-                startTimerAutoHide()
-                break
-            }
-        case .oldDeviceUnavailable:
-            if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
-                for output in previousRoute.outputs where output.portType == AVAudioSession.Port.headphones {
-                    print("headphones disconnected")
-                    ncplayer?.playerPause()
-                    ncplayer?.saveCurrentTime()
-                    break
-                }
-            }
-        default: ()
-        }
-    }
-
-    @objc func handleInterruption(notification: Notification) {
-
-        guard let userInfo = notification.userInfo, let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt, let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
-
-        if type == .began {
-            print("Interruption began")
-        } else if type == .ended {
-            if let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
-                let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
-                if options.contains(.shouldResume) {
-                    print("Interruption Ended - playback should resume")
-                    ncplayer?.playerPlay()
-                    startTimerAutoHide()
-                } else {
-                    print("Interruption Ended - playback should NOT resume")
-                }
-            }
-        }
     }
 
     // MARK: -
@@ -385,12 +340,9 @@ class NCPlayerToolBar: UIView {
 
         if ncplayer.isPlay() {
             ncplayer.playerPause()
-            CCUtility.setPlayerPlay(false)
-            ncplayer.saveCurrentTime()
             timerAutoHide?.invalidate()
         } else {
             ncplayer.playerPlay()
-            CCUtility.setPlayerPlay(true)
             startTimerAutoHide()
         }
     }

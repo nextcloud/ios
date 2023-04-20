@@ -184,9 +184,6 @@
 + (BOOL)getRemovePhotoCameraRoll;
 + (void)setRemovePhotoCameraRoll:(BOOL)set;
 
-+ (BOOL)getPlayerPlay;
-+ (void)setPlayerPlay:(BOOL)set;
-
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

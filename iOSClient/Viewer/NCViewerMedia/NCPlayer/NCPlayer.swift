@@ -69,11 +69,11 @@ class NCPlayer: NSObject {
 
     deinit {
 
-        playerStop()
+        playerClose()
         print("deinit NCPlayer with ocId \(metadata.ocId)")
     }
 
-    func openAVPlayer(url: URL, autoplay: Bool) {
+    func openAVPlayer(url: URL) {
 
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
@@ -116,16 +116,32 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self)
-        playerToolBar?.setMetadata(self.metadata)
-
-        if autoplay {
-            player?.play()
+        if NCManageDatabase.shared.getVideoAutoplay(metadata: metadata) {
+            playerPlay()
             playerToolBar?.show(enableTimerAutoHide: true)
         } else {
             playerToolBar?.show(enableTimerAutoHide: false)
         }
+
+        playerToolBar?.setBarPlayer(ncplayer: self)
+        playerToolBar?.setMetadata(self.metadata)
     }
+
+    func deactivatePlayer() {
+
+        playerPause()
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemPlaybackStalled, object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
+    }
+
+    // MARK: - UIGestureRecognizerDelegate
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         viewerMediaPage?.didSingleTapWith(gestureRecognizer: gestureRecognizer)
@@ -157,37 +173,46 @@ class NCPlayer: NSObject {
     @objc func playerPlay() {
 
         player?.play()
+        if let position = NCManageDatabase.shared.getVideoPosition(metadata: self.metadata) {
+            player?.position = position
+        }
         playerToolBar?.updateToolBar()
     }
 
     @objc func playerPause() {
 
-        player?.pause()
-        playerToolBar?.updateToolBar()
+        if let position = player?.position {
+            player?.pause()
+            playerToolBar?.updateToolBar()
+        }
 
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
         }
     }
 
-    @objc func playerStop() {
+    @objc func playerClose() {
 
         player?.stop()
-        playerToolBar?.updateToolBar()
+
+        if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
+            playerToolBar.pictureInPictureController?.stopPictureInPicture()
+        }
     }
 
     func videoSeek(position: Float) {
 
         player?.position = position
-        savePosition(position)
+        playerToolBar?.updateToolBar()
     }
 
     func videoStop() {
         if let url = self.url {
+            NCManageDatabase.shared.addVideo(metadata: metadata, position: 0, autoplay: false)
             if !(self.detailView?.isShow() ?? false) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
             }
-            self.openAVPlayer(url: url, autoplay: false)
+            self.openAVPlayer(url: url)
         }
     }
 
@@ -196,15 +221,8 @@ class NCPlayer: NSObject {
         if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
         let length = Int(player?.media?.length.intValue ?? 0)
 
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length)
+        NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length, autoplay: isPlay())
         generatorImagePreview()
-    }
-
-    func saveCurrentTime() {
-
-        if let player = self.player {
-            savePosition(player.position)
-        }
     }
 
     @objc func generatorImagePreview() {
@@ -286,7 +304,7 @@ class NCPlayer: NSObject {
                         self.convertVideo(withAlert: false)
 #endif
                     } else {
-                        self.openAVPlayer(url: url, autoplay: true)
+                        self.openAVPlayer(url: url)
                     }
                 }
             }

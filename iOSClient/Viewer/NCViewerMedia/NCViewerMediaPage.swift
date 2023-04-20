@@ -138,7 +138,6 @@ class NCViewerMediaPage: UIViewController {
 
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
-            ncplayer.saveCurrentTime()
         }
         currentViewController.playerToolBar?.stopTimerAutoHide()
         clearCommandCenter()
@@ -488,7 +487,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
     func reloadCurrentPage() {
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        viewerMedia.autoPlay = false
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: false, completion: nil)
     }
     
@@ -497,7 +495,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         currentIndex = index
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        viewerMedia.autoPlay = autoPlay
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
     }
 
@@ -520,11 +517,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
     // START TRANSITION
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
 
-        // Save time video
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-            ncplayer.saveCurrentTime()
-        }
-
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
     }
@@ -535,7 +527,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         if completed && nextIndex != nil {
             previousViewControllers.forEach { viewController in
                 let viewerMedia = viewController as! NCViewerMedia
-                // viewerMedia.ncplayer?.deactivateObserver()
+                viewerMedia.ncplayer?.deactivatePlayer()
             }
             currentIndex = nextIndex!
         }
@@ -621,7 +613,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
                 NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
                     if let url = url {
                         self.ncplayerLivePhoto = NCPlayer.init(imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self, viewerMediaPage: self)
-                        self.ncplayerLivePhoto?.openAVPlayer(url: url, autoplay: true)
+                        self.ncplayerLivePhoto?.openAVPlayer(url: url)
                     }
                 }
             }
