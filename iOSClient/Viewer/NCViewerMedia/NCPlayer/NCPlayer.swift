@@ -41,15 +41,17 @@ class NCPlayer: NSObject {
 
     private weak var imageVideoContainer: imageVideoContainerView?
     private weak var detailView: NCViewerMediaDetailView?
+    private weak var viewerMediaPage: NCViewerMediaPage?
     private var observerAVPlayerItemDidPlayToEndTime: Any?
     private var observerAVPlayertTime: Any?
 
     var player: VLCMediaPlayer?
     var metadata: tableMetadata
+    var singleTapGestureRecognizer: UITapGestureRecognizer!
 
     // MARK: - View Life Cycle
 
-    init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController) {
+    init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController, viewerMediaPage: NCViewerMediaPage?) {
 
         self.isStartPlayer = false
         self.isStartObserver = false
@@ -58,6 +60,7 @@ class NCPlayer: NSObject {
         self.metadata = metadata
         self.detailView = detailView
         self.viewController = viewController
+        self.viewerMediaPage = viewerMediaPage
 
         super.init()
 
@@ -76,7 +79,9 @@ class NCPlayer: NSObject {
     }
 
     func openAVPlayer(url: URL, autoplay: Bool) {
+
         self.url = url
+        self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
 #if MFFFLIB
         MFFF.shared.setDelegate = self
@@ -111,6 +116,10 @@ class NCPlayer: NSObject {
         }
 
         player?.drawable = self.imageVideoContainer
+        if let view = player?.drawable as? UIView {
+            view.isUserInteractionEnabled = true
+            view.addGestureRecognizer(singleTapGestureRecognizer)
+        }
 
         playerToolBar?.setBarPlayer(ncplayer: self)
         playerToolBar?.setMetadata(self.metadata)
@@ -121,6 +130,10 @@ class NCPlayer: NSObject {
         } else {
             playerToolBar?.show(enableTimerAutoHide: false)
         }
+    }
+
+    @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        viewerMediaPage?.didSingleTapWith(gestureRecognizer: gestureRecognizer)
     }
 
     // MARK: - NotificationCenter

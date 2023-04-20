@@ -110,7 +110,7 @@ class NCViewerMedia: UIViewController {
                 playerToolBar.viewerMediaPage = viewerMediaPage
             }
 
-            self.ncplayer = NCPlayer.init(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
+            self.ncplayer = NCPlayer.init(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self, viewerMediaPage: self.viewerMediaPage)
         }
 
         // TIP
