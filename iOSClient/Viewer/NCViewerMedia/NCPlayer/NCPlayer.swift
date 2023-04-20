@@ -36,14 +36,10 @@ class NCPlayer: NSObject {
     internal var url: URL?
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewController: UIViewController?
-    internal var isStartPlayer: Bool
-    internal var isStartObserver: Bool
 
     private weak var imageVideoContainer: imageVideoContainerView?
     private weak var detailView: NCViewerMediaDetailView?
     private weak var viewerMediaPage: NCViewerMediaPage?
-    private var observerAVPlayerItemDidPlayToEndTime: Any?
-    private var observerAVPlayertTime: Any?
 
     var player: VLCMediaPlayer?
     var metadata: tableMetadata
@@ -53,8 +49,6 @@ class NCPlayer: NSObject {
 
     init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController, viewerMediaPage: NCViewerMediaPage?) {
 
-        self.isStartPlayer = false
-        self.isStartObserver = false
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -75,6 +69,7 @@ class NCPlayer: NSObject {
 
     deinit {
 
+        playerStop()
         print("deinit NCPlayer with ocId \(metadata.ocId)")
     }
 
@@ -173,6 +168,12 @@ class NCPlayer: NSObject {
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
         }
+    }
+
+    @objc func playerStop() {
+
+        player?.stop()
+        playerToolBar?.updateToolBar()
     }
 
     func videoSeek(position: Float) {
