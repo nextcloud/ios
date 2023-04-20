@@ -358,17 +358,13 @@ class NCPlayerToolBar: UIView {
 
             switch touchEvent.phase {
             case .began:
-                wasInPlay = ncplayer.isPlay()
                 ncplayer.playerPause()
                 playbackSliderEvent = .began
             case .moved:
-                ncplayer.videoSeek(position: newPosition)
                 playbackSliderEvent = .moved
             case .ended:
+                ncplayer.playerPlay()
                 ncplayer.videoSeek(position: newPosition)
-                if wasInPlay {
-                    ncplayer.playerPlay()
-                }
                 playbackSliderEvent = .ended
             default:
                 break
