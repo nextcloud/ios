@@ -38,8 +38,6 @@ class NCPlayer: NSObject {
     internal weak var viewController: UIViewController?
     internal var isStartPlayer: Bool
     internal var isStartObserver: Bool
-    internal var subtitleUrls: [URL] = []
-    internal var currentSubtitle: URL?
 
     private weak var imageVideoContainer: imageVideoContainerView?
     private weak var detailView: NCViewerMediaDetailView?
@@ -99,11 +97,6 @@ class NCPlayer: NSObject {
         player?.media = VLCMedia(url: url)
         player?.media?.addOption("--network-caching=10000")
         player?.delegate = self
-        playerToolBar?.show()
-        playerToolBar?.setMetadata(self.metadata)
-#if MFFFLIB
-        setUpForSubtitle()
-#endif
 
         let volume = CCUtility.getAudioVolume()
         if metadata.livePhoto {
@@ -118,10 +111,16 @@ class NCPlayer: NSObject {
         }
 
         player?.drawable = self.imageVideoContainer
+
+        playerToolBar?.setBarPlayer(ncplayer: self)
+        playerToolBar?.setMetadata(self.metadata)
+
         if autoplay {
             player?.play()
+            playerToolBar?.show(enableTimerAutoHide: true)
+        } else {
+            playerToolBar?.show(enableTimerAutoHide: false)
         }
-        self.playerToolBar?.setBarPlayer(ncplayer: self)
     }
 
     // MARK: - NotificationCenter
@@ -348,6 +347,4 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     func mediaPlayer(_ player: VLCMediaPlayer, recordingStoppedAtPath path: String) {
         // Handle other states...
     }
-
-
 }

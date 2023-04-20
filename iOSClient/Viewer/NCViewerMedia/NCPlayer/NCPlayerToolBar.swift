@@ -449,7 +449,7 @@ class NCPlayerToolBar: UIView {
     }
 
     @IBAction func tapSubtitle(_ sender: Any) {
-        self.ncplayer?.showAlertSubtitles()
+
     }
 
     func forward() {

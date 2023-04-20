@@ -569,8 +569,4 @@ extension NCViewerMedia: EasyTipViewDelegate {
 class imageVideoContainerView: UIImageView {
     var playerLayer: CALayer?
     var metadata: tableMetadata?
-    override func layoutSublayers(of layer: CALayer) {
-        super.layoutSublayers(of: layer)
-        playerLayer?.frame = self.bounds
-    }
 }

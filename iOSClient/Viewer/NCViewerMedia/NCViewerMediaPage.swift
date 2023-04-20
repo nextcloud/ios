@@ -631,7 +631,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             currentViewController.statusViewImage.isHidden = false
             currentViewController.statusLabel.isHidden = false
             currentViewController.imageVideoContainer.image = currentViewController.image
-            // ncplayerLivePhoto?.deactivateObserver()
         }
     }
 }
