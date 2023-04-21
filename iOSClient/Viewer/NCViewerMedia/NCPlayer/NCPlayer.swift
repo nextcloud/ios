@@ -313,19 +313,13 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
-            // var codecNameVideo, codecNameAudio, codecAudioChannelLayout, codecAudioLanguage, codecQuality: String?
             if let tracksInformation = player.media?.tracksInformation {
                 for case let track as [String:Any] in tracksInformation {
                     if track["type"] as? String == "video" {
                         width = track["width"] as? Int64
                         height = track["height"] as? Int64
-                        //codecNameVideo = track["codec"] as? String
-                    }
-                    if track["type"] as? String == "audio" {
-                        // codecNameAudio = track["codec"] as? String
                     }
                 }
-                //NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: codecNameVideo, codecNameAudio: codecNameAudio, codecAudioChannelLayout: codecAudioChannelLayout, codecAudioLanguage: codecAudioLanguage, codecMaxCompatibility: true, codecQuality: codecQuality)
             }
             // let metaDictionary = player.media?.metaData
             print("Played mode: PLAYING")
@@ -383,25 +377,22 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
 
     func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) {
 
-        var image: UIImage?
+        let image = UIImage(cgImage: thumbnail)
 
         do {
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            image = UIImage(cgImage: thumbnail)
             // Update Playing Info Center
             let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
-            if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
+            if mediaItemPropertyTitle == metadata.fileNameView {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
                     return image
                 }
             }
             // Preview
-            if let data = image?.jpegData(compressionQuality: 0.5) {
+            if let data = image.jpegData(compressionQuality: 0.5) {
                 try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
             }
             // Icon
-            if let data = image?.jpegData(compressionQuality: 0.5) {
+            if let data = image.jpegData(compressionQuality: 0.5) {
                 try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
             }
         } catch let error as NSError {
