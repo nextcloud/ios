@@ -46,6 +46,12 @@ class NCPlayer: NSObject {
     var metadata: tableMetadata
     var singleTapGestureRecognizer: UITapGestureRecognizer!
 
+    var width: Int64?
+    var height: Int64?
+
+    let fileNamePreviewLocalPath: String
+    let fileNameIconLocalPath: String
+
     // MARK: - View Life Cycle
 
     init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController, viewerMediaPage: NCViewerMediaPage?) {
@@ -56,6 +62,9 @@ class NCPlayer: NSObject {
         self.detailView = detailView
         self.viewController = viewController
         self.viewerMediaPage = viewerMediaPage
+
+        fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+        fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
         super.init()
 
@@ -195,6 +204,13 @@ class NCPlayer: NSObject {
 
     @objc func playerPause() {
 
+        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+
+        if let width = width, let height = height {
+            player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
+        }
+
         player?.pause()
         playerToolBar?.update(position: player?.position)
 
@@ -215,6 +231,13 @@ class NCPlayer: NSObject {
         let length = Int(player?.media?.length.intValue ?? 0)
 
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length, autoplay: isPlay())
+    }
+
+    func snapshot() {
+
+        if let player = player, let width = width, let height = height {
+            player.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
+        }
     }
 
     internal func downloadVideo(isEncrypted: Bool = false, requiredConvert: Bool = false) {
@@ -283,9 +306,11 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: STOPPED")
             break
         case .opening:
+            playerToolBar?.buffering()
             print("Played mode: OPENING")
             break
         case .buffering:
+            playerToolBar?.buffering()
             print("Played mode: BUFFERING")
             break
         case .ended:
@@ -296,21 +321,21 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
-            /*
             var codecNameVideo, codecNameAudio, codecAudioChannelLayout, codecAudioLanguage, codecQuality: String?
             if let tracksInformation = player.media?.tracksInformation {
                 for case let track as [String:Any] in tracksInformation {
                     if track["type"] as? String == "video" {
-                        codecNameVideo = track["codec"] as? String
+                        width = track["width"] as? Int64
+                        height = track["height"] as? Int64
+                        //codecNameVideo = track["codec"] as? String
                     }
                     if track["type"] as? String == "audio" {
                         codecNameAudio = track["codec"] as? String
                     }
                 }
-                NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: codecNameVideo, codecNameAudio: codecNameAudio, codecAudioChannelLayout: codecAudioChannelLayout, codecAudioLanguage: codecAudioLanguage, codecMaxCompatibility: true, codecQuality: codecQuality)
+                //NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: codecNameVideo, codecNameAudio: codecNameAudio, codecAudioChannelLayout: codecAudioChannelLayout, codecAudioLanguage: codecAudioLanguage, codecMaxCompatibility: true, codecQuality: codecQuality)
             }
             // let metaDictionary = player.media?.metaData
-            */
             print("Played mode: PLAYING")
             break
         case .paused:
@@ -341,7 +366,14 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {
-        print(".")
+        if let data = NSData(contentsOfFile: fileNamePreviewLocalPath),
+           let image = UIImage(data: data as Data),
+           let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)),
+           let data = image.jpegData(compressionQuality: 0.5) {
+            try? data.write(to: URL(fileURLWithPath: fileNameIconLocalPath))
+        }
+        print("Snapshot saved")
+
     }
 
     func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {
@@ -357,32 +389,5 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
 
     func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) { }
 
-    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) {
-
-        var image: UIImage?
-
-        do {
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            image = UIImage(cgImage: thumbnail)
-            // Update Playing Info Center
-            let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
-            if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
-                    return image
-                }
-            }
-            // Preview
-            if let data = image?.jpegData(compressionQuality: 0.5) {
-                try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
-            }
-            // Icon
-            if let data = image?.jpegData(compressionQuality: 0.5) {
-                try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
-            }
-        } catch let error as NSError {
-            print("GeneratorImagePreview localized error:")
-            print(error.localizedDescription)
-        }
-    }
+    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) { }
 }

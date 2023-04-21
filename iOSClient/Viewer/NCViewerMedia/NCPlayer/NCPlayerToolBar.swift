@@ -152,6 +152,16 @@ class NCPlayerToolBar: UIView {
         update(position: position)
     }
 
+    public func buffering() {
+
+        pipButton.isEnabled = false
+        muteButton.isEnabled = false
+        playButton.isEnabled = false
+        forwardButton.isEnabled = false
+        backButton.isEnabled = false
+        playbackSlider.isEnabled = false
+    }
+
     public func update(position: Float?) {
 
         guard let ncplayer = self.ncplayer, let position = position else { return }
