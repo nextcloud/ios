@@ -201,6 +201,8 @@ class NCPlayer: NSObject {
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
         }
+
+        thumbnailer?.fetchThumbnail()
     }
 
     func videoSeek(position: Float) {
@@ -358,11 +360,34 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
 extension NCPlayer: VLCMediaThumbnailerDelegate {
 
-    func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) {
-
-    }
+    func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) { }
 
     func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) {
 
+        var image: UIImage?
+
+        do {
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            image = UIImage(cgImage: thumbnail)
+            // Update Playing Info Center
+            let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
+            if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
+                    return image
+                }
+            }
+            // Preview
+            if let data = image?.jpegData(compressionQuality: 0.5) {
+                try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
+            }
+            // Icon
+            if let data = image?.jpegData(compressionQuality: 0.5) {
+                try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+            }
+        } catch let error as NSError {
+            print("GeneratorImagePreview localized error:")
+            print(error.localizedDescription)
+        }
     }
 }
