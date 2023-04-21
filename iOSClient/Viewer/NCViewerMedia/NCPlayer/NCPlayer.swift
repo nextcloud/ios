@@ -95,20 +95,6 @@ class NCPlayer: NSObject {
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
-#if MFFFLIB
-        MFFF.shared.setDelegate = self
-        MFFF.shared.dismissMessage()
-        NotificationCenter.default.addObserver(self, selector: #selector(convertVideoDidFinish(_:)), name: NSNotification.Name(rawValue: self.metadata.ocId), object: nil)
-
-        if CCUtility.fileProviderStorageExists(metadata) {
-            self.url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: NCGlobal.shared.fileNameVideoEncoded))
-            self.isProxy = false
-        }
-        if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
-            return
-        }
-#endif
-
         print("Play URL: \(url)")
         player = VLCMediaPlayer()
         player?.media = VLCMedia(url: url)
@@ -156,7 +142,7 @@ class NCPlayer: NSObject {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
     }
@@ -273,9 +259,7 @@ class NCPlayer: NSObject {
                 if CCUtility.fileProviderStorageExists(self.metadata) || self.metadata.isDirectoryE2EE {
                     let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                     if requiredConvert {
-#if MFFFLIB
-                        self.convertVideo(withAlert: false)
-#endif
+
                     } else {
                         self.openAVPlayer(url: url)
                     }

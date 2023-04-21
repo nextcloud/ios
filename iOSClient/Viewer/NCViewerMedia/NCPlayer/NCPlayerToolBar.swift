@@ -227,13 +227,6 @@ class NCPlayerToolBar: UIView {
         guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto else { return }
         if metadata.classFile != NKCommon.TypeClassFile.video.rawValue && metadata.classFile != NKCommon.TypeClassFile.audio.rawValue { return }
 
-#if MFFFLIB
-        if MFFF.shared.existsMFFFSession(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))) {
-            self.hide()
-            return
-        }
-#endif
-
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
             startTimerAutoHide()
