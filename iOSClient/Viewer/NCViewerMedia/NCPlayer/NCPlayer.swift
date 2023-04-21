@@ -42,6 +42,7 @@ class NCPlayer: NSObject {
     private weak var viewerMediaPage: NCViewerMediaPage?
 
     var player: VLCMediaPlayer?
+    var thumbnailer: VLCMediaThumbnailer?
     var metadata: tableMetadata
     var singleTapGestureRecognizer: UITapGestureRecognizer!
 
@@ -134,6 +135,10 @@ class NCPlayer: NSObject {
 
         playerToolBar?.setBarPlayer(ncplayer: self, position: position)
         playerToolBar?.setMetadata(self.metadata)
+
+        if let media = player?.media {
+            thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
+        }
     }
 
     func deactivatePlayer() {
@@ -182,9 +187,10 @@ class NCPlayer: NSObject {
 
         if let position = NCManageDatabase.shared.getVideoPosition(metadata: self.metadata) {
             player?.position = position
+            playerToolBar?.update(position: position)
+        } else {
+            playerToolBar?.update(position: player?.position)
         }
-        
-        playerToolBar?.update(position: player?.position)
     }
 
     @objc func playerPause() {
@@ -290,8 +296,21 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
+            var codecNameVideo, codecNameAudio, codecAudioChannelLayout, codecAudioLanguage, codecQuality: String?
+            if let tracksInformation = player.media?.tracksInformation {
+                for case let track as [String:Any] in tracksInformation {
+                    if track["type"] as? String == "video" {
+                        codecNameVideo = track["codec"] as? String
+                    }
+                    if track["type"] as? String == "audio" {
+                        codecNameAudio = track["codec"] as? String
+                    }
+                }
+                NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: codecNameVideo, codecNameAudio: codecNameAudio, codecAudioChannelLayout: codecAudioChannelLayout, codecAudioLanguage: codecAudioLanguage, codecMaxCompatibility: true, codecQuality: codecQuality)
+            }
+
+            let metaDictionary = player.media?.metaData
             print("Played mode: PLAYING")
-            playerToolBar?.update(position: player.position)
             break
         case .paused:
             print("Played mode: PAUSED")
@@ -334,5 +353,16 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
     func mediaPlayer(_ player: VLCMediaPlayer, recordingStoppedAtPath path: String) {
         // Handle other states...
+    }
+}
+
+extension NCPlayer: VLCMediaThumbnailerDelegate {
+
+    func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) {
+
+    }
+
+    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) {
+
     }
 }
