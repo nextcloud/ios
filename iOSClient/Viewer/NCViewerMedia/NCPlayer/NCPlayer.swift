@@ -24,10 +24,7 @@
 import Foundation
 import NextcloudKit
 import UIKit
-import AVFoundation
 import MediaPlayer
-import JGProgressHUD
-import Alamofire
 import MobileVLCKit
 
 class NCPlayer: NSObject {
@@ -220,52 +217,6 @@ class NCPlayer: NSObject {
 
         if let player = player, let width = width, let height = height {
             player.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
-        }
-    }
-
-    internal func downloadVideo(isEncrypted: Bool = false, requiredConvert: Bool = false) {
-
-        guard let view = appDelegate.window?.rootViewController?.view else { return }
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
-        let hud = JGProgressHUD()
-        var downloadRequest: DownloadRequest?
-
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-        }
-        hud.textLabel.text = NSLocalizedString(metadata.fileNameView, comment: "")
-        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-        hud.show(in: view)
-        hud.tapOnHUDViewBlock = { hud in
-            downloadRequest?.cancel()
-        }
-
-        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
-            downloadRequest = request
-        } taskHandler: { task in
-            // task
-        } progressHandler: { progress in
-            hud.progress = Float(progress.fractionCompleted)
-        } completionHandler: { _, _, _, _, _, afError, error in
-            if afError == nil {
-                NCManageDatabase.shared.addLocalFile(metadata: self.metadata)
-                if isEncrypted {
-                    if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", self.metadata.fileName, self.metadata.serverUrl)) {
-                        NCEndToEndEncryption.sharedManager()?.decryptFile(self.metadata.fileName, fileNameView: self.metadata.fileNameView, ocId: self.metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
-                    }
-                }
-                if CCUtility.fileProviderStorageExists(self.metadata) || self.metadata.isDirectoryE2EE {
-                    let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                    if requiredConvert {
-
-                    } else {
-                        self.openAVPlayer(url: url)
-                    }
-                }
-            }
-            hud.dismiss()
         }
     }
 }

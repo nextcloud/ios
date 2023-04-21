@@ -52,6 +52,8 @@ class NCViewerMedia: UIViewController {
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
 
+    var avPlayerLayer: AVPlayerLayer?
+    var avPlayer: AVPlayer?
 
     // MARK: - View Life Cycle
 
@@ -326,6 +328,35 @@ class NCViewerMedia: UIViewController {
         }
     }
 
+    // MARK: - Live Photo
+
+    func playLivePhoto(filePath: String) {
+
+        updateViewConstraints()
+        statusViewImage.isHidden = true
+        statusLabel.isHidden = true
+
+        avPlayer = AVPlayer(url: URL(fileURLWithPath: filePath))
+        avPlayerLayer = AVPlayerLayer(player: avPlayer)
+
+        if let avPlayerLayer = self.avPlayerLayer, let imageView = imageVideoContainer {
+            avPlayerLayer.videoGravity = .resizeAspect
+            avPlayerLayer.frame = imageView.bounds
+            imageView.layer.addSublayer(avPlayerLayer)
+            imageView.playerLayer = avPlayerLayer
+            avPlayer?.play()
+        }
+    }
+
+    func stopLivePhoto() {
+
+        avPlayer?.pause()
+        avPlayerLayer?.removeFromSuperlayer()
+
+        statusViewImage.isHidden = false
+        statusLabel.isHidden = false
+    }
+
     // MARK: - Gesture
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
@@ -560,4 +591,8 @@ extension NCViewerMedia: EasyTipViewDelegate {
 class imageVideoContainerView: UIImageView {
     var playerLayer: CALayer?
     var metadata: tableMetadata?
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        playerLayer?.frame = self.bounds
+    }
 }

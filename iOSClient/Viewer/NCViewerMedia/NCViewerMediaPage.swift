@@ -24,6 +24,8 @@
 import UIKit
 import NextcloudKit
 import MediaPlayer
+import JGProgressHUD
+import Alamofire
 
 class NCViewerMediaPage: UIViewController {
 
@@ -53,7 +55,6 @@ class NCViewerMediaPage: UIViewController {
     var modifiedOcId: [String] = []
     var currentIndex = 0
     var nextIndex: Int?
-    var ncplayerLivePhoto: NCPlayer?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
@@ -601,28 +602,58 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
         if gestureRecognizer.state == .began {
 
-            currentViewController.updateViewConstraints()
-            currentViewController.statusViewImage.isHidden = true
-            currentViewController.statusLabel.isHidden = true
-
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), CCUtility.fileProviderStorageExists(metadata) {
 
                 AudioServicesPlaySystemSound(1519) // peek feedback
-
-                NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
-                    if let url = url {
-                        self.ncplayerLivePhoto = NCPlayer.init(imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self, viewerMediaPage: self)
-                        self.ncplayerLivePhoto?.openAVPlayer(url: url)
-                    }
-                }
+                currentViewController.playLivePhoto(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
             }
 
         } else if gestureRecognizer.state == .ended {
 
-            currentViewController.statusViewImage.isHidden = false
-            currentViewController.statusLabel.isHidden = false
-            currentViewController.imageVideoContainer.image = currentViewController.image
+            currentViewController.stopLivePhoto()
+        }
+    }
+
+    internal func downloadVideo(metadata: tableMetadata) {
+
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        let hud = JGProgressHUD()
+        var downloadRequest: DownloadRequest?
+
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
+        hud.textLabel.text = NSLocalizedString(metadata.fileNameView, comment: "")
+        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+        hud.show(in: view)
+        hud.tapOnHUDViewBlock = { hud in
+            downloadRequest?.cancel()
+        }
+
+        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
+            downloadRequest = request
+        } taskHandler: { task in
+            // task
+        } progressHandler: { progress in
+            hud.progress = Float(progress.fractionCompleted)
+        } completionHandler: { _, _, _, _, _, afError, error in
+            if afError == nil {
+                NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                if metadata.e2eEncrypted {
+                    if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
+                        NCEndToEndEncryption.sharedManager()?.decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                    }
+                }
+                if CCUtility.fileProviderStorageExists(metadata) || metadata.isDirectoryE2EE {
+                    let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    //self.openAVPlayer(url: url)
+
+                }
+            }
+            hud.dismiss()
         }
     }
 }
