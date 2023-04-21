@@ -301,6 +301,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 if !(self.detailView?.isShow() ?? false) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
                 }
+                self.thumbnailer?.fetchThumbnail()
                 self.openAVPlayer(url: url)
             }
             print("Played mode: STOPPED")
@@ -321,7 +322,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
-            var codecNameVideo, codecNameAudio, codecAudioChannelLayout, codecAudioLanguage, codecQuality: String?
+            // var codecNameVideo, codecNameAudio, codecAudioChannelLayout, codecAudioLanguage, codecQuality: String?
             if let tracksInformation = player.media?.tracksInformation {
                 for case let track as [String:Any] in tracksInformation {
                     if track["type"] as? String == "video" {
@@ -330,7 +331,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                         //codecNameVideo = track["codec"] as? String
                     }
                     if track["type"] as? String == "audio" {
-                        codecNameAudio = track["codec"] as? String
+                        // codecNameAudio = track["codec"] as? String
                     }
                 }
                 //NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: codecNameVideo, codecNameAudio: codecNameAudio, codecAudioChannelLayout: codecAudioChannelLayout, codecAudioLanguage: codecAudioLanguage, codecMaxCompatibility: true, codecQuality: codecQuality)
@@ -389,5 +390,32 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
 
     func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) { }
 
-    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) { }
+    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) {
+
+        var image: UIImage?
+
+        do {
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            image = UIImage(cgImage: thumbnail)
+            // Update Playing Info Center
+            let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
+            if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
+                    return image
+                }
+            }
+            // Preview
+            if let data = image?.jpegData(compressionQuality: 0.5) {
+                try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
+            }
+            // Icon
+            if let data = image?.jpegData(compressionQuality: 0.5) {
+                try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+            }
+        } catch let error as NSError {
+            print("GeneratorImagePreview localized error:")
+            print(error.localizedDescription)
+        }
+    }
 }

@@ -169,6 +169,8 @@ class NCPlayerToolBar: UIView {
         // SAVE POSITION
         if position > 0 {
             ncplayer.savePosition(position)
+        } else {
+            
         }
 
         // MUTE
