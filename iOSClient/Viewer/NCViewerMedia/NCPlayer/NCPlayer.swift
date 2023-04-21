@@ -201,8 +201,6 @@ class NCPlayer: NSObject {
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
         }
-
-        thumbnailer?.fetchThumbnail()
     }
 
     func videoSeek(position: Float) {
@@ -298,6 +296,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
+            /*
             var codecNameVideo, codecNameAudio, codecAudioChannelLayout, codecAudioLanguage, codecQuality: String?
             if let tracksInformation = player.media?.tracksInformation {
                 for case let track as [String:Any] in tracksInformation {
@@ -310,8 +309,8 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 }
                 NCManageDatabase.shared.addVideoCodec(metadata: metadata, codecNameVideo: codecNameVideo, codecNameAudio: codecNameAudio, codecAudioChannelLayout: codecAudioChannelLayout, codecAudioLanguage: codecAudioLanguage, codecMaxCompatibility: true, codecQuality: codecQuality)
             }
-
-            let metaDictionary = player.media?.metaData
+            // let metaDictionary = player.media?.metaData
+            */
             print("Played mode: PLAYING")
             break
         case .paused:
@@ -330,22 +329,18 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerTitleChanged(_ aNotification: Notification) {
-        guard let player = self.player else { return }
         print(".")
     }
 
     func mediaPlayerChapterChanged(_ aNotification: Notification) {
-        guard let player = self.player else { return }
         print(".")
     }
 
     func mediaPlayerLoudnessChanged(_ aNotification: Notification) {
-        guard let player = self.player else { return }
         print(".")
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {
-        guard let player = self.player else { return }
         print(".")
     }
 
