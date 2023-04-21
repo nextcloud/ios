@@ -177,10 +177,6 @@ class NCViewerMedia: UIViewController {
                             self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
                         }
                     }
-                } else {
-                    if NCManageDatabase.shared.getVideoAutoplay(metadata: self.metadata) {
-                        ncplayer.playerPlay()
-                    }
                 }
             }
             

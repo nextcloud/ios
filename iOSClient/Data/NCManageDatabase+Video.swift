@@ -31,7 +31,6 @@ class tableVideo: Object {
     @objc dynamic var length: Int = 0
     @objc dynamic var ocId = ""
     @objc dynamic var position: Float = 0
-    @objc dynamic var autoplay: Bool = false
     @objc dynamic var codecNameVideo: String?
     @objc dynamic var codecNameAudio: String?
     @objc dynamic var codecAudioChannelLayout: String?
@@ -46,7 +45,7 @@ class tableVideo: Object {
 
 extension NCManageDatabase {
 
-    func addVideo(metadata: tableMetadata, position: Float, length: Int? = nil, autoplay: Bool) {
+    func addVideo(metadata: tableMetadata, position: Float, length: Int? = nil) {
 
         if metadata.livePhoto { return }
         let realm = try! Realm()
@@ -59,7 +58,6 @@ extension NCManageDatabase {
                         result.length = length
                     }
                     result.position = position
-                    result.autoplay = autoplay
                     realm.add(result, update: .all)
 
                 } else {
@@ -72,7 +70,6 @@ extension NCManageDatabase {
                     }
                     addObject.ocId = metadata.ocId
                     addObject.position = position
-                    addObject.autoplay = autoplay
                     realm.add(addObject, update: .all)
                 }
             }
@@ -149,18 +146,6 @@ extension NCManageDatabase {
 
         if result.position == 0 { return nil }
         return result.position
-    }
-
-    func getVideoAutoplay(metadata: tableMetadata) -> Bool {
-
-        if metadata.livePhoto { return false }
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
-            return false
-        }
-
-        return result.autoplay
     }
 
     func deleteVideo(metadata: tableMetadata) {

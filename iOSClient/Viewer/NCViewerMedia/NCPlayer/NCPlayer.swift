@@ -135,15 +135,9 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        if NCManageDatabase.shared.getVideoAutoplay(metadata: metadata) {
-            playerPlay()
-            playerToolBar?.show(enableTimerAutoHide: true)
-        } else {
-            playerToolBar?.show(enableTimerAutoHide: false)
-        }
-
         playerToolBar?.setBarPlayer(ncplayer: self, position: position)
         playerToolBar?.setMetadata(self.metadata)
+        playerToolBar?.show(enableTimerAutoHide: false)
 
         if let media = player?.media {
             thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
@@ -227,7 +221,7 @@ class NCPlayer: NSObject {
         if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
         let length = Int(player?.media?.length.intValue ?? 0)
 
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length, autoplay: isPlay())
+        NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length)
     }
 
     func snapshot() {
@@ -294,7 +288,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         switch player.state {
         case .stopped:
             if let url = self.url {
-                NCManageDatabase.shared.addVideo(metadata: metadata, position: 0, autoplay: false)
+                NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
                 if !(self.detailView?.isShow() ?? false) {
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
                 }
