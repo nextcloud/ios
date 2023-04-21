@@ -114,7 +114,7 @@ class NCPlayer: NSObject {
         player?.media = VLCMedia(url: url)
         player?.delegate = self
 
-        player?.media?.addOption("--network-caching=10000")
+        player?.media?.addOption("--network-caching=5000")
 
         let volume = CCUtility.getAudioVolume()
         if metadata.livePhoto {
@@ -152,8 +152,8 @@ class NCPlayer: NSObject {
 
     func deactivatePlayer() {
 
-        playerPause()
-        
+        playerPause(withSnapshot: false)
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
@@ -202,12 +202,9 @@ class NCPlayer: NSObject {
         }
     }
 
-    @objc func playerPause() {
+    @objc func playerPause(withSnapshot: Bool = true) {
 
-        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-
-        if let width = width, let height = height {
+        if let width = width, let height = height, withSnapshot {
             player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
         }
 
