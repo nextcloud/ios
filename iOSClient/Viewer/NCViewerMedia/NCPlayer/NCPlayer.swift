@@ -80,6 +80,8 @@ class NCPlayer: NSObject {
 
     func openAVPlayer(url: URL) {
 
+        var position: Float = 0
+
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
@@ -111,7 +113,8 @@ class NCPlayer: NSObject {
             player?.audio?.volume = Int32(volume)
         } else {
             player?.audio?.volume = Int32(volume)
-            if let position = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
+            if let result = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
+                position = result
                 player?.position = position
             }
         }
@@ -129,7 +132,7 @@ class NCPlayer: NSObject {
             playerToolBar?.show(enableTimerAutoHide: false)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self)
+        playerToolBar?.setBarPlayer(ncplayer: self, position: position)
         playerToolBar?.setMetadata(self.metadata)
     }
 
@@ -163,7 +166,7 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
-        playerToolBar?.update()
+        playerToolBar?.update(position: player?.position)
     }
 
     // MARK: -
@@ -181,13 +184,13 @@ class NCPlayer: NSObject {
             player?.position = position
         }
         
-        playerToolBar?.update()
+        playerToolBar?.update(position: player?.position)
     }
 
     @objc func playerPause() {
 
         player?.pause()
-        playerToolBar?.update()
+        playerToolBar?.update(position: player?.position)
 
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
@@ -197,7 +200,7 @@ class NCPlayer: NSObject {
     func videoSeek(position: Float) {
 
         player?.position = position
-        playerToolBar?.update()
+        playerToolBar?.update(position: position)
     }
 
     func savePosition(_ position: Float) {
@@ -281,18 +284,18 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             break
         case .ended:
             print("Played mode: ENDED")
-            playerToolBar?.update()
+            playerToolBar?.update(position: player.position)
             break
         case .error:
             print("Played mode: ERROR")
             break
         case .playing:
             print("Played mode: PLAYING")
-            playerToolBar?.update()
+            playerToolBar?.update(position: player.position)
             break
         case .paused:
             print("Played mode: PAUSED")
-            playerToolBar?.update()
+            playerToolBar?.update(position: player.position)
             break
         default: break
         }
@@ -302,7 +305,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
 
-        self.playerToolBar?.update()
+        self.playerToolBar?.update(position: player?.position)
     }
 
     func mediaPlayerTitleChanged(_ aNotification: Notification) {

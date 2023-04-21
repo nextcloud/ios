@@ -139,25 +139,24 @@ class NCPlayerToolBar: UIView {
         self.metadata = metadata
     }
 
-    func setBarPlayer(ncplayer: NCPlayer) {
+    func setBarPlayer(ncplayer: NCPlayer, position: Float) {
 
         self.ncplayer = ncplayer
 
-        playbackSlider.value = ncplayer.player?.position ?? 0
+        playbackSlider.value = position
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
-        update()
+        update(position: position)
     }
 
-    public func update() {
+    public func update(position: Float?) {
 
-        guard let ncplayer = self.ncplayer else { return }
+        guard let ncplayer = self.ncplayer, let position = position else { return }
 
         // SAVE POSITION
-        let position = ncplayer.player?.position ?? 0
         if position > 0 {
             ncplayer.savePosition(position)
         }
@@ -235,7 +234,7 @@ class NCPlayerToolBar: UIView {
             self.isHidden = false
         })
 
-        update()
+        update(position: ncplayer?.player?.position)
     }
 
     func isShow() -> Bool {
@@ -282,7 +281,7 @@ class NCPlayerToolBar: UIView {
 
         ncplayer.videoSeek(position: newPosition)
 
-        update()
+        update(position: ncplayer.player?.position)
         reStartTimerAutoHide()
     }
 
@@ -356,7 +355,7 @@ class NCPlayerToolBar: UIView {
             ncplayer?.player?.audio?.volume = 100
         }
 
-        update()
+        update(position: ncplayer?.player?.position)
         reStartTimerAutoHide()
     }
 

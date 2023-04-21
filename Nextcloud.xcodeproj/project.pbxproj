@@ -1818,11 +1818,11 @@
 		F79018B1240962C7007C9B6D /* NCViewerMedia */ = {
 			isa = PBXGroup;
 			children = (
-				F79EDA9E26B004980007D134 /* NCPlayer */,
+				F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */,
 				F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerMediaPage.swift */,
-				F718C24D254D507B00C5C256 /* NCViewerMediaDetailView.swift */,
 				F70753F02542A9A200972D44 /* NCViewerMedia.swift */,
+				F79EDA9E26B004980007D134 /* NCPlayer */,
 			);
 			path = NCViewerMedia;
 			sourceTree = "<group>";
