@@ -69,8 +69,13 @@ class NCPlayer: NSObject {
 
     deinit {
 
-        playerClose()
         print("deinit NCPlayer with ocId \(metadata.ocId)")
+
+        player?.stop()
+
+        if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
+            playerToolBar.pictureInPictureController?.stopPictureInPicture()
+        }
     }
 
     func openAVPlayer(url: URL) {
@@ -95,8 +100,9 @@ class NCPlayer: NSObject {
         print("Play URL: \(url)")
         player = VLCMediaPlayer()
         player?.media = VLCMedia(url: url)
-        player?.media?.addOption("--network-caching=10000")
         player?.delegate = self
+
+        player?.media?.addOption("--network-caching=10000")
 
         let volume = CCUtility.getAudioVolume()
         if metadata.livePhoto {
@@ -134,9 +140,6 @@ class NCPlayer: NSObject {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationWillResignActive), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemPlaybackStalled, object: nil)
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
     }
@@ -173,27 +176,18 @@ class NCPlayer: NSObject {
     @objc func playerPlay() {
 
         player?.play()
+
         if let position = NCManageDatabase.shared.getVideoPosition(metadata: self.metadata) {
             player?.position = position
         }
+        
         playerToolBar?.update()
     }
 
     @objc func playerPause() {
 
-        if let position = player?.position {
-            player?.pause()
-            playerToolBar?.update()
-        }
-
-        if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
-            playerToolBar.pictureInPictureController?.stopPictureInPicture()
-        }
-    }
-
-    @objc func playerClose() {
-
-        player?.stop()
+        player?.pause()
+        playerToolBar?.update()
 
         if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
             playerToolBar.pictureInPictureController?.stopPictureInPicture()
@@ -206,62 +200,12 @@ class NCPlayer: NSObject {
         playerToolBar?.update()
     }
 
-    func videoStop() {
-        if let url = self.url {
-            NCManageDatabase.shared.addVideo(metadata: metadata, position: 0, autoplay: false)
-            if !(self.detailView?.isShow() ?? false) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
-            }
-            self.openAVPlayer(url: url)
-        }
-    }
-
     func savePosition(_ position: Float) {
 
         if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
         let length = Int(player?.media?.length.intValue ?? 0)
 
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length, autoplay: isPlay())
-        generatorImagePreview()
-    }
-
-    @objc func generatorImagePreview() {
-
-        /*
-        guard let time = player.time, !metadata.livePhoto, metadata.classFile != NKCommon.TypeClassFile.audio.rawValue  else { return }
-
-        var image: UIImage?
-
-        if let asset = player?.currentItem?.asset {
-
-            do {
-                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-                let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-                let imageGenerator = AVAssetImageGenerator(asset: asset)
-                imageGenerator.appliesPreferredTrackTransform = true
-                let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
-                image = UIImage(cgImage: cgImage)
-                // Update Playing Info Center
-                let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
-                if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
-                    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
-                        return image
-                    }
-                }
-                // Preview
-                if let data = image?.jpegData(compressionQuality: 0.5) {
-                    try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
-                }
-                // Icon
-                if let data = image?.jpegData(compressionQuality: 0.5) {
-                    try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
-                }
-            } catch let error as NSError {
-                print("GeneratorImagePreview localized error:")
-                print(error.localizedDescription)
-            }
-        }
-        */
     }
 
     internal func downloadVideo(isEncrypted: Bool = false, requiredConvert: Bool = false) {
@@ -320,7 +264,13 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
         switch player.state {
         case .stopped:
-            videoStop()
+            if let url = self.url {
+                NCManageDatabase.shared.addVideo(metadata: metadata, position: 0, autoplay: false)
+                if !(self.detailView?.isShow() ?? false) {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
+                }
+                self.openAVPlayer(url: url)
+            }
             print("Played mode: STOPPED")
             break
         case .opening:
