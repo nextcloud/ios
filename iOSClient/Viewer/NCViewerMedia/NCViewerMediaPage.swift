@@ -584,11 +584,8 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
         }
 
         if currentScreenMode == .full {
-
             changeScreenMode(mode: .normal, enableTimerAutoHide: true)
-
         } else {
-
             changeScreenMode(mode: .full)
         }
     }
