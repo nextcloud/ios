@@ -346,7 +346,7 @@ class NCViewerMediaPage: UIViewController {
     @objc func showPlayerToolBar(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let enableTimerAutoHide = userInfo["enableTimerAutoHide"] as? Bool {
-            if currentViewController.metadata.ocId == ocId, let playerToolBar = currentViewController.playerToolBar, !playerToolBar.isPictureInPictureActive() {
+            if currentViewController.metadata.ocId == ocId {
                 changeScreenMode(mode: .normal, enableTimerAutoHide: enableTimerAutoHide)
             }
         }
@@ -578,10 +578,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     }
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-
-        if let playerToolBar = currentViewController.playerToolBar, playerToolBar.isPictureInPictureActive() {
-            playerToolBar.pictureInPictureController?.stopPictureInPicture()
-        }
 
         if currentScreenMode == .full {
             changeScreenMode(mode: .normal, enableTimerAutoHide: true)

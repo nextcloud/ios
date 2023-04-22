@@ -64,25 +64,12 @@ class NCPlayer: NSObject {
         fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
         super.init()
-
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback)
-            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.PortOverride.none)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print(error)
-        }
     }
 
     deinit {
 
         print("deinit NCPlayer with ocId \(metadata.ocId)")
-
         player?.stop()
-
-        if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
-            playerToolBar.pictureInPictureController?.stopPictureInPicture()
-        }
     }
 
     func openAVPlayer(url: URL) {
@@ -154,10 +141,8 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
 
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue, let playerToolBar = self.playerToolBar {
-            if !playerToolBar.isPictureInPictureActive() {
-                playerPause()
-            }
+        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            playerPause()
         }
     }
 
@@ -193,10 +178,6 @@ class NCPlayer: NSObject {
 
         player?.pause()
         playerToolBar?.update(position: player?.position)
-
-        if let playerToolBar = self.playerToolBar, playerToolBar.isPictureInPictureActive() {
-            playerToolBar.pictureInPictureController?.stopPictureInPicture()
-        }
     }
 
     func videoSeek(position: Float) {
@@ -276,20 +257,19 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
-
         self.playerToolBar?.update(position: player?.position)
     }
 
     func mediaPlayerTitleChanged(_ aNotification: Notification) {
-        print(".")
+        // Handle other states...
     }
 
     func mediaPlayerChapterChanged(_ aNotification: Notification) {
-        print(".")
+        // Handle other states...
     }
 
     func mediaPlayerLoudnessChanged(_ aNotification: Notification) {
-        print(".")
+        // Handle other states...
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {

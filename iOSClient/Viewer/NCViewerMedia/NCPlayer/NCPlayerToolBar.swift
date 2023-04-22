@@ -33,8 +33,6 @@ class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var playerTopToolBarView: UIStackView!
     @IBOutlet weak var playerToolBarView: UIView!
-    @IBOutlet weak var pipButton: UIButton!
-    @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
@@ -65,7 +63,6 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    var pictureInPictureController: AVPictureInPictureController?
     weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
@@ -89,15 +86,8 @@ class NCPlayerToolBar: UIView {
         playerToolBarView.layer.masksToBounds = true
         playerToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToolBarWith(gestureRecognizer:))))
 
-        pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .lightGray), for: .normal)
-        pipButton.isEnabled = false
-
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
         muteButton.isEnabled = false
-
-        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
-        subtitleButton.isEnabled = true
-        subtitleButton.isHidden = true
 
         playbackSlider.value = 0
         playbackSlider.minimumValue = 0
@@ -127,9 +117,6 @@ class NCPlayerToolBar: UIView {
 
     deinit {
         print("deinit NCPlayerToolBar")
-
-        NotificationCenter.default.removeObserver(self, name: AVAudioSession.interruptionNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: AVAudioSession.routeChangeNotification, object: nil)
     }
 
     // MARK: -
@@ -154,7 +141,6 @@ class NCPlayerToolBar: UIView {
 
     public func buffering() {
 
-        pipButton.isEnabled = false
         muteButton.isEnabled = false
         playButton.isEnabled = false
         forwardButton.isEnabled = false
@@ -182,17 +168,6 @@ class NCPlayerToolBar: UIView {
                 muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
             }
             muteButton.isEnabled = true
-        }
-
-        // PIP
-        if let pipButton = pipButton {
-            if metadata?.classFile == NKCommon.TypeClassFile.video.rawValue && AVPictureInPictureController.isPictureInPictureSupported() {
-                pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .white), for: .normal)
-                pipButton.isEnabled = true
-            } else {
-                pipButton.setImage(NCUtility.shared.loadImage(named: "pip.enter", color: .gray), for: .normal)
-                pipButton.isEnabled = false
-            }
         }
 
         // SLIDER TIME (START - END)
@@ -290,15 +265,6 @@ class NCPlayerToolBar: UIView {
         reStartTimerAutoHide()
     }
 
-    func isPictureInPictureActive() -> Bool {
-
-        if let pictureInPictureController = self.pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
-            return true
-        } else {
-            return false
-        }
-    }
-
     func stopTimerAutoHide() {
 
         timerAutoHide?.invalidate()
@@ -364,29 +330,6 @@ class NCPlayerToolBar: UIView {
         reStartTimerAutoHide()
     }
 
-    @IBAction func tapPip(_ sender: Any) {
-
-        /*
-        guard let videoLayer = ncplayer?.videoLayer else { return }
-
-        if let pictureInPictureController = self.pictureInPictureController, pictureInPictureController.isPictureInPictureActive {
-            pictureInPictureController.stopPictureInPicture()
-        }
-
-        if pictureInPictureController == nil {
-            pictureInPictureController = AVPictureInPictureController(playerLayer: videoLayer)
-            pictureInPictureController?.delegate = self
-        }
-
-        if let pictureInPictureController = pictureInPictureController, pictureInPictureController.isPictureInPicturePossible, let metadata = self.metadata {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                pictureInPictureController.startPictureInPicture()
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId": metadata.ocId])
-            }
-        }
-        */
-    }
-
     @IBAction func tapForward(_ sender: Any) {
 
         skip(seconds: 10)
@@ -395,10 +338,6 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapBack(_ sender: Any) {
 
         skip(seconds: -10)
-    }
-
-    @IBAction func tapSubtitle(_ sender: Any) {
-
     }
 
     func forward() {
