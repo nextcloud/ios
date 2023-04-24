@@ -152,10 +152,6 @@ class NCPlayerToolBar: UIView {
               let position = position
         else { return }
 
-        let currentPosition = position * Float(length / 1000)
-        let newPositionForward = (currentPosition + 10)
-        let newPositionBack = (currentPosition - 10)
-
         // SAVE POSITION
         if position > 0 {
             ncplayer.savePosition(position)
@@ -182,19 +178,6 @@ class NCPlayerToolBar: UIView {
         if length > 0 {
             forwardButton.isEnabled = true
             backButton.isEnabled = true
-
-            /*
-            if newPositionForward <= Float(length / 1000) {
-                forwardButton.isEnabled = true
-            } else {
-                forwardButton.isEnabled = false
-            }
-            if newPositionBack >= 0 {
-                backButton.isEnabled = true
-            } else {
-                backButton.isEnabled = false
-            }
-            */
         } else {
             backButton.isEnabled = false
             forwardButton.isEnabled = false
