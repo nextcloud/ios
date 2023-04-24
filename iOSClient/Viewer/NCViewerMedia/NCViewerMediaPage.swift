@@ -242,10 +242,15 @@ class NCViewerMediaPage: UIViewController {
            (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue),
            CCUtility.fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
-            ncplayer.playerPause(withSnapshot: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                ncplayer.openAVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
-                ncplayer.playerPlay()
+            let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+            if ncplayer.isPlay() {
+                ncplayer.playerPause(withSnapshot: false)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    ncplayer.openAVPlayer(url: url)
+                    ncplayer.playerPlay()
+                }
+            } else {
+                ncplayer.openAVPlayer(url: url)
             }
         }
     }
