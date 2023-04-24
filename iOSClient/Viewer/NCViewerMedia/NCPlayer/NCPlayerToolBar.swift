@@ -121,14 +121,10 @@ class NCPlayerToolBar: UIView {
 
     // MARK: -
 
-    func setMetadata(_ metadata: tableMetadata) {
-
-        self.metadata = metadata
-    }
-
-    func setBarPlayer(ncplayer: NCPlayer, position: Float) {
+    func setBarPlayer(ncplayer: NCPlayer, position: Float, metadata: tableMetadata) {
 
         self.ncplayer = ncplayer
+        self.metadata = metadata
 
         playbackSlider.value = position
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
@@ -136,6 +132,7 @@ class NCPlayerToolBar: UIView {
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
+        show(enableTimerAutoHide: false)
         update(position: position)
     }
 
@@ -154,6 +151,10 @@ class NCPlayerToolBar: UIView {
               let length = ncplayer.player?.media?.length.intValue,
               let position = position
         else { return }
+
+        let currentPosition = position * Float(length / 1000)
+        let newPositionForward = (currentPosition + 10)
+        let newPositionBack = (currentPosition - 10)
 
         // SAVE POSITION
         if position > 0 {
@@ -179,8 +180,21 @@ class NCPlayerToolBar: UIView {
 
         // BACK FORWARD
         if length > 0 {
-            backButton.isEnabled = true
             forwardButton.isEnabled = true
+            backButton.isEnabled = true
+
+            /*
+            if newPositionForward <= Float(length / 1000) {
+                forwardButton.isEnabled = true
+            } else {
+                forwardButton.isEnabled = false
+            }
+            if newPositionBack >= 0 {
+                backButton.isEnabled = true
+            } else {
+                backButton.isEnabled = false
+            }
+            */
         } else {
             backButton.isEnabled = false
             forwardButton.isEnabled = false
@@ -258,12 +272,15 @@ class NCPlayerToolBar: UIView {
     func skip(seconds: Float) {
         guard let ncplayer = ncplayer,
               let player = ncplayer.player,
-              let lengthInSeconds = player.media?.length.intValue
+              let length = player.media?.length.intValue
         else { return }
 
-        let currentInSeconds = player.position * Float(lengthInSeconds / 1000)
-        let newPositionSeconds = currentInSeconds + seconds
-        let newPosition = newPositionSeconds / Float(lengthInSeconds / 1000)
+        let currentPosition = player.position * Float(length / 1000)
+        var newPosition = (currentPosition + seconds) / Float(length / 1000)
+
+        if newPosition < 0 || newPosition > 1 {
+            newPosition = 0
+        }
 
         ncplayer.videoSeek(position: newPosition)
         update(position: newPosition)

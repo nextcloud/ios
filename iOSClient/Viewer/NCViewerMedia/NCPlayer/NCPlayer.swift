@@ -107,9 +107,7 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self, position: position)
-        playerToolBar?.setMetadata(self.metadata)
-        playerToolBar?.show(enableTimerAutoHide: false)
+        playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: self.metadata)
 
         if let media = player?.media {
             thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
