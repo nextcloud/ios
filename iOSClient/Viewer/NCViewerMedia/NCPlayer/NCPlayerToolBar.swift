@@ -47,12 +47,11 @@ class NCPlayerToolBar: UIView {
         case moved
     }
 
-    var ncplayer: NCPlayer?
+    private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private var wasInPlay: Bool = false
     private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
-
     private var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() { // for test
@@ -62,8 +61,6 @@ class NCPlayerToolBar: UIView {
             }
         }
     }
-
-    weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
 
@@ -352,37 +349,5 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapBack(_ sender: Any) {
 
         skip(seconds: -10)
-    }
-
-    func forward() {
-
-        var index: Int = 0
-
-        if let currentIndex = self.viewerMediaPage?.currentIndex, let metadatas = self.viewerMediaPage?.metadatas, let ncplayer = self.ncplayer {
-
-            if currentIndex == metadatas.count - 1 {
-                index = 0
-            } else {
-                index = currentIndex + 1
-            }
-
-            self.viewerMediaPage?.goTo(index: index, direction: .forward, autoPlay: ncplayer.isPlay())
-        }
-    }
-
-    func backward() {
-
-        var index: Int = 0
-
-        if let currentIndex = self.viewerMediaPage?.currentIndex, let metadatas = self.viewerMediaPage?.metadatas, let ncplayer = self.ncplayer {
-
-            if currentIndex == 0 {
-                index = metadatas.count - 1
-            } else {
-                index = currentIndex - 1
-            }
-
-            self.viewerMediaPage?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
-        }
     }
 }
