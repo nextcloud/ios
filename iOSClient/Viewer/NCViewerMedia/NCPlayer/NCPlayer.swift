@@ -74,6 +74,7 @@ class NCPlayer: NSObject {
 
     func openAVPlayer(url: URL) {
 
+        let userAgent = CCUtility.getUserAgent()!
         var position: Float = 0
 
         self.url = url
@@ -85,6 +86,7 @@ class NCPlayer: NSObject {
         player?.delegate = self
 
         player?.media?.addOption("--network-caching=5000")
+        player?.media?.addOption(":http-user-agent=\(userAgent)")
 
         let volume = CCUtility.getAudioVolume()
         if metadata.livePhoto {
