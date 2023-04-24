@@ -151,6 +151,7 @@ class NCPlayerToolBar: UIView {
               let length = ncplayer.player?.media?.length.intValue,
               let position = position
         else { return }
+        let positionInSecond = position * Float(length / 1000)
 
         // SAVE POSITION
         if position > 0 {
@@ -173,6 +174,8 @@ class NCPlayerToolBar: UIView {
         playbackSlider.isEnabled = true
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
 
         // BACK FORWARD
         if length > 0 {

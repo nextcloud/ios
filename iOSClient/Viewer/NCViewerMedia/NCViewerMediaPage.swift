@@ -415,7 +415,6 @@ class NCViewerMediaPage: UIViewController {
         }
 
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = 0 // ncplayer.durationTime.seconds
         if let image = currentViewController.image {
             nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
                 return image

@@ -24,7 +24,6 @@
 import Foundation
 import NextcloudKit
 import UIKit
-import MediaPlayer
 import MobileVLCKit
 
 class NCPlayer: NSObject {
@@ -296,12 +295,12 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
         do {
             image = UIImage(cgImage: thumbnail)
             // Update Playing Info Center
-            let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
-            if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
-                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
-                    return image
-                }
-            }
+            // let mediaItemPropertyTitle = MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyTitle] as? String
+            // if let image = image, mediaItemPropertyTitle == metadata.fileNameView {
+            //    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
+            //        return image
+            //    }
+            // }
             // Preview
             if let data = image?.jpegData(compressionQuality: 0.5) {
                 try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
