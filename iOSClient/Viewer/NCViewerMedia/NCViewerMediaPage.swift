@@ -229,7 +229,25 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func downloadedFile(_ notification: NSNotification) {
 
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else {
+            return
+        }
+
         progressView.progress = 0
+        let metadata = metadatas[currentIndex]
+
+        if metadata.ocId == ocId,
+           (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue),
+           CCUtility.fileProviderStorageExists(metadata),
+           let ncplayer = currentViewController.ncplayer {
+            ncplayer.playerPause(withSnapshot: false)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                ncplayer.openAVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
+                ncplayer.playerPlay()
+            }
+        }
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
