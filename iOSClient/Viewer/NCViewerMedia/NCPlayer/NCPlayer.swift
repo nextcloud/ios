@@ -31,33 +31,26 @@ class NCPlayer: NSObject {
 
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     internal var url: URL?
+    internal var player: VLCMediaPlayer?
+    internal var thumbnailer: VLCMediaThumbnailer?
+    internal var metadata: tableMetadata
+    internal var singleTapGestureRecognizer: UITapGestureRecognizer!
+    internal var width: Int64?
+    internal var height: Int64?
+    internal let fileNamePreviewLocalPath: String
+    internal let fileNameIconLocalPath: String
+
     internal weak var playerToolBar: NCPlayerToolBar?
-    internal weak var viewController: UIViewController?
-
-    private weak var imageVideoContainer: imageVideoContainerView?
-    private weak var detailView: NCViewerMediaDetailView?
-    private weak var viewerMediaPage: NCViewerMediaPage?
-
-    var player: VLCMediaPlayer?
-    var thumbnailer: VLCMediaThumbnailer?
-    var metadata: tableMetadata
-    var singleTapGestureRecognizer: UITapGestureRecognizer!
-
-    var width: Int64?
-    var height: Int64?
-
-    let fileNamePreviewLocalPath: String
-    let fileNameIconLocalPath: String
+    internal weak var imageVideoContainer: imageVideoContainerView?
+    internal weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
 
-    init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, detailView: NCViewerMediaDetailView?, viewController: UIViewController, viewerMediaPage: NCViewerMediaPage?) {
+    init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
 
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
-        self.detailView = detailView
-        self.viewController = viewController
         self.viewerMediaPage = viewerMediaPage
 
         fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
@@ -211,9 +204,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .stopped:
             if let url = self.url {
                 NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
-                if !(self.detailView?.isShow() ?? false) {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
-                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
                 self.thumbnailer?.fetchThumbnail()
                 self.openAVPlayer(url: url)
             }

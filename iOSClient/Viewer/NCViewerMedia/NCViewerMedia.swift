@@ -101,7 +101,7 @@ class NCViewerMedia: UIViewController {
                 playerToolBar.viewerMediaPage = viewerMediaPage
             }
 
-            self.ncplayer = NCPlayer.init(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self, viewerMediaPage: self.viewerMediaPage)
+            self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
         }
 
         // TIP
@@ -382,6 +382,8 @@ class NCViewerMedia: UIViewController {
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
 
+        guard metadata.classFile == NKCommon.TypeClassFile.image.rawValue else { return }
+
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
         switch gestureRecognizer.state {
@@ -507,9 +509,6 @@ extension NCViewerMedia {
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.livePhoto && !(ncplayer?.isPlay() ?? false) {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
-        }
     }
 
     func reloadDetail() {
