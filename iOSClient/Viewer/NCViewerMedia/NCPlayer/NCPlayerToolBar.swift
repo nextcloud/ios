@@ -150,13 +150,14 @@ class NCPlayerToolBar: UIView {
 
     public func update(position: Float?) {
 
-        guard let ncplayer = self.ncplayer, let position = position else { return }
+        guard let ncplayer = self.ncplayer,
+              let length = ncplayer.player?.media?.length.intValue,
+              let position = position
+        else { return }
 
         // SAVE POSITION
         if position > 0 {
             ncplayer.savePosition(position)
-        } else {
-            
         }
 
         // MUTE
@@ -176,9 +177,14 @@ class NCPlayerToolBar: UIView {
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
-        // BACK
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
-        backButton.isEnabled = true
+        // BACK FORWARD
+        if length > 0 {
+            backButton.isEnabled = true
+            forwardButton.isEnabled = true
+        } else {
+            backButton.isEnabled = false
+            forwardButton.isEnabled = false
+        }
 
         // PLAY
         if ncplayer.isPlay() {
@@ -190,9 +196,7 @@ class NCPlayerToolBar: UIView {
         playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         playButton.isEnabled = true
 
-        // FORWARD
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
-        forwardButton.isEnabled = true
+
     }
 
     // MARK: -
@@ -252,16 +256,17 @@ class NCPlayerToolBar: UIView {
     }
 
     func skip(seconds: Float) {
-        guard let ncplayer = ncplayer, let player = ncplayer.player else { return }
+        guard let ncplayer = ncplayer,
+              let player = ncplayer.player,
+              let lengthInSeconds = player.media?.length.intValue
+        else { return }
 
-        let lengthInSeconds = Float((player.media?.length.intValue ?? 0) / 1000)
-        let currentInSeconds = player.position * lengthInSeconds
+        let currentInSeconds = player.position * Float(lengthInSeconds / 1000)
         let newPositionSeconds = currentInSeconds + seconds
-        let newPosition = newPositionSeconds / lengthInSeconds
+        let newPosition = newPositionSeconds / Float(lengthInSeconds / 1000)
 
         ncplayer.videoSeek(position: newPosition)
-
-        update(position: ncplayer.player?.position)
+        update(position: newPosition)
         reStartTimerAutoHide()
     }
 
@@ -274,26 +279,28 @@ class NCPlayerToolBar: UIView {
 
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
 
-        if let touchEvent = event.allTouches?.first, let ncplayer = ncplayer {
+        guard let touchEvent = event.allTouches?.first,
+              let ncplayer = ncplayer
+        else { return }
 
-            let newPosition = self.playbackSlider.value
+        let newPosition = self.playbackSlider.value
 
-            switch touchEvent.phase {
-            case .began:
-                ncplayer.playerPause()
-                playbackSliderEvent = .began
-            case .moved:
-                playbackSliderEvent = .moved
-            case .ended:
-                ncplayer.playerPlay()
-                ncplayer.videoSeek(position: newPosition)
-                playbackSliderEvent = .ended
-            default:
-                break
-            }
-
-            reStartTimerAutoHide()
+        switch touchEvent.phase {
+        case .began:
+            ncplayer.playerPause()
+            playbackSliderEvent = .began
+        case .moved:
+            playbackSliderEvent = .moved
+        case .ended:
+            ncplayer.playerPlay()
+            ncplayer.videoSeek(position: newPosition)
+            playbackSliderEvent = .ended
+        default:
+            break
         }
+
+        reStartTimerAutoHide()
+
     }
 
     // MARK: - Action
