@@ -223,6 +223,8 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             playerToolBar?.update(position: player.position)
             break
         case .error:
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
+            NCContentPresenter.shared.showError(error: error, priority: .max)
             print("Played mode: ERROR")
             break
         case .playing:

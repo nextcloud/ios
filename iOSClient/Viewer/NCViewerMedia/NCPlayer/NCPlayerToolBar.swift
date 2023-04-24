@@ -106,7 +106,7 @@ class NCPlayerToolBar: UIView {
 
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
         backButton.isEnabled = false
-        
+
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
         forwardButton.isEnabled = false
     }
@@ -380,16 +380,6 @@ class NCPlayerToolBar: UIView {
             }
 
             self.viewerMediaPage?.goTo(index: index, direction: .reverse, autoPlay: ncplayer.isPlay())
-        }
-    }
-}
-
-extension NCPlayerToolBar: AVPictureInPictureControllerDelegate {
-
-    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-
-        if let metadata = self.metadata, let ncplayer = self.ncplayer, !ncplayer.isPlay() {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
         }
     }
 }
