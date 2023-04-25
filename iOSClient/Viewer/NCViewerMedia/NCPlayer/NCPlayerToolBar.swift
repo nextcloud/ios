@@ -46,11 +46,11 @@ class NCPlayerToolBar: UIView {
         case ended
         case moved
     }
+    var playbackSliderEvent: sliderEventType = .ended
 
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private var wasInPlay: Bool = false
-    private var playbackSliderEvent: sliderEventType = .ended
     private var timerAutoHide: Timer?
     private var timerAutoHideSeconds: Double {
         get {
@@ -134,7 +134,6 @@ class NCPlayerToolBar: UIView {
         }
 
         show(enableTimerAutoHide: false)
-        update()
     }
 
     public func update() {

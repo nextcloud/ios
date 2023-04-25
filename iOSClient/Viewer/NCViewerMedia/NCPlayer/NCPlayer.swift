@@ -80,17 +80,9 @@ class NCPlayer: NSObject {
         // player?.media?.addOption("--network-caching=500")
         player?.media?.addOption(":http-user-agent=\(userAgent)")
 
-        let volume = CCUtility.getAudioVolume()
-        if metadata.livePhoto {
-            player?.audio?.volume = 0
-        } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
-            player?.audio?.volume = Int32(volume)
-        } else {
-            player?.audio?.volume = Int32(volume)
-            if let result = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
-                position = result
-                player?.position = position
-            }
+        if let result = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
+            position = result
+            player?.position = position
         }
 
         player?.drawable = imageVideoContainer
@@ -153,10 +145,16 @@ class NCPlayer: NSObject {
 
     @objc func playerPlay() {
 
+        playerToolBar?.playbackSliderEvent = .began
         player?.play()
 
         if let position = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
             player?.position = position
+            playerToolBar?.playbackSliderEvent = .moved
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.playerToolBar?.playbackSliderEvent = .ended
         }
     }
 
