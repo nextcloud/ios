@@ -40,13 +40,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewDidLoad()
 
         title = NSLocalizedString("_notifications_", comment: "")
-        view.backgroundColor = NCBrandColor.shared.systemBackground
+        view.backgroundColor = .systemBackground
 
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
         tableView.allowsSelection = false
-        tableView.backgroundColor = NCBrandColor.shared.systemBackground
+        tableView.backgroundColor = .systemBackground
 
         refreshControl?.addTarget(self, action: #selector(getNetwokingNotification), for: .valueChanged)
 
@@ -139,7 +139,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         }
 
         if let image = image {
-            cell.icon.image = image.imageColor(NCBrandColor.shared.iconColor)
+            cell.icon.image = image.withTintColor(NCBrandColor.shared.iconColor, renderingMode: .alwaysOriginal)
         } else {
             cell.icon.image = NCUtility.shared.loadImage(named: "bell", color: NCBrandColor.shared.iconColor)
         }
@@ -152,7 +152,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.date.text = CCUtility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
-        cell.subject.textColor = NCBrandColor.shared.label
+        cell.subject.textColor = .label
         cell.message.text = notification.message.replacingOccurrences(of: "<br />", with: "\n")
         cell.message.textColor = .gray
 
