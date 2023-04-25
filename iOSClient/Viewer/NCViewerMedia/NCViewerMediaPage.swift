@@ -194,8 +194,9 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if !currentViewController.detailView.isShow() {
+            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
                 currentViewController.playerToolBar?.show(enableTimerAutoHide: enableTimerAutoHide)
+
             }
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)

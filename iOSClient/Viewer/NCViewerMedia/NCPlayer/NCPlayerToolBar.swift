@@ -163,9 +163,6 @@ class NCPlayerToolBar: UIView {
 
     public func show(enableTimerAutoHide: Bool = false) {
 
-        guard let metadata = self.metadata, ncplayer != nil, !metadata.livePhoto else { return }
-        if metadata.classFile != NKCommon.TypeClassFile.video.rawValue && metadata.classFile != NKCommon.TypeClassFile.audio.rawValue { return }
-
         timerAutoHide?.invalidate()
         if enableTimerAutoHide {
             startTimerAutoHide()
