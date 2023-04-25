@@ -146,7 +146,9 @@ class NCPlayerToolBar: UIView {
         let positionInSecond = position * Float(length / 1000)
 
         // SLIDER & TIME
-        playbackSlider.value = position
+        if playbackSliderEvent == .ended {
+            playbackSlider.value = position
+        }
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
@@ -232,14 +234,14 @@ class NCPlayerToolBar: UIView {
 
         switch touchEvent.phase {
         case .began:
-            ncplayer.playerPause()
             playbackSliderEvent = .began
         case .moved:
             playbackSliderEvent = .moved
         case .ended:
-            ncplayer.playerPlay()
             ncplayer.playerPosizion(newPosition)
-            playbackSliderEvent = .ended
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.playbackSliderEvent = .ended
+            }
         default:
             break
         }
@@ -289,7 +291,6 @@ class NCPlayerToolBar: UIView {
 
         ncplayer?.player?.jumpForward(10)
         reStartTimerAutoHide()
-
     }
 
     @IBAction func tapBack(_ sender: Any) {
