@@ -89,9 +89,7 @@ class NCPlayerToolBar: UIView {
         playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
 
-        labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
         labelCurrentTime.textColor = .white
-        labelLeftTime.text = NCUtility.shared.stringFromTime(.zero)
         labelLeftTime.textColor = .white
 
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
@@ -133,17 +131,16 @@ class NCPlayerToolBar: UIView {
         }
 
         show(enableTimerAutoHide: false)
-        update(position: position)
+        update()
     }
 
-    public func update(position: Float?) {
+    public func update() {
 
         guard let ncplayer = self.ncplayer,
               let length = ncplayer.player?.media?.length.intValue,
-              let position = position
+              let position = ncplayer.player?.position
         else { return }
         let positionInSecond = position * Float(length / 1000)
-        let status = ncplayer.player?.state
 
         // SLIDER & TIME
         playbackSlider.value = position
@@ -151,15 +148,6 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
-
-        // PLAY
-        if ncplayer.isPlay() {
-            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
-        } else {
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-        }
     }
 
     public func disableAllControl() {
@@ -190,7 +178,7 @@ class NCPlayerToolBar: UIView {
             self.isHidden = false
         })
 
-        update(position: ncplayer?.player?.position)
+        update()
     }
 
     func isShow() -> Bool {
@@ -241,7 +229,6 @@ class NCPlayerToolBar: UIView {
         }
 
         ncplayer.videoSeek(position: newPosition)
-        update(position: newPosition)
         reStartTimerAutoHide()
     }
 
@@ -258,7 +245,7 @@ class NCPlayerToolBar: UIView {
               let ncplayer = ncplayer
         else { return }
 
-        let newPosition = self.playbackSlider.value
+        let newPosition = playbackSlider.value
 
         switch touchEvent.phase {
         case .began:
@@ -289,9 +276,11 @@ class NCPlayerToolBar: UIView {
 
         if ncplayer.isPlay() {
             ncplayer.playerPause()
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
             timerAutoHide?.invalidate()
         } else {
             ncplayer.playerPlay()
+            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
             startTimerAutoHide()
         }
     }

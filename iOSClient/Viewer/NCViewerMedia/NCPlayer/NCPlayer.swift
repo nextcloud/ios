@@ -93,13 +93,13 @@ class NCPlayer: NSObject {
             }
         }
 
-        player?.drawable = self.imageVideoContainer
+        player?.drawable = imageVideoContainer
         if let view = player?.drawable as? UIView {
             view.isUserInteractionEnabled = true
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: self.metadata)
+        playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: metadata)
 
         if let media = player?.media {
             thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
@@ -140,7 +140,7 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
-        playerToolBar?.update(position: player?.position)
+        playerToolBar?.update()
     }
 
     // MARK: -
@@ -154,11 +154,8 @@ class NCPlayer: NSObject {
 
         player?.play()
 
-        if let position = NCManageDatabase.shared.getVideoPosition(metadata: self.metadata) {
+        if let position = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
             player?.position = position
-            playerToolBar?.update(position: position)
-        } else {
-            playerToolBar?.update(position: player?.position)
         }
     }
 
@@ -169,13 +166,11 @@ class NCPlayer: NSObject {
         }
 
         player?.pause()
-        playerToolBar?.update(position: player?.position)
     }
 
     func videoSeek(position: Float) {
 
         player?.position = position
-        playerToolBar?.update(position: position)
     }
 
     func savePosition(_ position: Float) {
@@ -241,13 +236,13 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         default: break
         }
 
-        playerToolBar?.update(position: player.position)
+        playerToolBar?.update()
         print(player.state)
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
         print("\(player?.time.stringValue) - \(player?.position)")
-        playerToolBar?.update(position: player?.position)
+        playerToolBar?.update()
     }
 
     func mediaPlayerTitleChanged(_ aNotification: Notification) {
