@@ -126,6 +126,7 @@ class NCPlayer: NSObject {
     // MARK: - UIGestureRecognizerDelegate
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+
         viewerMediaPage?.didSingleTapWith(gestureRecognizer: gestureRecognizer)
     }
 
@@ -266,6 +267,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {
+        
         if let data = NSData(contentsOfFile: fileNamePreviewLocalPath),
            let image = UIImage(data: data as Data),
            let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)),
