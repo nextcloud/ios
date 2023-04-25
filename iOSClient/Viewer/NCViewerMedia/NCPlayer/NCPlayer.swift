@@ -77,7 +77,7 @@ class NCPlayer: NSObject {
         player?.media = VLCMedia(url: url)
         player?.delegate = self
 
-        // player?.media?.addOption("--network-caching=5000")
+        // player?.media?.addOption("--network-caching=500")
         player?.media?.addOption(":http-user-agent=\(userAgent)")
 
         let volume = CCUtility.getAudioVolume()
