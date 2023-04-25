@@ -178,8 +178,6 @@ class NCPlayerToolBar: UIView {
         }, completion: { (_: Bool) in
             self.isHidden = false
         })
-
-        update()
     }
 
     func isShow() -> Bool {
@@ -221,6 +219,16 @@ class NCPlayerToolBar: UIView {
         timerAutoHide?.invalidate()
     }
 
+    func playButtonPause() {
+        playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
+    }
+
+    func playButtonPlay() {
+        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
+    }
+
     // MARK: - Event / Gesture
 
     @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
@@ -260,13 +268,9 @@ class NCPlayerToolBar: UIView {
 
         if ncplayer.isPlay() {
             ncplayer.playerPause()
-            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
             timerAutoHide?.invalidate()
         } else {
             ncplayer.playerPlay()
-            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
             startTimerAutoHide()
         }
     }

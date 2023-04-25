@@ -131,10 +131,7 @@ class NCPlayer: NSObject {
         }
     }
 
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-
-        playerToolBar?.update()
-    }
+    @objc func applicationDidBecomeActive(_ notification: NSNotification) { }
 
     // MARK: -
 
@@ -147,7 +144,8 @@ class NCPlayer: NSObject {
 
         playerToolBar?.playbackSliderEvent = .began
         player?.play()
-
+        playerToolBar?.playButtonPause()
+        
         if let position = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
             player?.position = position
             playerToolBar?.playbackSliderEvent = .moved
@@ -161,6 +159,7 @@ class NCPlayer: NSObject {
     @objc func playerStop() {
 
         player?.stop()
+        playerToolBar?.playButtonPlay()
     }
 
     @objc func playerPause(withSnapshot: Bool = true) {
@@ -174,6 +173,7 @@ class NCPlayer: NSObject {
         }
 
         player?.pause()
+        playerToolBar?.playButtonPlay()
     }
 
     func playerPosizion(_ position: Float) {
@@ -243,8 +243,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             break
         default: break
         }
-
-        playerToolBar?.update()
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
