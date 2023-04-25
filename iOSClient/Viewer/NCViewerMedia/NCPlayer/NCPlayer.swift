@@ -61,7 +61,7 @@ class NCPlayer: NSObject {
     deinit {
 
         print("deinit NCPlayer with ocId \(metadata.ocId)")
-        player?.stop()
+        closeAVPlayer()
     }
 
     func openAVPlayer(url: URL) {
@@ -114,7 +114,7 @@ class NCPlayer: NSObject {
 
     func closeAVPlayer() {
 
-        playerPause(withSnapshot: false)
+        playerStop()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
@@ -159,6 +159,11 @@ class NCPlayer: NSObject {
         }
     }
 
+    @objc func playerStop() {
+
+        player?.stop()
+    }
+
     @objc func playerPause(withSnapshot: Bool = true) {
 
         if let width = width, let height = height, withSnapshot {
@@ -200,12 +205,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
         switch player.state {
         case .stopped:
-            if let url = self.url {
-                NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
-                self.thumbnailer?.fetchThumbnail()
-                self.openAVPlayer(url: url)
-            }
             print("Played mode: STOPPED")
             break
         case .opening:
@@ -215,6 +214,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: BUFFERING")
             break
         case .ended:
+            if let url = self.url {
+                NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
+                self.thumbnailer?.fetchThumbnail()
+                self.openAVPlayer(url: url)
+            }
             print("Played mode: ENDED")
             break
         case .error:

@@ -116,6 +116,9 @@ class NCPlayerToolBar: UIView {
         self.ncplayer = ncplayer
         self.metadata = metadata
 
+        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
+
         playbackSlider.value = position
         playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
@@ -212,23 +215,6 @@ class NCPlayerToolBar: UIView {
         }
     }
 
-    func skip(seconds: Float) {
-        guard let ncplayer = ncplayer,
-              let player = ncplayer.player,
-              let length = player.media?.length.intValue
-        else { return }
-
-        let currentPosition = player.position * Float(length / 1000)
-        var newPosition = (currentPosition + seconds) / Float(length / 1000)
-
-        if newPosition < 0 || newPosition > 1 {
-            newPosition = 0
-        }
-
-        ncplayer.videoSeek(position: newPosition)
-        reStartTimerAutoHide()
-    }
-
     func stopTimerAutoHide() {
 
         timerAutoHide?.invalidate()
@@ -301,11 +287,14 @@ class NCPlayerToolBar: UIView {
 
     @IBAction func tapForward(_ sender: Any) {
 
-        skip(seconds: 10)
+        ncplayer?.player?.jumpForward(10)
+        reStartTimerAutoHide()
+
     }
 
     @IBAction func tapBack(_ sender: Any) {
 
-        skip(seconds: -10)
+        ncplayer?.player?.jumpBackward(10)
+        reStartTimerAutoHide()
     }
 }
