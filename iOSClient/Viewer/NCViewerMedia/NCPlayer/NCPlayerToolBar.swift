@@ -94,7 +94,7 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = NCUtility.shared.stringFromTime(.zero)
         labelLeftTime.textColor = .white
 
-        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
+        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
 
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
 
@@ -124,6 +124,14 @@ class NCPlayerToolBar: UIView {
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
+        if CCUtility.getAudioVolume() == 0 {
+            ncplayer.player?.audio?.volume = 0
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
+        } else {
+            ncplayer.player?.audio?.volume = 100
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
+        }
+
         show(enableTimerAutoHide: false)
         update(position: position)
     }
@@ -136,21 +144,6 @@ class NCPlayerToolBar: UIView {
         else { return }
         let positionInSecond = position * Float(length / 1000)
         let status = ncplayer.player?.state
-
-        // SAVE POSITION
-        if position > 0 {
-            ncplayer.savePosition(position)
-        }
-
-        // MUTE
-        if let muteButton = muteButton {
-            let audio = CCUtility.getAudioVolume()
-            if audio == 0 {
-                muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
-            } else {
-                muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
-            }
-        }
 
         // SLIDER & TIME
         playbackSlider.value = position
@@ -167,18 +160,15 @@ class NCPlayerToolBar: UIView {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
             playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         }
+    }
 
-        if status == .error {
-            playButton.isEnabled = false
-            forwardButton.isEnabled = false
-            backButton.isEnabled = false
-            playbackSlider.isEnabled = false
-        } else {
-            playButton.isEnabled = true
-            forwardButton.isEnabled = true
-            backButton.isEnabled = true
-            playbackSlider.isEnabled = true
-        }
+    public func disableAllControl() {
+
+        muteButton.isEnabled = false
+        playButton.isEnabled = false
+        forwardButton.isEnabled = false
+        backButton.isEnabled = false
+        playbackSlider.isEnabled = false
     }
 
     // MARK: -
@@ -308,17 +298,16 @@ class NCPlayerToolBar: UIView {
 
     @IBAction func tapMute(_ sender: Any) {
 
-        let volume = CCUtility.getAudioVolume()
-
-        if volume > 0 {
+        if CCUtility.getAudioVolume() > 0 {
             CCUtility.setAudioVolume(0)
             ncplayer?.player?.audio?.volume = 0
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
             CCUtility.setAudioVolume(100)
             ncplayer?.player?.audio?.volume = 100
+            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
-        update(position: ncplayer?.player?.position)
         reStartTimerAutoHide()
     }
 

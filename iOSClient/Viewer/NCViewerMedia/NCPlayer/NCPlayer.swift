@@ -219,6 +219,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ENDED")
             break
         case .error:
+            playerToolBar?.disableAllControl()
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
             NCContentPresenter.shared.showError(error: error, priority: .max)
             print("Played mode: ERROR")
@@ -245,7 +246,8 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
-        self.playerToolBar?.update(position: player?.position)
+        print("\(player?.time.stringValue) - \(player?.position)")
+        playerToolBar?.update(position: player?.position)
     }
 
     func mediaPlayerTitleChanged(_ aNotification: Notification) {
