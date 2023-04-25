@@ -164,6 +164,10 @@ class NCPlayer: NSObject {
         if let width = width, let height = height, withSnapshot {
             player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
         }
+        
+        if let position = player?.position {
+            NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
+        }
 
         player?.pause()
     }
