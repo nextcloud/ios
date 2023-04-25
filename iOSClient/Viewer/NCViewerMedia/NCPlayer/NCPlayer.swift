@@ -77,7 +77,7 @@ class NCPlayer: NSObject {
         player?.media = VLCMedia(url: url)
         player?.delegate = self
 
-        player?.media?.addOption("--network-caching=5000")
+        // player?.media?.addOption("--network-caching=5000")
         player?.media?.addOption(":http-user-agent=\(userAgent)")
 
         let volume = CCUtility.getAudioVolume()
@@ -210,16 +210,13 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: STOPPED")
             break
         case .opening:
-            playerToolBar?.buffering()
             print("Played mode: OPENING")
             break
         case .buffering:
-            playerToolBar?.buffering()
             print("Played mode: BUFFERING")
             break
         case .ended:
             print("Played mode: ENDED")
-            playerToolBar?.update(position: player.position)
             break
         case .error:
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
@@ -235,16 +232,15 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                     }
                 }
             }
-            // let metaDictionary = player.media?.metaData
             print("Played mode: PLAYING")
             break
         case .paused:
             print("Played mode: PAUSED")
-            playerToolBar?.update(position: player.position)
             break
         default: break
         }
 
+        playerToolBar?.update(position: player.position)
         print(player.state)
     }
 
@@ -271,8 +267,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
            let data = image.jpegData(compressionQuality: 0.5) {
             try? data.write(to: URL(fileURLWithPath: fileNameIconLocalPath))
         }
-        print("Snapshot saved")
-
+        print("Snapshot saved on \(fileNameIconLocalPath)")
     }
 
     func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {

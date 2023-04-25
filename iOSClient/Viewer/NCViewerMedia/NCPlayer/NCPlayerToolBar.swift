@@ -55,7 +55,7 @@ class NCPlayerToolBar: UIView {
     private var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() { // for test
-                return 15
+                return 150
             } else {
                 return 3.5
             }
@@ -88,24 +88,19 @@ class NCPlayerToolBar: UIView {
         playbackSlider.maximumValue = 1
         playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
-        playbackSlider.isEnabled = false
 
         labelCurrentTime.text = NCUtility.shared.stringFromTime(.zero)
-        labelCurrentTime.textColor = .lightGray
+        labelCurrentTime.textColor = .white
         labelLeftTime.text = NCUtility.shared.stringFromTime(.zero)
-        labelLeftTime.textColor = .lightGray
+        labelLeftTime.textColor = .white
 
-        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .lightGray), for: .normal)
-        muteButton.isEnabled = false
+        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
 
-        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .lightGray, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-        playButton.isEnabled = false
+        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
 
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
-        backButton.isEnabled = false
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
 
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
-        forwardButton.isEnabled = false
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -133,15 +128,6 @@ class NCPlayerToolBar: UIView {
         update(position: position)
     }
 
-    public func buffering() {
-
-        muteButton.isEnabled = false
-        playButton.isEnabled = false
-        forwardButton.isEnabled = false
-        backButton.isEnabled = false
-        playbackSlider.isEnabled = false
-    }
-
     public func update(position: Float?) {
 
         guard let ncplayer = self.ncplayer,
@@ -149,6 +135,7 @@ class NCPlayerToolBar: UIView {
               let position = position
         else { return }
         let positionInSecond = position * Float(length / 1000)
+        let status = ncplayer.player?.state
 
         // SAVE POSITION
         if position > 0 {
@@ -163,41 +150,35 @@ class NCPlayerToolBar: UIView {
             } else {
                 muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
             }
-            muteButton.isEnabled = true
         }
 
-        // SLIDER TIME (START - END)
+        // SLIDER & TIME
         playbackSlider.value = position
-        playbackSlider.isEnabled = true
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
 
-        // BACK FORWARD
-        if length > 0 {
-            forwardButton.isEnabled = true
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
-            backButton.isEnabled = true
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
-        } else {
-            backButton.isEnabled = false
-            backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .lightGray), for: .normal)
-            forwardButton.isEnabled = false
-            forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .lightGray), for: .normal)
-        }
-
         // PLAY
         if ncplayer.isPlay() {
+            playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
         } else {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
+            playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         }
-        let namedPlay = ncplayer.isPlay() ? "pause.fill" : "play.fill"
-        playButton.setImage(NCUtility.shared.loadImage(named: namedPlay, color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-        playButton.isEnabled = true
 
-
+        if status == .error {
+            playButton.isEnabled = false
+            forwardButton.isEnabled = false
+            backButton.isEnabled = false
+            playbackSlider.isEnabled = false
+        } else {
+            playButton.isEnabled = true
+            forwardButton.isEnabled = true
+            backButton.isEnabled = true
+            playbackSlider.isEnabled = true
+        }
     }
 
     // MARK: -
