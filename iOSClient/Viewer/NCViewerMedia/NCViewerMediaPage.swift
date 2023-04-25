@@ -424,16 +424,16 @@ class NCViewerMediaPage: UIViewController {
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
 
-                let seconds = Float((event as! MPSkipIntervalCommandEvent).interval)
-                self.currentViewController.playerToolBar?.tapForward(self)
+                let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+                ncplayer.player?.jumpForward(seconds)
                 return.success
             }
 
             MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
             skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
 
-                let seconds = Float((event as! MPSkipIntervalCommandEvent).interval)
-                self.currentViewController.playerToolBar?.tapBack(self)
+                let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+                ncplayer.player?.jumpBackward(seconds)
                 return.success
             }
         }
