@@ -274,10 +274,12 @@ class NCPlayerToolBar: UIView {
         if ncplayer.isPlay() {
             ncplayer.playerPause()
             playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
             timerAutoHide?.invalidate()
         } else {
             ncplayer.playerPlay()
             playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
             startTimerAutoHide()
         }
     }
