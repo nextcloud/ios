@@ -177,7 +177,7 @@ class NCPlayer: NSObject {
         player?.pause()
     }
 
-    func videoSeek(position: Float) {
+    func playerPosizion(_ position: Float) {
 
         player?.position = position
     }
@@ -246,7 +246,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         }
 
         playerToolBar?.update()
-        print(player.state)
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {

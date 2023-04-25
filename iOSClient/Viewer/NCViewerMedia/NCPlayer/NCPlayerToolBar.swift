@@ -238,7 +238,7 @@ class NCPlayerToolBar: UIView {
             playbackSliderEvent = .moved
         case .ended:
             ncplayer.playerPlay()
-            ncplayer.videoSeek(position: newPosition)
+            ncplayer.playerPosizion(newPosition)
             playbackSliderEvent = .ended
         default:
             break
