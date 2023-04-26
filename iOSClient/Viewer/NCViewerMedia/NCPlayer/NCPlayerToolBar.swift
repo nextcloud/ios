@@ -226,7 +226,7 @@ class NCPlayerToolBar: UIView {
     }
 
     func playButtonPlay() {
-        
+
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
     }
@@ -245,6 +245,7 @@ class NCPlayerToolBar: UIView {
         case .began:
             playbackSliderEvent = .began
         case .moved:
+            ncplayer.playerPosizion(newPosition)
             playbackSliderEvent = .moved
         case .ended:
             ncplayer.playerPosizion(newPosition)
