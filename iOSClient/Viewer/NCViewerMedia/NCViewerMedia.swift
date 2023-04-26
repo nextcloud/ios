@@ -210,6 +210,15 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
+
+            /*
+            if let ncplayer = self.ncplayer {
+
+                ncplayer.imageVideoContainer?.frame = self.imageVideoContainer.frame
+                ncplayer.imageVideoContainer?.frame.size = self.imageVideoContainer.frame.size
+                //ncplayer.imageVideoContainer?.resizeContentView()
+            }
+            */
         }, completion: { context in
             self.showTip()
         })

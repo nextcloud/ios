@@ -40,8 +40,9 @@ class NCPlayer: NSObject {
     internal let fileNameIconLocalPath: String
 
     internal weak var playerToolBar: NCPlayerToolBar?
-    internal weak var imageVideoContainer: imageVideoContainerView?
     internal weak var viewerMediaPage: NCViewerMediaPage?
+
+    weak var imageVideoContainer: imageVideoContainerView?
 
     // MARK: - View Life Cycle
 
@@ -246,7 +247,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
-        print("\(player?.time.stringValue) - \(player?.position)")
+
         playerToolBar?.update()
     }
 
