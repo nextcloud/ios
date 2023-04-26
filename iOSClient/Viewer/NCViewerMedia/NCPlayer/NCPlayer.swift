@@ -169,13 +169,6 @@ class NCPlayer: NSObject {
 
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
     }
-
-    func snapshot() {
-
-        if let player = player, let width = width, let height = height {
-            player.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
-        }
-    }
 }
 
 extension NCPlayer: VLCMediaPlayerDelegate {
