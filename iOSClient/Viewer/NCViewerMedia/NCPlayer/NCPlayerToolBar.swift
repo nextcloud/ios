@@ -172,8 +172,6 @@ class NCPlayerToolBar: UIView {
             startTimerAutoHide()
         }
 
-        ncplayer?.viewerMediaPage?.changeScreenMode(mode: .normal, toggleToolbar: false)
-
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
         }, completion: { (_: Bool) in
@@ -188,8 +186,6 @@ class NCPlayerToolBar: UIView {
     }
 
     @objc func hide() {
-
-        ncplayer?.viewerMediaPage?.changeScreenMode(mode: .full, toggleToolbar: false)
 
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0

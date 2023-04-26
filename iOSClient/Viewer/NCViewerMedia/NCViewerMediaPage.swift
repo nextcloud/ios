@@ -197,7 +197,7 @@ class NCViewerMediaPage: UIViewController {
             progressView.isHidden = true
 
             if toggleToolbar && (metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue) {
-                currentViewController.playerToolBar?.hide()
+                currentViewController.playerToolBar?.show()
             }
 
             view.backgroundColor = .black

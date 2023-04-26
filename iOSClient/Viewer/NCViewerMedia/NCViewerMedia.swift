@@ -177,6 +177,8 @@ class NCViewerMedia: UIViewController {
                             self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
                         }
                     }
+                } else {
+                    playerToolBar?.show()
                 }
             }
             
@@ -487,7 +489,6 @@ extension NCViewerMedia {
             }
 
             self.scrollView.pinchGestureRecognizer?.isEnabled = false
-            self.playerToolBar?.hide()
         }
     }
 
