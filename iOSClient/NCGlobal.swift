@@ -367,10 +367,6 @@ class NCGlobal: NSObject {
     let notificationCenterShowPlayerToolBar                     = "showPlayerToolBar"               // userInfo: ocId, enableTimerAutoHide
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
 
-    let notificationCenterReloadMediaPage                       = "reloadMediaPage"
-    let notificationCenterPlayMedia                             = "playMedia"
-    let notificationCenterPauseMedia                            = "pauseMedia"
-
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
     let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 

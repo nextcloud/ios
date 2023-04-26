@@ -140,17 +140,10 @@ class NCViewerMediaDetailView: UIView {
         }
         dateValue.textColor = textColor
 
-        // Dimension / Duration
-        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
-            if let image = image {
-                dimLabel.text = NSLocalizedString("_resolution_", comment: "")
-                dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
-            }
-        } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
-            if let durationTime = NCManageDatabase.shared.getVideoDurationTime(metadata: metadata) {
-                self.dimLabel.text = NSLocalizedString("_duration_", comment: "")
-                self.dimValue.text = NCUtility.shared.stringFromTime(durationTime)
-            }
+        // Dimension
+        if let image = image {
+            dimLabel.text = NSLocalizedString("_resolution_", comment: "")
+            dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
         }
         dimValue.textColor = textColor
 
