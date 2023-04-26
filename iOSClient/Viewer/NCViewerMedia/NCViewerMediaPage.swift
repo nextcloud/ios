@@ -182,10 +182,6 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if toggleToolbar && (metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue) {
-                currentViewController.playerToolBar?.show()
-            }
-
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
             view.backgroundColor = .systemBackground
             textColor = .label
@@ -195,10 +191,6 @@ class NCViewerMediaPage: UIViewController {
             navigationController?.setNavigationBarHidden(true, animated: true)
             hideStatusBar = true
             progressView.isHidden = true
-
-            if toggleToolbar && (metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue) {
-                currentViewController.playerToolBar?.show()
-            }
 
             view.backgroundColor = .black
             textColor = .white
