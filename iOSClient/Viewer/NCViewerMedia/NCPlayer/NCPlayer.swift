@@ -154,8 +154,9 @@ class NCPlayer: NSObject {
         playerToolBar?.playButtonPlay()
     }
 
-    func playerPosizion(_ position: Float) {
+    func playerPosition(_ position: Float) {
 
+        NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
         player?.position = position
     }
 

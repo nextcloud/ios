@@ -245,10 +245,10 @@ class NCPlayerToolBar: UIView {
         case .began:
             playbackSliderEvent = .began
         case .moved:
-            ncplayer.playerPosizion(newPosition)
+            ncplayer.playerPosition(newPosition)
             playbackSliderEvent = .moved
         case .ended:
-            ncplayer.playerPosizion(newPosition)
+            ncplayer.playerPosition(newPosition)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.playbackSliderEvent = .ended
             }
