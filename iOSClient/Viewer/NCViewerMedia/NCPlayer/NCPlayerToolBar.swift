@@ -126,10 +126,10 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
         if CCUtility.getAudioVolume() == 0 {
-            ncplayer.player?.audio?.volume = 0
+            ncplayer.setVolumeAudio(0)
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
-            ncplayer.player?.audio?.volume = 100
+            ncplayer.setVolumeAudio(100)
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
@@ -279,13 +279,15 @@ class NCPlayerToolBar: UIView {
 
     @IBAction func tapMute(_ sender: Any) {
 
+        guard let ncplayer = ncplayer else { return }
+
         if CCUtility.getAudioVolume() > 0 {
             CCUtility.setAudioVolume(0)
-            ncplayer?.player?.audio?.volume = 0
+            ncplayer.setVolumeAudio(0)
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
             CCUtility.setAudioVolume(100)
-            ncplayer?.player?.audio?.volume = 100
+            ncplayer.setVolumeAudio(100)
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
@@ -294,13 +296,17 @@ class NCPlayerToolBar: UIView {
 
     @IBAction func tapForward(_ sender: Any) {
 
-        ncplayer?.player?.jumpForward(10)
+        guard let ncplayer = ncplayer else { return }
+
+        ncplayer.jumpForward(10)
         reStartTimerAutoHide()
     }
 
     @IBAction func tapBack(_ sender: Any) {
 
-        ncplayer?.player?.jumpBackward(10)
+        guard let ncplayer = ncplayer else { return }
+
+        ncplayer.jumpBackward(10)
         reStartTimerAutoHide()
     }
 }

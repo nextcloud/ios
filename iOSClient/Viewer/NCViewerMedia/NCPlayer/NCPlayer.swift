@@ -170,6 +170,21 @@ class NCPlayer: NSObject {
 
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
     }
+
+    func setVolumeAudio(_ volume: Int32) {
+
+        player?.audio?.volume = volume
+    }
+
+    func jumpForward(_ seconds: Int32) {
+
+        player?.jumpForward(seconds)
+    }
+
+    func jumpBackward(_ seconds: Int32) {
+
+        player?.jumpBackward(seconds)
+    }
 }
 
 extension NCPlayer: VLCMediaPlayerDelegate {
