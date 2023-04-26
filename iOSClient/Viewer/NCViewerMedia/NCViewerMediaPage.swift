@@ -106,9 +106,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
@@ -123,9 +120,6 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
@@ -182,7 +176,7 @@ class NCViewerMediaPage: UIViewController {
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
 
-    func changeScreenMode(mode: ScreenMode, enableTimerAutoHide: Bool = false) {
+    func changeScreenMode(mode: ScreenMode, toggleToolbar: Bool) {
 
         if mode == .normal {
 
@@ -190,9 +184,8 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
-                currentViewController.playerToolBar?.show(enableTimerAutoHide: enableTimerAutoHide)
-
+            if toggleToolbar && (metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue) {
+                currentViewController.playerToolBar?.show()
             }
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
@@ -205,7 +198,9 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
-            currentViewController.playerToolBar?.hide()
+            if toggleToolbar && (metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue) {
+                currentViewController.playerToolBar?.hide()
+            }
 
             view.backgroundColor = .black
             textColor = .white
@@ -351,24 +346,6 @@ class NCViewerMediaPage: UIViewController {
 
         if metadatas.firstIndex(where: {$0.ocId == ocId}) != nil {
             deleteFile(notification)
-        }
-    }
-
-    @objc func hidePlayerToolBar(_ notification: NSNotification) {
-
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String {
-            if currentViewController.metadata.ocId == ocId {
-                changeScreenMode(mode: .full)
-            }
-        }
-    }
-
-    @objc func showPlayerToolBar(_ notification: NSNotification) {
-
-        if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let enableTimerAutoHide = userInfo["enableTimerAutoHide"] as? Bool {
-            if currentViewController.metadata.ocId == ocId {
-                changeScreenMode(mode: .normal, enableTimerAutoHide: enableTimerAutoHide)
-            }
         }
     }
 
@@ -594,9 +571,9 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
         if currentScreenMode == .full {
-            changeScreenMode(mode: .normal, enableTimerAutoHide: true)
+            changeScreenMode(mode: .normal, toggleToolbar: true)
         } else {
-            changeScreenMode(mode: .full)
+            changeScreenMode(mode: .full, toggleToolbar: true)
         }
     }
 

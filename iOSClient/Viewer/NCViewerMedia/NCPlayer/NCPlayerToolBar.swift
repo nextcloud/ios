@@ -55,9 +55,9 @@ class NCPlayerToolBar: UIView {
     private var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() { // for test
-                return 150
+                return 3
             } else {
-                return 3.5
+                return 5
             }
         }
     }
@@ -133,7 +133,7 @@ class NCPlayerToolBar: UIView {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
-        show(enableTimerAutoHide: false)
+        show()
     }
 
     public func update() {
@@ -165,13 +165,13 @@ class NCPlayerToolBar: UIView {
 
     // MARK: -
 
-    public func show(enableTimerAutoHide: Bool = false) {
+    public func show() {
 
-        timerAutoHide?.invalidate()
-        if enableTimerAutoHide {
+        if let ncplayer = ncplayer, ncplayer.isPlay() {
             startTimerAutoHide()
         }
-        if !self.isHidden { return }
+
+        ncplayer?.viewerMediaPage?.changeScreenMode(mode: .normal, toggleToolbar: false)
 
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
@@ -180,31 +180,21 @@ class NCPlayerToolBar: UIView {
         })
     }
 
-    func isShow() -> Bool {
+    private func startTimerAutoHide() {
 
-        return !self.isHidden
+        timerAutoHide?.invalidate()
+        timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(hide), userInfo: nil, repeats: false)
     }
 
-    public func hide() {
+    @objc func hide() {
+
+        ncplayer?.viewerMediaPage?.changeScreenMode(mode: .full, toggleToolbar: false)
 
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
         }, completion: { (_: Bool) in
             self.isHidden = true
         })
-    }
-
-    @objc private func automaticHide() {
-
-        if let metadata = self.metadata {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterHidePlayerToolBar, userInfo: ["ocId": metadata.ocId])
-        }
-    }
-
-    private func startTimerAutoHide() {
-
-        timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(automaticHide), userInfo: nil, repeats: false)
     }
 
     private func reStartTimerAutoHide() {

@@ -205,7 +205,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .ended:
             if let url = self.url {
                 NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": self.metadata.ocId, "enableTimerAutoHide": false])
                 self.thumbnailer?.fetchThumbnail()
                 self.openAVPlayer(url: url)
             }
