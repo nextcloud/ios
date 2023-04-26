@@ -220,11 +220,13 @@ class NCPlayerToolBar: UIView {
     }
 
     func playButtonPause() {
+
         playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
     }
 
     func playButtonPlay() {
+        
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
     }
@@ -254,7 +256,6 @@ class NCPlayerToolBar: UIView {
         }
 
         reStartTimerAutoHide()
-
     }
 
     // MARK: - Action
