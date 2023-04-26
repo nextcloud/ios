@@ -159,20 +159,14 @@ class NCPlayer: NSObject {
 
     @objc func playerStop() {
 
+        savePosition()
         player?.stop()
         playerToolBar?.playButtonPlay()
     }
 
     @objc func playerPause(withSnapshot: Bool = true) {
 
-        if let width = width, let height = height, withSnapshot {
-            player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
-        }
-        
-        if let position = player?.position {
-            NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
-        }
-
+        savePosition()
         player?.pause()
         playerToolBar?.playButtonPlay()
     }
@@ -182,12 +176,15 @@ class NCPlayer: NSObject {
         player?.position = position
     }
 
-    func savePosition(_ position: Float) {
+    func savePosition() {
 
-        if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
-        let length = Int(player?.media?.length.intValue ?? 0)
+        guard let position = player?.position, metadata.classFile == NKCommon.TypeClassFile.video.rawValue else { return }
 
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: position, length: length)
+        if let width = width, let height = height {
+            player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
+        }
+
+        NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
     }
 
     func snapshot() {

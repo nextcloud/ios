@@ -28,7 +28,6 @@ import NextcloudKit
 class tableVideo: Object {
 
     @objc dynamic var account = ""
-    @objc dynamic var length: Int = 0
     @objc dynamic var ocId = ""
     @objc dynamic var position: Float = 0
     @objc dynamic var codecNameVideo: String?
@@ -45,7 +44,7 @@ class tableVideo: Object {
 
 extension NCManageDatabase {
 
-    func addVideo(metadata: tableMetadata, position: Float, length: Int? = nil) {
+    func addVideo(metadata: tableMetadata, position: Float) {
 
         if metadata.livePhoto { return }
         let realm = try! Realm()
@@ -54,9 +53,6 @@ extension NCManageDatabase {
             try realm.write {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
 
-                    if let length = length {
-                        result.length = length
-                    }
                     result.position = position
                     realm.add(result, update: .all)
 
@@ -65,9 +61,6 @@ extension NCManageDatabase {
                     let addObject = tableVideo()
 
                     addObject.account = metadata.account
-                    if let length = length {
-                        addObject.length = length
-                    }
                     addObject.ocId = metadata.ocId
                     addObject.position = position
                     realm.add(addObject, update: .all)
@@ -119,20 +112,6 @@ extension NCManageDatabase {
         }
 
         return tableVideo.init(value: result)
-    }
-
-    func getVideoLength(metadata: tableMetadata?) -> Int? {
-        guard let metadata = metadata else { return nil }
-
-        if metadata.livePhoto { return nil }
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
-            return nil
-        }
-
-        if result.length == 0 { return nil }
-        return result.length
     }
 
     func getVideoPosition(metadata: tableMetadata) -> Float? {
