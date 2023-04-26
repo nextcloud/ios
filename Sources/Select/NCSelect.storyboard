@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EAU-PF-EEd">
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Select-->
+        <scene sceneID="d4X-6u-1HM">
+            <objects>
+                <viewController storyboardIdentifier="NCSelect.storyboard" id="VYq-xA-D35" customClass="NCSelect" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="MaM-Im-7sc">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="0HI-k1-SD0">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="D7P-75-aB1">
+                                    <size key="itemSize" width="0.0" height="0.0"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                                <connections>
+                                    <outlet property="dataSource" destination="VYq-xA-D35" id="knG-ac-buS"/>
+                                    <outlet property="delegate" destination="VYq-xA-D35" id="EXB-bA-tje"/>
+                                </connections>
+                            </collectionView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vaA-85-uNN"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="vaA-85-uNN" firstAttribute="trailing" secondItem="0HI-k1-SD0" secondAttribute="trailing" id="Dk4-c3-6wl"/>
+                            <constraint firstItem="0HI-k1-SD0" firstAttribute="top" secondItem="MaM-Im-7sc" secondAttribute="top" id="GKj-QM-2Yy"/>
+                            <constraint firstAttribute="bottom" secondItem="0HI-k1-SD0" secondAttribute="bottom" id="onM-VP-itM"/>
+                            <constraint firstItem="0HI-k1-SD0" firstAttribute="leading" secondItem="vaA-85-uNN" secondAttribute="leading" id="uLL-RT-YFO"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="N5K-De-4CP">
+                        <barButtonItem key="rightBarButtonItem" title="Cancel" id="qHj-AF-EN7">
+                            <connections>
+                                <action selector="actionCancel:" destination="VYq-xA-D35" id="LRW-H2-pbh"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="bottomContraint" destination="onM-VP-itM" id="kqE-5e-xj2"/>
+                        <outlet property="buttonCancel" destination="qHj-AF-EN7" id="Fky-XJ-BxL"/>
+                        <outlet property="collectionView" destination="0HI-k1-SD0" id="xme-mG-bnz"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vH8-UY-9MN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1196" y="228.03598200899552"/>
+        </scene>
+        <!--Main Navigation Controller-->
+        <scene sceneID="KP9-Ja-zsS">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="EAU-PF-EEd" customClass="NCMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="OMR-Ah-U1w">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="VYq-xA-D35" kind="relationship" relationship="rootViewController" id="dZh-kL-x5f"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rcK-ZU-zTS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="256.80000000000001" y="228.93553223388307"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
