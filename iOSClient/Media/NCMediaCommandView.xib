@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina3_5" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NCMediaCommandView" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i1s-Qa-dG1">
+                    <rect key="frame" x="224" y="10" width="40" height="40"/>
+                    <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="e3Q-e0-SQa">
+                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jSO-Vb-jcU">
+                                <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="5zz-h5-hx9"/>
+                                    <constraint firstAttribute="height" constant="40" id="lzK-bd-NlR"/>
+                                </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="imageEdgeInsets" minX="12" minY="12" maxX="12" maxY="12"/>
+                                <state key="normal" image="plus-slash-minus">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <state key="disabled">
+                                    <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="gridSwitchButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="0jB-EV-iMe"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZkU-dK-sp1">
+                                <rect key="frame" x="0.0" y="0.0" width="19.5" height="40"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="imageEdgeInsets" minX="12" minY="12" maxX="12" maxY="12"/>
+                                <state key="normal" image="zoomInMedia">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <state key="disabled">
+                                    <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="zoomInPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="YPO-oL-Gf5"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NwM-bk-QAK">
+                                <rect key="frame" x="19.5" y="8" width="1" height="24"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="1" id="1cE-rd-mYI"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="swp-Cd-CbD">
+                                <rect key="frame" x="20.5" y="0.0" width="19.5" height="40"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="imageEdgeInsets" minX="12" minY="12" maxX="12" maxY="12"/>
+                                <state key="normal" image="zoomOutMedia">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <state key="disabled">
+                                    <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="zoomOutPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="xIo-6p-l7h"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="NwM-bk-QAK" firstAttribute="top" secondItem="e3Q-e0-SQa" secondAttribute="top" constant="8" id="3V7-Bl-HeS"/>
+                            <constraint firstItem="jSO-Vb-jcU" firstAttribute="centerY" secondItem="e3Q-e0-SQa" secondAttribute="centerY" id="5ap-Yp-VlG"/>
+                            <constraint firstItem="NwM-bk-QAK" firstAttribute="centerX" secondItem="e3Q-e0-SQa" secondAttribute="centerX" id="70K-vU-VR6"/>
+                            <constraint firstItem="NwM-bk-QAK" firstAttribute="leading" secondItem="ZkU-dK-sp1" secondAttribute="trailing" id="Lcu-89-Iys"/>
+                            <constraint firstAttribute="bottom" secondItem="NwM-bk-QAK" secondAttribute="bottom" constant="8" id="O8t-uT-Dhh"/>
+                            <constraint firstItem="jSO-Vb-jcU" firstAttribute="centerX" secondItem="e3Q-e0-SQa" secondAttribute="centerX" id="YFf-Kh-lAp"/>
+                            <constraint firstAttribute="bottom" secondItem="swp-Cd-CbD" secondAttribute="bottom" id="dgT-Np-dTd"/>
+                            <constraint firstItem="ZkU-dK-sp1" firstAttribute="leading" secondItem="e3Q-e0-SQa" secondAttribute="leading" id="fyg-tQ-tfR"/>
+                            <constraint firstItem="ZkU-dK-sp1" firstAttribute="top" secondItem="e3Q-e0-SQa" secondAttribute="top" id="o2e-4h-ylb"/>
+                            <constraint firstAttribute="trailing" secondItem="swp-Cd-CbD" secondAttribute="trailing" id="oaa-Rc-bYC"/>
+                            <constraint firstItem="swp-Cd-CbD" firstAttribute="leading" secondItem="NwM-bk-QAK" secondAttribute="trailing" id="omu-Hf-g4C"/>
+                            <constraint firstAttribute="bottom" secondItem="ZkU-dK-sp1" secondAttribute="bottom" id="pfE-6t-fCg"/>
+                            <constraint firstItem="swp-Cd-CbD" firstAttribute="top" secondItem="e3Q-e0-SQa" secondAttribute="top" id="yoe-G6-vaw"/>
+                        </constraints>
+                    </view>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="mEu-PL-xc2"/>
+                        <constraint firstAttribute="width" constant="40" id="wkm-j1-5v4"/>
+                    </constraints>
+                    <blurEffect style="regular"/>
+                </visualEffectView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IxY-xH-yZQ">
+                    <rect key="frame" x="8" y="10" width="208" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="S6o-Pa-sxy"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="enp-xt-Y5y">
+                    <rect key="frame" x="272" y="10" width="40" height="40"/>
+                    <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="KKR-Hr-av8">
+                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3qs-Hm-qLL">
+                                <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
+                                <state key="normal" image="more"/>
+                                <connections>
+                                    <action selector="moreButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="EeF-Eg-Pqi"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="3qs-Hm-qLL" secondAttribute="bottom" id="B32-ni-kC4"/>
+                            <constraint firstItem="3qs-Hm-qLL" firstAttribute="leading" secondItem="KKR-Hr-av8" secondAttribute="leading" id="NSe-Qy-mmd"/>
+                            <constraint firstItem="3qs-Hm-qLL" firstAttribute="top" secondItem="KKR-Hr-av8" secondAttribute="top" id="URa-a2-sfx"/>
+                            <constraint firstAttribute="trailing" secondItem="3qs-Hm-qLL" secondAttribute="trailing" id="fjn-eP-8DS"/>
+                        </constraints>
+                    </view>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="Ftv-5S-RKc"/>
+                        <constraint firstAttribute="width" constant="40" id="JJ2-fQ-ew9"/>
+                    </constraints>
+                    <blurEffect style="regular"/>
+                </visualEffectView>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="XVj-jD-9KA">
+                    <rect key="frame" x="150" y="-9" width="20" height="20"/>
+                    <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </activityIndicatorView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="XVj-jD-9KA" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="-9" id="Cpb-Vg-sov"/>
+                <constraint firstItem="i1s-Qa-dG1" firstAttribute="leading" secondItem="IxY-xH-yZQ" secondAttribute="trailing" constant="8" id="Owq-aa-Sr6"/>
+                <constraint firstItem="enp-xt-Y5y" firstAttribute="leading" secondItem="i1s-Qa-dG1" secondAttribute="trailing" constant="8" id="XcU-G8-k0a"/>
+                <constraint firstItem="IxY-xH-yZQ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="ZhO-pY-Qwi"/>
+                <constraint firstItem="i1s-Qa-dG1" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="cWc-xe-8un"/>
+                <constraint firstItem="XVj-jD-9KA" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="lqb-pC-WUR"/>
+                <constraint firstItem="IxY-xH-yZQ" firstAttribute="centerY" secondItem="i1s-Qa-dG1" secondAttribute="centerY" id="mJJ-pT-yA3"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="enp-xt-Y5y" secondAttribute="trailing" constant="8" id="rSU-Dz-YXW"/>
+                <constraint firstItem="enp-xt-Y5y" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="z6I-sd-mmD"/>
+            </constraints>
+            <connections>
+                <outlet property="activityIndicator" destination="XVj-jD-9KA" id="cSB-RJ-RCZ"/>
+                <outlet property="buttonControlWidthConstraint" destination="wkm-j1-5v4" id="SHm-F2-NjB"/>
+                <outlet property="controlButtonView" destination="i1s-Qa-dG1" id="5q4-uE-oC5"/>
+                <outlet property="gridSwitchButton" destination="jSO-Vb-jcU" id="geS-eg-obV"/>
+                <outlet property="moreButton" destination="3qs-Hm-qLL" id="OPi-J6-wkl"/>
+                <outlet property="moreView" destination="enp-xt-Y5y" id="Fqg-Wl-V7h"/>
+                <outlet property="separatorView" destination="NwM-bk-QAK" id="wRe-37-oxD"/>
+                <outlet property="title" destination="IxY-xH-yZQ" id="ZNZ-Jy-JbH"/>
+                <outlet property="zoomInButton" destination="ZkU-dK-sp1" id="bC0-Wo-2as"/>
+                <outlet property="zoomOutButton" destination="swp-Cd-CbD" id="wvm-jt-8nI"/>
+            </connections>
+            <point key="canvasLocation" x="138.75" y="152.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="more" width="425" height="425"/>
+        <image name="plus-slash-minus" width="512" height="512"/>
+        <image name="zoomInMedia" width="512" height="512"/>
+        <image name="zoomOutMedia" width="512" height="512"/>
+    </resources>
+</document>

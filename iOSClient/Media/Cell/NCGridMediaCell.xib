@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="gridCell" id="vf1-Kf-9uL" customClass="NCGridMediaCell" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView autoresizesSubviews="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
+                        <rect key="frame" x="-1" y="-1" width="222" height="222"/>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
+                        <rect key="frame" x="5" y="192" width="23" height="23"/>
+                    </imageView>
+                    <visualEffectView hidden="YES" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r1K-4X-gNd" userLabel="VisualEffect">
+                        <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
+                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="3h4-qt-b9E">
+                            <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        </view>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <blurEffect style="extraLight"/>
+                    </visualEffectView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
+                        <rect key="frame" x="5" y="5" width="44.5" height="44.5"/>
+                    </imageView>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
+            <constraints>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="r1K-4X-gNd" secondAttribute="trailing" id="1Hu-GT-dJv"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="a0p-rj-jnV" secondAttribute="bottom" constant="5" id="2IN-4o-XSp"/>
+                <constraint firstItem="r1K-4X-gNd" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="3bv-Dh-iih"/>
+                <constraint firstItem="a0p-rj-jnV" firstAttribute="height" secondItem="5Ci-V1-hf5" secondAttribute="height" multiplier="0.1" constant="1" id="4IJ-uh-zvr"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="height" secondItem="5Ci-V1-hf5" secondAttribute="height" multiplier="0.2" id="7FN-4V-ZAz"/>
+                <constraint firstItem="a0p-rj-jnV" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="DYA-5M-RZ8"/>
+                <constraint firstItem="a0p-rj-jnV" firstAttribute="width" secondItem="5Ci-V1-hf5" secondAttribute="width" multiplier="0.1" constant="1" id="DvH-0a-ncn"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="-1" id="Ouj-ZD-UFm"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="r1K-4X-gNd" secondAttribute="bottom" id="QAj-Am-H9V"/>
+                <constraint firstItem="r1K-4X-gNd" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Rou-vT-GPt"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-1" id="cHT-cP-NN6"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-1" id="eEC-eB-alE"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="width" secondItem="5Ci-V1-hf5" secondAttribute="width" multiplier="0.2" id="ojv-2d-Xmj"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="-1" id="qT3-WD-iTV"/>
+            </constraints>
+            <size key="customSize" width="220" height="260"/>
+            <connections>
+                <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
+                <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
+                <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
+                <outlet property="imageVisualEffect" destination="r1K-4X-gNd" id="uf3-P1-F4o"/>
+            </connections>
+            <point key="canvasLocation" x="88" y="141.67916041979012"/>
+        </collectionViewCell>
+    </objects>
+</document>
