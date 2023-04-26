@@ -106,6 +106,7 @@ class NCPlayerToolBar: UIView {
     }
 
     deinit {
+        timerAutoHide?.invalidate()
         print("deinit NCPlayerToolBar")
     }
 
@@ -197,18 +198,6 @@ class NCPlayerToolBar: UIView {
         })
     }
 
-    private func reStartTimerAutoHide() {
-
-        if let timerAutoHide = timerAutoHide, timerAutoHide.isValid {
-            startTimerAutoHide()
-        }
-    }
-
-    func stopTimerAutoHide() {
-
-        timerAutoHide?.invalidate()
-    }
-
     func playButtonPause() {
 
         playButton.setImage(NCUtility.shared.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
@@ -246,7 +235,7 @@ class NCPlayerToolBar: UIView {
             break
         }
 
-        reStartTimerAutoHide()
+        startTimerAutoHide()
     }
 
     // MARK: - Action
@@ -281,7 +270,7 @@ class NCPlayerToolBar: UIView {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
-        reStartTimerAutoHide()
+        startTimerAutoHide()
     }
 
     @IBAction func tapForward(_ sender: Any) {
@@ -289,7 +278,7 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpForward(10)
-        reStartTimerAutoHide()
+        startTimerAutoHide()
     }
 
     @IBAction func tapBack(_ sender: Any) {
@@ -297,6 +286,6 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpBackward(10)
-        reStartTimerAutoHide()
+        startTimerAutoHide()
     }
 }

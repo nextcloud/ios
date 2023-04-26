@@ -34,8 +34,7 @@ class NCViewerMediaPage: UIViewController {
     enum ScreenMode {
         case full, normal
     }
-    var currentScreenMode: ScreenMode = .normal
-    var saveScreenModeImage: ScreenMode = .normal
+    var screenMode: ScreenMode = .normal
 
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
@@ -130,13 +129,12 @@ class NCViewerMediaPage: UIViewController {
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
         }
-        currentViewController.playerToolBar?.stopTimerAutoHide()
         clearCommandCenter()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
 
-        if currentScreenMode == .normal {
+        if screenMode == .normal {
             return .default
         } else {
             return .lightContent
@@ -144,7 +142,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     override var prefersHomeIndicatorAutoHidden: Bool {
-        return currentScreenMode == .full
+        return screenMode == .full
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -206,11 +204,7 @@ class NCViewerMediaPage: UIViewController {
             textColor = .white
         }
 
-        currentScreenMode = mode
-
-        if currentViewController.metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
-            saveScreenModeImage = mode
-        }
+        screenMode = mode
 
         setNeedsStatusBarAppearanceUpdate()
         setNeedsUpdateOfHomeIndicatorAutoHidden()
@@ -570,7 +564,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        if currentScreenMode == .full {
+        if screenMode == .full {
             changeScreenMode(mode: .normal, toggleToolbar: true)
         } else {
             changeScreenMode(mode: .full, toggleToolbar: true)

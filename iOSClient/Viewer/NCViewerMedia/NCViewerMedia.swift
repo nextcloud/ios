@@ -135,24 +135,13 @@ class NCViewerMedia: UIViewController {
         viewerMediaPage?.navigationItem.title = metadata.fileNameView
 
         if metadata.classFile == NKCommon.TypeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
-            viewerMediaPage.currentScreenMode = viewerMediaPage.saveScreenModeImage
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
                 viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
                 reloadImage()
             }
         }
 
-        if viewerMediaPage?.currentScreenMode == .full {
-
-            viewerMediaPage?.navigationController?.setNavigationBarHidden(true, animated: true)
-
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
-
-            viewerMediaPage?.view.backgroundColor = .black
-            viewerMediaPage?.textColor = .white
-            viewerMediaPage?.progressView.isHidden = true
-
-        } else {
+        if viewerMediaPage?.screenMode == .normal {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
 
@@ -161,6 +150,16 @@ class NCViewerMedia: UIViewController {
             viewerMediaPage?.view.backgroundColor = .systemBackground
             viewerMediaPage?.textColor = .label
             viewerMediaPage?.progressView.isHidden = false
+
+        } else {
+
+            viewerMediaPage?.navigationController?.setNavigationBarHidden(true, animated: true)
+
+            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
+
+            viewerMediaPage?.view.backgroundColor = .black
+            viewerMediaPage?.textColor = .white
+            viewerMediaPage?.progressView.isHidden = true
         }
     }
 
@@ -210,15 +209,6 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
-
-            /*
-            if let ncplayer = self.ncplayer {
-
-                ncplayer.imageVideoContainer?.frame = self.imageVideoContainer.frame
-                ncplayer.imageVideoContainer?.frame.size = self.imageVideoContainer.frame.size
-                //ncplayer.imageVideoContainer?.resizeContentView()
-            }
-            */
         }, completion: { context in
             self.showTip()
         })
