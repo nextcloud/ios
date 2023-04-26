@@ -162,9 +162,9 @@ class NCPlayer: NSObject {
 
     func savePosition() {
 
-        guard let position = player?.position, metadata.classFile == NKCommon.TypeClassFile.video.rawValue else { return }
+        guard let position = player?.position, metadata.classFile == NKCommon.TypeClassFile.video.rawValue, isPlay() else { return }
 
-        if isPlay(), let width = width, let height = height {
+        if let width = width, let height = height {
             player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
         }
 
