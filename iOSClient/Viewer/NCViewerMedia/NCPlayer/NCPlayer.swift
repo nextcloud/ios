@@ -218,15 +218,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
-            // player.currentVideoSubTitleIndex = 4
-            if let tracksInformation = player.media?.tracksInformation {
-                for case let track as [String:Any] in tracksInformation {
-                    if track["type"] as? String == "video" {
-                        width = track["width"] as? Int64
-                        height = track["height"] as? Int64
-                    }
-                }
-            }
+            let size = player.videoSize
+            self.width = Int64(size.width)
+            self.height = Int64(size.height)
             print("Played mode: PLAYING")
             break
         case .paused:
