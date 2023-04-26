@@ -62,7 +62,7 @@ class NCPlayer: NSObject {
     deinit {
 
         print("deinit NCPlayer with ocId \(metadata.ocId)")
-        closeAVPlayer()
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
 
     func openAVPlayer(url: URL) {
@@ -99,21 +99,6 @@ class NCPlayer: NSObject {
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(playerPause), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(playerPlay), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
-    }
-
-    func closeAVPlayer() {
-
-        playerStop()
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPauseMedia), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayMedia), object: nil)
     }
 
     // MARK: - UIGestureRecognizerDelegate
@@ -132,8 +117,6 @@ class NCPlayer: NSObject {
         }
     }
 
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) { }
-
     // MARK: -
 
     func isPlay() -> Bool {
@@ -141,7 +124,7 @@ class NCPlayer: NSObject {
         return player?.isPlaying ?? false
     }
 
-    @objc func playerPlay() {
+    func playerPlay() {
 
         playerToolBar?.playbackSliderEvent = .began
         player?.play()
@@ -164,7 +147,7 @@ class NCPlayer: NSObject {
         playerToolBar?.playButtonPlay()
     }
 
-    @objc func playerPause(withSnapshot: Bool = true) {
+    @objc func playerPause() {
 
         savePosition()
         player?.pause()

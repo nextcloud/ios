@@ -109,8 +109,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadMediaPage(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
@@ -128,8 +126,6 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
@@ -245,7 +241,7 @@ class NCViewerMediaPage: UIViewController {
            let ncplayer = currentViewController.ncplayer {
             let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
             if ncplayer.isPlay() {
-                ncplayer.playerPause(withSnapshot: false)
+                ncplayer.playerPause()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     ncplayer.openAVPlayer(url: url)
                     ncplayer.playerPlay()
@@ -375,12 +371,7 @@ class NCViewerMediaPage: UIViewController {
             }
         }
     }
-    
-    @objc func reloadMediaPage(_ notification: NSNotification) {
-        
-        self.reloadCurrentPage()
-    }
-    
+
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
         progressView.progress = 0
@@ -551,7 +542,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         if completed && nextIndex != nil {
             previousViewControllers.forEach { viewController in
                 let viewerMedia = viewController as! NCViewerMedia
-                viewerMedia.ncplayer?.closeAVPlayer()
+                viewerMedia.ncplayer?.playerPause()
             }
             currentIndex = nextIndex!
         }
