@@ -134,7 +134,7 @@
 "_of_"                      = "of";
 "_internal_modify_"         = "Edit with internal editor";
 "_database_corrupt_"        = "Oops something went wrong, please enter your credentials but don't worry, your files have remained secure";
-"_download_image_max_"      = "Download the image in full resolution";
+"_download_locally_"        = "Download locally";
 "_livephoto_save_"          = "Save Live Photo to photo album";
 "_livephoto_save_error_"    = "Error during save of Live Photo";
 "_file_conflict_num_"       = "file conflict";

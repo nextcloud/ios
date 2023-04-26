@@ -206,13 +206,13 @@ extension NCViewer {
         }
 
         //
-        // DOWNLOAD IMAGE MAX RESOLUTION
+        // DOWNLOAD LOCALLY
         //
-        if !webView, metadata.session.isEmpty, metadata.classFile == NKCommon.TypeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata) {
+        if !webView, metadata.session.isEmpty, !CCUtility.fileProviderStorageExists(metadata) {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_download_image_max_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
+                    title: NSLocalizedString("_download_locally_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "icloud.and.arrow.down"),
                     action: { _ in
                         NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                     }

@@ -39,7 +39,6 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
 
-    private var _autoPlay: Bool = false
     private var tipView: EasyTipView?
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -53,16 +52,8 @@ class NCViewerMedia: UIViewController {
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
 
-    var autoPlay: Bool {
-        get {
-            let temp = _autoPlay
-            _autoPlay = false
-            return temp
-        }
-        set(newVal) {
-            _autoPlay = newVal
-        }
-    }
+    var avPlayerLayer: AVPlayerLayer?
+    var avPlayer: AVPlayer?
 
     // MARK: - View Life Cycle
 
@@ -107,13 +98,9 @@ class NCViewerMedia: UIViewController {
                 playerToolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
                 playerToolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
                 playerToolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
-                playerToolBar.viewerMediaPage = viewerMediaPage
             }
 
-            let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
-            if let url = urlVideo.url {
-                self.ncplayer = NCPlayer.init(url: url, autoPlay: self.autoPlay, isProxy: urlVideo.isProxy, imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, detailView: self.detailView, viewController: self)
-            }
+            self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
         }
 
         // TIP
@@ -183,8 +170,15 @@ class NCViewerMedia: UIViewController {
         if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
 
             if let ncplayer = self.ncplayer {
-                ncplayer.openAVPlayer()
-                self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+
+                if ncplayer.url == nil {
+                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+                        if let url = url {
+                            ncplayer.openAVPlayer(url: url)
+                            self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+                        }
+                    }
+                }
             }
             
         } else if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
@@ -216,6 +210,15 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
+
+            /*
+            if let ncplayer = self.ncplayer {
+
+                ncplayer.imageVideoContainer?.frame = self.imageVideoContainer.frame
+                ncplayer.imageVideoContainer?.frame.size = self.imageVideoContainer.frame.size
+                //ncplayer.imageVideoContainer?.resizeContentView()
+            }
+            */
         }, completion: { context in
             self.showTip()
         })
@@ -333,13 +336,40 @@ class NCViewerMedia: UIViewController {
         }
     }
 
+    // MARK: - Live Photo
+
+    func playLivePhoto(filePath: String) {
+
+        updateViewConstraints()
+        statusViewImage.isHidden = true
+        statusLabel.isHidden = true
+
+        avPlayer = AVPlayer(url: URL(fileURLWithPath: filePath))
+        avPlayerLayer = AVPlayerLayer(player: avPlayer)
+
+        if let avPlayerLayer = self.avPlayerLayer, let imageView = imageVideoContainer {
+            avPlayerLayer.videoGravity = .resizeAspect
+            avPlayerLayer.frame = imageView.bounds
+            imageView.layer.addSublayer(avPlayerLayer)
+            imageView.playerLayer = avPlayerLayer
+            avPlayer?.play()
+        }
+    }
+
+    func stopLivePhoto() {
+
+        avPlayer?.pause()
+        avPlayerLayer?.removeFromSuperlayer()
+
+        statusViewImage.isHidden = false
+        statusLabel.isHidden = false
+    }
+
     // MARK: - Gesture
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        if detailView.isShow() { return }
-        // NO ZOOM for Audio
-        if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue { return }
+        guard metadata.classFile == NKCommon.TypeClassFile.image.rawValue, !detailView.isShow()  else { return }
 
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
@@ -357,6 +387,8 @@ class NCViewerMedia: UIViewController {
     }
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+
+        guard metadata.classFile == NKCommon.TypeClassFile.image.rawValue else { return }
 
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
@@ -483,9 +515,6 @@ extension NCViewerMedia {
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.livePhoto && ncplayer?.player?.timeControlStatus == .paused {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterShowPlayerToolBar, userInfo: ["ocId": metadata.ocId, "enableTimerAutoHide": false])
-        }
     }
 
     func reloadDetail() {

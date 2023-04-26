@@ -28,9 +28,8 @@ import NextcloudKit
 class tableVideo: Object {
 
     @objc dynamic var account = ""
-    @objc dynamic var duration: Int64 = 0
     @objc dynamic var ocId = ""
-    @objc dynamic var time: Int64 = 0
+    @objc dynamic var position: Float = 0
     @objc dynamic var codecNameVideo: String?
     @objc dynamic var codecNameAudio: String?
     @objc dynamic var codecAudioChannelLayout: String?
@@ -45,7 +44,7 @@ class tableVideo: Object {
 
 extension NCManageDatabase {
 
-    func addVideoTime(metadata: tableMetadata, time: CMTime?, durationTime: CMTime?) {
+    func addVideo(metadata: tableMetadata, position: Float) {
 
         if metadata.livePhoto { return }
         let realm = try! Realm()
@@ -54,12 +53,7 @@ extension NCManageDatabase {
             try realm.write {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
 
-                    if let durationTime = durationTime {
-                        result.duration = durationTime.convertScale(1000, method: .default).value
-                    }
-                    if let time = time {
-                        result.time = time.convertScale(1000, method: .default).value
-                    }
+                    result.position = position
                     realm.add(result, update: .all)
 
                 } else {
@@ -67,13 +61,8 @@ extension NCManageDatabase {
                     let addObject = tableVideo()
 
                     addObject.account = metadata.account
-                    if let durationTime = durationTime {
-                        addObject.duration = durationTime.convertScale(1000, method: .default).value
-                    }
                     addObject.ocId = metadata.ocId
-                    if let time = time {
-                        addObject.time = time.convertScale(1000, method: .default).value
-                    }
+                    addObject.position = position
                     realm.add(addObject, update: .all)
                 }
             }
@@ -125,8 +114,7 @@ extension NCManageDatabase {
         return tableVideo.init(value: result)
     }
 
-    func getVideoDurationTime(metadata: tableMetadata?) -> CMTime? {
-        guard let metadata = metadata else { return nil }
+    func getVideoPosition(metadata: tableMetadata) -> Float? {
 
         if metadata.livePhoto { return nil }
         let realm = try! Realm()
@@ -135,23 +123,8 @@ extension NCManageDatabase {
             return nil
         }
 
-        if result.duration == 0 { return nil }
-        let duration = CMTimeMake(value: result.duration, timescale: 1000)
-        return duration
-    }
-
-    func getVideoTime(metadata: tableMetadata) -> CMTime? {
-
-        if metadata.livePhoto { return nil }
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
-            return nil
-        }
-
-        if result.time == 0 { return nil }
-        let time = CMTimeMake(value: result.time, timescale: 1000)
-        return time
+        if result.position == 0 { return nil }
+        return result.position
     }
 
     func deleteVideo(metadata: tableMetadata) {

@@ -24,6 +24,8 @@
 import UIKit
 import NextcloudKit
 import MediaPlayer
+import JGProgressHUD
+import Alamofire
 
 class NCViewerMediaPage: UIViewController {
 
@@ -53,7 +55,6 @@ class NCViewerMediaPage: UIViewController {
     var modifiedOcId: [String] = []
     var currentIndex = 0
     var nextIndex: Int?
-    var ncplayerLivePhoto: NCPlayer?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
@@ -108,8 +109,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(hidePlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(showPlayerToolBar(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadMediaPage(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
@@ -128,8 +127,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterHidePlayerToolBar), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterShowPlayerToolBar), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadMediaPage), object: nil)
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
@@ -138,7 +135,6 @@ class NCViewerMediaPage: UIViewController {
 
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
-            ncplayer.saveCurrentTime()
         }
         currentViewController.playerToolBar?.stopTimerAutoHide()
         clearCommandCenter()
@@ -194,8 +190,9 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if !currentViewController.detailView.isShow() {
+            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
                 currentViewController.playerToolBar?.show(enableTimerAutoHide: enableTimerAutoHide)
+
             }
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
@@ -229,7 +226,30 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func downloadedFile(_ notification: NSNotification) {
 
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String
+        else {
+            return
+        }
+
         progressView.progress = 0
+        let metadata = metadatas[currentIndex]
+
+        if metadata.ocId == ocId,
+           (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue),
+           CCUtility.fileProviderStorageExists(metadata),
+           let ncplayer = currentViewController.ncplayer {
+            let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+            if ncplayer.isPlay() {
+                ncplayer.playerPause()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    ncplayer.openAVPlayer(url: url)
+                    ncplayer.playerPlay()
+                }
+            } else {
+                ncplayer.openAVPlayer(url: url)
+            }
+        }
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
@@ -346,17 +366,12 @@ class NCViewerMediaPage: UIViewController {
     @objc func showPlayerToolBar(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, let enableTimerAutoHide = userInfo["enableTimerAutoHide"] as? Bool {
-            if currentViewController.metadata.ocId == ocId, let playerToolBar = currentViewController.playerToolBar, !playerToolBar.isPictureInPictureActive() {
+            if currentViewController.metadata.ocId == ocId {
                 changeScreenMode(mode: .normal, enableTimerAutoHide: enableTimerAutoHide)
             }
         }
     }
-    
-    @objc func reloadMediaPage(_ notification: NSNotification) {
-        
-        self.reloadCurrentPage()
-    }
-    
+
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
         progressView.progress = 0
@@ -400,22 +415,21 @@ class NCViewerMediaPage: UIViewController {
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
 
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.currentViewController.playerToolBar?.skip(seconds: seconds)
+                let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+                ncplayer.player?.jumpForward(seconds)
                 return.success
             }
 
             MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
             skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
 
-                let seconds = Float64((event as! MPSkipIntervalCommandEvent).interval)
-                self.currentViewController.playerToolBar?.skip(seconds: -seconds)
+                let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+                ncplayer.player?.jumpBackward(seconds)
                 return.success
             }
         }
 
         nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = ncplayer.durationTime.seconds
         if let image = currentViewController.image {
             nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
                 return image
@@ -488,7 +502,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
     func reloadCurrentPage() {
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        viewerMedia.autoPlay = false
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: false, completion: nil)
     }
     
@@ -497,7 +510,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         currentIndex = index
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        viewerMedia.autoPlay = autoPlay
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
     }
 
@@ -520,11 +532,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
     // START TRANSITION
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
 
-        // Save time video
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-            ncplayer.saveCurrentTime()
-        }
-
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
     }
@@ -535,7 +542,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         if completed && nextIndex != nil {
             previousViewControllers.forEach { viewController in
                 let viewerMedia = viewController as! NCViewerMedia
-                viewerMedia.ncplayer?.deactivateObserver()
+                viewerMedia.ncplayer?.playerStop()
             }
             currentIndex = nextIndex!
         }
@@ -586,16 +593,9 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        if let playerToolBar = currentViewController.playerToolBar, playerToolBar.isPictureInPictureActive() {
-            playerToolBar.pictureInPictureController?.stopPictureInPicture()
-        }
-
         if currentScreenMode == .full {
-
             changeScreenMode(mode: .normal, enableTimerAutoHide: true)
-
         } else {
-
             changeScreenMode(mode: .full)
         }
     }
@@ -608,31 +608,13 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
         if !currentViewController.metadata.livePhoto { return }
 
         if gestureRecognizer.state == .began {
-
-            currentViewController.updateViewConstraints()
-            currentViewController.statusViewImage.isHidden = true
-            currentViewController.statusLabel.isHidden = true
-
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentViewController.metadata.account, currentViewController.metadata.serverUrl, fileName)), CCUtility.fileProviderStorageExists(metadata) {
-
                 AudioServicesPlaySystemSound(1519) // peek feedback
-
-                let urlVideo = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata)
-                
-                if let url = urlVideo.url {
-                    self.ncplayerLivePhoto = NCPlayer.init(url: url, autoPlay: true, isProxy: urlVideo.isProxy, imageVideoContainer: self.currentViewController.imageVideoContainer, playerToolBar: nil, metadata: metadata, detailView: nil, viewController: self)
-                    self.ncplayerLivePhoto?.openAVPlayer()
-                }
+                currentViewController.playLivePhoto(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
             }
-
         } else if gestureRecognizer.state == .ended {
-
-            currentViewController.statusViewImage.isHidden = false
-            currentViewController.statusLabel.isHidden = false
-            currentViewController.imageVideoContainer.image = currentViewController.image
-            ncplayerLivePhoto?.videoLayer?.removeFromSuperlayer()
-            ncplayerLivePhoto?.deactivateObserver()
+            currentViewController.stopLivePhoto()
         }
     }
 }
