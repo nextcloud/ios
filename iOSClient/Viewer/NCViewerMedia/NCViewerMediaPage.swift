@@ -542,7 +542,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         if completed && nextIndex != nil {
             previousViewControllers.forEach { viewController in
                 let viewerMedia = viewController as! NCViewerMedia
-                viewerMedia.ncplayer?.playerPause()
+                viewerMedia.ncplayer?.playerStop()
             }
             currentIndex = nextIndex!
         }

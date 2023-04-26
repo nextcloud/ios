@@ -113,7 +113,7 @@ class NCPlayer: NSObject {
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
 
         if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
-            playerPause()
+            playerStop()
         }
     }
 
