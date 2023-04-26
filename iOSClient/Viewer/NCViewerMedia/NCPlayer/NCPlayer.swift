@@ -105,6 +105,7 @@ class NCPlayer: NSObject {
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
+        playerToolBar?.show()
         viewerMediaPage?.didSingleTapWith(gestureRecognizer: gestureRecognizer)
     }
 
@@ -217,6 +218,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
+            // player.currentVideoSubTitleIndex = 4
             if let tracksInformation = player.media?.tracksInformation {
                 for case let track as [String:Any] in tracksInformation {
                     if track["type"] as? String == "video" {
