@@ -999,3 +999,9 @@
 "Mantis.Reset"                  = "Reset";
 "Mantis.Original"               = "Original";
 "Mantis.Square"                 = "Square";
+
+// MARK: Rotate Image
+"_rotate_"                      = "Rotate right";
+"_rotate_button_"               = "Rotate";
+"_save_changes_message_"        = "Do you want to save changes?";
+"_discard_"                     = "Discard";

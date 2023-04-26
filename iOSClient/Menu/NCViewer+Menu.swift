@@ -35,6 +35,7 @@ extension NCViewer {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        let isFolderEncrypted = NCUtility.shared.isDirectoryE2EE(serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
         let isOffline = localFile?.offline == true
 
         //
@@ -82,6 +83,21 @@ extension NCViewer {
                                 NCContentPresenter.shared.showError(error: error)
                             }
                         }
+                    }
+                )
+            )
+        }
+        
+        //
+        // Rotate
+        //
+        if !isFolderEncrypted, (metadata.classFile == NKCommon.TypeClassFile.image.rawValue && metadata.contentType != "image/svg+xml"), !metadata.livePhoto {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_rotate_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "rotate_image",color: NCBrandColor.shared.iconColor),
+                    action: { menuAction in
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationImagePreviewRotateImage)
                     }
                 )
             )
