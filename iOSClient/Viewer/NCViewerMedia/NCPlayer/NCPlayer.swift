@@ -163,7 +163,7 @@ class NCPlayer: NSObject {
 
         guard let position = player?.position, metadata.classFile == NKCommon.TypeClassFile.video.rawValue else { return }
 
-        if let width = width, let height = height {
+        if isPlay(), let width = width, let height = height {
             player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
         }
 
