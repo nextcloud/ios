@@ -38,7 +38,6 @@ class NCPlayer: NSObject {
     internal var height: Int?
     internal var length: Int?
     internal let fileNamePreviewLocalPath: String
-    internal let fileNameIconLocalPath: String
 
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewerMediaPage: NCViewerMediaPage?
@@ -57,7 +56,6 @@ class NCPlayer: NSObject {
         self.viewerMediaPage = viewerMediaPage
 
         fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-        fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
         super.init()
     }
@@ -257,7 +255,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {
-        print("Snapshot saved on \(fileNameIconLocalPath)")
+        print("Snapshot saved")
     }
 
     func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {
@@ -281,9 +279,6 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
             image = UIImage(cgImage: thumbnail)
             if let data = image?.jpegData(compressionQuality: 0.5) {
                 try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
-            }
-            if let data = image?.jpegData(compressionQuality: 0.5) {
-                try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
             }
         } catch let error as NSError {
             print("GeneratorImagePreview localized error:")
