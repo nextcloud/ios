@@ -25,8 +25,8 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
-typealias tableVideo = tableVideoV2
-class tableVideoV2: Object {
+typealias tableVideo = tableVideoV3
+class tableVideoV3: Object {
 
     @Persisted var account = ""
     @Persisted(primaryKey: true) var ocId = ""
