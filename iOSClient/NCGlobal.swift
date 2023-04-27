@@ -365,8 +365,6 @@ class NCGlobal: NSObject {
 
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
     
-    let notificationCenterStartTimerAutoHideMediaPage           = "startTimerAutoHideMediaPage"
-
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
     let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
