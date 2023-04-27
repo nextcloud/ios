@@ -88,7 +88,7 @@ class NCViewerMedia: UIViewController {
             statusLabel.text = ""
         }
         
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+        if metadata.isMediaPlay {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
@@ -145,28 +145,33 @@ class NCViewerMedia: UIViewController {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
 
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
-
-            viewerMediaPage?.view.backgroundColor = .systemBackground
-            viewerMediaPage?.textColor = .label
+            if metadata.isMediaPlay {
+                viewerMediaPage?.view.backgroundColor = .black
+                viewerMediaPage?.textColor = .white
+            } else {
+                viewerMediaPage?.view.backgroundColor = .systemBackground
+                viewerMediaPage?.textColor = .label
+            }
             viewerMediaPage?.progressView.isHidden = false
+
+            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
         } else {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(true, animated: true)
 
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
-
             viewerMediaPage?.view.backgroundColor = .black
             viewerMediaPage?.textColor = .white
             viewerMediaPage?.progressView.isHidden = true
+
+            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+        if metadata.isMediaPlay {
 
             if let ncplayer = self.ncplayer {
 

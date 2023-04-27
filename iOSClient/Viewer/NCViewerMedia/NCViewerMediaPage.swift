@@ -211,11 +211,14 @@ class NCViewerMediaPage: UIViewController {
 
             if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
                 currentViewController.playerToolBar?.show()
+                view.backgroundColor = .black
+                textColor = .white
+            } else {
+                view.backgroundColor = .systemBackground
+                textColor = .label
             }
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
-            view.backgroundColor = .systemBackground
-            textColor = .label
 
         } else {
 
@@ -267,7 +270,7 @@ class NCViewerMediaPage: UIViewController {
         let metadata = metadatas[currentIndex]
 
         if metadata.ocId == ocId,
-           (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue),
+           metadata.isMediaPlay,
            CCUtility.fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
             let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
@@ -423,7 +426,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         // VIDEO / AUDIO () ()
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+        if metadata.isMediaPlay {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in

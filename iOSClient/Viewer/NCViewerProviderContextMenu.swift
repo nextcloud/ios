@@ -101,7 +101,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
             // AUTO DOWNLOAD VIDEO / AUDIO
             // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue || metadata.contentType == "application/pdf") {
-            if !CCUtility.fileProviderStorageExists(metadata) && (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue) {
+            if !CCUtility.fileProviderStorageExists(metadata) && metadata.isMediaPlay {
 
                 var maxDownload: UInt64 = 0
 

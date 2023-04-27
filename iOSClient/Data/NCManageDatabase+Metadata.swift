@@ -144,6 +144,10 @@ extension tableMetadata {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
     }
 
+    var isMediaPlay: Bool {
+        return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
+    }
+
     var isSavebleAsImage: Bool {
         classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml"
     }
