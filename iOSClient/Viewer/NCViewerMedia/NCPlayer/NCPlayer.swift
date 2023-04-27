@@ -109,7 +109,6 @@ class NCPlayer: NSObject {
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        playerToolBar?.show()
         viewerMediaPage?.didSingleTapWith(gestureRecognizer: gestureRecognizer)
     }
 

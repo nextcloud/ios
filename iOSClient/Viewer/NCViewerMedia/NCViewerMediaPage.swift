@@ -232,6 +232,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         viewerMediaScreenMode = mode
+        print("Screen mode: \(viewerMediaScreenMode)")
 
         startTimerAutoHide()
         setNeedsStatusBarAppearanceUpdate()
