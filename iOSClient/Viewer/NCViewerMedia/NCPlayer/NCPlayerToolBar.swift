@@ -199,6 +199,7 @@ class NCPlayerToolBar: UIView {
             playbackSliderEvent = .began
         case .moved:
             ncplayer.playerPosition(newPosition)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
             playbackSliderEvent = .moved
         case .ended:
             ncplayer.playerPosition(newPosition)
@@ -224,6 +225,8 @@ class NCPlayerToolBar: UIView {
         } else {
             ncplayer.playerPlay()
         }
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 
     @IBAction func tapMute(_ sender: Any) {
@@ -239,6 +242,8 @@ class NCPlayerToolBar: UIView {
             ncplayer.setVolumeAudio(100)
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 
     @IBAction func tapForward(_ sender: Any) {
@@ -246,6 +251,8 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpForward(10)
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 
     @IBAction func tapBack(_ sender: Any) {
@@ -253,5 +260,7 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpBackward(10)
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 }

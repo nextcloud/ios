@@ -119,6 +119,8 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(startTimerAutoHide), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage), object: nil)
     }
 
     deinit {
@@ -136,6 +138,8 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage), object: nil)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -227,7 +231,7 @@ class NCViewerMediaPage: UIViewController {
         currentViewController.reloadDetail()
     }
 
-    func startTimerAutoHide() {
+    @objc func startTimerAutoHide() {
 
         timerAutoHide?.invalidate()
         timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(autoHide), userInfo: nil, repeats: true)
