@@ -69,7 +69,7 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() {
-                return 5
+                return 20
             } else {
                 return 4
             }

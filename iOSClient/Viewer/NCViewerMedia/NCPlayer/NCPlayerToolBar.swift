@@ -28,6 +28,7 @@ import UIKit
 import AVKit
 import MediaPlayer
 import MobileVLCKit
+import FloatingPanel
 
 class NCPlayerToolBar: UIView {
 
@@ -35,6 +36,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playerToolBarView: UIView!
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
@@ -50,8 +52,9 @@ class NCPlayerToolBar: UIView {
 
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
-    private var wasInPlay: Bool = false
 
+    private var subTitleIndex: Int32?
+    
     private weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
@@ -87,6 +90,8 @@ class NCPlayerToolBar: UIView {
         muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
 
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+
+        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
 
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
 
@@ -250,6 +255,19 @@ class NCPlayerToolBar: UIView {
         self.viewerMediaPage?.startTimerAutoHide()
     }
 
+    @IBAction func tapSubTitle(_ sender: Any) {
+
+        guard let player = ncplayer?.player else { return }
+
+        let spuTracks = player.videoSubTitlesNames
+        let spuTrackIndexes = player.videoSubTitlesIndexes
+        let count = spuTracks.count
+
+        if count > 1 {
+            toggleMenuSubTitle(spuTracks: spuTracks, spuTrackIndexes: spuTrackIndexes)
+        }
+    }
+
     @IBAction func tapForward(_ sender: Any) {
 
         guard let ncplayer = ncplayer else { return }
@@ -266,5 +284,39 @@ class NCPlayerToolBar: UIView {
         ncplayer.jumpBackward(10)
 
         self.viewerMediaPage?.startTimerAutoHide()
+    }
+}
+
+extension NCPlayerToolBar {
+
+    func toggleMenuSubTitle(spuTracks: [Any], spuTrackIndexes: [Any]) {
+
+        var actions = [NCMenuAction]()
+        let tableVideo = NCManageDatabase.shared.getVideo(metadata: metadata)
+
+        if self.subTitleIndex == nil, let idx = ncplayer?.player?.currentVideoSubTitleIndex {
+            self.subTitleIndex = idx
+        }
+
+        for index in 0...spuTracks.count - 1 {
+
+            guard let title = spuTracks[index] as? String, let idx = spuTrackIndexes[index] as? Int32 else { return }
+
+            actions.append(
+                NCMenuAction(
+                    title: title,
+                    icon: UIImage(),
+                    onTitle: title,
+                    onIcon: UIImage(),
+                    selected: (self.subTitleIndex ?? -9999) == idx,
+                    on: (self.subTitleIndex ?? -9999) == idx,
+                    action: { _ in
+                        self.ncplayer?.player?.currentVideoSubTitleIndex = idx
+                    }
+                )
+            )
+        }
+
+        viewerMediaPage?.presentMenu(with: actions)
     }
 }

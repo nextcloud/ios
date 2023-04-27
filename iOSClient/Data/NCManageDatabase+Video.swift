@@ -28,22 +28,18 @@ import NextcloudKit
 typealias tableVideo = tableVideoV2
 class tableVideoV2: Object {
 
-    @objc dynamic var account = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var position: Float = 0
-    @objc dynamic var width: Int = 0
-    @objc dynamic var height: Int = 0
-    @objc dynamic var length: Int = 0
-    @objc dynamic var codecNameVideo: String?
-    @objc dynamic var codecNameAudio: String?
-    @objc dynamic var codecAudioChannelLayout: String?
-    @objc dynamic var codecAudioLanguage: String?
-    @objc dynamic var codecMaxCompatibility: Bool = false
-    @objc dynamic var codecQuality: String?
-
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
+    @Persisted var account = ""
+    @Persisted(primaryKey: true) var ocId = ""
+    @Persisted var position: Float?
+    @Persisted var width: Int?
+    @Persisted var height: Int?
+    @Persisted var length: Int?
+    @Persisted var codecNameVideo: String?
+    @Persisted var codecNameAudio: String?
+    @Persisted var codecAudioChannelLayout: String?
+    @Persisted var codecAudioLanguage: String?
+    @Persisted var codecMaxCompatibility: Bool = false
+    @Persisted var codecQuality: String?
 }
 
 extension NCManageDatabase {
@@ -91,7 +87,7 @@ extension NCManageDatabase {
                     if let length = length {
                         result.length = length
                     }
-
+                    
                     realm.add(result, update: .all)
                 }
             }
@@ -142,20 +138,7 @@ extension NCManageDatabase {
 
         return tableVideo.init(value: result)
     }
-
-    func getVideoPosition(metadata: tableMetadata) -> Float? {
-
-        if metadata.livePhoto { return nil }
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
-            return nil
-        }
-
-        if result.position == 0 { return nil }
-        return result.position
-    }
-
+    
     func deleteVideo(metadata: tableMetadata) {
 
         let realm = try! Realm()

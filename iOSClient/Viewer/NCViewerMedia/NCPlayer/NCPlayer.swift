@@ -69,7 +69,7 @@ class NCPlayer: NSObject {
     func openAVPlayer(url: URL) {
 
         let userAgent = CCUtility.getUserAgent()!
-        var position: Float = 0
+        var positionSliderToolBar: Float = 0
 
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
@@ -82,9 +82,9 @@ class NCPlayer: NSObject {
         // player?.media?.addOption("--network-caching=500")
         player?.media?.addOption(":http-user-agent=\(userAgent)")
 
-        if let result = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
-            position = result
-            player?.position = position
+        if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
+            positionSliderToolBar = position
+            player?.position = positionSliderToolBar
         }
 
         player?.drawable = imageVideoContainer
@@ -93,7 +93,7 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: metadata, viewerMediaPage: viewerMediaPage)
+        playerToolBar?.setBarPlayer(ncplayer: self, position: positionSliderToolBar, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
         if let media = player?.media {
             thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
@@ -133,8 +133,8 @@ class NCPlayer: NSObject {
         playerToolBar?.playbackSliderEvent = .began
         player?.play()
         playerToolBar?.playButtonPause()
-        
-        if let position = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
+
+        if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
             player?.position = position
             playerToolBar?.playbackSliderEvent = .moved
         }
