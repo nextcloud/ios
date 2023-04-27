@@ -27,14 +27,14 @@ import MediaPlayer
 import JGProgressHUD
 import Alamofire
 
+enum ScreenMode {
+    case full, normal
+}
+var viewerMediaScreenMode: ScreenMode = .normal
+
 class NCViewerMediaPage: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
-
-    enum ScreenMode {
-        case full, normal
-    }
-    var screenMode: ScreenMode = .normal
 
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
@@ -65,7 +65,30 @@ class NCViewerMediaPage: UIViewController {
     var nextTrackCommand: Any?
     var previousTrackCommand: Any?
 
+    private var timerAutoHide: Timer?
+    private var timerAutoHideSeconds: Double {
+        get {
+            if NCUtility.shared.isSimulator() {
+                return 5
+            } else {
+                return 4
+            }
+        }
+    }
+
     // MARK: - View Life Cycle
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+
+        viewerMediaScreenMode = .normal
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        viewerMediaScreenMode = .normal
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,6 +118,8 @@ class NCViewerMediaPage: UIViewController {
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
+        startTimerAutoHide()
+
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -106,9 +131,13 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(startTimerAutoHide), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage), object: nil)
     }
 
     deinit {
+
+        timerAutoHide?.invalidate()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -121,6 +150,8 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage), object: nil)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -134,7 +165,7 @@ class NCViewerMediaPage: UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
 
-        if screenMode == .normal {
+        if viewerMediaScreenMode == .normal {
             return .default
         } else {
             return .lightContent
@@ -142,7 +173,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     override var prefersHomeIndicatorAutoHidden: Bool {
-        return screenMode == .full
+        return viewerMediaScreenMode == .full
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -174,13 +205,17 @@ class NCViewerMediaPage: UIViewController {
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
 
-    func changeScreenMode(mode: ScreenMode, toggleToolbar: Bool) {
+    func changeScreenMode(mode: ScreenMode) {
 
         if mode == .normal {
 
             navigationController?.setNavigationBarHidden(false, animated: true)
             hideStatusBar = false
             progressView.isHidden = false
+
+            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+                currentViewController.playerToolBar?.show()
+            }
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
             view.backgroundColor = .systemBackground
@@ -192,15 +227,33 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
+            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+                currentViewController.playerToolBar?.hide()
+            }
+
             view.backgroundColor = .black
             textColor = .white
         }
 
-        screenMode = mode
+        viewerMediaScreenMode = mode
 
+        startTimerAutoHide()
         setNeedsStatusBarAppearanceUpdate()
         setNeedsUpdateOfHomeIndicatorAutoHidden()
         currentViewController.reloadDetail()
+    }
+
+    @objc func startTimerAutoHide() {
+
+        timerAutoHide?.invalidate()
+        timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(autoHide), userInfo: nil, repeats: true)
+    }
+
+    @objc func autoHide() {
+
+        if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue, viewerMediaScreenMode == .normal {
+            changeScreenMode(mode: .full)
+        }
     }
 
     // MARK: - NotificationCenter
@@ -497,6 +550,8 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
+
+        startTimerAutoHide()
     }
 
     // END TRANSITION
@@ -556,10 +611,10 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        if screenMode == .full {
-            changeScreenMode(mode: .normal, toggleToolbar: true)
+        if viewerMediaScreenMode == .full {
+            changeScreenMode(mode: .normal)
         } else {
-            changeScreenMode(mode: .full, toggleToolbar: true)
+            changeScreenMode(mode: .full)
         }
     }
 

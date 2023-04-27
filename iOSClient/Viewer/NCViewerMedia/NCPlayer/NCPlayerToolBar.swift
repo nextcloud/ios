@@ -51,16 +51,6 @@ class NCPlayerToolBar: UIView {
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private var wasInPlay: Bool = false
-    private var timerAutoHide: Timer?
-    private var timerAutoHideSeconds: Double {
-        get {
-            if NCUtility.shared.isSimulator() { // for test
-                return 3
-            } else {
-                return 5
-            }
-        }
-    }
 
     // MARK: - View Life Cycle
 
@@ -99,6 +89,10 @@ class NCPlayerToolBar: UIView {
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
 
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
+
+        // Normally hide
+        self.alpha = 0
+        self.isHidden = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -106,7 +100,6 @@ class NCPlayerToolBar: UIView {
     }
 
     deinit {
-        timerAutoHide?.invalidate()
         print("deinit NCPlayerToolBar")
     }
 
@@ -134,7 +127,11 @@ class NCPlayerToolBar: UIView {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
-        show()
+        if viewerMediaScreenMode == .normal {
+            show()
+        } else {
+            hide()
+        }
     }
 
     public func update() {
@@ -155,22 +152,9 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
     }
 
-    public func disableAllControl() {
-
-        muteButton.isEnabled = false
-        playButton.isEnabled = false
-        forwardButton.isEnabled = false
-        backButton.isEnabled = false
-        playbackSlider.isEnabled = false
-    }
-
     // MARK: -
 
     public func show() {
-
-        if let ncplayer = ncplayer, ncplayer.isPlay() {
-            startTimerAutoHide()
-        }
 
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 1
@@ -179,13 +163,7 @@ class NCPlayerToolBar: UIView {
         })
     }
 
-    private func startTimerAutoHide() {
-
-        timerAutoHide?.invalidate()
-        timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(hide), userInfo: nil, repeats: false)
-    }
-
-    @objc func hide() {
+    func hide() {
 
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
@@ -221,6 +199,7 @@ class NCPlayerToolBar: UIView {
             playbackSliderEvent = .began
         case .moved:
             ncplayer.playerPosition(newPosition)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
             playbackSliderEvent = .moved
         case .ended:
             ncplayer.playerPosition(newPosition)
@@ -230,8 +209,6 @@ class NCPlayerToolBar: UIView {
         default:
             break
         }
-
-        startTimerAutoHide()
     }
 
     // MARK: - Action
@@ -245,11 +222,11 @@ class NCPlayerToolBar: UIView {
 
         if ncplayer.isPlay() {
             ncplayer.playerPause()
-            timerAutoHide?.invalidate()
         } else {
             ncplayer.playerPlay()
-            startTimerAutoHide()
         }
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 
     @IBAction func tapMute(_ sender: Any) {
@@ -266,7 +243,7 @@ class NCPlayerToolBar: UIView {
             muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
-        startTimerAutoHide()
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 
     @IBAction func tapForward(_ sender: Any) {
@@ -274,7 +251,8 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpForward(10)
-        startTimerAutoHide()
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 
     @IBAction func tapBack(_ sender: Any) {
@@ -282,6 +260,7 @@ class NCPlayerToolBar: UIView {
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpBackward(10)
-        startTimerAutoHide()
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterStartTimerAutoHideMediaPage)
     }
 }

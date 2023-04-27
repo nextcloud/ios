@@ -141,7 +141,7 @@ class NCViewerMedia: UIViewController {
             }
         }
 
-        if viewerMediaPage?.screenMode == .normal {
+        if viewerMediaScreenMode == .normal {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
 
@@ -178,7 +178,11 @@ class NCViewerMedia: UIViewController {
                         }
                     }
                 } else {
-                    playerToolBar?.show()
+                    if viewerMediaScreenMode == .normal {
+                        playerToolBar?.show()
+                    } else {
+                        playerToolBar?.hide()
+                    }
                 }
             }
             

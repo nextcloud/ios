@@ -34,15 +34,17 @@ class NCPlayer: NSObject {
     internal var thumbnailer: VLCMediaThumbnailer?
     internal var metadata: tableMetadata
     internal var singleTapGestureRecognizer: UITapGestureRecognizer!
-    internal var width: Int64?
-    internal var height: Int64?
+    internal var width: Int?
+    internal var height: Int?
+    internal var length: Int?
     internal let fileNamePreviewLocalPath: String
-    internal let fileNameIconLocalPath: String
 
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewerMediaPage: NCViewerMediaPage?
 
     weak var imageVideoContainer: imageVideoContainerView?
+
+    internal var counterSeconds: Double = 0
 
     // MARK: - View Life Cycle
 
@@ -54,7 +56,6 @@ class NCPlayer: NSObject {
         self.viewerMediaPage = viewerMediaPage
 
         fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-        fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
         super.init()
     }
@@ -97,6 +98,9 @@ class NCPlayer: NSObject {
         if let media = player?.media {
             thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
         }
+
+        player?.play()
+        player?.pause()
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
@@ -212,15 +216,18 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ENDED")
             break
         case .error:
-            playerToolBar?.disableAllControl()
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
             NCContentPresenter.shared.showError(error: error, priority: .max)
             print("Played mode: ERROR")
             break
         case .playing:
             let size = player.videoSize
-            self.width = Int64(size.width)
-            self.height = Int64(size.height)
+            if let mediaLength = player.media?.length.intValue {
+                self.length = Int(mediaLength)
+            }
+            self.width = Int(size.width)
+            self.height = Int(size.height)
+            NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
             print("Played mode: PLAYING")
             break
         case .paused:
@@ -248,7 +255,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {
-        print("Snapshot saved on \(fileNameIconLocalPath)")
+        print("Snapshot saved")
     }
 
     func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {
@@ -272,9 +279,6 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
             image = UIImage(cgImage: thumbnail)
             if let data = image?.jpegData(compressionQuality: 0.5) {
                 try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
-            }
-            if let data = image?.jpegData(compressionQuality: 0.5) {
-                try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
             }
         } catch let error as NSError {
             print("GeneratorImagePreview localized error:")
