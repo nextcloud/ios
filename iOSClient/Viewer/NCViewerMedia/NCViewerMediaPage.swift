@@ -106,6 +106,7 @@ class NCViewerMediaPage: UIViewController {
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
+        viewerMediaScreenMode = .normal
         startTimerAutoHide()
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
