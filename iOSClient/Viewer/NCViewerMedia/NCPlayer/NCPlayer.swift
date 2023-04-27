@@ -44,6 +44,8 @@ class NCPlayer: NSObject {
 
     weak var imageVideoContainer: imageVideoContainerView?
 
+    internal var counterSeconds: Double = 0
+
     // MARK: - View Life Cycle
 
     init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
@@ -212,7 +214,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ENDED")
             break
         case .error:
-            playerToolBar?.disableAllControl()
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
             NCContentPresenter.shared.showError(error: error, priority: .max)
             print("Played mode: ERROR")

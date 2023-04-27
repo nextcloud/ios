@@ -27,14 +27,14 @@ import MediaPlayer
 import JGProgressHUD
 import Alamofire
 
+enum ScreenMode {
+    case full, normal
+}
+var viewerMediaScreenMode: ScreenMode = .normal
+
 class NCViewerMediaPage: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
-
-    enum ScreenMode {
-        case full, normal
-    }
-    var screenMode: ScreenMode = .normal
 
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
@@ -134,7 +134,7 @@ class NCViewerMediaPage: UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
 
-        if screenMode == .normal {
+        if viewerMediaScreenMode == .normal {
             return .default
         } else {
             return .lightContent
@@ -142,7 +142,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     override var prefersHomeIndicatorAutoHidden: Bool {
-        return screenMode == .full
+        return viewerMediaScreenMode == .full
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -182,6 +182,10 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
+            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+                currentViewController.playerToolBar?.show()
+            }
+
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
             view.backgroundColor = .systemBackground
             textColor = .label
@@ -192,11 +196,15 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
+            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+                currentViewController.playerToolBar?.hide()
+            }
+
             view.backgroundColor = .black
             textColor = .white
         }
 
-        screenMode = mode
+        viewerMediaScreenMode = mode
 
         setNeedsStatusBarAppearanceUpdate()
         setNeedsUpdateOfHomeIndicatorAutoHidden()
@@ -556,7 +564,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        if screenMode == .full {
+        if viewerMediaScreenMode == .full {
             changeScreenMode(mode: .normal, toggleToolbar: true)
         } else {
             changeScreenMode(mode: .full, toggleToolbar: true)
