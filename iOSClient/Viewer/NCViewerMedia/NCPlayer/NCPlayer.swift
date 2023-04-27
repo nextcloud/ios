@@ -101,6 +101,9 @@ class NCPlayer: NSObject {
             thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
         }
 
+        player?.play()
+        player?.pause()
+
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
 
