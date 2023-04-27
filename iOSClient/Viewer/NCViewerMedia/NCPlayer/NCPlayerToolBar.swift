@@ -37,6 +37,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var subtitleButton: UIButton!
+    @IBOutlet weak var audioButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
@@ -54,6 +55,7 @@ class NCPlayerToolBar: UIView {
     private var metadata: tableMetadata?
 
     private var subTitleIndex: Int32?
+    private var audioIndex: Int32?
     
     private weak var viewerMediaPage: NCViewerMediaPage?
 
@@ -92,6 +94,8 @@ class NCPlayerToolBar: UIView {
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
 
         subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
+
+        audioButton.setImage(NCUtility.shared.loadImage(named: "speaker.zzz", color: .white), for: .normal)
 
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
 
@@ -268,6 +272,19 @@ class NCPlayerToolBar: UIView {
         }
     }
 
+    @IBAction func tapAudio(_ sender: Any) {
+
+        guard let player = ncplayer?.player else { return }
+
+        let audioTracks = player.audioTrackNames
+        let audioTrackIndexes = player.audioTrackIndexes
+        let count = audioTracks.count
+
+        if count > 1 {
+            toggleMenuAudio(audioTracks: audioTracks, audioTrackIndexes: audioTrackIndexes)
+        }
+    }
+
     @IBAction func tapForward(_ sender: Any) {
 
         guard let ncplayer = ncplayer else { return }
@@ -292,7 +309,6 @@ extension NCPlayerToolBar {
     func toggleMenuSubTitle(spuTracks: [Any], spuTrackIndexes: [Any]) {
 
         var actions = [NCMenuAction]()
-        let tableVideo = NCManageDatabase.shared.getVideo(metadata: metadata)
 
         if self.subTitleIndex == nil, let idx = ncplayer?.player?.currentVideoSubTitleIndex {
             self.subTitleIndex = idx
@@ -312,6 +328,38 @@ extension NCPlayerToolBar {
                     on: (self.subTitleIndex ?? -9999) == idx,
                     action: { _ in
                         self.ncplayer?.player?.currentVideoSubTitleIndex = idx
+                        self.subTitleIndex = idx
+                    }
+                )
+            )
+        }
+
+        viewerMediaPage?.presentMenu(with: actions)
+    }
+
+    func toggleMenuAudio(audioTracks: [Any], audioTrackIndexes: [Any]) {
+
+        var actions = [NCMenuAction]()
+
+        if self.audioIndex == nil, let idx = ncplayer?.player?.currentAudioTrackIndex {
+            self.audioIndex = idx
+        }
+
+        for index in 0...audioTracks.count - 1 {
+
+            guard let title = audioTracks[index] as? String, let idx = audioTrackIndexes[index] as? Int32 else { return }
+
+            actions.append(
+                NCMenuAction(
+                    title: title,
+                    icon: UIImage(),
+                    onTitle: title,
+                    onIcon: UIImage(),
+                    selected: (self.audioIndex ?? -9999) == idx,
+                    on: (self.audioIndex ?? -9999) == idx,
+                    action: { _ in
+                        self.ncplayer?.player?.currentAudioTrackIndex = idx
+                        self.audioIndex = idx
                     }
                 )
             )
