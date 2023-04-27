@@ -25,7 +25,8 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
-class tableVideo: Object {
+typealias tableVideo = tableVideoV2
+class tableVideoV2: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var ocId = ""
