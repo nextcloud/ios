@@ -30,6 +30,9 @@ class tableVideo: Object {
     @objc dynamic var account = ""
     @objc dynamic var ocId = ""
     @objc dynamic var position: Float = 0
+    @objc dynamic var width: Int = 0
+    @objc dynamic var height: Int = 0
+    @objc dynamic var length: Int = 0
     @objc dynamic var codecNameVideo: String?
     @objc dynamic var codecNameAudio: String?
     @objc dynamic var codecAudioChannelLayout: String?
@@ -44,7 +47,7 @@ class tableVideo: Object {
 
 extension NCManageDatabase {
 
-    func addVideo(metadata: tableMetadata, position: Float) {
+    func addVideo(metadata: tableMetadata, position: Float? = nil, width: Int? = nil, height: Int? = nil, length: Int? = nil) {
 
         if metadata.livePhoto { return }
         let realm = try! Realm()
@@ -53,17 +56,42 @@ extension NCManageDatabase {
             try realm.write {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
 
-                    result.position = position
+                    if let position = position {
+                        result.position = position
+                    }
+                    if let width = width {
+                        result.width = width
+                    }
+                    if let height = height {
+                        result.height = height
+                    }
+                    if let length = length {
+                        result.length = length
+                    }
+
                     realm.add(result, update: .all)
 
                 } else {
 
-                    let addObject = tableVideo()
+                    let result = tableVideo()
 
-                    addObject.account = metadata.account
-                    addObject.ocId = metadata.ocId
-                    addObject.position = position
-                    realm.add(addObject, update: .all)
+                    result.account = metadata.account
+                    result.ocId = metadata.ocId
+
+                    if let position = position {
+                        result.position = position
+                    }
+                    if let width = width {
+                        result.width = width
+                    }
+                    if let height = height {
+                        result.height = height
+                    }
+                    if let length = length {
+                        result.length = length
+                    }
+
+                    realm.add(result, update: .all)
                 }
             }
         } catch let error {

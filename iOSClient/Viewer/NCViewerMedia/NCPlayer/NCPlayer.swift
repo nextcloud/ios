@@ -34,8 +34,9 @@ class NCPlayer: NSObject {
     internal var thumbnailer: VLCMediaThumbnailer?
     internal var metadata: tableMetadata
     internal var singleTapGestureRecognizer: UITapGestureRecognizer!
-    internal var width: Int64?
-    internal var height: Int64?
+    internal var width: Int?
+    internal var height: Int?
+    internal var length: Int?
     internal let fileNamePreviewLocalPath: String
     internal let fileNameIconLocalPath: String
 
@@ -220,8 +221,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             break
         case .playing:
             let size = player.videoSize
-            self.width = Int64(size.width)
-            self.height = Int64(size.height)
+            if let mediaLength = player.media?.length.intValue {
+                self.length = Int(mediaLength)
+            }
+            self.width = Int(size.width)
+            self.height = Int(size.height)
+            NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
             print("Played mode: PLAYING")
             break
         case .paused:
