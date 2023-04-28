@@ -238,7 +238,7 @@ class NCViewerMedia: UIViewController {
 
     func loadImage() {
 
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId), metadata.isImage else { return }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
 
         // Download image
@@ -283,12 +283,12 @@ class NCViewerMedia: UIViewController {
                 }
             }
 
-            if metadata.isVideo {
-                return UIImage(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
-            } else if metadata.isAudio {
+            if metadata.isAudio {
                 return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
-            } else {
+            } else if metadata.isImage {
                 return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+            } else {
+                return nil
             }
         }
 

@@ -69,7 +69,7 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() {
-                return 20
+                return 4
             } else {
                 return 4
             }
@@ -118,8 +118,6 @@ class NCViewerMediaPage: UIViewController {
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
-        startTimerAutoHide()
-
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -150,6 +148,12 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        startTimerAutoHide()
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -157,6 +161,7 @@ class NCViewerMediaPage: UIViewController {
             ncplayer.playerPause()
         }
         clearCommandCenter()
+        timerAutoHide?.invalidate()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
