@@ -66,18 +66,20 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        blurEffectView.frame = self.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        playerToolBarView.insertSubview(blurEffectView, at: 0)
+        let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
+        blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
         playerTopToolBarView.layer.cornerRadius = 10
         playerTopToolBarView.layer.masksToBounds = true
         playerTopToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapTopToolBarWith(gestureRecognizer:))))
 
-        let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
-        blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
+        let blurEffectToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blurEffectToolBarView.frame = playerToolBarView.bounds
+        blurEffectToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        playerToolBarView.insertSubview(blurEffectToolBarView, at: 0)
         playerToolBarView.layer.cornerRadius = 10
         playerToolBarView.layer.masksToBounds = true
         playerToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToolBarWith(gestureRecognizer:))))
