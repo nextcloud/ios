@@ -33,16 +33,20 @@ import FloatingPanel
 class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var playerTopToolBarView: UIStackView!
-    @IBOutlet weak var playerToolBarView: UIView!
-    @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var audioButton: UIButton!
+
+    @IBOutlet weak var playerToolBarView: UIView!
+    @IBOutlet weak var playButton: UIButton!
+
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
-    @IBOutlet weak var volumeSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
+
+    @IBOutlet weak var volumeView: UIView!
+    @IBOutlet weak var volumeSlider: UISlider!
     @IBOutlet weak var volumeSliderConstraintWidth: NSLayoutConstraint!
     @IBOutlet weak var volumeSliderConstraintTrailing: NSLayoutConstraint!
 
