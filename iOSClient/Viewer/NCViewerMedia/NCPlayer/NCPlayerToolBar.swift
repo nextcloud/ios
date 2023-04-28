@@ -34,15 +34,17 @@ class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var playerTopToolBarView: UIStackView!
     @IBOutlet weak var playerToolBarView: UIView!
-    @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var audioButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
+    @IBOutlet weak var volumeSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
+    @IBOutlet weak var volumeSliderConstraintWidth: NSLayoutConstraint!
+    @IBOutlet weak var volumeSliderConstraintTrailing: NSLayoutConstraint!
 
     enum sliderEventType {
         case began
@@ -81,15 +83,10 @@ class NCPlayerToolBar: UIView {
         playerToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToolBarWith(gestureRecognizer:))))
 
         playbackSlider.value = 0
-        playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = 1
-        playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
 
         labelCurrentTime.textColor = .white
         labelLeftTime.textColor = .white
-
-        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
 
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
 
@@ -102,6 +99,13 @@ class NCPlayerToolBar: UIView {
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
 
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
+
+        volumeSliderConstraintWidth.constant = self.frame.size.width / 2
+        volumeSliderConstraintTrailing.constant = -(volumeSliderConstraintWidth.constant / 2) + 15
+        volumeSlider.value = AVAudioSession.sharedInstance().outputVolume
+        volumeSlider.tintColor = .white
+        volumeSlider.setThumbImage(UIImage(), for: .normal)
+        volumeSlider.maximumValueImage = NCUtility.shared.loadImage(named: "speaker.wave.3", color: .white).rotate(radians: .pi / 2)
 
         // Normally hide
         self.alpha = 0
@@ -135,10 +139,8 @@ class NCPlayerToolBar: UIView {
 
         if CCUtility.getAudioVolume() == 0 {
             ncplayer.setVolumeAudio(0)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
             ncplayer.setVolumeAudio(100)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
         if viewerMediaScreenMode == .normal {
@@ -252,19 +254,19 @@ class NCPlayerToolBar: UIView {
 
     @IBAction func tapMute(_ sender: Any) {
 
+        /*
         guard let ncplayer = ncplayer else { return }
 
         if CCUtility.getAudioVolume() > 0 {
             CCUtility.setAudioVolume(0)
             ncplayer.setVolumeAudio(0)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
         } else {
             CCUtility.setAudioVolume(100)
             ncplayer.setVolumeAudio(100)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
         }
 
         self.viewerMediaPage?.startTimerAutoHide()
+        */
     }
 
     @IBAction func tapSubTitle(_ sender: Any) {
