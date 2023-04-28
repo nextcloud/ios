@@ -209,7 +209,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+            if metadatas[currentIndex].isMediaPlay {
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
@@ -226,7 +226,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
-            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+            if metadatas[currentIndex].isMediaPlay {
                 currentViewController.playerToolBar?.hide()
             }
 
@@ -251,7 +251,7 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func autoHide() {
 
-        if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue, viewerMediaScreenMode == .normal {
+        if metadatas[currentIndex].isMediaPlay, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
         }
     }
@@ -325,7 +325,7 @@ class NCViewerMediaPage: UIViewController {
 
         metadatas[index] = metadata
         if currentViewController.metadata.ocId == ocId {
-            currentViewController.reloadImage()
+            currentViewController.loadImage()
         } else {
             modifiedOcId.append(ocId)
         }

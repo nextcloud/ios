@@ -125,7 +125,7 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        reloadImage()
+        loadImage()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -134,10 +134,10 @@ class NCViewerMedia: UIViewController {
         viewerMediaPage?.navigationController?.navigationBar.prefersLargeTitles = false
         viewerMediaPage?.navigationItem.title = metadata.fileNameView
 
-        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue, let viewerMediaPage = self.viewerMediaPage {
+        if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
                 viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
-                reloadImage()
+                loadImage()
             }
         }
 
@@ -191,7 +191,7 @@ class NCViewerMedia: UIViewController {
                 }
             }
             
-        } else if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+        } else if metadata.isImage {
 
             viewerMediaPage?.clearCommandCenter()
         }
@@ -236,17 +236,13 @@ class NCViewerMedia: UIViewController {
 
     // MARK: - Image
 
-    func reloadImage() {
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
-            self.metadata = metadata
-            loadImage(metadata: metadata)
-        }
-    }
+    func loadImage() {
 
-    func loadImage(metadata: tableMetadata) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId), metadata.isImage else { return }
+        self.metadata = metadata
 
         // Download image
-        if !CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.TypeClassFile.image.rawValue && metadata.session == "" {
+        if !CCUtility.fileProviderStorageExists(metadata) && metadata.isImage && metadata.session == "" {
 
             if metadata.livePhoto {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
@@ -277,7 +273,7 @@ class NCViewerMedia: UIViewController {
                 return image
             }
 
-            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.hasPreview {
+            if metadata.isVideo && !metadata.hasPreview {
                 NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
             }
 
@@ -287,9 +283,9 @@ class NCViewerMedia: UIViewController {
                 }
             }
 
-            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if metadata.isVideo {
                 return UIImage(named: "noPreviewVideo")!.image(color: .gray, size: view.frame.width)
-            } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+            } else if metadata.isAudio {
                 return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
             } else {
                 return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
@@ -301,7 +297,7 @@ class NCViewerMedia: UIViewController {
             let ext = CCUtility.getExtension(metadata.fileNameView)
             var image: UIImage?
 
-            if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+            if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
 
                 let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
                 let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -370,7 +366,7 @@ class NCViewerMedia: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        guard metadata.classFile == NKCommon.TypeClassFile.image.rawValue, !detailView.isShow()  else { return }
+        guard metadata.isImage, !detailView.isShow()  else { return }
 
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
@@ -389,7 +385,7 @@ class NCViewerMedia: UIViewController {
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
 
-        guard metadata.classFile == NKCommon.TypeClassFile.image.rawValue else { return }
+        guard metadata.isImage else { return }
 
         let currentLocation = gestureRecognizer.translation(in: self.view)
 

@@ -95,10 +95,6 @@ class NCPlayer: NSObject {
 
         playerToolBar?.setBarPlayer(ncplayer: self, position: positionSliderToolBar, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
-        if let media = player?.media {
-            thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
-        }
-
         player?.play()
         player?.pause()
 
@@ -116,7 +112,7 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
 
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+        if metadata.isVideo {
             playerStop()
         }
     }
@@ -166,12 +162,7 @@ class NCPlayer: NSObject {
 
     func savePosition() {
 
-        guard let position = player?.position, metadata.classFile == NKCommon.TypeClassFile.video.rawValue, isPlay() else { return }
-
-        if let width = width, let height = height {
-            player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
-        }
-
+        guard let position = player?.position, metadata.isVideo, isPlay() else { return }
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
     }
 
@@ -270,18 +261,5 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
 
     func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) { }
 
-    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) {
-
-        var image: UIImage?
-
-        do {
-            image = UIImage(cgImage: thumbnail)
-            if let data = image?.jpegData(compressionQuality: 0.5) {
-                try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
-            }
-        } catch let error as NSError {
-            print("GeneratorImagePreview localized error:")
-            print(error.localizedDescription)
-        }
-    }
+    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) { }
 }

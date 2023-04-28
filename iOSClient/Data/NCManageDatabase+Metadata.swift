@@ -148,6 +148,18 @@ extension tableMetadata {
         return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
     }
 
+    var isVideo: Bool {
+        return classFile == NKCommon.TypeClassFile.video.rawValue
+    }
+
+    var isAudio: Bool {
+        return classFile == NKCommon.TypeClassFile.audio.rawValue
+    }
+
+    var isImage: Bool {
+        return classFile == NKCommon.TypeClassFile.image.rawValue
+    }
+
     var isSavebleAsImage: Bool {
         classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml"
     }

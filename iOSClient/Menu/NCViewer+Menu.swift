@@ -124,7 +124,7 @@ extension NCViewer {
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
 #if MFFFLIB
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+        if metadata.isVideo {
             
             actions.append(
                 NCMenuAction(

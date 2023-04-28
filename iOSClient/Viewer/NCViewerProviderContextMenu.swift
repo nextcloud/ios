@@ -80,7 +80,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // VIEW IMAGE
-            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.isImage && CCUtility.fileProviderStorageExists(metadata) {
                 viewImage(metadata: metadata)
             }
 
@@ -90,17 +90,16 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // VIEW VIDEO
-            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.isVideo && CCUtility.fileProviderStorageExists(metadata) {
                 viewVideo(metadata: metadata)
             }
 
             // PLAY SOUND
-            if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.isAudio && CCUtility.fileProviderStorageExists(metadata) {
                 playSound(metadata: metadata)
             }
 
             // AUTO DOWNLOAD VIDEO / AUDIO
-            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue || metadata.contentType == "application/pdf") {
             if !CCUtility.fileProviderStorageExists(metadata) && metadata.isMediaPlay {
 
                 var maxDownload: UInt64 = 0
@@ -191,11 +190,11 @@ class NCViewerProviderContextMenu: UIViewController {
         else { return }
 
         if error == .success && metadata.ocId == self.metadata?.ocId {
-            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+            if metadata.isImage {
                 viewImage(metadata: metadata)
-            } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            } else if metadata.isVideo {
                 viewVideo(metadata: metadata)
-            } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+            } else if metadata.isAudio {
                 playSound(metadata: metadata)
             }
         }

@@ -155,7 +155,7 @@ class NCViewerMediaDetailView: UIView {
         }
 
         // Message
-        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
+        if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
             messageButton.isHidden = false
         } else {
