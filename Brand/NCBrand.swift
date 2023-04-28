@@ -184,7 +184,7 @@ class NCBrandColor: NSObject {
             return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
         }
     }
-    
+
     override init() {
         brand = customer
         brandElement = customer
