@@ -79,6 +79,8 @@ class NCPlayer: NSObject {
         player?.media = VLCMedia(url: url)
         player?.delegate = self
 
+        player?.audio?.passthrough = true
+
         // player?.media?.addOption("--network-caching=500")
         player?.media?.addOption(":http-user-agent=\(userAgent)")
 
@@ -169,6 +171,11 @@ class NCPlayer: NSObject {
     func setVolumeAudio(_ volume: Int32) {
 
         player?.audio?.volume = volume
+    }
+
+    func getVolumeAudio() -> Int32? {
+
+        return player?.audio?.volume
     }
 
     func jumpForward(_ seconds: Int32) {

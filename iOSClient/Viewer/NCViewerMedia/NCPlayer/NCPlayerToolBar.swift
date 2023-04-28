@@ -120,6 +120,9 @@ class NCPlayerToolBar: UIView {
         volumeSlider.setThumbImage(UIImage(), for: .normal)
         volumeSlider.maximumValueImage = getSpeakerImage()
 
+        let panGestureRecognizerVolume = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
+        volumeView.addGestureRecognizer(panGestureRecognizerVolume)
+
         // Normally hide
         self.alpha = 0
         self.isHidden = true
@@ -160,11 +163,8 @@ class NCPlayerToolBar: UIView {
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
-        if CCUtility.getAudioVolume() == 0 {
-            ncplayer.setVolumeAudio(0)
-        } else {
-            ncplayer.setVolumeAudio(100)
-        }
+        let volume = Int32(audioSession.outputVolume * 100)
+        ncplayer.setVolumeAudio(volume)
 
         if viewerMediaScreenMode == .normal {
             show()
@@ -274,6 +274,28 @@ class NCPlayerToolBar: UIView {
         }
     }
 
+    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+
+        let velocity = gestureRecognizer.velocity(in: volumeView)
+        let currentLocation = gestureRecognizer.translation(in: volumeView)
+        let step = volumeView.frame.height * 0.05
+        var add: Float = -(Float(Int(currentLocation.y / step)) / 10) * 100
+
+        if gestureRecognizer.state == .began {
+            if abs(velocity.x) > abs(velocity.y) {
+                gestureRecognizer.state = .cancelled
+            }
+        }
+
+        if gestureRecognizer.state == .changed {
+            if add > 0 {
+                ncplayer?.player?.audio?.volumeUp()
+            } else if add < 0 {
+                ncplayer?.player?.audio?.volumeDown()
+            }
+        }
+    }
+
     // MARK: - Action
 
     @objc func tapTopToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
@@ -290,23 +312,6 @@ class NCPlayerToolBar: UIView {
         }
 
         self.viewerMediaPage?.startTimerAutoHide()
-    }
-
-    @IBAction func tapMute(_ sender: Any) {
-
-        /*
-        guard let ncplayer = ncplayer else { return }
-
-        if CCUtility.getAudioVolume() > 0 {
-            CCUtility.setAudioVolume(0)
-            ncplayer.setVolumeAudio(0)
-        } else {
-            CCUtility.setAudioVolume(100)
-            ncplayer.setVolumeAudio(100)
-        }
-
-        self.viewerMediaPage?.startTimerAutoHide()
-        */
     }
 
     @IBAction func tapSubTitle(_ sender: Any) {
