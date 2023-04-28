@@ -95,7 +95,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rotate_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "rotate_image",color: NCBrandColor.shared.iconColor),
+                    icon: NCUtility.shared.loadImage(named: "rotate_image"),
                     action: { menuAction in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationImagePreviewRotateImage)
                     }
