@@ -107,11 +107,13 @@ class NCPlayerToolBar: UIView {
         volumeSlider.value = AVAudioSession.sharedInstance().outputVolume
         volumeSlider.tintColor = .white
         volumeSlider.setThumbImage(UIImage(), for: .normal)
-        volumeSlider.maximumValueImage = NCUtility.shared.loadImage(named: "speaker.wave.3", color: .white).rotate(radians: .pi / 2)
+        volumeSlider.maximumValueImage = getSpeakerImage()
 
         // Normally hide
         self.alpha = 0
         self.isHidden = true
+
+        NotificationCenter.default.addObserver(self, selector: #selector(systemVolumeDidChange), name: Notification.Name("SystemVolumeDidChange"), object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -178,6 +180,23 @@ class NCPlayerToolBar: UIView {
 
     // MARK: -
 
+    func getSpeakerImage() -> UIImage {
+
+        let volume = AVAudioSession.sharedInstance().outputVolume
+
+        if volume == 0 {
+            return NCUtility.shared.loadImage(named: "speaker0", color: .white, size: 20, renderingMode: .automatic)
+        } else if volume > 0 && volume <= 0.5 {
+            return NCUtility.shared.loadImage(named: "speaker1", color: .white, size: 20, renderingMode: .automatic)
+        } else if volume > 0.5 && volume < 1 {
+            return NCUtility.shared.loadImage(named: "speaker2", color: .white, size: 20, renderingMode: .automatic)
+        } else {
+            return NCUtility.shared.loadImage(named: "speaker3", color: .white, size: 20, renderingMode: .automatic)
+        }
+    }
+
+    // MARK: -
+
     public func show() {
 
         UIView.animate(withDuration: 0.3, animations: {
@@ -234,6 +253,12 @@ class NCPlayerToolBar: UIView {
         default:
             break
         }
+    }
+
+    @objc func systemVolumeDidChange(notification: NSNotification) {
+
+        volumeSlider.value = AVAudioSession.sharedInstance().outputVolume
+        volumeSlider.maximumValueImage = getSpeakerImage()
     }
 
     // MARK: - Action
