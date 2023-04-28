@@ -134,6 +134,8 @@ class NCPlayerToolBar: UIView {
     }
 
     deinit {
+
+        audioSession.removeObserver(self, forKeyPath: "outputVolume")
         print("deinit NCPlayerToolBar")
     }
 
