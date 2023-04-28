@@ -55,7 +55,7 @@ class NCPlayerToolBar: UIView {
 
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
-
+    private let audioSession = AVAudioSession.sharedInstance()
     private var subTitleIndex: Int32?
     private var audioIndex: Int32?
     
@@ -102,9 +102,16 @@ class NCPlayerToolBar: UIView {
 
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
 
+        do {
+            try audioSession.setActive(true, options: [])
+            audioSession.addObserver(self, forKeyPath: "outputVolume", options: [.new], context: nil)
+        } catch {
+            print("error")
+        }
+
         volumeSliderConstraintWidth.constant = self.frame.size.width / 2
         volumeSliderConstraintTrailing.constant = -(volumeSliderConstraintWidth.constant / 2) + 15
-        volumeSlider.value = AVAudioSession.sharedInstance().outputVolume
+        volumeSlider.value = audioSession.outputVolume
         volumeSlider.tintColor = .white
         volumeSlider.setThumbImage(UIImage(), for: .normal)
         volumeSlider.maximumValueImage = getSpeakerImage()
@@ -112,8 +119,14 @@ class NCPlayerToolBar: UIView {
         // Normally hide
         self.alpha = 0
         self.isHidden = true
+    }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(systemVolumeDidChange), name: Notification.Name("SystemVolumeDidChange"), object: nil)
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+
+        if keyPath == "outputVolume"{
+            volumeSlider.value = audioSession.outputVolume
+            volumeSlider.maximumValueImage = getSpeakerImage()
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -253,12 +266,6 @@ class NCPlayerToolBar: UIView {
         default:
             break
         }
-    }
-
-    @objc func systemVolumeDidChange(notification: NSNotification) {
-
-        volumeSlider.value = AVAudioSession.sharedInstance().outputVolume
-        volumeSlider.maximumValueImage = getSpeakerImage()
     }
 
     // MARK: - Action
