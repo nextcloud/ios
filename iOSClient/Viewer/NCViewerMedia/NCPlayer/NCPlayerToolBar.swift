@@ -94,8 +94,10 @@ class NCPlayerToolBar: UIView {
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
 
         subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
-
+        subtitleButton.isEnabled = false
+        
         audioButton.setImage(NCUtility.shared.loadImage(named: "speaker.zzz", color: .white), for: .normal)
+        audioButton.isEnabled = false
 
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
 
@@ -162,6 +164,12 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
+    }
+
+    public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {
+
+        self.subtitleButton.isEnabled = !videoSubTitlesIndexes.isEmpty
+        self.audioButton.isEnabled = !audioTrackIndexes.isEmpty
     }
 
     // MARK: -

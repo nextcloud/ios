@@ -217,6 +217,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             }
             self.width = Int(size.width)
             self.height = Int(size.height)
+            playerToolBar?.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
             print("Played mode: PLAYING")
             break
