@@ -90,6 +90,7 @@ class NCPlayerToolBar: UIView {
 
         playbackSlider.value = 0
         playbackSlider.tintColor = .lightGray
+        playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.textColor = .white
         labelLeftTime.textColor = .white
@@ -120,8 +121,10 @@ class NCPlayerToolBar: UIView {
         volumeSlider.setThumbImage(UIImage(), for: .normal)
         volumeSlider.maximumValueImage = getSpeakerImage()
 
-        let panGestureRecognizerVolume = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
-        volumeView.addGestureRecognizer(panGestureRecognizerVolume)
+        volumeSlider.addTarget(self, action: #selector(volumeValChanged(slider:event:)), for: .valueChanged)
+
+        // let panGestureRecognizerVolume = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
+        // volumeView.addGestureRecognizer(panGestureRecognizerVolume)
 
         // Normally hide
         self.alpha = 0
@@ -158,7 +161,6 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
 
         playbackSlider.value = position
-        playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
@@ -248,7 +250,7 @@ class NCPlayerToolBar: UIView {
 
     // MARK: - Event / Gesture
 
-    @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
+    @objc func playbackValChanged(slider: UISlider, event: UIEvent) {
 
         guard let touchEvent = event.allTouches?.first,
               let ncplayer = ncplayer
@@ -274,6 +276,10 @@ class NCPlayerToolBar: UIView {
         }
     }
 
+    @objc func volumeValChanged(slider: UISlider, event: UIEvent) {
+
+    }
+
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
 
         let velocity = gestureRecognizer.velocity(in: volumeView)
@@ -289,9 +295,9 @@ class NCPlayerToolBar: UIView {
 
         if gestureRecognizer.state == .changed {
             if add > 0 {
-                ncplayer?.player?.audio?.volumeUp()
+
             } else if add < 0 {
-                ncplayer?.player?.audio?.volumeDown()
+
             }
         }
     }
