@@ -168,16 +168,6 @@ class NCPlayer: NSObject {
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
     }
 
-    func setVolumeAudio(_ volume: Int32) {
-
-        player?.audio?.volume = volume
-    }
-
-    func getVolumeAudio() -> Int32? {
-
-        return player?.audio?.volume
-    }
-
     func jumpForward(_ seconds: Int32) {
 
         player?.jumpForward(seconds)

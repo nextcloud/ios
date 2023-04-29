@@ -163,8 +163,8 @@ class NCPlayerToolBar: UIView {
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
 
-        let volume = Int32(audioSession.outputVolume * 100)
-        ncplayer.setVolumeAudio(volume)
+        // let volume = Int32(audioSession.outputVolume * 100)
+        // ncplayer.setVolumeAudio(volume)
 
         if viewerMediaScreenMode == .normal {
             show()
@@ -201,7 +201,7 @@ class NCPlayerToolBar: UIView {
 
     func getSpeakerImage() -> UIImage {
 
-        let volume = AVAudioSession.sharedInstance().outputVolume
+        let volume = audioSession.outputVolume
 
         if volume == 0 {
             return NCUtility.shared.loadImage(named: "speaker0", color: .white, size: 20, renderingMode: .automatic)
