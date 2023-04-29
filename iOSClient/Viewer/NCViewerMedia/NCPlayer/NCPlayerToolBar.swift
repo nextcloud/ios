@@ -120,7 +120,7 @@ class NCPlayerToolBar: UIView {
         volumeSlider.tintColor = .white
         volumeSlider.setThumbImage(UIImage(), for: .normal)
         volumeSlider.maximumValueImage = getSpeakerImage()
-
+        volumeSlider.isHidden = true
         volumeSlider.addTarget(self, action: #selector(volumeValChanged(slider:event:)), for: .valueChanged)
 
         // let panGestureRecognizerVolume = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -164,9 +164,6 @@ class NCPlayerToolBar: UIView {
 
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
-
-        // let volume = Int32(audioSession.outputVolume * 100)
-        // ncplayer.setVolumeAudio(volume)
 
         if viewerMediaScreenMode == .normal {
             show()
