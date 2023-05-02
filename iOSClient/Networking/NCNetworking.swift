@@ -1538,7 +1538,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
     func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?) -> Void) {
 
         if !metadata.url.isEmpty {
-            completition(URL(fileURLWithPath: metadata.url))
+            if metadata.url.hasPrefix("/") {
+                completition(URL(fileURLWithPath: metadata.url))
+            } else {
+                completition(URL(string: metadata.url))
+            }
         } else if CCUtility.fileProviderStorageExists(metadata) {
             completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
         } else {
