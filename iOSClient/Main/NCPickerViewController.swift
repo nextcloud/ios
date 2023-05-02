@@ -125,15 +125,20 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var isViewerMedia: Bool
+    var viewController: UIViewController?
 
     @discardableResult
-    init (tabBarController: UITabBarController) {
+    init (tabBarController: UITabBarController, supportedTypes: [UTType], isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+
+        self.isViewerMedia = isViewerMedia
+        self.viewController = viewController
         super.init()
 
-        let documentProviderMenu = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .import)
+        let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes)
 
         documentProviderMenu.modalPresentationStyle = .formSheet
-        documentProviderMenu.allowsMultipleSelection = true
+        documentProviderMenu.allowsMultipleSelection = allowsMultipleSelection
         documentProviderMenu.popoverPresentationController?.sourceView = tabBarController.tabBar
         documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
@@ -143,41 +148,51 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
 
-        for url in urls {
+        let ocId = NSUUID().uuidString
+
+        if isViewerMedia, let url = urls.first, let viewController = self.viewController {
 
             let fileName = url.lastPathComponent
-            let serverUrl = appDelegate.activeServerUrl
-            let ocId = NSUUID().uuidString
-            let atPath = url.path
-            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
+            NCManageDatabase.shared.addMetadata(metadata)
+            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
-            if NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath) {
+        } else {
+            for url in urls {
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+                let serverUrl = appDelegate.activeServerUrl
+                let fileName = url.lastPathComponent
+                let atPath = url.path
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
 
-                metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
-                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                if NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath) {
 
-                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+                    let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
-                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                    metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+                    metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                    metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+                    metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                        conflict.delegate = appDelegate
-                        conflict.serverUrl = serverUrl
-                        conflict.metadatasUploadInConflict = [metadataForUpload]
+                    if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
 
-                        appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
+                        if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+
+                            conflict.delegate = appDelegate
+                            conflict.serverUrl = serverUrl
+                            conflict.metadatasUploadInConflict = [metadataForUpload]
+
+                            appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
+                        }
+
+                    } else {
+                        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
                     }
 
                 } else {
-                    NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_read_file_error_")
+                    NCContentPresenter.shared.showError(error: error)
                 }
-
-            } else {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_read_file_error_")
-                NCContentPresenter.shared.showError(error: error)
             }
         }
     }

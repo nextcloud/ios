@@ -88,7 +88,7 @@ class NCViewerMedia: UIViewController {
             statusLabel.text = ""
         }
         
-        if metadata.isMediaPlay {
+        if metadata.isMovie {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
@@ -145,7 +145,7 @@ class NCViewerMedia: UIViewController {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
 
-            if metadata.isMediaPlay {
+            if metadata.isMovie {
                 viewerMediaPage?.view.backgroundColor = .black
                 viewerMediaPage?.textColor = .white
             } else {
@@ -171,7 +171,7 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if metadata.isMediaPlay {
+        if metadata.isMovie {
 
             if let ncplayer = self.ncplayer {
 

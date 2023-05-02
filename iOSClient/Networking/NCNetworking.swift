@@ -1537,7 +1537,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?) -> Void) {
 
-        if CCUtility.fileProviderStorageExists(metadata) {
+        if !metadata.url.isEmpty {
+            completition(URL(fileURLWithPath: metadata.url))
+        } else if CCUtility.fileProviderStorageExists(metadata) {
             completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { account, url, data, error in

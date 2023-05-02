@@ -1342,10 +1342,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
-            if metadata.isImage || metadata.isMediaPlay {
+            if metadata.isImage || metadata.isMovie {
                 var metadatas: [tableMetadata] = []
                 for metadata in metadataSourceForAllSections {
-                    if metadata.isImage || metadata.isMediaPlay {
+                    if metadata.isImage || metadata.isMovie {
                         metadatas.append(metadata)
                     }
                 }

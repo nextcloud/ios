@@ -939,7 +939,7 @@
 "_creation_"                = "Creation";
 "_modified_"                = "Modified";
 "_group_folders_"           = "Group folders";
-
+"_play_from_files_"         = "Play a movie from Files";
 
 // Video
 "_select_trace_"            = "Select the trace";

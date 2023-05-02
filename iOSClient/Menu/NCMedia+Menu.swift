@@ -96,6 +96,22 @@ extension NCMedia {
                 )
             )
 
+            actions.append(.seperator(order: 0))
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_play_from_files_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "play.circle"),
+                    action: { _ in
+                        if let tabBarController =  self.appDelegate.window?.rootViewController as? UITabBarController {
+                            self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, supportedTypes: [UTType.movie], isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
+                        }
+                    }
+                )
+            )
+
+            actions.append(.seperator(order: 0))
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_modified_date_", comment: ""),

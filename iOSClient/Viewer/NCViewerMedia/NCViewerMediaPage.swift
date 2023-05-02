@@ -214,7 +214,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if metadatas[currentIndex].isMediaPlay {
+            if metadatas[currentIndex].isMovie {
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
@@ -231,7 +231,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
-            if metadatas[currentIndex].isMediaPlay {
+            if metadatas[currentIndex].isMovie {
                 currentViewController.playerToolBar?.hide()
             }
 
@@ -256,7 +256,7 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func autoHide() {
 
-        if metadatas[currentIndex].isMediaPlay, viewerMediaScreenMode == .normal {
+        if metadatas[currentIndex].isMovie, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
         }
     }
@@ -275,7 +275,7 @@ class NCViewerMediaPage: UIViewController {
         let metadata = metadatas[currentIndex]
 
         if metadata.ocId == ocId,
-           metadata.isMediaPlay,
+           metadata.isMovie,
            CCUtility.fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
             let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
@@ -430,8 +430,8 @@ class NCViewerMediaPage: UIViewController {
             return .commandFailed
         }
 
-        // VIDEO / AUDIO () ()
-        if metadata.isMediaPlay {
+        // VIDEO AUDIO () ()
+        if metadata.isMovie {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
