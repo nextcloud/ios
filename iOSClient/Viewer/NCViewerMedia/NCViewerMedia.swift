@@ -88,7 +88,7 @@ class NCViewerMedia: UIViewController {
             statusLabel.text = ""
         }
         
-        if metadata.isMediaPlay {
+        if metadata.isMovie {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
@@ -145,7 +145,7 @@ class NCViewerMedia: UIViewController {
 
             viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
 
-            if metadata.isMediaPlay {
+            if metadata.isMovie {
                 viewerMediaPage?.view.backgroundColor = .black
                 viewerMediaPage?.textColor = .white
             } else {
@@ -171,14 +171,14 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if metadata.isMediaPlay {
+        if metadata.isMovie {
 
             if let ncplayer = self.ncplayer {
 
                 if ncplayer.url == nil {
-                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
                         if let url = url {
-                            ncplayer.openAVPlayer(url: url)
+                            ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                             self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
                         }
                     }

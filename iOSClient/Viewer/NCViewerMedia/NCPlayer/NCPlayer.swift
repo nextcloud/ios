@@ -66,7 +66,7 @@ class NCPlayer: NSObject {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
 
-    func openAVPlayer(url: URL) {
+    func openAVPlayer(url: URL, autoplay: Bool = false) {
 
         let userAgent = CCUtility.getUserAgent()!
         var positionSliderToolBar: Float = 0
@@ -98,7 +98,9 @@ class NCPlayer: NSObject {
         playerToolBar?.setBarPlayer(ncplayer: self, position: positionSliderToolBar, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
         player?.play()
-        player?.pause()
+        if !autoplay {
+            player?.pause()
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }

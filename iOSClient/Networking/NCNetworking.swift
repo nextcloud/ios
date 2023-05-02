@@ -1535,20 +1535,26 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Direct Download
 
-    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?) -> Void) {
+    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?, _ autoplay: Bool) -> Void) {
 
-        if CCUtility.fileProviderStorageExists(metadata) {
-            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+        if !metadata.url.isEmpty {
+            if metadata.url.hasPrefix("/") {
+                completition(URL(fileURLWithPath: metadata.url), true)
+            } else {
+                completition(URL(string: metadata.url), true)
+            }
+        } else if CCUtility.fileProviderStorageExists(metadata) {
+            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { account, url, data, error in
                 if error == .success && url != nil {
                     if let url = URL(string: url!) {
-                        completition(url)
+                        completition(url, false)
                     } else {
-                        completition(nil)
+                        completition(nil, false)
                     }
                 } else {
-                    completition(nil)
+                    completition(nil, false)
                 }
             }
         }

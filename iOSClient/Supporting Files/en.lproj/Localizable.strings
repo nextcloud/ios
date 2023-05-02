@@ -939,7 +939,9 @@
 "_creation_"                = "Creation";
 "_modified_"                = "Modified";
 "_group_folders_"           = "Group folders";
-
+"_play_from_files_"         = "Play movie by Files";
+"_play_from_url_"           = "Play movie by URL";
+"_valid_video_url_"         = "Insert a valid URL";
 
 // Video
 "_select_trace_"            = "Select the trace";

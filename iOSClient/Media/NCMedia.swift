@@ -31,6 +31,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var emptyDataSet: NCEmptyDataSet?
     private var mediaCommandView: NCMediaCommandView?
     private var gridLayout: NCGridMediaLayout!
+    internal var documentPickerViewController: NCDocumentPickerViewController?
 
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -393,7 +394,7 @@ extension NCMedia: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
 
-            if metadata.isMediaPlay {
+            if metadata.isMovie {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.livePhoto && livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage
