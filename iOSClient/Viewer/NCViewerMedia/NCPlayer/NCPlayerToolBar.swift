@@ -316,7 +316,7 @@ extension NCPlayerToolBar {
             )
         }
 
-        viewerMediaPage?.presentMenu(with: actions, menuColor: .darkGray, textColor: .white)
+        viewerMediaPage?.presentMenu(with: actions, menuColor: UIColor(hexString: "#1C1C1EFF"), textColor: .white)
     }
 
     func toggleMenuAudio(audioTracks: [Any], audioTrackIndexes: [Any]) {
@@ -347,6 +347,6 @@ extension NCPlayerToolBar {
             )
         }
 
-        viewerMediaPage?.presentMenu(with: actions, menuColor: .darkGray, textColor: .white)
+        viewerMediaPage?.presentMenu(with: actions, menuColor: UIColor(hexString: "#1C1C1EFF"), textColor: .white)
     }
 }
