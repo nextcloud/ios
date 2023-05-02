@@ -150,7 +150,10 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
         let ocId = NSUUID().uuidString
 
-        if isViewerMedia, let url = urls.first, let viewController = self.viewController {
+        if isViewerMedia,
+            let urlIn = urls.first,
+            let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
+            let viewController = self.viewController {
 
             let fileName = url.lastPathComponent
             let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
@@ -158,42 +161,52 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
-            for url in urls {
 
-                let serverUrl = appDelegate.activeServerUrl
-                let fileName = url.lastPathComponent
-                let atPath = url.path
+            for urlIn in urls {
+
+                let fileName = urlIn.lastPathComponent
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                let urlOut = URL(fileURLWithPath: toPath)
+                let serverUrl = appDelegate.activeServerUrl
 
-                if NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath) {
+                guard let url = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
 
-                    let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
-                    metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
-                    metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                    metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
-                    metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
+                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                    if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
 
-                        if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
 
-                            conflict.delegate = appDelegate
-                            conflict.serverUrl = serverUrl
-                            conflict.metadatasUploadInConflict = [metadataForUpload]
+                        conflict.delegate = appDelegate
+                        conflict.serverUrl = serverUrl
+                        conflict.metadatasUploadInConflict = [metadataForUpload]
 
-                            appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
-                        }
-
-                    } else {
-                        NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
+                        appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                     }
 
                 } else {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_read_file_error_")
-                    NCContentPresenter.shared.showError(error: error)
+                    NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
                 }
             }
         }
+    }
+
+    func copySecurityScopedResource(url: URL, urlOut: URL) -> URL? {
+
+        try? FileManager.default.removeItem(at: urlOut)
+        if url.startAccessingSecurityScopedResource() {
+            do {
+                try FileManager.default.copyItem(at: url, to: urlOut)
+                url.stopAccessingSecurityScopedResource()
+                return urlOut
+            } catch {
+            }
+        }
+        return nil
     }
 }

@@ -176,9 +176,9 @@ class NCViewerMedia: UIViewController {
             if let ncplayer = self.ncplayer {
 
                 if ncplayer.url == nil {
-                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url in
+                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
                         if let url = url {
-                            ncplayer.openAVPlayer(url: url)
+                            ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                             self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
                         }
                     }
