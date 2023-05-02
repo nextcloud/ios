@@ -104,7 +104,7 @@ extension NCMedia {
                     icon: NCUtility.shared.loadImage(named: "play.circle"),
                     action: { _ in
                         if let tabBarController =  self.appDelegate.window?.rootViewController as? UITabBarController {
-                            self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, supportedTypes: [UTType.movie], isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
+                            self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
                         }
                     }
                 )

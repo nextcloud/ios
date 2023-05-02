@@ -129,13 +129,13 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     var viewController: UIViewController?
 
     @discardableResult
-    init (tabBarController: UITabBarController, supportedTypes: [UTType], isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+    init (tabBarController: UITabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
 
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController
         super.init()
 
-        let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes)
+        let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.data])
 
         documentProviderMenu.modalPresentationStyle = .formSheet
         documentProviderMenu.allowsMultipleSelection = allowsMultipleSelection
@@ -157,6 +157,9 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
             let fileName = url.lastPathComponent
             let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
+            if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
+                metadata.classFile = NKCommon.TypeClassFile.video.rawValue
+            }
             NCManageDatabase.shared.addMetadata(metadata)
             NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
