@@ -166,9 +166,6 @@
 + (NSInteger)getLogLevel;
 + (void)setLogLevel:(NSInteger)value;
 
-+ (NSInteger)getAudioVolume;
-+ (void)setAudioVolume:(NSInteger)volume;
-
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 

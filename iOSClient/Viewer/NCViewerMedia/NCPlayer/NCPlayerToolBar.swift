@@ -45,11 +45,6 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
 
-    @IBOutlet weak var volumeView: UIView!
-    @IBOutlet weak var volumeSlider: UISlider!
-    @IBOutlet weak var volumeSliderConstraintWidth: NSLayoutConstraint!
-    @IBOutlet weak var volumeSliderConstraintTrailing: NSLayoutConstraint!
-
     enum sliderEventType {
         case began
         case ended
@@ -107,36 +102,9 @@ class NCPlayerToolBar: UIView {
 
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
 
-        do {
-            try audioSession.setActive(true, options: [])
-            audioSession.addObserver(self, forKeyPath: "outputVolume", options: [.new], context: nil)
-        } catch {
-            print("error")
-        }
-
-        volumeSliderConstraintWidth.constant = self.frame.size.width / 2
-        volumeSliderConstraintTrailing.constant = -(volumeSliderConstraintWidth.constant / 2) + 15
-        volumeSlider.value = audioSession.outputVolume
-        volumeSlider.tintColor = .white
-        volumeSlider.setThumbImage(UIImage(), for: .normal)
-        volumeSlider.maximumValueImage = getSpeakerImage()
-        volumeSlider.isHidden = true
-        volumeSlider.addTarget(self, action: #selector(volumeValChanged(slider:event:)), for: .valueChanged)
-
-        // let panGestureRecognizerVolume = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
-        // volumeView.addGestureRecognizer(panGestureRecognizerVolume)
-
         // Normally hide
         self.alpha = 0
         self.isHidden = true
-    }
-
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-
-        if keyPath == "outputVolume"{
-            volumeSlider.value = audioSession.outputVolume
-            volumeSlider.maximumValueImage = getSpeakerImage()
-        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -145,7 +113,6 @@ class NCPlayerToolBar: UIView {
 
     deinit {
 
-        audioSession.removeObserver(self, forKeyPath: "outputVolume")
         print("deinit NCPlayerToolBar")
     }
 
@@ -194,23 +161,6 @@ class NCPlayerToolBar: UIView {
 
         self.subtitleButton.isEnabled = !videoSubTitlesIndexes.isEmpty
         self.audioButton.isEnabled = !audioTrackIndexes.isEmpty
-    }
-
-    // MARK: -
-
-    func getSpeakerImage() -> UIImage {
-
-        let volume = audioSession.outputVolume
-
-        if volume == 0 {
-            return NCUtility.shared.loadImage(named: "speaker0", color: .white, size: 20, renderingMode: .automatic)
-        } else if volume > 0 && volume <= 0.5 {
-            return NCUtility.shared.loadImage(named: "speaker1", color: .white, size: 20, renderingMode: .automatic)
-        } else if volume > 0.5 && volume < 1 {
-            return NCUtility.shared.loadImage(named: "speaker2", color: .white, size: 20, renderingMode: .automatic)
-        } else {
-            return NCUtility.shared.loadImage(named: "speaker3", color: .white, size: 20, renderingMode: .automatic)
-        }
     }
 
     // MARK: -
@@ -270,32 +220,6 @@ class NCPlayerToolBar: UIView {
             }
         default:
             break
-        }
-    }
-
-    @objc func volumeValChanged(slider: UISlider, event: UIEvent) {
-
-    }
-
-    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-
-        let velocity = gestureRecognizer.velocity(in: volumeView)
-        let currentLocation = gestureRecognizer.translation(in: volumeView)
-        let step = volumeView.frame.height * 0.05
-        var add: Float = -(Float(Int(currentLocation.y / step)) / 10) * 100
-
-        if gestureRecognizer.state == .began {
-            if abs(velocity.x) > abs(velocity.y) {
-                gestureRecognizer.state = .cancelled
-            }
-        }
-
-        if gestureRecognizer.state == .changed {
-            if add > 0 {
-
-            } else if add < 0 {
-
-            }
         }
     }
 

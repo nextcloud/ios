@@ -45,25 +45,6 @@
                     </subviews>
                     <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                 </stackView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UlI-V1-Wz3">
-                    <rect key="frame" x="331" y="103" width="83" height="681"/>
-                    <subviews>
-                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Jec-GX-2dX">
-                            <rect key="frame" x="31" y="325.5" width="54" height="31"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="50" id="tyN-ZD-51M"/>
-                            </constraints>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="string" keyPath="layer.transform.rotation.z" value="-1.570795"/>
-                            </userDefinedRuntimeAttributes>
-                        </slider>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="trailing" secondItem="Jec-GX-2dX" secondAttribute="trailing" id="pwZ-O5-ybP"/>
-                        <constraint firstItem="Jec-GX-2dX" firstAttribute="centerY" secondItem="UlI-V1-Wz3" secondAttribute="centerY" id="qND-ic-m70"/>
-                    </constraints>
-                </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85m-50-8yp">
                     <rect key="frame" x="10" y="794" width="394" height="58"/>
                     <subviews>
@@ -153,15 +134,11 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="85m-50-8yp" firstAttribute="top" secondItem="UlI-V1-Wz3" secondAttribute="bottom" constant="10" id="2mJ-aK-dch"/>
                 <constraint firstItem="85m-50-8yp" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="5H2-Gg-PEb"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="85m-50-8yp" secondAttribute="trailing" constant="10" id="BXT-Qo-qFl"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" constant="10" id="N7Q-PF-7lb"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="UlI-V1-Wz3" secondAttribute="trailing" id="dmY-RB-YLe"/>
                 <constraint firstItem="XfW-XC-eMf" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="fq3-6h-kkx"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XfW-XC-eMf" secondAttribute="trailing" constant="10" id="uYG-Ai-CGv"/>
-                <constraint firstItem="UlI-V1-Wz3" firstAttribute="top" secondItem="XfW-XC-eMf" secondAttribute="bottom" constant="10" id="zFs-be-FCU"/>
-                <constraint firstItem="UlI-V1-Wz3" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.2" id="zVc-qr-lZr"/>
             </constraints>
             <connections>
                 <outlet property="audioButton" destination="sMY-qo-4CE" id="R7Q-de-Dsv"/>
@@ -174,10 +151,6 @@
                 <outlet property="playerToolBarView" destination="85m-50-8yp" id="eZK-p1-v65"/>
                 <outlet property="playerTopToolBarView" destination="XfW-XC-eMf" id="Qdp-IW-YhT"/>
                 <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
-                <outlet property="volumeSlider" destination="Jec-GX-2dX" id="p6t-7N-Cfr"/>
-                <outlet property="volumeSliderConstraintTrailing" destination="pwZ-O5-ybP" id="ry2-tb-qrt"/>
-                <outlet property="volumeSliderConstraintWidth" destination="tyN-ZD-51M" id="Jgs-Kj-QQ7"/>
-                <outlet property="volumeView" destination="UlI-V1-Wz3" id="x2N-4V-o1N"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="152.67857142857142"/>
         </view>
