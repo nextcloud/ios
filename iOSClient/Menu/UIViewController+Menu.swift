@@ -108,10 +108,10 @@ extension UIViewController {
         present(mail, animated: true)
     }
 
-    func presentMenu(with actions: [NCMenuAction]) {
+    func presentMenu(with actions: [NCMenuAction], menuColor: UIColor = .systemBackground, textColor: UIColor = .label) {
         guard !actions.isEmpty else { return }
         let actions = actions.sorted(by: { $0.order < $1.order })
-        guard let menuViewController = NCMenu.makeNCMenu(with: actions) else {
+        guard let menuViewController = NCMenu.makeNCMenu(with: actions, menuColor: menuColor, textColor: textColor) else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_internal_generic_error_")
             NCContentPresenter.shared.showError(error: error)
             return

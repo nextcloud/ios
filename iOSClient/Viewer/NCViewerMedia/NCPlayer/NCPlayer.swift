@@ -69,7 +69,7 @@ class NCPlayer: NSObject {
     func openAVPlayer(url: URL) {
 
         let userAgent = CCUtility.getUserAgent()!
-        var position: Float = 0
+        var positionSliderToolBar: Float = 0
 
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
@@ -79,12 +79,14 @@ class NCPlayer: NSObject {
         player?.media = VLCMedia(url: url)
         player?.delegate = self
 
+        player?.audio?.passthrough = true
+
         // player?.media?.addOption("--network-caching=500")
         player?.media?.addOption(":http-user-agent=\(userAgent)")
 
-        if let result = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
-            position = result
-            player?.position = position
+        if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
+            positionSliderToolBar = position
+            player?.position = positionSliderToolBar
         }
 
         player?.drawable = imageVideoContainer
@@ -93,11 +95,7 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: metadata, viewerMediaPage: viewerMediaPage)
-
-        if let media = player?.media {
-            thumbnailer = VLCMediaThumbnailer(media: media, andDelegate: self)
-        }
+        playerToolBar?.setBarPlayer(ncplayer: self, position: positionSliderToolBar, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
         player?.play()
         player?.pause()
@@ -109,7 +107,6 @@ class NCPlayer: NSObject {
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        playerToolBar?.show()
         viewerMediaPage?.didSingleTapWith(gestureRecognizer: gestureRecognizer)
     }
 
@@ -117,7 +114,7 @@ class NCPlayer: NSObject {
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
 
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+        if metadata.isVideo {
             playerStop()
         }
     }
@@ -134,8 +131,8 @@ class NCPlayer: NSObject {
         playerToolBar?.playbackSliderEvent = .began
         player?.play()
         playerToolBar?.playButtonPause()
-        
-        if let position = NCManageDatabase.shared.getVideoPosition(metadata: metadata) {
+
+        if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
             player?.position = position
             playerToolBar?.playbackSliderEvent = .moved
         }
@@ -167,18 +164,8 @@ class NCPlayer: NSObject {
 
     func savePosition() {
 
-        guard let position = player?.position, metadata.classFile == NKCommon.TypeClassFile.video.rawValue, isPlay() else { return }
-
-        if let width = width, let height = height {
-            player?.saveVideoSnapshot(at: fileNamePreviewLocalPath, withWidth: Int32(width), andHeight: Int32(height))
-        }
-
+        guard let position = player?.position, metadata.isVideo, isPlay() else { return }
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
-    }
-
-    func setVolumeAudio(_ volume: Int32) {
-
-        player?.audio?.volume = volume
     }
 
     func jumpForward(_ seconds: Int32) {
@@ -227,6 +214,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             }
             self.width = Int(size.width)
             self.height = Int(size.height)
+            playerToolBar?.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
             print("Played mode: PLAYING")
             break
@@ -271,18 +259,5 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
 
     func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) { }
 
-    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) {
-
-        var image: UIImage?
-
-        do {
-            image = UIImage(cgImage: thumbnail)
-            if let data = image?.jpegData(compressionQuality: 0.5) {
-                try data.write(to: URL(fileURLWithPath: fileNamePreviewLocalPath), options: .atomic)
-            }
-        } catch let error as NSError {
-            print("GeneratorImagePreview localized error:")
-            print(error.localizedDescription)
-        }
-    }
+    func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) { }
 }

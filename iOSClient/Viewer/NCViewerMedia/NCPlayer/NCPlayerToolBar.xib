@@ -15,19 +15,31 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="XfW-XC-eMf" userLabel="Player Top Tool Bar">
-                    <rect key="frame" x="369" y="58" width="35" height="35"/>
+                <stackView opaque="NO" contentMode="scaleToFill" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="XfW-XC-eMf" userLabel="Player Top Tool Bar">
+                    <rect key="frame" x="329" y="58" width="75" height="35"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fml-c2-FMY">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qqZ-QN-TsW">
                             <rect key="frame" x="5" y="5" width="25" height="25"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="25" id="S8g-UR-4zh"/>
-                                <constraint firstAttribute="height" constant="25" id="zjo-O1-SI2"/>
+                                <constraint firstAttribute="height" constant="25" id="S3q-Dj-i67"/>
+                                <constraint firstAttribute="width" constant="25" id="rg2-EW-KJX"/>
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" image="audioOn"/>
+                            <state key="normal" image="captions.bubble" catalog="system"/>
                             <connections>
-                                <action selector="tapMute:" destination="iN0-l3-epB" eventType="touchUpInside" id="FWr-cn-Pgw"/>
+                                <action selector="tapSubTitle:" destination="iN0-l3-epB" eventType="touchUpInside" id="ooC-tL-TBX"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sMY-qo-4CE">
+                            <rect key="frame" x="45" y="5" width="25" height="25"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="25" id="kui-Ih-KqM"/>
+                                <constraint firstAttribute="width" constant="25" id="zUF-5q-I6f"/>
+                            </constraints>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="speaker.zzz" catalog="system"/>
+                            <connections>
+                                <action selector="tapAudio:" destination="iN0-l3-epB" eventType="touchUpInside" id="EVU-fE-n5T"/>
                             </connections>
                         </button>
                     </subviews>
@@ -86,7 +98,7 @@
                                 <constraint firstItem="bGn-IC-3V1" firstAttribute="centerX" secondItem="ixi-yR-HDH" secondAttribute="centerX" multiplier="1.6" id="wJP-ph-5c5"/>
                             </constraints>
                         </view>
-                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MY0-FC-j88">
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MY0-FC-j88">
                             <rect key="frame" x="121" y="14" width="265" height="31"/>
                         </slider>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--:--" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svM-TQ-AyQ">
@@ -129,23 +141,25 @@
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XfW-XC-eMf" secondAttribute="trailing" constant="10" id="uYG-Ai-CGv"/>
             </constraints>
             <connections>
+                <outlet property="audioButton" destination="sMY-qo-4CE" id="R7Q-de-Dsv"/>
                 <outlet property="backButton" destination="uP7-aY-x4n" id="SyC-qV-IMq"/>
                 <outlet property="forwardButton" destination="bGn-IC-3V1" id="0OZ-f2-eWU"/>
                 <outlet property="labelCurrentTime" destination="OHB-2J-Gqb" id="pFy-CJ-x2A"/>
                 <outlet property="labelLeftTime" destination="svM-TQ-AyQ" id="UDV-Lh-12z"/>
-                <outlet property="muteButton" destination="Fml-c2-FMY" id="Fo1-Ep-ZPz"/>
                 <outlet property="playButton" destination="hx9-d5-yiD" id="Enk-Ge-2Yx"/>
                 <outlet property="playbackSlider" destination="MY0-FC-j88" id="bVe-Kc-80k"/>
                 <outlet property="playerToolBarView" destination="85m-50-8yp" id="eZK-p1-v65"/>
                 <outlet property="playerTopToolBarView" destination="XfW-XC-eMf" id="Qdp-IW-YhT"/>
+                <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="152.67857142857142"/>
         </view>
     </objects>
     <resources>
-        <image name="audioOn" width="28" height="28"/>
+        <image name="captions.bubble" catalog="system" width="128" height="110"/>
         <image name="gobackward.10" catalog="system" width="119" height="128"/>
         <image name="goforward.10" catalog="system" width="119" height="128"/>
         <image name="play.fill" catalog="system" width="117" height="128"/>
+        <image name="speaker.zzz" catalog="system" width="128" height="83"/>
     </resources>
 </document>

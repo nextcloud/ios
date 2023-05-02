@@ -28,13 +28,17 @@ import UIKit
 import AVKit
 import MediaPlayer
 import MobileVLCKit
+import FloatingPanel
 
 class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var playerTopToolBarView: UIStackView!
+    @IBOutlet weak var subtitleButton: UIButton!
+    @IBOutlet weak var audioButton: UIButton!
+
     @IBOutlet weak var playerToolBarView: UIView!
-    @IBOutlet weak var muteButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
+
     @IBOutlet weak var forwardButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playbackSlider: UISlider!
@@ -50,8 +54,10 @@ class NCPlayerToolBar: UIView {
 
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
-    private var wasInPlay: Bool = false
-
+    private let audioSession = AVAudioSession.sharedInstance()
+    private var subTitleIndex: Int32?
+    private var audioIndex: Int32?
+    
     private weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
@@ -59,34 +65,38 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        blurEffectView.frame = self.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        playerToolBarView.insertSubview(blurEffectView, at: 0)
+        let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
+        blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
         playerTopToolBarView.layer.cornerRadius = 10
         playerTopToolBarView.layer.masksToBounds = true
         playerTopToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapTopToolBarWith(gestureRecognizer:))))
 
-        let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
-        blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
+        let blurEffectToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blurEffectToolBarView.frame = playerToolBarView.bounds
+        blurEffectToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        playerToolBarView.insertSubview(blurEffectToolBarView, at: 0)
         playerToolBarView.layer.cornerRadius = 10
         playerToolBarView.layer.masksToBounds = true
         playerToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToolBarWith(gestureRecognizer:))))
 
         playbackSlider.value = 0
-        playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = 1
-        playbackSlider.isContinuous = true
         playbackSlider.tintColor = .lightGray
+        playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.textColor = .white
         labelLeftTime.textColor = .white
 
-        muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
-
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
+
+        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
+        subtitleButton.isEnabled = false
+        
+        audioButton.setImage(NCUtility.shared.loadImage(named: "speaker.zzz", color: .white), for: .normal)
+        audioButton.isEnabled = false
 
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
 
@@ -102,6 +112,7 @@ class NCPlayerToolBar: UIView {
     }
 
     deinit {
+
         print("deinit NCPlayerToolBar")
     }
 
@@ -117,18 +128,9 @@ class NCPlayerToolBar: UIView {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
 
         playbackSlider.value = position
-        playbackSlider.addTarget(self, action: #selector(onSliderValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.text = ncplayer.player?.time.stringValue
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
-
-        if CCUtility.getAudioVolume() == 0 {
-            ncplayer.setVolumeAudio(0)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
-        } else {
-            ncplayer.setVolumeAudio(100)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
-        }
 
         if viewerMediaScreenMode == .normal {
             show()
@@ -153,6 +155,12 @@ class NCPlayerToolBar: UIView {
         labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
+    }
+
+    public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {
+
+        self.subtitleButton.isEnabled = !videoSubTitlesIndexes.isEmpty
+        self.audioButton.isEnabled = !audioTrackIndexes.isEmpty
     }
 
     // MARK: -
@@ -189,7 +197,7 @@ class NCPlayerToolBar: UIView {
 
     // MARK: - Event / Gesture
 
-    @objc func onSliderValChanged(slider: UISlider, event: UIEvent) {
+    @objc func playbackValChanged(slider: UISlider, event: UIEvent) {
 
         guard let touchEvent = event.allTouches?.first,
               let ncplayer = ncplayer
@@ -233,21 +241,30 @@ class NCPlayerToolBar: UIView {
         self.viewerMediaPage?.startTimerAutoHide()
     }
 
-    @IBAction func tapMute(_ sender: Any) {
+    @IBAction func tapSubTitle(_ sender: Any) {
 
-        guard let ncplayer = ncplayer else { return }
+        guard let player = ncplayer?.player else { return }
 
-        if CCUtility.getAudioVolume() > 0 {
-            CCUtility.setAudioVolume(0)
-            ncplayer.setVolumeAudio(0)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOff", color: .white), for: .normal)
-        } else {
-            CCUtility.setAudioVolume(100)
-            ncplayer.setVolumeAudio(100)
-            muteButton.setImage(NCUtility.shared.loadImage(named: "audioOn", color: .white), for: .normal)
+        let spuTracks = player.videoSubTitlesNames
+        let spuTrackIndexes = player.videoSubTitlesIndexes
+        let count = spuTracks.count
+
+        if count > 1 {
+            toggleMenuSubTitle(spuTracks: spuTracks, spuTrackIndexes: spuTrackIndexes)
         }
+    }
 
-        self.viewerMediaPage?.startTimerAutoHide()
+    @IBAction func tapAudio(_ sender: Any) {
+
+        guard let player = ncplayer?.player else { return }
+
+        let audioTracks = player.audioTrackNames
+        let audioTrackIndexes = player.audioTrackIndexes
+        let count = audioTracks.count
+
+        if count > 1 {
+            toggleMenuAudio(audioTracks: audioTracks, audioTrackIndexes: audioTrackIndexes)
+        }
     }
 
     @IBAction func tapForward(_ sender: Any) {
@@ -266,5 +283,70 @@ class NCPlayerToolBar: UIView {
         ncplayer.jumpBackward(10)
 
         self.viewerMediaPage?.startTimerAutoHide()
+    }
+}
+
+extension NCPlayerToolBar {
+
+    func toggleMenuSubTitle(spuTracks: [Any], spuTrackIndexes: [Any]) {
+
+        var actions = [NCMenuAction]()
+
+        if self.subTitleIndex == nil, let idx = ncplayer?.player?.currentVideoSubTitleIndex {
+            self.subTitleIndex = idx
+        }
+
+        for index in 0...spuTracks.count - 1 {
+
+            guard let title = spuTracks[index] as? String, let idx = spuTrackIndexes[index] as? Int32 else { return }
+
+            actions.append(
+                NCMenuAction(
+                    title: title,
+                    icon: UIImage(),
+                    onTitle: title,
+                    onIcon: UIImage(),
+                    selected: (self.subTitleIndex ?? -9999) == idx,
+                    on: (self.subTitleIndex ?? -9999) == idx,
+                    action: { _ in
+                        self.ncplayer?.player?.currentVideoSubTitleIndex = idx
+                        self.subTitleIndex = idx
+                    }
+                )
+            )
+        }
+
+        viewerMediaPage?.presentMenu(with: actions, menuColor: .darkGray, textColor: .white)
+    }
+
+    func toggleMenuAudio(audioTracks: [Any], audioTrackIndexes: [Any]) {
+
+        var actions = [NCMenuAction]()
+
+        if self.audioIndex == nil, let idx = ncplayer?.player?.currentAudioTrackIndex {
+            self.audioIndex = idx
+        }
+
+        for index in 0...audioTracks.count - 1 {
+
+            guard let title = audioTracks[index] as? String, let idx = audioTrackIndexes[index] as? Int32 else { return }
+
+            actions.append(
+                NCMenuAction(
+                    title: title,
+                    icon: UIImage(),
+                    onTitle: title,
+                    onIcon: UIImage(),
+                    selected: (self.audioIndex ?? -9999) == idx,
+                    on: (self.audioIndex ?? -9999) == idx,
+                    action: { _ in
+                        self.ncplayer?.player?.currentAudioTrackIndex = idx
+                        self.audioIndex = idx
+                    }
+                )
+            )
+        }
+
+        viewerMediaPage?.presentMenu(with: actions, menuColor: .darkGray, textColor: .white)
     }
 }

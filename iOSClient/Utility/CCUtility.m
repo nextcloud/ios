@@ -656,23 +656,6 @@
     [UICKeyChainStore setString:valueString forKey:@"logLevel" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (NSInteger)getAudioVolume
-{
-    NSString *volume = [UICKeyChainStore stringForKey:@"audioVolume" service:NCGlobal.shared.serviceShareKeyChain];
-
-    if (volume == nil) {
-        return 100;
-    } else {
-        return [volume integerValue];
-    }
-}
-
-+ (void)setAudioVolume:(NSInteger)volume
-{
-    NSString *volumeString = [@(volume) stringValue];
-    [UICKeyChainStore setString:volumeString forKey:@"audioVolume" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getAccountRequest
 {
     return [[UICKeyChainStore stringForKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain] boolValue];

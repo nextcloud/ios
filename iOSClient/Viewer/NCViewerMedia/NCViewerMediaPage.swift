@@ -69,7 +69,7 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() {
-                return 5
+                return 4
             } else {
                 return 4
             }
@@ -118,8 +118,6 @@ class NCViewerMediaPage: UIViewController {
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
-        startTimerAutoHide()
-
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -150,6 +148,12 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        startTimerAutoHide()
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -157,6 +161,7 @@ class NCViewerMediaPage: UIViewController {
             ncplayer.playerPause()
         }
         clearCommandCenter()
+        timerAutoHide?.invalidate()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -209,13 +214,16 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+            if metadatas[currentIndex].isMediaPlay {
                 currentViewController.playerToolBar?.show()
+                view.backgroundColor = .black
+                textColor = .white
+            } else {
+                view.backgroundColor = .systemBackground
+                textColor = .label
             }
 
             NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
-            view.backgroundColor = .systemBackground
-            textColor = .label
 
         } else {
 
@@ -223,7 +231,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
-            if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue {
+            if metadatas[currentIndex].isMediaPlay {
                 currentViewController.playerToolBar?.hide()
             }
 
@@ -232,6 +240,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         viewerMediaScreenMode = mode
+        print("Screen mode: \(viewerMediaScreenMode)")
 
         startTimerAutoHide()
         setNeedsStatusBarAppearanceUpdate()
@@ -247,7 +256,7 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func autoHide() {
 
-        if metadatas[currentIndex].classFile == NKCommon.TypeClassFile.video.rawValue || metadatas[currentIndex].classFile == NKCommon.TypeClassFile.audio.rawValue, viewerMediaScreenMode == .normal {
+        if metadatas[currentIndex].isMediaPlay, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
         }
     }
@@ -266,7 +275,7 @@ class NCViewerMediaPage: UIViewController {
         let metadata = metadatas[currentIndex]
 
         if metadata.ocId == ocId,
-           (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue),
+           metadata.isMediaPlay,
            CCUtility.fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
             let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
@@ -321,7 +330,7 @@ class NCViewerMediaPage: UIViewController {
 
         metadatas[index] = metadata
         if currentViewController.metadata.ocId == ocId {
-            currentViewController.reloadImage()
+            currentViewController.loadImage()
         } else {
             modifiedOcId.append(ocId)
         }
@@ -422,7 +431,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         // VIDEO / AUDIO () ()
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+        if metadata.isMediaPlay {
 
             MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
