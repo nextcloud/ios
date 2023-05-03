@@ -69,7 +69,7 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() {
-                return 4
+                return 40
             } else {
                 return 4
             }
@@ -441,7 +441,7 @@ class NCViewerMediaPage: UIViewController {
             skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
 
                 let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
-                ncplayer.player?.jumpForward(seconds)
+                ncplayer.player.jumpForward(seconds)
                 return.success
             }
 
@@ -449,7 +449,7 @@ class NCViewerMediaPage: UIViewController {
             skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
 
                 let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
-                ncplayer.player?.jumpBackward(seconds)
+                ncplayer.player.jumpBackward(seconds)
                 return.success
             }
         }

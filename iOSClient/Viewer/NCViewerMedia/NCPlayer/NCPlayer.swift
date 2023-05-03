@@ -30,7 +30,7 @@ class NCPlayer: NSObject {
 
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     internal var url: URL?
-    internal var player: VLCMediaPlayer?
+    internal var player = VLCMediaPlayer()
     internal var metadata: tableMetadata
     internal var singleTapGestureRecognizer: UITapGestureRecognizer!
     internal var width: Int?
@@ -74,30 +74,27 @@ class NCPlayer: NSObject {
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
         print("Play URL: \(url)")
-        player = VLCMediaPlayer()
-        player?.media = VLCMedia(url: url)
-        player?.delegate = self
+        player.media = VLCMedia(url: url)
+        player.delegate = self
 
         // player?.media?.addOption("--network-caching=500")
-        player?.media?.addOption(":http-user-agent=\(userAgent)")
+        player.media?.addOption(":http-user-agent=\(userAgent)")
 
         if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
             positionSliderToolBar = position
-            player?.position = positionSliderToolBar
+            player.position = positionSliderToolBar
         }
 
-        player?.drawable = imageVideoContainer
-        if let view = player?.drawable as? UIView {
+        player.drawable = imageVideoContainer
+        if let view = player.drawable as? UIView {
             view.isUserInteractionEnabled = true
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
         playerToolBar?.setBarPlayer(ncplayer: self, position: positionSliderToolBar, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
-        player?.play()
-        if !autoplay {
-            player?.pause()
-            player?.position = 0
+        if autoplay {
+            player.play()
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -123,17 +120,17 @@ class NCPlayer: NSObject {
 
     func isPlay() -> Bool {
 
-        return player?.isPlaying ?? false
+        return player.isPlaying
     }
 
     func playerPlay() {
 
         playerToolBar?.playbackSliderEvent = .began
-        player?.play()
+        player.play()
         playerToolBar?.playButtonPause()
 
         if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
-            player?.position = position
+            player.position = position
             playerToolBar?.playbackSliderEvent = .moved
         }
 
@@ -145,44 +142,43 @@ class NCPlayer: NSObject {
     @objc func playerStop() {
 
         savePosition()
-        player?.stop()
+        player.stop()
         playerToolBar?.playButtonPlay()
     }
 
     @objc func playerPause() {
 
         savePosition()
-        player?.pause()
+        player.pause()
         playerToolBar?.playButtonPlay()
     }
 
     func playerPosition(_ position: Float) {
 
         NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
-        player?.position = position
+        player.position = position
     }
 
     func savePosition() {
 
-        guard let position = player?.position, metadata.isVideo, isPlay() else { return }
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
+        guard metadata.isVideo, isPlay() else { return }
+        NCManageDatabase.shared.addVideo(metadata: metadata, position: player.position)
     }
 
     func jumpForward(_ seconds: Int32) {
 
-        player?.jumpForward(seconds)
+        player.jumpForward(seconds)
     }
 
     func jumpBackward(_ seconds: Int32) {
 
-        player?.jumpBackward(seconds)
+        player.jumpBackward(seconds)
     }
 }
 
 extension NCPlayer: VLCMediaPlayerDelegate {
 
     func mediaPlayerStateChanged(_ aNotification: Notification) {
-        guard let player = self.player else { return }
 
         switch player.state {
         case .stopped:

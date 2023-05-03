@@ -129,8 +129,8 @@ class NCPlayerToolBar: UIView {
 
         playbackSlider.value = position
 
-        labelCurrentTime.text = ncplayer.player?.time.stringValue
-        labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
+        labelCurrentTime.text = ncplayer.player.time.stringValue
+        labelLeftTime.text = ncplayer.player.remainingTime?.stringValue
 
         if viewerMediaScreenMode == .normal {
             show()
@@ -142,17 +142,18 @@ class NCPlayerToolBar: UIView {
     public func update() {
 
         guard let ncplayer = self.ncplayer,
-              let length = ncplayer.player?.media?.length.intValue,
-              let position = ncplayer.player?.position
+              let length = ncplayer.player.media?.length.intValue
         else { return }
+
+        let position = ncplayer.player.position
         let positionInSecond = position * Float(length / 1000)
 
         // SLIDER & TIME
         if playbackSliderEvent == .ended {
             playbackSlider.value = position
         }
-        labelCurrentTime.text = ncplayer.player?.time.stringValue
-        labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
+        labelCurrentTime.text = ncplayer.player.time.stringValue
+        labelLeftTime.text = ncplayer.player.remainingTime?.stringValue
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
     }
@@ -292,7 +293,7 @@ extension NCPlayerToolBar {
 
         var actions = [NCMenuAction]()
 
-        if self.subTitleIndex == nil, let idx = ncplayer?.player?.currentVideoSubTitleIndex {
+        if self.subTitleIndex == nil, let idx = ncplayer?.player.currentVideoSubTitleIndex {
             self.subTitleIndex = idx
         }
 
@@ -309,7 +310,7 @@ extension NCPlayerToolBar {
                     selected: (self.subTitleIndex ?? -9999) == idx,
                     on: (self.subTitleIndex ?? -9999) == idx,
                     action: { _ in
-                        self.ncplayer?.player?.currentVideoSubTitleIndex = idx
+                        self.ncplayer?.player.currentVideoSubTitleIndex = idx
                         self.subTitleIndex = idx
                     }
                 )
@@ -323,7 +324,7 @@ extension NCPlayerToolBar {
 
         var actions = [NCMenuAction]()
 
-        if self.audioIndex == nil, let idx = ncplayer?.player?.currentAudioTrackIndex {
+        if self.audioIndex == nil, let idx = ncplayer?.player.currentAudioTrackIndex {
             self.audioIndex = idx
         }
 
@@ -340,7 +341,7 @@ extension NCPlayerToolBar {
                     selected: (self.audioIndex ?? -9999) == idx,
                     on: (self.audioIndex ?? -9999) == idx,
                     action: { _ in
-                        self.ncplayer?.player?.currentAudioTrackIndex = idx
+                        self.ncplayer?.player.currentAudioTrackIndex = idx
                         self.audioIndex = idx
                     }
                 )
