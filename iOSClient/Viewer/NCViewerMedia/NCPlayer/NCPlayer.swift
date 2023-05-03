@@ -197,15 +197,10 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .ended:
             if let url = self.url {
                 NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.player.media = VLCMedia(url: url)
-                    self.player.position = 0
-                    self.playerToolBar?.setBarPlayer(position: 0)
-                    self.player.play()
-                    self.player.pause()
-                    self.player.position = 0
-                    self.viewerMediaPage?.changeScreenMode(mode: .normal)
-                }
+                self.player.media = VLCMedia(url: url)
+                self.player.position = 0
+                self.playerToolBar?.setBarPlayer(position: 0)
+                self.viewerMediaPage?.changeScreenMode(mode: .normal)
             }
             print("Played mode: ENDED")
             break
