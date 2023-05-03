@@ -91,7 +91,7 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: metadata, viewerMediaPage: viewerMediaPage)
+        playerToolBar?.setBarPlayer(position: position, ncplayer: self, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
         self.player.play()
         if !autoplay {
@@ -200,7 +200,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.player.media = VLCMedia(url: url)
                     self.player.position = 0
-                    self.playerToolBar?.setBarPlayer(ncplayer: self, position: 0, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
+                    self.playerToolBar?.setBarPlayer(position: 0)
                     self.player.play()
                     self.player.pause()
                     self.player.position = 0

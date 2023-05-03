@@ -118,11 +118,17 @@ class NCPlayerToolBar: UIView {
 
     // MARK: -
 
-    func setBarPlayer(ncplayer: NCPlayer, position: Float, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
+    func setBarPlayer(position: Float, ncplayer: NCPlayer? = nil, metadata: tableMetadata? = nil, viewerMediaPage: NCViewerMediaPage? = nil) {
 
-        self.ncplayer = ncplayer
-        self.metadata = metadata
-        self.viewerMediaPage = viewerMediaPage
+        if let ncplayer = ncplayer {
+            self.ncplayer = ncplayer
+        }
+        if let metadata = metadata {
+            self.metadata = metadata
+        }
+        if let viewerMediaPage = viewerMediaPage {
+            self.viewerMediaPage = viewerMediaPage
+        }
 
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
