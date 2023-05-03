@@ -204,6 +204,14 @@ class NCViewerMedia: UIViewController {
         self.tipView?.dismiss()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if let ncplayer = ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
+        }
+    }
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 

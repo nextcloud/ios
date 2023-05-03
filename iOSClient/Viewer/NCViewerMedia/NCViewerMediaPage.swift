@@ -161,10 +161,6 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-            ncplayer.playerPause()
-        }
-        clearCommandCenter()
         timerAutoHide?.invalidate()
     }
 
