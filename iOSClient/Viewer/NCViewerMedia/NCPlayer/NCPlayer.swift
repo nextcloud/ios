@@ -94,13 +94,11 @@ class NCPlayer: NSObject {
 
         playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.player.play()
-            if !autoplay {
-                self.player.pause()
-                if position == 0 {
-                    self.player.position = 0
-                }
+        self.player.play()
+        if !autoplay {
+            self.player.pause()
+            if position == 0 {
+                self.player.position = 0
             }
         }
 
@@ -200,7 +198,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .ended:
             if let url = self.url {
                 NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
-                self.openAVPlayer(url: url)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.openAVPlayer(url: url)
+                }
             }
             print("Played mode: ENDED")
             break
