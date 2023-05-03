@@ -97,12 +97,9 @@ class NCPlayer: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.player.play()
             if !autoplay {
+                self.player.pause()
                 if position == 0 {
-                    self.player.pause()
                     self.player.position = 0
-                } else {
-                    self.player.mediumJumpBackward()
-                    self.player.pause()
                 }
             }
         }
