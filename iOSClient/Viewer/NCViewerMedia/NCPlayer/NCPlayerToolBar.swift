@@ -35,11 +35,12 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var audioButton: UIButton!
 
-    @IBOutlet weak var playerView: UIStackView!
+    @IBOutlet weak var playerButtonView: UIStackView!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
 
+    @IBOutlet weak var playbackSliderView: UIView!
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
@@ -78,7 +79,7 @@ class NCPlayerToolBar: UIView {
             pointSize = 30
         }
 
-        playerView.spacing = pointSize
+        playerButtonView.spacing = pointSize
         backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
         forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
@@ -87,6 +88,7 @@ class NCPlayerToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
+        playbackSlider.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(playbackSlider(gestureRecognizer:))))
 
         labelCurrentTime.textColor = .white
         labelLeftTime.textColor = .white
@@ -220,6 +222,10 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: - Action
+
+    @objc func playbackSlider(gestureRecognizer: UITapGestureRecognizer) {
+        
+    }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }

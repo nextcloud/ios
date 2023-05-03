@@ -118,7 +118,8 @@
                 <outlet property="labelLeftTime" destination="svM-TQ-AyQ" id="UDV-Lh-12z"/>
                 <outlet property="playButton" destination="qo0-x8-OfL" id="m4a-gb-D0J"/>
                 <outlet property="playbackSlider" destination="MY0-FC-j88" id="bVe-Kc-80k"/>
-                <outlet property="playerView" destination="ncM-9U-phl" id="bff-Nb-Uxk"/>
+                <outlet property="playbackSliderView" destination="85m-50-8yp" id="SOs-XA-Mgh"/>
+                <outlet property="playerButtonView" destination="ncM-9U-phl" id="aTD-g1-xGg"/>
                 <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
             </connections>
             <point key="canvasLocation" x="136.80000000000001" y="152.47376311844079"/>
