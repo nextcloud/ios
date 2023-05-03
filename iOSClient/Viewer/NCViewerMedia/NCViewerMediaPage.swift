@@ -400,6 +400,7 @@ class NCViewerMediaPage: UIViewController {
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
         progressView.progress = 0
+        changeScreenMode(mode: .normal)
     }
 
     // MARK: - Command Center

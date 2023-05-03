@@ -204,6 +204,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                     self.player.play()
                     self.player.pause()
                     self.player.position = 0
+                    self.viewerMediaPage?.changeScreenMode(mode: .normal)
                 }
             }
             print("Played mode: ENDED")
