@@ -118,19 +118,25 @@ class NCPlayerToolBar: UIView {
 
     // MARK: -
 
-    func setBarPlayer(ncplayer: NCPlayer, position: Float, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
+    func setBarPlayer(position: Float, ncplayer: NCPlayer? = nil, metadata: tableMetadata? = nil, viewerMediaPage: NCViewerMediaPage? = nil) {
 
-        self.ncplayer = ncplayer
-        self.metadata = metadata
-        self.viewerMediaPage = viewerMediaPage
+        if let ncplayer = ncplayer {
+            self.ncplayer = ncplayer
+        }
+        if let metadata = metadata {
+            self.metadata = metadata
+        }
+        if let viewerMediaPage = viewerMediaPage {
+            self.viewerMediaPage = viewerMediaPage
+        }
 
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
 
         playbackSlider.value = position
 
-        labelCurrentTime.text = ncplayer.player?.time.stringValue
-        labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
+        labelCurrentTime.text = "--:--"
+        labelLeftTime.text = "--:--"
 
         if viewerMediaScreenMode == .normal {
             show()
@@ -142,17 +148,18 @@ class NCPlayerToolBar: UIView {
     public func update() {
 
         guard let ncplayer = self.ncplayer,
-              let length = ncplayer.player?.media?.length.intValue,
-              let position = ncplayer.player?.position
+              let length = ncplayer.player.media?.length.intValue
         else { return }
+
+        let position = ncplayer.player.position
         let positionInSecond = position * Float(length / 1000)
 
         // SLIDER & TIME
         if playbackSliderEvent == .ended {
             playbackSlider.value = position
         }
-        labelCurrentTime.text = ncplayer.player?.time.stringValue
-        labelLeftTime.text = ncplayer.player?.remainingTime?.stringValue
+        labelCurrentTime.text = ncplayer.player.time.stringValue
+        labelLeftTime.text = ncplayer.player.remainingTime?.stringValue
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
     }
@@ -292,7 +299,7 @@ extension NCPlayerToolBar {
 
         var actions = [NCMenuAction]()
 
-        if self.subTitleIndex == nil, let idx = ncplayer?.player?.currentVideoSubTitleIndex {
+        if self.subTitleIndex == nil, let idx = ncplayer?.player.currentVideoSubTitleIndex {
             self.subTitleIndex = idx
         }
 
@@ -309,7 +316,7 @@ extension NCPlayerToolBar {
                     selected: (self.subTitleIndex ?? -9999) == idx,
                     on: (self.subTitleIndex ?? -9999) == idx,
                     action: { _ in
-                        self.ncplayer?.player?.currentVideoSubTitleIndex = idx
+                        self.ncplayer?.player.currentVideoSubTitleIndex = idx
                         self.subTitleIndex = idx
                     }
                 )
@@ -323,7 +330,7 @@ extension NCPlayerToolBar {
 
         var actions = [NCMenuAction]()
 
-        if self.audioIndex == nil, let idx = ncplayer?.player?.currentAudioTrackIndex {
+        if self.audioIndex == nil, let idx = ncplayer?.player.currentAudioTrackIndex {
             self.audioIndex = idx
         }
 
@@ -340,7 +347,7 @@ extension NCPlayerToolBar {
                     selected: (self.audioIndex ?? -9999) == idx,
                     on: (self.audioIndex ?? -9999) == idx,
                     action: { _ in
-                        self.ncplayer?.player?.currentAudioTrackIndex = idx
+                        self.ncplayer?.player.currentAudioTrackIndex = idx
                         self.audioIndex = idx
                     }
                 )

@@ -125,7 +125,9 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        loadImage()
+        if metadata.isImage || metadata.isAudio {
+            loadImage()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
