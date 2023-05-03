@@ -1107,6 +1107,11 @@
     return [NSString stringWithFormat:@"%@/%@.preview.%@", [self getDirectoryProviderStorageOcId:ocId], etag, [NCGlobal shared].extensionPreview];
 }
 
++ (NSString *)getDirectoryProviderStorageSnapshotOcId:(NSString *)ocId etag:(NSString *)etag
+{
+    return [NSString stringWithFormat:@"%@/%@.snapshot.%@", [self getDirectoryProviderStorageOcId:ocId], etag, [NCGlobal shared].extensionPreview];
+}
+
 + (BOOL)fileProviderStorageExists:(tableMetadata *)metadata
 {
     NSString *fileNameViewPath = [self getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView];

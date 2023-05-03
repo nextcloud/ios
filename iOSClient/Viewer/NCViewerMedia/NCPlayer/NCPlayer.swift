@@ -36,6 +36,7 @@ class NCPlayer: NSObject {
     internal var width: Int?
     internal var height: Int?
     internal var length: Int?
+    internal let fileNameSnapshotLocalPath: String
     internal let fileNamePreviewLocalPath: String
     internal let userAgent = CCUtility.getUserAgent()!
 
@@ -55,6 +56,7 @@ class NCPlayer: NSObject {
         self.metadata = metadata
         self.viewerMediaPage = viewerMediaPage
 
+        fileNameSnapshotLocalPath = CCUtility.getDirectoryProviderStorageSnapshotOcId(metadata.ocId, etag: metadata.etag)!
         fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
 
         super.init()
@@ -93,11 +95,13 @@ class NCPlayer: NSObject {
 
         playerToolBar?.setBarPlayer(position: position, ncplayer: self, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
-        self.player.play()
-        if !autoplay {
-            self.player.pause()
-            if position == 0 {
-                self.player.position = 0
+        if autoplay {
+            player.play()
+        } else {
+            if position == 0, let image = UIImage(contentsOfFile: fileNamePreviewLocalPath) {
+                imageVideoContainer?.image = image
+            } else if let image = UIImage(contentsOfFile: fileNameSnapshotLocalPath) {
+                imageVideoContainer?.image = image
             }
         }
 
@@ -145,7 +149,6 @@ class NCPlayer: NSObject {
 
     @objc func playerStop() {
 
-        savePosition()
         player.stop()
         playerToolBar?.playButtonPlay()
     }
@@ -167,16 +170,23 @@ class NCPlayer: NSObject {
 
         guard metadata.isVideo, isPlay() else { return }
         NCManageDatabase.shared.addVideo(metadata: metadata, position: player.position)
+        if let width = width, let height = height {
+            player.saveVideoSnapshot(at: fileNameSnapshotLocalPath, withWidth: Int32(width), andHeight: Int32(height))
+        }
     }
 
     func jumpForward(_ seconds: Int32) {
 
+        player.play()
         player.jumpForward(seconds)
+        playerToolBar?.playButtonPause()
     }
 
     func jumpBackward(_ seconds: Int32) {
 
+        player.play()
         player.jumpBackward(seconds)
+        playerToolBar?.playButtonPause()
     }
 }
 
@@ -201,6 +211,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 self.player.position = 0
                 self.playerToolBar?.setBarPlayer(position: 0)
                 self.viewerMediaPage?.changeScreenMode(mode: .normal)
+                NCUtilityFileSystem.shared.deleteFile(filePath: fileNameSnapshotLocalPath)
             }
             print("Played mode: ENDED")
             break
