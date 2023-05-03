@@ -88,7 +88,6 @@ class NCPlayerToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
-        playbackSlider.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(playbackSlider(gestureRecognizer:))))
 
         labelCurrentTime.textColor = .white
         labelLeftTime.textColor = .white
@@ -222,10 +221,6 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: - Action
-
-    @objc func playbackSlider(gestureRecognizer: UITapGestureRecognizer) {
-        
-    }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
