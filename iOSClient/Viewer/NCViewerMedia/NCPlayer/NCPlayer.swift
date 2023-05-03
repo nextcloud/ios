@@ -37,6 +37,7 @@ class NCPlayer: NSObject {
     internal var height: Int?
     internal var length: Int?
     internal let fileNamePreviewLocalPath: String
+    internal let userAgent = CCUtility.getUserAgent()!
 
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewerMediaPage: NCViewerMediaPage?
@@ -67,9 +68,7 @@ class NCPlayer: NSObject {
 
     func openAVPlayer(url: URL, autoplay: Bool = false) {
 
-        let userAgent = CCUtility.getUserAgent()!
         var position: Float = 0
-
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
@@ -199,7 +198,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             if let url = self.url {
                 NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.openAVPlayer(url: url)
+                    self.player.media = VLCMedia(url: url)
+                    self.player.position = 0
+                    self.playerToolBar?.setBarPlayer(ncplayer: self, position: 0, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
+                    self.player.play()
+                    self.player.pause()
+                    self.player.position = 0
                 }
             }
             print("Played mode: ENDED")
