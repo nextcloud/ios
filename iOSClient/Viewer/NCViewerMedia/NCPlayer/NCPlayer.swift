@@ -98,10 +98,10 @@ class NCPlayer: NSObject {
         if autoplay {
             player.play()
         } else {
-            if position == 0, let image = UIImage(contentsOfFile: fileNamePreviewLocalPath) {
-                imageVideoContainer?.image = image
-            } else if let image = UIImage(contentsOfFile: fileNameSnapshotLocalPath) {
-                imageVideoContainer?.image = image
+            if position == 0 {
+                imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
+            } else {
+                imageVideoContainer?.image = UIImage(contentsOfFile: fileNameSnapshotLocalPath)
             }
         }
 
@@ -212,6 +212,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 self.playerToolBar?.setBarPlayer(position: 0)
                 self.viewerMediaPage?.changeScreenMode(mode: .normal)
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNameSnapshotLocalPath)
+                imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
             }
             print("Played mode: ENDED")
             break

@@ -68,42 +68,22 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let blurEffectTopToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        blurEffectTopToolBarView.frame = playerTopToolBarView.bounds
-        blurEffectTopToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
+        subtitleButton.isEnabled = false
 
-        playerTopToolBarView.insertSubview(blurEffectTopToolBarView, at: 0)
-        playerTopToolBarView.layer.cornerRadius = 10
-        playerTopToolBarView.layer.masksToBounds = true
-        playerTopToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapTopToolBarWith(gestureRecognizer:))))
+        audioButton.setImage(NCUtility.shared.loadImage(named: "speaker.zzz", color: .white), for: .normal)
+        audioButton.isEnabled = false
 
-        let blurEffectToolBarView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        blurEffectToolBarView.frame = playerToolBarView.bounds
-        blurEffectToolBarView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-        playerToolBarView.insertSubview(blurEffectToolBarView, at: 0)
-        playerToolBarView.layer.cornerRadius = 10
-        playerToolBarView.layer.masksToBounds = true
-        playerToolBarView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToolBarWith(gestureRecognizer:))))
+        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 40)), for: .normal)
+        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 40)), for: .normal)
+        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 40)), for: .normal)
 
         playbackSlider.value = 0
-        playbackSlider.tintColor = .lightGray
+        playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
 
         labelCurrentTime.textColor = .white
         labelLeftTime.textColor = .white
-
-        playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
-
-        subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
-        subtitleButton.isEnabled = false
-        
-        audioButton.setImage(NCUtility.shared.loadImage(named: "speaker.zzz", color: .white), for: .normal)
-        audioButton.isEnabled = false
-
-        backButton.setImage(NCUtility.shared.loadImage(named: "gobackward.10", color: .white), for: .normal)
-
-        forwardButton.setImage(NCUtility.shared.loadImage(named: "goforward.10", color: .white), for: .normal)
 
         // Normally hide
         self.alpha = 0
@@ -234,10 +214,6 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: - Action
-
-    @objc func tapTopToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
-
-    @objc func tapToolBarWith(gestureRecognizer: UITapGestureRecognizer) { }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
