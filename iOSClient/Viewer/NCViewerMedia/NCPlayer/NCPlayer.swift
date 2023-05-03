@@ -36,9 +36,8 @@ class NCPlayer: NSObject {
     internal var width: Int?
     internal var height: Int?
     internal var length: Int?
-    internal let fileNameSnapshotLocalPath: String
-    internal let fileNamePreviewLocalPath: String
     internal let userAgent = CCUtility.getUserAgent()!
+    internal var pauseAfterPlay: Bool = false
 
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewerMediaPage: NCViewerMediaPage?
@@ -55,9 +54,6 @@ class NCPlayer: NSObject {
         self.playerToolBar = playerToolBar
         self.metadata = metadata
         self.viewerMediaPage = viewerMediaPage
-
-        fileNameSnapshotLocalPath = CCUtility.getDirectoryProviderStorageSnapshotOcId(metadata.ocId, etag: metadata.etag)!
-        fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
 
         super.init()
     }
@@ -84,7 +80,6 @@ class NCPlayer: NSObject {
         if let result = NCManageDatabase.shared.getVideo(metadata: metadata),
             let resultPosition = result.position {
             position = resultPosition
-            player.position = position
         }
 
         player.drawable = imageVideoContainer
@@ -93,19 +88,31 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(position: position, ncplayer: self, metadata: metadata, viewerMediaPage: viewerMediaPage)
+        player.play()
+        player.position = position
 
         if autoplay {
-            player.play()
+            pauseAfterPlay = false
         } else {
-            if position == 0 {
-                imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
-            } else {
-                imageVideoContainer?.image = UIImage(contentsOfFile: fileNameSnapshotLocalPath)
-            }
+            pauseAfterPlay = true
         }
 
+        playerToolBar?.setBarPlayer(position: position, ncplayer: self, metadata: metadata, viewerMediaPage: viewerMediaPage)
+
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+    }
+
+    func restartAVPlayer(url: URL) {
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
+            self.player.media = VLCMedia(url: url)
+            self.player.position = 0
+            self.playerToolBar?.setBarPlayer(position: 0)
+            self.viewerMediaPage?.changeScreenMode(mode: .normal)
+            self.pauseAfterPlay = true
+            self.player.play()
+        }
     }
 
     // MARK: - UIGestureRecognizerDelegate
@@ -170,9 +177,6 @@ class NCPlayer: NSObject {
 
         guard metadata.isVideo, isPlay() else { return }
         NCManageDatabase.shared.addVideo(metadata: metadata, position: player.position)
-        if let width = width, let height = height {
-            player.saveVideoSnapshot(at: fileNameSnapshotLocalPath, withWidth: Int32(width), andHeight: Int32(height))
-        }
     }
 
     func jumpForward(_ seconds: Int32) {
@@ -206,13 +210,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             break
         case .ended:
             if let url = self.url {
-                NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
-                self.player.media = VLCMedia(url: url)
-                self.player.position = 0
-                self.playerToolBar?.setBarPlayer(position: 0)
-                self.viewerMediaPage?.changeScreenMode(mode: .normal)
-                NCUtilityFileSystem.shared.deleteFile(filePath: fileNameSnapshotLocalPath)
-                imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
+                restartAVPlayer(url: url)
             }
             print("Played mode: ENDED")
             break
@@ -223,6 +221,11 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
+            if pauseAfterPlay {
+                player.pause()
+                pauseAfterPlay = false
+                print(player.position)
+            }
             let size = player.videoSize
             if let mediaLength = player.media?.length.intValue {
                 self.length = Int(mediaLength)
@@ -258,8 +261,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {
-        imageVideoContainer?.image = UIImage(contentsOfFile: fileNameSnapshotLocalPath)
-        print("Snapshot saved")
+        // Handle other states...
     }
 
     func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {
