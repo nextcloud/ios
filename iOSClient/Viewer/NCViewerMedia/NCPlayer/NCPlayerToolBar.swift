@@ -45,6 +45,9 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
 
+    // @IBOutlet weak var brightnessView: UIView!
+    // @IBOutlet weak var volumeView: UIView!
+
     enum sliderEventType {
         case began
         case ended

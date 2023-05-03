@@ -116,7 +116,7 @@ class NCPlayer: NSObject {
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
 
         if metadata.isVideo {
-            playerStop()
+            playerPause()
         }
     }
 
