@@ -174,9 +174,7 @@ class NCViewerMedia: UIViewController {
         super.viewDidAppear(animated)
 
         if metadata.isMovie {
-
             if let ncplayer = self.ncplayer {
-
                 if ncplayer.url == nil {
                     NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
                         if let url = url {
@@ -192,13 +190,10 @@ class NCViewerMedia: UIViewController {
                     }
                 }
             }
-            
         } else if metadata.isImage {
-
             viewerMediaPage?.clearCommandCenter()
+            showTip()
         }
-
-        showTip()
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }

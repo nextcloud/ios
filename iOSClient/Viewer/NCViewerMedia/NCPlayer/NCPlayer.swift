@@ -133,15 +133,15 @@ class NCPlayer: NSObject {
 
     func playerPlay() {
 
-        playerToolBar?.playbackSliderEvent = .began
-        player.play()
-        playerToolBar?.playButtonPause()
-
         if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
             player.position = position
             playerToolBar?.playbackSliderEvent = .moved
         }
 
+        playerToolBar?.playbackSliderEvent = .began
+        player.play()
+        playerToolBar?.playButtonPause()
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.playerToolBar?.playbackSliderEvent = .ended
         }
@@ -258,6 +258,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerSnapshot(_ aNotification: Notification) {
+        imageVideoContainer?.image = UIImage(contentsOfFile: fileNameSnapshotLocalPath)
         print("Snapshot saved")
     }
 
