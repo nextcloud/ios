@@ -68,7 +68,7 @@ class NCPlayer: NSObject {
     func openAVPlayer(url: URL, autoplay: Bool = false) {
 
         let userAgent = CCUtility.getUserAgent()!
-        var positionSliderToolBar: Float = 0
+        var position: Float = 0
 
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
@@ -80,9 +80,10 @@ class NCPlayer: NSObject {
         // player?.media?.addOption("--network-caching=500")
         player.media?.addOption(":http-user-agent=\(userAgent)")
 
-        if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
-            positionSliderToolBar = position
-            player.position = positionSliderToolBar
+        if let result = NCManageDatabase.shared.getVideo(metadata: metadata),
+            let resultPosition = result.position {
+            position = resultPosition
+            player.position = position
         }
 
         player.drawable = imageVideoContainer
@@ -91,13 +92,18 @@ class NCPlayer: NSObject {
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
 
-        playerToolBar?.setBarPlayer(ncplayer: self, position: positionSliderToolBar, metadata: metadata, viewerMediaPage: viewerMediaPage)
+        playerToolBar?.setBarPlayer(ncplayer: self, position: position, metadata: metadata, viewerMediaPage: viewerMediaPage)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.player.play()
             if !autoplay {
-                self.player.pause()
-                self.player.position = 0
+                if position == 0 {
+                    self.player.pause()
+                    self.player.position = 0
+                } else {
+                    self.player.mediumJumpBackward()
+                    self.player.pause()
+                }
             }
         }
 
