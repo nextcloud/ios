@@ -31,7 +31,6 @@ class NCPlayer: NSObject {
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     internal var url: URL?
     internal var player: VLCMediaPlayer?
-    internal var thumbnailer: VLCMediaThumbnailer?
     internal var metadata: tableMetadata
     internal var singleTapGestureRecognizer: UITapGestureRecognizer!
     internal var width: Int?
@@ -79,8 +78,6 @@ class NCPlayer: NSObject {
         player?.media = VLCMedia(url: url)
         player?.delegate = self
 
-        player?.audio?.passthrough = true
-
         // player?.media?.addOption("--network-caching=500")
         player?.media?.addOption(":http-user-agent=\(userAgent)")
 
@@ -100,6 +97,7 @@ class NCPlayer: NSObject {
         player?.play()
         if !autoplay {
             player?.pause()
+            player?.position = 0
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
@@ -199,7 +197,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .ended:
             if let url = self.url {
                 NCManageDatabase.shared.addVideo(metadata: metadata, position: 0)
-                self.thumbnailer?.fetchThumbnail()
                 self.openAVPlayer(url: url)
             }
             print("Played mode: ENDED")
