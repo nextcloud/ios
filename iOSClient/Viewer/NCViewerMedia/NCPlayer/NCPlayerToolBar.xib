@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
-        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -12,18 +11,14 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NCPlayerToolBar" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="XfW-XC-eMf" userLabel="Player Top Tool Bar">
-                    <rect key="frame" x="329" y="58" width="75" height="35"/>
+                    <rect key="frame" x="302" y="30" width="73" height="32"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qqZ-QN-TsW">
-                            <rect key="frame" x="5" y="5" width="25" height="25"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="25" id="S3q-Dj-i67"/>
-                                <constraint firstAttribute="width" constant="25" id="rg2-EW-KJX"/>
-                            </constraints>
+                            <rect key="frame" x="5" y="5" width="22.5" height="22"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="captions.bubble" catalog="system"/>
                             <connections>
@@ -31,11 +26,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sMY-qo-4CE">
-                            <rect key="frame" x="45" y="5" width="25" height="25"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="25" id="kui-Ih-KqM"/>
-                                <constraint firstAttribute="width" constant="25" id="zUF-5q-I6f"/>
-                            </constraints>
+                            <rect key="frame" x="42.5" y="5" width="25.5" height="22"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="speaker.zzz" catalog="system"/>
                             <connections>
@@ -45,58 +36,14 @@
                     </subviews>
                     <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                 </stackView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ixi-yR-HDH" userLabel="Container play">
-                    <rect key="frame" x="82" y="426" width="250" height="58"/>
-                    <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uP7-aY-x4n">
-                            <rect key="frame" x="40" y="18" width="20" height="22.5"/>
-                            <state key="normal">
-                                <imageReference key="image" image="gobackward.10" catalog="system" symbolScale="default"/>
-                            </state>
-                            <connections>
-                                <action selector="tapBack:" destination="iN0-l3-epB" eventType="touchUpInside" id="q3g-BH-iUc"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hx9-d5-yiD">
-                            <rect key="frame" x="117.5" y="18" width="15" height="22"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                            <state key="normal">
-                                <imageReference key="image" image="play.fill" catalog="system" symbolScale="default"/>
-                            </state>
-                            <connections>
-                                <action selector="tapPlayerPause:" destination="iN0-l3-epB" eventType="touchUpInside" id="XHf-om-3g9"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bGn-IC-3V1">
-                            <rect key="frame" x="190" y="18" width="20" height="22.5"/>
-                            <state key="normal">
-                                <imageReference key="image" image="goforward.10" catalog="system" symbolScale="default"/>
-                            </state>
-                            <connections>
-                                <action selector="tapForward:" destination="iN0-l3-epB" eventType="touchUpInside" id="45z-IH-Fyr"/>
-                            </connections>
-                        </button>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstItem="hx9-d5-yiD" firstAttribute="centerY" secondItem="ixi-yR-HDH" secondAttribute="centerY" id="Brn-9w-mrJ"/>
-                        <constraint firstAttribute="width" constant="250" id="ID6-XU-0wC"/>
-                        <constraint firstItem="bGn-IC-3V1" firstAttribute="centerY" secondItem="ixi-yR-HDH" secondAttribute="centerY" id="JBD-51-iYm"/>
-                        <constraint firstAttribute="height" constant="58" id="L3m-ny-qyB"/>
-                        <constraint firstItem="uP7-aY-x4n" firstAttribute="centerY" secondItem="ixi-yR-HDH" secondAttribute="centerY" id="MPU-Hg-zQa"/>
-                        <constraint firstItem="hx9-d5-yiD" firstAttribute="centerX" secondItem="ixi-yR-HDH" secondAttribute="centerX" id="Vyv-jg-Cwu"/>
-                        <constraint firstItem="uP7-aY-x4n" firstAttribute="centerX" secondItem="ixi-yR-HDH" secondAttribute="centerX" multiplier="0.4" id="bwk-Bx-qVb"/>
-                        <constraint firstItem="bGn-IC-3V1" firstAttribute="centerX" secondItem="ixi-yR-HDH" secondAttribute="centerX" multiplier="1.6" id="wJP-ph-5c5"/>
-                    </constraints>
-                </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85m-50-8yp">
-                    <rect key="frame" x="10" y="804" width="394" height="58"/>
+                    <rect key="frame" x="10" y="609" width="355" height="58"/>
                     <subviews>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MY0-FC-j88">
-                            <rect key="frame" x="8" y="14" width="378" height="31"/>
+                            <rect key="frame" x="8" y="14" width="339" height="31"/>
                         </slider>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--:--" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svM-TQ-AyQ">
-                            <rect key="frame" x="361.5" y="44" width="22.5" height="12"/>
+                            <rect key="frame" x="322.5" y="44" width="22.5" height="12"/>
                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -120,28 +67,58 @@
                         <constraint firstItem="MY0-FC-j88" firstAttribute="centerY" secondItem="85m-50-8yp" secondAttribute="centerY" id="lG8-DN-rTE"/>
                     </constraints>
                 </view>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="ncM-9U-phl" userLabel="Player Top Tool Bar">
+                    <rect key="frame" x="125" y="327.5" width="125" height="32.5"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xja-nq-uD3">
+                            <rect key="frame" x="5" y="5" width="20" height="22.5"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="gobackward.10" catalog="system"/>
+                            <connections>
+                                <action selector="tapBack:" destination="iN0-l3-epB" eventType="touchUpInside" id="dam-FU-7fD"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qo0-x8-OfL">
+                            <rect key="frame" x="55" y="5" width="15" height="22.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="play.fill" catalog="system"/>
+                            <connections>
+                                <action selector="tapPlayerPause:" destination="iN0-l3-epB" eventType="touchUpInside" id="XcN-Tk-ad8"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Zd-By-Fko">
+                            <rect key="frame" x="100" y="5" width="20" height="22.5"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="goforward.10" catalog="system"/>
+                            <connections>
+                                <action selector="tapForward:" destination="iN0-l3-epB" eventType="touchUpInside" id="MAM-Kd-NXu"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="ixi-yR-HDH" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="2SY-N8-wwd"/>
                 <constraint firstItem="85m-50-8yp" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="5H2-Gg-PEb"/>
-                <constraint firstItem="ixi-yR-HDH" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="9cb-BB-bSC"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="85m-50-8yp" secondAttribute="trailing" constant="10" id="BXT-Qo-qFl"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" id="N7Q-PF-7lb"/>
+                <constraint firstItem="ncM-9U-phl" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="DAA-xj-35k"/>
+                <constraint firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" id="N7Q-PF-7lb"/>
+                <constraint firstItem="ncM-9U-phl" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="dPB-Kf-Ad7"/>
                 <constraint firstItem="XfW-XC-eMf" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="fq3-6h-kkx"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XfW-XC-eMf" secondAttribute="trailing" constant="10" id="uYG-Ai-CGv"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XfW-XC-eMf" secondAttribute="trailing" id="uYG-Ai-CGv"/>
             </constraints>
             <connections>
                 <outlet property="audioButton" destination="sMY-qo-4CE" id="R7Q-de-Dsv"/>
-                <outlet property="backButton" destination="uP7-aY-x4n" id="SyC-qV-IMq"/>
-                <outlet property="forwardButton" destination="bGn-IC-3V1" id="0OZ-f2-eWU"/>
+                <outlet property="backButton" destination="xja-nq-uD3" id="l3U-Mo-DEL"/>
+                <outlet property="forwardButton" destination="5Zd-By-Fko" id="ocQ-YT-Rwm"/>
                 <outlet property="labelCurrentTime" destination="OHB-2J-Gqb" id="pFy-CJ-x2A"/>
                 <outlet property="labelLeftTime" destination="svM-TQ-AyQ" id="UDV-Lh-12z"/>
-                <outlet property="playButton" destination="hx9-d5-yiD" id="Enk-Ge-2Yx"/>
+                <outlet property="playButton" destination="qo0-x8-OfL" id="m4a-gb-D0J"/>
                 <outlet property="playbackSlider" destination="MY0-FC-j88" id="bVe-Kc-80k"/>
-                <outlet property="playerToolBarView" destination="85m-50-8yp" id="eZK-p1-v65"/>
-                <outlet property="playerTopToolBarView" destination="XfW-XC-eMf" id="Qdp-IW-YhT"/>
+                <outlet property="playerView" destination="ncM-9U-phl" id="bff-Nb-Uxk"/>
                 <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="152.67857142857142"/>
