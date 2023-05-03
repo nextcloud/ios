@@ -121,6 +121,7 @@
                 <outlet property="playbackSliderView" destination="85m-50-8yp" id="SOs-XA-Mgh"/>
                 <outlet property="playerButtonView" destination="ncM-9U-phl" id="aTD-g1-xGg"/>
                 <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
+                <outlet property="utilityView" destination="XfW-XC-eMf" id="QiB-so-jiU"/>
             </connections>
             <point key="canvasLocation" x="136.80000000000001" y="152.47376311844079"/>
         </view>

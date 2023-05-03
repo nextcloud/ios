@@ -32,6 +32,7 @@ import FloatingPanel
 
 class NCPlayerToolBar: UIView {
 
+    @IBOutlet weak var utilityView: UIStackView!
     @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var audioButton: UIButton!
 
@@ -88,6 +89,10 @@ class NCPlayerToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
+
+        utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
+        playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
+        playerButtonView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
 
         labelCurrentTime.textColor = .white
         labelLeftTime.textColor = .white
@@ -221,6 +226,8 @@ class NCPlayerToolBar: UIView {
     }
 
     // MARK: - Action
+
+    @objc func tap(gestureRecognizer: UITapGestureRecognizer) { }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
