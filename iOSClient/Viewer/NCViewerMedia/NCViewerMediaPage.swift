@@ -541,20 +541,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
     }
-    
-    func reloadCurrentPage() {
-
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: false, completion: nil)
-    }
-    
-    func goTo(index: Int, direction: UIPageViewController.NavigationDirection, autoPlay: Bool) {
-
-        currentIndex = index
-
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
-    }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
 
