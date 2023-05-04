@@ -122,6 +122,9 @@ class NCViewerMediaPage: UIViewController {
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
+        NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.enableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
@@ -138,6 +141,9 @@ class NCViewerMediaPage: UIViewController {
     deinit {
 
         timerAutoHide?.invalidate()
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
@@ -206,7 +212,9 @@ class NCViewerMediaPage: UIViewController {
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
 
-    func changeScreenMode(mode: ScreenMode) {
+    func changeScreenMode(mode: ScreenMode, isMovie: Bool = false) {
+
+        let metadata = metadatas[currentIndex]
 
         if mode == .normal {
 
@@ -214,7 +222,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = false
             progressView.isHidden = false
 
-            if metadatas[currentIndex].isMovie {
+            if metadata.isMovie || isMovie {
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
@@ -231,7 +239,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
-            if metadatas[currentIndex].isMovie {
+            if metadata.isMovie || isMovie {
                 currentViewController.playerToolBar?.hide()
             }
 
@@ -639,6 +647,25 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()
+        }
+    }
+}
+
+extension UIPageViewController {
+
+    @objc func enableSwipeGesture() {
+        for view in self.view.subviews {
+            if let subView = view as? UIScrollView {
+                subView.isScrollEnabled = true
+            }
+        }
+    }
+
+    @objc func disableSwipeGesture() {
+        for view in self.view.subviews {
+            if let subView = view as? UIScrollView {
+                subView.isScrollEnabled = false
+            }
         }
     }
 }

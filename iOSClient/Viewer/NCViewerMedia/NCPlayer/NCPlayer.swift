@@ -108,7 +108,7 @@ class NCPlayer: NSObject {
             player.media = VLCMedia(url: url)
             player.position = position
             playerToolBar?.setBarPlayer(position: position)
-            viewerMediaPage?.changeScreenMode(mode: .normal)
+            viewerMediaPage?.changeScreenMode(mode: .normal, isMovie: true)
             pauseAfterPlay = true
             player.play()
         }

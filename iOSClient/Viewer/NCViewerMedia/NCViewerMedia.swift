@@ -181,11 +181,6 @@ class NCViewerMedia: UIViewController {
                         }
                     }
                 } else {
-                    if viewerMediaScreenMode == .normal {
-                        playerToolBar?.show()
-                    } else {
-                        playerToolBar?.hide()
-                    }
                     var position: Float = 0
                     if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let resultPosition = result.position {
                         position = resultPosition

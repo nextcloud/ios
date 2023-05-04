@@ -368,6 +368,9 @@ class NCGlobal: NSObject {
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
     let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
+    let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
+    let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
+
     // TIP
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
