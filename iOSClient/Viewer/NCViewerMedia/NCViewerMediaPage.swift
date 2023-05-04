@@ -69,7 +69,7 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHideSeconds: Double {
         get {
             if NCUtility.shared.isSimulator() {
-                return 40
+                return 4
             } else {
                 return 4
             }
@@ -212,9 +212,10 @@ class NCViewerMediaPage: UIViewController {
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
 
-    func changeScreenMode(mode: ScreenMode, isMovie: Bool = false, fullscreen: Bool = false) {
+    func changeScreenMode(mode: ScreenMode) {
 
-        let metadata = metadatas[currentIndex]
+        let metadata = currentViewController.metadata
+        let fullscreen = currentViewController.playerToolBar?.isFullscreen ?? false
         NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
         if mode == .normal {
@@ -229,7 +230,7 @@ class NCViewerMediaPage: UIViewController {
                 progressView.isHidden = false
             }
 
-            if metadata.isMovie || isMovie {
+            if metadata.isMovie {
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
@@ -244,7 +245,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
-            if metadata.isMovie || isMovie {
+            if metadata.isMovie {
                 currentViewController.playerToolBar?.hide()
             }
 
@@ -275,7 +276,8 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func autoHide() {
 
-        if metadatas[currentIndex].isMovie, viewerMediaScreenMode == .normal {
+        let metadata = currentViewController.metadata
+        if metadata.isMovie, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
         }
     }
@@ -291,7 +293,7 @@ class NCViewerMediaPage: UIViewController {
         }
 
         progressView.progress = 0
-        let metadata = metadatas[currentIndex]
+        let metadata = currentViewController.metadata
 
         if metadata.ocId == ocId,
            metadata.isMovie,

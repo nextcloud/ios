@@ -108,7 +108,7 @@ class NCPlayer: NSObject {
             player.media = VLCMedia(url: url)
             player.position = position
             playerToolBar?.setBarPlayer(position: position)
-            viewerMediaPage?.changeScreenMode(mode: .normal, isMovie: true)
+            viewerMediaPage?.changeScreenMode(mode: .normal)
             pauseAfterPlay = true
             player.play()
         }
@@ -129,12 +129,12 @@ class NCPlayer: NSObject {
 
     func changeScreenMode() {
 
-        guard let viewerMediaPage = viewerMediaPage, let playerToolBar = self.playerToolBar else { return }
+        guard let viewerMediaPage = viewerMediaPage else { return }
 
         if viewerMediaScreenMode == .full {
-            viewerMediaPage.changeScreenMode(mode: .normal, isMovie: true, fullscreen: playerToolBar.isFullscreen)
+            viewerMediaPage.changeScreenMode(mode: .normal)
         } else {
-            viewerMediaPage.changeScreenMode(mode: .full, isMovie: true, fullscreen: playerToolBar.isFullscreen)
+            viewerMediaPage.changeScreenMode(mode: .full)
         }
     }
 
