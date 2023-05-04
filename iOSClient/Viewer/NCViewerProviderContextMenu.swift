@@ -262,28 +262,17 @@ class NCViewerProviderContextMenu: UIViewController {
     private func viewVideo(metadata: tableMetadata) {
 
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let player = AVPlayer(url: URL(fileURLWithPath: filePath))
 
-        if let resolutionVideo = resolutionForLocalVideo(url: URL(fileURLWithPath: filePath)) {
-
-            let player = AVPlayer(url: URL(fileURLWithPath: filePath))
-
-            self.videoLayer = AVPlayerLayer(player: player)
-            if let videoLayer = self.videoLayer {
-                videoLayer.videoGravity = .resizeAspectFill
-                imageView.image = nil
-                imageView.frame = resize(resolutionVideo)
-                imageView.layer.addSublayer(videoLayer)
-            }
-
-            player.isMuted = true
-            player.play()
+        self.videoLayer = AVPlayerLayer(player: player)
+        if let videoLayer = self.videoLayer {
+            videoLayer.videoGravity = .resizeAspect
+            imageView.image = nil
+            imageView.layer.addSublayer(videoLayer)
         }
-    }
 
-    private func resolutionForLocalVideo(url: URL) -> CGSize? {
-        guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
-        let size = track.naturalSize.applying(track.preferredTransform)
-        return CGSize(width: abs(size.width), height: abs(size.height))
+        player.isMuted = true
+        player.play()
     }
 
     private func resize(_ size: CGSize?) -> CGRect {
