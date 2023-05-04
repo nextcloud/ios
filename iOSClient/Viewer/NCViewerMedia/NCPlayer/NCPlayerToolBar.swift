@@ -77,7 +77,7 @@ class NCPlayerToolBar: UIView {
         if UIDevice.current.userInterfaceIdiom == .pad {
             pointSize = 60
         } else {
-            pointSize = 40
+            pointSize = 50
         }
 
         playerButtonView.spacing = pointSize
