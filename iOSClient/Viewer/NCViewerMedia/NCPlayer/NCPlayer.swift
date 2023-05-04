@@ -124,8 +124,18 @@ class NCPlayer: NSObject {
     // MARK: - UIGestureRecognizerDelegate
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        changeScreenMode()
+    }
 
-        viewerMediaPage?.didSingleTapWith(gestureRecognizer: gestureRecognizer)
+    func changeScreenMode() {
+
+        guard let viewerMediaPage = viewerMediaPage, let playerToolBar = self.playerToolBar else { return }
+
+        if viewerMediaScreenMode == .full {
+            viewerMediaPage.changeScreenMode(mode: .normal, isMovie: true, fullscreen: playerToolBar.isFullscreen)
+        } else {
+            viewerMediaPage.changeScreenMode(mode: .full, isMovie: true, fullscreen: playerToolBar.isFullscreen)
+        }
     }
 
     // MARK: - NotificationCenter

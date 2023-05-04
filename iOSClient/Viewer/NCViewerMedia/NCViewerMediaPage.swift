@@ -212,15 +212,22 @@ class NCViewerMediaPage: UIViewController {
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
 
-    func changeScreenMode(mode: ScreenMode, isMovie: Bool = false) {
+    func changeScreenMode(mode: ScreenMode, isMovie: Bool = false, fullscreen: Bool = false) {
 
         let metadata = metadatas[currentIndex]
+        NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
         if mode == .normal {
 
-            navigationController?.setNavigationBarHidden(false, animated: true)
-            hideStatusBar = false
-            progressView.isHidden = false
+            if fullscreen {
+                navigationController?.setNavigationBarHidden(true, animated: true)
+                hideStatusBar = true
+                progressView.isHidden = true
+            } else {
+                navigationController?.setNavigationBarHidden(false, animated: true)
+                hideStatusBar = false
+                progressView.isHidden = false
+            }
 
             if metadata.isMovie || isMovie {
                 currentViewController.playerToolBar?.show()
@@ -230,8 +237,6 @@ class NCViewerMediaPage: UIViewController {
                 view.backgroundColor = .systemBackground
                 textColor = .label
             }
-
-            NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
         } else {
 
@@ -245,6 +250,12 @@ class NCViewerMediaPage: UIViewController {
 
             view.backgroundColor = .black
             textColor = .white
+        }
+
+        if fullscreen {
+            pageViewController.disableSwipeGesture()
+        } else {
+            pageViewController.enableSwipeGesture()
         }
 
         viewerMediaScreenMode = mode

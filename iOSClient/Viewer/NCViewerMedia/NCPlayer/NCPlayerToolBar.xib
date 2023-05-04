@@ -15,7 +15,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="XfW-XC-eMf" userLabel="Player Top Tool Bar">
-                    <rect key="frame" x="297" y="0.0" width="78" height="52"/>
+                    <rect key="frame" x="256" y="0.0" width="119" height="52"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qqZ-QN-TsW">
                             <rect key="frame" x="5" y="25" width="22.5" height="22"/>
@@ -31,6 +31,14 @@
                             <state key="normal" image="speaker.zzz" catalog="system"/>
                             <connections>
                                 <action selector="tapAudio:" destination="iN0-l3-epB" eventType="touchUpInside" id="EVU-fE-n5T"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oOw-fT-A3E">
+                            <rect key="frame" x="94" y="25" width="20" height="22"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="arrow.up.left.and.arrow.down.right" catalog="system"/>
+                            <connections>
+                                <action selector="tapFullscreen:" destination="iN0-l3-epB" eventType="touchUpInside" id="HC5-4P-VQi"/>
                             </connections>
                         </button>
                     </subviews>
@@ -114,6 +122,7 @@
                 <outlet property="audioButton" destination="sMY-qo-4CE" id="R7Q-de-Dsv"/>
                 <outlet property="backButton" destination="xja-nq-uD3" id="l3U-Mo-DEL"/>
                 <outlet property="forwardButton" destination="5Zd-By-Fko" id="ocQ-YT-Rwm"/>
+                <outlet property="fullscreenButton" destination="oOw-fT-A3E" id="D9a-Tf-vzm"/>
                 <outlet property="labelCurrentTime" destination="OHB-2J-Gqb" id="pFy-CJ-x2A"/>
                 <outlet property="labelLeftTime" destination="svM-TQ-AyQ" id="UDV-Lh-12z"/>
                 <outlet property="playButton" destination="qo0-x8-OfL" id="m4a-gb-D0J"/>
@@ -127,6 +136,7 @@
         </view>
     </objects>
     <resources>
+        <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="128" height="115"/>
         <image name="captions.bubble" catalog="system" width="128" height="110"/>
         <image name="gobackward.10" catalog="system" width="119" height="128"/>
         <image name="goforward.10" catalog="system" width="119" height="128"/>

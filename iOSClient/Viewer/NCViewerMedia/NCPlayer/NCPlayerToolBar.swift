@@ -33,6 +33,7 @@ import FloatingPanel
 class NCPlayerToolBar: UIView {
 
     @IBOutlet weak var utilityView: UIStackView!
+    @IBOutlet weak var fullscreenButton: UIButton!
     @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var audioButton: UIButton!
 
@@ -52,21 +53,22 @@ class NCPlayerToolBar: UIView {
         case moved
     }
     var playbackSliderEvent: sliderEventType = .ended
+    var isFullscreen: Bool = false
 
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private let audioSession = AVAudioSession.sharedInstance()
     private var subTitleIndex: Int32?
     private var audioIndex: Int32?
-
     private var pointSize: CGFloat = 0
-    
     private weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
 
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        fullscreenButton.setImage(NCUtility.shared.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
 
         subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
         subtitleButton.isEnabled = false
@@ -229,16 +231,15 @@ class NCPlayerToolBar: UIView {
 
     @objc func tap(gestureRecognizer: UITapGestureRecognizer) { }
 
-    @IBAction func tapPlayerPause(_ sender: Any) {
-        guard let ncplayer = ncplayer else { return }
+    @IBAction func tapFullscreen(_ sender: Any) {
 
-        if ncplayer.isPlay() {
-            ncplayer.playerPause()
+        isFullscreen = !isFullscreen
+        if isFullscreen {
+            fullscreenButton.setImage(NCUtility.shared.loadImage(named: "arrow.down.right.and.arrow.up.left", color: .white), for: .normal)
         } else {
-            ncplayer.playerPlay()
+            fullscreenButton.setImage(NCUtility.shared.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
         }
-
-        self.viewerMediaPage?.startTimerAutoHide()
+        ncplayer?.changeScreenMode()
     }
 
     @IBAction func tapSubTitle(_ sender: Any) {
@@ -265,6 +266,18 @@ class NCPlayerToolBar: UIView {
         if count > 1 {
             toggleMenuAudio(audioTracks: audioTracks, audioTrackIndexes: audioTrackIndexes)
         }
+    }
+
+    @IBAction func tapPlayerPause(_ sender: Any) {
+        guard let ncplayer = ncplayer else { return }
+
+        if ncplayer.isPlay() {
+            ncplayer.playerPause()
+        } else {
+            ncplayer.playerPlay()
+        }
+
+        self.viewerMediaPage?.startTimerAutoHide()
     }
 
     @IBAction func tapForward(_ sender: Any) {
