@@ -102,13 +102,12 @@ class NCPlayer: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
 
-    func restartAVPlayer(url: URL) {
+    func restartAVPlayer(position: Float) {
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
+        if let url = self.url {
             self.player.media = VLCMedia(url: url)
-            self.player.position = 0
-            self.playerToolBar?.setBarPlayer(position: 0)
+            self.player.position = position
+            self.playerToolBar?.setBarPlayer(position: position)
             self.viewerMediaPage?.changeScreenMode(mode: .normal)
             self.pauseAfterPlay = true
             self.player.play()
@@ -207,7 +206,10 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             break
         case .ended:
             if let url = self.url {
-                restartAVPlayer(url: url)
+                NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.restartAVPlayer(position: 0)
+                }
             }
             playerToolBar?.playButtonPlay()
             print("Played mode: ENDED")
@@ -219,7 +221,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
-            playerToolBar?.playButtonPause()
             if pauseAfterPlay {
                 player.pause()
                 pauseAfterPlay = false
@@ -233,6 +234,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             self.height = Int(size.height)
             playerToolBar?.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
+            playerToolBar?.playButtonPause()
             print("Played mode: PLAYING")
             break
         case .paused:

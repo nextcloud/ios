@@ -75,9 +75,9 @@ class NCPlayerToolBar: UIView {
         audioButton.isEnabled = false
 
         if UIDevice.current.userInterfaceIdiom == .pad {
-            pointSize = 50
+            pointSize = 60
         } else {
-            pointSize = 30
+            pointSize = 40
         }
 
         playerButtonView.spacing = pointSize

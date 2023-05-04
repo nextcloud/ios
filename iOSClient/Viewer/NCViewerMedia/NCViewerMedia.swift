@@ -188,6 +188,7 @@ class NCViewerMedia: UIViewController {
                     } else {
                         playerToolBar?.hide()
                     }
+                    ncplayer.restartAVPlayer(position: 0)
                 }
             }
         } else if metadata.isImage {
