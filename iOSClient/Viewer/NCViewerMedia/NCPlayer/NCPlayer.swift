@@ -206,11 +206,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: BUFFERING")
             break
         case .ended:
-            if let url = self.url {
-                NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.restartAVPlayer(position: 0)
-                }
+            NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.restartAVPlayer(position: 0)
             }
             playerToolBar?.playButtonPlay()
             print("Played mode: ENDED")
