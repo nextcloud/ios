@@ -188,7 +188,11 @@ class NCViewerMedia: UIViewController {
                     } else {
                         playerToolBar?.hide()
                     }
-                    ncplayer.restartAVPlayer(position: 0)
+                    var position: Float = 0
+                    if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let resultPosition = result.position {
+                        position = resultPosition
+                    }
+                    ncplayer.restartAVPlayer(position: position)
                 }
             }
         } else if metadata.isImage {
