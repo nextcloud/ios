@@ -112,6 +112,13 @@ class NCPlayer: NSObject {
             pauseAfterPlay = true
             player.play()
         }
+
+        if position == 0 {
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
+        } else {
+            imageVideoContainer?.image = nil
+        }
     }
 
     // MARK: - UIGestureRecognizerDelegate
@@ -199,7 +206,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: STOPPED")
             break
         case .opening:
-            playerToolBar?.playButtonPause()
             print("Played mode: OPENING")
             break
         case .buffering:
@@ -224,6 +230,8 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 player.pause()
                 pauseAfterPlay = false
                 print(player.position)
+            } else {
+                playerToolBar?.playButtonPause()
             }
             let size = player.videoSize
             if let mediaLength = player.media?.length.intValue {
@@ -233,7 +241,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             self.height = Int(size.height)
             playerToolBar?.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
-            playerToolBar?.playButtonPause()
             print("Played mode: PLAYING")
             break
         case .paused:

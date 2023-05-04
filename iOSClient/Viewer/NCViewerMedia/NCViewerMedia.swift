@@ -125,9 +125,7 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        if metadata.isImage || metadata.isAudio {
-            loadImage()
-        }
+        loadImage()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -263,7 +261,7 @@ class NCViewerMedia: UIViewController {
 
             NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in
                 let image = getImageMetadata(metadata)
-                if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
+                if self.metadata.ocId == metadata.ocId {
                     self.image = image
                     self.imageVideoContainer.image = image
                 }
@@ -272,7 +270,7 @@ class NCViewerMedia: UIViewController {
 
         // Get image
         let image = getImageMetadata(metadata)
-        if self.metadata.ocId == metadata.ocId && self.imageVideoContainer.layer.sublayers?.count == nil {
+        if self.metadata.ocId == metadata.ocId {
             self.image = image
             self.imageVideoContainer.image = image
         }
