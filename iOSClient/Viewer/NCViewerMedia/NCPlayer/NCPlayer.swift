@@ -105,12 +105,12 @@ class NCPlayer: NSObject {
     func restartAVPlayer(position: Float) {
 
         if let url = self.url {
-            self.player.media = VLCMedia(url: url)
-            self.player.position = position
-            self.playerToolBar?.setBarPlayer(position: position)
-            self.viewerMediaPage?.changeScreenMode(mode: .normal)
-            self.pauseAfterPlay = true
-            self.player.play()
+            player.media = VLCMedia(url: url)
+            player.position = position
+            playerToolBar?.setBarPlayer(position: position)
+            viewerMediaPage?.changeScreenMode(mode: .normal)
+            pauseAfterPlay = true
+            player.play()
         }
     }
 
@@ -140,12 +140,13 @@ class NCPlayer: NSObject {
     func playerPlay() {
 
         playerToolBar?.playbackSliderEvent = .began
-        player.play()
 
         if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
             player.position = position
             playerToolBar?.playbackSliderEvent = .moved
         }
+
+        player.play()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.playerToolBar?.playbackSliderEvent = .ended
