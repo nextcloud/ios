@@ -161,10 +161,6 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-            ncplayer.playerPause()
-        }
-        clearCommandCenter()
         timerAutoHide?.invalidate()
     }
 
@@ -400,6 +396,7 @@ class NCViewerMediaPage: UIViewController {
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
 
         progressView.progress = 0
+        changeScreenMode(mode: .normal)
     }
 
     // MARK: - Command Center

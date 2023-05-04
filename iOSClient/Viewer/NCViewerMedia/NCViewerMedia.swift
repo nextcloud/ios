@@ -94,10 +94,10 @@ class NCViewerMedia: UIViewController {
             if let playerToolBar = playerToolBar {
                 view.addSubview(playerToolBar)
                 playerToolBar.translatesAutoresizingMaskIntoConstraints = false
-                playerToolBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
-                playerToolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
-                playerToolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
-                playerToolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
+                playerToolBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+                playerToolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+                playerToolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
+                playerToolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
             }
 
             self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
@@ -174,9 +174,7 @@ class NCViewerMedia: UIViewController {
         super.viewDidAppear(animated)
 
         if metadata.isMovie {
-
             if let ncplayer = self.ncplayer {
-
                 if ncplayer.url == nil {
                     NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
                         if let url = url {
@@ -190,15 +188,17 @@ class NCViewerMedia: UIViewController {
                     } else {
                         playerToolBar?.hide()
                     }
+                    var position: Float = 0
+                    if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let resultPosition = result.position {
+                        position = resultPosition
+                    }
+                    ncplayer.restartAVPlayer(position: position)
                 }
             }
-            
         } else if metadata.isImage {
-
             viewerMediaPage?.clearCommandCenter()
+            showTip()
         }
-
-        showTip()
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
@@ -207,6 +207,14 @@ class NCViewerMedia: UIViewController {
         super.viewWillDisappear(animated)
 
         self.tipView?.dismiss()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if let ncplayer = ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
