@@ -26,6 +26,7 @@ import SVGKit
 import NextcloudKit
 import EasyTipView
 import SwiftUI
+import MobileVLCKit
 
 class NCViewerMedia: UIViewController {
 
@@ -34,12 +35,13 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var imageVideoContainer: imageVideoContainerView!
+    @IBOutlet weak var imageVideoContainer: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
 
     private var tipView: EasyTipView?
+    private let player = VLCMediaPlayer()
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     weak var viewerMediaPage: NCViewerMediaPage?
@@ -51,9 +53,6 @@ class NCViewerMedia: UIViewController {
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
-
-    var avPlayerLayer: AVPlayerLayer?
-    var avPlayer: AVPlayer?
 
     // MARK: - View Life Cycle
 
@@ -140,32 +139,6 @@ class NCViewerMedia: UIViewController {
                 loadImage()
             }
         }
-
-        if viewerMediaScreenMode == .normal {
-
-            viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
-
-            if metadata.isMovie {
-                viewerMediaPage?.view.backgroundColor = .black
-                viewerMediaPage?.textColor = .white
-            } else {
-                viewerMediaPage?.view.backgroundColor = .systemBackground
-                viewerMediaPage?.textColor = .label
-            }
-            viewerMediaPage?.progressView.isHidden = false
-
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
-
-        } else {
-
-            viewerMediaPage?.navigationController?.setNavigationBarHidden(true, animated: true)
-
-            viewerMediaPage?.view.backgroundColor = .black
-            viewerMediaPage?.textColor = .white
-            viewerMediaPage?.progressView.isHidden = true
-
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -214,6 +187,10 @@ class NCViewerMedia: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
 
         self.tipView?.dismiss()
+        if metadata.isVideo {
+            self.imageVideoContainer.isHidden = true
+        }
+
         coordinator.animate(alongsideTransition: { context in
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
@@ -225,6 +202,9 @@ class NCViewerMedia: UIViewController {
             }
         }, completion: { context in
             self.showTip()
+            if self.metadata.isVideo {
+                self.imageVideoContainer.isHidden = false
+            }
         })
     }
 
@@ -344,22 +324,14 @@ class NCViewerMedia: UIViewController {
         statusViewImage.isHidden = true
         statusLabel.isHidden = true
 
-        avPlayer = AVPlayer(url: URL(fileURLWithPath: filePath))
-        avPlayerLayer = AVPlayerLayer(player: avPlayer)
-
-        if let avPlayerLayer = self.avPlayerLayer, let imageView = imageVideoContainer {
-            avPlayerLayer.videoGravity = .resizeAspect
-            avPlayerLayer.frame = imageView.bounds
-            imageView.layer.addSublayer(avPlayerLayer)
-            imageView.playerLayer = avPlayerLayer
-            avPlayer?.play()
-        }
+        player.media = VLCMedia(url: URL(fileURLWithPath: filePath))
+        player.drawable = imageVideoContainer
+        player.play()
     }
 
     func stopLivePhoto() {
 
-        avPlayer?.pause()
-        avPlayerLayer?.removeFromSuperlayer()
+        player.stop()
 
         statusViewImage.isHidden = false
         statusLabel.isHidden = false
@@ -592,6 +564,7 @@ extension NCViewerMedia: EasyTipViewDelegate {
 
 // MARK: -
 
+/*
 class imageVideoContainerView: UIImageView {
     var playerLayer: CALayer?
     var metadata: tableMetadata?
@@ -600,3 +573,4 @@ class imageVideoContainerView: UIImageView {
         playerLayer?.frame = self.bounds
     }
 }
+*/

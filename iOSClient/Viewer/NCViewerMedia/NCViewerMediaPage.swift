@@ -112,15 +112,17 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(panGestureRecognizer)
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
-        
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
 
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
+
+
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
+        pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
+        changeScreenMode(mode: viewerMediaScreenMode)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.enableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
@@ -167,6 +169,7 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
+        currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()
     }
 
@@ -216,7 +219,6 @@ class NCViewerMediaPage: UIViewController {
 
         let metadata = currentViewController.metadata
         let fullscreen = currentViewController.playerToolBar?.isFullscreen ?? false
-        NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
         if mode == .normal {
 
@@ -231,10 +233,12 @@ class NCViewerMediaPage: UIViewController {
             }
 
             if metadata.isMovie {
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .label, tintColor: nil, withoutShadow: false)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
             } else {
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
                 view.backgroundColor = .systemBackground
                 textColor = .label
             }
@@ -563,8 +567,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
-
-        startTimerAutoHide()
     }
 
     // END TRANSITION
@@ -577,6 +579,9 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
             }
             currentIndex = nextIndex!
         }
+
+        changeScreenMode(mode: viewerMediaScreenMode)
+        startTimerAutoHide()
 
         self.nextIndex = nil
     }

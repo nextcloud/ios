@@ -36,19 +36,18 @@ class NCPlayer: NSObject {
     internal var width: Int?
     internal var height: Int?
     internal var length: Int?
-    internal let userAgent = CCUtility.getUserAgent()!
     internal var pauseAfterPlay: Bool = false
 
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewerMediaPage: NCViewerMediaPage?
 
-    weak var imageVideoContainer: imageVideoContainerView?
+    weak var imageVideoContainer: UIImageView?
 
     internal var counterSeconds: Double = 0
 
     // MARK: - View Life Cycle
 
-    init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
+    init(imageVideoContainer: UIImageView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
 
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
@@ -67,6 +66,8 @@ class NCPlayer: NSObject {
     func openAVPlayer(url: URL, autoplay: Bool = false) {
 
         var position: Float = 0
+        let userAgent = CCUtility.getUserAgent()!
+
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
@@ -104,20 +105,21 @@ class NCPlayer: NSObject {
 
     func restartAVPlayer(position: Float) {
 
-        if let url = self.url {
+        if let url = self.url, !player.isPlaying {
+
             player.media = VLCMedia(url: url)
             player.position = position
             playerToolBar?.setBarPlayer(position: position)
             viewerMediaPage?.changeScreenMode(mode: .normal)
             pauseAfterPlay = true
             player.play()
-        }
 
-        if position == 0 {
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
-        } else {
-            imageVideoContainer?.image = nil
+            if position == 0 {
+                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
+            } else {
+                imageVideoContainer?.image = nil
+            }
         }
     }
 
@@ -236,6 +238,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
+            playerToolBar?.playerView(hidden: false)
             if pauseAfterPlay {
                 player.pause()
                 pauseAfterPlay = false

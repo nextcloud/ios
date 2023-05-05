@@ -33,7 +33,6 @@ class NCViewerProviderContextMenu: UIViewController {
     private var metadataLivePhoto: tableMetadata?
     private var image: UIImage?
     private let player = VLCMediaPlayer()
-    private let userAgent = CCUtility.getUserAgent()!
 
     private let sizeIcon: CGFloat = 150
 
@@ -235,10 +234,10 @@ class NCViewerProviderContextMenu: UIViewController {
     private func viewVideo(metadata: tableMetadata) {
 
         NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
-            if let url = url {
+            if let url = url, let userAgent = CCUtility.getUserAgent() {
                 self.player.media = VLCMedia(url: url)
                 self.player.delegate = self
-                self.player.media?.addOption(":http-user-agent=\(self.userAgent)")
+                self.player.media?.addOption(":http-user-agent=\(userAgent)")
                 self.player.drawable = self.imageView
                 self.player.play()
             }
@@ -303,6 +302,7 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
+            imageView.image = nil
             NCActivityIndicator.shared.stop()
             print("Played mode: PLAYING")
             break
