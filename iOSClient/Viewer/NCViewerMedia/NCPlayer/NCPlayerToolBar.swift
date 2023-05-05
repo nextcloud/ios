@@ -239,7 +239,7 @@ class NCPlayerToolBar: UIView {
         } else {
             fullscreenButton.setImage(NCUtility.shared.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
         }
-        ncplayer?.changeScreenMode()
+        viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
     }
 
     @IBAction func tapSubTitle(_ sender: Any) {
