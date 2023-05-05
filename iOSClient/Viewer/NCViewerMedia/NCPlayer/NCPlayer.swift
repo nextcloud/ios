@@ -90,7 +90,7 @@ class NCPlayer: NSObject {
         }
 
         player.play()
-        //player.position = position
+        player.position = position
 
         if autoplay {
             pauseAfterPlay = false
@@ -238,6 +238,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
+            playerToolBar?.playerView(hidden: false)
             if pauseAfterPlay {
                 player.pause()
                 pauseAfterPlay = false
