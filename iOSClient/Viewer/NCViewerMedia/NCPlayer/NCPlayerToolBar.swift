@@ -129,7 +129,7 @@ class NCPlayerToolBar: UIView {
             self.viewerMediaPage = viewerMediaPage
         }
 
-        playerView(hidden: true)
+        playerButtonView.isHidden = true
         
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
@@ -169,11 +169,6 @@ class NCPlayerToolBar: UIView {
 
         self.subtitleButton.isEnabled = !videoSubTitlesIndexes.isEmpty
         self.audioButton.isEnabled = !audioTrackIndexes.isEmpty
-    }
-
-    public func playerView(hidden: Bool) {
-
-        playerButtonView.isHidden = hidden
     }
 
     // MARK: -

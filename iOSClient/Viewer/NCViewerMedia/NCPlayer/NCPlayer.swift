@@ -239,13 +239,17 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
-            playerToolBar?.playerView(hidden: false)
+            guard let playerToolBar = playerToolBar else { return }
+            if playerToolBar.playerButtonView.isHidden {
+                playerToolBar.playerButtonView.isHidden = false
+                viewerMediaPage?.changeScreenMode(mode: .normal)
+            }
             if pauseAfterPlay {
                 player.pause()
                 pauseAfterPlay = false
                 print(player.position)
             } else {
-                playerToolBar?.playButtonPause()
+                playerToolBar.playButtonPause()
             }
             let size = player.videoSize
             if let mediaLength = player.media?.length.intValue {
@@ -253,7 +257,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             }
             self.width = Int(size.width)
             self.height = Int(size.height)
-            playerToolBar?.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
+            playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
             print("Played mode: PLAYING")
             break
