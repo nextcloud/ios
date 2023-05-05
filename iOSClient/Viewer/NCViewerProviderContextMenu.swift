@@ -303,7 +303,6 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
             break
         case .playing:
             imageView.image = nil
-            imageView.frame = resize(player.videoSize)
             NCActivityIndicator.shared.stop()
             print("Played mode: PLAYING")
             break
