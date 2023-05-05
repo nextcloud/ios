@@ -36,19 +36,18 @@ class NCPlayer: NSObject {
     internal var width: Int?
     internal var height: Int?
     internal var length: Int?
-    internal let userAgent = CCUtility.getUserAgent()!
     internal var pauseAfterPlay: Bool = false
 
     internal weak var playerToolBar: NCPlayerToolBar?
     internal weak var viewerMediaPage: NCViewerMediaPage?
 
-    weak var imageVideoContainer: imageVideoContainerView?
+    weak var imageVideoContainer: UIImageView?
 
     internal var counterSeconds: Double = 0
 
     // MARK: - View Life Cycle
 
-    init(imageVideoContainer: imageVideoContainerView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
+    init(imageVideoContainer: UIImageView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
 
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
@@ -67,6 +66,8 @@ class NCPlayer: NSObject {
     func openAVPlayer(url: URL, autoplay: Bool = false) {
 
         var position: Float = 0
+        let userAgent = CCUtility.getUserAgent()!
+
         self.url = url
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
 
@@ -89,7 +90,7 @@ class NCPlayer: NSObject {
         }
 
         player.play()
-        player.position = position
+        //player.position = position
 
         if autoplay {
             pauseAfterPlay = false

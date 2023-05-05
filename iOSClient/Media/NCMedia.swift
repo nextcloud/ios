@@ -108,7 +108,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.prefetchDataSource = self
 
         cacheImages.cellLivePhotoImage = NCUtility.shared.loadImage(named: "livephoto", color: .white)
-        cacheImages.cellPlayImage = NCUtility.shared.loadImage(named: "play", color: .white)
+        cacheImages.cellPlayImage = NCUtility.shared.loadImage(named: "play.fill", color: .white)
     }
 
     override func viewWillAppear(_ animated: Bool) {
