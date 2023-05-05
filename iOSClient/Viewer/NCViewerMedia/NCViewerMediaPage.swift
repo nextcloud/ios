@@ -567,8 +567,6 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
-
-        startTimerAutoHide()
     }
 
     // END TRANSITION
@@ -581,7 +579,9 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
             }
             currentIndex = nextIndex!
         }
+
         changeScreenMode(mode: viewerMediaScreenMode)
+        startTimerAutoHide()
 
         self.nextIndex = nil
     }
