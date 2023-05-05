@@ -104,20 +104,21 @@ class NCPlayer: NSObject {
 
     func restartAVPlayer(position: Float) {
 
-        if let url = self.url {
+        if let url = self.url, !player.isPlaying {
+
             player.media = VLCMedia(url: url)
             player.position = position
             playerToolBar?.setBarPlayer(position: position)
             viewerMediaPage?.changeScreenMode(mode: .normal)
             pauseAfterPlay = true
             player.play()
-        }
 
-        if position == 0 {
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
-        } else {
-            imageVideoContainer?.image = nil
+            if position == 0 {
+                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
+            } else {
+                imageVideoContainer?.image = nil
+            }
         }
     }
 
