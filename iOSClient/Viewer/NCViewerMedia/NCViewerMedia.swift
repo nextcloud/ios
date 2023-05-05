@@ -125,8 +125,6 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
-        viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
-
         loadImage()
     }
 
