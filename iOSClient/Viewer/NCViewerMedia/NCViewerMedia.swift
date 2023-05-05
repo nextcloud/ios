@@ -125,6 +125,8 @@ class NCViewerMedia: UIViewController {
         self.image = nil
         self.imageVideoContainer.image = nil
 
+        viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
+
         loadImage()
     }
 
@@ -139,32 +141,6 @@ class NCViewerMedia: UIViewController {
                 viewerMediaPage.modifiedOcId.removeAll(where: { $0 == metadata.ocId })
                 loadImage()
             }
-        }
-
-        if viewerMediaScreenMode == .normal {
-
-            viewerMediaPage?.navigationController?.setNavigationBarHidden(false, animated: true)
-
-            if metadata.isMovie {
-                viewerMediaPage?.view.backgroundColor = .black
-                viewerMediaPage?.textColor = .white
-            } else {
-                viewerMediaPage?.view.backgroundColor = .systemBackground
-                viewerMediaPage?.textColor = .label
-            }
-            viewerMediaPage?.progressView.isHidden = false
-
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
-
-        } else {
-
-            viewerMediaPage?.navigationController?.setNavigationBarHidden(true, animated: true)
-
-            viewerMediaPage?.view.backgroundColor = .black
-            viewerMediaPage?.textColor = .white
-            viewerMediaPage?.progressView.isHidden = true
-
-            NCUtility.shared.colorNavigationController(viewerMediaPage?.navigationController, backgroundColor: .black, titleColor: .white, tintColor: nil, withoutShadow: false)
         }
     }
 

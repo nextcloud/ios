@@ -217,7 +217,6 @@ class NCViewerMediaPage: UIViewController {
 
         let metadata = currentViewController.metadata
         let fullscreen = currentViewController.playerToolBar?.isFullscreen ?? false
-        NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
 
         if mode == .normal {
 
@@ -232,10 +231,12 @@ class NCViewerMediaPage: UIViewController {
             }
 
             if metadata.isMovie {
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .label, tintColor: nil, withoutShadow: false)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
             } else {
+                NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
                 view.backgroundColor = .systemBackground
                 textColor = .label
             }
@@ -578,6 +579,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
             }
             currentIndex = nextIndex!
         }
+        changeScreenMode(mode: viewerMediaScreenMode)
 
         self.nextIndex = nil
     }
