@@ -90,6 +90,12 @@ class NCViewerProviderContextMenu: UIViewController {
 
             // VIEW VIDEO
             if metadata.isVideo {
+                if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                    let newSize = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    imageView.image = nil
+                    imageView.frame = newSize
+                    preferredContentSize = newSize.size
+                }
                 viewVideo(metadata: metadata)
             }
 
@@ -302,7 +308,6 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
             print("Played mode: ERROR")
             break
         case .playing:
-            imageView.image = nil
             NCActivityIndicator.shared.stop()
             print("Played mode: PLAYING")
             break
