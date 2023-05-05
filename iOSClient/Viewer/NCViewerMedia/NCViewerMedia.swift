@@ -187,6 +187,10 @@ class NCViewerMedia: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
 
         self.tipView?.dismiss()
+        if metadata.isVideo {
+            self.imageVideoContainer.isHidden = true
+        }
+
         coordinator.animate(alongsideTransition: { context in
             // back to the original size
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
@@ -198,6 +202,9 @@ class NCViewerMedia: UIViewController {
             }
         }, completion: { context in
             self.showTip()
+            if self.metadata.isVideo {
+                self.imageVideoContainer.isHidden = false
+            }
         })
     }
 
