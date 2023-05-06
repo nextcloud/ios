@@ -14,8 +14,8 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="XfW-XC-eMf" userLabel="Player Top Tool Bar">
-                    <rect key="frame" x="256" y="0.0" width="119" height="52"/>
+                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="XfW-XC-eMf" userLabel="Player Top Tool Bar">
+                    <rect key="frame" x="257" y="0.0" width="118" height="52"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qqZ-QN-TsW">
                             <rect key="frame" x="5" y="25" width="22.5" height="22"/>
@@ -34,7 +34,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oOw-fT-A3E">
-                            <rect key="frame" x="94" y="25" width="20" height="22"/>
+                            <rect key="frame" x="93" y="25" width="20" height="22"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="arrow.up.left.and.arrow.down.right" catalog="system"/>
                             <connections>
@@ -76,13 +76,13 @@
                     <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                 </stackView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85m-50-8yp">
-                    <rect key="frame" x="0.0" y="609" width="375" height="58"/>
+                    <rect key="frame" x="20" y="594" width="335" height="58"/>
                     <subviews>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MY0-FC-j88">
-                            <rect key="frame" x="-2" y="14" width="379" height="31"/>
+                            <rect key="frame" x="-2" y="14" width="339" height="31"/>
                         </slider>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--:--" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svM-TQ-AyQ">
-                            <rect key="frame" x="352.5" y="44" width="22.5" height="12"/>
+                            <rect key="frame" x="312.5" y="44" width="22.5" height="12"/>
                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -110,10 +110,10 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="85m-50-8yp" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="5H2-Gg-PEb"/>
-                <constraint firstAttribute="trailing" secondItem="85m-50-8yp" secondAttribute="trailing" id="BXT-Qo-qFl"/>
+                <constraint firstItem="85m-50-8yp" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="5H2-Gg-PEb"/>
+                <constraint firstAttribute="trailing" secondItem="85m-50-8yp" secondAttribute="trailing" constant="20" id="BXT-Qo-qFl"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="DAA-xj-35k"/>
-                <constraint firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" id="N7Q-PF-7lb"/>
+                <constraint firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" constant="15" id="N7Q-PF-7lb"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="dPB-Kf-Ad7"/>
                 <constraint firstItem="XfW-XC-eMf" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="fq3-6h-kkx"/>
                 <constraint firstAttribute="trailing" secondItem="XfW-XC-eMf" secondAttribute="trailing" id="uYG-Ai-CGv"/>

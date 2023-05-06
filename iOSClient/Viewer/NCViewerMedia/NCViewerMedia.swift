@@ -93,10 +93,10 @@ class NCViewerMedia: UIViewController {
             if let playerToolBar = playerToolBar {
                 view.addSubview(playerToolBar)
                 playerToolBar.translatesAutoresizingMaskIntoConstraints = false
-                playerToolBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-                playerToolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
-                playerToolBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
-                playerToolBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
+                playerToolBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+                playerToolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+                playerToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+                playerToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
             }
 
             self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
@@ -184,12 +184,13 @@ class NCViewerMedia: UIViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
 
         self.tipView?.dismiss()
         if metadata.isVideo {
             self.imageVideoContainer.isHidden = true
         }
+
+        super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { context in
             // back to the original size
