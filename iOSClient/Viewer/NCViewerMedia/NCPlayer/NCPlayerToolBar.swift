@@ -32,7 +32,7 @@ import FloatingPanel
 
 class NCPlayerToolBar: UIView {
 
-    @IBOutlet weak var utilityView: UIStackView!
+    @IBOutlet weak var utilityView: UIView!
     @IBOutlet weak var fullscreenButton: UIButton!
     @IBOutlet weak var subtitleButton: UIButton!
     @IBOutlet weak var audioButton: UIButton!

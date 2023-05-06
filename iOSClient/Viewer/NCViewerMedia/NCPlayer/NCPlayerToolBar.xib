@@ -14,11 +14,11 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="XfW-XC-eMf" userLabel="Player Top Tool Bar">
-                    <rect key="frame" x="257" y="0.0" width="118" height="52"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="orv-9i-XUs">
+                    <rect key="frame" x="20" y="0.0" width="335" height="50"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qqZ-QN-TsW">
-                            <rect key="frame" x="5" y="25" width="22.5" height="22"/>
+                            <rect key="frame" x="217" y="10" width="22.5" height="22"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="captions.bubble" catalog="system"/>
                             <connections>
@@ -26,7 +26,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sMY-qo-4CE">
-                            <rect key="frame" x="47.5" y="25" width="25.5" height="22"/>
+                            <rect key="frame" x="264.5" y="10" width="25.5" height="22"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="speaker.zzz" catalog="system"/>
                             <connections>
@@ -34,7 +34,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oOw-fT-A3E">
-                            <rect key="frame" x="93" y="25" width="20" height="22"/>
+                            <rect key="frame" x="315" y="10" width="20" height="22"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="arrow.up.left.and.arrow.down.right" catalog="system"/>
                             <connections>
@@ -42,8 +42,17 @@
                             </connections>
                         </button>
                     </subviews>
-                    <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
-                </stackView>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="sMY-qo-4CE" firstAttribute="top" secondItem="orv-9i-XUs" secondAttribute="top" constant="10" id="JN8-3O-was"/>
+                        <constraint firstAttribute="height" constant="50" id="OaO-1q-P0D"/>
+                        <constraint firstItem="sMY-qo-4CE" firstAttribute="leading" secondItem="qqZ-QN-TsW" secondAttribute="trailing" constant="25" id="Rwi-4K-cTW"/>
+                        <constraint firstItem="qqZ-QN-TsW" firstAttribute="top" secondItem="orv-9i-XUs" secondAttribute="top" constant="10" id="fZd-j6-JA8"/>
+                        <constraint firstItem="oOw-fT-A3E" firstAttribute="leading" secondItem="sMY-qo-4CE" secondAttribute="trailing" constant="25" id="gqw-nr-jbR"/>
+                        <constraint firstAttribute="trailing" secondItem="oOw-fT-A3E" secondAttribute="trailing" id="ttU-3o-teH"/>
+                        <constraint firstItem="oOw-fT-A3E" firstAttribute="top" secondItem="orv-9i-XUs" secondAttribute="top" constant="10" id="wIn-Zg-sHa"/>
+                    </constraints>
+                </view>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="ncM-9U-phl" userLabel="Player Top Tool Bar">
                     <rect key="frame" x="125" y="317.5" width="125" height="32.5"/>
                     <subviews>
@@ -73,6 +82,7 @@
                             </connections>
                         </button>
                     </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                 </stackView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85m-50-8yp">
@@ -114,9 +124,10 @@
                 <constraint firstAttribute="trailing" secondItem="85m-50-8yp" secondAttribute="trailing" constant="20" id="BXT-Qo-qFl"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="DAA-xj-35k"/>
                 <constraint firstAttribute="bottom" secondItem="85m-50-8yp" secondAttribute="bottom" constant="15" id="N7Q-PF-7lb"/>
+                <constraint firstAttribute="trailing" secondItem="orv-9i-XUs" secondAttribute="trailing" constant="20" id="Nnr-hx-a2V"/>
                 <constraint firstItem="ncM-9U-phl" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="dPB-Kf-Ad7"/>
-                <constraint firstItem="XfW-XC-eMf" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="fq3-6h-kkx"/>
-                <constraint firstAttribute="trailing" secondItem="XfW-XC-eMf" secondAttribute="trailing" id="uYG-Ai-CGv"/>
+                <constraint firstItem="orv-9i-XUs" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="xBn-BF-JVz"/>
+                <constraint firstItem="orv-9i-XUs" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="yFO-0l-kuQ"/>
             </constraints>
             <connections>
                 <outlet property="audioButton" destination="sMY-qo-4CE" id="R7Q-de-Dsv"/>
@@ -130,7 +141,7 @@
                 <outlet property="playbackSliderView" destination="85m-50-8yp" id="SOs-XA-Mgh"/>
                 <outlet property="playerButtonView" destination="ncM-9U-phl" id="aTD-g1-xGg"/>
                 <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
-                <outlet property="utilityView" destination="XfW-XC-eMf" id="QiB-so-jiU"/>
+                <outlet property="utilityView" destination="orv-9i-XUs" id="AGX-4E-dOr"/>
             </connections>
             <point key="canvasLocation" x="136.80000000000001" y="152.47376311844079"/>
         </view>

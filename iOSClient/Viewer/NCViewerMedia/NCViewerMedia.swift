@@ -93,7 +93,7 @@ class NCViewerMedia: UIViewController {
             if let playerToolBar = playerToolBar {
                 view.addSubview(playerToolBar)
                 playerToolBar.translatesAutoresizingMaskIntoConstraints = false
-                playerToolBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+                playerToolBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
                 playerToolBar.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
                 playerToolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
                 playerToolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
