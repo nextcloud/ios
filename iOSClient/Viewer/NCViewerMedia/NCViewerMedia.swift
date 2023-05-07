@@ -150,7 +150,6 @@ class NCViewerMedia: UIViewController {
                     NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
                         if let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
-                            self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
                         }
                     }
                 } else {
@@ -162,8 +161,15 @@ class NCViewerMedia: UIViewController {
                 }
             }
         } else if metadata.isImage {
-            viewerMediaPage?.clearCommandCenter()
             showTip()
+        }
+
+        // COMMAND CENTER
+        
+        if metadata.isAudio, let ncplayer = self.ncplayer {
+            self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
+        } else {
+            viewerMediaPage?.clearCommandCenter()
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
