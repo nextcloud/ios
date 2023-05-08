@@ -247,10 +247,17 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             if pauseAfterPlay {
                 player.pause()
                 pauseAfterPlay = false
-                print(player.position)
-                self.viewerMediaPage?.updateCommandCenter(ncplayer: self, title: self.metadata.fileNameView)
+                self.viewerMediaPage?.updateCommandCenter(ncplayer: self, title: metadata.fileNameView)
             } else {
                 playerToolBar.playButtonPause()
+                // Set track audio/subtitle
+                let data = NCManageDatabase.shared.getVideo(metadata: metadata)
+                if let currentAudioTrackIndex = data?.currentAudioTrackIndex {
+                    player.currentAudioTrackIndex = Int32(currentAudioTrackIndex)
+                }
+                if let currentVideoSubTitleIndex = data?.currentVideoSubTitleIndex {
+                    player.currentVideoSubTitleIndex = Int32(currentVideoSubTitleIndex)
+                }
             }
             let size = player.videoSize
             if let mediaLength = player.media?.length.intValue {

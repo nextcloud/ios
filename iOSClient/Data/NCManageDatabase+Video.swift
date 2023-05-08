@@ -40,11 +40,13 @@ class tableVideoV3: Object {
     @Persisted var codecAudioLanguage: String?
     @Persisted var codecMaxCompatibility: Bool = false
     @Persisted var codecQuality: String?
+    @Persisted var currentAudioTrackIndex: Int?
+    @Persisted var currentVideoSubTitleIndex: Int?
 }
 
 extension NCManageDatabase {
 
-    func addVideo(metadata: tableMetadata, position: Float? = nil, width: Int? = nil, height: Int? = nil, length: Int? = nil) {
+    func addVideo(metadata: tableMetadata, position: Float? = nil, width: Int? = nil, height: Int? = nil, length: Int? = nil, currentAudioTrackIndex: Int? = nil, currentVideoSubTitleIndex: Int? = nil) {
 
         if metadata.livePhoto { return }
         let realm = try! Realm()
@@ -64,6 +66,12 @@ extension NCManageDatabase {
                     }
                     if let length = length {
                         result.length = length
+                    }
+                    if let currentAudioTrackIndex = currentAudioTrackIndex {
+                        result.currentAudioTrackIndex = currentAudioTrackIndex
+                    }
+                    if let currentVideoSubTitleIndex = currentVideoSubTitleIndex {
+                        result.currentVideoSubTitleIndex = currentVideoSubTitleIndex
                     }
 
                     realm.add(result, update: .all)
@@ -86,6 +94,12 @@ extension NCManageDatabase {
                     }
                     if let length = length {
                         result.length = length
+                    }
+                    if let currentAudioTrackIndex = currentAudioTrackIndex {
+                        result.currentAudioTrackIndex = currentAudioTrackIndex
+                    }
+                    if let currentVideoSubTitleIndex = currentVideoSubTitleIndex {
+                        result.currentVideoSubTitleIndex = currentVideoSubTitleIndex
                     }
                     
                     realm.add(result, update: .all)
