@@ -144,6 +144,8 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        viewerMediaPage?.clearCommandCenter()
+        
         if metadata.isMovie {
             if let ncplayer = self.ncplayer {
                 if ncplayer.url == nil {
@@ -162,14 +164,6 @@ class NCViewerMedia: UIViewController {
             }
         } else if metadata.isImage {
             showTip()
-        }
-
-        // COMMAND CENTER
-        
-        if metadata.isAudio, let ncplayer = self.ncplayer {
-            self.viewerMediaPage?.updateCommandCenter(ncplayer: ncplayer, metadata: self.metadata)
-        } else {
-            viewerMediaPage?.clearCommandCenter()
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)

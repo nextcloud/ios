@@ -171,6 +171,7 @@ class NCViewerMediaPage: UIViewController {
 
         currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()
+        clearCommandCenter()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -426,12 +427,10 @@ class NCViewerMediaPage: UIViewController {
 
     // MARK: - Command Center
 
-    func updateCommandCenter(ncplayer: NCPlayer, metadata: tableMetadata) {
+    func updateCommandCenter(ncplayer: NCPlayer, title: String) {
 
         var nowPlayingInfo = [String: Any]()
 
-        // Clear
-        clearCommandCenter()
         UIApplication.shared.beginReceivingRemoteControlEvents()
 
         // Add handler for Play Command
@@ -456,27 +455,25 @@ class NCViewerMediaPage: UIViewController {
             return .commandFailed
         }
 
-        // VIDEO AUDIO () ()
-        if metadata.isMovie {
+        // >>
+        MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
+        skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
 
-            MPRemoteCommandCenter.shared().skipForwardCommand.isEnabled = true
-            skipForwardCommand = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { event in
-
-                let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
-                ncplayer.player.jumpForward(seconds)
-                return.success
-            }
-
-            MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
-            skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
-
-                let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
-                ncplayer.player.jumpBackward(seconds)
-                return.success
-            }
+            let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+            ncplayer.player.jumpForward(seconds)
+            return.success
         }
 
-        nowPlayingInfo[MPMediaItemPropertyTitle] = metadata.fileNameView
+        // <<
+        MPRemoteCommandCenter.shared().skipBackwardCommand.isEnabled = true
+        skipBackwardCommand = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { event in
+
+            let seconds = Int32((event as! MPSkipIntervalCommandEvent).interval)
+            ncplayer.player.jumpBackward(seconds)
+            return.success
+        }
+
+        nowPlayingInfo[MPMediaItemPropertyTitle] = title
         if let image = currentViewController.image {
             nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
                 return image

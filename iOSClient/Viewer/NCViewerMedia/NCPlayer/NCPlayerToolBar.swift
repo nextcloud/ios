@@ -134,7 +134,6 @@ class NCPlayerToolBar: UIView {
         playerButtonView.isHidden = true
         
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
 
         playbackSlider.value = position
 
@@ -146,6 +145,8 @@ class NCPlayerToolBar: UIView {
         } else {
             hide()
         }
+
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = position
     }
 
     public func update() {
@@ -163,6 +164,7 @@ class NCPlayerToolBar: UIView {
         }
         labelCurrentTime.text = ncplayer.player.time.stringValue
         labelLeftTime.text = ncplayer.player.remainingTime?.stringValue
+
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = length / 1000
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
     }

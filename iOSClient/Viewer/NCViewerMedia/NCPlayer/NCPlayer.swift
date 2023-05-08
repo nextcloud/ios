@@ -248,6 +248,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
                 player.pause()
                 pauseAfterPlay = false
                 print(player.position)
+                self.viewerMediaPage?.updateCommandCenter(ncplayer: self, title: self.metadata.fileNameView)
             } else {
                 playerToolBar.playButtonPause()
             }
