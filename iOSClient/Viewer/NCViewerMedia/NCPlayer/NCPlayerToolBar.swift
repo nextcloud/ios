@@ -30,6 +30,7 @@ import MediaPlayer
 import MobileVLCKit
 import FloatingPanel
 import JGProgressHUD
+import Alamofire
 
 class NCPlayerToolBar: UIView {
 
@@ -441,12 +442,21 @@ extension NCPlayerToolBar: NCSelectDelegate {
             if CCUtility.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
+                var downloadRequest: DownloadRequest?
                 hud.indicatorView = JGProgressHUDRingIndicatorView()
+                hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
                 if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                     indicatorView.ringWidth = 1.5
                 }
+                hud.tapOnHUDViewBlock = { _ in
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
                 hud.show(in: viewerMediaPage.view)
-                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+
+                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
+                    downloadRequest = request
                 }, taskHandler: { _ in
                 }, progressHandler: { progress in
                     self.hud.progress = Float(progress.fractionCompleted)
@@ -454,7 +464,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     self.hud.dismiss()
                     if error == .success {
                         self.addPlaybackSlave(type: type, metadata: metadata)
-                    } else {
+                    } else if error.errorCode != 200 {
                         NCContentPresenter.shared.showError(error: error)
                     }
                 }
