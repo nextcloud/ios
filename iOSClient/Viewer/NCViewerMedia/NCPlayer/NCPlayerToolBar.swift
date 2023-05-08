@@ -68,6 +68,8 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
+        self.backgroundColor = UIColor.black
+
         fullscreenButton.setImage(NCUtility.shared.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
 
         subtitleButton.setImage(NCUtility.shared.loadImage(named: "captions.bubble", color: .white), for: .normal)
@@ -175,23 +177,19 @@ class NCPlayerToolBar: UIView {
 
     public func show() {
 
-        UIView.animate(withDuration: 0.6, animations: {
-            self.backgroundColor = UIColor.black
-            self.alpha = 1
+        UIView.animate(withDuration: 0.5, animations: {
+            self.alpha = 0.1
         }, completion: { (_: Bool) in
             self.isHidden = false
-            self.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         })
     }
 
     func hide() {
 
-        UIView.animate(withDuration: 0.6, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 0
-            self.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         }, completion: { (_: Bool) in
             self.isHidden = true
-            self.backgroundColor = UIColor.black
         })
     }
 
