@@ -98,10 +98,12 @@ class NCPlayer: NSObject {
             position = resultPosition
         }
 
-        player.drawable = imageVideoContainer
-        if let view = player.drawable as? UIView, let singleTapGestureRecognizer = singleTapGestureRecognizer {
-            view.isUserInteractionEnabled = true
-            view.addGestureRecognizer(singleTapGestureRecognizer)
+        if metadata.isVideo {
+            player.drawable = imageVideoContainer
+            if let view = player.drawable as? UIView, let singleTapGestureRecognizer = singleTapGestureRecognizer {
+                view.isUserInteractionEnabled = true
+                view.addGestureRecognizer(singleTapGestureRecognizer)
+            }
         }
 
         player.play()
@@ -129,11 +131,13 @@ class NCPlayer: NSObject {
             self.pauseAfterPlay = pauseAfterPlay
             player.play()
 
-            if position == 0 {
-                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-                imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
-            } else {
-                imageVideoContainer?.image = nil
+            if metadata.isVideo {
+                if position == 0 {
+                    let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+                    imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
+                } else {
+                    imageVideoContainer?.image = nil
+                }
             }
         }
     }
