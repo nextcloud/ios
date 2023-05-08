@@ -68,7 +68,7 @@ class NCPlayerToolBar: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        self.backgroundColor = UIColor.black
+        self.backgroundColor = UIColor.black.withAlphaComponent(0.1)
 
         fullscreenButton.setImage(NCUtility.shared.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
 
@@ -178,7 +178,7 @@ class NCPlayerToolBar: UIView {
     public func show() {
 
         UIView.animate(withDuration: 0.5, animations: {
-            self.alpha = 0.1
+            self.alpha = 1
         }, completion: { (_: Bool) in
             self.isHidden = false
         })
