@@ -29,6 +29,7 @@ import AVKit
 import MediaPlayer
 import MobileVLCKit
 import FloatingPanel
+import JGProgressHUD
 
 class NCPlayerToolBar: UIView {
 
@@ -55,10 +56,12 @@ class NCPlayerToolBar: UIView {
     var playbackSliderEvent: sliderEventType = .ended
     var isFullscreen: Bool = false
 
+    private let hud = JGProgressHUD()
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private let audioSession = AVAudioSession.sharedInstance()
     private var pointSize: CGFloat = 0
+
     private weak var viewerMediaPage: NCViewerMediaPage?
 
     // MARK: - View Life Cycle
@@ -169,8 +172,10 @@ class NCPlayerToolBar: UIView {
 
     public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {
 
-        self.subtitleButton.isEnabled = !videoSubTitlesIndexes.isEmpty
-        self.audioButton.isEnabled = !audioTrackIndexes.isEmpty
+        if let metadata = metadata, metadata.isVideo {
+            self.subtitleButton.isEnabled = true
+            self.audioButton.isEnabled = true
+        }
     }
 
     // MARK: -
@@ -254,11 +259,8 @@ class NCPlayerToolBar: UIView {
 
         let spuTracks = player.videoSubTitlesNames
         let spuTrackIndexes = player.videoSubTitlesIndexes
-        let count = spuTracks.count
 
-        if count > 1 {
-            toggleMenuSubTitle(spuTracks: spuTracks, spuTrackIndexes: spuTrackIndexes)
-        }
+        toggleMenuSubTitle(spuTracks: spuTracks, spuTrackIndexes: spuTrackIndexes)
     }
 
     @IBAction func tapAudio(_ sender: Any) {
@@ -267,11 +269,8 @@ class NCPlayerToolBar: UIView {
 
         let audioTracks = player.audioTrackNames
         let audioTrackIndexes = player.audioTrackIndexes
-        let count = audioTracks.count
 
-        if count > 1 {
-            toggleMenuAudio(audioTracks: audioTracks, audioTrackIndexes: audioTrackIndexes)
-        }
+        toggleMenuAudio(audioTracks: audioTracks, audioTrackIndexes: audioTrackIndexes)
     }
 
     @IBAction func tapPlayerPause(_ sender: Any) {
@@ -318,25 +317,52 @@ extension NCPlayerToolBar {
             subTitleIndex = Int(idx)
         }
 
-        for index in 0...spuTracks.count - 1 {
+        if !spuTracks.isEmpty {
+            for index in 0...spuTracks.count - 1 {
 
-            guard let title = spuTracks[index] as? String, let idx = spuTrackIndexes[index] as? Int32, let metadata = self.metadata else { return }
+                guard let title = spuTracks[index] as? String, let idx = spuTrackIndexes[index] as? Int32, let metadata = self.metadata else { return }
 
-            actions.append(
-                NCMenuAction(
-                    title: title,
-                    icon: UIImage(),
-                    onTitle: title,
-                    onIcon: UIImage(),
-                    selected: (subTitleIndex ?? -9999) == idx,
-                    on: (subTitleIndex ?? -9999) == idx,
-                    action: { _ in
-                        self.ncplayer?.player.currentVideoSubTitleIndex = idx
-                        NCManageDatabase.shared.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
-                    }
+                actions.append(
+                    NCMenuAction(
+                        title: title,
+                        icon: UIImage(),
+                        onTitle: title,
+                        onIcon: UIImage(),
+                        selected: (subTitleIndex ?? -9999) == idx,
+                        on: (subTitleIndex ?? -9999) == idx,
+                        action: { _ in
+                            self.ncplayer?.player.currentVideoSubTitleIndex = idx
+                            NCManageDatabase.shared.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
+                        }
+                    )
                 )
-            )
+            }
         }
+
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_add_subtitle_", comment: ""),
+                icon: UIImage(),
+                onTitle: NSLocalizedString("_add_subtitle_", comment: ""),
+                onIcon: UIImage(),
+                selected: false,
+                on: false,
+                action: { _ in
+
+                    let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+                    let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
+                    let viewController = navigationController.topViewController as! NCSelect
+
+                    viewController.delegate = self
+                    viewController.typeOfCommandView = .nothing
+                    viewController.includeDirectoryE2EEncryption = false
+                    viewController.enableSelectFile = true
+                    viewController.type = "subtitle"
+
+                    self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
+                }
+            )
+        )
 
         viewerMediaPage?.presentMenu(with: actions, menuColor: UIColor(hexString: "#1C1C1EFF"), textColor: .white)
     }
@@ -352,26 +378,99 @@ extension NCPlayerToolBar {
             audioIndex = Int(idx)
         }
 
-        for index in 0...audioTracks.count - 1 {
+        if !audioTracks.isEmpty {
+            for index in 0...audioTracks.count - 1 {
 
-            guard let title = audioTracks[index] as? String, let idx = audioTrackIndexes[index] as? Int32, let metadata = self.metadata else { return }
+                guard let title = audioTracks[index] as? String, let idx = audioTrackIndexes[index] as? Int32, let metadata = self.metadata else { return }
 
-            actions.append(
-                NCMenuAction(
-                    title: title,
-                    icon: UIImage(),
-                    onTitle: title,
-                    onIcon: UIImage(),
-                    selected: (audioIndex ?? -9999) == idx,
-                    on: (audioIndex ?? -9999) == idx,
-                    action: { _ in
-                        self.ncplayer?.player.currentAudioTrackIndex = idx
-                        NCManageDatabase.shared.addVideo(metadata: metadata, currentAudioTrackIndex: Int(idx))
-                    }
+                actions.append(
+                    NCMenuAction(
+                        title: title,
+                        icon: UIImage(),
+                        onTitle: title,
+                        onIcon: UIImage(),
+                        selected: (audioIndex ?? -9999) == idx,
+                        on: (audioIndex ?? -9999) == idx,
+                        action: { _ in
+                            self.ncplayer?.player.currentAudioTrackIndex = idx
+                            NCManageDatabase.shared.addVideo(metadata: metadata, currentAudioTrackIndex: Int(idx))
+                        }
+                    )
                 )
-            )
+            }
         }
 
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_add_audio_", comment: ""),
+                icon: UIImage(),
+                onTitle: NSLocalizedString("_add_audio_", comment: ""),
+                onIcon: UIImage(),
+                selected: false,
+                on: false,
+                action: { _ in
+
+                    let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+                    let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
+                    let viewController = navigationController.topViewController as! NCSelect
+
+                    viewController.delegate = self
+                    viewController.typeOfCommandView = .nothing
+                    viewController.includeDirectoryE2EEncryption = false
+                    viewController.enableSelectFile = true
+                    viewController.type = "audio"
+
+                    self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
+                }
+            )
+        )
+
         viewerMediaPage?.presentMenu(with: actions, menuColor: UIColor(hexString: "#1C1C1EFF"), textColor: .white)
+    }
+}
+
+extension NCPlayerToolBar: NCSelectDelegate {
+
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+
+        if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
+
+            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+            if CCUtility.fileProviderStorageExists(metadata) {
+                addPlaybackSlave(type: type, metadata: metadata)
+            } else {
+                hud.indicatorView = JGProgressHUDRingIndicatorView()
+                if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                    indicatorView.ringWidth = 1.5
+                }
+                hud.show(in: viewerMediaPage.view)
+                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+                }, taskHandler: { _ in
+                }, progressHandler: { progress in
+                    self.hud.progress = Float(progress.fractionCompleted)
+                }) { account, _, _, _, _, _, error in
+                    self.hud.dismiss()
+                    if error == .success {
+                        self.addPlaybackSlave(type: type, metadata: metadata)
+                    } else {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                }
+            }
+        }
+    }
+
+    func addPlaybackSlave(type: String, metadata: tableMetadata) {
+
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+        if type == "subtitle" {
+            self.ncplayer?.player.addPlaybackSlave(URL(fileURLWithPath: fileNameLocalPath), type: .subtitle, enforce: true)
+        } else if type == "audio" {
+            self.ncplayer?.player.addPlaybackSlave(URL(fileURLWithPath: fileNameLocalPath), type: .audio, enforce: true)
+
+        }
     }
 }
