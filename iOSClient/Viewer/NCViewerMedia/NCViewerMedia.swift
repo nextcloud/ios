@@ -159,7 +159,7 @@ class NCViewerMedia: UIViewController {
                     if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let resultPosition = result.position {
                         position = resultPosition
                     }
-                    ncplayer.restartAVPlayer(position: position)
+                    ncplayer.restartAVPlayer(position: position, pauseAfterPlay: true)
                 }
             }
         } else if metadata.isImage {

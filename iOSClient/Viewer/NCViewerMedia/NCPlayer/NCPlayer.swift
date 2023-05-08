@@ -118,7 +118,7 @@ class NCPlayer: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
     }
 
-    func restartAVPlayer(position: Float) {
+    func restartAVPlayer(position: Float, pauseAfterPlay: Bool) {
 
         if let url = self.url, !player.isPlaying {
 
@@ -126,7 +126,7 @@ class NCPlayer: NSObject {
             player.position = position
             playerToolBar?.setBarPlayer(position: position)
             viewerMediaPage?.changeScreenMode(mode: .normal)
-            pauseAfterPlay = true
+            self.pauseAfterPlay = pauseAfterPlay
             player.play()
 
             if position == 0 {
@@ -247,7 +247,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .ended:
             NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.restartAVPlayer(position: 0)
+                if let playRepeat = self.playerToolBar?.playRepeat {
+                    self.restartAVPlayer(position: 0, pauseAfterPlay: !playRepeat)
+                }
             }
             playerToolBar?.playButtonPlay()
             print("Played mode: ENDED")

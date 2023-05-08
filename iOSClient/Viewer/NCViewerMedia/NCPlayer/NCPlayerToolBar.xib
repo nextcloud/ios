@@ -89,10 +89,10 @@
                     <rect key="frame" x="20" y="594" width="335" height="58"/>
                     <subviews>
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="MY0-FC-j88">
-                            <rect key="frame" x="-2" y="14" width="339" height="31"/>
+                            <rect key="frame" x="-2" y="14" width="297" height="31"/>
                         </slider>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--:--" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svM-TQ-AyQ">
-                            <rect key="frame" x="312.5" y="44" width="22.5" height="12"/>
+                            <rect key="frame" x="270.5" y="44" width="22.5" height="12"/>
                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -103,6 +103,14 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VLW-it-fXU">
+                            <rect key="frame" x="313" y="18" width="22" height="22"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="repeat" catalog="system"/>
+                            <connections>
+                                <action selector="tapRepeat:" destination="iN0-l3-epB" eventType="touchUpInside" id="Tas-6N-aTq"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -110,10 +118,12 @@
                         <constraint firstAttribute="height" constant="58" id="9Uv-dV-to4"/>
                         <constraint firstItem="svM-TQ-AyQ" firstAttribute="top" secondItem="MY0-FC-j88" secondAttribute="bottom" id="Aan-ac-nr9"/>
                         <constraint firstItem="MY0-FC-j88" firstAttribute="leading" secondItem="85m-50-8yp" secondAttribute="leading" id="Hjo-k0-bpn"/>
-                        <constraint firstAttribute="trailing" secondItem="svM-TQ-AyQ" secondAttribute="trailing" id="JXl-DO-x6b"/>
-                        <constraint firstAttribute="trailing" secondItem="MY0-FC-j88" secondAttribute="trailing" id="hBO-J2-Kdo"/>
+                        <constraint firstItem="VLW-it-fXU" firstAttribute="centerY" secondItem="MY0-FC-j88" secondAttribute="centerY" id="OYO-ej-jdC"/>
+                        <constraint firstItem="svM-TQ-AyQ" firstAttribute="trailing" secondItem="MY0-FC-j88" secondAttribute="trailing" id="gso-SX-bYq"/>
                         <constraint firstItem="OHB-2J-Gqb" firstAttribute="top" secondItem="MY0-FC-j88" secondAttribute="bottom" id="jdb-Vq-WoF"/>
                         <constraint firstItem="MY0-FC-j88" firstAttribute="centerY" secondItem="85m-50-8yp" secondAttribute="centerY" id="lG8-DN-rTE"/>
+                        <constraint firstAttribute="trailing" secondItem="VLW-it-fXU" secondAttribute="trailing" id="mZX-EK-qnC"/>
+                        <constraint firstItem="VLW-it-fXU" firstAttribute="leading" secondItem="MY0-FC-j88" secondAttribute="trailing" constant="20" id="vSb-In-qqx"/>
                     </constraints>
                 </view>
             </subviews>
@@ -140,6 +150,7 @@
                 <outlet property="playbackSlider" destination="MY0-FC-j88" id="bVe-Kc-80k"/>
                 <outlet property="playbackSliderView" destination="85m-50-8yp" id="SOs-XA-Mgh"/>
                 <outlet property="playerButtonView" destination="ncM-9U-phl" id="aTD-g1-xGg"/>
+                <outlet property="repeatButton" destination="VLW-it-fXU" id="WER-bj-rHK"/>
                 <outlet property="subtitleButton" destination="qqZ-QN-TsW" id="XCP-hb-eZB"/>
                 <outlet property="utilityView" destination="orv-9i-XUs" id="AGX-4E-dOr"/>
             </connections>
@@ -152,6 +163,7 @@
         <image name="gobackward.10" catalog="system" width="119" height="128"/>
         <image name="goforward.10" catalog="system" width="119" height="128"/>
         <image name="play.fill" catalog="system" width="117" height="128"/>
+        <image name="repeat" catalog="system" width="128" height="98"/>
         <image name="speaker.zzz" catalog="system" width="128" height="83"/>
     </resources>
 </document>

@@ -48,6 +48,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: UISlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
+    @IBOutlet weak var repeatButton: UIButton!
 
     enum sliderEventType {
         case began
@@ -56,6 +57,7 @@ class NCPlayerToolBar: UIView {
     }
     var playbackSliderEvent: sliderEventType = .ended
     var isFullscreen: Bool = false
+    var playRepeat: Bool = false
 
     private let hud = JGProgressHUD()
     private var ncplayer: NCPlayer?
@@ -97,6 +99,7 @@ class NCPlayerToolBar: UIView {
         playbackSlider.value = 0
         playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
+        repeatButton.setImage(NCUtility.shared.loadImage(named: "repeat", color: .gray), for: .normal)
 
         utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
@@ -302,6 +305,17 @@ class NCPlayerToolBar: UIView {
         ncplayer.jumpBackward(10)
 
         self.viewerMediaPage?.startTimerAutoHide()
+    }
+
+    @IBAction func tapRepeat(_ sender: Any) {
+
+        if playRepeat {
+            playRepeat = false
+            repeatButton.setImage(NCUtility.shared.loadImage(named: "repeat", color: .gray), for: .normal)
+        } else {
+            playRepeat = true
+            repeatButton.setImage(NCUtility.shared.loadImage(named: "repeat", color: .white), for: .normal)
+        }
     }
 }
 
