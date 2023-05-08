@@ -32,7 +32,8 @@ class NCPlayer: NSObject {
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var metadata: tableMetadata
-    internal var singleTapGestureRecognizer: UITapGestureRecognizer!
+    internal var singleTapGestureRecognizer: UITapGestureRecognizer?
+    internal var activityIndicator: UIActivityIndicatorView
     internal var width: Int?
     internal var height: Int?
     internal var length: Int?
@@ -53,6 +54,19 @@ class NCPlayer: NSObject {
         self.playerToolBar = playerToolBar
         self.metadata = metadata
         self.viewerMediaPage = viewerMediaPage
+
+        self.activityIndicator = UIActivityIndicatorView(style: .large)
+        self.activityIndicator.color = .white
+        self.activityIndicator.hidesWhenStopped = true
+        self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+
+        if let viewerMediaPage = viewerMediaPage {
+            viewerMediaPage.view.addSubview(activityIndicator)
+            NSLayoutConstraint.activate([
+                activityIndicator.centerXAnchor.constraint(equalTo: viewerMediaPage.view.centerXAnchor),
+                activityIndicator.centerYAnchor.constraint(equalTo: viewerMediaPage.view.centerYAnchor)
+            ])
+        }
 
         super.init()
     }
@@ -85,7 +99,7 @@ class NCPlayer: NSObject {
         }
 
         player.drawable = imageVideoContainer
-        if let view = player.drawable as? UIView {
+        if let view = player.drawable as? UIView, let singleTapGestureRecognizer = singleTapGestureRecognizer {
             view.isUserInteractionEnabled = true
             view.addGestureRecognizer(singleTapGestureRecognizer)
         }
@@ -213,6 +227,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 
     func mediaPlayerStateChanged(_ aNotification: Notification) {
 
+        if player.state == .buffering && player.isPlaying {
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+        }
+
         switch player.state {
         case .stopped:
             playerToolBar?.playButtonPlay()
@@ -278,6 +298,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
+        activityIndicator.stopAnimating()
         playerToolBar?.update()
     }
 
