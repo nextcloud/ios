@@ -293,11 +293,18 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             labelInfo.isHidden = true
             if let tag = tags.first {
                 tagListView.addTag(tag)
-                if tags.count >= 2 {
-                    tagListView.addTag(tags[1])
-                }
-                if tags.count > 2 {
-                    tagListView.addTag("+\(tags.count-2)")
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    tagListView.addTag(tag)
+                    if tags.count >= 2 {
+                        tagListView.addTag(tags[1])
+                    }
+                    if tags.count > 2 {
+                        tagListView.addTag("+\(tags.count-2)")
+                    }
+                } else {
+                    if tags.count > 1 {
+                        tagListView.addTag("+\(tags.count-1)")
+                    }
                 }
             }
         }

@@ -239,7 +239,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
     private func viewVideo(metadata: tableMetadata) {
 
-        NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
+        NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay, _ in
             if let url = url, let userAgent = CCUtility.getUserAgent() {
                 self.player.media = VLCMedia(url: url)
                 self.player.delegate = self

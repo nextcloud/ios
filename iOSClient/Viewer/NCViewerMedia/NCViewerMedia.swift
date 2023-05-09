@@ -149,9 +149,13 @@ class NCViewerMedia: UIViewController {
         if metadata.isMovie {
             if let ncplayer = self.ncplayer {
                 if ncplayer.url == nil {
-                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay in
-                        if let url = url {
+                    NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium)
+                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay, error in
+                        NCActivityIndicator.shared.stop()
+                        if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+                        } else {
+                            NCContentPresenter.shared.showError(error: error)
                         }
                     }
                 } else {
