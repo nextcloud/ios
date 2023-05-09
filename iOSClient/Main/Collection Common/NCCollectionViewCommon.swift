@@ -368,16 +368,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.collectionView?.reloadData()
         } else {
             let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-            if let indexPath = indexPath, dataSource.metadatas.count > 0 {
-                if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                    collectionView?.performBatchUpdates({
+            if let indexPath = indexPath, dataSource.metadatas.count > 0, sameSections {
+                collectionView?.performBatchUpdates({
+                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                         collectionView?.deleteItems(at: [indexPath])
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                } else {
+                    }
+                }, completion: { _ in
                     self.collectionView?.reloadData()
-                }
+                })
             } else {
                 reloadDataSource()
             }
