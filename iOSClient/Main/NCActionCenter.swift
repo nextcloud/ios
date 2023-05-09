@@ -188,7 +188,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: -
 
-    func openShare(viewController: UIViewController, metadata: tableMetadata, indexPage: NCGlobal.NCSharePagingIndex) {
+    func openShare(viewController: UIViewController, metadata: tableMetadata, indexPage: NCBrandOptions.NCInfoPagingIndex) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCActivityIndicator.shared.start(backgroundView: viewController.view)

@@ -135,12 +135,6 @@ class NCGlobal: NSObject {
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
     let fileNameVideoEncoded: String                = "video_encoded.mp4"
 
-    // NCSharePaging
-    //
-    enum NCSharePagingIndex: Int, CaseIterable {
-        case activity, sharing
-    }
-
     // NCViewerProviderContextMenu
     //
     let maxAutoDownload: UInt64                     = 50000000      // 50MB
