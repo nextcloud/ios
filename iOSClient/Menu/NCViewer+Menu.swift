@@ -123,6 +123,7 @@ extension NCViewer {
         //
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
+        /*
 #if MFFFLIB
         if metadata.isVideo {
             
@@ -139,7 +140,7 @@ extension NCViewer {
             )
         }
 #endif
-        
+        */
         //
         // SAVE CAMERA ROLL
         //
