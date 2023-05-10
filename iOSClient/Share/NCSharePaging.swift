@@ -240,7 +240,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.height = height
             return viewController
         default:
-            return applicationHandle.pagingViewController(pagingViewController, viewControllerAt: index)
+            return applicationHandle.pagingViewController(pagingViewController, viewControllerAt: index, metadata: metadata)
         }
     }
 

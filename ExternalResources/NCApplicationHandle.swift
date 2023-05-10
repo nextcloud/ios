@@ -64,7 +64,7 @@ class NCApplicationHandle: NSObject {
 
     // class: NCSharePaging
     // func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController
-    func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
+    func pagingViewController(_: PagingViewController, viewControllerAt index: Int, metadata: tableMetadata) -> UIViewController {
         return UIViewController()
     }
 
