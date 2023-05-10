@@ -126,7 +126,8 @@ class NCGroupfolders: NCCollectionViewCommon {
                 if error == .success, let groupfolders = results {
                     NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
                     for groupfolder in groupfolders {
-                        let serverUrlFileName = homeServerUrl + groupfolder.mountPoint
+                        let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
+                        let serverUrlFileName = homeServerUrl + mountPoint
                         if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
                             NCOperationQueue.shared.readFile(serverUrlFileName: serverUrlFileName)
                         }

@@ -1089,21 +1089,6 @@ extension NCManageDatabase {
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
 
-    func getSubtitles(account: String, serverUrl: String, fileName: String) -> (all:[tableMetadata], existing:[tableMetadata]) {
-
-        let realm = try! Realm()
-        let nameOnly = (fileName as NSString).deletingPathExtension + "."
-        var metadatas: [tableMetadata] = []
-
-        let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName BEGINSWITH[c] %@ AND fileName ENDSWITH[c] '.srt'", account, serverUrl, nameOnly)
-        for result in results {
-            if CCUtility.fileProviderStorageExists(result) {
-                metadatas.append(result)
-            }
-        }
-        return(Array(results.map { tableMetadata.init(value: $0) }), Array(metadatas.map { tableMetadata.init(value: $0) }))
-    }
-
     func getNumMetadatasInUpload() -> Int {
 
         let realm = try! Realm()
@@ -1131,7 +1116,8 @@ extension NCManageDatabase {
 
         let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
         for groupfolder in groupfolders {
-            let serverUrlFileName = homeServerUrl + groupfolder.mountPoint
+            let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
+            let serverUrlFileName = homeServerUrl + mountPoint
             if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrlFileName).first,
                let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
                 metadatas.append(tableMetadata(value: metadata))
