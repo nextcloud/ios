@@ -352,6 +352,8 @@ extension NCPlayerToolBar {
                     )
                 )
             }
+
+            actions.append(.seperator(order: 0))
         }
 
         actions.append(
@@ -413,6 +415,8 @@ extension NCPlayerToolBar {
                     )
                 )
             }
+
+            actions.append(.seperator(order: 0))
         }
 
         actions.append(
