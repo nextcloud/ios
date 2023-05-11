@@ -197,7 +197,6 @@ class NCBrandColor: NSObject {
         }
     }
     
-    
     @objc public var iconColor: UIColor{
         if #available(iOS 13.0, *) {
             if UITraitCollection.current.userInterfaceStyle == .dark {
