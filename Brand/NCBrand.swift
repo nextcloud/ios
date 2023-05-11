@@ -196,11 +196,7 @@ class NCBrandColor: NSObject {
             return UIColor(red: 0.0 / 255.0, green: 199.0 / 255.0, blue: 190.0 / 255.0, alpha: 1.0)
         }
     }
-    
-    @objc public var notificationAction: UIColor {
-        return UIColor(red: 0/255.0, green: 153/255.0, blue: 255/255.0, alpha: 1.0)
-    }
-    
+
     @objc public var iconColor: UIColor{
         if #available(iOS 13.0, *) {
             if UITraitCollection.current.userInterfaceStyle == .dark {
@@ -211,6 +207,10 @@ class NCBrandColor: NSObject {
         } else {
             return  UIColor(red: 38.0/255.0, green: 38.0/255.0, blue: 38.0/255.0, alpha: 1.0)
         }
+    }
+    
+    @objc public var notificationAction: UIColor {
+        return UIColor(red: 0/255.0, green: 153/255.0, blue: 255/255.0, alpha: 1.0)
     }
 
     override init() {
