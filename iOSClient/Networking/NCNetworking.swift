@@ -216,7 +216,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
     
-    private func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
+    func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
         
         let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
         let data: CFData = SecCertificateCopyData(certificate)
