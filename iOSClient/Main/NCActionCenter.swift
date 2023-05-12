@@ -222,6 +222,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 shareViewController?.metadata = metadata
                 shareViewController?.pages = pages
 
+                pages = NCApplicationHandle().filterPages(pages: pages)
+
                 if pages.contains(page) {
                     shareViewController?.page = page
                 } else if let page = pages.first {
