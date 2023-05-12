@@ -75,7 +75,7 @@ class NCApplicationHandle: NSObject {
     }
 
     // class: NCActionCenter
-    func filterPages(pages: [NCBrandOptions.NCInfoPagingTab]) -> [NCBrandOptions.NCInfoPagingTab] {
+    func filterPages(pages: [NCBrandOptions.NCInfoPagingTab], metadata: tableMetadata) -> [NCBrandOptions.NCInfoPagingTab] {
         return pages
     }
 }
