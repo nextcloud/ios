@@ -216,10 +216,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 if !metadata.isSharable, let idx = pages.firstIndex(of: .sharing) {
                     pages.remove(at: idx)
                 }
-
-                shareViewController?.metadata = metadata
-                shareViewController?.pages = pages
-
                 (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
 
                 if pages.contains(page) {
@@ -229,6 +225,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else {
                     return
                 }
+
+                shareViewController?.pages = pages
+                shareViewController?.metadata = metadata
 
                 shareNavigationController?.modalPresentationStyle = .formSheet
                 if let shareNavigationController = shareNavigationController {
