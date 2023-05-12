@@ -73,4 +73,9 @@ class NCApplicationHandle: NSObject {
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
         return PagingIndexItem(index: index, title: "")
     }
+
+    // class: NCActionCenter
+    func filterPages(pages: [NCBrandOptions.NCInfoPagingTab], page: NCBrandOptions.NCInfoPagingTab, metadata: tableMetadata) -> ([NCBrandOptions.NCInfoPagingTab], NCBrandOptions.NCInfoPagingTab) {
+        return (pages, page)
+    }
 }

@@ -83,7 +83,7 @@ import UIKit
     @objc public var cleanUpDay:                        Int = 0                                                     // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
 
     // Info Paging
-    enum NCInfoPagingIndex: Int, CaseIterable {
+    enum NCInfoPagingTab: Int, CaseIterable {
         case activity, sharing
     }
 
