@@ -233,15 +233,6 @@ class NCShareHeaderViewController: PagingViewController {
             metadata: metadata
         )
     }
-
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        /*
-        guard NCBrandOptions.NCInfoPagingIndex(rawValue: indexPath.item) != .activity || activityEnabled,
-              NCBrandOptions.NCInfoPagingIndex(rawValue: indexPath.item) != .sharing || sharingEnabled
-        else { return }
-        */
-        super.collectionView(collectionView, didSelectItemAt: indexPath)
-    }
 }
 
 class NCSharePagingView: PagingView {
