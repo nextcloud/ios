@@ -515,6 +515,7 @@
         
     NSURL *url = [NSURL URLWithString: NCBrandOptions.shared.pushNotificationServerProxy];
     viewController.host = [url host];
+    viewController.certificateTitle = NSLocalizedString(@"_certificate_pn_view_", nil);
 
     [self presentViewController:navigationController animated:YES completion:nil];
 }

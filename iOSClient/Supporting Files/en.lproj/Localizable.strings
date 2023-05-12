@@ -846,6 +846,8 @@
 "Cancel"                    = "Cancel";
 "_certificate_details_"     = "Certificate Server details";
 "_certificate_pn_details_"  = "Certificate Push Notification details";
+"_certificate_view_"        = "Certificate Server";
+"_certificate_pn_view_"     = "Certificate Push Notification";
 "_save_as_scan_"            = "Save as scan";
 "_modify_"                  = "Modify";
 "_overwrite_original_"      = "Overwrite original";
