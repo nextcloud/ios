@@ -191,6 +191,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        var page = page
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, queue: .main) { _, metadata, error in
@@ -203,9 +204,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
                 let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
                 let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
-
-                // let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                // let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
                 let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesActivity)
 
                 for value in NCBrandOptions.NCInfoPagingTab.allCases {
@@ -222,7 +220,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 shareViewController?.metadata = metadata
                 shareViewController?.pages = pages
 
-                pages = NCApplicationHandle().filterPages(pages: pages, metadata: metadata)
+                (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
 
                 if pages.contains(page) {
                     shareViewController?.page = page
