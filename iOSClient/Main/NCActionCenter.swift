@@ -188,18 +188,47 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: -
 
-    func openShare(viewController: UIViewController, metadata: tableMetadata, indexPage: NCBrandOptions.NCInfoPagingIndex) {
+    func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, queue: .main) { _, metadata, error in
+
             NCActivityIndicator.shared.stop()
+
             if let metadata = metadata, error == .success {
+
+                var pages: [NCBrandOptions.NCInfoPagingTab] = []
+
                 let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
                 let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
 
+                // let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                // let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+                let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesActivity)
+
+                for value in NCBrandOptions.NCInfoPagingTab.allCases {
+                    pages.append(value)
+                }
+
+                if activity == nil, let idx = pages.firstIndex(of: .activity) {
+                    pages.remove(at: idx)
+                }
+                if !metadata.isSharable, let idx = pages.firstIndex(of: .sharing) {
+                    pages.remove(at: idx)
+                }
+
                 shareViewController?.metadata = metadata
-                shareViewController?.indexPage = indexPage
+                shareViewController?.pages = pages
+
+                if pages.contains(page) {
+                    shareViewController?.page = page
+                } else if let page = pages.first {
+                    shareViewController?.page = page
+                } else {
+                    return
+                }
 
                 shareNavigationController?.modalPresentationStyle = .formSheet
                 if let shareNavigationController = shareNavigationController {

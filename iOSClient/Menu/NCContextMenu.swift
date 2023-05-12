@@ -53,7 +53,7 @@ class NCContextMenu: NSObject {
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
                               image: UIImage(systemName: "info")) { _ in
-            NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+            NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
         }
 
         let favorite = UIAction(title: metadata.favorite ?

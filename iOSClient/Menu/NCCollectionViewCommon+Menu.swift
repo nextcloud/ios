@@ -82,7 +82,7 @@ extension NCCollectionViewCommon {
                     icon: NCUtility.shared.loadImage(named: "info"),
                     order: 10,
                     action: { _ in
-                        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .activity)
+                        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
                     }
                 )
             )

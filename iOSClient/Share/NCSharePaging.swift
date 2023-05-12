@@ -37,14 +37,12 @@ class NCSharePaging: UIViewController {
     private let pagingViewController = NCShareHeaderViewController()
     private weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-    private var activityEnabled = true
-    private var commentsEnabled = true
-    private var sharingEnabled = true
     private var currentVC: NCSharePagingContent?
     private let applicationHandle = NCApplicationHandle()
 
-    @objc var metadata = tableMetadata()
-    var indexPage = NCBrandOptions.NCInfoPagingIndex.activity
+    var metadata = tableMetadata()
+    var pages: [NCBrandOptions.NCInfoPagingTab] = []
+    var page: NCBrandOptions.NCInfoPagingTab = .activity
 
     // MARK: - View Life Cycle
 
@@ -57,14 +55,8 @@ class NCSharePaging: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
-        setupCapabilities()
-
         // *** MUST BE THE FIRST ONE ***
         pagingViewController.metadata = metadata
-
-        pagingViewController.activityEnabled = activityEnabled
-        pagingViewController.commentsEnabled = commentsEnabled
-        pagingViewController.sharingEnabled = sharingEnabled
         pagingViewController.backgroundColor = .systemBackground
         pagingViewController.menuBackgroundColor = .systemBackground
         pagingViewController.selectedBackgroundColor = .systemBackground
@@ -95,37 +87,12 @@ class NCSharePaging: UIViewController {
 
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
-        pagingViewController.select(index: indexPage.rawValue)
-        let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: indexPage.rawValue) as? PagingIndexItem
+        pagingViewController.select(index: page.rawValue)
+        let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: page.rawValue) as? PagingIndexItem
         self.title = pagingIndexItem?.title
 
-        if sharingEnabled {
-            pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
-        } else {
-            pagingViewController.indicatorColor = .clear
-        }
         (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
-    }
-
-    func setupCapabilities() {
-        guard let appDelegate = appDelegate else { return }
-
-        // Verify Comments & Sharing enabled
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 && comments == false {
-            commentsEnabled = false
-        }
-        sharingEnabled = metadata.isSharable
-        let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesActivity)
-        activityEnabled = activity != nil
-        if indexPage == .sharing && !sharingEnabled {
-            indexPage = .activity
-        }
-        if indexPage == .activity && !activityEnabled && sharingEnabled {
-            indexPage = .sharing
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -140,7 +107,7 @@ class NCSharePaging: UIViewController {
         }
 
         pagingViewController.menuItemSize = .fixed(
-            width: self.view.bounds.width / CGFloat(NCBrandOptions.NCInfoPagingIndex.allCases.count),
+            width: self.view.bounds.width / CGFloat(self.pages.count),
             height: 40)
     }
 
@@ -159,7 +126,7 @@ class NCSharePaging: UIViewController {
 
         coordinator.animate(alongsideTransition: nil) { _ in
             self.pagingViewController.menuItemSize = .fixed(
-                width: self.view.bounds.width / CGFloat(NCBrandOptions.NCInfoPagingIndex.allCases.count),
+                width: self.view.bounds.width / CGFloat(self.pages.count),
                 height: 40)
             self.currentVC?.textField?.resignFirstResponder()
         }
@@ -196,17 +163,6 @@ extension NCSharePaging: PagingViewControllerDelegate {
 
     func pagingViewController(_ pagingViewController: PagingViewController, willScrollToItem pagingItem: PagingItem, startingViewController: UIViewController, destinationViewController: UIViewController) {
 
-        guard
-            let item = pagingItem as? PagingIndexItem,
-            let itemIndex = NCBrandOptions.NCInfoPagingIndex(rawValue: item.index)
-        else { return }
-
-        if itemIndex == .activity && !activityEnabled || itemIndex == .sharing && !sharingEnabled {
-            pagingViewController.contentInteraction = .none
-        } else {
-            self.title = item.title
-        }
-
         currentVC?.textField?.resignFirstResponder()
         self.currentVC = destinationViewController as? NCSharePagingContent
     }
@@ -220,8 +176,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
 
         let height = pagingViewController.options.menuHeight + NCSharePagingView.headerHeight + NCSharePagingView.tagHeaderHeight
 
-        switch NCBrandOptions.NCInfoPagingIndex(rawValue: index) {
-        case .activity:
+        if pages[index] == .activity {
             guard let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as? NCActivity else {
                 return UIViewController()
             }
@@ -231,38 +186,31 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.metadata = metadata
             viewController.objectType = "files"
             return viewController
-        case .sharing:
+        } else if pages[index] == .sharing {
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {
                 return UIViewController()
             }
-            viewController.sharingEnabled = sharingEnabled
             viewController.metadata = metadata
             viewController.height = height
             return viewController
-        default:
+        } else {
             return applicationHandle.pagingViewController(pagingViewController, viewControllerAt: index, metadata: metadata, topHeight: height)
         }
     }
 
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
 
-        if NCBrandOptions.NCInfoPagingIndex.allCases.count == 2 && !sharingEnabled {
-            self.title = NSLocalizedString("_activity_", comment: "")
-            return PagingIndexItem(index: index, title: "")
-        }
-
-        switch NCBrandOptions.NCInfoPagingIndex(rawValue: index) {
-        case .activity:
+        if pages[index] == .activity {
             return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
-        case .sharing:
+        } else if pages[index] == .sharing {
             return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
-        default:
+        } else {
             return applicationHandle.pagingViewController(pagingViewController, pagingItemAt: index)
         }
     }
 
     func numberOfViewControllers(in pagingViewController: PagingViewController) -> Int {
-        return NCBrandOptions.NCInfoPagingIndex.allCases.count
+        return self.pages.count
     }
 }
 
@@ -287,9 +235,11 @@ class NCShareHeaderViewController: PagingViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        /*
         guard NCBrandOptions.NCInfoPagingIndex(rawValue: indexPath.item) != .activity || activityEnabled,
               NCBrandOptions.NCInfoPagingIndex(rawValue: indexPath.item) != .sharing || sharingEnabled
         else { return }
+        */
         super.collectionView(collectionView, didSelectItemAt: indexPath)
     }
 }
