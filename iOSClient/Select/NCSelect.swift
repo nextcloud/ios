@@ -499,6 +499,9 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.separator.isHidden = false
             }
 
+            // Add TAGS
+            cell.setTags(tags: Array(metadata.tags))
+
             return cell
         }
 

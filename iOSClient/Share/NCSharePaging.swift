@@ -50,6 +50,7 @@ class NCSharePaging: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        title = NSLocalizedString("_details_", comment: "")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -89,7 +90,6 @@ class NCSharePaging: UIViewController {
         pagingViewController.delegate = self
         pagingViewController.select(index: page.rawValue)
         let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: page.rawValue) as? PagingIndexItem
-        self.title = pagingIndexItem?.title
 
         (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
