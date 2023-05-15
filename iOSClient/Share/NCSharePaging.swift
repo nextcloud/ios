@@ -55,6 +55,7 @@ class NCSharePaging: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(notification:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
 
         // *** MUST BE THE FIRST ONE ***
         pagingViewController.metadata = metadata
@@ -89,7 +90,6 @@ class NCSharePaging: UIViewController {
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
         pagingViewController.select(index: page.rawValue)
-        let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: page.rawValue) as? PagingIndexItem
 
         (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
@@ -132,7 +132,8 @@ class NCSharePaging: UIViewController {
         }
     }
 
-    // MARK: - Keyboard & TextField
+    // MARK: - NotificationCenter & Keyboard & TextField
+
     @objc func keyboardWillShow(notification: Notification) {
          let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
 
@@ -148,12 +149,16 @@ class NCSharePaging: UIViewController {
          }
      }
 
-     @objc func keyboardWillHide(notification: NSNotification) {
-         view.frame.origin.y = 0
-     }
+    @objc func keyboardWillHide(notification: NSNotification) {
+        view.frame.origin.y = 0
+    }
 
     @objc func exitTapped() {
         self.dismiss(animated: true, completion: nil)
+    }
+
+    @objc func applicationDidEnterBackground(notification: Notification) {
+        self.dismiss(animated: false, completion: nil)
     }
 }
 
