@@ -193,6 +193,7 @@ class NCPlayer: NSObject {
 
     @objc func playerStop() {
 
+        savePosition()
         player.stop()
     }
 
