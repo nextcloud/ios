@@ -34,11 +34,11 @@ class NCActivityIndicator: NSObject {
     private var viewActivityIndicator: UIView?
     private var viewBackgroundActivityIndicator: UIView?
 
-    @objc func startActivity(backgroundView: UIView?, style: UIActivityIndicatorView.Style) {
-        start(backgroundView: backgroundView, style: style)
+    @objc func startActivity(backgroundView: UIView? = nil, style: UIActivityIndicatorView.Style, blurEffect: Bool = true) {
+        start(backgroundView: backgroundView, style: style, blurEffect: blurEffect)
     }
 
-    func start(backgroundView: UIView? = nil, bottom: CGFloat? = nil, top: CGFloat? = nil, style: UIActivityIndicatorView.Style = .large) {
+    func start(backgroundView: UIView? = nil, bottom: CGFloat? = nil, top: CGFloat? = nil, style: UIActivityIndicatorView.Style = .large, blurEffect: Bool = true) {
 
         if self.activityIndicator != nil { stop() }
 
@@ -83,7 +83,7 @@ class NCActivityIndicator: NSObject {
             guard let viewActivityIndicator = self.viewActivityIndicator else { return }
             viewActivityIndicator.addSubview(activityIndicator)
 
-            if backgroundView == nil {
+            if backgroundView == nil, blurEffect {
                 let blurEffect = UIBlurEffect(style: .regular)
                 let blurEffectView = UIVisualEffectView(effect: blurEffect)
                 blurEffectView.frame = viewActivityIndicator.frame
