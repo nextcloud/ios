@@ -294,7 +294,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             if let tag = tags.first {
                 tagListView.addTag(tag)
                 if UIDevice.current.userInterfaceIdiom == .pad {
-                    tagListView.addTag(tag)
                     if tags.count >= 2 {
                         tagListView.addTag(tags[1])
                     }
