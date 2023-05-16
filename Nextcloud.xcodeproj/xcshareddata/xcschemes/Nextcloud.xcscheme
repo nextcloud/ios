@@ -48,6 +48,17 @@
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C007CB1E2A13683700247E65"
+               BuildableName = "NextcloudUITests.xctest"
+               BlueprintName = "NextcloudUITests"
+               ReferencedContainer = "container:Nextcloud.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
