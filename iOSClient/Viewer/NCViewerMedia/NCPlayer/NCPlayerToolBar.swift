@@ -366,6 +366,7 @@ extension NCPlayerToolBar {
                 on: false,
                 action: { _ in
 
+                    guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                     let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
                     let viewController = navigationController.topViewController as! NCSelect
@@ -375,6 +376,7 @@ extension NCPlayerToolBar {
                     viewController.includeDirectoryE2EEncryption = false
                     viewController.enableSelectFile = true
                     viewController.type = "subtitle"
+                    viewController.serverUrl = metadata.serverUrl
 
                     self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                 }
@@ -429,6 +431,7 @@ extension NCPlayerToolBar {
                 on: false,
                 action: { _ in
 
+                    guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                     let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
                     let viewController = navigationController.topViewController as! NCSelect
@@ -438,6 +441,7 @@ extension NCPlayerToolBar {
                     viewController.includeDirectoryE2EEncryption = false
                     viewController.enableSelectFile = true
                     viewController.type = "audio"
+                    viewController.serverUrl = metadata.serverUrl
 
                     self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                 }
