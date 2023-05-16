@@ -6,6 +6,7 @@
 //  Copyright © 2023 Marino Faggiana. All rights reserved.
 //
 
+@testable import Nextcloud
 import XCTest
 
 final class ScreenshotUITests: XCTestCase {
