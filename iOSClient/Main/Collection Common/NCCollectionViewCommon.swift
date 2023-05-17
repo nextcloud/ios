@@ -353,36 +353,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? [String],
+              let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError
         else { return }
 
         if error == .success {
-            
-        } else {
 
-        }
-        
-        /*
-        if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
-            reloadDataSourceNetwork(forced: true)
-        } else if onlyLocalCache {
-            self.collectionView?.reloadData()
-        } else {
-            let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-            if let indexPath = indexPath, dataSource.metadatas.count > 0, sameSections {
-                collectionView?.performBatchUpdates({
+            var items: [IndexPath] = []
+            for ocId in ocIds {
+                if let indexPath = dataSource.deleteMetadata(ocId: ocId).indexPath {
                     if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                        collectionView?.deleteItems(at: [indexPath])
+                        items.append(indexPath)
                     }
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
+                }
+            }
+
+            if items.count == ocIds.count {
+                self.collectionView?.deleteItems(at: items)
             } else {
                 reloadDataSource()
             }
         }
-        */
     }
 
     @objc func moveFile(_ notification: NSNotification) {
