@@ -70,7 +70,7 @@ class NCManageDatabase: NSObject {
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
                 schemaVersion: databaseSchemaVersion,
-                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tablePhotoLibrary.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableShare.self, tableChunk.self, tableAvatar.self, tableDashboardWidget.self, tableDashboardWidgetButton.self, NCDBLayoutForView.self]
+                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tablePhotoLibrary.self, tableE2eEncryption.self, tableE2eEncryptionLock.self, tableE2eMetadata.self, tableShare.self, tableChunk.self, tableAvatar.self, tableDashboardWidget.self, tableDashboardWidgetButton.self, NCDBLayoutForView.self]
             )
 
             Realm.Configuration.defaultConfiguration = config
@@ -95,6 +95,10 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableMetadata.className())
                     }
 
+                    if oldSchemaVersion < 292 {
+                        migration.deleteData(forType: tableVideo.className())
+                    }
+
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
 
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -108,14 +112,14 @@ class NCManageDatabase: NSObject {
 
             do {
                 _ = try Realm(configuration: configCompact)
-            } catch {
+            } catch let error {
                 if let databaseFileUrlPath = databaseFileUrlPath {
                     do {
 #if !EXTENSION
-                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_database_corrupt_")
-                        NCContentPresenter.shared.showError(error: error, priority: .max)
+                        let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
+                        NCContentPresenter.shared.showError(error: nkError, priority: .max)
 #endif
-                        NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE CORRUPT: removed")
+                        NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE ERROR: \(error.localizedDescription)")
                         try FileManager.default.removeItem(at: databaseFileUrlPath)
                     } catch {}
                 }
@@ -132,16 +136,16 @@ class NCManageDatabase: NSObject {
         // Verify Database, if corrupt remove it
         do {
             _ = try Realm()
-        } catch {
+        } catch let error {
             if let databaseFileUrlPath = databaseFileUrlPath {
                 do {
 #if !EXTENSION
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_database_corrupt_")
-                    NCContentPresenter.shared.showError(error: error, priority: .max)
+                    let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
+                    NCContentPresenter.shared.showError(error: nkError, priority: .max)
 #endif
-                    NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE CORRUPT: removed")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE ERROR: \(error.localizedDescription)")
                     try FileManager.default.removeItem(at: databaseFileUrlPath)
-                } catch {}
+                } catch { }
             }
         }
 
@@ -190,8 +194,11 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableDirectory.self, account: account)
         self.clearTable(tableE2eEncryption.self, account: account)
         self.clearTable(tableE2eEncryptionLock.self, account: account)
+        self.clearTable(tableE2eMetadata.self, account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
+        self.clearTable(TableGroupfolders.self, account: account)
+        self.clearTable(TableGroupfoldersGroups.self, account: account)
         self.clearTable(NCDBLayoutForView.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)

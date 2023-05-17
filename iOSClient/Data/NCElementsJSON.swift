@@ -70,4 +70,6 @@ import UIKit
 
     @objc public let capabilitiesUserStatusEnabled: Array = ["ocs", "data", "capabilities", "user_status", "enabled"]
     @objc public let capabilitiesUserStatusSupportsEmoji: Array = ["ocs", "data", "capabilities", "user_status", "supports_emoji"]
+
+    @objc public let capabilitiesGroupfoldersEnabled: Array = ["ocs", "data", "capabilities", "groupfolders", "hasGroupFolders"]
 }

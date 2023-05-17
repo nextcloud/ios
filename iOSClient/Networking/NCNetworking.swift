@@ -171,11 +171,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Start")
-
         if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
-
-            NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Extarct certificate txt")
 
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
@@ -189,17 +185,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
             certificateData.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
             
             if isServerTrusted {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server trusted")
                 isTrusted = true
             } else if let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server trusted (data saved)")
                 isTrusted = true
             } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server not trusted")
                 isTrusted = false
             }
         } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] not certificate, server not trusted ")
             isTrusted = false
         }
 
@@ -224,7 +216,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
     
-    private func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
+    func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
         
         let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
         let data: CFData = SecCertificateCopyData(certificate)
@@ -1535,20 +1527,26 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Direct Download
 
-    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?) -> Void) {
+    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?, _ autoplay: Bool, _ error: NKError) -> Void) {
 
-        if CCUtility.fileProviderStorageExists(metadata) {
-            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+        if !metadata.url.isEmpty {
+            if metadata.url.hasPrefix("/") {
+                completition(URL(fileURLWithPath: metadata.url), true, .success)
+            } else {
+                completition(URL(string: metadata.url), true, .success)
+            }
+        } else if CCUtility.fileProviderStorageExists(metadata) {
+            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { account, url, data, error in
                 if error == .success && url != nil {
                     if let url = URL(string: url!) {
-                        completition(url)
+                        completition(url, false, error)
                     } else {
-                        completition(nil)
+                        completition(nil, false, error)
                     }
                 } else {
-                    completition(nil)
+                    completition(nil, false, error)
                 }
             }
         }

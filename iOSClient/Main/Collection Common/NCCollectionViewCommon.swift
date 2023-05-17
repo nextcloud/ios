@@ -368,16 +368,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.collectionView?.reloadData()
         } else {
             let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-            if let indexPath = indexPath, dataSource.metadatas.count > 0 {
-                if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                    collectionView?.performBatchUpdates({
+            if let indexPath = indexPath, dataSource.metadatas.count > 0, sameSections {
+                collectionView?.performBatchUpdates({
+                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                         collectionView?.deleteItems(at: [indexPath])
-                    }, completion: { _ in
-                        self.collectionView?.reloadData()
-                    })
-                } else {
+                    }
+                }, completion: { _ in
                     self.collectionView?.reloadData()
-                }
+                })
             } else {
                 reloadDataSource()
             }
@@ -894,7 +892,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
-        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, indexPage: .sharing)
+        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
@@ -1269,6 +1267,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             }
         }
+
+        // GROUPFOLDERS
+        if layoutKey == NCGlobal.shared.layoutViewGroupfolders && !pushed {
+
+            if let viewController = appDelegate.listGroupfoldersVC[serverUrlPush] {
+
+                if viewController.isViewLoaded {
+                    pushViewController(viewController: viewController)
+                }
+
+            } else {
+
+                if let viewController: NCGroupfolders = UIStoryboard(name: "NCGroupfolders", bundle: nil).instantiateInitialViewController() as? NCGroupfolders {
+
+                    viewController.serverUrl = serverUrlPush
+                    viewController.titleCurrentFolder = metadata.fileNameView
+
+                    appDelegate.listGroupfoldersVC[serverUrlPush] = viewController
+
+                    pushViewController(viewController: viewController)
+                }
+            }
+        }
     }
 }
 
@@ -1319,10 +1340,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
-            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+            if metadata.isImage || metadata.isMovie {
                 var metadatas: [tableMetadata] = []
                 for metadata in metadataSourceForAllSections {
-                    if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+                    if metadata.isImage || metadata.isMovie {
                         metadatas.append(metadata)
                     }
                 }
@@ -1679,6 +1700,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
         }
+
+        // Add TAGS
+        cell.setTags(tags: Array(metadata.tags))
 
         // ** IMPORT MUST BE AT THE END **
         //

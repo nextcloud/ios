@@ -52,6 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let listFilesVC = ThreadSafeDictionary<String,NCFiles>()
     let listFavoriteVC = ThreadSafeDictionary<String,NCFavorite>()
     let listOfflineVC = ThreadSafeDictionary<String,NCOffline>()
+    let listGroupfoldersVC = ThreadSafeDictionary<String,NCGroupfolders>()
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -462,9 +463,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         } else if openLoginWeb {
 
+            // Used also for reinsert the account (change passwd)
             if activeLoginWeb?.view.window == nil {
                 activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb
                 activeLoginWeb?.urlBase = urlBase
+                activeLoginWeb?.user = user
                 showLoginViewController(activeLoginWeb, contextViewController: viewController)
             }
 
@@ -577,7 +580,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if serverVersionMajor > 0 {
             NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
         }
-        NCKTVHTTPCache.shared.restartProxy(user: user, password: password)
 
         DispatchQueue.main.async {
             if UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {

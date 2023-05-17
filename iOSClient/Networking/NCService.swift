@@ -253,7 +253,7 @@ class NCService: NSObject {
             }
         }
     }
-    
+
     // MARK: -
 
     private func requestDashboardWidget() {

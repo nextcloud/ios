@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 public protocol NCViewCertificateDetailsDelegate: AnyObject {
     func viewCertificateDetailsDismiss(host: String)
@@ -38,22 +39,26 @@ class NCViewCertificateDetails: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textView: UITextView!
 
-    private let directoryCertificate = CCUtility.getDirectoryCerificates()!
     public var delegate: NCViewCertificateDetailsDelegate?
     @objc public var host: String = ""
+    public var fileNamePath: String = ""
+    @objc public var certificateTitle = NSLocalizedString("_certificate_view_", comment: "")
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = NSLocalizedString("_certificate_details_", comment: "")
+        self.navigationItem.title = certificateTitle
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 
-        let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
-        if FileManager.default.fileExists(atPath: certNamePathTXT) {
+        if fileNamePath.isEmpty {
+            fileNamePath = CCUtility.getDirectoryCerificates()! + "/" + host + ".txt"
+        }
+
+        if FileManager.default.fileExists(atPath: fileNamePath) {
             do {
-                let text = try String(contentsOfFile: certNamePathTXT, encoding: .utf8)
+                let text = try String(contentsOfFile: fileNamePath, encoding: .utf8)
                 let font = UIFont.systemFont(ofSize: 13)
                 let attributes = [NSAttributedString.Key.font: font] as [NSAttributedString.Key: Any]
                 var contentRect = NSString(string: text).boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 0), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: attributes, context: nil)
@@ -94,4 +99,27 @@ class NCViewCertificateDetails: UIViewController {
     @IBAction func actionCancel(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+// MARK: - UIViewControllerRepresentable
+
+struct NCViewCertificateDetailsRepresentable: UIViewControllerRepresentable {
+
+    typealias UIViewControllerType = UINavigationController
+    var fileNamePath: String
+    var title: String
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+
+        let storyboard = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController?.topViewController as? NCViewCertificateDetails
+
+        viewController?.fileNamePath = fileNamePath
+        viewController?.certificateTitle = title
+
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
 }

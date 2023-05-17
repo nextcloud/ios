@@ -91,6 +91,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var subline: String?
+    let tags = List<String>()
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
@@ -141,6 +142,22 @@ extension tableMetadata {
 
     var isDocumentViewableOnly: Bool {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
+    }
+
+    var isMovie: Bool {
+        return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
+    }
+
+    var isVideo: Bool {
+        return classFile == NKCommon.TypeClassFile.video.rawValue
+    }
+
+    var isAudio: Bool {
+        return classFile == NKCommon.TypeClassFile.audio.rawValue
+    }
+
+    var isImage: Bool {
+        return classFile == NKCommon.TypeClassFile.image.rawValue
     }
 
     var isSavebleAsImage: Bool {
@@ -284,6 +301,9 @@ extension NCManageDatabase {
         }
         for element in file.shareType {
             metadata.shareType.append(element)
+        }
+        for element in file.tags {
+            metadata.tags.append(element)
         }
         metadata.size = file.size
         metadata.classFile = file.classFile
@@ -533,7 +553,19 @@ extension NCManageDatabase {
                         // update
                         // Workaround: check lock bc no etag changes if lock runs out in directory
                         // https://github.com/nextcloud/server/issues/8477
-                        if result.status == NCGlobal.shared.metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions || result.hasPreview != metadata.hasPreview || result.note != metadata.note || result.lock != metadata.lock || result.shareType != metadata.shareType || result.sharePermissionsCloudMesh != metadata.sharePermissionsCloudMesh || result.sharePermissionsCollaborationServices != metadata.sharePermissionsCollaborationServices || result.favorite != metadata.favorite) {
+                        if result.status == NCGlobal.shared.metadataStatusNormal &&
+                            (result.etag != metadata.etag ||
+                             result.fileNameView != metadata.fileNameView ||
+                             result.date != metadata.date ||
+                             result.permissions != metadata.permissions ||
+                             result.hasPreview != metadata.hasPreview ||
+                             result.note != metadata.note ||
+                             result.lock != metadata.lock ||
+                             result.shareType != metadata.shareType ||
+                             result.sharePermissionsCloudMesh != metadata.sharePermissionsCloudMesh ||
+                             result.sharePermissionsCollaborationServices != metadata.sharePermissionsCollaborationServices ||
+                             result.favorite != metadata.favorite ||
+                             result.tags != metadata.tags) {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(tableMetadata.init(value: metadata), update: .all)
                         } else if result.status == NCGlobal.shared.metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
@@ -1057,21 +1089,6 @@ extension NCManageDatabase {
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
 
-    func getSubtitles(account: String, serverUrl: String, fileName: String) -> (all:[tableMetadata], existing:[tableMetadata]) {
-
-        let realm = try! Realm()
-        let nameOnly = (fileName as NSString).deletingPathExtension + "."
-        var metadatas: [tableMetadata] = []
-
-        let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName BEGINSWITH[c] %@ AND fileName ENDSWITH[c] '.srt'", account, serverUrl, nameOnly)
-        for result in results {
-            if CCUtility.fileProviderStorageExists(result) {
-                metadatas.append(result)
-            }
-        }
-        return(Array(results.map { tableMetadata.init(value: $0) }), Array(metadatas.map { tableMetadata.init(value: $0) }))
-    }
-
     func getNumMetadatasInUpload() -> Int {
 
         let realm = try! Realm()
@@ -1079,5 +1096,34 @@ extension NCManageDatabase {
         let num = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status == %i || status == %i",  NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading)).count
 
         return num
+    }
+
+    func getMetadataFromDirectory(account: String, serverUrl: String) -> tableMetadata? {
+
+        let realm = try! Realm()
+
+        guard let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
+        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first else { return nil }
+
+        return tableMetadata.init(value: result)
+    }
+
+    func getMetadatasFromGroupfolders(account: String, urlBase: String, userId: String) -> [tableMetadata] {
+
+        let realm = try! Realm()
+        var metadatas: [tableMetadata] = []
+        let homeServerUrl = NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
+
+        let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
+        for groupfolder in groupfolders {
+            let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
+            let serverUrlFileName = homeServerUrl + mountPoint
+            if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrlFileName).first,
+               let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
+                metadatas.append(tableMetadata(value: metadata))
+            }
+        }
+
+        return metadatas
     }
 }

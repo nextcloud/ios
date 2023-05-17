@@ -35,10 +35,14 @@ extension Array where Element == NCMenuAction {
 class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
+    var menuColor = UIColor.systemBackground
+    var textColor = UIColor.label
 
-    static func makeNCMenu(with actions: [NCMenuAction]) -> NCMenu? {
+    static func makeNCMenu(with actions: [NCMenuAction], menuColor: UIColor, textColor: UIColor) -> NCMenu? {
         let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu
         menuViewController?.actions = actions
+        menuViewController?.menuColor = menuColor
+        menuViewController?.textColor = textColor
         return menuViewController
     }
 
@@ -48,6 +52,7 @@ class NCMenu: UITableViewController {
         super.viewDidLoad()
         tableView.estimatedRowHeight = 60
         tableView.rowHeight = UITableView.automaticDimension
+        self.view.backgroundColor = menuColor
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -77,6 +82,7 @@ class NCMenu: UITableViewController {
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
         cell.tintColor = NCBrandColor.shared.customer
+        cell.backgroundColor = menuColor
         let actionIconView = cell.viewWithTag(1) as? UIImageView
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
         let actionDetailLabel = cell.viewWithTag(3) as? UILabel
@@ -86,15 +92,18 @@ class NCMenu: UITableViewController {
         }
         if let details = action.details {
             actionDetailLabel?.text = details
+            actionDetailLabel?.textColor = textColor
             actionNameLabel?.isHidden = false
         } else { actionDetailLabel?.isHidden = true }
 
         if action.isOn {
             actionIconView?.image = action.onIcon
             actionNameLabel?.text = action.onTitle
+            actionNameLabel?.textColor = textColor
         } else {
             actionIconView?.image = action.icon
             actionNameLabel?.text = action.title
+            actionNameLabel?.textColor = textColor
         }
 
         cell.accessoryType = action.selectable && action.selected ? .checkmark : .none

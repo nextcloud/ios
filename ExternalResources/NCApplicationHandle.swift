@@ -23,6 +23,8 @@
 
 import Foundation
 import NextcloudKit
+import UIKit
+import Parchment
 
 class NCApplicationHandle: NSObject {
 
@@ -58,5 +60,22 @@ class NCApplicationHandle: NSObject {
     // class: NCMore
     // func: tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     func didSelectItem(_ item: NKExternalSite, viewController: UIViewController) {
+    }
+
+    // class: NCSharePaging
+    // func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController
+    func pagingViewController(_: PagingViewController, viewControllerAt index: Int, metadata: tableMetadata, topHeight: CGFloat) -> UIViewController {
+        return UIViewController()
+    }
+
+    // class: NCSharePaging
+    // func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem
+    func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
+        return PagingIndexItem(index: index, title: "")
+    }
+
+    // class: NCActionCenter
+    func filterPages(pages: [NCBrandOptions.NCInfoPagingTab], page: NCBrandOptions.NCInfoPagingTab, metadata: tableMetadata) -> ([NCBrandOptions.NCInfoPagingTab], NCBrandOptions.NCInfoPagingTab) {
+        return (pages, page)
     }
 }

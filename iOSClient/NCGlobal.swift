@@ -102,6 +102,7 @@ class NCGlobal: NSObject {
     let nextcloudVersion24: Int                     =  24
     let nextcloudVersion25: Int                     =  25
     let nextcloudVersion26: Int                     =  26
+    let nextcloudVersion27: Int                     =  27
 
     // Nextcloud unsupported
     //
@@ -134,12 +135,6 @@ class NCGlobal: NSObject {
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
     let fileNameVideoEncoded: String                = "video_encoded.mp4"
 
-    // NCSharePaging
-    //
-    enum NCSharePagingIndex: Int, CaseIterable {
-        case activity, sharing
-    }
-
     // NCViewerProviderContextMenu
     //
     let maxAutoDownload: UInt64                     = 50000000      // 50MB
@@ -160,6 +155,7 @@ class NCGlobal: NSObject {
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
     let layoutViewShareExtension                    = "LayoutShareExtension"
+    let layoutViewGroupfolders                      = "LayoutGroupfolders"
 
     // Button Type in Cell list/grid
     //
@@ -353,22 +349,21 @@ class NCGlobal: NSObject {
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
+    let notificationCenterOperationReadFile                     = "operationReadFile"               // userInfo: ocId
+
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
     let notificationCenterMenuDetailClose                       = "menuDetailClose"
 
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 
-    let notificationCenterHidePlayerToolBar                     = "hidePlayerToolBar"               // userInfo: ocId
-    let notificationCenterShowPlayerToolBar                     = "showPlayerToolBar"               // userInfo: ocId, enableTimerAutoHide
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
-
-    let notificationCenterReloadMediaPage                       = "reloadMediaPage"
-    let notificationCenterPlayMedia                             = "playMedia"
-    let notificationCenterPauseMedia                            = "pauseMedia"
-
+    
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
     let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
+
+    let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
+    let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
 
     // TIP
     //

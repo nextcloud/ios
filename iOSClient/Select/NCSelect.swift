@@ -41,6 +41,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         case select
         case selectCreateFolder
         case copyMove
+        case nothing
     }
 
     // ------ external settings ------------------------------------
@@ -498,6 +499,9 @@ extension NCSelect: UICollectionViewDataSource {
                 cell.separator.isHidden = false
             }
 
+            // Add TAGS
+            cell.setTags(tags: Array(metadata.tags))
+
             return cell
         }
 
@@ -720,6 +724,8 @@ extension NCSelect {
 
             if includeImages {
                 predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR classFile == 'image')", activeAccount.account, serverUrl)
+            } else if enableSelectFile {
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false", activeAccount.account, serverUrl)
             } else {
                 predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", activeAccount.account, serverUrl)
             }

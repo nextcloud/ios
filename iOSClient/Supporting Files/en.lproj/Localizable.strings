@@ -134,7 +134,7 @@
 "_of_"                      = "of";
 "_internal_modify_"         = "Edit with internal editor";
 "_database_corrupt_"        = "Oops something went wrong, please enter your credentials but don't worry, your files have remained secure";
-"_download_image_max_"      = "Download the image in full resolution";
+"_download_locally_"        = "Download locally";
 "_livephoto_save_"          = "Save Live Photo to photo album";
 "_livephoto_save_error_"    = "Error during save of Live Photo";
 "_file_conflict_num_"       = "file conflict";
@@ -436,6 +436,7 @@
 "_no_files_uploaded_"           = "No files uploaded";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
 "_tutorial_offline_view_"       = "Files copied here will be available offline.\n\nThey will be synchronized with your cloud.";
+"_tutorial_groupfolders_view_"  = "No Group folders yet";
 "_tutorial_local_view_"         = "You'll find the unpacked files from your cloud.\n\nConnect to iTunes to share these files.";
 "_more_"                        = "More";
 "_favorite_no_files_"           = "No favorites yet";
@@ -722,7 +723,7 @@
 "_e2e_error_mark_folder_"           = "Encrypt folder";
 "_e2e_error_directory_not_empty_"   = "The directory is not empty";
 "_e2e_error_not_move_"              = "It is not possible move files to encrypted directory";
-"_e2e_error_not_versionwriteable_"  = "The server e2ee version is not compatible with this client";
+"_e2e_error_not_versionwriteable_"  = "The E2EE version of the server is not compatible with this client";
 "_scans_document_"                  = "Scan document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";
@@ -845,6 +846,8 @@
 "Cancel"                    = "Cancel";
 "_certificate_details_"     = "Certificate Server details";
 "_certificate_pn_details_"  = "Certificate Push Notification details";
+"_certificate_view_"        = "Certificate Server";
+"_certificate_pn_view_"     = "Certificate Push Notification";
 "_save_as_scan_"            = "Save as scan";
 "_modify_"                  = "Modify";
 "_overwrite_original_"      = "Overwrite original";
@@ -853,7 +856,7 @@
 "_message_disable_overwrite_livephoto_" = "This image is a Live Photo, overwrite will not be possible";
 "_discard_changes_info_"    = "Your changes will be discarded.";
 "_delete_files_desc_"       = "Delete files to free up space";
-"_delete_old_files_"        = "Delete all files older than";
+"_delete_old_files_"        = "Delete, in the cache, all files older than";
 "_never_"                   = "Never";
 "_1_year_"                  = "1 year";
 "_6_months_"                = "6 months";
@@ -935,6 +938,12 @@
 "_created_"                 = "Created";
 "_recipients_"              = "Recipients";
 "_are_sure_"                = "Are you sure?";
+"_creation_"                = "Creation";
+"_modified_"                = "Modified";
+"_group_folders_"           = "Group folders";
+"_play_from_files_"         = "Play movie by Files";
+"_play_from_url_"           = "Play movie by URL";
+"_valid_video_url_"         = "Insert a valid URL";
 
 // Video
 "_select_trace_"            = "Select the trace";
@@ -955,6 +964,8 @@
 "_disable_"                 = "Disable";
 "_subtitle_not_dowloaded_"  = "There are subtitles not downloaded locally";
 "_user_"                    = "User";
+"_add_subtitle_"            = "Add an external subtitle";
+"_add_audio_"               = "Add an external audio";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

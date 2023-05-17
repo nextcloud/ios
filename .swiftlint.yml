@@ -37,7 +37,8 @@ disabled_rules:
   - cyclomatic_complexity
   - nesting
   - shorthand_operator
-  
+  - force_try
+    
 excluded:
   - Carthage
   - Pods

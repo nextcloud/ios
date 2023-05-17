@@ -75,7 +75,7 @@ private var hasChangesQuickLook: Bool = false
             NCContentPresenter.shared.showInfo(error: error)
         }
 
-        if let metadata = metadata, metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+        if let metadata = metadata, metadata.isImage {
             let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
             let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
             navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
@@ -145,7 +145,7 @@ private var hasChangesQuickLook: Bool = false
             self.dismiss(animated: true)
         })
 
-        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+        if metadata.isImage {
             present(alertController, animated: true)
         } else {
             parentVC?.present(alertController, animated: true)

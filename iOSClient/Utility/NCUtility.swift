@@ -29,7 +29,6 @@ import CoreMedia
 import Photos
 
 #if !EXTENSION
-import KTVHTTPCache
 import SVGKit
 #endif
 
@@ -213,7 +212,6 @@ class NCUtility: NSObject {
 
         URLCache.shared.memoryCapacity = 0
         URLCache.shared.diskCapacity = 0
-        KTVHTTPCache.cacheDeleteAllCaches()
 
         NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
 
@@ -422,16 +420,16 @@ class NCUtility: NSObject {
         return ""
     }
 
-    func loadImage(named imageName: String, color: UIColor = UIColor.systemGray, size: CGFloat = 50, symbolConfiguration: Any? = nil) -> UIImage {
+    func loadImage(named imageName: String, color: UIColor = UIColor.systemGray, size: CGFloat = 50, symbolConfiguration: Any? = nil, renderingMode: UIImage.RenderingMode = .alwaysOriginal) -> UIImage {
 
         var image: UIImage?
 
         // see https://stackoverflow.com/questions/71764255
         let sfSymbolName = imageName.replacingOccurrences(of: "_", with: ".")
         if let symbolConfiguration = symbolConfiguration {
-            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: .alwaysOriginal)
+            image = UIImage(systemName: sfSymbolName, withConfiguration: symbolConfiguration as? UIImage.Configuration)?.withTintColor(color, renderingMode: renderingMode)
         } else {
-            image = UIImage(systemName: sfSymbolName)?.withTintColor(color, renderingMode: .alwaysOriginal)
+            image = UIImage(systemName: sfSymbolName)?.withTintColor(color, renderingMode: renderingMode)
         }
         if image == nil {
             image = UIImage(named: imageName)?.image(color: color, size: size)
