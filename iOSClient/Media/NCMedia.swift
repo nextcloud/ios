@@ -176,22 +176,21 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         if error == .success {
             var items: [IndexPath] = []
-            var needReload: Bool = true
-            self.metadatas.enumerated().forEach { (key, value) in
-                if ocIds.contains(value.ocId) {
-                    self.metadatas.remove(at: key)
-                    items.append(IndexPath(row: key, section: 0))
-                    if ocIds.count == items.count {
-                        needReload = false
-                        self.collectionView?.deleteItems(at: items)
-                    }
+            var index: Int = 0
+            for metadata in metadatas {
+                if ocIds.contains(metadata.ocId) {
+                    self.metadatas.remove(at: index)
+                    items.append(IndexPath(row: index, section: 0))
                 }
+                if ocIds.count == items.count { break }
+                index += 1
             }
-            if needReload {
+            if ocIds.count == items.count {
+                self.collectionView?.deleteItems(at: items)
+            } else {
                 self.reloadDataSourceWithCompletion { _ in }
             }
         }
-
         self.updateMediaControlVisibility()
     }
 
