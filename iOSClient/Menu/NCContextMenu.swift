@@ -158,7 +158,7 @@ class NCContextMenu: NSObject {
                     if error != .success {
                         NCContentPresenter.shared.showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [metadata.ocId], "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -172,7 +172,7 @@ class NCContextMenu: NSObject {
                 if error != .success {
                     NCContentPresenter.shared.showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [metadata.ocId], "error": error])
             }
         }
 

@@ -343,7 +343,7 @@ class NCGlobal: NSObject {
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: error
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocIds, error
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo

@@ -144,7 +144,8 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
+                            let ocId = selectedMetadatas.map { $0.ocId }
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
                         }
                         completion?()
                     })
@@ -161,7 +162,8 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
+                            let ocId = selectedMetadatas.map { $0.ocId }
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
                         }
                         completion?()
                     })
