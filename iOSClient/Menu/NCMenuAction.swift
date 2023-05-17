@@ -136,7 +136,11 @@ extension NCMenuAction {
                     preferredStyle: .alert)
                 if canDeleteServer {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
+                        Task {
+                            for metadata in selectedMetadatas {
+                                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                            }
+                        }
                         completion?()
                     })
                 }
@@ -144,7 +148,11 @@ extension NCMenuAction {
                 // NCMedia removes image from collection view if removed from cache
                 if !(viewController is NCMedia) {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: true) })
+                        Task {
+                            for metadata in selectedMetadatas {
+                                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                            }
+                        }
                         completion?()
                     })
                 }

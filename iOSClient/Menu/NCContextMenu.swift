@@ -153,7 +153,8 @@ class NCContextMenu: NSObject {
                                          image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
+                Task {
+                    let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                     if error != .success {
                         NCContentPresenter.shared.showError(error: error)
                     }
@@ -165,7 +166,9 @@ class NCContextMenu: NSObject {
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
                                           image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in }
+            Task {
+                await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+            }
         }
 
         let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""),

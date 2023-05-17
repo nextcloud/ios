@@ -32,8 +32,6 @@ import NextcloudKit
     }()
 
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    private let deleteQueue = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let deleteQueueE2EE = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -44,7 +42,6 @@ import NextcloudKit
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
-        deleteCancelAll()
         copyMoveCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
@@ -76,27 +73,6 @@ import NextcloudKit
             return true
         }
         return false
-    }
-
-    // MARK: - Delete file
-
-    func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
-
-        if metadata.isDirectoryE2EE {
-            for case let operation as NCOperationDelete in deleteQueueE2EE.operations where operation.metadata.ocId == metadata.ocId {
-                return
-            }
-            deleteQueueE2EE.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
-        } else {
-            for case let operation as NCOperationDelete in deleteQueue.operations where operation.metadata.ocId == metadata.ocId {
-                return
-            }
-            deleteQueue.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
-        }
-    }
-
-    func deleteCancelAll() {
-        deleteQueue.cancelAll()
     }
 
     // MARK: - Copy Move file
@@ -260,32 +236,6 @@ class NCOperationDownload: ConcurrentOperation {
             self.finish()
         } else {
             NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
-                self.finish()
-            }
-        }
-    }
-}
-
-// MARK: -
-
-class NCOperationDelete: ConcurrentOperation {
-
-    var metadata: tableMetadata
-    var onlyLocalCache: Bool
-
-    init(metadata: tableMetadata, onlyLocalCache: Bool) {
-        self.metadata = tableMetadata.init(value: metadata)
-        self.onlyLocalCache = onlyLocalCache
-    }
-
-    override func start() {
-        if isCancelled {
-            self.finish()
-        } else {
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { error in
-                if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
-                }
                 self.finish()
             }
         }
