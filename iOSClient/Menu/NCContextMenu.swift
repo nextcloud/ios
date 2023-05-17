@@ -156,6 +156,7 @@ class NCContextMenu: NSObject {
                 Task {
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                     if error != .success {
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
                         NCContentPresenter.shared.showError(error: error)
                     }
                 }
@@ -167,7 +168,11 @@ class NCContextMenu: NSObject {
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
                                           image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             Task {
-                await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                if error != .success {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+                    NCContentPresenter.shared.showError(error: error)
+                }
             }
         }
 

@@ -328,7 +328,7 @@ class NCGlobal: NSObject {
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"                // userInfo: serverUrl?
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: serverUrl?
-    let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"   // userInfo: serverUrl?
+    let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 

@@ -352,7 +352,7 @@ extension NCViewerRichdocument: UINavigationControllerDelegate {
         super.didMove(toParent: parent)
 
         if parent == nil {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": self.metadata.serverUrl])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
         }
     }
 }

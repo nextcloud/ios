@@ -1408,7 +1408,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         if let path = CCUtility.getDirectoryProviderStorageOcId(ocId) {
                             NCUtilityFileSystem.shared.deleteFile(filePath: path)
                         }
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": metadata.serverUrl])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
 
                     } else {
 

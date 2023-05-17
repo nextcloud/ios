@@ -137,8 +137,13 @@ extension NCMenuAction {
                 if canDeleteServer {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
                         Task {
-                            for metadata in selectedMetadatas {
-                                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                            var error = NKError()
+                            for metadata in selectedMetadatas where error == .success {
+                                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                            }
+                            if error != .success {
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
                         completion?()
@@ -149,8 +154,13 @@ extension NCMenuAction {
                 if !(viewController is NCMedia) {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
                         Task {
-                            for metadata in selectedMetadatas {
-                                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                            var error = NKError()
+                            for metadata in selectedMetadatas where error == .success {
+                                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                            }
+                            if error != .success {
+                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
                         completion?()
