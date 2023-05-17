@@ -339,7 +339,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
               let error = userInfo["error"] as? NKError
         else { return }
 
-        viewUnload()
+        if error == .success {
+            viewUnload()
+        }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
