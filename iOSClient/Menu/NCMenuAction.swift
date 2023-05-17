@@ -142,9 +142,9 @@ extension NCMenuAction {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                             }
                             if error != .success {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
                                 NCContentPresenter.shared.showError(error: error)
                             }
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
                         }
                         completion?()
                     })
@@ -159,9 +159,9 @@ extension NCMenuAction {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                             }
                             if error != .success {
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
                                 NCContentPresenter.shared.showError(error: error)
                             }
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["error": error])
                         }
                         completion?()
                     })
