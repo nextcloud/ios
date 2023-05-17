@@ -74,6 +74,12 @@
 		AFD33240276A02C100F5AE02 /* UIApplication+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD3323F276A02C000F5AE02 /* UIApplication+Extension.swift */; };
 		C007CB812A14FBDD00247E65 /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C007CB212A13683700247E65 /* LoginUITests.swift */; };
 		C007CB822A14FBDD00247E65 /* ScreenshotUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C007CB232A13683700247E65 /* ScreenshotUITests.swift */; };
+		C016DE562A152C4100C5E0FB /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE552A152C4100C5E0FB /* SVGKit */; };
+		C016DE582A152C4100C5E0FB /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE572A152C4100C5E0FB /* XLForm */; };
+		C016DE5A2A152CBD00C5E0FB /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE592A152CBD00C5E0FB /* FirebaseCrashlytics */; };
+		C016DE5C2A152CBD00C5E0FB /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE5B2A152CBD00C5E0FB /* UICKeyChainStore */; };
+		C016DE5E2A152CBD00C5E0FB /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE5D2A152CBD00C5E0FB /* Realm */; };
+		C016DE602A152CBD00C5E0FB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE5F2A152CBD00C5E0FB /* JGProgressHUD */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -1272,6 +1278,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C016DE5A2A152CBD00C5E0FB /* FirebaseCrashlytics in Frameworks */,
+				C016DE582A152C4100C5E0FB /* XLForm in Frameworks */,
+				C016DE5C2A152CBD00C5E0FB /* UICKeyChainStore in Frameworks */,
+				C016DE562A152C4100C5E0FB /* SVGKit in Frameworks */,
+				C016DE602A152CBD00C5E0FB /* JGProgressHUD in Frameworks */,
+				C016DE5E2A152CBD00C5E0FB /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2466,6 +2478,14 @@
 				C007CB7D2A14FB7F00247E65 /* PBXTargetDependency */,
 			);
 			name = NextcloudUITests;
+			packageProductDependencies = (
+				C016DE552A152C4100C5E0FB /* SVGKit */,
+				C016DE572A152C4100C5E0FB /* XLForm */,
+				C016DE592A152CBD00C5E0FB /* FirebaseCrashlytics */,
+				C016DE5B2A152CBD00C5E0FB /* UICKeyChainStore */,
+				C016DE5D2A152CBD00C5E0FB /* Realm */,
+				C016DE5F2A152CBD00C5E0FB /* JGProgressHUD */,
+			);
 			productName = NextcloudUITests;
 			productReference = C007CB762A14FB7D00247E65 /* NextcloudUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -4481,6 +4501,36 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C016DE552A152C4100C5E0FB /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		C016DE572A152C4100C5E0FB /* XLForm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F74E771E277A2EF40013B958 /* XCRemoteSwiftPackageReference "XLForm" */;
+			productName = XLForm;
+		};
+		C016DE592A152CBD00C5E0FB /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		C016DE5B2A152CBD00C5E0FB /* UICKeyChainStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
+			productName = UICKeyChainStore;
+		};
+		C016DE5D2A152CBD00C5E0FB /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		C016DE5F2A152CBD00C5E0FB /* JGProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F72CD01027A7E92400E59476 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
+			productName = JGProgressHUD;
+		};
 		F70716F829881CFA00E72C1D /* UICKeyChainStore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F76DA964277B76F10082465B /* XCRemoteSwiftPackageReference "UICKeyChainStore" */;
