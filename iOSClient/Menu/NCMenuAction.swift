@@ -138,13 +138,16 @@ extension NCMenuAction {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
                         Task {
                             var error = NKError()
+                            var ocId: [String] = []
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                                if error == .success {
+                                    ocId.append(metadata.ocId)
+                                }
                             }
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            let ocId = selectedMetadatas.map { $0.ocId }
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
                         }
                         completion?()
@@ -156,13 +159,16 @@ extension NCMenuAction {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
                         Task {
                             var error = NKError()
+                            var ocId: [String] = []
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                                if error == .success {
+                                    ocId.append(metadata.ocId)
+                                }
                             }
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            let ocId = selectedMetadatas.map { $0.ocId }
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
                         }
                         completion?()

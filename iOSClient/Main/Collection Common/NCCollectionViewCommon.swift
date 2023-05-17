@@ -353,15 +353,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let fileNameView = userInfo["fileNameView"] as? String,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account,
-              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
+              let ocId = userInfo["ocId"] as? [String],
+              let error = userInfo["error"] as? NKError
         else { return }
 
+        if error == .success {
+            
+        } else {
+
+        }
+        
+        /*
         if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
             reloadDataSourceNetwork(forced: true)
         } else if onlyLocalCache {
@@ -380,6 +382,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 reloadDataSource()
             }
         }
+        */
     }
 
     @objc func moveFile(_ notification: NSNotification) {
