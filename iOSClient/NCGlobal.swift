@@ -328,7 +328,7 @@ class NCGlobal: NSObject {
 
     @objc let notificationCenterReloadDataSource                = "reloadDataSource"                // userInfo: serverUrl?
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: serverUrl?
-    let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"   // userInfo: serverUrl?
+    let notificationCenterReloadDataSourceNetworkForced         = "reloadDataSourceNetworkForced"
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
@@ -343,7 +343,7 @@ class NCGlobal: NSObject {
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocId, fileNameView, serverUrl, account, classFile, onlyLocalCache
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocIds, error
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
