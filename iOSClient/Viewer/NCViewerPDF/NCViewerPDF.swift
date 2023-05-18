@@ -79,6 +79,37 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
+
+        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
+
+        // Tip
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .right
+        preferences.drawing.cornerRadius = 10
+
+        preferences.positioning.bubbleInsets.right = window?.safeAreaInsets.right ?? 0
+
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 1.5
+        preferences.animating.dismissDuration = 1.5
+
+        tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
     }
 
     override func viewDidAppear(_ animated: Bool) {
