@@ -117,7 +117,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                                <state key="normal" image="more"/>
+                                <state key="normal" image="ellipsis" catalog="system"/>
                                 <connections>
                                     <action selector="moreButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="EeF-Eg-Pqi"/>
                                 </connections>
@@ -170,8 +170,8 @@
         </view>
     </objects>
     <resources>
+        <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="minus" catalog="system" width="128" height="26"/>
-        <image name="more" width="425" height="425"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <image name="plus.slash.minus" catalog="system" width="128" height="115"/>
     </resources>
