@@ -37,7 +37,7 @@ class NCRecent: NCCollectionViewCommon {
         headerMenuButtonsCommand = false
         headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
-        emptyImage = UIImage(named: "recent")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        emptyImage = NCUtility.shared.loadImage(named: "clock.arrow.circlepath", color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }
