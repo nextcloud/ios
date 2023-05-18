@@ -452,7 +452,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         self.pdfThumbnailScrollViewWidthAnchor?.constant = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
         UIView.animate(withDuration: animateDuration, animations: {
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = 0
-            // self.view.layoutIfNeeded()
             self.pdfContainer.layoutIfNeeded()
         })
     }
@@ -462,7 +461,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         UIView.animate(withDuration: animateDuration) {
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
-            // self.view.layoutIfNeeded()
             self.pdfContainer.layoutIfNeeded()
         } completion: { _ in
             self.pdfThumbnailScrollView.isHidden = true
@@ -481,7 +479,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = widthThumbnail
             self.pdfThumbnailScrollViewWidthAnchor?.constant = widthThumbnail
 
-            // self.view.layoutIfNeeded()
             self.pdfContainer.layoutIfNeeded()
             self.pdfView.autoScales = true
         })
