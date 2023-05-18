@@ -73,13 +73,45 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-        let pageCount = CGFloat(pdfDocument?.pageCount ?? 0)
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
 
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        createview()
+        showTip()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        tipView?.dismiss()
+
+        coordinator.animate(alongsideTransition: { context in
+            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
+            self.pdfThumbnailScrollView.isHidden = true
+        }, completion: { context in
+            self.setConstraints()
+            self.showTip()
+        })
+    }
+
+    override var prefersStatusBarHidden: Bool {
+        return hideStatusBar
+    }
+
+    @objc func viewUnload() {
+
+        navigationController?.popViewController(animated: true)
+    }
+
+    func createview() {
 
         // PDF VIEW
 
@@ -127,6 +159,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         ])
         let contentViewCenterY = pdfThumbnailView.centerYAnchor.constraint(equalTo: pdfThumbnailScrollView.centerYAnchor)
         contentViewCenterY.priority = .defaultLow
+        let pageCount = CGFloat(pdfDocument?.pageCount ?? 0)
         let contentViewHeight = pdfThumbnailView.heightAnchor.constraint(equalToConstant: CGFloat(pageCount * thumbnailViewHeight) + CGFloat(pageCount * thumbnailPadding) + 30)
         contentViewHeight.priority = .defaultLow
         NSLayoutConstraint.activate([
@@ -192,40 +225,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         handlePageChange()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        UIView.animate(withDuration: 0.1, animations: {
-            if let pdf = self.pdfView.document, let page = pdf.page(at: 0) {
-                self.pdfView.go(to: page)
-            }
-        })
-
-        showTip()
-    }
-
-    @objc func viewUnload() {
-
-        navigationController?.popViewController(animated: true)
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        tipView?.dismiss()
-        coordinator.animate(alongsideTransition: { context in
-            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
-            self.pdfThumbnailScrollView.isHidden = true
-        }, completion: { context in
-            self.setConstraints()
-            self.showTip()
-        })
-    }
-
-    override var prefersStatusBarHidden: Bool {
-        return hideStatusBar
-    }
-
     deinit {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
@@ -245,8 +244,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     func showTip() {
 
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
-            self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.view)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
+                self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.pdfContainer)
+            }
         }
     }
 
