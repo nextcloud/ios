@@ -408,23 +408,20 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func tapPdfView(_ recognizer: UITapGestureRecognizer) {
 
-        pdfThumbnailScrollViewTopAnchor?.isActive = false
+        if pdfThumbnailScrollView.isHidden {
 
-        if navigationController?.isNavigationBarHidden ?? false {
-            navigationController?.setNavigationBarHidden(false, animated: true)
-            hideStatusBar = false
-            pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor)
-
-        } else {
-            navigationController?.setNavigationBarHidden(true, animated: true)
-            hideStatusBar = true
-            pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.topAnchor)
+            if navigationController?.isNavigationBarHidden ?? false {
+                navigationController?.setNavigationBarHidden(false, animated: true)
+                hideStatusBar = false
+                pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor)
+            } else {
+                navigationController?.setNavigationBarHidden(true, animated: true)
+                hideStatusBar = true
+                pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.topAnchor)
+            }
         }
 
-        pdfThumbnailScrollViewTopAnchor?.isActive = true
-
         handlePageChange()
-
         closePdfThumbnail()
     }
 
