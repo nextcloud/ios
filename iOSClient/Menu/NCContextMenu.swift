@@ -151,7 +151,12 @@ class NCContextMenu: NSObject {
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,
                                          image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+            var alertStyle = UIAlertController.Style.actionSheet
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                alertStyle = .alert
+            }
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
                 Task {
                     var ocId: [String] = []
