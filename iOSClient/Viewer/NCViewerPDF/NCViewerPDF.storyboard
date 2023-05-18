@@ -45,7 +45,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="wnh-nF-AjD" firstAttribute="leading" secondItem="QiL-bG-Ojl" secondAttribute="leading" id="49g-1K-X2G"/>
-                            <constraint firstItem="QiL-bG-Ojl" firstAttribute="bottom" secondItem="wnh-nF-AjD" secondAttribute="bottom" id="9yz-fc-kA9"/>
+                            <constraint firstAttribute="bottom" secondItem="wnh-nF-AjD" secondAttribute="bottom" id="9yz-fc-kA9"/>
                             <constraint firstItem="wnh-nF-AjD" firstAttribute="top" secondItem="QiL-bG-Ojl" secondAttribute="top" constant="1" id="Snr-Xx-Peu"/>
                             <constraint firstItem="QiL-bG-Ojl" firstAttribute="trailing" secondItem="wnh-nF-AjD" secondAttribute="trailing" id="nvb-SR-s8x"/>
                         </constraints>
