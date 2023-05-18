@@ -353,26 +353,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError
         else { return }
 
         if error == .success {
-
-            var items: [IndexPath] = []
-            for ocId in ocIds {
-                if let indexPath = dataSource.deleteMetadata(ocId: ocId).indexPath {
-                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                        items.append(indexPath)
-                    }
-                }
-            }
-
-            if items.count == ocIds.count {
-                self.collectionView?.deleteItems(at: items)
-            } else {
-                reloadDataSource()
-            }
+            reloadDataSource()
         }
     }
 
