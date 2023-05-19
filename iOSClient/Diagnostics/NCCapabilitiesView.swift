@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import NextcloudKit
 
 @objc class NCHostingCapabilitiesView: NSObject {
 
@@ -32,11 +33,56 @@ class NCCapabilitiesStatus: ObservableObject {
     @Published var capabililies: [Capability] = []
 
     init(preview: Bool = false) {
-        // if preview {
+
+        if preview {
             capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!, available: true),
                             Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
             ]
-        // }
+        } else {
+            guard let account = NCManageDatabase.shared.getActiveAccount()?.account else { return }
+            getCapabilities(account: account)
+            updateCapabilities(account: account)
+        }
+    }
+
+    func getCapabilities(account: String) {
+
+        NextcloudKit.shared.getCapabilities { account, data, error in
+            if error == .success && data != nil {
+                NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
+                let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
+                    NextcloudKit.shared.NCTextObtainEditorDetails { account, editors, creators, _, error in
+                        if error == .success {
+                            NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
+                            self.updateCapabilities(account: account)
+                        }
+                    }
+                } else {
+                    self.updateCapabilities(account: account)
+                }
+            } else {
+                self.updateCapabilities(account: account)
+            }
+        }
+    }
+
+    func updateCapabilities(account: String) {
+
+        var available: Bool = false
+        capabililies.removeAll()
+
+        // File Sharing
+        if NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
+            available = true
+        } else {
+            available = false
+        }
+        capabililies.append(Capability(text: "File sharing", image: UIImage(named: "share")!, available: available))
+
+        if let text = NCManageDatabase.shared.getCapabilities(account: account) {
+            // self.capabilitiesText = text
+        }
     }
 }
 
