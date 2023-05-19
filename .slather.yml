@@ -1,0 +1,4 @@
+coverage_service: cobertura_xml
+xcodeproj: ./Nextcloud.xcodeproj
+scheme: Nextcloud
+output_directory: ./
