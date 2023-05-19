@@ -32,6 +32,7 @@ class NCCapabilitiesStatus: ObservableObject {
 
     @Published var capabililies: [Capability] = []
     @Published var json = "Lorem ipsum dolor sit amet. Ea voluptas aperiam aut inventore saepe in tenetur modi. Cum sint tempore sed maiores quos aut quaerat deleniti./nQui beatae quia qui repellat sunt in Quis libero aut quidem porro non explicabo tenetur et natus doloribus non voluptatum consequatur."
+    @Published var homeServer = ""
 
     init(preview: Bool = false) {
 
@@ -39,10 +40,12 @@ class NCCapabilitiesStatus: ObservableObject {
             capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: true),
                             Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
             ]
+            homeServer = "https://cloud.nextcloud.com/remote.php.dav/files/marino/"
         } else {
-            guard let account = NCManageDatabase.shared.getActiveAccount()?.account else { return }
-            getCapabilities(account: account)
-            updateCapabilities(account: account)
+            guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
+            homeServer = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
+            getCapabilities(account: activeAccount.account)
+            updateCapabilities(account: activeAccount.account)
         }
     }
 
@@ -72,6 +75,7 @@ class NCCapabilitiesStatus: ObservableObject {
 
         var available: Bool = false
         capabililies.removeAll()
+
         self.json = ""
 
         // File Sharing
@@ -165,6 +169,9 @@ struct NCCapabilitiesView: View {
                             CapabilityAvailable(available: capability.available)
                         }
                     }
+                }
+                Section {
+                    Capability(text: capabilitiesStatus.homeServer, image: Image(uiImage: UIImage(systemName: "house")!))
                 }
                 Section {
                     TextEditor(text: .constant(capabilitiesStatus.json))
