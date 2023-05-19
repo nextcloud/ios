@@ -8,18 +8,40 @@
 
 import SwiftUI
 
+class NCCapabilitiesStatus: ObservableObject {
+
+    struct Capability: Identifiable, Hashable {
+        let id = UUID()
+        let text: String
+        let image: UIImage
+        let available: Bool
+    }
+
+    @Published var capabililies: [Capability] = []
+
+    init() {
+        capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!, available: true),
+                        Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
+        ]
+    }
+}
+
 struct NCCapabilitiesView: View {
+
+    @ObservedObject var capabilitiesStatus: NCCapabilitiesStatus
+
+    init(capabilitiesStatus: NCCapabilitiesStatus) {
+        self.capabilitiesStatus = capabilitiesStatus
+    }
 
     var body: some View {
         ScrollView {
             VStack {
-                HStack {
-                    Capability(text: "File sharing", image: Image("share"))
-                    CapabilityAvailable(available: true)
-                }
-                HStack {
-                    Capability(text: "Externa site", image: Image(systemName: "network"))
-                    CapabilityAvailable(available: false)
+                ForEach(capabilitiesStatus.capabililies, id: \.id) { capability in
+                    HStack {
+                        Capability(text: capability.text, image: Image(uiImage: capability.image))
+                        CapabilityAvailable(available: capability.available)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .top)
@@ -82,6 +104,6 @@ struct CapabilityAvailable: View {
 
 struct NCCapabilitiesView_Previews: PreviewProvider {
     static var previews: some View {
-        NCCapabilitiesView()
+        NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesStatus())
     }
 }
