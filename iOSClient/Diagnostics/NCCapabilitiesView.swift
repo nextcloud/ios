@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct NCCapabilitiesView: View {
+
     var body: some View {
         ScrollView {
             VStack {
@@ -22,7 +23,7 @@ struct NCCapabilitiesView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .top)
-            .padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
+            .padding(EdgeInsets(top: 20, leading: 10, bottom: 0, trailing: 10))
         }
     }
 }
@@ -54,7 +55,7 @@ struct CapabilityAvailable: View {
 
     init(available: Bool) {
         if available {
-            _text = State(initialValue: "✓ " + NSLocalizedString("_available_", comment: ""))
+            _text = State(initialValue: NSLocalizedString("_available_", comment: ""))
         } else {
             _text = State(initialValue: NSLocalizedString("_not_available_", comment: ""))
 
@@ -63,6 +64,7 @@ struct CapabilityAvailable: View {
 
     var body: some View {
         Text(text)
+            .frame(width: 100)
             .font(.system(size: 12))
             .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
             .foregroundColor(.primary)
