@@ -8,6 +8,18 @@
 
 import SwiftUI
 
+@objc class NCHostingCapabilitiesView: NSObject {
+
+    @objc func makeShipDetailsUI() -> UIViewController {
+
+        let capabilitiesStatus = NCCapabilitiesStatus()
+        let view = NCCapabilitiesView(capabilitiesStatus: capabilitiesStatus)
+        let vc = UIHostingController(rootView: view)
+        vc.title = NSLocalizedString("_capabilities_", comment: "")
+        return vc
+    }
+}
+
 class NCCapabilitiesStatus: ObservableObject {
 
     struct Capability: Identifiable, Hashable {
@@ -20,11 +32,11 @@ class NCCapabilitiesStatus: ObservableObject {
     @Published var capabililies: [Capability] = []
 
     init(preview: Bool = false) {
-        if preview {
+        // if preview {
             capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!, available: true),
                             Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
             ]
-        }
+        // }
     }
 }
 
@@ -47,7 +59,7 @@ struct NCCapabilitiesView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .top)
-            .padding(EdgeInsets(top: 20, leading: 10, bottom: 0, trailing: 10))
+            //.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
         }
     }
 }
