@@ -37,6 +37,12 @@
             ReferencedContainer = "container:Nextcloud.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:Nextcloud.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -53,7 +59,7 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C007CB1E2A13683700247E65"
+               BlueprintIdentifier = "C007CB752A14FB7C00247E65"
                BuildableName = "NextcloudUITests.xctest"
                BlueprintName = "NextcloudUITests"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
@@ -64,9 +70,20 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C007CB3C2A14F1DF00247E65"
-               BuildableName = "test.xctest"
-               BlueprintName = "test"
+               BlueprintIdentifier = "C078E46C2A1761DB00A989D9"
+               BuildableName = "NextcloudIntegrationTests.xctest"
+               BlueprintName = "NextcloudIntegrationTests"
+               ReferencedContainer = "container:Nextcloud.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C078E4812A17648500A989D9"
+               BuildableName = "NextcloudEndToEndTests.xctest"
+               BlueprintName = "NextcloudEndToEndTests"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </TestableReference>

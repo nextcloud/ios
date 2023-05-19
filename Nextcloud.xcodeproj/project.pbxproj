@@ -80,6 +80,9 @@
 		C016DE5C2A152CBD00C5E0FB /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE5B2A152CBD00C5E0FB /* UICKeyChainStore */; };
 		C016DE5E2A152CBD00C5E0FB /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE5D2A152CBD00C5E0FB /* Realm */; };
 		C016DE602A152CBD00C5E0FB /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = C016DE5F2A152CBD00C5E0FB /* JGProgressHUD */; };
+		C078E4702A1761DC00A989D9 /* LoginIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C078E46F2A1761DC00A989D9 /* LoginIntegrationTests.swift */; };
+		C078E47B2A1763D600A989D9 /* LoginUnitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C078E47A2A1763D600A989D9 /* LoginUnitTest.swift */; };
+		C078E4852A17648500A989D9 /* LoginEndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C078E4842A17648500A989D9 /* LoginEndToEndTests.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -628,6 +631,20 @@
 			remoteGlobalIDString = F77B0DEB1D118A16002130FE;
 			remoteInfo = Nextcloud;
 		};
+		C078E4712A1761DC00A989D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F77B0DEB1D118A16002130FE;
+			remoteInfo = Nextcloud;
+		};
+		C078E4862A17648500A989D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F77B0DEB1D118A16002130FE;
+			remoteInfo = Nextcloud;
+		};
 		F70716EB2987F81500E72C1D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
@@ -752,6 +769,11 @@
 		C007CB212A13683700247E65 /* LoginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUITests.swift; sourceTree = "<group>"; };
 		C007CB232A13683700247E65 /* ScreenshotUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotUITests.swift; sourceTree = "<group>"; };
 		C007CB762A14FB7D00247E65 /* NextcloudUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C078E46D2A1761DC00A989D9 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C078E46F2A1761DC00A989D9 /* LoginIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginIntegrationTests.swift; sourceTree = "<group>"; };
+		C078E47A2A1763D600A989D9 /* LoginUnitTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUnitTest.swift; sourceTree = "<group>"; };
+		C078E4822A17648500A989D9 /* NextcloudEndToEndTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudEndToEndTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C078E4842A17648500A989D9 /* LoginEndToEndTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginEndToEndTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
@@ -1293,6 +1315,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C078E46A2A1761DB00A989D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C078E47F2A17648500A989D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F70716E02987F81400E72C1D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1423,10 +1459,8 @@
 		AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */ = {
 			isa = PBXGroup;
 			children = (
-				AF8ED2022757822700B8DBC4 /* NCGlobalTests.swift */,
-				AF36077527BFB019001A243D /* ParallelWorkerTest.swift */,
-				AF70C14C27F3484D00E13DF2 /* SharePermissionTest.swift */,
-				AF3F909928213BEA0048A93E /* UserAgentTests.swift */,
+				C078E4782A1763A700A989D9 /* iOSClient */,
+				C078E4772A17639200A989D9 /* Deprecated */,
 			);
 			path = NextcloudUnitTests;
 			sourceTree = "<group>";
@@ -1468,6 +1502,92 @@
 				C007CB232A13683700247E65 /* ScreenshotUITests.swift */,
 			);
 			path = NextcloudUITests;
+			sourceTree = "<group>";
+		};
+		C078E46E2A1761DC00A989D9 /* NextcloudIntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				C078E47C2A1763E500A989D9 /* iOSClient */,
+			);
+			path = NextcloudIntegrationTests;
+			sourceTree = "<group>";
+		};
+		C078E4762A1762F200A989D9 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */,
+				C078E46E2A1761DC00A989D9 /* NextcloudIntegrationTests */,
+				C007CB772A14FB7F00247E65 /* NextcloudUITests */,
+				C078E4832A17648500A989D9 /* NextcloudEndToEndTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		C078E4772A17639200A989D9 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				AF8ED2022757822700B8DBC4 /* NCGlobalTests.swift */,
+				AF36077527BFB019001A243D /* ParallelWorkerTest.swift */,
+				AF70C14C27F3484D00E13DF2 /* SharePermissionTest.swift */,
+				AF3F909928213BEA0048A93E /* UserAgentTests.swift */,
+			);
+			path = Deprecated;
+			sourceTree = "<group>";
+		};
+		C078E4782A1763A700A989D9 /* iOSClient */ = {
+			isa = PBXGroup;
+			children = (
+				C078E4792A1763B000A989D9 /* Login */,
+			);
+			path = iOSClient;
+			sourceTree = "<group>";
+		};
+		C078E4792A1763B000A989D9 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				C078E47A2A1763D600A989D9 /* LoginUnitTest.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		C078E47C2A1763E500A989D9 /* iOSClient */ = {
+			isa = PBXGroup;
+			children = (
+				C078E47D2A1763FB00A989D9 /* Login */,
+			);
+			path = iOSClient;
+			sourceTree = "<group>";
+		};
+		C078E47D2A1763FB00A989D9 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				C078E46F2A1761DC00A989D9 /* LoginIntegrationTests.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		C078E4832A17648500A989D9 /* NextcloudEndToEndTests */ = {
+			isa = PBXGroup;
+			children = (
+				C078E48B2A1764AA00A989D9 /* iOSClient */,
+			);
+			path = NextcloudEndToEndTests;
+			sourceTree = "<group>";
+		};
+		C078E48B2A1764AA00A989D9 /* iOSClient */ = {
+			isa = PBXGroup;
+			children = (
+				C078E48C2A1764B200A989D9 /* Login */,
+			);
+			path = iOSClient;
+			sourceTree = "<group>";
+		};
+		C078E48C2A1764B200A989D9 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				C078E4842A17648500A989D9 /* LoginEndToEndTests.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
@@ -2242,17 +2362,18 @@
 				F7346E1428B0EF5B006CE2D2 /* Widget */,
 				F7C9739328F17131002C43E2 /* WidgetDashboardIntentHandler */,
 				F7903A4A2948CAC300203DA5 /* ExternalResources */,
-				AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */,
-				C007CB772A14FB7F00247E65 /* NextcloudUITests */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
+				C078E4762A1762F200A989D9 /* Tests */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
 				2C33C47F23E2C475005F963B /* Notification Service Extension.appex */,
-				AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */,
 				F7346E1028B0EF5B006CE2D2 /* Widget.appex */,
 				F7C9739028F17131002C43E2 /* WidgetDashboardIntentHandler.appex */,
 				F70716E32987F81500E72C1D /* File Provider Extension UI.appex */,
+				AF8ED1F92757821000B8DBC4 /* NextcloudUnitTests.xctest */,
 				C007CB762A14FB7D00247E65 /* NextcloudUITests.xctest */,
+				C078E46D2A1761DC00A989D9 /* NextcloudIntegrationTests.xctest */,
+				C078E4822A17648500A989D9 /* NextcloudEndToEndTests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2498,6 +2619,42 @@
 			productReference = C007CB762A14FB7D00247E65 /* NextcloudUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		C078E46C2A1761DB00A989D9 /* NextcloudIntegrationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C078E4732A1761DD00A989D9 /* Build configuration list for PBXNativeTarget "NextcloudIntegrationTests" */;
+			buildPhases = (
+				C078E4692A1761DB00A989D9 /* Sources */,
+				C078E46A2A1761DB00A989D9 /* Frameworks */,
+				C078E46B2A1761DB00A989D9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C078E4722A1761DC00A989D9 /* PBXTargetDependency */,
+			);
+			name = NextcloudIntegrationTests;
+			productName = NextcloudIntegrationTests;
+			productReference = C078E46D2A1761DC00A989D9 /* NextcloudIntegrationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C078E4812A17648500A989D9 /* NextcloudEndToEndTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C078E4882A17648600A989D9 /* Build configuration list for PBXNativeTarget "NextcloudEndToEndTests" */;
+			buildPhases = (
+				C078E47E2A17648500A989D9 /* Sources */,
+				C078E47F2A17648500A989D9 /* Frameworks */,
+				C078E4802A17648500A989D9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C078E4872A17648500A989D9 /* PBXTargetDependency */,
+			);
+			name = NextcloudEndToEndTests;
+			productName = NextcloudEndToEndTests;
+			productReference = C078E4822A17648500A989D9 /* NextcloudEndToEndTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F70716E22987F81400E72C1D /* File Provider Extension UI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F70716F02987F81600E72C1D /* Build configuration list for PBXNativeTarget "File Provider Extension UI" */;
@@ -2689,6 +2846,14 @@
 						CreatedOnToolsVersion = 14.2;
 						TestTargetID = F77B0DEB1D118A16002130FE;
 					};
+					C078E46C2A1761DB00A989D9 = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = F77B0DEB1D118A16002130FE;
+					};
+					C078E4812A17648500A989D9 = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = F77B0DEB1D118A16002130FE;
+					};
 					F70716E22987F81400E72C1D = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -2817,6 +2982,8 @@
 				2C33C47E23E2C475005F963B /* Notification Service Extension */,
 				AF8ED1F82757821000B8DBC4 /* NextcloudUnitTests */,
 				C007CB752A14FB7C00247E65 /* NextcloudUITests */,
+				C078E46C2A1761DB00A989D9 /* NextcloudIntegrationTests */,
+				C078E4812A17648500A989D9 /* NextcloudEndToEndTests */,
 			);
 		};
 /* End PBXProject section */
@@ -2838,6 +3005,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C007CB742A14FB7C00247E65 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C078E46B2A1761DB00A989D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C078E4802A17648500A989D9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3056,6 +3237,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C078E47B2A1763D600A989D9 /* LoginUnitTest.swift in Sources */,
 				AF70C14D27F3484D00E13DF2 /* SharePermissionTest.swift in Sources */,
 				AF3F909A28213BEA0048A93E /* UserAgentTests.swift in Sources */,
 				AF36077627BFB019001A243D /* ParallelWorkerTest.swift in Sources */,
@@ -3069,6 +3251,22 @@
 			files = (
 				C007CB812A14FBDD00247E65 /* LoginUITests.swift in Sources */,
 				C007CB822A14FBDD00247E65 /* ScreenshotUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C078E4692A1761DB00A989D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C078E4702A1761DC00A989D9 /* LoginIntegrationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C078E47E2A17648500A989D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C078E4852A17648500A989D9 /* LoginEndToEndTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3519,6 +3717,16 @@
 			target = F77B0DEB1D118A16002130FE /* Nextcloud */;
 			targetProxy = C007CB7C2A14FB7F00247E65 /* PBXContainerItemProxy */;
 		};
+		C078E4722A1761DC00A989D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F77B0DEB1D118A16002130FE /* Nextcloud */;
+			targetProxy = C078E4712A1761DC00A989D9 /* PBXContainerItemProxy */;
+		};
+		C078E4872A17648500A989D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F77B0DEB1D118A16002130FE /* Nextcloud */;
+			targetProxy = C078E4862A17648500A989D9 /* PBXContainerItemProxy */;
+		};
 		F70716EC2987F81500E72C1D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F70716E22987F81400E72C1D /* File Provider Extension UI */;
@@ -3862,6 +4070,162 @@
 				TEST_HOST = "";
 				TEST_TARGET_NAME = Nextcloud;
 				VALIDATE_PRODUCT = NO;
+			};
+			name = Release;
+		};
+		C078E4742A1761DD00A989D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudIntegrationTests.NextcloudIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
+			};
+			name = Debug;
+		};
+		C078E4752A1761DD00A989D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudIntegrationTests.NextcloudIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C078E4892A17648600A989D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudEndToEndTests.NextcloudEndToEndTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
+			};
+			name = Debug;
+		};
+		C078E48A2A17648600A989D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.NextcloudEndToEndTests.NextcloudEndToEndTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -4277,6 +4641,24 @@
 			buildConfigurations = (
 				C007CB7F2A14FB8100247E65 /* Debug */,
 				C007CB802A14FB8100247E65 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C078E4732A1761DD00A989D9 /* Build configuration list for PBXNativeTarget "NextcloudIntegrationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C078E4742A1761DD00A989D9 /* Debug */,
+				C078E4752A1761DD00A989D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C078E4882A17648600A989D9 /* Build configuration list for PBXNativeTarget "NextcloudEndToEndTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C078E4892A17648600A989D9 /* Debug */,
+				C078E48A2A17648600A989D9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -9,6 +9,9 @@
 @testable import Nextcloud
 import XCTest
 
+
+// NOTE: Make sure to keep the directory structure of the thing you are testing the same as the original.
+// For example: the Login code is inside iOSClient/Login, therefore this test is also inside a iOSClient/Login direcotry.
 final class LoginUITests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -24,7 +27,5 @@ final class LoginUITests: XCTestCase {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
         app.launch()
-
-        XCTAssertTrue(true)
     }
 }
