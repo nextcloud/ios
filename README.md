@@ -74,6 +74,12 @@ Git even has a `-s | --signoff` command line option to append this to your commi
 
 If you need assistance or want to ask a question about the iOS app, you are welcome to [ask for support](https://help.nextcloud.com/c/clients/ios) in our Forums. If you have found a bug, feel free to [open a new Issue on GitHub](https://github.com/nextcloud/ios/issues). Keep in mind, that this repository only manages the iOS app. If you find bugs or have problems with the server/backend, you should ask the [Nextcloud server team](https://github.com/nextcloud/server) for help!
 
+## Testing
+
+The project includes directories for Unit, Integration, UI, and End to End testing. 
+
+When writing tests, please make sure to keep a one-to-one directory structure between the thing you are testing and the original. For example: The Login logic is inside `iOSClient/Login`, therefore the tests are also inside a `iOSClient/Login` directory.
+
 ## TestFlight 
 
 Do you want to try the latest version in development of Nextcloud iOS ? Simple, follow this simple step
