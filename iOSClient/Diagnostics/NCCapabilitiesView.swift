@@ -19,10 +19,12 @@ class NCCapabilitiesStatus: ObservableObject {
 
     @Published var capabililies: [Capability] = []
 
-    init() {
-        capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!, available: true),
-                        Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
-        ]
+    init(preview: Bool = false) {
+        if preview {
+            capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!, available: true),
+                            Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
+            ]
+        }
     }
 }
 
@@ -104,6 +106,6 @@ struct CapabilityAvailable: View {
 
 struct NCCapabilitiesView_Previews: PreviewProvider {
     static var previews: some View {
-        NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesStatus())
+        NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesStatus(preview: true))
     }
 }
