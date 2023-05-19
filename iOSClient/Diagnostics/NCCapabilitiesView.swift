@@ -84,8 +84,62 @@ class NCCapabilitiesStatus: ObservableObject {
         available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
         capabililies.append(Capability(text: "End-to-End Encryption", image: UIImage(systemName: "lock")!, available: available))
 
+        if NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity) == nil {
+            available = false
+        } else {
+            available = true
+        }
+        capabililies.append(Capability(text: "Activity", image: UIImage(systemName: "bolt")!, available: available))
 
-        if let text = NCManageDatabase.shared.getCapabilities(account: account) {
+        if NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesNotification) == nil {
+            available = false
+        } else {
+            available = true
+        }
+        capabililies.append(Capability(text: "Notification", image: UIImage(systemName: "bell")!, available: available))
+
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesUndelete, exists: false)
+        capabililies.append(Capability(text: "Deleted files", image: UIImage(systemName: "trash")!, available: available))
+
+        var textEditor = false
+        var onlyofficeEditors = false
+        if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: account) {
+            for editor in editors {
+                if editor.editor == NCGlobal.shared.editorText {
+                    textEditor = true
+                } else if editor.editor == NCGlobal.shared.editorOnlyoffice {
+                    onlyofficeEditors = true
+                }
+            }
+        }
+        capabililies.append(Capability(text: "Text", image: UIImage(named: "text")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: textEditor))
+        capabililies.append(Capability(text: "ONLYOFFICE", image: UIImage(named: "onlyoffice")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: onlyofficeEditors))
+
+        if NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) == nil {
+            available = false
+        } else {
+            available = true
+        }
+        capabililies.append(Capability(text: "Collabora", image: UIImage(named: "collabora")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: available))
+
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
+        capabililies.append(Capability(text: "User Status", image: UIImage(systemName: "moon")!, available: available))
+
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+        capabililies.append(Capability(text: "Comments", image: UIImage(systemName: "ellipsis.bubble")!, available: available))
+
+        let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
+        if hasLockCapability {
+            available = false
+        } else {
+            available = true
+        }
+        capabililies.append(Capability(text: "Lock file", image: UIImage(systemName: "lock")!, available: available))
+
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesGroupfoldersEnabled, exists: false)
+        capabililies.append(Capability(text: "Group folders", image: UIImage(systemName: "person.2")!, available: available))
+
+        if let json = NCManageDatabase.shared.getCapabilities(account: account) {
             // self.capabilitiesText = text
         }
     }
@@ -106,11 +160,6 @@ struct NCCapabilitiesView: View {
                     HStack {
                         Capability(text: capability.text, image: Image(uiImage: capability.image))
                         CapabilityAvailable(available: capability.available)
-                    }
-                    .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
                     }
                 }
             }
@@ -140,32 +189,16 @@ struct Capability: View {
 
 struct CapabilityAvailable: View {
 
-    @State private var text: String
-
-    init(available: Bool) {
-        if available {
-            _text = State(initialValue: NSLocalizedString("_available_", comment: ""))
-        } else {
-            _text = State(initialValue: NSLocalizedString("_not_available_", comment: ""))
-
-        }
-    }
+    @State var available: Bool
 
     var body: some View {
-        Text(text)
-            .frame(width: 100)
-            .font(.system(size: 12))
-            .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
-            .foregroundColor(.primary)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color(UIColor.systemGray), lineWidth: 0.5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                )
-            )
-            .frame(maxWidth: .infinity, alignment: .trailing)
+        if available {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+        } else {
+            Image(systemName: "multiply.circle.fill")
+                .foregroundColor(.red)
+        }
     }
 }
 
