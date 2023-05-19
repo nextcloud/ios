@@ -49,18 +49,22 @@ struct NCCapabilitiesView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack {
+        VStack {
+            List {
                 ForEach(capabilitiesStatus.capabililies, id: \.id) { capability in
                     HStack {
                         Capability(text: capability.text, image: Image(uiImage: capability.image))
                         CapabilityAvailable(available: capability.available)
                     }
+                    .complexModifier { view in
+                        if #available(iOS 15, *) {
+                            view.listRowSeparator(.hidden)
+                        }
+                    }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .top)
-            //.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
         }
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 }
 
