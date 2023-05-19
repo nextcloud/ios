@@ -38,7 +38,7 @@ jobs:
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
     - name: Build & Test Nextcloud iOS
       run: |
-        xcodebuild clean build test -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
+        xcodebuild clean build test -quiet -project $PROJECT -scheme "$SCHEME" -destination "$DESTINATION"
       env:
           SCHEME: Nextcloud
     - name: Build iOS Share

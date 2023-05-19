@@ -1,0 +1,45 @@
+{
+  "configurations" : [
+    {
+      "id" : "0255C0F4-3840-422B-8121-6C777E937262",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Nextcloud.xcodeproj",
+        "identifier" : "C078E4812A17648500A989D9",
+        "name" : "NextcloudEndToEndTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Nextcloud.xcodeproj",
+        "identifier" : "C078E46C2A1761DB00A989D9",
+        "name" : "NextcloudIntegrationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Nextcloud.xcodeproj",
+        "identifier" : "C007CB752A14FB7C00247E65",
+        "name" : "NextcloudUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Nextcloud.xcodeproj",
+        "identifier" : "AF8ED1F82757821000B8DBC4",
+        "name" : "NextcloudUnitTests"
+      }
+    }
+  ],
+  "version" : 1
+}
