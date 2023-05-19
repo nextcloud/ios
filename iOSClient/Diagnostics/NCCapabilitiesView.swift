@@ -73,12 +73,17 @@ class NCCapabilitiesStatus: ObservableObject {
         capabililies.removeAll()
 
         // File Sharing
-        if NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
-            available = true
-        } else {
-            available = false
-        }
-        capabililies.append(Capability(text: "File sharing", image: UIImage(named: "share")!, available: available))
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+        capabililies.append(Capability(text: "File sharing", image: UIImage(named: "share")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: available))
+
+        // ExternalSites
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
+        capabililies.append(Capability(text: "External site", image: UIImage(systemName: "network")!, available: available))
+
+        // E2EE
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
+        capabililies.append(Capability(text: "End-to-End Encryption", image: UIImage(systemName: "lock")!, available: available))
+
 
         if let text = NCManageDatabase.shared.getCapabilities(account: account) {
             // self.capabilitiesText = text
@@ -127,8 +132,6 @@ struct Capability: View {
         } icon: {
             image
                 .renderingMode(.template)
-                .resizable()
-                .frame(width: 25.0, height: 25.0)
                 .foregroundColor(Color(UIColor.systemGray))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
