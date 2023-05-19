@@ -12,7 +12,8 @@ on:
       - develop
 
 jobs:
-  XCBuild:
+  build-and-test:
+    name: Build and Test
     runs-on: macOS-latest
     if: github.event.pull_request.draft == false
     env:
