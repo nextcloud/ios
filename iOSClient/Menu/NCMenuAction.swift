@@ -136,7 +136,20 @@ extension NCMenuAction {
                     preferredStyle: .alert)
                 if canDeleteServer {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: false) })
+                        Task {
+                            var error = NKError()
+                            var ocId: [String] = []
+                            for metadata in selectedMetadatas where error == .success {
+                                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                                if error == .success {
+                                    ocId.append(metadata.ocId)
+                                }
+                            }
+                            if error != .success {
+                                NCContentPresenter.shared.showError(error: error)
+                            }
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
+                        }
                         completion?()
                     })
                 }
@@ -144,7 +157,20 @@ extension NCMenuAction {
                 // NCMedia removes image from collection view if removed from cache
                 if !(viewController is NCMedia) {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        selectedMetadatas.forEach({ NCOperationQueue.shared.delete(metadata: $0, onlyLocalCache: true) })
+                        Task {
+                            var error = NKError()
+                            var ocId: [String] = []
+                            for metadata in selectedMetadatas where error == .success {
+                                error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                                if error == .success {
+                                    ocId.append(metadata.ocId)
+                                }
+                            }
+                            if error != .success {
+                                NCContentPresenter.shared.showError(error: error)
+                            }
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
+                        }
                         completion?()
                     })
                 }

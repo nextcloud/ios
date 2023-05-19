@@ -86,7 +86,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility.shared.loadImage(named: "scan"), action: { _ in
+                title: NSLocalizedString("_scans_document_", comment: ""), icon: NCUtility.shared.loadImage(named: "doc.text.viewfinder"), action: { _ in
                     if let viewController = appDelegate.window?.rootViewController {
                         NCDocumentCamera.shared.openScannerDocument(viewController: viewController)
                     }

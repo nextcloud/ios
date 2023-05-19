@@ -109,7 +109,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Recent
         item = NKExternalSite()
         item.name = "_recent_"
-        item.icon = "recent"
+        item.icon = "clock.arrow.circlepath"
         item.url = "segueRecent"
         item.order = 20
         functionMenu.append(item)
@@ -154,7 +154,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if hasAccessibleGroupFolders {
             item = NKExternalSite()
             item.name = "_group_folders_"
-            item.icon = "groupfolders"
+            item.icon = "person.2"
             item.url = "segueGroupfolders"
             item.order = 61
             functionMenu.append(item)
@@ -162,7 +162,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Scan
         item = NKExternalSite()
         item.name = "_scanned_images_"
-        item.icon = "scan"
+        item.icon = "doc.text.viewfinder"
         item.url = "openStoryboardNCScan"
         item.order = 70
         functionMenu.append(item)

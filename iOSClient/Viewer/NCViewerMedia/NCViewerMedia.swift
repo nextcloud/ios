@@ -167,7 +167,9 @@ class NCViewerMedia: UIViewController {
                 }
             }
         } else if metadata.isImage {
-            showTip()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.showTip()
+            }
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)

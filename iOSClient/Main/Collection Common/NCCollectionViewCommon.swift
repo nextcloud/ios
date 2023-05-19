@@ -353,57 +353,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let fileNameView = userInfo["fileNameView"] as? String,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account,
-              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
+              let error = userInfo["error"] as? NKError
         else { return }
 
-        if fileNameView.lowercased() == NCGlobal.shared.fileNameRichWorkspace.lowercased() {
-            reloadDataSourceNetwork(forced: true)
-        } else if onlyLocalCache {
-            self.collectionView?.reloadData()
-        } else {
-            let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-            if let indexPath = indexPath, dataSource.metadatas.count > 0, sameSections {
-                collectionView?.performBatchUpdates({
-                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                        collectionView?.deleteItems(at: [indexPath])
-                    }
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            } else {
-                reloadDataSource()
-            }
+        if error == .success {
+            reloadDataSource()
         }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrlFrom = userInfo["serverUrlFrom"] as? String,
               serverUrlFrom == self.serverUrl
         else { return }
 
-        let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-        if let indexPath = indexPath {
-            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                collectionView?.performBatchUpdates({
-                    collectionView?.deleteItems(at: [indexPath])
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            } else {
-                self.collectionView?.reloadData()
-            }
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     @objc func copyFile(_ notification: NSNotification) {
@@ -581,27 +546,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadCancelFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        let (indexPath, sameSections) = dataSource.deleteMetadata(ocId: ocId)
-        if let indexPath = indexPath {
-            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                collectionView?.performBatchUpdates({
-                    collectionView?.deleteItems(at: [indexPath])
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            } else {
-                self.collectionView?.reloadData()
-            }
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
@@ -1736,7 +1687,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if headerMenuButtonsCommand && !isSearchingMode {
                     let imageButton2 = isDirectoryE2EE ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
                     let titleButton2 = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
-                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(named: "scan"), titleButton3: NSLocalizedString("_scan_", comment: ""))
+                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(systemName: "doc.text.viewfinder"), titleButton3: NSLocalizedString("_scan_", comment: ""))
                 } else {
                     header.setButtonsCommand(heigt: 0)
                 }

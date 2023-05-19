@@ -170,20 +170,27 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
+              let ocIds = userInfo["ocId"] as? [String],
+              let error = userInfo["error"] as? NKError
         else { return }
 
-        let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == ocId }
-        let metadatas = self.metadatas.filter { $0.ocId != ocId }
-        self.metadatas = metadatas
-
-        if self.metadatas.count == 0 {
-            collectionView?.reloadData()
-        } else if let row = indexes.first {
-            let indexPath = IndexPath(row: row, section: 0)
-            collectionView?.deleteItems(at: [indexPath])
+        if error == .success {
+            var items: [IndexPath] = []
+            var index: Int = 0
+            for metadata in metadatas {
+                if ocIds.contains(metadata.ocId) {
+                    self.metadatas.remove(at: index)
+                    items.append(IndexPath(row: index, section: 0))
+                }
+                if ocIds.count == items.count { break }
+                index += 1
+            }
+            if ocIds.count == items.count {
+                self.collectionView?.deleteItems(at: items)
+            } else {
+                self.reloadDataSourceWithCompletion { _ in }
+            }
         }
-
         self.updateMediaControlVisibility()
     }
 
