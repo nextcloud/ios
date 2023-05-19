@@ -31,11 +31,12 @@ class NCCapabilitiesStatus: ObservableObject {
     }
 
     @Published var capabililies: [Capability] = []
+    @Published var json = "Lorem ipsum dolor sit amet. Ea voluptas aperiam aut inventore saepe in tenetur modi. Cum sint tempore sed maiores quos aut quaerat deleniti. Qui beatae quia qui repellat sunt in Quis libero aut quidem porro non explicabo tenetur et natus doloribus non voluptatum consequatur."
 
     init(preview: Bool = false) {
 
         if preview {
-            capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!, available: true),
+            capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: true),
                             Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
             ]
         } else {
@@ -71,6 +72,7 @@ class NCCapabilitiesStatus: ObservableObject {
 
         var available: Bool = false
         capabililies.removeAll()
+        self.json = ""
 
         // File Sharing
         available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
@@ -140,7 +142,7 @@ class NCCapabilitiesStatus: ObservableObject {
         capabililies.append(Capability(text: "Group folders", image: UIImage(systemName: "person.2")!, available: available))
 
         if let json = NCManageDatabase.shared.getCapabilities(account: account) {
-            // self.capabilitiesText = text
+            self.json = json
         }
     }
 }
@@ -156,11 +158,16 @@ struct NCCapabilitiesView: View {
     var body: some View {
         VStack {
             List {
-                ForEach(capabilitiesStatus.capabililies, id: \.id) { capability in
-                    HStack {
-                        Capability(text: capability.text, image: Image(uiImage: capability.image))
-                        CapabilityAvailable(available: capability.available)
+                Section {
+                    ForEach(capabilitiesStatus.capabililies, id: \.id) { capability in
+                        HStack {
+                            Capability(text: capability.text, image: Image(uiImage: capability.image))
+                            CapabilityAvailable(available: capability.available)
+                        }
                     }
+                }
+                Section {
+                    TextEditor(text: $capabilitiesStatus.json)
                 }
             }
         }
