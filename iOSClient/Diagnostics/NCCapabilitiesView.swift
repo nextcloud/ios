@@ -83,7 +83,7 @@ class NCCapabilitiesViewOO: ObservableObject {
         capabililies.append(Capability(text: "File sharing", image: UIImage(named: "share")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: available))
 
         // ExternalSites
-        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
+        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSites, exists: true)
         capabililies.append(Capability(text: "External site", image: UIImage(systemName: "network")!, available: available))
 
         // E2EE
