@@ -396,6 +396,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
 
             cell.imageIcon?.image = NCUtility.shared.loadImage(named: item.icon)
+            cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = .label
 
