@@ -31,7 +31,7 @@ class NCCapabilitiesViewOO: ObservableObject {
     }
 
     @Published var capabililies: [Capability] = []
-    @Published var json = "Lorem ipsum dolor sit amet. Ea voluptas aperiam aut inventore saepe in tenetur modi\n.Cum sint tempore sed maiores quos aut quaerat deleniti.\nQui beatae quia qui repellat sunt in Quis libero aut quidem porro non explicabo tenetur et natus doloribus non voluptatum consequatur.\n"
+    @Published var json = "Lorem ipsum dolor sit amet.\nEa voluptas aperiam aut inventore saepe in tenetur modi.\nCum sint tempore sed maiores quos aut quaerat deleniti.\nQui beatae quia qui repellat sunt in Quis libero aut quidem porro non explicabo tenetur et natus doloribus non voluptatum consequatur.\n"
     @Published var homeServer = ""
 
     init() {
@@ -45,7 +45,6 @@ class NCCapabilitiesViewOO: ObservableObject {
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
             homeServer = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
             getCapabilities(account: activeAccount.account)
-            updateCapabilities(account: activeAccount.account)
         }
     }
 
@@ -69,14 +68,16 @@ class NCCapabilitiesViewOO: ObservableObject {
                 self.updateCapabilities(account: account)
             }
         }
+
+        updateCapabilities(account: account)
     }
 
     func updateCapabilities(account: String) {
 
         var available: Bool = false
-        capabililies.removeAll()
 
-        self.json = ""
+        capabililies.removeAll()
+        json = ""
 
         // FILE SHARING
         available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
