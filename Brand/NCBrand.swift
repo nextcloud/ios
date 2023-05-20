@@ -381,4 +381,10 @@ class NCBrandColor: NSObject {
     @objc public var notificationAction: UIColor {
         return UIColor(red: 0/255.0, green: 153/255.0, blue: 255/255.0, alpha: 1.0)
     }
+    
+    @objc public var secondarySystemGroupedBackground: UIColor = UIColor.secondarySystemGroupedBackground
+    @objc public var label: UIColor = UIColor.label
+    @objc public var backgroundForm: UIColor = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
+    @objc public let graySoft: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
+    @objc public let systemGray4: UIColor = UIColor.systemGray4
 }
