@@ -34,9 +34,9 @@ class NCCapabilitiesViewOO: ObservableObject {
     @Published var json = "Lorem ipsum dolor sit amet. Ea voluptas aperiam aut inventore saepe in tenetur modi\n.Cum sint tempore sed maiores quos aut quaerat deleniti.\nQui beatae quia qui repellat sunt in Quis libero aut quidem porro non explicabo tenetur et natus doloribus non voluptatum consequatur.\n"
     @Published var homeServer = ""
 
-    init(preview: Bool = false) {
+    init() {
 
-        if preview {
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
             capabililies = [Capability(text: "File sharing", image: UIImage(named: "share")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: true),
                             Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
             ]
@@ -221,6 +221,6 @@ struct NCCapabilitiesView: View {
 
 struct NCCapabilitiesView_Previews: PreviewProvider {
     static var previews: some View {
-        NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO(preview: true))
+        NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO())
     }
 }
