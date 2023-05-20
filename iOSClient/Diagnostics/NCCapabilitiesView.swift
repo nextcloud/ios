@@ -52,8 +52,8 @@ class NCCapabilitiesViewOO: ObservableObject {
     func getCapabilities(account: String) {
 
         NextcloudKit.shared.getCapabilities { account, data, error in
-            if error == .success && data != nil {
-                NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
+            if error == .success, let data = data {
+                NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
                 let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                     NextcloudKit.shared.NCTextObtainEditorDetails { account, editors, creators, _, error in
