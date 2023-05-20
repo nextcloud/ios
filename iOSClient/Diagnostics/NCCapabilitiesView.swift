@@ -176,7 +176,6 @@ struct NCCapabilitiesView: View {
                 Section {
                     TextEditor(text: .constant(capabilitiesStatus.json))
                         .font(.system(size: 12))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }
