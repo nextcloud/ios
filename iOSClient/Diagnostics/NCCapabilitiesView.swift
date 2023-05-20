@@ -13,7 +13,7 @@ import NextcloudKit
 
     @objc func makeShipDetailsUI() -> UIViewController {
 
-        let capabilitiesStatus = NCCapabilitiesStatus()
+        let capabilitiesStatus = NCCapabilitiesViewOO()
         let view = NCCapabilitiesView(capabilitiesStatus: capabilitiesStatus)
         let vc = UIHostingController(rootView: view)
         vc.title = NSLocalizedString("_capabilities_", comment: "")
@@ -21,7 +21,7 @@ import NextcloudKit
     }
 }
 
-class NCCapabilitiesStatus: ObservableObject {
+class NCCapabilitiesViewOO: ObservableObject {
 
     struct Capability: Identifiable, Hashable {
         let id = UUID()
@@ -153,29 +153,29 @@ class NCCapabilitiesStatus: ObservableObject {
 
 struct NCCapabilitiesView: View {
 
-    @ObservedObject var capabilitiesStatus: NCCapabilitiesStatus
+    @ObservedObject var capabilitiesViewOO: NCCapabilitiesViewOO
 
-    init(capabilitiesStatus: NCCapabilitiesStatus) {
-        self.capabilitiesStatus = capabilitiesStatus
+    init(capabilitiesStatus: NCCapabilitiesViewOO) {
+        self.capabilitiesViewOO = capabilitiesStatus
     }
 
     var body: some View {
         VStack {
             List {
                 Section {
-                    ForEach(capabilitiesStatus.capabililies, id: \.id) { capability in
+                    ForEach(capabilitiesViewOO.capabililies, id: \.id) { capability in
                         HStack {
-                            Capability(text: capability.text, image: Image(uiImage: capability.image))
-                            CapabilityAvailable(available: capability.available)
+                            CapabilityName(text: capability.text, image: Image(uiImage: capability.image))
+                            CapabilityStatus(available: capability.available)
                         }
                     }
                 }
                 Section {
-                    Capability(text: capabilitiesStatus.homeServer, image: Image(uiImage: UIImage(systemName: "house")!))
+                    CapabilityName(text: capabilitiesViewOO.homeServer, image: Image(uiImage: UIImage(systemName: "house")!))
                 }
                 Section {
                     ScrollView(.horizontal) {
-                        Text(capabilitiesStatus.json)
+                        Text(capabilitiesViewOO.json)
                             .font(.system(size: 12))
                     }
                 }
@@ -183,44 +183,44 @@ struct NCCapabilitiesView: View {
         }
         .frame(maxWidth: .infinity, alignment: .top)
     }
-}
 
-struct Capability: View {
+    struct CapabilityName: View {
 
-    @State var text: String = ""
-    @State var image: Image
+        @State var text: String = ""
+        @State var image: Image
 
-    var body: some View {
-        Label {
-            Text(text)
-                .font(.system(size: 15))
-                .foregroundColor(Color(UIColor.systemGray))
-        } icon: {
-            image
-                .renderingMode(.template)
-                .foregroundColor(Color(UIColor.systemGray))
+        var body: some View {
+            Label {
+                Text(text)
+                    .font(.system(size: 15))
+                    .foregroundColor(Color(UIColor.systemGray))
+            } icon: {
+                image
+                    .renderingMode(.template)
+                    .foregroundColor(Color(UIColor.systemGray))
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
-}
 
-struct CapabilityAvailable: View {
+    struct CapabilityStatus: View {
 
-    @State var available: Bool
+        @State var available: Bool
 
-    var body: some View {
-        if available {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
-        } else {
-            Image(systemName: "multiply.circle.fill")
-                .foregroundColor(.red)
+        var body: some View {
+            if available {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+            } else {
+                Image(systemName: "multiply.circle.fill")
+                    .foregroundColor(.red)
+            }
         }
     }
 }
 
 struct NCCapabilitiesView_Previews: PreviewProvider {
     static var previews: some View {
-        NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesStatus(preview: true))
+        NCCapabilitiesView(capabilitiesStatus: NCCapabilitiesViewOO(preview: true))
     }
 }
