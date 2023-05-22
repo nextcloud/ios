@@ -173,12 +173,12 @@ struct UploadAssetsView: View {
         uploadAssets.loadImages()
     }
 
-    func getOriginalFilename() -> String {
+    func getOriginalFilename() -> NSString {
 
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
 
         if let asset = uploadAssets.assets.first?.phAsset, let resource = PHAssetResource.assetResources(for: asset).first {
-            return (resource.originalFilename as NSString).deletingPathExtension
+            return resource.originalFilename as NSString
         } else {
             return ""
         }
@@ -252,9 +252,10 @@ struct UploadAssetsView: View {
         let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
         for tlAsset in uploadAssets.assets {
-            guard let asset = tlAsset.phAsset,
-                  let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }),
-                  let assetFileName = asset.value(forKey: "filename") as? NSString else { continue }
+            guard let asset = tlAsset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier })
+            else { continue }
+            
+            let assetFileName = getOriginalFilename()
 
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
@@ -496,7 +497,7 @@ struct UploadAssetsView: View {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             if isMaintainOriginalFilename {
-                                Text(getOriginalFilename())
+                                Text(getOriginalFilename().deletingPathExtension)
                                     .font(.system(size: 15))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .foregroundColor(Color.gray)
