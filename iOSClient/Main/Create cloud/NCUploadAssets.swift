@@ -177,8 +177,8 @@ struct UploadAssetsView: View {
 
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
 
-        if let asset = uploadAssets.assets.first?.phAsset, let name = (asset.value(forKey: "filename") as? String) {
-            return (name as NSString).deletingPathExtension
+        if let asset = uploadAssets.assets.first?.phAsset, let resource = PHAssetResource.assetResources(for: asset).first {
+            return (resource.originalFilename as NSString).deletingPathExtension
         } else {
             return ""
         }
