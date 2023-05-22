@@ -9,8 +9,6 @@
 import SwiftUI
 import NextcloudKit
 
-// TEST
-
 @objc class NCHostingCapabilitiesView: NSObject {
 
     @objc func makeShipDetailsUI() -> UIViewController {
