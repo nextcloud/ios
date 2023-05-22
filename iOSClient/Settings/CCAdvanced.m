@@ -203,9 +203,9 @@
     row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                 
         [self deselectFormRow:sender];
-        
-        NCCapabilitiesViewController *capabilities = [[UIStoryboard storyboardWithName:@"NCCapabilitiesViewController" bundle:nil] instantiateInitialViewController];        
-        [self presentViewController:capabilities animated:YES completion:nil];
+
+        UIViewController *vc = [[NCHostingCapabilitiesView alloc] makeShipDetailsUI];
+        [self.navigationController pushViewController:vc animated:YES];
     };
     [section addFormRow:row];
     
