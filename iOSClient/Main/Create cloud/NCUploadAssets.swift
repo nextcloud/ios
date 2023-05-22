@@ -252,11 +252,9 @@ struct UploadAssetsView: View {
         let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
         for tlAsset in uploadAssets.assets {
-            guard let asset = tlAsset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier })
-            else { continue }
-            
-            let assetFileName = getOriginalFilename()
+            guard let asset = tlAsset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
 
+            let assetFileName = getOriginalFilename()
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
