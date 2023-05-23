@@ -171,11 +171,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let certificateSavedPath = directoryCertificate + "/" + host + ".der"
         var isTrusted: Bool
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Start")
-
         if let serverTrust: SecTrust = protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
-
-            NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Extarct certificate txt")
 
             // extarct certificate txt
             saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
@@ -189,17 +185,13 @@ class NCNetworking: NSObject, NKCommonDelegate {
             certificateData.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
             
             if isServerTrusted {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server trusted")
                 isTrusted = true
             } else if let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server trusted (data saved)")
                 isTrusted = true
             } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] Server not trusted")
                 isTrusted = false
             }
         } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[PINNING] not certificate, server not trusted ")
             isTrusted = false
         }
 
@@ -224,7 +216,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
     
-    private func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
+    func saveX509Certificate(_ certificate: SecCertificate, host: String, directoryCertificate: String) {
         
         let certNamePathTXT = directoryCertificate + "/" + host + ".txt"
         let data: CFData = SecCertificateCopyData(certificate)
@@ -1167,7 +1159,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Delete
 
-    func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool) async -> (NKError) {
 
         if onlyLocalCache {
 
@@ -1188,10 +1180,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLivePhoto.ocId))
                     NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
                 }
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "serverUrl": metadata.serverUrl, "account": metadata.account, "classFile": metadata.classFile, "onlyLocalCache": true])
             }
-            return completion(NKError())
+            return NKError()
         }
 
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
@@ -1202,73 +1192,59 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 if let metadataLive = metadataLive {
                     let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
                     if error == .success {
-                        let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
-                        completion(error)
+                        return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
                     } else {
-                        completion(error)
+                        return error
                     }
                 } else {
-                    let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
-                    completion(error)
+                    return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
                 }
             }
 #endif
         } else {
-            if metadataLive == nil {
-                self.deleteMetadataPlain(metadata, customHeader: nil, completion: completion)
-            } else {
-                self.deleteMetadataPlain(metadataLive!, customHeader: nil) { error in
-                    if error == .success {
-                        self.deleteMetadataPlain(metadata, customHeader: nil, completion: completion)
-                    } else {
-                        completion(error)
-                    }
+            if let metadataLive = metadataLive {
+                let error = await deleteMetadataPlain(metadataLive)
+                if error == .success {
+                    return await deleteMetadataPlain(metadata)
+                } else {
+                    return error
                 }
+            } else {
+                return await deleteMetadataPlain(metadata)
             }
         }
+        return NKError()
     }
 
-    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]?, completion: @escaping (_ error: NKError) -> Void) {
+    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> (NKError) {
 
         // verify permission
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanDelete)
         if metadata.permissions != "" && permission == false {
-            return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_")
         }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
-        
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options) { account, error in
 
-            if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
+        let result = await NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, options: options)
 
-                do {
-                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                } catch { }
+        if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
-                NCManageDatabase.shared.deleteVideo(metadata: metadata)
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            do {
+                try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+            } catch { }
 
-                if metadata.directory {
-                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
-                }
+            NCManageDatabase.shared.deleteVideo(metadata: metadata)
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": metadata.ocId, "fileNameView": metadata.fileNameView, "serverUrl": metadata.serverUrl, "account": metadata.account, "classFile": metadata.classFile, "onlyLocalCache": false])
+            if metadata.directory {
+                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
             }
-
-            completion(error)
         }
-    }
 
-    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]?) async -> (NKError) {
-
-        await withUnsafeContinuation({ continuation in
-            self.deleteMetadataPlain(metadata, customHeader: customHeader) { error in
-                continuation.resume(returning: error)
-            }
-        })
+        return result.error
     }
 
     // MARK: - WebDav Favorite
@@ -1432,7 +1408,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         if let path = CCUtility.getDirectoryProviderStorageOcId(ocId) {
                             NCUtilityFileSystem.shared.deleteFile(filePath: path)
                         }
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": metadata.serverUrl])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
 
                     } else {
 
@@ -1535,20 +1511,26 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Direct Download
 
-    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?) -> Void) {
+    func getVideoUrl(metadata: tableMetadata, completition: @escaping (_ url: URL?, _ autoplay: Bool, _ error: NKError) -> Void) {
 
-        if CCUtility.fileProviderStorageExists(metadata) {
-            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)))
+        if !metadata.url.isEmpty {
+            if metadata.url.hasPrefix("/") {
+                completition(URL(fileURLWithPath: metadata.url), true, .success)
+            } else {
+                completition(URL(string: metadata.url), true, .success)
+            }
+        } else if CCUtility.fileProviderStorageExists(metadata) {
+            completition(URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId) { account, url, data, error in
                 if error == .success && url != nil {
                     if let url = URL(string: url!) {
-                        completition(url)
+                        completition(url, false, error)
                     } else {
-                        completition(nil)
+                        completition(nil, false, error)
                     }
                 } else {
-                    completition(nil)
+                    completition(nil, false, error)
                 }
             }
         }

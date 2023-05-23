@@ -84,8 +84,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(UIImage(named: "plus")?.image(color: .label, size: 25), for: .normal)
-        transferDown.setImage(UIImage(named: "transferDown")?.image(color: .label, size: 25), for: .normal)
+        add.setImage(UIImage(systemName: "plus")?.image(color: .label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(systemName: "arrow.down")?.image(color: .label, size: 25), for: .normal)
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         collectionViewSource.addGestureRecognizer(longPressRecognizer)
@@ -145,8 +145,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        add.setImage(UIImage(named: "plus")?.image(color: .label, size: 25), for: .normal)
-        transferDown.setImage(UIImage(named: "transferDown")?.image(color: .label, size: 25), for: .normal)
+        add.setImage(UIImage(systemName: "plus")?.image(color: .label, size: 25), for: .normal)
+        transferDown.setImage(UIImage(systemName: "arrow.down")?.image(color: .label, size: 25), for: .normal)
     }
 
     override var canBecomeFirstResponder: Bool { return true }

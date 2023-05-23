@@ -125,15 +125,20 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var isViewerMedia: Bool
+    var viewController: UIViewController?
 
     @discardableResult
-    init (tabBarController: UITabBarController) {
+    init (tabBarController: UITabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+
+        self.isViewerMedia = isViewerMedia
+        self.viewController = viewController
         super.init()
 
-        let documentProviderMenu = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .import)
+        let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.data])
 
         documentProviderMenu.modalPresentationStyle = .formSheet
-        documentProviderMenu.allowsMultipleSelection = true
+        documentProviderMenu.allowsMultipleSelection = allowsMultipleSelection
         documentProviderMenu.popoverPresentationController?.sourceView = tabBarController.tabBar
         documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
@@ -143,15 +148,31 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
 
-        for url in urls {
+        let ocId = NSUUID().uuidString
+
+        if isViewerMedia,
+            let urlIn = urls.first,
+            let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
+            let viewController = self.viewController {
 
             let fileName = url.lastPathComponent
-            let serverUrl = appDelegate.activeServerUrl
-            let ocId = NSUUID().uuidString
-            let atPath = url.path
-            let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+            let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
+            if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
+                metadata.classFile = NKCommon.TypeClassFile.video.rawValue
+            }
+            NCManageDatabase.shared.addMetadata(metadata)
+            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
-            if NCUtilityFileSystem.shared.copyFile(atPath: atPath, toPath: toPath) {
+        } else {
+
+            for urlIn in urls {
+
+                let fileName = urlIn.lastPathComponent
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+                let urlOut = URL(fileURLWithPath: toPath)
+                let serverUrl = appDelegate.activeServerUrl
+
+                guard let url = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
@@ -174,11 +195,21 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 } else {
                     NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
                 }
-
-            } else {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_read_file_error_")
-                NCContentPresenter.shared.showError(error: error)
             }
         }
+    }
+
+    func copySecurityScopedResource(url: URL, urlOut: URL) -> URL? {
+
+        try? FileManager.default.removeItem(at: urlOut)
+        if url.startAccessingSecurityScopedResource() {
+            do {
+                try FileManager.default.copyItem(at: url, to: urlOut)
+                url.stopAccessingSecurityScopedResource()
+                return urlOut
+            } catch {
+            }
+        }
+        return nil
     }
 }

@@ -88,6 +88,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         var item = NKExternalSite()
         var quota: String = ""
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
         // Clear
         functionMenu.removeAll()
@@ -108,7 +109,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Recent
         item = NKExternalSite()
         item.name = "_recent_"
-        item.icon = "recent"
+        item.icon = "clock.arrow.circlepath"
         item.url = "segueRecent"
         item.order = 20
         functionMenu.append(item)
@@ -148,18 +149,26 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 60
         functionMenu.append(item)
 
+        // ITEM : Groupfolders
+        let hasAccessibleGroupFolders = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesGroupfoldersEnabled, exists: false)
+        if hasAccessibleGroupFolders {
+            item = NKExternalSite()
+            item.name = "_group_folders_"
+            item.icon = "person.2"
+            item.url = "segueGroupfolders"
+            item.order = 61
+            functionMenu.append(item)
+        }
         // ITEM : Scan
         item = NKExternalSite()
         item.name = "_scanned_images_"
-        item.icon = "scan"
+        item.icon = "doc.text.viewfinder"
         item.url = "openStoryboardNCScan"
         item.order = 70
         functionMenu.append(item)
 
         // ITEM : Trash
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
-
             item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"
@@ -387,6 +396,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
 
             cell.imageIcon?.image = NCUtility.shared.loadImage(named: item.icon)
+            cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = .label
 

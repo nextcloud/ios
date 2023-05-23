@@ -94,7 +94,7 @@
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[[UIImage imageNamed:@"plus"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[[UIImage systemImageNamed:@"plus"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
             row.action.formSelector = @selector(addAccount:);
@@ -515,6 +515,7 @@
         
     NSURL *url = [NSURL URLWithString: NCBrandOptions.shared.pushNotificationServerProxy];
     viewController.host = [url host];
+    viewController.certificateTitle = NSLocalizedString(@"_certificate_pn_view_", nil);
 
     [self presentViewController:navigationController animated:YES completion:nil];
 }

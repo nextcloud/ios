@@ -214,7 +214,7 @@ class NCService: NSObject {
             }
 
             // External file Server
-            let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
+            let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSites, exists: true)
             if isExternalSitesServerEnabled {
                 NextcloudKit.shared.getExternalSite(options: options) { account, externalSites, data, error in
                     if error == .success && account == self.appDelegate.account {
@@ -253,7 +253,7 @@ class NCService: NSObject {
             }
         }
     }
-    
+
     // MARK: -
 
     private func requestDashboardWidget() {

@@ -656,17 +656,6 @@
     [UICKeyChainStore setString:valueString forKey:@"logLevel" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
-+ (BOOL)getAudioMute
-{
-    return [[UICKeyChainStore stringForKey:@"audioMute" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setAudioMute:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"audioMute" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
 + (BOOL)getAccountRequest
 {
     return [[UICKeyChainStore stringForKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
@@ -700,7 +689,8 @@
     NSString *size = [UICKeyChainStore stringForKey:@"cleanUpDay" service:NCGlobal.shared.serviceShareKeyChain];
     
     if (size == nil) {
-        return 0;
+        NSInteger days = [[NCBrandOptions shared] cleanUpDay];
+        return days;
     } else {
         return [size integerValue];
     }
@@ -732,17 +722,6 @@
 {
     NSString *sSet = (set) ? @"true" : @"false";
     [UICKeyChainStore setString:sSet forKey:@"removePhotoCameraRoll" service:NCGlobal.shared.serviceShareKeyChain];
-}
-
-+ (BOOL)getPlayerPlay
-{
-    return [[UICKeyChainStore stringForKey:@"playerPlay" service:NCGlobal.shared.serviceShareKeyChain] boolValue];
-}
-
-+ (void)setPlayerPlay:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"playerPlay" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import TagListView
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
@@ -43,6 +44,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var infoTrailingConstraint: NSLayoutConstraint!
+
+    @IBOutlet weak var tagListView: TagListView!
 
     private var objectId = ""
     private var user = ""
@@ -104,6 +107,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var cellSeparatorView: UIView? {
         get { return separator }
         set { separator = newValue }
+    }
+    var cellTagListView: TagListView? {
+        get { return tagListView}
+        set { tagListView = newValue }
     }
  
     override func awakeFromNib() {
@@ -274,6 +281,32 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func setAccessibility(label: String, value: String) {
         accessibilityLabel = label
         accessibilityValue = value
+    }
+
+    func setTags(tags: [String]) {
+        tagListView.removeAllTags()
+        if tags.isEmpty {
+            tagListView.isHidden = true
+            labelInfo.isHidden = false
+        } else {
+            tagListView.isHidden = false
+            labelInfo.isHidden = true
+            if let tag = tags.first {
+                tagListView.addTag(tag)
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    if tags.count >= 2 {
+                        tagListView.addTag(tags[1])
+                    }
+                    if tags.count > 2 {
+                        tagListView.addTag("+\(tags.count-2)")
+                    }
+                } else {
+                    if tags.count > 1 {
+                        tagListView.addTag("+\(tags.count-1)")
+                    }
+                }
+            }
+        }
     }
 }
 

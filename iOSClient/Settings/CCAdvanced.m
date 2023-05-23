@@ -203,9 +203,9 @@
     row.action.formBlock = ^(XLFormRowDescriptor * sender) {
                 
         [self deselectFormRow:sender];
-        
-        NCCapabilitiesViewController *capabilities = [[UIStoryboard storyboardWithName:@"NCCapabilitiesViewController" bundle:nil] instantiateInitialViewController];        
-        [self presentViewController:capabilities animated:YES completion:nil];
+
+        UIViewController *vc = [[NCHostingCapabilitiesView alloc] makeShipDetailsUI];
+        [self.navigationController pushViewController:vc animated:YES];
     };
     [section addFormRow:row];
     
@@ -267,7 +267,19 @@
     [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCacheRequest:);
     [sectionSize addFormRow:row];
-    
+
+#ifdef DEBUG
+    // Clear all cache
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeraallcache" rowType:XLFormRowDescriptorTypeButton title:@"Clear all cache"];
+    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blueColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    [row.cellConfig setObject:[[UIImage imageNamed:@"trash"] imageWithColor:[UIColor blueColor] size:25] forKey:@"imageView.image"];
+    row.action.formSelector = @selector(clearAllCacheRequest:);
+    [sectionSize addFormRow:row];
+#endif
+
     // Section EXIT --------------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -377,24 +389,22 @@
 
 #pragma mark - Clear Cache
 
-- (void)clearCache
+- (void)clearCache:(NSString *)account
 {
-    [[NCNetworking shared] cancelAllTransferWithAccount:appDelegate.account completion:^{ }];
+    [[NCNetworking shared] cancelAllTransferWithAccount:account completion:^{ }];
     [[NCOperationQueue shared] cancelAllQueue];
     [[NCNetworking shared] cancelAllTask];
     
     [[NSURLCache sharedURLCache] setMemoryCapacity:0];
     [[NSURLCache sharedURLCache] setDiskCapacity:0];
     
-    [[NCManageDatabase shared] clearDatabaseWithAccount:appDelegate.account removeAccount:false];
+    [[NCManageDatabase shared] clearDatabaseWithAccount:account removeAccount:false];
     
     [CCUtility removeGroupDirectoryProviderStorage];
     [CCUtility removeGroupLibraryDirectory];
 
     [CCUtility removeDocumentsDirectory];
     [CCUtility removeTemporaryDirectory];
-
-    [[NCKTVHTTPCache shared] deleteAllCache];
     
     [CCUtility createDirectoryStandard];
 
@@ -416,9 +426,9 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_cache_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[NCActivityIndicator shared] startActivityWithBackgroundView:nil style: UIActivityIndicatorViewStyleLarge];
+        [[NCActivityIndicator shared] startActivityWithBackgroundView:nil style: UIActivityIndicatorViewStyleLarge blurEffect:true];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-            [self clearCache];
+            [self clearCache:appDelegate.account];
         });
     }]];
     
@@ -431,6 +441,12 @@
     alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)clearAllCacheRequest:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    [self clearCache:nil];
 }
 
 - (void)calculateSize

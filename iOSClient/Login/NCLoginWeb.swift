@@ -28,7 +28,6 @@ import FloatingPanel
 
 class NCLoginWeb: UIViewController {
 
-    var activityIndicator: UIActivityIndicatorView!
     var webView: WKWebView?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var titleView: String = ""
@@ -93,16 +92,9 @@ class NCLoginWeb: UIViewController {
         webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 
-        activityIndicator = UIActivityIndicatorView(style: .medium)
-        activityIndicator.center = self.view.center
-        activityIndicator.startAnimating()
-        
-        self.view.addSubview(activityIndicator)
-        
         // AppConfig
         if let serverUrl = configServerUrl {
             if let username = self.configUsername, let password = configAppPassword {
-                activityIndicator.stopAnimating()
                 createAccount(server: serverUrl, username: username, password: password)
                 return
             } else if let username = self.configUsername, let password = configPassword {
@@ -157,6 +149,12 @@ class NCLoginWeb: UIViewController {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        NCActivityIndicator.shared.stop()
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -185,7 +183,6 @@ class NCLoginWeb: UIViewController {
     func getAppPassword(serverUrl: String, username: String, password: String) {
         
         NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, data, error in
-            self.activityIndicator.stopAnimating()
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
@@ -277,12 +274,12 @@ extension NCLoginWeb: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print("didStartProvisionalNavigation")
+        NCActivityIndicator.shared.startActivity(style: .medium, blurEffect: false)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        activityIndicator.stopAnimating()
-        print("didFinishProvisionalNavigation")
+
+        NCActivityIndicator.shared.stop()
 
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

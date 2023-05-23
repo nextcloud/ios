@@ -46,7 +46,7 @@ extension NCViewer {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "info"),
                     action: { _ in
-                        NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+                        NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
                     }
                 )
             )
@@ -123,8 +123,9 @@ extension NCViewer {
         //
         // CONVERSION VIDEO TO MPEG4 (MFFF Lib)
         //
+        /*
 #if MFFFLIB
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+        if metadata.isVideo {
             
             actions.append(
                 NCMenuAction(
@@ -139,7 +140,7 @@ extension NCViewer {
             )
         }
 #endif
-        
+        */
         //
         // SAVE CAMERA ROLL
         //
@@ -206,13 +207,13 @@ extension NCViewer {
         }
 
         //
-        // DOWNLOAD IMAGE MAX RESOLUTION
+        // DOWNLOAD LOCALLY
         //
-        if !webView, metadata.session.isEmpty, metadata.classFile == NKCommon.TypeClassFile.image.rawValue, !CCUtility.fileProviderStorageExists(metadata) {
+        if !webView, metadata.session.isEmpty, !CCUtility.fileProviderStorageExists(metadata) {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_download_image_max_", comment: ""),
-                    icon: NCUtility.shared.loadImage(named: "square.and.arrow.down"),
+                    title: NSLocalizedString("_download_locally_", comment: ""),
+                    icon: NCUtility.shared.loadImage(named: "icloud.and.arrow.down"),
                     action: { _ in
                         NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                     }

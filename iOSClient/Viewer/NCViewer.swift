@@ -69,7 +69,7 @@ class NCViewer: NSObject {
         }
 
         // IMAGE AUDIO VIDEO
-        if metadata.classFile == NKCommon.TypeClassFile.image.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue || metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+        if metadata.isImage || metadata.isMovie {
 
             if let navigationController = viewController.navigationController {
 

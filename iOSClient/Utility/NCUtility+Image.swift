@@ -32,7 +32,7 @@ extension NCUtility {
             return image
         }
 
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && !metadata.hasPreview {
+        if metadata.isVideo && !metadata.hasPreview {
             NCUtility.shared.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         }
 
@@ -42,9 +42,9 @@ extension NCUtility {
             }
         }
 
-        if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+        if metadata.isVideo {
             return UIImage(named: "noPreviewVideo")?.image(color: .gray, size: size)
-        } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
+        } else if metadata.isAudio {
             return UIImage(named: "noPreviewAudio")?.image(color: .gray, size: size)
         } else {
             return UIImage(named: "noPreview")?.image(color: .gray, size: size)
@@ -55,7 +55,7 @@ extension NCUtility {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
 
-        if CCUtility.fileProviderStorageExists(metadata) && metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+        if CCUtility.fileProviderStorageExists(metadata) && metadata.isImage {
 
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!

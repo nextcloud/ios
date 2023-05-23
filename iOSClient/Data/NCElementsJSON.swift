@@ -54,7 +54,7 @@ import UIKit
     @objc public let capabilitiesE2EEEnabled: Array = ["ocs", "data", "capabilities", "end-to-end-encryption", "enabled"]
     @objc public let capabilitiesE2EEApiVersion: Array = ["ocs", "data", "capabilities", "end-to-end-encryption", "api-version"]
 
-    @objc public let capabilitiesExternalSitesExists: Array = ["ocs", "data", "capabilities", "external"]
+    @objc public let capabilitiesExternalSites: Array = ["ocs", "data", "capabilities", "external"]
 
     @objc public let capabilitiesRichdocumentsMimetypes: Array = ["ocs", "data", "capabilities", "richdocuments", "mimetypes"]
 
@@ -70,4 +70,6 @@ import UIKit
 
     @objc public let capabilitiesUserStatusEnabled: Array = ["ocs", "data", "capabilities", "user_status", "enabled"]
     @objc public let capabilitiesUserStatusSupportsEmoji: Array = ["ocs", "data", "capabilities", "user_status", "supports_emoji"]
+
+    @objc public let capabilitiesGroupfoldersEnabled: Array = ["ocs", "data", "capabilities", "groupfolders", "hasGroupFolders"]
 }

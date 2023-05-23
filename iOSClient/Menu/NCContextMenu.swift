@@ -53,7 +53,7 @@ class NCContextMenu: NSObject {
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
                               image: UIImage(systemName: "info")) { _ in
-            NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, indexPage: .activity)
+            NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
         }
 
         let favorite = UIAction(title: metadata.favorite ?
@@ -151,12 +151,22 @@ class NCContextMenu: NSObject {
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,
                                          image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+            var alertStyle = UIAlertController.Style.actionSheet
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                alertStyle = .alert
+            }
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false) { error in
-                    if error != .success {
+                Task {
+                    var ocId: [String] = []
+                    let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                    if error == .success {
+                        ocId.append(metadata.ocId)
+                    } else {
                         NCContentPresenter.shared.showError(error: error)
                     }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -165,7 +175,16 @@ class NCContextMenu: NSObject {
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
                                           image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true) { _ in }
+            Task {
+                var ocId: [String] = []
+                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                if error == .success {
+                    ocId.append(metadata.ocId)
+                } else {
+                    NCContentPresenter.shared.showError(error: error)
+                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
+            }
         }
 
         let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""),

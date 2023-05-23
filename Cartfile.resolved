@@ -1,2 +1,2 @@
-github "marinofaggiana/KTVHTTPCache" "2.0.5"
-github "marinofaggiana/TOPasscodeViewController" "a1b9d1058b2648e636525fc368e220a0cfddb42a"
+binary "https://code.videolan.org/videolan/VLCKit/raw/master/Packaging/MobileVLCKit.json" "3.5.1"
+github "marinofaggiana/TOPasscodeViewController" "ed795637acd2b1ef154e011a04ebab4686d0523c"

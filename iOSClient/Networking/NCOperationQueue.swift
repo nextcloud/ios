@@ -32,26 +32,23 @@ import NextcloudKit
     }()
 
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    private let deleteQueue = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let deleteQueueE2EE = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-
-    private var timerReadFileForMediaQueue: Timer?
+    private let readFileQueue = Queuer(name: "readFileQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
-        deleteCancelAll()
         copyMoveCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
         downloadThumbnailActivityCancelAll()
         downloadAvatarCancelAll()
         unifiedSearchCancelAll()
+        readFileCancelAll()
     }
 
     // MARK: - Download file
@@ -76,27 +73,6 @@ import NextcloudKit
             return true
         }
         return false
-    }
-
-    // MARK: - Delete file
-
-    func delete(metadata: tableMetadata, onlyLocalCache: Bool) {
-
-        if metadata.isDirectoryE2EE {
-            for case let operation as NCOperationDelete in deleteQueueE2EE.operations where operation.metadata.ocId == metadata.ocId {
-                return
-            }
-            deleteQueueE2EE.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
-        } else {
-            for case let operation as NCOperationDelete in deleteQueue.operations where operation.metadata.ocId == metadata.ocId {
-                return
-            }
-            deleteQueue.addOperation(NCOperationDelete(metadata: metadata, onlyLocalCache: onlyLocalCache))
-        }
-    }
-
-    func deleteCancelAll() {
-        deleteQueue.cancelAll()
     }
 
     // MARK: - Copy Move file
@@ -226,6 +202,21 @@ import NextcloudKit
     func unifiedSearchCancelAll() {
         unifiedSearchQueue.cancelAll()
     }
+
+    // MARK: - Read file
+
+    func readFile(serverUrlFileName: String) {
+
+        for case let operation as NCOperationReadFile in readFileQueue.operations where operation.serverUrlFileName == serverUrlFileName {
+            return
+        }
+
+        readFileQueue.addOperation(NCOperationReadFile(serverUrlFileName: serverUrlFileName))
+    }
+
+    func readFileCancelAll() {
+        readFileQueue.cancelAll()
+    }
 }
 
 // MARK: -
@@ -245,32 +236,6 @@ class NCOperationDownload: ConcurrentOperation {
             self.finish()
         } else {
             NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
-                self.finish()
-            }
-        }
-    }
-}
-
-// MARK: -
-
-class NCOperationDelete: ConcurrentOperation {
-
-    var metadata: tableMetadata
-    var onlyLocalCache: Bool
-
-    init(metadata: tableMetadata, onlyLocalCache: Bool) {
-        self.metadata = tableMetadata.init(value: metadata)
-        self.onlyLocalCache = onlyLocalCache
-    }
-
-    override func start() {
-        if isCancelled {
-            self.finish()
-        } else {
-            NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: onlyLocalCache) { error in
-                if error != .success {
-                    NCContentPresenter.shared.showError(error: error)
-                }
                 self.finish()
             }
         }
@@ -633,6 +598,35 @@ class NCOperationUnifiedSearch: ConcurrentOperation {
             self.collectionViewCommon.searchResults?.append(self.searchResult)
             reloadDataThenPerform {
                 self.finish()
+            }
+        }
+    }
+}
+
+// MARK: -
+
+class NCOperationReadFile: ConcurrentOperation {
+
+    var serverUrlFileName: String
+
+    init(serverUrlFileName: String) {
+        self.serverUrlFileName = serverUrlFileName
+    }
+
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+
+            NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { account, metadata, error in
+                if error == .success, let metadata = metadata {
+                    NCManageDatabase.shared.addMetadata(metadata)
+                    if metadata.directory {
+                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: self.serverUrlFileName, account: account)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterOperationReadFile, userInfo: ["ocId": metadata.ocId])
+                }
             }
         }
     }

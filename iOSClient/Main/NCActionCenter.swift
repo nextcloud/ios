@@ -188,18 +188,46 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: -
 
-    func openShare(viewController: UIViewController, metadata: tableMetadata, indexPage: NCGlobal.NCSharePagingIndex) {
+    func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        var page = page
+
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, queue: .main) { _, metadata, error in
+
             NCActivityIndicator.shared.stop()
+
             if let metadata = metadata, error == .success {
+
+                var pages: [NCBrandOptions.NCInfoPagingTab] = []
+
                 let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
                 let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
+                let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesActivity)
 
+                for value in NCBrandOptions.NCInfoPagingTab.allCases {
+                    pages.append(value)
+                }
+
+                if activity == nil, let idx = pages.firstIndex(of: .activity) {
+                    pages.remove(at: idx)
+                }
+                if !metadata.isSharable, let idx = pages.firstIndex(of: .sharing) {
+                    pages.remove(at: idx)
+                }
+                (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
+
+                if pages.contains(page) {
+                    shareViewController?.page = page
+                } else if let page = pages.first {
+                    shareViewController?.page = page
+                } else {
+                    return
+                }
+
+                shareViewController?.pages = pages
                 shareViewController?.metadata = metadata
-                shareViewController?.indexPage = indexPage
 
                 shareNavigationController?.modalPresentationStyle = .formSheet
                 if let shareNavigationController = shareNavigationController {
@@ -285,7 +313,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let printInfo = UIPrintInfo(dictionary: nil)
 
         printInfo.jobName = fileNameURL.lastPathComponent
-        printInfo.outputType = metadata.classFile == NKCommon.TypeClassFile.image.rawValue ? .photo : .general
+        printInfo.outputType = metadata.isImage ? .photo : .general
         printController.printInfo = printInfo
         printController.showsNumberOfCopies = true
 
@@ -330,7 +358,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             let errorSave = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_file_not_saved_cameraroll_")
 
             do {
-                if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+                if metadata.isImage {
                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
                     PHPhotoLibrary.shared().performChanges({
                         let assetRequest = PHAssetCreationRequest.forAsset()
@@ -340,7 +368,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                             NCContentPresenter.shared.messageNotification("_save_selected_files_", error: errorSave, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
                         }
                     }
-                } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+                } else if metadata.isVideo {
                     PHPhotoLibrary.shared().performChanges({
                         PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: fileNamePath))
                     }) { success, _ in
@@ -464,7 +492,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)!
                     NCUtilityFileSystem.shared.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                     NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced, userInfo: ["serverUrl": serverUrl])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetworkForced)
                 } else if afError?.isExplicitlyCancelledError ?? false {
                     print("cancel")
                 } else {

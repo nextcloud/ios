@@ -166,9 +166,6 @@
 + (NSInteger)getLogLevel;
 + (void)setLogLevel:(NSInteger)value;
 
-+ (BOOL)getAudioMute;
-+ (void)setAudioMute:(BOOL)set;
-
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 
@@ -183,9 +180,6 @@
 
 + (BOOL)getRemovePhotoCameraRoll;
 + (void)setRemovePhotoCameraRoll:(BOOL)set;
-
-+ (BOOL)getPlayerPlay;
-+ (void)setPlayerPlay:(BOOL)set;
 
 // ===== Varius =====
 

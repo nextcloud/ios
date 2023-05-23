@@ -22,18 +22,17 @@
 //
 
 import UIKit
-import AVFoundation
 import NextcloudKit
 import SVGKit
+import MobileVLCKit
 
 class NCViewerProviderContextMenu: UIViewController {
 
     private let imageView = UIImageView()
-    private var videoLayer: AVPlayerLayer?
-    private var audioPlayer: AVAudioPlayer?
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
     private var image: UIImage?
+    private let player = VLCMediaPlayer()
 
     private let sizeIcon: CGFloat = 150
 
@@ -80,7 +79,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // VIEW IMAGE
-            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.isImage && CCUtility.fileProviderStorageExists(metadata) {
                 viewImage(metadata: metadata)
             }
 
@@ -90,29 +89,36 @@ class NCViewerProviderContextMenu: UIViewController {
             }
 
             // VIEW VIDEO
-            if metadata.classFile == NKCommon.TypeClassFile.video.rawValue && CCUtility.fileProviderStorageExists(metadata) {
+            if metadata.isVideo {
+                if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                    let newSize = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    imageView.image = nil
+                    imageView.frame = newSize
+                    preferredContentSize = newSize.size
+                }
                 viewVideo(metadata: metadata)
             }
 
-            // PLAY SOUND
-            if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue && CCUtility.fileProviderStorageExists(metadata) {
-                playSound(metadata: metadata)
-            }
-
-            // AUTO DOWNLOAD VIDEO / AUDIO
-            // if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue || metadata.contentType == "application/pdf") {
-            if !CCUtility.fileProviderStorageExists(metadata) && (metadata.classFile == NKCommon.TypeClassFile.video.rawValue || metadata.classFile == NKCommon.TypeClassFile.audio.rawValue) {
+            // PLAY AUDIO
+            if metadata.isAudio {
 
                 var maxDownload: UInt64 = 0
 
-                if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableCellular {
-                    maxDownload = NCGlobal.shared.maxAutoDownloadCellular
-                } else {
-                    maxDownload = NCGlobal.shared.maxAutoDownload
-                }
+                if CCUtility.fileProviderStorageExists(metadata) {
 
-                if metadata.size <= maxDownload {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: "")
+                    viewVideo(metadata: metadata)
+
+                } else {
+
+                    if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableCellular {
+                        maxDownload = NCGlobal.shared.maxAutoDownloadCellular
+                    } else {
+                        maxDownload = NCGlobal.shared.maxAutoDownload
+                    }
+
+                    if metadata.size <= maxDownload {
+                        NCOperationQueue.shared.download(metadata: metadata, selector: "")
+                    }
                 }
             }
 
@@ -151,22 +157,11 @@ class NCViewerProviderContextMenu: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        player.stop()
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        if let videoLayer = self.videoLayer {
-            if videoLayer.frame == CGRect.zero {
-                videoLayer.frame = imageView.frame
-            } else {
-                imageView.frame = videoLayer.frame
-            }
-        }
-        preferredContentSize = imageView.frame.size
     }
 
     // MARK: - NotificationCenter
@@ -191,12 +186,12 @@ class NCViewerProviderContextMenu: UIViewController {
         else { return }
 
         if error == .success && metadata.ocId == self.metadata?.ocId {
-            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+            if metadata.isImage {
                 viewImage(metadata: metadata)
-            } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            } else if metadata.isVideo {
                 viewVideo(metadata: metadata)
-            } else if metadata.classFile == NKCommon.TypeClassFile.audio.rawValue {
-                playSound(metadata: metadata)
+            } else if metadata.isAudio {
+                viewVideo(metadata: metadata)
             }
         }
         if error == .success && metadata.ocId == self.metadataLivePhoto?.ocId {
@@ -242,49 +237,17 @@ class NCViewerProviderContextMenu: UIViewController {
         imageView.frame = resize(image?.size)
     }
 
-    func playSound(metadata: tableMetadata) {
-
-        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: filePath), fileTypeHint: AVFileType.mp3.rawValue)
-
-            guard let player = audioPlayer else { return }
-
-            player.play()
-
-        } catch let error {
-            print(error.localizedDescription)
-        }
-
-        preferredContentSize = imageView.frame.size
-    }
-
     private func viewVideo(metadata: tableMetadata) {
 
-        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-
-        if let resolutionVideo = resolutionForLocalVideo(url: URL(fileURLWithPath: filePath)) {
-
-            let player = AVPlayer(url: URL(fileURLWithPath: filePath))
-
-            self.videoLayer = AVPlayerLayer(player: player)
-            if let videoLayer = self.videoLayer {
-                videoLayer.videoGravity = .resizeAspectFill
-                imageView.image = nil
-                imageView.frame = resize(resolutionVideo)
-                imageView.layer.addSublayer(videoLayer)
+        NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay, _ in
+            if let url = url, let userAgent = CCUtility.getUserAgent() {
+                self.player.media = VLCMedia(url: url)
+                self.player.delegate = self
+                self.player.media?.addOption(":http-user-agent=\(userAgent)")
+                self.player.drawable = self.imageView
+                self.player.play()
             }
-
-            player.isMuted = true
-            player.play()
         }
-    }
-
-    private func resolutionForLocalVideo(url: URL) -> CGSize? {
-        guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
-        let size = track.naturalSize.applying(track.preferredTransform)
-        return CGSize(width: abs(size.width), height: abs(size.height))
     }
 
     private func resize(_ size: CGSize?) -> CGRect {
@@ -317,5 +280,69 @@ class NCViewerProviderContextMenu: UIViewController {
         frame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
         preferredContentSize = frame.size
         return frame
+    }
+}
+
+extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
+
+    func mediaPlayerStateChanged(_ aNotification: Notification) {
+
+        switch player.state {
+        case .stopped:
+            print("Played mode: STOPPED")
+            break
+        case .opening:
+            NCActivityIndicator.shared.start(backgroundView: self.view)
+            print("Played mode: OPENING")
+            break
+        case .buffering:
+            print("Played mode: BUFFERING")
+            break
+        case .ended:
+            print("Played mode: ENDED")
+            break
+        case .error:
+            NCActivityIndicator.shared.stop()
+            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
+            NCContentPresenter.shared.showError(error: error, priority: .max)
+            print("Played mode: ERROR")
+            break
+        case .playing:
+            NCActivityIndicator.shared.stop()
+            print("Played mode: PLAYING")
+            break
+        case .paused:
+            print("Played mode: PAUSED")
+            break
+        default: break
+        }
+    }
+
+    func mediaPlayerTimeChanged(_ aNotification: Notification) {
+        // Handle other states...
+    }
+
+    func mediaPlayerTitleChanged(_ aNotification: Notification) {
+        // Handle other states...
+    }
+
+    func mediaPlayerChapterChanged(_ aNotification: Notification) {
+        // Handle other states...
+    }
+
+    func mediaPlayerLoudnessChanged(_ aNotification: Notification) {
+        // Handle other states...
+    }
+
+    func mediaPlayerSnapshot(_ aNotification: Notification) {
+        // Handle other states...
+    }
+
+    func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {
+        // Handle other states...
+    }
+
+    func mediaPlayer(_ player: VLCMediaPlayer, recordingStoppedAtPath path: String) {
+        // Handle other states...
     }
 }
