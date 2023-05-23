@@ -202,43 +202,19 @@ struct UploadAssetsView: View {
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
         CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
 
-        if let fileName = fileName {
-
-            let fileName = fileName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-
-            if !fileName.isEmpty {
-
-                CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
-                preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                   fileDate: creationDate, fileType: asset.mediaType,
-                                                   keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                   forcedNewFileName: false)
-
-            } else {
-
-                CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-                preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                   fileDate: creationDate,
-                                                   fileType: asset.mediaType,
-                                                   keyFileName: nil,
-                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                   forcedNewFileName: false)
-            }
-
+        if let fileName = fileName?.trimmingCharacters(in: .whitespacesAndNewlines), !fileName.isEmpty {
+            CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
         } else {
-
             CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-            preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                               fileDate: creationDate,
-                                               fileType: asset.mediaType,
-                                               keyFileName: nil,
-                                               keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                               keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                               forcedNewFileName: false)
         }
+
+        preview = CCUtility.createFileName(getOriginalFilename() as String,
+                                           fileDate: creationDate,
+                                           fileType: asset.mediaType,
+                                           keyFileName: fileName,
+                                           keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                           keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                           forcedNewFileName: false)
 
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (preview as NSString).deletingPathExtension
     }
