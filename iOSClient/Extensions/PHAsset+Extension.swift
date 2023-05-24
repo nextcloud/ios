@@ -14,7 +14,7 @@ extension PHAsset {
         if let resource = PHAssetResource.assetResources(for: self).first {
             return resource.originalFilename as NSString
         } else {
-            return ""
+            return self.value(forKey: "filename") as! NSString
         }
     }
 }
