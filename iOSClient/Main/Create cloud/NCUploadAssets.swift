@@ -174,7 +174,6 @@ struct UploadAssetsView: View {
     }
 
     func getTextServerUrl(_ serverUrl: String) -> String {
-
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", uploadAssets.userBaseUrl.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
             return (metadata.fileNameView)
         } else {
@@ -182,7 +181,7 @@ struct UploadAssetsView: View {
         }
     }
 
-    func setFileNameMask(fileName: String?) -> String {
+    private func setFileNameMaskForPreview(fileName: String?) -> String {
 
         guard let asset = uploadAssets.assets.first?.phAsset else { return "" }
         var preview: String = ""
@@ -195,7 +194,7 @@ struct UploadAssetsView: View {
         CCUtility.setFileNameMask(trimmedFileName, key: NCGlobal.shared.keyFileNameMask)
 
         preview = CCUtility.createFileName(
-            getPreviewOriginalFilename() as String,
+            getOriginalFilenameForPreview() as String,
             fileDate: creationDate,
             fileType: asset.mediaType,
             keyFileName: trimmedFileName.isEmpty ? nil : NCGlobal.shared.keyFileNameMask,
@@ -207,7 +206,7 @@ struct UploadAssetsView: View {
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (preview as NSString).deletingPathExtension
     }
 
-    func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
+    private func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
 
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
@@ -295,7 +294,7 @@ struct UploadAssetsView: View {
         completion(metadatasNOConflict, metadatasUploadInConflict)
     }
 
-    func presentedQuickLook(index: Int) {
+    private func presentedQuickLook(index: Int) {
 
         var image: UIImage?
 
@@ -317,8 +316,7 @@ struct UploadAssetsView: View {
         }
     }
 
-    func deleteAsset(index: Int) {
-
+    private func deleteAsset(index: Int) {
         uploadAssets.assets.remove(at: index)
         uploadAssets.previewStore.remove(at: index)
         if uploadAssets.previewStore.isEmpty {
@@ -326,7 +324,7 @@ struct UploadAssetsView: View {
         }
     }
 
-    private func getPreviewOriginalFilename() -> NSString {
+    private func getOriginalFilenameForPreview() -> NSString {
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
 
         if let asset = uploadAssets.assets.first?.phAsset {
@@ -470,7 +468,7 @@ struct UploadAssetsView: View {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             if isMaintainOriginalFilename {
-                                Text(getPreviewOriginalFilename().deletingPathExtension)
+                                Text(getOriginalFilenameForPreview().deletingPathExtension)
                                     .font(.system(size: 15))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .foregroundColor(Color.gray)
@@ -482,7 +480,7 @@ struct UploadAssetsView: View {
                             }
                         }
                         if !isMaintainOriginalFilename {
-                            Text(setFileNameMask(fileName: fileName))
+                            Text(setFileNameMaskForPreview(fileName: fileName))
                                 .font(.system(size: 11))
                                 .foregroundColor(Color.gray)
                         }
