@@ -202,19 +202,18 @@ struct UploadAssetsView: View {
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
         CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
 
-        if let fileName = fileName?.trimmingCharacters(in: .whitespacesAndNewlines), !fileName.isEmpty {
-            CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
-        } else {
-            CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-        }
+        let trimmedFileName = fileName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        CCUtility.setFileNameMask(trimmedFileName, key: NCGlobal.shared.keyFileNameMask)
 
-        preview = CCUtility.createFileName(getOriginalFilename() as String,
-                                           fileDate: creationDate,
-                                           fileType: asset.mediaType,
-                                           keyFileName: fileName,
-                                           keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                           keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                           forcedNewFileName: false)
+        preview = CCUtility.createFileName(
+            getOriginalFilename() as String,
+            fileDate: creationDate,
+            fileType: asset.mediaType,
+            keyFileName: trimmedFileName.isEmpty ? nil : NCGlobal.shared.keyFileNameMask,
+            keyFileNameType: NCGlobal.shared.keyFileNameType,
+            keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+            forcedNewFileName: false
+        )
 
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (preview as NSString).deletingPathExtension
     }
