@@ -105,10 +105,11 @@ class NCCameraRoll: NSObject {
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject, let extensionAsset = (asset.value(forKey: "filename") as? NSString)?.pathExtension.uppercased() else {
+        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject else {
             return callCompletionWithError()
         }
 
+        let extensionAsset = asset.originalFilename.pathExtension.uppercased()
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 

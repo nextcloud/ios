@@ -173,19 +173,7 @@ struct UploadAssetsView: View {
         uploadAssets.loadImages()
     }
 
-    func getOriginalFilename() -> String {
-
-        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
-
-        if let asset = uploadAssets.assets.first?.phAsset, let name = (asset.value(forKey: "filename") as? String) {
-            return (name as NSString).deletingPathExtension
-        } else {
-            return ""
-        }
-    }
-
     func getTextServerUrl(_ serverUrl: String) -> String {
-
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", uploadAssets.userBaseUrl.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
             return (metadata.fileNameView)
         } else {
@@ -193,7 +181,7 @@ struct UploadAssetsView: View {
         }
     }
 
-    func setFileNameMask(fileName: String?) -> String {
+    private func setFileNameMaskForPreview(fileName: String?) -> String {
 
         guard let asset = uploadAssets.assets.first?.phAsset else { return "" }
         var preview: String = ""
@@ -202,48 +190,23 @@ struct UploadAssetsView: View {
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
         CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
 
-        if let fileName = fileName {
+        let trimmedFileName = fileName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        CCUtility.setFileNameMask(trimmedFileName, key: NCGlobal.shared.keyFileNameMask)
 
-            let fileName = fileName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-
-            if !fileName.isEmpty {
-
-                CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
-                preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                   fileDate: creationDate, fileType: asset.mediaType,
-                                                   keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                   forcedNewFileName: false)
-
-            } else {
-
-                CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-                preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                                   fileDate: creationDate,
-                                                   fileType: asset.mediaType,
-                                                   keyFileName: nil,
-                                                   keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                   keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                   forcedNewFileName: false)
-            }
-
-        } else {
-
-            CCUtility.setFileNameMask("", key: NCGlobal.shared.keyFileNameMask)
-            preview = CCUtility.createFileName(asset.value(forKey: "filename") as? String,
-                                               fileDate: creationDate,
-                                               fileType: asset.mediaType,
-                                               keyFileName: nil,
-                                               keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                               keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                               forcedNewFileName: false)
-        }
+        preview = CCUtility.createFileName(
+            getOriginalFilenameForPreview() as String,
+            fileDate: creationDate,
+            fileType: asset.mediaType,
+            keyFileName: trimmedFileName.isEmpty ? nil : NCGlobal.shared.keyFileNameMask,
+            keyFileNameType: NCGlobal.shared.keyFileNameType,
+            keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+            forcedNewFileName: false
+        )
 
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (preview as NSString).deletingPathExtension
     }
 
-    func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
+    private func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
 
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
@@ -252,21 +215,21 @@ struct UploadAssetsView: View {
         let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
         for tlAsset in uploadAssets.assets {
-            guard let asset = tlAsset.phAsset,
-                  let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }),
-                  let assetFileName = asset.value(forKey: "filename") as? NSString else { continue }
+            guard let asset = tlAsset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
 
+            let assetFileName = asset.originalFilename
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
-            let fileName = previewStore.fileName.isEmpty ?
-            CCUtility.createFileName(assetFileName as String,
-                                                    fileDate: creationDate,
-                                                    fileType: asset.mediaType,
-                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                    forcedNewFileName: false)!
+
+            let fileName = previewStore.fileName.isEmpty
+            ? CCUtility.createFileName(assetFileName as String,
+                                       fileDate: creationDate,
+                                       fileType: asset.mediaType,
+                                       keyFileName: NCGlobal.shared.keyFileNameMask,
+                                       keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                       keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                       forcedNewFileName: false)!
             : (previewStore.fileName + "." + ext)
 
             if previewStore.assetType == .livePhoto && CCUtility.getLivePhoto() && previewStore.data == nil {
@@ -331,7 +294,7 @@ struct UploadAssetsView: View {
         completion(metadatasNOConflict, metadatasUploadInConflict)
     }
 
-    func presentedQuickLook(index: Int) {
+    private func presentedQuickLook(index: Int) {
 
         var image: UIImage?
 
@@ -353,12 +316,21 @@ struct UploadAssetsView: View {
         }
     }
 
-    func deleteAsset(index: Int) {
-
+    private func deleteAsset(index: Int) {
         uploadAssets.assets.remove(at: index)
         uploadAssets.previewStore.remove(at: index)
         if uploadAssets.previewStore.isEmpty {
             uploadAssets.dismiss = true
+        }
+    }
+
+    private func getOriginalFilenameForPreview() -> NSString {
+        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
+
+        if let asset = uploadAssets.assets.first?.phAsset {
+            return asset.originalFilename
+        } else {
+            return ""
         }
     }
 
@@ -496,7 +468,7 @@ struct UploadAssetsView: View {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             if isMaintainOriginalFilename {
-                                Text(getOriginalFilename())
+                                Text(getOriginalFilenameForPreview().deletingPathExtension)
                                     .font(.system(size: 15))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .foregroundColor(Color.gray)
@@ -508,7 +480,7 @@ struct UploadAssetsView: View {
                             }
                         }
                         if !isMaintainOriginalFilename {
-                            Text(setFileNameMask(fileName: fileName))
+                            Text(setFileNameMaskForPreview(fileName: fileName))
                                 .font(.system(size: 11))
                                 .foregroundColor(Color.gray)
                         }
