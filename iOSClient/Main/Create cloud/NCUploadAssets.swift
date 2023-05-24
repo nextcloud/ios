@@ -173,17 +173,6 @@ struct UploadAssetsView: View {
         uploadAssets.loadImages()
     }
 
-    func getOriginalFilename() -> NSString {
-
-        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
-
-        if let asset = uploadAssets.assets.first?.phAsset {
-            return asset.originalFilename
-        } else {
-            return ""
-        }
-    }
-
     func getTextServerUrl(_ serverUrl: String) -> String {
 
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", uploadAssets.userBaseUrl.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
@@ -206,7 +195,7 @@ struct UploadAssetsView: View {
         CCUtility.setFileNameMask(trimmedFileName, key: NCGlobal.shared.keyFileNameMask)
 
         preview = CCUtility.createFileName(
-            getOriginalFilename() as String,
+            getPreviewOriginalFilename() as String,
             fileDate: creationDate,
             fileType: asset.mediaType,
             keyFileName: trimmedFileName.isEmpty ? nil : NCGlobal.shared.keyFileNameMask,
@@ -229,18 +218,19 @@ struct UploadAssetsView: View {
         for tlAsset in uploadAssets.assets {
             guard let asset = tlAsset.phAsset, let previewStore = uploadAssets.previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
 
-            let assetFileName = getOriginalFilename()
+            let assetFileName = asset.originalFilename
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
-            let fileName = previewStore.fileName.isEmpty ?
-            CCUtility.createFileName(assetFileName as String,
-                                                    fileDate: creationDate,
-                                                    fileType: asset.mediaType,
-                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                    forcedNewFileName: false)!
+
+            let fileName = previewStore.fileName.isEmpty
+            ? CCUtility.createFileName(assetFileName as String,
+                                       fileDate: creationDate,
+                                       fileType: asset.mediaType,
+                                       keyFileName: NCGlobal.shared.keyFileNameMask,
+                                       keyFileNameType: NCGlobal.shared.keyFileNameType,
+                                       keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
+                                       forcedNewFileName: false)!
             : (previewStore.fileName + "." + ext)
 
             if previewStore.assetType == .livePhoto && CCUtility.getLivePhoto() && previewStore.data == nil {
@@ -333,6 +323,16 @@ struct UploadAssetsView: View {
         uploadAssets.previewStore.remove(at: index)
         if uploadAssets.previewStore.isEmpty {
             uploadAssets.dismiss = true
+        }
+    }
+
+    private func getPreviewOriginalFilename() -> NSString {
+        CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
+
+        if let asset = uploadAssets.assets.first?.phAsset {
+            return asset.originalFilename
+        } else {
+            return ""
         }
     }
 
@@ -470,7 +470,7 @@ struct UploadAssetsView: View {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             if isMaintainOriginalFilename {
-                                Text(getOriginalFilename().deletingPathExtension)
+                                Text(getPreviewOriginalFilename().deletingPathExtension)
                                     .font(.system(size: 15))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .foregroundColor(Color.gray)
