@@ -189,21 +189,21 @@ struct UploadAssetsView: View {
 
         CCUtility.setOriginalFileName(isMaintainOriginalFilename, key: NCGlobal.shared.keyFileNameOriginal)
         CCUtility.setFileNameType(isAddFilenametype, key: NCGlobal.shared.keyFileNameType)
-
-        let trimmedFileName = fileName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        CCUtility.setFileNameMask(trimmedFileName, key: NCGlobal.shared.keyFileNameMask)
+        CCUtility.setFileNameMask(fileName, key: NCGlobal.shared.keyFileNameMask)
 
         preview = CCUtility.createFileName(
             getOriginalFilenameForPreview() as String,
             fileDate: creationDate,
             fileType: asset.mediaType,
-            keyFileName: trimmedFileName.isEmpty ? nil : NCGlobal.shared.keyFileNameMask,
+            keyFileName: fileName.isEmptyOrNil ? nil : NCGlobal.shared.keyFileNameMask,
             keyFileNameType: NCGlobal.shared.keyFileNameType,
             keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
             forcedNewFileName: false
         )
 
-        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (preview as NSString).deletingPathExtension
+        let trimmedPreview = preview.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm") + ":" + "\n\n" + (trimmedPreview as NSString).deletingPathExtension
     }
 
     private func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
