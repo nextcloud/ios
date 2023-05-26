@@ -38,6 +38,10 @@
     AppDelegate *appDelegate;
     TOPasscodeViewController *passcodeViewController;
     TOPasscodeSettingsViewController *passcodeSettingsViewController;
+
+    NSString *versionServer;
+    NSString *themingName;
+    NSString *themingSlogan;
 }
 @end
 
@@ -220,6 +224,10 @@
     [super viewWillAppear:animated];
     
     appDelegate.activeViewController = self;
+
+    versionServer = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionString];
+    themingName = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingName];
+    themingSlogan = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingSlogan];
 }
 
 #pragma mark - NotificationCenter
@@ -454,15 +462,9 @@
     } else if (section == 2 && !NCBrandOptions.shared.disable_mobileconfig) {
         sectionName = NSLocalizedString(@"_calendar_contacts_footer_", nil);
     } else if (section == numSections) {
-        NSString *versionServer = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionString];
-        NSString *themingName = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingName];
-        NSString *themingSlogan = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingSlogan];
-
         NSString *versionNextcloud = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudServer, versionServer];
         NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions shared].textCopyrightNextcloudiOS, [[NCUtility shared] getVersionAppWithBuild:true]];
-
         NSString *nameSlogan = [NSString stringWithFormat:@"%@ - %@", themingName, themingSlogan];
-
         sectionName = [NSString stringWithFormat:@"\n%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud, nameSlogan];
     }
     return sectionName;
