@@ -28,7 +28,6 @@ import Mantis
 import Photos
 import QuickLook
 
-@available(iOS 15, *)
 class NCHostingUploadAssetsView: NSObject {
 
     func makeShipDetailsUI(assets: [TLPHAsset], serverUrl: String, userBaseUrl: NCUserBaseUrl) -> UIViewController {
@@ -146,7 +145,6 @@ class NCUploadAssets: NSObject, ObservableObject, NCCreateFormUploadConflictDele
 
 // MARK: - View
 
-@available(iOS 15, *)
 struct UploadAssetsView: View {
 
     @State private var fileName: String = CCUtility.getFileNameMask(NCGlobal.shared.keyFileNameMask)
@@ -580,7 +578,6 @@ struct UploadAssetsView: View {
 
 // MARK: - Preview
 
-@available(iOS 15, *)
 struct UploadAssetsView_Previews: PreviewProvider {
     static var previews: some View {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {

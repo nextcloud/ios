@@ -46,18 +46,9 @@ class NCPhotosPickerViewController: NSObject {
 
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
-                if #available(iOS 15, *) {
-                    let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: self.appDelegate.activeServerUrl, userBaseUrl: self.appDelegate)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        viewController.present(vc, animated: true, completion: nil)
-                    }
-                } else {
-                    let assets = assets.compactMap { $0.phAsset }
-                    let vc = NCCreateFormUploadAssets(serverUrl: self.appDelegate.activeServerUrl, assets: assets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground)
-                    let navigationController = UINavigationController(rootViewController: vc)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        viewController.present(navigationController, animated: true, completion: nil)
-                    }
+                let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: self.appDelegate.activeServerUrl, userBaseUrl: self.appDelegate)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    viewController.present(vc, animated: true, completion: nil)
                 }
             }
         }
