@@ -353,10 +353,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
               let error = userInfo["error"] as? NKError
         else { return }
 
-        if error == .success {
+        if error == .success, account == appDelegate.account {
             reloadDataSource()
         }
     }
