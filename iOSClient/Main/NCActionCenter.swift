@@ -191,6 +191,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+        let serverVersion = NCManageDatabase.shared.getCapabilitiesServerInt(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         var page = page
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
@@ -213,7 +215,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 if activity == nil, let idx = pages.firstIndex(of: .activity) {
                     pages.remove(at: idx)
                 }
-                if !metadata.isSharable, let idx = pages.firstIndex(of: .sharing) {
+                if !metadata.isSharable(sharing: sharing, serverVersion: serverVersion), let idx = pages.firstIndex(of: .sharing) {
                     pages.remove(at: idx)
                 }
                 (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
