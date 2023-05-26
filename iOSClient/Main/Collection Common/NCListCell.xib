@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="landscape" appearance="light"/>
+    <device id="retina6_0" orientation="landscape" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
@@ -19,54 +19,54 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="w2m-Vw-hpd" userLabel="ImageItem">
-                        <rect key="frame" x="10" y="54" width="40" height="40"/>
+                        <rect key="frame" x="57" y="43.666666666666664" width="40" height="39.999999999999993"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="Dpd-Xj-z4U"/>
                             <constraint firstAttribute="width" constant="40" id="v0e-MW-EeE"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7Q9-Tv-9yo" userLabel="imageStatus">
-                        <rect key="frame" x="5" y="84" width="15" height="15"/>
+                        <rect key="frame" x="52" y="73.666666666666671" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="f8p-9B-Rgw"/>
                             <constraint firstAttribute="height" constant="15" id="ndy-wW-xdL"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="C4K-Nv-phA" userLabel="imageFavorite">
-                        <rect key="frame" x="40" y="49" width="15" height="15"/>
+                        <rect key="frame" x="87" y="38.666666666666664" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="hXC-b9-Q2V"/>
                             <constraint firstAttribute="height" constant="15" id="mPH-zc-eH5"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AyA-hP-r6w" userLabel="imageSelect">
-                        <rect key="frame" x="10" y="61.5" width="25" height="25"/>
+                        <rect key="frame" x="57" y="51" width="25" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="25" id="bIF-gu-6Jj"/>
                             <constraint firstAttribute="height" constant="25" id="nJa-oj-gcQ"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H4E-G2-C1H" userLabel="imageLocal">
-                        <rect key="frame" x="40" y="84" width="15" height="15"/>
+                        <rect key="frame" x="87" y="73.666666666666671" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="15" id="BEs-Rd-5Ov"/>
                             <constraint firstAttribute="height" constant="15" id="N8h-3R-JpE"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
-                        <rect key="frame" x="60" y="13" width="519" height="18"/>
+                        <rect key="frame" x="107" y="13" width="425" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="labelInfo">
-                        <rect key="frame" x="60" y="120" width="519" height="15"/>
+                        <rect key="frame" x="107" y="120" width="425" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
-                        <rect key="frame" x="584" y="45" width="40" height="58"/>
+                        <rect key="frame" x="537" y="34.666666666666664" width="40" height="57.999999999999993"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="58" id="WOg-y5-5UA"/>
@@ -77,14 +77,14 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShared">
-                        <rect key="frame" x="589" y="59" width="30" height="30"/>
+                        <rect key="frame" x="542" y="48.666666666666664" width="30" height="29.999999999999993"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="Cvy-nZ-zyD"/>
                             <constraint firstAttribute="width" constant="30" id="jfe-Fg-vA8"/>
                         </constraints>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
-                        <rect key="frame" x="629" y="44" width="40" height="60"/>
+                        <rect key="frame" x="582" y="33.666666666666664" width="40" height="59.999999999999993"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="ZgH-mI-l2k"/>
                             <constraint firstAttribute="height" constant="60" id="woC-64-Tyc"/>
@@ -94,17 +94,17 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
-                        <rect key="frame" x="636.5" y="61.5" width="25" height="25"/>
+                        <rect key="frame" x="589.66666666666663" y="51" width="25" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="25" id="05P-NL-pd8"/>
                             <constraint firstAttribute="height" constant="25" id="Jet-eo-x1M"/>
                         </constraints>
                     </imageView>
                     <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m2p-oJ-j15">
-                        <rect key="frame" x="60" y="137" width="519" height="4"/>
+                        <rect key="frame" x="107" y="116" width="425" height="4"/>
                     </progressView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-cb-EhZ" userLabel="separator">
-                        <rect key="frame" x="50" y="147" width="619" height="1"/>
+                        <rect key="frame" x="97" y="126" width="525" height="1"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -112,7 +112,7 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnc-hI-Z9r" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="60" y="124.5" width="26" height="14.5"/>
+                        <rect key="frame" x="107" y="101.66666666666667" width="36" height="16.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -141,7 +141,7 @@
                         </userDefinedRuntimeAttributes>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jUe-8q-VJd" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="91" y="124.5" width="24" height="14.5"/>
+                        <rect key="frame" x="148" y="101.66666666666667" width="34" height="16.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -235,10 +235,10 @@
     </objects>
     <designables>
         <designable name="jUe-8q-VJd">
-            <size key="intrinsicContentSize" width="24" height="14.5"/>
+            <size key="intrinsicContentSize" width="34" height="16.333333333333336"/>
         </designable>
         <designable name="qnc-hI-Z9r">
-            <size key="intrinsicContentSize" width="26" height="14.5"/>
+            <size key="intrinsicContentSize" width="36" height="16.333333333333336"/>
         </designable>
     </designables>
     <resources>
