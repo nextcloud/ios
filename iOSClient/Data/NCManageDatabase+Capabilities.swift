@@ -56,93 +56,6 @@ extension NCManageDatabase {
         }
     }
 
-    func getCapabilities(account: String) -> String? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-
-        let json = JSON(jsondata)
-
-        return json.rawString()?.replacingOccurrences(of: "\\/", with: "/")
-    }
-
-    @objc func getCapabilitiesServerString(account: String, elements: [String]) -> String? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-
-        let json = JSON(jsondata)
-        return json[elements].string
-    }
-
-    func getCapabilitiesServerInt(account: String, elements: [String]) -> Int {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
-              let jsondata = result.jsondata else {
-            return 0
-        }
-
-        let json = JSON(jsondata)
-        return json[elements].intValue
-    }
-
-    @objc func getCapabilitiesServerBool(account: String, elements: [String], exists: Bool) -> Bool {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return false
-        }
-        guard let jsondata = result.jsondata else {
-            return false
-        }
-
-        let json = JSON(jsondata)
-        if exists {
-            return json[elements].exists()
-        } else {
-            return json[elements].boolValue
-        }
-    }
-
-    func getCapabilitiesServerArray(account: String, elements: [String]) -> [String]? {
-
-        let realm = try! Realm()
-        var resultArray: [String] = []
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-
-        let json = JSON(jsondata)
-
-        if let results = json[elements].array {
-            for result in results {
-                resultArray.append(result.string ?? "")
-            }
-            return resultArray
-        }
-
-        return nil
-    }
-
     func setCapabilities(account: String, data: Data? = nil) {
 
         let realm = try! Realm()
@@ -171,6 +84,7 @@ extension NCManageDatabase {
         NCGlobal.shared.capabilityFileSharingInternalExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "days"].intValue
         NCGlobal.shared.capabilityFileSharingRemoteExpireDateEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "enforced"].boolValue
         NCGlobal.shared.capabilityFileSharingRemoteExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "days"].intValue
+        NCGlobal.shared.capabilityFileSharingDefaultPermission = json["ocs", "data", "capabilities", "files_sharing", "default_permissions"].intValue
 
         NCGlobal.shared.capabilityThemingColor = json["ocs", "data", "capabilities", "theming", "color"].stringValue
         NCGlobal.shared.capabilityThemingColorElement = json["ocs", "data", "capabilities", "theming", "color-element"].stringValue
