@@ -209,14 +209,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     pages.append(value)
                 }
 
-                if !NCGlobal.shared.capabilityActivity.isEmpty, let idx = pages.firstIndex(of: .activity) {
+                if NCGlobal.shared.capabilityActivity.isEmpty, let idx = pages.firstIndex(of: .activity) {
                     pages.remove(at: idx)
                 }
                 if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
                     pages.remove(at: idx)
-                }
-                if pages.isEmpty {
-                    return
                 }
 
                 (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
