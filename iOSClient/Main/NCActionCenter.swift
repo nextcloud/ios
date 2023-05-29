@@ -215,6 +215,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
                     pages.remove(at: idx)
                 }
+                if pages.isEmpty {
+                    return
+                }
+
                 (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
 
                 if pages.contains(page) {

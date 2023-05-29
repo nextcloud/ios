@@ -97,7 +97,7 @@ class NCCapabilitiesViewOO: ObservableObject {
         capabililies.append(Capability(text: "Comments", image: UIImage(systemName: "ellipsis.bubble")!, available: NCGlobal.shared.capabilityFilesComments))
 
         // LOCK FILE
-        capabililies.append(Capability(text: "Lock file", image: UIImage(systemName: "lock")!, available: NCGlobal.shared.capabilityFilesLockVersion >= 1))
+        capabililies.append(Capability(text: "Lock file", image: UIImage(systemName: "lock")!, available: !NCGlobal.shared.capabilityFilesLockVersion.isEmpty))
 
         // GROUP FOLDERS
         capabililies.append(Capability(text: "Group folders", image: UIImage(systemName: "person.2")!, available: NCGlobal.shared.capabilityGroupfoldersEnabled))

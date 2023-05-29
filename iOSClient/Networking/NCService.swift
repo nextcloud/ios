@@ -177,6 +177,8 @@ class NCService: NSObject {
                 return
             }
 
+            data.printJson()
+            
             NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
             NCManageDatabase.shared.setCapabilities(account: account, data: data)
 

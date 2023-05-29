@@ -128,7 +128,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
 
         actions.append(.openInAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
 
-        if !isAnyFolder, canUnlock, NCGlobal.shared.capabilityFilesLockVersion >= 1 {
+        if !isAnyFolder, canUnlock, !NCGlobal.shared.capabilityFilesLockVersion.isEmpty {
             actions.append(.lockUnlockFiles(shouldLock: !isAnyLocked, metadatas: selectedMetadatas, completion: tapSelect))
         }
 

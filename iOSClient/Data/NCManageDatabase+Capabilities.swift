@@ -202,11 +202,10 @@ extension NCManageDatabase {
         }
 
         NCGlobal.shared.capabilityFilesUndelete = json["ocs", "data", "capabilities", "files", "undelete"].boolValue
-        NCGlobal.shared.capabilityFilesLockVersion = json["ocs", "data", "capabilities", "files", "locking"].intValue
+        NCGlobal.shared.capabilityFilesLockVersion = json["ocs", "data", "capabilities", "files", "locking"].stringValue
         NCGlobal.shared.capabilityFilesComments = json["ocs", "data", "capabilities", "files", "comments"].boolValue
 
         NCGlobal.shared.capabilityUserStatusEnabled = json["ocs", "data", "capabilities", "user_status", "enabled"].boolValue
-        NCGlobal.shared.capabilityUserStatusSupportsEmoji = json["ocs", "data", "capabilities", "user_status", "supports_emoji"].boolValue
 
         NCGlobal.shared.capabilityGroupfoldersEnabled = json["ocs", "data", "capabilities", "groupfolders", "hasGroupFolders"].boolValue
     }

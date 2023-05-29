@@ -436,11 +436,10 @@ class NCGlobal: NSObject {
     var capabilityNotification: [String] = []
 
     var capabilityFilesUndelete: Bool = false
-    var capabilityFilesLockVersion: Int = 0 // NC 24
+    var capabilityFilesLockVersion: String = "" // NC 24
     var capabilityFilesComments: Bool = false // NC 20
 
     @objc var capabilityUserStatusEnabled: Bool = false
-    var capabilityUserStatusSupportsEmoji: Bool = false
 
     var capabilityGroupfoldersEnabled: Bool = false
 }
