@@ -191,8 +191,7 @@ class NCService: NSObject {
             }
 
             // Sharing & Comments
-            let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
-            if !NCGlobal.shared.capabilityFileSharingApiEnabled && !comments && NCGlobal.shared.capabilityActivity.isEmpty {
+            if !NCGlobal.shared.capabilityFileSharingApiEnabled && !NCGlobal.shared.capabilityFilesComments && NCGlobal.shared.capabilityActivity.isEmpty {
                 self.appDelegate.disableSharesView = true
             } else {
                 self.appDelegate.disableSharesView = false
@@ -223,8 +222,7 @@ class NCService: NSObject {
             }
 
             // User Status
-            let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
-            if userStatus {
+            if NCGlobal.shared.capabilityUserStatusEnabled {
                 NextcloudKit.shared.getUserStatus(options: options) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, data, error in
                     if error == .success && account == self.appDelegate.account && userId == self.appDelegate.userId {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)

@@ -29,14 +29,7 @@ import UIKit
         return instance
     }()
 
-    @objc public let capabilitiesFilesUndelete: Array = ["ocs", "data", "capabilities", "files", "undelete"]
-    @objc public let capabilitiesFilesLockVersion: Array = ["ocs", "data", "capabilities", "files", "locking"] // NC 24
-    @objc public let capabilitiesFilesComments: Array = ["ocs", "data", "capabilities", "files", "comments"] // NC 20
 
-    @objc public let capabilitiesHWCEnabled: Array = ["ocs", "data", "capabilities", "handwerkcloud", "enabled"]
 
-    @objc public let capabilitiesUserStatusEnabled: Array = ["ocs", "data", "capabilities", "user_status", "enabled"]
-    @objc public let capabilitiesUserStatusSupportsEmoji: Array = ["ocs", "data", "capabilities", "user_status", "supports_emoji"]
-
-    @objc public let capabilitiesGroupfoldersEnabled: Array = ["ocs", "data", "capabilities", "groupfolders", "hasGroupFolders"]
+    
 }
