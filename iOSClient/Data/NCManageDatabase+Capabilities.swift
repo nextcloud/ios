@@ -95,7 +95,6 @@ extension NCManageDatabase {
         NCGlobal.shared.capabilityE2EEEnabled = json["ocs", "data", "capabilities", "end-to-end-encryption", "enabled"].boolValue
         NCGlobal.shared.capabilityE2EEApiVersion = json["ocs", "data", "capabilities", "end-to-end-encryption", "api-version"].stringValue
 
-        NCGlobal.shared.capabilityExternalSites = json["ocs", "data", "capabilities", "external"].exists()
 
         NCGlobal.shared.capabilityRichdocumentsMimetypes.removeAll()
         let mimetypes = json["ocs", "data", "capabilities", "richdocuments", "mimetypes"].arrayValue
@@ -120,7 +119,7 @@ extension NCManageDatabase {
         NCGlobal.shared.capabilityFilesComments = json["ocs", "data", "capabilities", "files", "comments"].boolValue
 
         NCGlobal.shared.capabilityUserStatusEnabled = json["ocs", "data", "capabilities", "user_status", "enabled"].boolValue
-
+        NCGlobal.shared.capabilityExternalSites = json["ocs", "data", "capabilities", "external"].exists()
         NCGlobal.shared.capabilityGroupfoldersEnabled = json["ocs", "data", "capabilities", "groupfolders", "hasGroupFolders"].boolValue
     }
 }
