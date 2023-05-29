@@ -44,32 +44,8 @@ class NCCapabilitiesViewOO: ObservableObject {
         } else {
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
             homeServer = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
-            getCapabilities(account: activeAccount.account)
+            updateCapabilities(account: activeAccount.account)
         }
-    }
-
-    func getCapabilities(account: String) {
-
-        NextcloudKit.shared.getCapabilities { account, data, error in
-            if error == .success, let data = data {
-                NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
-                let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
-                    NextcloudKit.shared.NCTextObtainEditorDetails { account, editors, creators, _, error in
-                        if error == .success {
-                            NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
-                            self.updateCapabilities(account: account)
-                        }
-                    }
-                } else {
-                    self.updateCapabilities(account: account)
-                }
-            } else {
-                self.updateCapabilities(account: account)
-            }
-        }
-
-        updateCapabilities(account: account)
     }
 
     func updateCapabilities(account: String) {

@@ -312,6 +312,13 @@
 		F761856B29E98543006EB3B0 /* NCIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F761856729E98543006EB3B0 /* NCIntroViewController.swift */; };
 		F761856C29E98543006EB3B0 /* NCIntroCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F761856829E98543006EB3B0 /* NCIntroCollectionViewCell.swift */; };
 		F761856D29E98543006EB3B0 /* NCIntroCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F761856929E98543006EB3B0 /* NCIntroCollectionViewCell.xib */; };
+		F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
+		F763D29E2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
+		F763D29F2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
+		F763D2A02A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
+		F763D2A12A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
+		F763D2A22A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
+		F763D2A32A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */; };
 		F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */; };
 		F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
@@ -951,6 +958,7 @@
 		F761856729E98543006EB3B0 /* NCIntroViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCIntroViewController.swift; sourceTree = "<group>"; };
 		F761856829E98543006EB3B0 /* NCIntroCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCIntroCollectionViewCell.swift; sourceTree = "<group>"; };
 		F761856929E98543006EB3B0 /* NCIntroCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCIntroCollectionViewCell.xib; sourceTree = "<group>"; };
+		F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Capabilities.swift"; sourceTree = "<group>"; };
 		F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCCreateFormUploadDocuments.storyboard; sourceTree = "<group>"; };
 		F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadDocuments.swift; sourceTree = "<group>"; };
 		F765608623BF806C00765969 /* QuickLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLayout.framework; path = Carthage/Build/iOS/QuickLayout.framework; sourceTree = "<group>"; };
@@ -1982,6 +1990,7 @@
 				AF4BF613275629E20081CEEF /* NCManageDatabase+Account.swift */,
 				AF4BF61D27562B3F0081CEEF /* NCManageDatabase+Activity.swift */,
 				F749B650297B0F2400087535 /* NCManageDatabase+Avatar.swift */,
+				F763D29C2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift */,
 				F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */,
 				F78A10BE29322E8A008499B8 /* NCManageDatabase+Directory.swift */,
 				F72FD3B4297ED49A00075D28 /* NCManageDatabase+E2EE.swift */,
@@ -2972,6 +2981,7 @@
 				F7817CFF29802D1A00FFBC65 /* NCPushNotificationEncryption.m in Sources */,
 				F798F0EC2588060A000DAFFD /* UIColor+Extension.swift in Sources */,
 				F343A4B92A1E084400DDA874 /* PHAsset+Extension.swift in Sources */,
+				F763D2A32A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F749B656297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				F782FDC424E6933900666099 /* NCUtility.swift in Sources */,
 			);
@@ -3004,6 +3014,7 @@
 				F7490E6E29882B56009DCE94 /* NCBrand.swift in Sources */,
 				F7490E8129882C79009DCE94 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F7490E8629882C99009DCE94 /* NCUtilityFileSystem.swift in Sources */,
+				F763D2A22A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F343A4C02A1E734600DDA874 /* Optional+Extensions.swift in Sources */,
 				F7490E8529882C8C009DCE94 /* NCManageDatabase+Video.swift in Sources */,
 				F7490E8C29882D02009DCE94 /* CCUtility.m in Sources */,
@@ -3076,6 +3087,7 @@
 				F7EDE4E0262D7BAF00414FE6 /* NCGridCell.swift in Sources */,
 				F7A76DC8256A71CD00119AB3 /* UIImage+Extension.swift in Sources */,
 				F7B8CD96261AF401007C1359 /* NCNetworkingChunkedUpload.swift in Sources */,
+				F763D2A02A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F757CC8529E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F7817D0129802D5F00FFBC65 /* NCViewCertificateDetails.swift in Sources */,
@@ -3131,6 +3143,7 @@
 				F757CC8329E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F749B652297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				F783030628B4C51E00B84583 /* String+Extension.swift in Sources */,
+				F763D29E2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F77ED59328C9CEA000E24ED0 /* ToolbarWidgetProvider.swift in Sources */,
 				F72A17D828B221E300F3F159 /* DashboardWidgetView.swift in Sources */,
 				F77ED59528C9CEA400E24ED0 /* ToolbarWidgetView.swift in Sources */,
@@ -3158,6 +3171,7 @@
 				F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */,
 				F7245926289BB59300474787 /* ThreadSafeDictionary.swift in Sources */,
 				F76673F022C90434007ED366 /* FileProviderUtility.swift in Sources */,
+				F763D2A12A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */,
 				F757CC8629E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F702F2D125EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
@@ -3376,6 +3390,7 @@
 				F75CA1472962F13700B01130 /* HUDView.swift in Sources */,
 				F7A48413297022E000BD1B49 /* ViewerQuickLook.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
+				F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F7A7FA6329265CF4000603EF /* NCManageE2EE.swift in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
@@ -3410,6 +3425,7 @@
 				F749B64C297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F7A8D73F28F181EF008BBE1C /* NCGlobal.swift in Sources */,
 				F749B653297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
+				F763D29F2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F7A8D74328F1826F008BBE1C /* String+Extension.swift in Sources */,
 				F7A8D73728F17E1E008BBE1C /* NCManageDatabase+Account.swift in Sources */,
 				F7A8D73B28F17E2C008BBE1C /* NCElementsJSON.swift in Sources */,

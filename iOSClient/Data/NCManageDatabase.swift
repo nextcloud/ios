@@ -25,7 +25,6 @@
 import UIKit
 import RealmSwift
 import NextcloudKit
-import SwiftyJSON
 import CoreMedia
 import Photos
 
@@ -250,118 +249,6 @@ class NCManageDatabase: NSObject {
     @objc func isTableInvalidated(_ object: Object) -> Bool {
 
         return object.isInvalidated
-    }
-
-    // MARK: -
-    // MARK: Table Avatar
-
-    
-    // MARK: -
-    // MARK: Table Capabilities
-
-    func addCapabilitiesJSon(_ data: Data, account: String) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                let addObject = tableCapabilities()
-
-                addObject.account = account
-                addObject.jsondata = data
-
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func getCapabilities(account: String) -> String? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-
-        let json = JSON(jsondata)
-
-        return json.rawString()?.replacingOccurrences(of: "\\/", with: "/")
-    }
-
-    @objc func getCapabilitiesServerString(account: String, elements: [String]) -> String? {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-
-        let json = JSON(jsondata)
-        return json[elements].string
-    }
-
-    func getCapabilitiesServerInt(account: String, elements: [String]) -> Int {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
-              let jsondata = result.jsondata else {
-            return 0
-        }
-
-        let json = JSON(jsondata)
-        return json[elements].intValue
-    }
-
-    @objc func getCapabilitiesServerBool(account: String, elements: [String], exists: Bool) -> Bool {
-
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return false
-        }
-        guard let jsondata = result.jsondata else {
-            return false
-        }
-
-        let json = JSON(jsondata)
-        if exists {
-            return json[elements].exists()
-        } else {
-            return json[elements].boolValue
-        }
-    }
-
-    func getCapabilitiesServerArray(account: String, elements: [String]) -> [String]? {
-
-        let realm = try! Realm()
-        var resultArray: [String] = []
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-
-        let json = JSON(jsondata)
-
-        if let results = json[elements].array {
-            for result in results {
-                resultArray.append(result.string ?? "")
-            }
-            return resultArray
-        }
-
-        return nil
     }
 
     // MARK: -
