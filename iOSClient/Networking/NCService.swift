@@ -192,8 +192,7 @@ class NCService: NSObject {
 
             // Sharing & Comments
             let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
-            let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
-            if !NCGlobal.shared.capabilityFileSharingApiEnabled && !comments && activity == nil {
+            if !NCGlobal.shared.capabilityFileSharingApiEnabled && !comments && NCGlobal.shared.capabilityActivity.isEmpty {
                 self.appDelegate.disableSharesView = true
             } else {
                 self.appDelegate.disableSharesView = false
@@ -234,10 +233,8 @@ class NCService: NSObject {
             }
 
             // Added UTI for Collabora
-            if let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) {
-                for mimeType in richdocumentsMimetypes {
-                    NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document")
-                }
+            for mimeType in NCGlobal.shared.capabilityRichdocumentsMimetypes {
+                NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document")
             }
 
             // Added UTI for ONLYOFFICE & Text

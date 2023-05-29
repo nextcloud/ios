@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
@@ -429,4 +430,9 @@ class NCGlobal: NSObject {
     @objc var capabilityE2EEApiVersion: String = ""
 
     var capabilityExternalSites: Bool = false
+
+    var capabilityRichdocumentsMimetypes: [String] = []
+    var capabilityActivity: [String] = []
+    var capabilityNotification: [String] = []
+
 }

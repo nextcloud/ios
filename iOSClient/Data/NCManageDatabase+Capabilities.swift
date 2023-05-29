@@ -183,5 +183,22 @@ extension NCManageDatabase {
 
         NCGlobal.shared.capabilityExternalSites = json["ocs", "data", "capabilities", "external"].exists()
 
+        NCGlobal.shared.capabilityRichdocumentsMimetypes.removeAll()
+        let mimetypes = json["ocs", "data", "capabilities", "richdocuments", "mimetypes"].arrayValue
+        for mimetype in mimetypes {
+            NCGlobal.shared.capabilityRichdocumentsMimetypes.append(mimetype.stringValue)
+        }
+
+        NCGlobal.shared.capabilityActivity.removeAll()
+        let activities = json["ocs", "data", "capabilities", "activity", "apiv2"].arrayValue
+        for activity in activities {
+            NCGlobal.shared.capabilityActivity.append(activity.stringValue)
+        }
+
+        NCGlobal.shared.capabilityNotification.removeAll()
+        let notifications = json["ocs", "data", "capabilities", "notifications", "ocs-endpoints"].arrayValue
+        for notify in notifications {
+            NCGlobal.shared.capabilityNotification.append(notify.stringValue)
+        }
     }
 }

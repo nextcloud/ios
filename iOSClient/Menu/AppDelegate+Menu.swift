@@ -233,8 +233,8 @@ extension AppDelegate {
             )
         }
 
-        if let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) {
-            if richdocumentsMimetypes.count > 0 &&  NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
+        if !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty {
+            if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""), icon: UIImage(named: "create_file_document")!, action: { _ in
