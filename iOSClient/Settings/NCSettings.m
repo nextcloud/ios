@@ -121,8 +121,8 @@
 
     // Section : E2EEncryption --------------------------------------------------------------
 
-    BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
-    NSString *versionE2EE = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
+    BOOL isE2EEEnabled = [[NCGlobal shared] capabilityE2EEEnabled];
+    NSString *versionE2EE = [[NCGlobal shared] capabilityE2EEApiVersion];
 
     if (isE2EEEnabled == YES && [NCGlobal.shared.e2eeReadVersions containsObject:versionE2EE]) {
 
@@ -225,9 +225,9 @@
     
     appDelegate.activeViewController = self;
 
-    versionServer = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionString];
-    themingName = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingName];
-    themingSlogan = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingSlogan];
+    versionServer = [[NCGlobal shared] capabilityServerVersion];
+    themingName = [[NCGlobal shared] capabilityThemingName];
+    themingSlogan = [[NCGlobal shared] capabilityThemingSlogan];
 }
 
 #pragma mark - NotificationCenter

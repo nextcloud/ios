@@ -88,7 +88,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         var item = NKExternalSite()
         var quota: String = ""
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
         // Clear
         functionMenu.removeAll()
@@ -131,8 +130,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Shares
-        let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-        if isFilesSharingEnabled {
+        if NCGlobal.shared.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
             item.icon = "share"
@@ -168,7 +166,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
+        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
             item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"

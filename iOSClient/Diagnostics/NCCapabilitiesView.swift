@@ -53,19 +53,15 @@ class NCCapabilitiesViewOO: ObservableObject {
         var available: Bool = false
 
         capabililies.removeAll()
-        json = ""
 
         // FILE SHARING
-        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-        capabililies.append(Capability(text: "File sharing", image: UIImage(named: "share")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: available))
+        capabililies.append(Capability(text: "File sharing", image: UIImage(named: "share")!.resizeImage(size: CGSize(width: 25, height: 25))!, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
 
         // EXTERNAL SITE
-        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSites, exists: true)
-        capabililies.append(Capability(text: "External site", image: UIImage(systemName: "network")!, available: available))
+        capabililies.append(Capability(text: "External site", image: UIImage(systemName: "network")!, available: NCGlobal.shared.capabilityExternalSites))
 
         // E2EE
-        available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
-        capabililies.append(Capability(text: "End-to-End Encryption", image: UIImage(systemName: "lock")!, available: available))
+        capabililies.append(Capability(text: "End-to-End Encryption", image: UIImage(systemName: "lock")!, available: NCGlobal.shared.capabilityE2EEEnabled))
 
         // ACTIVITY
         if NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity) == nil {
@@ -131,9 +127,9 @@ class NCCapabilitiesViewOO: ObservableObject {
         available = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesGroupfoldersEnabled, exists: false)
         capabililies.append(Capability(text: "Group folders", image: UIImage(systemName: "person.2")!, available: available))
 
-        if let json = NCManageDatabase.shared.getCapabilities(account: account) {
-            self.json = json
-        }
+        // if let json = NCManageDatabase.shared.getCapabilities(account: account) {
+        //    self.json = json
+        // }
     }
 }
 
@@ -159,12 +155,14 @@ struct NCCapabilitiesView: View {
                 Section {
                     CapabilityName(text: capabilitiesViewOO.homeServer, image: Image(uiImage: UIImage(systemName: "house")!))
                 }
+                /*
                 Section {
                     ScrollView(.horizontal) {
                         Text(capabilitiesViewOO.json)
                             .font(.system(size: 12))
                     }
                 }
+                */
             }
         }
         .frame(maxWidth: .infinity, alignment: .top)

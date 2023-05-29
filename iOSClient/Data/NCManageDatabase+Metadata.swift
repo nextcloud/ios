@@ -236,12 +236,12 @@ extension tableMetadata {
 
     /// Return if is sharable (temp)
     // TODO: modifify for E2EE 2.0
-    func isSharable(sharing: Bool, serverVersion: Int) -> Bool {
-        guard sharing else { return false }
+    func isSharable() -> Bool {
+        guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
 
         if !e2eEncrypted && !isDirectoryE2EE {
             return true
-        } else if serverVersion >= NCGlobal.shared.nextcloudVersion26 && directory {
+        } else if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
             // E2EE DIRECTORY SECURE FILE DROP (SHARE AVAILABLE)
             return true
         } else {

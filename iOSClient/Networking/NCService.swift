@@ -178,33 +178,29 @@ class NCService: NSObject {
             }
 
             NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
-            let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+            NCManageDatabase.shared.setCapabilities(account: account, data: data)
 
             // Setup communication
-            if serverVersionMajor > 0 {
-                NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
+            if NCGlobal.shared.capabilityServerVersionMajor > 0 {
+                NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
             }
 
             // Theming
-            let themingColorNew = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
-            let themingColorElementNew = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
-            let themingColorTextNew = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
-            if themingColorNew != NCBrandColor.shared.themingColor || themingColorElementNew != NCBrandColor.shared.themingColorElement || themingColorTextNew != NCBrandColor.shared.themingColorText {
+            if NCGlobal.shared.capabilityThemingColor != NCBrandColor.shared.themingColor || NCGlobal.shared.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || NCGlobal.shared.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
             }
 
             // Sharing & Comments
-            let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
             let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
             let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
-            if !isFilesSharingEnabled && !comments && activity == nil {
+            if !NCGlobal.shared.capabilityFileSharingApiEnabled && !comments && activity == nil {
                 self.appDelegate.disableSharesView = true
             } else {
                 self.appDelegate.disableSharesView = false
             }
 
             // Text direct editor detail
-            if serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
+            if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
                 NextcloudKit.shared.NCTextObtainEditorDetails(options: options) { account, editors, creators, data, error in
                     if error == .success && account == self.appDelegate.account {
@@ -214,8 +210,7 @@ class NCService: NSObject {
             }
 
             // External file Server
-            let isExternalSitesServerEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSites, exists: true)
-            if isExternalSitesServerEnabled {
+            if NCGlobal.shared.capabilityExternalSites {
                 NextcloudKit.shared.getExternalSite(options: options) { account, externalSites, data, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.deleteExternalSites(account: account)

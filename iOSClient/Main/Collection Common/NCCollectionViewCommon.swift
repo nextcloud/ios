@@ -67,9 +67,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     private var tipView: EasyTipView?
 
-    private var sharing: Bool = true
-    private var serverVersion: Int = 0
-
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -167,9 +164,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
-
-        sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-        serverVersion = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
@@ -987,8 +981,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
 
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
+        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { account, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
@@ -1665,7 +1658,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // ** IMPORT MUST BE AT THE END **
         //
 
-        if !metadata.isSharable(sharing: sharing, serverVersion: serverVersion) {
+        if !metadata.isSharable() {
             cell.hideButtonShare(true)
         }
         

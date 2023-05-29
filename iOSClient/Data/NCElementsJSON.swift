@@ -29,33 +29,8 @@ import UIKit
         return instance
     }()
 
-    @objc public let capabilitiesVersionString: Array = ["ocs", "data", "version", "string"]
-    @objc public let capabilitiesVersionMajor: Array = ["ocs", "data", "version", "major"]
 
-    @objc public let capabilitiesFileSharingApiEnabled: Array = ["ocs", "data", "capabilities", "files_sharing", "api_enabled"]
-    @objc public let capabilitiesFileSharingPubPasswdEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "password", "enforced"]
-    @objc public let capabilitiesFileSharingPubExpireDateEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "enforced"]
-    @objc public let capabilitiesFileSharingPubExpireDateDays: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "days"]
-    @objc public let capabilitiesFileSharingInternalExpireDateEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "enforced"]
-    @objc public let capabilitiesFileSharingInternalExpireDateDays: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "days"]
-    @objc public let capabilitiesFileSharingRemoteExpireDateEnforced: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "enforced"]
-    @objc public let capabilitiesFileSharingRemoteExpireDateDays: Array = ["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "days"]
-    @objc public let capabilitiesFileSharingDefaultPermissions: Array = ["ocs", "data", "capabilities", "files_sharing", "default_permissions"]
-    @objc public let capabilitiesFileSharingSendPasswordMail: Array = ["ocs", "data", "capabilities", "files_sharing", "sharebymail", "send_password_by_mail"]
-
-    @objc public let capabilitiesThemingColor: Array = ["ocs", "data", "capabilities", "theming", "color"]
-    @objc public let capabilitiesThemingColorElement: Array = ["ocs", "data", "capabilities", "theming", "color-element"]
-    @objc public let capabilitiesThemingColorText: Array = ["ocs", "data", "capabilities", "theming", "color-text"]
-    @objc public let capabilitiesThemingName: Array = ["ocs", "data", "capabilities", "theming", "name"]
-    @objc public let capabilitiesThemingSlogan: Array = ["ocs", "data", "capabilities", "theming", "slogan"]
-
-    @objc public let capabilitiesWebDavRoot: Array = ["ocs", "data", "capabilities", "core", "webdav-root"]
-
-    @objc public let capabilitiesE2EEEnabled: Array = ["ocs", "data", "capabilities", "end-to-end-encryption", "enabled"]
-    @objc public let capabilitiesE2EEApiVersion: Array = ["ocs", "data", "capabilities", "end-to-end-encryption", "api-version"]
-
-    @objc public let capabilitiesExternalSites: Array = ["ocs", "data", "capabilities", "external"]
-
+    
     @objc public let capabilitiesRichdocumentsMimetypes: Array = ["ocs", "data", "capabilities", "richdocuments", "mimetypes"]
 
     @objc public let capabilitiesActivity: Array = ["ocs", "data", "capabilities", "activity", "apiv2"]

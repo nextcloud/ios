@@ -142,4 +142,46 @@ extension NCManageDatabase {
 
         return nil
     }
+
+    func setCapabilities(account: String, data: Data? = nil) {
+
+        let realm = try! Realm()
+        let json: JSON?
+
+        if let data = data {
+            json = JSON(data)
+        } else {
+            guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
+                  let data = result.jsondata else {
+                return
+            }
+            json = JSON(data)
+        }
+
+        guard let json = json else { return }
+
+        NCGlobal.shared.capabilityServerVersion = json["ocs", "data", "version", "string"].stringValue
+        NCGlobal.shared.capabilityServerVersionMajor = json["ocs", "data", "version", "major"].intValue
+
+        NCGlobal.shared.capabilityFileSharingApiEnabled = json["ocs", "data", "capabilities", "files_sharing", "api_enabled"].boolValue
+        NCGlobal.shared.capabilityFileSharingPubPasswdEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "password", "enforced"].boolValue
+        NCGlobal.shared.capabilityFileSharingPubExpireDateEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "enforced"].boolValue
+        NCGlobal.shared.capabilityFileSharingPubExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "days"].intValue
+        NCGlobal.shared.capabilityFileSharingInternalExpireDateEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "enforced"].boolValue
+        NCGlobal.shared.capabilityFileSharingInternalExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "days"].intValue
+        NCGlobal.shared.capabilityFileSharingRemoteExpireDateEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "enforced"].boolValue
+        NCGlobal.shared.capabilityFileSharingRemoteExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "days"].intValue
+
+        NCGlobal.shared.capabilityThemingColor = json["ocs", "data", "capabilities", "theming", "color"].stringValue
+        NCGlobal.shared.capabilityThemingColorElement = json["ocs", "data", "capabilities", "theming", "color-element"].stringValue
+        NCGlobal.shared.capabilityThemingColorText = json["ocs", "data", "capabilities", "theming", "color-text"].stringValue
+        NCGlobal.shared.capabilityThemingName = json["ocs", "data", "capabilities", "theming", "name"].stringValue
+        NCGlobal.shared.capabilityThemingSlogan = json["ocs", "data", "capabilities", "theming", "slogan"].stringValue
+
+        NCGlobal.shared.capabilityE2EEEnabled = json["ocs", "data", "capabilities", "end-to-end-encryption", "enabled"].boolValue
+        NCGlobal.shared.capabilityE2EEApiVersion = json["ocs", "data", "capabilities", "end-to-end-encryption", "api-version"].stringValue
+
+        NCGlobal.shared.capabilityExternalSites = json["ocs", "data", "capabilities", "external"].exists()
+
+    }
 }
