@@ -56,6 +56,17 @@ extension NCManageDatabase {
         }
     }
 
+    func getCapabilities(account: String) -> Data? {
+
+        let realm = try! Realm()
+
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return nil
+        }
+
+        return result.jsondata
+    }
+
     func setCapabilities(account: String, data: Data? = nil) {
 
         let realm = try! Realm()
