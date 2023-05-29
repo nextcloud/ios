@@ -218,6 +218,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
                 (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
 
+                shareViewController?.pages = pages
+                shareViewController?.metadata = metadata
+
                 if pages.contains(page) {
                     shareViewController?.page = page
                 } else if let page = pages.first {
@@ -225,9 +228,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else {
                     return
                 }
-
-                shareViewController?.pages = pages
-                shareViewController?.metadata = metadata
 
                 shareNavigationController?.modalPresentationStyle = .formSheet
                 if let shareNavigationController = shareNavigationController {

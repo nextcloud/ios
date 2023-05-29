@@ -90,7 +90,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
 
-        if page.rawValue < NCBrandOptions.NCInfoPagingTab.allCases.count {
+        if page.rawValue < pages.count {
             pagingViewController.select(index: page.rawValue)
         } else {
             pagingViewController.select(index: 0)
