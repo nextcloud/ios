@@ -322,15 +322,15 @@ class NCShareDateCell: UITableViewCell {
         case NCShareCommon.shared.SHARE_TYPE_LINK,
             NCShareCommon.shared.SHARE_TYPE_EMAIL,
             NCShareCommon.shared.SHARE_TYPE_GUEST:
-            return NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubExpireDateEnforced, exists: false)
+            return NCGlobal.shared.capabilityFileSharingPubExpireDateEnforced
         case NCShareCommon.shared.SHARE_TYPE_USER,
             NCShareCommon.shared.SHARE_TYPE_GROUP,
             NCShareCommon.shared.SHARE_TYPE_CIRCLE,
             NCShareCommon.shared.SHARE_TYPE_ROOM:
-            return NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingInternalExpireDateEnforced, exists: false)
+            return NCGlobal.shared.capabilityFileSharingInternalExpireDateEnforced
         case NCShareCommon.shared.SHARE_TYPE_REMOTE,
             NCShareCommon.shared.SHARE_TYPE_REMOTE_GROUP:
-            return NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingRemoteExpireDateEnforced, exists: false)
+            return NCGlobal.shared.capabilityFileSharingRemoteExpireDateEnforced
         default:
             return false
         }
@@ -341,15 +341,15 @@ class NCShareDateCell: UITableViewCell {
         case NCShareCommon.shared.SHARE_TYPE_LINK,
             NCShareCommon.shared.SHARE_TYPE_EMAIL,
             NCShareCommon.shared.SHARE_TYPE_GUEST:
-            return NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubExpireDateDays)
+            return NCGlobal.shared.capabilityFileSharingPubExpireDateDays
         case NCShareCommon.shared.SHARE_TYPE_USER,
             NCShareCommon.shared.SHARE_TYPE_GROUP,
             NCShareCommon.shared.SHARE_TYPE_CIRCLE,
             NCShareCommon.shared.SHARE_TYPE_ROOM:
-            return NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingInternalExpireDateDays)
+            return NCGlobal.shared.capabilityFileSharingInternalExpireDateDays
         case NCShareCommon.shared.SHARE_TYPE_REMOTE,
             NCShareCommon.shared.SHARE_TYPE_REMOTE_GROUP:
-            return NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingRemoteExpireDateDays)
+            return NCGlobal.shared.capabilityFileSharingRemoteExpireDateDays
         default:
             return 0
         }

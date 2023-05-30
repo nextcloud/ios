@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import TagListView
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
@@ -39,13 +38,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var tag0: UILabel!
+    @IBOutlet weak var tag1: UILabel!
 
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var infoTrailingConstraint: NSLayoutConstraint!
-
-    @IBOutlet weak var tagListView: TagListView!
 
     private var objectId = ""
     private var user = ""
@@ -108,11 +107,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return separator }
         set { separator = newValue }
     }
-    var cellTagListView: TagListView? {
-        get { return tagListView}
-        set { tagListView = newValue }
-    }
- 
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -284,26 +279,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setTags(tags: [String]) {
-        tagListView.removeAllTags()
         if tags.isEmpty {
-            tagListView.isHidden = true
+            tag0.isHidden = true
+            tag1.isHidden = true
             labelInfo.isHidden = false
         } else {
-            tagListView.isHidden = false
+            tag0.isHidden = false
+            tag1.isHidden = true
             labelInfo.isHidden = true
             if let tag = tags.first {
-                tagListView.addTag(tag)
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    if tags.count >= 2 {
-                        tagListView.addTag(tags[1])
-                    }
-                    if tags.count > 2 {
-                        tagListView.addTag("+\(tags.count-2)")
-                    }
-                } else {
-                    if tags.count > 1 {
-                        tagListView.addTag("+\(tags.count-1)")
-                    }
+                tag0.text = tag
+                if tags.count > 1 {
+                    tag1.isHidden = false
+                    tag1.text = "+\(tags.count-1)"
                 }
             }
         }

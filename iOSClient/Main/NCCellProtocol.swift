@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import TagListView
 
 protocol NCCellProtocol {
 
@@ -40,7 +39,6 @@ protocol NCCellProtocol {
     var fileSharedImage: UIImageView? { get set }
     var fileMoreImage: UIImageView? { get set }
     var cellSeparatorView: UIView? { get set }
-    var cellTagListView: TagListView? { get set }
 
     func titleInfoTrailingDefault()
     func titleInfoTrailingFull()
@@ -104,10 +102,6 @@ extension NCCellProtocol {
         set {}
     }
     var cellSeparatorView: UIView? {
-        get { return nil }
-        set {}
-    }
-    var cellTagListView: TagListView? {
         get { return nil }
         set {}
     }

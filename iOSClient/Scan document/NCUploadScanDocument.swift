@@ -452,9 +452,7 @@ struct UploadScanDocumentView: View {
                         }
                     }
                     .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
+                        view.listRowSeparator(.hidden)
                     }
 
                     VStack(spacing: 20) {
@@ -499,9 +497,7 @@ struct UploadScanDocumentView: View {
                             .frame(maxWidth: .infinity, minHeight: geo.size.height / 2)
                     }
                     .complexModifier { view in
-                        if #available(iOS 15, *) {
-                            view.listRowSeparator(.hidden)
-                        }
+                        view.listRowSeparator(.hidden)
                     }
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")

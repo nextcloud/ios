@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
@@ -404,4 +405,40 @@ class NCGlobal: NSObject {
     let configuration_disable_manage_account                    = "disable_manage_account"
     let configuration_disable_more_external_site                = "disable_more_external_site"
     let configuration_disable_openin_file                       = "disable_openin_file"
+
+    // CAPABILITIES
+    //
+    var capabilityServerVersionMajor: Int                       = 0
+    @objc var capabilityServerVersion: String                   = ""
+    
+    var capabilityFileSharingApiEnabled: Bool                   = false
+    var capabilityFileSharingPubPasswdEnforced: Bool            = false
+    var capabilityFileSharingPubExpireDateEnforced: Bool        = false
+    var capabilityFileSharingPubExpireDateDays: Int             = 0
+    var capabilityFileSharingInternalExpireDateEnforced: Bool   = false
+    var capabilityFileSharingInternalExpireDateDays: Int        = 0
+    var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
+    var capabilityFileSharingRemoteExpireDateDays: Int          = 0
+    var capabilityFileSharingDefaultPermission: Int             = 0
+
+    var capabilityThemingColor: String                          = ""
+    var capabilityThemingColorElement: String                   = ""
+    var capabilityThemingColorText: String                      = ""
+    @objc var capabilityThemingName: String                     = ""
+    @objc var capabilityThemingSlogan: String                   = ""
+
+    @objc var capabilityE2EEEnabled: Bool                       = false
+    @objc var capabilityE2EEApiVersion: String                  = ""
+
+    var capabilityRichdocumentsMimetypes: [String]              = []
+    var capabilityActivity: [String]                            = []
+    var capabilityNotification: [String]                        = []
+
+    var capabilityFilesUndelete: Bool                           = false
+    var capabilityFilesLockVersion: String                      = ""    // NC 24
+    var capabilityFilesComments: Bool                           = false // NC 20
+
+    @objc var capabilityUserStatusEnabled: Bool                 = false
+    var capabilityExternalSites: Bool                           = false
+    var capabilityGroupfoldersEnabled: Bool                     = false // NC27
 }

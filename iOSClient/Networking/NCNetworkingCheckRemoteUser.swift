@@ -27,7 +27,6 @@ class NCNetworkingCheckRemoteUser {
 
     func checkRemoteUser(account: String, error: NKError) {
 
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
@@ -40,7 +39,7 @@ class NCNetworkingCheckRemoteUser {
 
         // -----------------------
 
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
+        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 
             let token = CCUtility.getPassword(account)!
             if token.isEmpty {

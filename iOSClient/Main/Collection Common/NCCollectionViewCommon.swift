@@ -981,8 +981,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
 
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
+        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { account, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
@@ -1658,7 +1657,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // ** IMPORT MUST BE AT THE END **
         //
-        if !metadata.isSharable {
+
+        if !metadata.isSharable() {
             cell.hideButtonShare(true)
         }
         

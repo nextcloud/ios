@@ -128,8 +128,10 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
-    let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-    guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
+    // Capabilities
+    NCManageDatabase.shared.setCapabilities(account: account.account)
+
+    guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
     }
         

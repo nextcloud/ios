@@ -576,9 +576,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ = NCActionCenter.shared
 
         NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor > 0 {
-            NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
+        NCManageDatabase.shared.setCapabilities(account: account)
+
+        if NCGlobal.shared.capabilityServerVersionMajor > 0 {
+            NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
         }
 
         DispatchQueue.main.async {
