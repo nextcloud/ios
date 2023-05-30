@@ -26,6 +26,8 @@ import Foundation
 extension DateFormatter {
     static let shareExpDate: DateFormatter = {
         let dateFormatter = DateFormatter()
+        let app_locale = Bundle.main.preferredLocalizations.first
+        dateFormatter.locale = Locale(identifier: app_locale ?? "en_US")
         dateFormatter.formatterBehavior = .behavior10_4
         dateFormatter.dateStyle = .medium
         return dateFormatter

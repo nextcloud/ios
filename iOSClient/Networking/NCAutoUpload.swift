@@ -109,6 +109,8 @@ class NCAutoUpload: NSObject {
                 var livePhoto = false
                 var session: String = ""
                 let dateFormatter = DateFormatter()
+                let app_locale = Bundle.main.preferredLocalizations.first
+                dateFormatter.locale = Locale(identifier: app_locale ?? "en_US")
                 let assetDate = asset.creationDate ?? Date()
                 dateFormatter.dateFormat = "yyyy"
                 let year = dateFormatter.string(from: assetDate)
