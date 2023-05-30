@@ -143,11 +143,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelInfo.text = ""
         labelTitle.textColor = .label
         labelInfo.textColor = .systemGray
-
-        // tag0.layer.masksToBounds = true
-        // tag0.layer.borderColor = UIColor.systemGray5.cgColor
-        // tag0.layer.borderWidth = 1.0
-        // tag0.layer.cornerRadius = 8
     }
 
     override func prepareForReuse() {
