@@ -25,6 +25,7 @@
 import UIKit
 import NextcloudKit
 import SwiftyJSON
+import JGProgressHUD
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
 
@@ -43,7 +44,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
-        tableView.allowsSelection = false
         tableView.backgroundColor = .systemBackground
 
         // Empty
@@ -101,6 +101,64 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         emptyDataSet?.numberOfItemsInSection(notifications.count, section: section)
         return notifications.count
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        let notification = notifications[indexPath.row]
+
+        if notification.app == "files_sharing" {
+            if let metadata = NCManageDatabase.shared.getMetadataFromFileId(notification.objectId) {
+                if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    do {
+                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+                        let fileSize = attr[FileAttributeKey.size] as! UInt64
+                        if fileSize > 0 {
+                            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                            return
+                        }
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+            }
+
+            let hud = JGProgressHUD()
+            hud.indicatorView = JGProgressHUDRingIndicatorView()
+            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                indicatorView.ringWidth = 1.5
+            }
+            guard let view = appDelegate.window?.rootViewController?.view else { return }
+            hud.show(in: view)
+
+            NextcloudKit.shared.getFileFromFileId(fileId: notification.objectId) { account, file, data, error in
+                if let file = file {
+                    let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                    let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                    NCManageDatabase.shared.addMetadata(metadata)
+
+                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+                    }, taskHandler: { _ in
+                    }, progressHandler: { progress in
+                        hud.progress = Float(progress.fractionCompleted)
+                    }) { account, _, _, _, _, _, error in
+                        hud.dismiss()
+                        if account == self.appDelegate.account && error == .success {
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            NCViewer.shared.view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        }
+                    }
+                } else {
+                    hud.dismiss()
+                    NCContentPresenter.shared.showError(error: error)
+                }
+            }
+        }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

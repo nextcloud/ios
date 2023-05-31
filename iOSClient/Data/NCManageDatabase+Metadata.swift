@@ -877,6 +877,17 @@ extension NCManageDatabase {
         return tableMetadata.init(value: result)
     }
 
+    func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
+
+        let realm = try! Realm()
+        realm.refresh()
+
+        guard let fileId = fileId else { return nil }
+        guard let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first else { return nil }
+
+        return tableMetadata.init(value: result)
+    }
+
     func getMetadataFolder(account: String, urlBase: String, userId: String, serverUrl: String) -> tableMetadata? {
 
         let realm = try! Realm()
