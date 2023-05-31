@@ -158,6 +158,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                     NCContentPresenter.shared.showError(error: error)
                 }
             }
+        } else {
+            NCApplicationHandle().didSelectNotification(notification)
         }
     }
 

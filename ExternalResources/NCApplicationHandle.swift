@@ -78,4 +78,8 @@ class NCApplicationHandle: NSObject {
     func filterPages(pages: [NCBrandOptions.NCInfoPagingTab], page: NCBrandOptions.NCInfoPagingTab, metadata: tableMetadata) -> ([NCBrandOptions.NCInfoPagingTab], NCBrandOptions.NCInfoPagingTab) {
         return (pages, page)
     }
+
+    // class: NCNotification
+    func didSelectNotification(_ notification: NKNotifications) {
+    }
 }
