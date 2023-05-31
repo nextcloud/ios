@@ -80,6 +80,6 @@ class NCApplicationHandle: NSObject {
     }
 
     // class: NCNotification
-    func didSelectNotification(_ notification: NKNotifications) {
+    func didSelectNotification(_ notification: NKNotifications, viewController: UIViewController) {
     }
 }

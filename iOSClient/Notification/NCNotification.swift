@@ -159,7 +159,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 }
             }
         } else {
-            NCApplicationHandle().didSelectNotification(notification)
+            NCApplicationHandle().didSelectNotification(notification, viewController: self)
         }
     }
 
