@@ -27,6 +27,7 @@ class NCCapabilitiesViewOO: ObservableObject {
         let id = UUID()
         let text: String
         let image: UIImage
+        let resize: Bool
         let available: Bool
     }
 
@@ -36,8 +37,8 @@ class NCCapabilitiesViewOO: ObservableObject {
     init() {
 
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-            capabililies = [Capability(text: "Collabora", image: UIImage(named: "collabora")!, available: true),
-                            Capability(text: "Externa site", image: UIImage(systemName: "network")!, available: false)
+            capabililies = [Capability(text: "Collabora", image: UIImage(named: "collabora")!, resize: true, available: true),
+                            Capability(text: "XXX site", image: UIImage(systemName: "lock.shield")!, resize: false, available: false)
             ]
             homeServer = "https://cloud.nextcloud.com/remote.php.dav/files/marino/"
         } else {
@@ -46,22 +47,22 @@ class NCCapabilitiesViewOO: ObservableObject {
             var onlyofficeEditors = false
 
             if let image = UIImage(named: "share") {
-                capabililies.append(Capability(text: "File sharing", image: image, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
+                capabililies.append(Capability(text: "File sharing", image: image, resize: true, available: NCGlobal.shared.capabilityFileSharingApiEnabled))
             }
             if let image = UIImage(systemName: "network") {
-                capabililies.append(Capability(text: "External site", image: image, available: NCGlobal.shared.capabilityExternalSites))
+                capabililies.append(Capability(text: "External site", image: image, resize: false, available: NCGlobal.shared.capabilityExternalSites))
             }
             if let image = UIImage(systemName: "lock") {
-                capabililies.append(Capability(text: "End-to-End Encryption", image: image, available: NCGlobal.shared.capabilityE2EEEnabled))
+                capabililies.append(Capability(text: "End-to-End Encryption", image: image, resize: false, available: NCGlobal.shared.capabilityE2EEEnabled))
             }
             if let image = UIImage(systemName: "bolt") {
-                capabililies.append(Capability(text: "Activity", image: image, available: !NCGlobal.shared.capabilityActivity.isEmpty))
+                capabililies.append(Capability(text: "Activity", image: image, resize: false, available: !NCGlobal.shared.capabilityActivity.isEmpty))
             }
             if let image = UIImage(systemName: "bell") {
-                capabililies.append(Capability(text: "Notification", image: image, available: !NCGlobal.shared.capabilityNotification.isEmpty))
+                capabililies.append(Capability(text: "Notification", image: image, resize: false, available: !NCGlobal.shared.capabilityNotification.isEmpty))
             }
             if let image = UIImage(systemName: "trash") {
-                capabililies.append(Capability(text: "Deleted files", image: image, available: NCGlobal.shared.capabilityFilesUndelete))
+                capabililies.append(Capability(text: "Deleted files", image: image, resize: false, available: NCGlobal.shared.capabilityFilesUndelete))
             }
 
             if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: activeAccount.account) {
@@ -75,25 +76,25 @@ class NCCapabilitiesViewOO: ObservableObject {
             }
 
             if let image = UIImage(systemName: "doc.text") {
-                capabililies.append(Capability(text: "Text", image: image, available: textEditor))
+                capabililies.append(Capability(text: "Text", image: image, resize: false, available: textEditor))
             }
             if let image = UIImage(named: "onlyoffice") {
-                capabililies.append(Capability(text: "ONLYOFFICE", image: image, available: onlyofficeEditors))
+                capabililies.append(Capability(text: "ONLYOFFICE", image: image, resize: true, available: onlyofficeEditors))
             }
             if let image = UIImage(named: "collabora") {
-                capabililies.append(Capability(text: "Collabora", image: image, available: !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty))
+                capabililies.append(Capability(text: "Collabora", image: image, resize: true, available: !NCGlobal.shared.capabilityRichdocumentsMimetypes.isEmpty))
             }
             if let image = UIImage(systemName: "moon") {
-                capabililies.append(Capability(text: "User Status", image: image, available: NCGlobal.shared.capabilityUserStatusEnabled))
+                capabililies.append(Capability(text: "User Status", image: image, resize: false, available: NCGlobal.shared.capabilityUserStatusEnabled))
             }
             if let image = UIImage(systemName: "ellipsis.bubble") {
-                capabililies.append(Capability(text: "Comments", image: image, available: NCGlobal.shared.capabilityFilesComments))
+                capabililies.append(Capability(text: "Comments", image: image, resize: false, available: NCGlobal.shared.capabilityFilesComments))
             }
             if let image = UIImage(systemName: "lock") {
-                capabililies.append(Capability(text: "Lock file", image: image, available: !NCGlobal.shared.capabilityFilesLockVersion.isEmpty))
+                capabililies.append(Capability(text: "Lock file", image: image, resize: false, available: !NCGlobal.shared.capabilityFilesLockVersion.isEmpty))
             }
             if let image = UIImage(systemName: "person.2") {
-                capabililies.append(Capability(text: "Group folders", image: image, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
+                capabililies.append(Capability(text: "Group folders", image: image, resize: false, available: NCGlobal.shared.capabilityGroupfoldersEnabled))
             }
 
             homeServer = NCUtilityFileSystem.shared.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + "/"
@@ -115,13 +116,13 @@ struct NCCapabilitiesView: View {
                 Section {
                     ForEach(capabilitiesViewOO.capabililies, id: \.id) { capability in
                         HStack {
-                            CapabilityName(text: capability.text, image: Image(uiImage: capability.image))
+                            CapabilityName(text: capability.text, image: Image(uiImage: capability.image), resize: capability.resize)
                             CapabilityStatus(available: capability.available)
                         }
                     }
                 }
                 Section {
-                    CapabilityName(text: capabilitiesViewOO.homeServer, image: Image(uiImage: UIImage(systemName: "house")!))
+                    CapabilityName(text: capabilitiesViewOO.homeServer, image: Image(systemName: "house"), resize: false)
                 }
             }
         }
@@ -132,18 +133,23 @@ struct NCCapabilitiesView: View {
 
         @State var text: String = ""
         @State var image: Image
+        @State var resize: Bool
 
         var body: some View {
             Label {
                 Text(text)
                     .font(.system(size: 15))
             } icon: {
-                image
-                    .renderingMode(.template)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 20.0, height: 20.0, alignment: .center)
-                    .foregroundColor(.primary)
+                if resize {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 23.0, height: 23.0)
+                        .foregroundColor(.primary)
+                } else {
+                    image
+                        .foregroundColor(.primary)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
