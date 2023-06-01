@@ -191,7 +191,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         cell.secondary.layer.borderWidth = 1
         cell.secondary.layer.borderColor = UIColor.systemGray.cgColor
         cell.secondary.layer.backgroundColor = UIColor.secondarySystemBackground.cgColor
-        cell.secondary.setTitleColor(.black, for: .normal)
+        cell.secondary.setTitleColor(.gray, for: .normal)
 
         // Action
         if let actions = notification.actions,
