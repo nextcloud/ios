@@ -120,6 +120,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCNotificationCell
         cell.delegate = self
+        cell.selectionStyle = .none
 
         let notification = notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
