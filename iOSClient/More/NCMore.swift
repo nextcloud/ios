@@ -113,14 +113,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 20
         functionMenu.append(item)
 
-        // ITEM : Notification
-        item = NKExternalSite()
-        item.name = "_notifications_"
-        item.icon = "bell"
-        item.url = "segueNotification"
-        item.order = 30
-        functionMenu.append(item)
-
         // ITEM : Activity
         item = NKExternalSite()
         item.name = "_activity_"

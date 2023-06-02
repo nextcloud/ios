@@ -42,7 +42,8 @@ protocol NCSelectableNavigationView: AnyObject {
     var selectOcId: [String] { get set }
     var titleCurrentFolder: String { get }
     var navigationItem: UINavigationItem { get }
-
+    var navigationController: UINavigationController? { get }
+    var layoutKey: String { get }
     var selectActions: [NCMenuAction] { get }
 
     func reloadDataSource(forced: Bool)
@@ -60,12 +61,20 @@ extension NCSelectableNavigationView {
 
     func setNavigationHeader() {
         if isEditMode {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "navigationMore"), style: .plain, action: tapSelectMenu)
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, action: tapSelect)
+            let more = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, action: tapSelectMenu)
+            let cancel = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, action: tapSelect)
+            navigationItem.rightBarButtonItems = [more]
+            navigationItem.leftBarButtonItems = [cancel]
             navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(selectableDataSource.count)"
         } else {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, action: tapSelect)
-            navigationItem.leftBarButtonItem = nil
+            let select = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, action: tapSelect)
+            let notification = UIBarButtonItem(image: UIImage(systemName: "bell"), style: .plain, action: tapNotification)
+            if layoutKey == NCGlobal.shared.layoutViewFiles {
+                navigationItem.rightBarButtonItems = [select, notification]
+            } else {
+                navigationItem.rightBarButtonItems = [select]
+            }
+            navigationItem.leftBarButtonItems = []
             navigationItem.title = titleCurrentFolder
         }
     }
@@ -81,6 +90,12 @@ extension NCSelectableNavigationView {
         selectOcId = selectableDataSource.compactMap({ $0.primaryKeyValue })
         navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(selectableDataSource.count)"
         collectionView.reloadData()
+    }
+
+    func tapNotification() {
+        if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+            navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }
 
