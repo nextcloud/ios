@@ -106,6 +106,10 @@ extension NCSelectableNavigationView where Self: UIViewController {
 
     var selectActions: [NCMenuAction] {
         var actions = [NCMenuAction]()
+
+        actions.append(.cancelAction {
+            self.tapSelect()
+        })
         if selectOcId.count != selectableDataSource.count {
             actions.append(.selectAllAction(action: collectionViewSelectAll))
         }
