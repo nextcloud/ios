@@ -62,10 +62,7 @@ extension NCSelectableNavigationView {
     func setNavigationHeader() {
         if isEditMode {
             let more = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, action: tapSelectMenu)
-            let cancel = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, action: tapSelect)
             navigationItem.rightBarButtonItems = [more]
-            navigationItem.leftBarButtonItems = [cancel]
-            navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(selectableDataSource.count)"
         } else {
             let select = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, action: tapSelect)
             let notification = UIBarButtonItem(image: UIImage(systemName: "bell"), style: .plain, action: tapNotification)
@@ -74,8 +71,6 @@ extension NCSelectableNavigationView {
             } else {
                 navigationItem.rightBarButtonItems = [select]
             }
-            navigationItem.leftBarButtonItems = []
-            navigationItem.title = titleCurrentFolder
         }
     }
 
@@ -88,7 +83,6 @@ extension NCSelectableNavigationView {
 
     func collectionViewSelectAll() {
         selectOcId = selectableDataSource.compactMap({ $0.primaryKeyValue })
-        navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(selectableDataSource.count)"
         collectionView.reloadData()
     }
 
@@ -115,6 +109,9 @@ extension NCSelectableNavigationView where Self: UIViewController {
         }
 
         guard !selectOcId.isEmpty else { return actions }
+
+        actions.append(.seperator(order: 0))
+
         var selectedMetadatas: [tableMetadata] = []
         var selectedMediaMetadatas: [tableMetadata] = []
         var isAnyOffline = false

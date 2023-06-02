@@ -70,6 +70,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
+    internal var titlePreviusFolder: String?
     internal var enableSearchBar: Bool = false
     internal var headerMenuButtonsCommand: Bool = true
     internal var headerMenuButtonsView: Bool = true
@@ -612,12 +613,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func setNavigationItem() {
         self.setNavigationHeader()
 
-        guard !isEditMode, layoutKey == NCGlobal.shared.layoutViewFiles else { return }
+        guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
         
         // PROFILE BUTTON
         
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        
+
         let image = NCUtility.shared.loadUserImage(
             for: appDelegate.user,
                displayName: activeAccount?.displayName,
@@ -671,6 +672,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: button), animated: true)
         navigationItem.leftItemsSupplementBackButton = true
+        if titlePreviusFolder == nil {
+            navigationController?.navigationBar.topItem?.title = getNavigationTitle()
+        } else {
+            navigationController?.navigationBar.topItem?.title = titlePreviusFolder
+        }
+        navigationItem.title = titleCurrentFolder
     }
 
     func getNavigationTitle() -> String {
@@ -1116,6 +1123,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                     viewController.isRoot = false
                     viewController.serverUrl = serverUrlPush
+                    viewController.titlePreviusFolder = navigationItem.title
                     viewController.titleCurrentFolder = metadata.fileNameView
 
                     appDelegate.listFilesVC[serverUrlPush] = viewController
@@ -1139,6 +1147,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if let viewController: NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as? NCFavorite {
 
                     viewController.serverUrl = serverUrlPush
+                    viewController.titlePreviusFolder = navigationItem.title
                     viewController.titleCurrentFolder = metadata.fileNameView
 
                     appDelegate.listFavoriteVC[serverUrlPush] = viewController
@@ -1162,6 +1171,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if let viewController: NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as? NCOffline {
 
                     viewController.serverUrl = serverUrlPush
+                    viewController.titlePreviusFolder = navigationItem.title
                     viewController.titleCurrentFolder = metadata.fileNameView
 
                     appDelegate.listOfflineVC[serverUrlPush] = viewController
@@ -1186,6 +1196,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                     viewController.isRoot = false
                     viewController.serverUrl = serverUrlPush
+                    viewController.titlePreviusFolder = navigationItem.title
                     viewController.titleCurrentFolder = metadata.fileNameView
 
                     appDelegate.listFilesVC[serverUrlPush] = viewController
@@ -1210,6 +1221,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                     viewController.isRoot = false
                     viewController.serverUrl = serverUrlPush
+                    viewController.titlePreviusFolder = navigationItem.title
                     viewController.titleCurrentFolder = metadata.fileNameView
 
                     appDelegate.listFilesVC[serverUrlPush] = viewController
@@ -1233,6 +1245,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if let viewController: NCGroupfolders = UIStoryboard(name: "NCGroupfolders", bundle: nil).instantiateInitialViewController() as? NCGroupfolders {
 
                     viewController.serverUrl = serverUrlPush
+                    viewController.titlePreviusFolder = navigationItem.title
                     viewController.titleCurrentFolder = metadata.fileNameView
 
                     appDelegate.listGroupfoldersVC[serverUrlPush] = viewController
@@ -1272,7 +1285,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            self.navigationItem.title = NSLocalizedString("_selected_", comment: "") + " : \(selectOcId.count)" + " / \(metadataSourceForAllSections.count)"
             return
         }
 
