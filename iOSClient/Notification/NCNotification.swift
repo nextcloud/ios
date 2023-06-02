@@ -32,6 +32,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var notifications: [NKNotifications] = []
     var emptyDataSet: NCEmptyDataSet?
+    var isReloadDataSourceNetworkInProgress: Bool = false
+
 
     // MARK: - View Life Cycle
 
@@ -55,14 +57,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         super.viewWillAppear(animated)
 
         appDelegate.activeViewController = self
-        
+
         navigationController?.setFileAppreance()
 
         NotificationCenter.default.addObserver(self, selector: #selector(initialize), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterInitialize), object: nil)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
 
         getNetwokingNotification()
     }
@@ -87,16 +85,18 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func emptyDataSetView(_ view: NCEmptyView) {
 
-        view.emptyImage.image = NCUtility.shared.loadImage(named: "bell", color: .gray, size: UIScreen.main.bounds.width)
-        view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
-        view.emptyDescription.text = ""
+        if isReloadDataSourceNetworkInProgress {
+            view.emptyImage.image = UIImage(named: "networkInProgress")?.image(color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+            view.emptyDescription.text = ""
+        } else {
+            view.emptyImage.image = NCUtility.shared.loadImage(named: "bell", color: .gray, size: UIScreen.main.bounds.width)
+            view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
+            view.emptyDescription.text = ""
+        }
     }
 
     // MARK: - Table
-
-    @objc func reloadDatasource() {
-        self.tableView.reloadData()
-    }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         emptyDataSet?.numberOfItemsInSection(notifications.count, section: section)
@@ -244,14 +244,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, error) in
             if error == .success && account == self.appDelegate.account {
-
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification })  {
                     self.notifications.remove(at: index)
                 }
-
-                self.reloadDatasource()
-
+                self.tableView.reloadData()
             } else if error != .success {
                 NCContentPresenter.shared.showError(error: error)
             } else {
@@ -278,14 +275,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
             }
 
             NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, error) in
-
                 if error == .success && account == self.appDelegate.account {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
                     }
-
-                    self.reloadDatasource()
-
+                    self.tableView.reloadData()
                 } else if error != .success {
                     NCContentPresenter.shared.showError(error: error)
                 } else {
@@ -303,21 +297,21 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func getNetwokingNotification() {
 
+        isReloadDataSourceNetworkInProgress = true
+        self.tableView.reloadData()
+
         NextcloudKit.shared.getNotifications { account, notifications, data, error in
-
             if error == .success && account == self.appDelegate.account {
-
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
-
                 for notification in sortedListOfNotifications {
                     if let icon = (notification as! NKNotifications).icon {
                         NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, completion: { _, _ in })
                     }
                     self.notifications.append(notification as! NKNotifications)
                 }
-
-                self.reloadDatasource()
+                self.isReloadDataSourceNetworkInProgress = false
+                self.tableView.reloadData()
             }
         }
     }
