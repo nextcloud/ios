@@ -8,3 +8,4 @@
 #import "UIImage+animatedGIF.h"
 #import "CCUtility.h"
 #import "NCPushNotification.h"
+#import "NCPushNotificationEncryption.h"
