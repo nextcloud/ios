@@ -56,10 +56,10 @@ protocol NCSelectableNavigationView: AnyObject {
 extension NCSelectableNavigationView {
 
     func setNavigationItem() {
-        setNavigationHeader()
+        setNavigationRightItems()
     }
 
-    func setNavigationHeader() {
+    func setNavigationRightItems() {
         if isEditMode {
             let more = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, action: tapSelectMenu)
             navigationItem.rightBarButtonItems = [more]

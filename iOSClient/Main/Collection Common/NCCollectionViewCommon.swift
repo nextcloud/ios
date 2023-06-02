@@ -611,7 +611,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     @objc func setNavigationItem() {
-        self.setNavigationHeader()
+
+        self.setNavigationRightItems()
+        navigationItem.title = titleCurrentFolder
 
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
         
@@ -677,7 +679,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
         }
-        navigationItem.title = titleCurrentFolder
     }
 
     func getNavigationTitle() -> String {
