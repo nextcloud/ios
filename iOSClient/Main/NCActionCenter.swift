@@ -27,6 +27,7 @@ import Queuer
 import JGProgressHUD
 import SVGKit
 import Photos
+import Alamofire
 
 class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     public static let shared: NCActionCenter = {
@@ -166,6 +167,76 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
             if let metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
                 NCNetworking.shared.download(metadata: metadataLivePhoto, selector: NCGlobal.shared.selectorLoadOffline) { _, _ in }
+            }
+        }
+    }
+
+    func viewerFile(account: String, fileId: String, viewController: UIViewController) {
+
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let hudView = appDelegate.window?.rootViewController?.view else { return }
+        var downloadRequest: DownloadRequest?
+
+        if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
+            if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
+                do {
+                    let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+                    let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
+                    if fileSize > 0 {
+                        NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        return
+                    }
+                } catch {
+                    print("Error: \(error)")
+                }
+            }
+        }
+
+        let hud = JGProgressHUD()
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
+        hud.tapOnHUDViewBlock = { _ in
+            if let request = downloadRequest {
+                request.cancel()
+            }
+        }
+        hud.show(in: hudView)
+
+        NextcloudKit.shared.getFileFromFileId(fileId: fileId) { account, file, _, error in
+
+            if error != .success {
+                hud.dismiss()
+                NCContentPresenter.shared.showError(error: error)
+            } else if let file = file {
+
+                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                NCManageDatabase.shared.addMetadata(metadata)
+
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+                if metadata.isMovie {
+                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                } else {
+                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
+                        downloadRequest = request
+                    }, taskHandler: { _ in
+                    }, progressHandler: { progress in
+                        hud.progress = Float(progress.fractionCompleted)
+                    }) { accountDownload, _, _, _, _, _, error in
+                        hud.dismiss()
+                        if account == accountDownload && error == .success {
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        }
+                    }
+                }
+            } else {
+                hud.dismiss()
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_found_")
+                NCContentPresenter.shared.showError(error: error)
             }
         }
     }

@@ -82,6 +82,15 @@ extension NCMenuAction {
         )
     }
 
+    /// Cancel
+    static func cancelAction(action: @escaping () -> Void) -> NCMenuAction {
+        NCMenuAction(
+            title: NSLocalizedString("_cancel_", comment: ""),
+            icon: NCUtility.shared.loadImage(named: "xmark"),
+            action: { _ in action() }
+        )
+    }
+
     /// Copy files to pasteboard
     static func copyAction(selectOcId: [String], hudView: UIView, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(

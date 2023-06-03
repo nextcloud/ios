@@ -60,6 +60,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     private var privacyProtectionWindow: UIWindow?
 
+    struct PushNotificationData {
+        var account: String
+        var json: [String: AnyObject]
+    }
+    var pushNotificationData: PushNotificationData = PushNotificationData(account: "", json: [:])
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
@@ -113,8 +119,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Activate user account
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
-            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), initialize: false)
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+            initialize()
 
         } else {
 
@@ -206,6 +213,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // L' applicazione entrerà in primo piano (dopo il background)
     func applicationWillEnterForeground(_ application: UIApplication) {
+        NCApplicationHandle().applicationWillEnterForeground(application)
         guard !account.isEmpty, let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Application will enter in foreground")
@@ -404,6 +412,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Push Notifications
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        do {
+            let userInfo = notification.request.content.userInfo
+            if let message = userInfo["subject"] as? String {
+                let tableAccounts = NCManageDatabase.shared.getAllAccount()
+                for tableAccount in tableAccounts {
+                    guard let privateKey = CCUtility.getPushNotificationPrivateKey(tableAccount.account),
+                          let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
+                          let data = decryptedMessage.data(using: .utf8) else {
+                        continue
+                    }
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
+                        pushNotificationData = PushNotificationData(account: tableAccount.account, json: json)
+                        print(json)
+                    }
+                }
+            }
+        } catch let error as NSError {
+            print("Failed : \(error.localizedDescription)")
+        }
         completionHandler([.list, .banner, .sound])
     }
 
@@ -562,7 +589,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
+    @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String, initialize: Bool = true) {
 
         let accountTestBackup = self.account + "/" + self.userId
         let accountTest = account +  "/" + userId
@@ -583,7 +610,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         DispatchQueue.main.async {
-            if UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
+            if initialize, UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, second: 0.2)
             }
         }

@@ -319,7 +319,7 @@ class NCGlobal: NSObject {
     let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
     let notificationCenterApplicationWillResignActive           = "applicationWillResignActive"
 
-    @objc let notificationCenterInitialize                      = "initialize"                      // userInfo?: atStart
+    @objc let notificationCenterInitialize                      = "initialize"
     @objc let notificationCenterChangeTheming                   = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
