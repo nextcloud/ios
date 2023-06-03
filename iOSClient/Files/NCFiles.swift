@@ -74,12 +74,6 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.initialize()
 
-        /*
-        if let userInfo = notification.userInfo as NSDictionary?, userInfo["atStart"] as? Int == 1 {
-            return
-        }
-        */
-
         reloadDataSource(forced: false)
         reloadDataSourceNetwork()
     }
