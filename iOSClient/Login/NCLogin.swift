@@ -260,7 +260,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         loginButton.isEnabled = false
 
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, _, error in
+        NextcloudKit.shared.getServerStatus(serverUrl: url) {installed, maintenance, _, _, _, versionMajor, _, _, _, _, error in
 
             if error == .success {
 
