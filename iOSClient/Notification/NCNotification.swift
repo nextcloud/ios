@@ -105,8 +105,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        tableView.deselectRow(at: indexPath, animated: true)
-
         let notification = notifications[indexPath.row]
 
         if notification.app == "files_sharing" {
