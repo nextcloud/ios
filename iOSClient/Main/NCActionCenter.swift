@@ -205,8 +205,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         NextcloudKit.shared.getFileFromFileId(fileId: fileId) { account, file, _, error in
 
+            hud.dismiss()
             if error != .success {
-                hud.dismiss()
                 NCContentPresenter.shared.showError(error: error)
             } else if let file = file {
 
@@ -220,6 +220,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 if metadata.isMovie {
                     NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 } else {
+                    hud.show(in: hudView)
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
                         downloadRequest = request
                     }, taskHandler: { _ in
@@ -234,7 +235,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                 }
             } else {
-                hud.dismiss()
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_found_")
                 NCContentPresenter.shared.showError(error: error)
             }
