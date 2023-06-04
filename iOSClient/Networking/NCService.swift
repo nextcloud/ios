@@ -114,24 +114,26 @@ class NCService: NSObject {
 
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
             guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile) else {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Internal error : account not found on DB")
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Internal error: account not found on DB")
                 NCContentPresenter.shared.showError(error: error, priority: .max)
                 return (false, nil)
             }
             await self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId, password: CCUtility.getPassword(tableAccount.account))
             return (true, tableAccount)
-        } else if resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized {
+        } else if resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized401 ||
+                    resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized997 {
             // Ops the server has Unauthorized
             DispatchQueue.main.async {
                 if UIApplication.shared.applicationState == .active && NCNetworking.shared.networkReachability != NKCommon.TypeReachability.notReachable {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized \(resultUserProfile.error.errorCode)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser \(resultUserProfile.error.errorCode)")
                     NCNetworkingCheckRemoteUser().checkRemoteUser(account: resultUserProfile.account, error: resultUserProfile.error)
                 }
             }
             return (false, nil)
+        } else {
+            NCContentPresenter.shared.showError(error: resultUserProfile.error, priority: .max)
+            return (false, nil)
         }
-
-        return (false, nil)
     }
 
     func synchronize(tableAccount: tableAccount) {
