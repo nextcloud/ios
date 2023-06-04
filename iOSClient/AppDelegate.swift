@@ -539,7 +539,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc private func checkErrorNetworking() {
         
-        // check unauthorized server (401/403)
         if account != "" && CCUtility.getPassword(account)!.count == 0 {
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
