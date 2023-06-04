@@ -94,7 +94,6 @@ class NCService: NSObject {
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         let resultServerStatus = await NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: options)
-        let resultUserProfile = await NextcloudKit.shared.getUserProfile(options: options)
 
         if resultServerStatus.maintenance {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
@@ -111,6 +110,8 @@ class NCService: NSObject {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
             NCContentPresenter.shared.showWarning(error: error, priority: .max)
         }
+
+        let resultUserProfile = await NextcloudKit.shared.getUserProfile(options: options)
 
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
             guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile) else {
