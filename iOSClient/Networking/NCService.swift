@@ -93,26 +93,25 @@ class NCService: NSObject {
 
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        let resultServerStatus = await NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: options)
-
-        if resultServerStatus.maintenance {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
-            NCContentPresenter.shared.showWarning(error: error, priority: .max)
-            return (false, nil)
-        }
-
-        if let serverProductName = resultServerStatus.serverProductName, serverProductName.contains("owncloud") {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
-            NCContentPresenter.shared.showWarning(error: error, priority: .max)
-        }
-
-        if resultServerStatus.versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
-            NCContentPresenter.shared.showWarning(error: error, priority: .max)
+        switch await NextcloudKit.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: options) {
+        case .success(let serverInfo):
+            if serverInfo.maintenance {
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
+                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                return (false, nil)
+            } else if serverInfo.productName.lowercased().contains("owncloud") {
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
+                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+                return (false, nil)
+            } else if serverInfo.versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
+                NCContentPresenter.shared.showWarning(error: error, priority: .max)
+            }
+        case .failure(_):
+            return(false, nil)
         }
 
         let resultUserProfile = await NextcloudKit.shared.getUserProfile(options: options)
-
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
             guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile) else {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Internal error: account not found on DB")
