@@ -202,7 +202,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Push Notification
         if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups),
            let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
-            nextcloudPushNotificationAction(data: data, backgound: true)
+            nextcloudPushNotificationAction(data: data, background: true)
             pref.set(nil, forKey: "NOTIFICATION_DATA")
         }
 
@@ -412,7 +412,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // push notification in foreground
         if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups),
            let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
-            nextcloudPushNotificationAction(data: data, backgound: false)
+            nextcloudPushNotificationAction(data: data, background: false)
             pref.set(nil, forKey: "NOTIFICATION_DATA")
         }
         completionHandler([.list, .banner, .sound])
@@ -436,8 +436,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func nextcloudPushNotificationAction(data: [String: AnyObject], backgound: Bool) {
-        NCApplicationHandle().nextcloudPushNotificationAction(data: data, backgroud: backgound)
+    func nextcloudPushNotificationAction(data: [String: AnyObject], background: Bool) {
+        NCApplicationHandle().nextcloudPushNotificationAction(data: data, background: background)
     }
 
     // MARK: - Login & checkErrorNetworking
