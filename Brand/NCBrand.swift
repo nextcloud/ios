@@ -387,4 +387,21 @@ class NCBrandColor: NSObject {
     @objc public var backgroundForm: UIColor = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
     @objc public let graySoft: UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
     @objc public let systemGray4: UIColor = UIColor.systemGray4
+    @objc public let systemBackground: UIColor = UIColor.systemBackground
+    @objc public let textInfo: UIColor = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 153.0/255.0, alpha: 1.0)
+    @objc public let systemGray: UIColor = UIColor.systemGray
+    @objc public let customerDarkGrey: UIColor = UIColor(red: 38.0/255.0, green: 38.0/255.0, blue: 38.0/255.0, alpha: 1.0)
+    @objc public var fileFolderName: UIColor = UIColor(displayP3Red: 102.0/255.0, green: 102.0/255.0, blue: 102.0/255.0, alpha: 1.0)
+    @objc public let optionItem: UIColor = UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
+    @objc public var singleTitleColorButton: UIColor = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
+    @objc public var shareCellTitleColor: UIColor = UIColor(displayP3Red: 242.0/255.0, green: 242.0/255.0, blue: 242.0/255.0, alpha: 1.0)
+    @objc public var gray60: UIColor {
+        if UITraitCollection.current.userInterfaceStyle == .dark {
+            return  UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
+        } else {
+            return  UIColor(red: 102.0/255.0, green: 102.0/255.0, blue: 102.0/255.0, alpha: 1.0)
+        }
+    }
+    @objc public var systemGray2: UIColor = UIColor.systemGray2
+    @objc public var shareByEmailTextColor: UIColor = UIColor(displayP3Red: 13.0/255.0, green: 57.0/255.0, blue: 223.0/255.0, alpha: 1.0)
 }
