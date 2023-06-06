@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="c26-Us-IIn">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="c26-Us-IIn">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -17,7 +17,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="187" id="R1c-h5-BOp" customClass="NCNotificationCell" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="44.5" width="375" height="187"/>
+                                <rect key="frame" x="0.0" y="50" width="375" height="187"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R1c-h5-BOp" id="9Bv-1W-yVV">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="187"/>
@@ -64,7 +64,7 @@
                                                 <constraint firstAttribute="height" constant="20" id="IIr-Ys-RMx"/>
                                                 <constraint firstAttribute="width" constant="20" id="YaB-cW-gAT"/>
                                             </constraints>
-                                            <state key="normal" image="exit"/>
+                                            <state key="normal" image="xmark" catalog="system"/>
                                             <connections>
                                                 <action selector="touchUpInsideRemove:" destination="R1c-h5-BOp" eventType="touchUpInside" id="Wlp-VM-Vf2"/>
                                             </connections>
@@ -166,6 +166,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="exit" width="300" height="300"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
     </resources>
 </document>

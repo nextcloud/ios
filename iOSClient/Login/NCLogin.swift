@@ -260,9 +260,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         loginButton.isEnabled = false
 
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, _, versionMajor, _, _, _, _, error in
+        NextcloudKit.shared.getServerStatus(serverUrl: url) { serverInfoResult in
 
-            if error == .success {
+            switch serverInfoResult {
+            case .success(let serverInfo):
 
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
@@ -288,7 +289,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
 
                     // Login Flow
-                    } else if versionMajor >= NCGlobal.shared.nextcloudVersion12 {
+                    } else if serverInfo.versionMajor >= NCGlobal.shared.nextcloudVersion12 {
 
                         if let loginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginWeb") as? NCLoginWeb {
 
@@ -299,7 +300,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
 
                     // NO Login flow available
-                    } else if versionMajor < NCGlobal.shared.nextcloudVersion12 {
+                    } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 {
 
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
 
@@ -309,7 +310,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     }
                 }
 
-            } else {
+            case .failure(let error):
 
                 self.loginButton.isEnabled = true
 

@@ -41,7 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var userId: String = ""
     @objc var password: String = ""
 
-    var deletePasswordSession: Bool = false
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     var activeServerUrl: String = ""
@@ -192,8 +191,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // START OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.observeTableMetadata()
         NCNetworkingProcessUpload.shared.startTimer()
-
-        self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
             hidePrivacyProtectionWindow()
@@ -541,8 +538,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking() {
-        
-        // check unauthorized server (401/403)
         if account != "" && CCUtility.getPassword(account)!.count == 0 {
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
