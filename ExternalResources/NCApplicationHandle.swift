@@ -31,8 +31,8 @@ class NCApplicationHandle: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // class: AppDelegate
-    // func applicationWillEnterForeground(_ application: UIApplication)
-    func applicationWillEnterForeground(_ application: UIApplication) {
+    // func nextcloudPushNotificationAction(data: [String: AnyObject])
+    func nextcloudPushNotificationAction(data: [String: AnyObject]) {
     }
     
     // class: AppDelegate

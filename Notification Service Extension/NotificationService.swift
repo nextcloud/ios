@@ -35,21 +35,23 @@ class NotificationService: UNNotificationServiceExtension {
             bestAttemptContent.title = ""
             bestAttemptContent.body = "Nextcloud notification"
             do {
-                let message = bestAttemptContent.userInfo["subject"] as! String
-                let tableAccounts = NCManageDatabase.shared.getAllAccount()
-                for tableAccount in tableAccounts {
-                    guard let privateKey = CCUtility.getPushNotificationPrivateKey(tableAccount.account) else {
-                        continue
-                    }
-                    guard let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey) else {
-                        continue
-                    }
-                    guard let data = decryptedMessage.data(using: .utf8) else {
-                        continue
-                    }
-                    let json = try JSONSerialization.jsonObject(with: data) as! [String: AnyObject]
-                    if let subject = json["subject"] as? String {
-                        bestAttemptContent.body = subject
+                if let message = bestAttemptContent.userInfo["subject"] as? String {
+                    let tableAccounts = NCManageDatabase.shared.getAllAccount()
+                    for tableAccount in tableAccounts {
+                        guard let privateKey = CCUtility.getPushNotificationPrivateKey(tableAccount.account),
+                              let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
+                              let data = decryptedMessage.data(using: .utf8) else {
+                            continue
+                        }
+                        if var json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
+                           let subject = json["subject"] as? String {
+                            bestAttemptContent.body = subject
+                            if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups) {
+                                json["account"] = tableAccount.account as AnyObject
+                                pref.set(json, forKey: "NOTIFICATION_DATA")
+                                pref.synchronize()
+                            }
+                        }
                     }
                 }
             } catch let error as NSError {

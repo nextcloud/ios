@@ -61,7 +61,7 @@ struct ToolbarWidgetView: View {
                     })
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
-                        Image("scan")
+                        Image(systemName: "doc.text.viewfinder")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
