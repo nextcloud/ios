@@ -32,7 +32,7 @@ class NCApplicationHandle: NSObject {
 
     // class: AppDelegate
     // func nextcloudPushNotificationAction(data: [String: AnyObject])
-    func nextcloudPushNotificationAction(data: [String: AnyObject]) {
+    func nextcloudPushNotificationAction(data: [String: AnyObject], background: Bool) {
     }
     
     // class: AppDelegate
