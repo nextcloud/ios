@@ -89,7 +89,7 @@ class NCSharePaging: UIViewController {
 
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
-        pagingViewController.select(index: page.rawValue)
+        pagingViewController.select(index: page.rawValue < pages.count ? page.rawValue : max(pages.count - 1, 0))
 
         (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
