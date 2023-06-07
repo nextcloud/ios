@@ -31,10 +31,10 @@ class NCApplicationHandle: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // class: AppDelegate
-    // func nextcloudPushNotificationAction(data: [String: AnyObject], background: Bool)
-    func nextcloudPushNotificationAction(data: [String: AnyObject], background: Bool) {
+    // func nextcloudPushNotificationAction(data: [String: AnyObject])
+    func nextcloudPushNotificationAction(data: [String: AnyObject]) {
     }
-    
+
     // class: AppDelegate
     // func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void)
     func applicationOpenUserActivity(_ userActivity: NSUserActivity) -> Bool {
