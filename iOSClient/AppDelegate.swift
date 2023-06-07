@@ -30,7 +30,7 @@ import Firebase
 import WidgetKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate, NCUserBaseUrl {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, TOPasscodeViewControllerDelegate, NCAccountRequestDelegate, NCViewCertificateDetailsDelegate, NCUserBaseUrl, NKCommonDelegate {
 
     var backgroundSessionCompletionHandler: (() -> Void)?
     var window: UIWindow?
@@ -59,7 +59,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     private var privacyProtectionWindow: UIWindow?
 
+    var isUiTestingEnabled: Bool {
+         get {
+             return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
+         }
+     }
+
+    struct PushNotificationData {
+        var account: String
+        var json: [String: AnyObject]
+    }
+    var pushNotificationData: PushNotificationData = PushNotificationData(account: "", json: [:])
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if isUiTestingEnabled {
+            deleteAllAccounts()
+        }
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
@@ -623,6 +638,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         }
+    }
+
+    @objc func deleteAllAccounts() {
+        let accounts = NCManageDatabase.shared.getAccounts()
+        accounts?.forEach({ account in
+            deleteAccount(account, wipe: true)
+        })
     }
 
     @objc func changeAccount(_ account: String) {

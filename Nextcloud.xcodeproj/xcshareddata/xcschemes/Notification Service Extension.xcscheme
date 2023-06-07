@@ -43,6 +43,50 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C0046CD92A17B98400D87C9D"
+               BuildableName = "NextcloudUITests.xctest"
+               BlueprintName = "NextcloudUITests"
+               ReferencedContainer = "container:Nextcloud.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C04E2F1F2A17BB4D001BAD85"
+               BuildableName = "NextcloudIntegrationTests.xctest"
+               BlueprintName = "NextcloudIntegrationTests"
+               ReferencedContainer = "container:Nextcloud.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C04E2F2C2A17BB77001BAD85"
+               BuildableName = "NextcloudEndToEndTests.xctest"
+               BlueprintName = "NextcloudEndToEndTests"
+               ReferencedContainer = "container:Nextcloud.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F31F69412A2F6D4500162F76"
+               BuildableName = "NextcloudSnapshotTests.xctest"
+               BlueprintName = "NextcloudSnapshotTests"
+               ReferencedContainer = "container:Nextcloud.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
