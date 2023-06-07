@@ -47,12 +47,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private let thumbnailViewWidth: CGFloat = 80
     private let thumbnailPadding: CGFloat = 2
     private let animateDuration: TimeInterval = 0.3
-    private let pageViewtopAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 10 : 30
     private let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
 
     private var defaultBackgroundColor: UIColor = .clear
 
-    private var pdfThumbnailScrollViewTopAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewTrailingAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewWidthAnchor: NSLayoutConstraint?
     private var pageViewWidthAnchor: NSLayoutConstraint?
@@ -76,7 +74,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
 
-        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
 
@@ -110,12 +107,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         preferences.animating.dismissDuration = 1.5
 
         tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
+
+        createview()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        createview()
         showTip()
     }
 
@@ -144,6 +142,16 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     func createview() {
 
+        // PDF CONTAINER
+
+        pdfContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pdfContainer.topAnchor.constraint(equalTo: view.topAnchor),
+            pdfContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            pdfContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            pdfContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
+
         // PDF VIEW
 
         pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: pdfContainer.frame.width, height: pdfContainer.frame.height))
@@ -165,8 +173,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfContainer.addSubview(pdfThumbnailScrollView)
 
         pdfThumbnailScrollView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor).isActive = true
-        pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor)
-        pdfThumbnailScrollViewTopAnchor?.isActive = true
+        pdfThumbnailScrollView.topAnchor.constraint(equalTo: self.pdfView.topAnchor).isActive = true
         pdfThumbnailScrollViewTrailingAnchor = pdfThumbnailScrollView.trailingAnchor.constraint(equalTo: pdfContainer.trailingAnchor)
         pdfThumbnailScrollViewTrailingAnchor?.isActive = true
         pdfThumbnailScrollViewWidthAnchor = pdfThumbnailScrollView.widthAnchor.constraint(equalToConstant: thumbnailViewWidth)
@@ -208,7 +215,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfContainer.addSubview(pageView)
 
         NSLayoutConstraint.activate([
-            pageView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor, constant: pageViewtopAnchor),
+            pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
             pageView.heightAnchor.constraint(equalToConstant: 30),
             pageView.leftAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.leftAnchor, constant: 10)
         ])
@@ -413,11 +420,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             if navigationController?.isNavigationBarHidden ?? false {
                 navigationController?.setNavigationBarHidden(false, animated: true)
                 hideStatusBar = false
-                pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor)
             } else {
                 navigationController?.setNavigationBarHidden(true, animated: true)
                 hideStatusBar = true
-                pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.topAnchor)
             }
         }
 
