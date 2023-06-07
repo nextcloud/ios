@@ -199,13 +199,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 
-        // Push Notification
-        if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups),
-           let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
-            nextcloudPushNotificationAction(data: data, background: true)
-            pref.set(nil, forKey: "NOTIFICATION_DATA")
-        }
-
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationDidBecomeActive)
     }
 
@@ -409,16 +402,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Push Notifications
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // push notification in foreground
-        if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups),
-           let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
-            nextcloudPushNotificationAction(data: data, background: false)
-            pref.set(nil, forKey: "NOTIFICATION_DATA")
-        }
         completionHandler([.list, .banner, .sound])
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+
+        if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups),
+           let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
+            nextcloudPushNotificationAction(data: data)
+            pref.set(nil, forKey: "NOTIFICATION_DATA")
+        }
+
         completionHandler()
     }
 
@@ -436,8 +430,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func nextcloudPushNotificationAction(data: [String: AnyObject], background: Bool) {
-        NCApplicationHandle().nextcloudPushNotificationAction(data: data, background: background)
+    func nextcloudPushNotificationAction(data: [String: AnyObject]) {
+        NCApplicationHandle().nextcloudPushNotificationAction(data: data)
     }
 
     // MARK: - Login & checkErrorNetworking
