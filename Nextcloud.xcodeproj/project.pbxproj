@@ -1733,9 +1733,9 @@
 			isa = PBXGroup;
 			children = (
 				F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */,
-				F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */,
 				F710D1F42405770F00A6033D /* NCViewerPDF.swift */,
 				F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */,
+				F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */,
 			);
 			path = NCViewerPDF;
 			sourceTree = "<group>";
