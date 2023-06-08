@@ -48,6 +48,7 @@ final class LoginUITests: XCTestCase {
 
         let element = webViewsQuery/*@START_MENU_TOKEN@*/.otherElements["main"]/*[[".otherElements[\"Login – Nextcloud\"].otherElements[\"main\"]",".otherElements[\"main\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.children(matching: .other).element(boundBy: 1)
         let usernameTextField = element.children(matching: .other).element(boundBy: 2).children(matching: .textField).element
+        XCTAssert(usernameTextField.waitForExistence(timeout: timeoutSeconds))
         usernameTextField.tap()
         usernameTextField.typeText(user)
         let passwordTextField = element.children(matching: .other).element(boundBy: 4).children(matching: .secureTextField).element
