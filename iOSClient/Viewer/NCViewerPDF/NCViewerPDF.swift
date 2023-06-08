@@ -139,8 +139,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         // PDF VIEW
 
-        pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: pdfContainer.frame.width, height: pdfContainer.frame.height))
-        pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin]
+        pdfView.translatesAutoresizingMaskIntoConstraints = false
         pdfView.document = pdfDocument
         pdfView.document?.page(at: 0)?.annotations.forEach({
             $0.isReadOnly = true
@@ -149,6 +148,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfView.displayMode = .singlePageContinuous
         pdfView.displayDirection = .vertical
         pdfContainer.addSubview(pdfView)
+
+        NSLayoutConstraint.activate([
+            pdfView.topAnchor.constraint(equalTo: pdfContainer.topAnchor),
+            pdfView.leadingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.leadingAnchor),
+            pdfView.trailingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.trailingAnchor),
+            pdfView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor)
+        ])
 
         // PDF THUMBNAIL
 
