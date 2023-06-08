@@ -82,8 +82,11 @@ Do you want to try the latest version in development of Nextcloud iOS ? Simple, 
 
 ## Testing
 
+#### Note: If a Unit or Integration test exclusively uses and tests NextcloudKit functions and components, then write that test in the NextcloudKit repo. NextcloudKit is used in many other repos as an API, and it's better if such tests are located there.
+
 ### Unit tests:
-Most unit tests will be inside NextcloudKit, so the unit tests are inside this PR: https://github.com/nextcloud/NextcloudKit/pull/26
+
+There are currently no preresquites for unit testing that need to be done. Mock everything that's not needed. 
 
 ### Integration tests:
 To run integration tests, we need a docker instance of a Nextcloud test server.
@@ -110,7 +113,6 @@ This is generated from the .env-vars file in the root directory. If there is an 
 ```
 6. You can now run the integration tests. They will use the env vars to connect to the test server to do the testing. 
 
-#### Note: If a Unit or Integration test exclusively uses and tests NextcloudKit functions and components, then write that test in the NextcloudKit repo. NextcloudKit is used in many other repos as an API, and it's better if such tests are located there.
 
 ### UI tests
 
