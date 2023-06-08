@@ -74,7 +74,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
 
-        // Tip
+        // TIP
+
         var preferences = EasyTipView.Preferences()
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
