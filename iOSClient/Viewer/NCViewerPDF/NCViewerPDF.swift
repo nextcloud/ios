@@ -104,6 +104,25 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             pdfContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
 
+        // PDF VIEW
+
+        pdfView.translatesAutoresizingMaskIntoConstraints = false
+        pdfView.document = pdfDocument
+        pdfView.document?.page(at: 0)?.annotations.forEach({
+            $0.isReadOnly = true
+        })
+        pdfView.autoScales = true
+        pdfView.displayMode = .singlePageContinuous
+        pdfView.displayDirection = .vertical
+        pdfContainer.addSubview(pdfView)
+
+        NSLayoutConstraint.activate([
+            pdfView.topAnchor.constraint(equalTo: pdfContainer.topAnchor),
+            pdfView.leadingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.leadingAnchor),
+            pdfView.trailingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.trailingAnchor),
+            pdfView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor)
+        ])
+        
         // NOTIFIFICATION
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
@@ -137,25 +156,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        // PDF VIEW
-
-        pdfView.translatesAutoresizingMaskIntoConstraints = false
-        pdfView.document = pdfDocument
-        pdfView.document?.page(at: 0)?.annotations.forEach({
-            $0.isReadOnly = true
-        })
-        pdfView.autoScales = true
-        pdfView.displayMode = .singlePageContinuous
-        pdfView.displayDirection = .vertical
-        pdfContainer.addSubview(pdfView)
-
-        NSLayoutConstraint.activate([
-            pdfView.topAnchor.constraint(equalTo: pdfContainer.topAnchor),
-            pdfView.leadingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.leadingAnchor),
-            pdfView.trailingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.trailingAnchor),
-            pdfView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor)
-        ])
 
         // PDF THUMBNAIL
 
