@@ -3226,7 +3226,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#This generates an env-vars file that the project uses for various tasks, mostly testing. If you want to modify the env vars, open .env-vars in the root dir.\n#It also generates a .swift file in the project that contains the env vars as swift constants for easy use. Check EnvVars.generated.\n\nif [ ! -f \".env-vars\" ]; then\n    touch .env-vars\n    echo \"export TEST_SERVER_URL=\" >> .env-vars\n    echo \"export TEST_USER=\" >> .env-vars\n    echo \"export TEST_APP_PASSWORD=\" >> .env-vars\n    #add more env vars here\nfi\n\nsource .env-vars\n\nSourcery/bin/sourcery --templates Sourcery --output Sourcery --sources . --args TEST_USER=$TEST_USER,TEST_APP_PASSWORD=$TEST_APP_PASSWORD,TEST_SERVER_URL=$TEST_SERVER_URL\n";
+			shellScript = "#This generates an env-vars file that the project uses for various tasks, mostly testing. If you want to modify the env vars, open .env-vars in the root dir.\n#It also generates a .swift file in the project that contains the env vars as swift constants for easy use. Check EnvVars.generated.swift\n\nif [ ! -f \".env-vars\" ]; then\n    touch .env-vars\n    echo \"export TEST_SERVER_URL=\" >> .env-vars\n    echo \"export TEST_USER=\" >> .env-vars\n    echo \"export TEST_APP_PASSWORD=\" >> .env-vars\n    #add more env vars here\nfi\n\nsource .env-vars\n\nSourcery/bin/sourcery --templates Sourcery --output Sourcery --sources . --args TEST_USER=$TEST_USER,TEST_APP_PASSWORD=$TEST_APP_PASSWORD,TEST_SERVER_URL=$TEST_SERVER_URL\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
