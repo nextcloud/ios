@@ -43,5 +43,7 @@ export TEST_APP_PASSWORD=$password
 export TEST_SERVER_URL=$server_url
 export TEST_USER=$user
 
-echo "App password: ${TEST_APP_PASSWORD}"
+echo "TEST_SERVER_URL: ${TEST_SERVER_URL}"
+echo "TEST_USER: ${TEST_USER}"
+echo "TEST_APP_PASSWORD: ${TEST_APP_PASSWORD}"
 echo "Env vars exported."
