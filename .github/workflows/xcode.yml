@@ -46,7 +46,7 @@ jobs:
       uses: douglascamata/setup-docker-macos-action@v1-alpha
     - name: Create docker test server and export enviroment variables
       run: |
-        source ./create-docker-test-server.sh
+        source <(curl -sL https://gist.githubusercontent.com/mpivchev/c9734386cd72132112f0ea1aae63e13a/raw/c468cde1d6ab5ab010cb18b8965d110ca1c01d3c/create-docker-test-server.sh)
         echo "TEST_SERVER_URL: $TEST_SERVER_URL"
         echo "TEST_USER: $TEST_USER"
         echo "TEST_APP_PASSWORD: $TEST_APP_PASSWORD"
