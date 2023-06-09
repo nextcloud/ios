@@ -254,9 +254,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         swipePdfThumbnailScrollView.direction = .right
         pdfThumbnailScrollView.addGestureRecognizer(swipePdfThumbnailScrollView)
 
-        // FUNC
-
-        setThumbnailConstraints()
         handlePageChange()
         showTip()
     }
@@ -270,8 +267,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfThumbnailScrollView.isHidden = true
         }, completion: { context in
-            self.setThumbnailConstraints()
-            self.showTip()
+            self.pdfView.autoScales = true
         })
     }
 
@@ -492,21 +488,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     // MARK: -
-
-    func setThumbnailConstraints() {
-
-        let widthThumbnail = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
-
-        UIView.animate(withDuration: animateDuration, animations: {
-            // Close
-            self.pdfThumbnailScrollView.isHidden = true
-            self.pdfThumbnailScrollViewTrailingAnchor?.constant = widthThumbnail
-            self.pdfThumbnailScrollViewWidthAnchor?.constant = widthThumbnail
-
-            self.pdfContainer.layoutIfNeeded()
-            self.pdfView.autoScales = true
-        })
-    }
 
     @objc func handlePageChange() {
 
