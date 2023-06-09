@@ -154,8 +154,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.removeObserver(self, name: Notification.Name.PDFViewPageChanged, object: nil)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         // PDF THUMBNAIL
 
@@ -169,7 +169,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         ])
         pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor)
         pdfThumbnailScrollViewTopAnchor?.isActive = true
-        pdfThumbnailScrollViewTrailingAnchor = pdfThumbnailScrollView.trailingAnchor.constraint(equalTo: pdfContainer.trailingAnchor)
+        pdfThumbnailScrollViewTrailingAnchor = pdfThumbnailScrollView.trailingAnchor.constraint(equalTo: pdfContainer.trailingAnchor, constant: thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0))
         pdfThumbnailScrollViewTrailingAnchor?.isActive = true
         pdfThumbnailScrollViewWidthAnchor = pdfThumbnailScrollView.widthAnchor.constraint(equalToConstant: thumbnailViewWidth)
         pdfThumbnailScrollViewWidthAnchor?.isActive = true
