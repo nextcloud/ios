@@ -168,7 +168,7 @@ struct NCCapabilitiesView_Previews: PreviewProvider {
     static var previews: some View {
         snapshots.previews.previewLayout(.device)
     }
-    
+
     static var snapshots: PreviewSnapshots<String> {
         PreviewSnapshots(
             configurations: [
