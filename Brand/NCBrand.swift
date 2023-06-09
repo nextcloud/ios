@@ -404,4 +404,19 @@ class NCBrandColor: NSObject {
     }
     @objc public var systemGray2: UIColor = UIColor.systemGray2
     @objc public var shareByEmailTextColor: UIColor = UIColor(displayP3Red: 13.0/255.0, green: 57.0/255.0, blue: 223.0/255.0, alpha: 1.0)
+    @objc public var memoryConsuptionBackground: UIColor {
+        if UITraitCollection.current.userInterfaceStyle == .dark {
+            return  UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
+        } else {
+            return  UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
+        }
+    }
+    @objc public var nmcGray0: UIColor{
+        if UITraitCollection.current.userInterfaceStyle == .dark {
+            return  UIColor(displayP3Red: 242.0/255.0, green: 242.0/255.0, blue: 242.0/255.0, alpha: 1.0)
+        }else {
+            return  UIColor(red: 19.0/255.0, green: 19.0/255.0, blue: 19.0/255.0, alpha: 1.0)
+        }
+    }
+    @objc public var commonViewInfoText: UIColor =  UIColor(displayP3Red: 102.0/255.0, green: 102.0/255.0, blue: 102.0/255.0, alpha: 1.0)
 }
