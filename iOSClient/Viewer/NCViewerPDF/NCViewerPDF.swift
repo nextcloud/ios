@@ -253,6 +253,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         let swipePdfThumbnailScrollView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail))
         swipePdfThumbnailScrollView.direction = .right
         pdfThumbnailScrollView.addGestureRecognizer(swipePdfThumbnailScrollView)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
         handlePageChange()
         showTip()
