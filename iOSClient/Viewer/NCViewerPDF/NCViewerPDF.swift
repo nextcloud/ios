@@ -122,7 +122,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             pdfView.trailingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.trailingAnchor),
             pdfView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor)
         ])
-        
+
         // NOTIFIFICATION
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
@@ -255,12 +255,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfThumbnailScrollView.addGestureRecognizer(swipePdfThumbnailScrollView)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        handlePageChange()
-        showTip()
-    }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -418,17 +412,23 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func tapPdfView(_ recognizer: UITapGestureRecognizer) {
 
         if pdfThumbnailScrollView.isHidden {
+            if navigationController?.isNavigationBarHidden ?? false {
+                navigationController?.setNavigationBarHidden(false, animated: true)
+            } else {
+                navigationController?.setNavigationBarHidden(true, animated: true)
+            }
+        }
+
+        UIView.animate(withDuration: 0.0, animations: {
 
             self.pdfContainerTopAnchor?.isActive = false
             if let barHidden = self.navigationController?.isNavigationBarHidden, barHidden {
-                navigationController?.setNavigationBarHidden(false, animated: true)
                 self.pdfContainerTopAnchor = self.pdfContainer.topAnchor.constraint(equalTo: self.view.topAnchor)
             } else {
-                navigationController?.setNavigationBarHidden(true, animated: true)
                 self.pdfContainerTopAnchor = self.pdfContainer.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor)
             }
             self.pdfContainerTopAnchor?.isActive = true
-        }
+        })
 
         handlePageChange()
         closePdfThumbnail()
