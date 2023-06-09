@@ -115,7 +115,7 @@ class NCFilesExtensionHandler {
                 var originalName = (dateFormatter.string(from: Date())) + String(ix)
 
                 if let url = item as? URL, url.isFileURL, !url.lastPathComponent.isEmpty {
-                    originalName = url.lastPathComponent
+                    originalName = url.deletingPathExtension().lastPathComponent + CCUtility.getIncrementalNumber() + "." + url.pathExtension
                 }
 
                 var fileName: String?
@@ -131,7 +131,9 @@ class NCFilesExtensionHandler {
                 default: return
                 }
 
-                if let fileName = fileName, !filesName.contains(fileName) { filesName.append(fileName) }
+                if let fileName, !filesName.contains(fileName) {
+                    filesName.append(fileName)
+                }
             }
         }
     }
@@ -140,8 +142,7 @@ class NCFilesExtensionHandler {
     func getItem(image: UIImage, fileName: String) -> String? {
         var fileUrl = URL(fileURLWithPath: NSTemporaryDirectory() + fileName)
         if fileUrl.pathExtension.isEmpty { fileUrl.appendPathExtension("png") }
-        guard let pngImageData = image.pngData(),
-              (try? pngImageData.write(to: fileUrl, options: [.atomic])) != nil
+        guard let pngImageData = image.pngData(), (try? pngImageData.write(to: fileUrl, options: [.atomic])) != nil
         else { return nil }
         return fileUrl.lastPathComponent
     }
