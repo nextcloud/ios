@@ -65,12 +65,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          }
      }
 
-    struct PushNotificationData {
-        var account: String
-        var json: [String: AnyObject]
-    }
-    var pushNotificationData: PushNotificationData = PushNotificationData(account: "", json: [:])
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
             deleteAllAccounts()
