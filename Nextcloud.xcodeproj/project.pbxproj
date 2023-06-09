@@ -74,7 +74,7 @@
 		C03BA14C2A17BC60002C8BA3 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = C03BA14B2A17BC60002C8BA3 /* UICKeyChainStore */; };
 		C04E2F192A17BA78001BAD85 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = C04E2F182A17BA78001BAD85 /* XLForm */; };
 		C04E2F1B2A17BAAB001BAD85 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = C04E2F1A2A17BAAB001BAD85 /* UICKeyChainStore */; };
-		C04E2F232A17BB4D001BAD85 /* LoginIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* LoginIntegrationTests.swift */; };
+		C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F30A962F2A27ADF900D7BCFE /* EnvVars.stencil in Resources */ = {isa = PBXBuildFile; fileRef = F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */; };
@@ -798,7 +798,7 @@
 		C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0046CDC2A17B98400D87C9D /* LoginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUITests.swift; sourceTree = "<group>"; };
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C04E2F222A17BB4D001BAD85 /* LoginIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginIntegrationTests.swift; sourceTree = "<group>"; };
+		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F30A962E2A27ADF900D7BCFE /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
@@ -1537,7 +1537,7 @@
 		C04E2F212A17BB4D001BAD85 /* NextcloudIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
-				C04E2F222A17BB4D001BAD85 /* LoginIntegrationTests.swift */,
+				C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */,
 			);
 			path = NextcloudIntegrationTests;
 			sourceTree = "<group>";
@@ -3297,7 +3297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F30A96322A27AEDD00D7BCFE /* EnvVars.generated.swift in Sources */,
-				C04E2F232A17BB4D001BAD85 /* LoginIntegrationTests.swift in Sources */,
+				C04E2F232A17BB4D001BAD85 /* FilesIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
