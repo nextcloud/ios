@@ -28,7 +28,7 @@ extension View {
         closure(self)
     }
 
-    /// Use this on preview views that are used in snapshot testing. It prevents the snapashot library from complaning that the view has a size of 0
+    /// Use this on preview views that are used in snapshot testing. It prevents the snapashot library from complaining that the view has a size of 0
     /// Check: https://github.com/pointfreeco/swift-snapshot-testing/issues/738
     func frameForPreview() -> some View {
         return frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
