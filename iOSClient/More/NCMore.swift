@@ -33,6 +33,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var progressQuota: UIProgressView!
     @IBOutlet weak var viewQuota: UIView!
 
+    var moreAppsMenu: [NKExternalSite] = []
     var functionMenu: [NKExternalSite] = []
     var externalSiteMenu: [NKExternalSite] = []
     var settingsMenu: [NKExternalSite] = []
@@ -90,12 +91,37 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         var quota: String = ""
 
         // Clear
+        moreAppsMenu.removeAll()
         functionMenu.removeAll()
         externalSiteMenu.removeAll()
         settingsMenu.removeAll()
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
         progressQuota.progressTintColor = NCBrandColor.shared.brandElement
+
+        // ITEM : Talk
+        item = NKExternalSite()
+        item.name = "Nextcloud Talk"
+        item.icon = "icon-talk"
+        item.url = "openTalk"
+        item.order = 0
+        moreAppsMenu.append(item)
+
+        // ITEM : Notes
+        item = NKExternalSite()
+        item.name = "Nextcloud Notes"
+        item.icon = "icon-notes"
+        item.url = "openNotes"
+        item.order = 1
+        moreAppsMenu.append(item)
+
+        // ITEM : More apps
+        item = NKExternalSite()
+        item.name = "More Nextcloud apps"
+        item.icon = "more"
+        item.url = "openAppStore"
+        item.order = 2
+        moreAppsMenu.append(item)
 
         // ITEM : Transfer
         item = NKExternalSite()
@@ -265,11 +291,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
+        let defaultSections = 4
 
         if externalSiteMenu.count == 0 {
-            return 3
+            return defaultSections
         } else {
-            return 4
+            return defaultSections + 1
         }
     }
     
@@ -283,36 +310,37 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
-        var cont = 0
+        var count = 0
 
         if section == 0 {
-            cont = tabAccount == nil ? 0 : 1
+            count = tabAccount == nil ? 0 : 1
         } else if section == 1 {
             // Menu Normal
-            cont = functionMenu.count
+            count = moreAppsMenu.count
+        } else if section == 2 {
+            count = functionMenu.count
         } else {
             switch numberOfSections(in: tableView) {
             case 3:
                 // Menu Settings
-                if section == 2 {
-                    cont = settingsMenu.count
+                if section == 3 {
+                    count = settingsMenu.count
                 }
             case 4:
                 // Menu External Site
-                if section == 2 {
-                    cont = externalSiteMenu.count
+                if section == 4 {
+                    count = externalSiteMenu.count
                 }
                 // Menu Settings
-                if section == 3 {
-                    cont = settingsMenu.count
+                if section == 5 {
+                    count = settingsMenu.count
                 }
             default:
-                cont = 0
+                count = 0
             }
         }
 
-        return cont
+        return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -369,16 +397,21 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
 
-            // Menu Normal
+            // Menu More Apps
             if indexPath.section == 1 {
+                item = moreAppsMenu[indexPath.row]
+            }
+
+            // Menu Function
+            if indexPath.section == 2 {
                 item = functionMenu[indexPath.row]
             }
             // Menu External Site
-            if numberOfSections(in: tableView) == 4 && indexPath.section == 2 {
+            if numberOfSections(in: tableView) == 5 && indexPath.section == 3 {
                 item = externalSiteMenu[indexPath.row]
             }
             // Menu Settings
-            if (numberOfSections(in: tableView) == 3 && indexPath.section == 2) || (numberOfSections(in: tableView) == 4 && indexPath.section == 3) {
+            if (numberOfSections(in: tableView) == 4 && indexPath.section == 3) || (numberOfSections(in: tableView) == 5 && indexPath.section == 4) {
                 item = settingsMenu[indexPath.row]
             }
 
@@ -420,23 +453,29 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         var item = NKExternalSite()
 
+        // Menu Function
         if indexPath.section == 0 {
             tapImageLogoManageAccount()
             return
         }
 
-        // Menu Function
+        // Menu More Apps
         if indexPath.section == 1 {
+            item = moreAppsMenu[indexPath.row]
+        }
+
+        // Menu Function
+        if indexPath.section == 2 {
             item = functionMenu[indexPath.row]
         }
 
         // Menu External Site
-        if numberOfSections(in: tableView) == 4 && indexPath.section == 2 {
+        if numberOfSections(in: tableView) == 5 && indexPath.section == 3 {
             item = externalSiteMenu[indexPath.row]
         }
 
         // Menu Settings
-        if (numberOfSections(in: tableView) == 3 && indexPath.section == 2) || (numberOfSections(in: tableView) == 4 && indexPath.section == 3) {
+        if (numberOfSections(in: tableView) == 4 && indexPath.section == 3) || (numberOfSections(in: tableView) == 5 && indexPath.section == 4) {
             item = settingsMenu[indexPath.row]
         }
 
@@ -484,6 +523,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
 
+        } else if item.url == "openTalk" {
+//            if UIApplication.shared.canOpenURL(URL)
+//               {
+//                    UIApplication.shared.open(other app scheme)
+//                }else {
+//                    UIApplication.shared.open(AppStore url)
+//               }
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }
