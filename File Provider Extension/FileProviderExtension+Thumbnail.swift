@@ -47,7 +47,7 @@ extension FileProviderExtension {
 
                 if let urlBase = metadata.urlBase.urlEncoded,
                    let fileNamePath = fileNamePath.urlEncoded,
-                   let url = URL(string: "\(urlBase)/index.php/core/preview.png?file=\(fileNamePath)&x=\(size)&y=\(size)&a=1&mode=cover") {
+                   let url = URL(string: "\(urlBase)/index.php/core/preview.png?file=\(fileNamePath)&x=\(size.width)&y=\(size.height)&a=1&mode=cover") {
 
                     NextcloudKit.shared.getPreview(url: url) { _, data, error in
                         if error == .success && data != nil {

@@ -142,12 +142,14 @@ struct NCCapabilitiesView: View {
             } icon: {
                 if resize {
                     image
+                        .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 23.0, height: 23.0)
                         .foregroundColor(.primary)
                 } else {
                     image
+                        .renderingMode(.template)
                         .foregroundColor(.primary)
                 }
             }
