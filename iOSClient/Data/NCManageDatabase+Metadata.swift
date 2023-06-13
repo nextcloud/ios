@@ -198,19 +198,6 @@ extension tableMetadata {
         return directory && size == 0 && !e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
     }
 
-    var isSharable: Bool {
-        let sharing = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-        if !sharing { return false }
-        if !e2eEncrypted && !isDirectoryE2EE { return true }
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
-            // E2EE DIRECTORY SECURE FILE DROP (SHARE AVAILABLE)
-            return true
-        } else {
-            return false
-        }
-    }
-
     var isDirectoryUnsettableE2EE: Bool {
         return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && CCUtility.isEnd(toEndEnabled: account)
     }
@@ -245,6 +232,21 @@ extension tableMetadata {
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
+    }
+
+    /// Return if is sharable (temp)
+    // TODO: modifify for E2EE 2.0
+    func isSharable() -> Bool {
+        guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
+
+        if !e2eEncrypted && !isDirectoryE2EE {
+            return true
+        } else if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
+            // E2EE DIRECTORY SECURE FILE DROP (SHARE AVAILABLE)
+            return true
+        } else {
+            return false
+        }
     }
 }
 
@@ -871,6 +873,17 @@ extension NCManageDatabase {
 
         guard let ocId = ocId else { return nil }
         guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else { return nil }
+
+        return tableMetadata.init(value: result)
+    }
+
+    func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
+
+        let realm = try! Realm()
+        realm.refresh()
+
+        guard let fileId = fileId else { return nil }
+        guard let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first else { return nil }
 
         return tableMetadata.init(value: result)
     }

@@ -364,8 +364,8 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
-    NSString* versionE2EE = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
+    BOOL isE2EEEnabled = [[NCGlobal shared] capabilityE2EEEnabled];
+    NSString* versionE2EE = [[NCGlobal shared] capabilityE2EEApiVersion];
     
     NSString *certificate = [self getEndToEndCertificate:account];
     NSString *publicKey = [self getEndToEndPublicKey:account];

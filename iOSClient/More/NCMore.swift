@@ -88,7 +88,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         var item = NKExternalSite()
         var quota: String = ""
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
 
         // Clear
         functionMenu.removeAll()
@@ -114,14 +113,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 20
         functionMenu.append(item)
 
-        // ITEM : Notification
-        item = NKExternalSite()
-        item.name = "_notifications_"
-        item.icon = "bell"
-        item.url = "segueNotification"
-        item.order = 30
-        functionMenu.append(item)
-
         // ITEM : Activity
         item = NKExternalSite()
         item.name = "_activity_"
@@ -131,8 +122,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Shares
-        let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-        if isFilesSharingEnabled {
+        if NCGlobal.shared.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
             item.icon = "share"
@@ -150,8 +140,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Groupfolders
-        let hasAccessibleGroupFolders = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesGroupfoldersEnabled, exists: false)
-        if hasAccessibleGroupFolders {
+        if NCGlobal.shared.capabilityGroupfoldersEnabled {
             item = NKExternalSite()
             item.name = "_group_folders_"
             item.icon = "person.2"
@@ -168,7 +157,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
+        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
             item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"
@@ -358,18 +347,16 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.backgroundColor = .secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
-            if NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false) {
-                if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
-                    let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
-                    cell.icon.image = status.onlineStatus
-                    cell.status.text = status.statusMessage
-                    cell.status.textColor = .label
-                    cell.status.trailingBuffer = cell.status.frame.width
-                    if cell.status.labelShouldScroll() {
-                        cell.status.tapToScroll = true
-                    } else {
-                        cell.status.tapToScroll = false
-                    }
+            if NCGlobal.shared.capabilityUserStatusEnabled, let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
+                let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
+                cell.icon.image = status.onlineStatus
+                cell.status.text = status.statusMessage
+                cell.status.textColor = .label
+                cell.status.trailingBuffer = cell.status.frame.width
+                if cell.status.labelShouldScroll() {
+                    cell.status.tapToScroll = true
+                } else {
+                    cell.status.tapToScroll = false
                 }
             }
             

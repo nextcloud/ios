@@ -103,7 +103,7 @@
         
         // Set user status
         
-        BOOL userStatus = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:activeAccount.account elements:NCElementsJSON.shared.capabilitiesUserStatusEnabled exists:false];
+        BOOL userStatus = [[NCGlobal shared] capabilityUserStatusEnabled];
         if (userStatus) {
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"setUserStatus" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_set_user_status_", nil)];
             row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
@@ -254,90 +254,6 @@
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[[UIImage imageNamed:@"twitter"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
         row.value = activeAccount.twitter;
-        [section addFormRow:row];
-    }
-    
-    // Section : THIRT PART -------------------------------------------
-    BOOL isHandwerkcloudEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:activeAccount.account elements:NCElementsJSON.shared.capabilitiesHWCEnabled exists:false];
-    if (isHandwerkcloudEnabled) {
-
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_job_", nil)];
-        [form addFormSection:section];
-        
-        // Business Type
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesstype" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesstype_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"businesstype"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-        row.value = activeAccount.businessType;
-        [section addFormRow:row];
-        
-        // Business Size
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userbusinesssize" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_businesssize_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"users"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-        row.value = activeAccount.businessSize;
-        [section addFormRow:row];
-        
-        // Role
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"userrole" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_role_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"role"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-        if ([activeAccount.role isEqualToString:@"owner"]) row.value = NSLocalizedString(@"_user_owner_", nil);
-        else if ([activeAccount.role isEqualToString:@"employee"]) row.value = NSLocalizedString(@"_user_employee_", nil);
-        else if ([activeAccount.role isEqualToString:@"contractor"]) row.value = NSLocalizedString(@"_user_contractor_", nil);
-        else row.value = @"";
-        [section addFormRow:row];
-        
-        // Company
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"usercompany" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_user_company_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"company"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-        row.value = activeAccount.organisation;
-        [section addFormRow:row];
-    
-        if (activeAccount.hcIsTrial) {
-        
-            section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_trial_", nil)];
-            [form addFormSection:section];
-            
-            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"trial" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_trial_expired_day_", nil)];
-            row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"detailTextLabel.font"];
-            [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
-            [row.cellConfig setObject:[UIColor redColor] forKey:@"detailTextLabel.textColor"];
-            [row.cellConfig setObject:[[UIImage imageNamed:@"timer"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-            NSInteger numberOfDays = activeAccount.hcTrialRemainingSec / (24*3600);
-            row.value = [@(numberOfDays) stringValue];
-            [section addFormRow:row];
-        }
-    
-        section = [XLFormSectionDescriptor formSection];
-        [form addFormSection:section];
-        
-        // Edit profile
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"editUserProfile" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_user_editprofile_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[[UIImage imageNamed:@"editUserProfile"] imageWithColor:UIColor.systemGrayColor size:25] forKey:@"imageView.image"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-#if defined(HC)
-        row.action.viewControllerClass = [HCEditProfile class];
-#endif
-        if (accounts.count == 0) row.disabled = @YES;
         [section addFormRow:row];
     }
     

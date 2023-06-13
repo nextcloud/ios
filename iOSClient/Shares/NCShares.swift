@@ -85,10 +85,10 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
 
+        if UIApplication.shared.applicationState != .active { return }
+
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
-
-        NextcloudKit.shared.nkCommonInstance.writeLog("[TEST] READSHARES")
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, data, error in
 

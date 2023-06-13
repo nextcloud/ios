@@ -33,9 +33,7 @@ class NCNetworkingE2EE: NSObject {
 
     func isE2EEVersionWriteable(account: String) -> NKError? {
 
-        let versionE2EE = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) ?? ""
-
-        if NCGlobal.shared.e2eeReadVersions.last == versionE2EE {
+        if NCGlobal.shared.e2eeReadVersions.last == NCGlobal.shared.capabilityE2EEApiVersion {
             return nil
         }
         

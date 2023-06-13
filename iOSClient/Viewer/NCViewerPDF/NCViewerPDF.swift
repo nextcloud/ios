@@ -47,21 +47,15 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private let thumbnailViewWidth: CGFloat = 80
     private let thumbnailPadding: CGFloat = 2
     private let animateDuration: TimeInterval = 0.3
-    private let pageViewtopAnchor: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 10 : 30
     private let window = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
 
     private var defaultBackgroundColor: UIColor = .clear
 
+    private var pdfContainerTopAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewTopAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewTrailingAnchor: NSLayoutConstraint?
     private var pdfThumbnailScrollViewWidthAnchor: NSLayoutConstraint?
     private var pageViewWidthAnchor: NSLayoutConstraint?
-
-    private var hideStatusBar: Bool = false {
-        didSet {
-            setNeedsStatusBarAppearanceUpdate()
-        }
-    }
 
     // MARK: - View Life Cycle
 
@@ -80,20 +74,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.title = metadata.fileNameView
 
-        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        // TIP
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
-
-        // Tip
         var preferences = EasyTipView.Preferences()
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -110,44 +92,21 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         preferences.animating.dismissDuration = 1.5
 
         tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
-    }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        // PDF CONTAINER
 
-        createview()
-        showTip()
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        tipView?.dismiss()
-
-        coordinator.animate(alongsideTransition: { context in
-            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
-            self.pdfThumbnailScrollView.isHidden = true
-        }, completion: { context in
-            self.setConstraints()
-            self.showTip()
-        })
-    }
-
-    override var prefersStatusBarHidden: Bool {
-        return hideStatusBar
-    }
-
-    @objc func viewUnload() {
-
-        navigationController?.popViewController(animated: true)
-    }
-
-    func createview() {
+        pdfContainer.translatesAutoresizingMaskIntoConstraints = false
+        pdfContainerTopAnchor = pdfContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        pdfContainerTopAnchor?.isActive = true
+        NSLayoutConstraint.activate([
+            pdfContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            pdfContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            pdfContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
 
         // PDF VIEW
 
-        pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: pdfContainer.frame.width, height: pdfContainer.frame.height))
-        pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin]
+        pdfView.translatesAutoresizingMaskIntoConstraints = false
         pdfView.document = pdfDocument
         pdfView.document?.page(at: 0)?.annotations.forEach({
             $0.isReadOnly = true
@@ -157,6 +116,47 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfView.displayDirection = .vertical
         pdfContainer.addSubview(pdfView)
 
+        NSLayoutConstraint.activate([
+            pdfView.topAnchor.constraint(equalTo: pdfContainer.topAnchor),
+            pdfView.leadingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.leadingAnchor),
+            pdfView.trailingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.trailingAnchor),
+            pdfView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor)
+        ])
+
+        // NOTIFIFICATION
+
+        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
+    }
+
+    deinit {
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
+
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.PDFViewPageChanged, object: nil)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         // PDF THUMBNAIL
 
         pdfThumbnailScrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -164,10 +164,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfThumbnailScrollView.showsVerticalScrollIndicator = false
         pdfContainer.addSubview(pdfThumbnailScrollView)
 
-        pdfThumbnailScrollView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            pdfThumbnailScrollView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor)
+        ])
         pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor)
         pdfThumbnailScrollViewTopAnchor?.isActive = true
-        pdfThumbnailScrollViewTrailingAnchor = pdfThumbnailScrollView.trailingAnchor.constraint(equalTo: pdfContainer.trailingAnchor)
+        pdfThumbnailScrollViewTrailingAnchor = pdfThumbnailScrollView.trailingAnchor.constraint(equalTo: pdfContainer.trailingAnchor, constant: thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0))
         pdfThumbnailScrollViewTrailingAnchor?.isActive = true
         pdfThumbnailScrollViewWidthAnchor = pdfThumbnailScrollView.widthAnchor.constraint(equalToConstant: thumbnailViewWidth)
         pdfThumbnailScrollViewWidthAnchor?.isActive = true
@@ -208,7 +210,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfContainer.addSubview(pageView)
 
         NSLayoutConstraint.activate([
-            pageView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor, constant: pageViewtopAnchor),
+            pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
             pageView.heightAnchor.constraint(equalToConstant: 30),
             pageView.leftAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.leftAnchor, constant: 10)
         ])
@@ -252,23 +254,31 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         swipePdfThumbnailScrollView.direction = .right
         pdfThumbnailScrollView.addGestureRecognizer(swipePdfThumbnailScrollView)
 
-        setConstraints()
         handlePageChange()
     }
 
-    deinit {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        showTip()
+    }
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuDetailClose), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
 
-        NotificationCenter.default.removeObserver(self, name: Notification.Name.PDFViewPageChanged, object: nil)
+        tipView?.dismiss()
+
+        coordinator.animate(alongsideTransition: { context in
+            self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
+            self.pdfThumbnailScrollView.isHidden = true
+        }, completion: { context in
+            self.pdfView.autoScales = true
+        })
+    }
+
+    @objc func viewUnload() {
+
+        navigationController?.popViewController(animated: true)
     }
 
     // MARK: - Tip
@@ -409,17 +419,23 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func tapPdfView(_ recognizer: UITapGestureRecognizer) {
 
         if pdfThumbnailScrollView.isHidden {
-
             if navigationController?.isNavigationBarHidden ?? false {
                 navigationController?.setNavigationBarHidden(false, animated: true)
-                hideStatusBar = false
-                pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.topAnchor)
             } else {
                 navigationController?.setNavigationBarHidden(true, animated: true)
-                hideStatusBar = true
-                pdfThumbnailScrollViewTopAnchor = pdfThumbnailScrollView.topAnchor.constraint(equalTo: pdfContainer.topAnchor)
             }
         }
+
+        UIView.animate(withDuration: 0.0, animations: {
+
+            self.pdfContainerTopAnchor?.isActive = false
+            if let barHidden = self.navigationController?.isNavigationBarHidden, barHidden {
+                self.pdfContainerTopAnchor = self.pdfContainer.topAnchor.constraint(equalTo: self.view.topAnchor)
+            } else {
+                self.pdfContainerTopAnchor = self.pdfContainer.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor)
+            }
+            self.pdfContainerTopAnchor?.isActive = true
+        })
 
         handlePageChange()
         closePdfThumbnail()
@@ -433,8 +449,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
-        guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
 
+        guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
         OpenPdfThumbnail()
     }
 
@@ -448,41 +464,41 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
             self.tipView = nil
         }
+
         self.pdfThumbnailScrollView.isHidden = false
         self.pdfThumbnailScrollViewWidthAnchor?.constant = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
+
+        self.pdfThumbnailScrollViewTopAnchor?.isActive = false
+        if let barHidden = self.navigationController?.isNavigationBarHidden, barHidden {
+            self.pdfThumbnailScrollViewTopAnchor = self.pdfThumbnailScrollView.topAnchor.constraint(equalTo: self.view.topAnchor)
+        } else {
+            self.pdfThumbnailScrollViewTopAnchor = self.pdfThumbnailScrollView.topAnchor.constraint(equalTo: self.pdfContainer.safeAreaLayoutGuide.topAnchor)
+        }
+        self.pdfThumbnailScrollViewTopAnchor?.isActive = true
+
         UIView.animate(withDuration: animateDuration, animations: {
+
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = 0
             self.pdfContainer.layoutIfNeeded()
         })
     }
 
     func closePdfThumbnail() {
+
         guard !self.pdfThumbnailScrollView.isHidden else { return }
 
         UIView.animate(withDuration: animateDuration) {
+
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfContainer.layoutIfNeeded()
+
         } completion: { _ in
+
             self.pdfThumbnailScrollView.isHidden = true
         }
     }
 
     // MARK: -
-
-    func setConstraints() {
-
-        let widthThumbnail = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
-
-        UIView.animate(withDuration: animateDuration, animations: {
-            // Close
-            self.pdfThumbnailScrollView.isHidden = true
-            self.pdfThumbnailScrollViewTrailingAnchor?.constant = widthThumbnail
-            self.pdfThumbnailScrollViewWidthAnchor?.constant = widthThumbnail
-
-            self.pdfContainer.layoutIfNeeded()
-            self.pdfView.autoScales = true
-        })
-    }
 
     @objc func handlePageChange() {
 

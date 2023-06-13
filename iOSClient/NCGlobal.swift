@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
@@ -207,13 +208,13 @@ class NCGlobal: NSObject {
     @objc let errorRequestExplicityCancelled: Int   = 15
     @objc let errorNotModified: Int                 = 304
     @objc let errorBadRequest: Int                  = 400
-    @objc let errorUnauthorized: Int                = 401
+    @objc let errorUnauthorized401: Int             = 401
     @objc let errorForbidden: Int                   = 403
     @objc let errorResourceNotFound: Int            = 404
     @objc let errordMethodNotSupported: Int         = 405
     @objc let errorConflict: Int                    = 409
     @objc let errorPreconditionFailed: Int          = 412
-    @objc let errorNCUnauthorized: Int              = 997
+    @objc let errorUnauthorized997: Int             = 997
     @objc let errorConnectionLost: Int              = -1005
     @objc let errorNetworkNotAvailable: Int         = -1009
     @objc let errorBadServerResponse: Int           = -1011
@@ -318,7 +319,7 @@ class NCGlobal: NSObject {
     let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
     let notificationCenterApplicationWillResignActive           = "applicationWillResignActive"
 
-    @objc let notificationCenterInitialize                      = "initialize"                      // userInfo?: atStart
+    @objc let notificationCenterInitialize                      = "initialize"
     @objc let notificationCenterChangeTheming                   = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
@@ -343,7 +344,7 @@ class NCGlobal: NSObject {
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: ocIds, error
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: account, ocIds, error
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
@@ -404,4 +405,40 @@ class NCGlobal: NSObject {
     let configuration_disable_manage_account                    = "disable_manage_account"
     let configuration_disable_more_external_site                = "disable_more_external_site"
     let configuration_disable_openin_file                       = "disable_openin_file"
+
+    // CAPABILITIES
+    //
+    var capabilityServerVersionMajor: Int                       = 0
+    @objc var capabilityServerVersion: String                   = ""
+    
+    var capabilityFileSharingApiEnabled: Bool                   = false
+    var capabilityFileSharingPubPasswdEnforced: Bool            = false
+    var capabilityFileSharingPubExpireDateEnforced: Bool        = false
+    var capabilityFileSharingPubExpireDateDays: Int             = 0
+    var capabilityFileSharingInternalExpireDateEnforced: Bool   = false
+    var capabilityFileSharingInternalExpireDateDays: Int        = 0
+    var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
+    var capabilityFileSharingRemoteExpireDateDays: Int          = 0
+    var capabilityFileSharingDefaultPermission: Int             = 0
+
+    var capabilityThemingColor: String                          = ""
+    var capabilityThemingColorElement: String                   = ""
+    var capabilityThemingColorText: String                      = ""
+    @objc var capabilityThemingName: String                     = ""
+    @objc var capabilityThemingSlogan: String                   = ""
+
+    @objc var capabilityE2EEEnabled: Bool                       = false
+    @objc var capabilityE2EEApiVersion: String                  = ""
+
+    var capabilityRichdocumentsMimetypes: [String]              = []
+    var capabilityActivity: [String]                            = []
+    var capabilityNotification: [String]                        = []
+
+    var capabilityFilesUndelete: Bool                           = false
+    var capabilityFilesLockVersion: String                      = ""    // NC 24
+    var capabilityFilesComments: Bool                           = false // NC 20
+
+    @objc var capabilityUserStatusEnabled: Bool                 = false
+    var capabilityExternalSites: Bool                           = false
+    var capabilityGroupfoldersEnabled: Bool                     = false // NC27
 }

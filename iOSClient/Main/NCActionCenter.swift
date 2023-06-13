@@ -27,6 +27,7 @@ import Queuer
 import JGProgressHUD
 import SVGKit
 import Photos
+import Alamofire
 
 class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     public static let shared: NCActionCenter = {
@@ -170,6 +171,76 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
     }
 
+    func viewerFile(account: String, fileId: String, viewController: UIViewController) {
+
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let hudView = appDelegate.window?.rootViewController?.view else { return }
+        var downloadRequest: DownloadRequest?
+
+        if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
+            if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
+                do {
+                    let attr = try FileManager.default.attributesOfItem(atPath: filePath)
+                    let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
+                    if fileSize > 0 {
+                        NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        return
+                    }
+                } catch {
+                    print("Error: \(error)")
+                }
+            }
+        }
+
+        let hud = JGProgressHUD()
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+        }
+        hud.tapOnHUDViewBlock = { _ in
+            if let request = downloadRequest {
+                request.cancel()
+            }
+        }
+        hud.show(in: hudView)
+
+        NextcloudKit.shared.getFileFromFileId(fileId: fileId) { account, file, _, error in
+
+            hud.dismiss()
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
+            } else if let file = file {
+
+                let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
+                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                NCManageDatabase.shared.addMetadata(metadata)
+
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+                if metadata.isMovie {
+                    NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                } else {
+                    hud.show(in: hudView)
+                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
+                        downloadRequest = request
+                    }, taskHandler: { _ in
+                    }, progressHandler: { progress in
+                        hud.progress = Float(progress.fractionCompleted)
+                    }) { accountDownload, _, _, _, _, _, error in
+                        hud.dismiss()
+                        if account == accountDownload && error == .success {
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                        }
+                    }
+                }
+            } else {
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_found_")
+                NCContentPresenter.shared.showError(error: error)
+            }
+        }
+    }
+
     // MARK: - Upload
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -204,19 +275,22 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
                 let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
                 let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
-                let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesActivity)
 
                 for value in NCBrandOptions.NCInfoPagingTab.allCases {
                     pages.append(value)
                 }
 
-                if activity == nil, let idx = pages.firstIndex(of: .activity) {
+                if NCGlobal.shared.capabilityActivity.isEmpty, let idx = pages.firstIndex(of: .activity) {
                     pages.remove(at: idx)
                 }
-                if !metadata.isSharable, let idx = pages.firstIndex(of: .sharing) {
+                if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
                     pages.remove(at: idx)
                 }
+
                 (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
+
+                shareViewController?.pages = pages
+                shareViewController?.metadata = metadata
 
                 if pages.contains(page) {
                     shareViewController?.page = page
@@ -225,9 +299,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } else {
                     return
                 }
-
-                shareViewController?.pages = pages
-                shareViewController?.metadata = metadata
 
                 shareNavigationController?.modalPresentationStyle = .formSheet
                 if let shareNavigationController = shareNavigationController {

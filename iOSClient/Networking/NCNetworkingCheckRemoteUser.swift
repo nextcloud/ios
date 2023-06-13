@@ -27,7 +27,6 @@ class NCNetworkingCheckRemoteUser {
 
     func checkRemoteUser(account: String, error: NKError) {
 
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
@@ -40,7 +39,7 @@ class NCNetworkingCheckRemoteUser {
 
         // -----------------------
 
-        if serverVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
+        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
 
             let token = CCUtility.getPassword(account)!
             if token.isEmpty {
@@ -59,13 +58,12 @@ class NCNetworkingCheckRemoteUser {
 
                 } else {
 
-                    if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() && !CCUtility.getPassword(account).isEmpty && !appDelegate.deletePasswordSession {
+                    if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() && !CCUtility.getPassword(account).isEmpty {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
                         NCContentPresenter.shared.showError(error: error, priority: .max)
                         CCUtility.setPassword(account, password: nil)
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Password removed.")
-                        appDelegate.deletePasswordSession = true
                     }
                 }
             }

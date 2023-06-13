@@ -36,19 +36,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wnh-nF-AjD">
-                                <rect key="frame" x="0.0" y="21" width="414" height="715"/>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wnh-nF-AjD">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="QiL-bG-Ojl"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="wnh-nF-AjD" firstAttribute="leading" secondItem="QiL-bG-Ojl" secondAttribute="leading" id="49g-1K-X2G"/>
-                            <constraint firstAttribute="bottom" secondItem="wnh-nF-AjD" secondAttribute="bottom" id="9yz-fc-kA9"/>
-                            <constraint firstItem="wnh-nF-AjD" firstAttribute="top" secondItem="QiL-bG-Ojl" secondAttribute="top" constant="1" id="Snr-Xx-Peu"/>
-                            <constraint firstItem="QiL-bG-Ojl" firstAttribute="trailing" secondItem="wnh-nF-AjD" secondAttribute="trailing" id="nvb-SR-s8x"/>
-                        </constraints>
                     </view>
                     <connections>
                         <outlet property="pdfContainer" destination="wnh-nF-AjD" id="gAz-vm-JVr"/>
@@ -56,7 +51,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2am-kV-AB1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-716" y="779"/>
+            <point key="canvasLocation" x="-717.39130434782612" y="778.53260869565224"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="rmL-pT-QPn">

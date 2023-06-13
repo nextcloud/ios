@@ -46,6 +46,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
+    var layoutKey = NCGlobal.shared.layoutViewTrash
 
     private let refreshControl = UIRefreshControl()
 

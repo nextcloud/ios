@@ -82,6 +82,15 @@ extension NCMenuAction {
         )
     }
 
+    /// Cancel
+    static func cancelAction(action: @escaping () -> Void) -> NCMenuAction {
+        NCMenuAction(
+            title: NSLocalizedString("_cancel_", comment: ""),
+            icon: NCUtility.shared.loadImage(named: "xmark"),
+            action: { _ in action() }
+        )
+    }
+
     /// Copy files to pasteboard
     static func copyAction(selectOcId: [String], hudView: UIView, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
@@ -139,6 +148,7 @@ extension NCMenuAction {
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
+                            let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                                 if error == .success {
@@ -148,7 +158,7 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
                         }
                         completion?()
                     })
@@ -160,6 +170,7 @@ extension NCMenuAction {
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
+                            let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                                 if error == .success {
@@ -169,7 +180,7 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
                         }
                         completion?()
                     })

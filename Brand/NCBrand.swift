@@ -251,46 +251,41 @@ class NCBrandColor: NSObject {
 
         if NCBrandOptions.shared.use_themingColor {
 
-            if let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor),
-               let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement),
-               let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText) {
+            self.themingColor = NCGlobal.shared.capabilityThemingColor
+            self.themingColorElement = NCGlobal.shared.capabilityThemingColorElement
+            self.themingColorText = NCGlobal.shared.capabilityThemingColorText
 
-                self.themingColor = themingColor
-                self.themingColorElement = themingColorElement
-                self.themingColorText = themingColorText
-                
-                // COLOR
-                if themingColor.first == "#" {
-                    if let color = UIColor(hex: themingColor) {
-                        brand = color
-                    } else {
-                        brand = customer
-                    }
+            // COLOR
+            if themingColor.first == "#" {
+                if let color = UIColor(hex: themingColor) {
+                    brand = color
                 } else {
                     brand = customer
                 }
+            } else {
+                brand = customer
+            }
 
-                // COLOR TEXT
-                if themingColorText.first == "#" {
-                    if let color = UIColor(hex: themingColorText) {
-                        brandText = color
-                    } else {
-                        brandText = customerText
-                    }
+            // COLOR TEXT
+            if themingColorText.first == "#" {
+                if let color = UIColor(hex: themingColorText) {
+                    brandText = color
                 } else {
                     brandText = customerText
                 }
+            } else {
+                brandText = customerText
+            }
 
-                // COLOR ELEMENT
-                if themingColorElement.first == "#" {
-                    if let color = UIColor(hex: themingColorElement) {
-                        brandElement = color
-                    } else {
-                        brandElement = brand
-                    }
+            // COLOR ELEMENT
+            if themingColorElement.first == "#" {
+                if let color = UIColor(hex: themingColorElement) {
+                    brandElement = color
                 } else {
                     brandElement = brand
                 }
+            } else {
+                brandElement = brand
             }
 
             if brandElement.isTooLight() {

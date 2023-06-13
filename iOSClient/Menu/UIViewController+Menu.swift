@@ -62,8 +62,7 @@ extension UIViewController {
     func showProfileMenu(userId: String) {
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        guard serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
+        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
         NextcloudKit.shared.getHovercard(for: userId) { account, card, _, _ in
             guard let card = card, account == appDelegate.account else { return }

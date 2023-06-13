@@ -141,24 +141,20 @@ class NCUtility: NSObject {
             return false
         }
 
-        guard let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) else {
-            return false
-        }
-
         // contentype
-        for richdocumentMimetype: String in richdocumentsMimetypes {
+        for richdocumentMimetype: String in NCGlobal.shared.capabilityRichdocumentsMimetypes {
             if richdocumentMimetype.contains(metadata.contentType) || metadata.contentType == "text/plain" {
                 return true
             }
         }
 
         // mimetype
-        if richdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
+        if NCGlobal.shared.capabilityRichdocumentsMimetypes.count > 0 && mimeType.components(separatedBy: ".").count > 2 {
 
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
 
-            for richdocumentMimetype: String in richdocumentsMimetypes {
+            for richdocumentMimetype: String in NCGlobal.shared.capabilityRichdocumentsMimetypes {
                 if richdocumentMimetype.contains(mimeType) {
                     return true
                 }

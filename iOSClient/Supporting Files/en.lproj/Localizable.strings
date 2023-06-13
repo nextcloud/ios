@@ -627,8 +627,8 @@
 "_enforce_password_protection_" = "Enforce password protection";
 "_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 "_shared_with_you_by_"          = "Shared with you by";
-"_shareLinksearch_placeholder_" = "Type a name and press Enter";
-"_shareLinksearch_mail_placeholder_" = "Type a name or an email and press Enter";
+"_shareLinksearch_placeholder_" = "Type a name and press Search";
+"_shareLinksearch_mail_placeholder_" = "Type a name or an email and press Search";
 "_new_comment_"                 = "New comment …";
 "_edit_comment_"                = "Edit comment";
 "_delete_comment_"              = "Delete comment";
@@ -966,6 +966,7 @@
 "_user_"                    = "User";
 "_add_subtitle_"            = "Add an external subtitle";
 "_add_audio_"               = "Add an external audio";
+"_maintenance_mode_"        = "Server is currently in maintenance mode";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

@@ -31,6 +31,11 @@ class NCApplicationHandle: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // class: AppDelegate
+    // func nextcloudPushNotificationAction(data: [String: AnyObject])
+    func nextcloudPushNotificationAction(data: [String: AnyObject]) {
+    }
+
+    // class: AppDelegate
     // func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void)
     func applicationOpenUserActivity(_ userActivity: NSUserActivity) -> Bool {
         return false
@@ -77,5 +82,9 @@ class NCApplicationHandle: NSObject {
     // class: NCActionCenter
     func filterPages(pages: [NCBrandOptions.NCInfoPagingTab], page: NCBrandOptions.NCInfoPagingTab, metadata: tableMetadata) -> ([NCBrandOptions.NCInfoPagingTab], NCBrandOptions.NCInfoPagingTab) {
         return (pages, page)
+    }
+
+    // class: NCNotification
+    func didSelectNotification(_ notification: NKNotifications, viewController: UIViewController) {
     }
 }

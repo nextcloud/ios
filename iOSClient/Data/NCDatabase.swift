@@ -30,16 +30,6 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-class tableCapabilities: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var jsondata: Data?
-
-    override static func primaryKey() -> String {
-        return "account"
-    }
-}
-
 class tableChunk: Object {
 
     @objc dynamic var account = ""

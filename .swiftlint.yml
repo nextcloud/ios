@@ -72,6 +72,7 @@ excluded:
   - iOSClient/Data/NCDataSource.swift
   - iOSClient/Data/NCDatabase.swift
   - iOSClient/Data/NCElementsJSON.swift
+  - iOSClient/Data/NCManageDatabase+Capabilities.swift
   - iOSClient/Data/NCManageDatabase+Account.swift
   - iOSClient/Data/NCManageDatabase+Activity.swift
   - iOSClient/Data/NCManageDatabase+Avatar.swift

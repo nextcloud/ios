@@ -202,7 +202,6 @@ class NCEndToEndMetadata: NSObject {
             return (0, "", NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON"))
         }
 
-        let versionE2EE = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) ?? ""
         data.printJson()
 
         let decoder = JSONDecoder()
@@ -212,7 +211,7 @@ class NCEndToEndMetadata: NSObject {
         } else if (try? decoder.decode(E2eeV12.self, from: data)) != nil {
             return decoderMetadataV12(json, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else {
-            return (0, "", NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Server E2EE version " + versionE2EE + ", not compatible"))
+            return (0, "", NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Server E2EE version " + NCGlobal.shared.capabilityE2EEApiVersion + ", not compatible"))
         }
     }
 

@@ -140,8 +140,7 @@ extension NCCollectionViewCommon {
         //
         // LOCK / UNLOCK
         //
-        let hasLockCapability = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesLockVersion) >= 1
-        if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), hasLockCapability {
+        if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), !NCGlobal.shared.capabilityFilesLockVersion.isEmpty {
             actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30))
         }
 

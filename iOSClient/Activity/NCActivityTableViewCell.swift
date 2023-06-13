@@ -53,7 +53,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var idActivity: Int = 0
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
-    var viewController: UIViewController?
+    var viewController = UIViewController()
 
     var fileAvatarImageView: UIImageView? {
         get { return avatar }
@@ -74,7 +74,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
 
     @objc func tapAvatarImage() {
         guard let fileUser = fileUser else { return }
-        viewController?.showProfileMenu(userId: fileUser)
+        viewController.showProfileMenu(userId: fileUser)
     }
 }
 
@@ -124,58 +124,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
                 return
             }
 
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileId == %@", activitySubjectRich.id)) {
-                if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    do {
-                        let attr = try FileManager.default.attributesOfItem(atPath: filePath)
-                        let fileSize = attr[FileAttributeKey.size] as! UInt64
-                        if fileSize > 0 {
-                            if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
-                            }
-                            return
-                        }
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-            }
-
-            let hud = JGProgressHUD()
-            hud.indicatorView = JGProgressHUDRingIndicatorView()
-            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                indicatorView.ringWidth = 1.5
-            }
-            guard let view = appDelegate.window?.rootViewController?.view else { return }
-            hud.show(in: view)
-
-            NextcloudKit.shared.getFileFromFileId(fileId: String(activityPreview.fileId)) { account, file, data, error in
-                if let file = file {
-                    let isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(file: file)
-                    let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                    NCManageDatabase.shared.addMetadata(metadata)
-
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-
-                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
-                    }, taskHandler: { _ in
-                    }, progressHandler: { progress in
-                        hud.progress = Float(progress.fractionCompleted)
-                    }) { account, _, _, _, _, _, error in
-                        hud.dismiss()
-                        if account == self.appDelegate.account && error == .success {
-                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                            if let viewController = self.viewController {
-                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: cell?.imageView.image)
-                            }
-                        }
-                    }
-                } else {
-                    hud.dismiss()
-                    NCContentPresenter.shared.showError(error: error)
-                }
-            }
+            NCActionCenter.shared.viewerFile(account: appDelegate.account, fileId: activitySubjectRich.id, viewController: viewController)
         }
     }
 }

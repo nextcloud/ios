@@ -160,13 +160,14 @@ class NCContextMenu: NSObject {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
                 Task {
                     var ocId: [String] = []
+                    let account: String = metadata.account
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     } else {
                         NCContentPresenter.shared.showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -177,13 +178,14 @@ class NCContextMenu: NSObject {
                                           image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             Task {
                 var ocId: [String] = []
+                let account: String = metadata.account
                 let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                 if error == .success {
                     ocId.append(metadata.ocId)
                 } else {
                     NCContentPresenter.shared.showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
             }
         }
 

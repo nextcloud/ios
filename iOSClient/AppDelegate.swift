@@ -41,7 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc var userId: String = ""
     @objc var password: String = ""
 
-    var deletePasswordSession: Bool = false
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginWeb?
     var activeServerUrl: String = ""
@@ -113,8 +112,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Activate user account
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
 
-            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account))
+            settingAccount(activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, password: CCUtility.getPassword(activeAccount.account), initialize: false)
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+            initialize()
 
         } else {
 
@@ -185,8 +185,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // START OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.observeTableMetadata()
         NCNetworkingProcessUpload.shared.startTimer()
-
-        self.deletePasswordSession = false
 
         if !NCAskAuthorization.shared.isRequesting {
             hidePrivacyProtectionWindow()
@@ -408,6 +406,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+
+        if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups),
+           let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
+            nextcloudPushNotificationAction(data: data)
+            pref.set(nil, forKey: "NOTIFICATION_DATA")
+        }
+
         completionHandler()
     }
 
@@ -423,6 +428,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared().applicationdidReceiveRemoteNotification(userInfo) { result in
             completionHandler(result)
         }
+    }
+
+    func nextcloudPushNotificationAction(data: [String: AnyObject]) {
+        NCApplicationHandle().nextcloudPushNotificationAction(data: data)
     }
 
     // MARK: - Login & checkErrorNetworking
@@ -514,8 +523,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking() {
-        
-        // check unauthorized server (401/403)
         if account != "" && CCUtility.getPassword(account)!.count == 0 {
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
@@ -562,7 +569,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
+    @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String, initialize: Bool = true) {
 
         let accountTestBackup = self.account + "/" + self.userId
         let accountTest = account +  "/" + userId
@@ -576,13 +583,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ = NCActionCenter.shared
 
         NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
-        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor > 0 {
-            NextcloudKit.shared.setup(nextcloudVersion: serverVersionMajor)
+        NCManageDatabase.shared.setCapabilities(account: account)
+
+        if NCGlobal.shared.capabilityServerVersionMajor > 0 {
+            NextcloudKit.shared.setup(nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor)
         }
 
         DispatchQueue.main.async {
-            if UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
+            if initialize, UIApplication.shared.applicationState != .background && accountTestBackup != accountTest {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterInitialize, second: 0.2)
             }
         }
