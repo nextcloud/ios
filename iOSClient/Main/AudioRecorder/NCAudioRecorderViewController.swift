@@ -56,7 +56,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
         view.backgroundColor = .clear
         contentContainerView.backgroundColor = UIColor.lightGray
-        voiceRecordHUD.fillColor = UIColor.green
+        voiceRecordHUD.fillColor = NCBrandColor.shared.progressColorGreen60
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -142,7 +142,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         }
 
         voiceRecordHUD.update(CGFloat(rate))
-        voiceRecordHUD.fillColor = UIColor.green
+        voiceRecordHUD.fillColor = NCBrandColor.shared.progressColorGreen60
         
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.second]

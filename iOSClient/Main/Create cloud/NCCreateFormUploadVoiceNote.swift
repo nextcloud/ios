@@ -66,8 +66,11 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
         // Progress view
         progressView.progress = 0
-        progressView.progressTintColor = .green
-        progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        progressView.layer.borderWidth = 1
+        progressView.layer.cornerRadius = 5.0
+        progressView.layer.borderColor = NCBrandColor.shared.customer.cgColor
+        progressView.progressTintColor = NCBrandColor.shared.customer
+        progressView.trackTintColor = .white
 
         labelTimer.textColor = .label
         labelDuration.textColor = .label
@@ -125,36 +128,44 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         // Section: Destination Folder
 
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_save_path_", comment: "").uppercased())
+        section.footerTitle = "                                                                               "
         form.addFormSection(section)
 
-        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
+        XLFormViewController.cellClassesForRowDescriptorTypes()["kNMCFolderCustomCellType"] = FolderPathCustomCell.self
+        
+        
+        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: "kNMCFolderCustomCellType", title: self.titleServerUrl)
+        row.cellConfig["backgroundColor"] = UIColor.secondarySystemGroupedBackground
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = cellBackgoundColor
-
-        row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
-
-        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
-
+        row.cellConfig["folderImage.image"] =  UIImage(named: "folder_nmcloud")?.image(color: NCBrandColor.shared.brandElement, size: 25)
+        
+        row.cellConfig["photoLabel.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["photoLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["photoLabel.textColor"] = UIColor.label //photos
+        if(self.titleServerUrl == "/"){
+            row.cellConfig["photoLabel.text"] = NSLocalizedString("_prefix_upload_path_", comment: "")
+        }else{
+            row.cellConfig["photoLabel.text"] = self.titleServerUrl
+        }
+        row.cellConfig["textLabel.text"] = ""
         section.addFormRow(row)
 
         // Section: File Name
 
+        XLFormViewController.cellClassesForRowDescriptorTypes()["kMyAppCustomCellType"] = TextTableViewCell.self
+        
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: "").uppercased())
         form.addFormSection(section)
 
-        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeText, title: NSLocalizedString("_filename_", comment: ""))
-        row.value = self.fileName
-        row.cellConfig["backgroundColor"] = cellBackgoundColor
+        row = XLFormRowDescriptor(tag: "fileName", rowType: "kMyAppCustomCellType", title: NSLocalizedString("_filename_", comment: ""))
+        row.cellClass = TextTableViewCell.self
 
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.label
-
-        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
-        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = UIColor.label
-
+        
+        row.cellConfigAtConfigure["backgroundColor"] = UIColor.secondarySystemGroupedBackground;
+        row.cellConfig["fileNameTextField.textAlignment"] = NSTextAlignment.left.rawValue
+        row.cellConfig["fileNameTextField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["fileNameTextField.textColor"] = UIColor.label
+        row.cellConfig["fileNameTextField.text"] = self.fileName
         section.addFormRow(row)
 
         self.form = form

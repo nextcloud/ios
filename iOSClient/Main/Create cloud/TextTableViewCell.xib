@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="TextTableViewCell" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Eb-B6-8Yt">
+                        <rect key="frame" x="0.0" y="2" width="320" height="66"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="left" contentHorizontalAlignment="leading" contentVerticalAlignment="center" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="NY9-7g-aGK">
+                                <rect key="frame" x="20" y="8" width="280" height="50"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="NY9-7g-aGK" firstAttribute="leading" secondItem="4Eb-B6-8Yt" secondAttribute="leading" constant="20" id="0cw-xE-O2D"/>
+                            <constraint firstAttribute="bottom" secondItem="NY9-7g-aGK" secondAttribute="bottom" constant="8" id="E9s-uT-Dyb"/>
+                            <constraint firstItem="NY9-7g-aGK" firstAttribute="top" secondItem="4Eb-B6-8Yt" secondAttribute="top" constant="8" id="Z8g-Xg-e8q"/>
+                            <constraint firstAttribute="trailing" secondItem="NY9-7g-aGK" secondAttribute="trailing" constant="20" id="xLE-gj-nVw"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bax-p8-r04" userLabel="topline">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
+                        <color key="backgroundColor" systemColor="separatorColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="Ul0-Uv-2Fe"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uy1-3e-xJA" userLabel="bottomline">
+                        <rect key="frame" x="0.0" y="69" width="320" height="1"/>
+                        <color key="backgroundColor" systemColor="separatorColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="tav-LJ-rbl"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="4Eb-B6-8Yt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="2" id="8oD-4Q-9Lv"/>
+                    <constraint firstItem="bax-p8-r04" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="E08-zj-INd"/>
+                    <constraint firstItem="4Eb-B6-8Yt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="LJ2-xa-ush"/>
+                    <constraint firstAttribute="trailing" secondItem="4Eb-B6-8Yt" secondAttribute="trailing" id="MKq-FX-Ppc"/>
+                    <constraint firstItem="uy1-3e-xJA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="UDd-c7-O7q"/>
+                    <constraint firstAttribute="bottom" secondItem="uy1-3e-xJA" secondAttribute="bottom" id="UF8-0W-qyN"/>
+                    <constraint firstAttribute="trailing" secondItem="bax-p8-r04" secondAttribute="trailing" id="dv0-GX-sqw"/>
+                    <constraint firstAttribute="trailing" secondItem="uy1-3e-xJA" secondAttribute="trailing" id="dxV-ZQ-1JA"/>
+                    <constraint firstAttribute="bottom" secondItem="4Eb-B6-8Yt" secondAttribute="bottom" constant="2" id="nya-m9-crw"/>
+                    <constraint firstItem="bax-p8-r04" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="oHk-ms-OCu"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="fileNameTextField" destination="NY9-7g-aGK" id="Qsb-6b-HK6"/>
+                <outlet property="topLineView" destination="bax-p8-r04" id="v8o-Ax-DJL"/>
+            </connections>
+            <point key="canvasLocation" x="140.57971014492756" y="122.54464285714285"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="separatorColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
