@@ -524,12 +524,23 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             self.present(alertController, animated: true, completion: nil)
 
         } else if item.url == "openTalk" {
-//            if UIApplication.shared.canOpenURL(URL)
-//               {
-//                    UIApplication.shared.open(other app scheme)
-//                }else {
-//                    UIApplication.shared.open(AppStore url)
-//               }
+            let url = URL(string: "nextcloudtalk://login?server=\(NextcloudKit.shared.nkCommonInstance.urlBase)&user=\(NextcloudKit.shared.nkCommonInstance.user)")!
+
+            if UIApplication.shared.canOpenURL(url)
+            {
+                UIApplication.shared.open(url)
+            } else {
+                UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-talk/id1296825574")!)
+            }
+        } else if item.url == "openNotes" {
+            let url = URL(string: "nextcloudnotes://note")!
+
+            if UIApplication.shared.canOpenURL(url)
+            {
+                UIApplication.shared.open(url)
+            } else {
+                UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-notes/id813973264")!)
+            }
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }
