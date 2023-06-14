@@ -23,7 +23,6 @@
 
 import UIKit
 import NextcloudKit
-import MarqueeLabel
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -524,7 +523,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             self.present(alertController, animated: true, completion: nil)
 
         } else if item.url == "openTalk" {
-            let url = URL(string: "nextcloudtalk://login?server=\(NextcloudKit.shared.nkCommonInstance.urlBase)&user=\(NextcloudKit.shared.nkCommonInstance.user)")!
+            let url = URL(string: "nextcloudtalk://")!
 
             if UIApplication.shared.canOpenURL(url)
             {
@@ -533,7 +532,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-talk/id1296825574")!)
             }
         } else if item.url == "openNotes" {
-            let url = URL(string: "nextcloudnotes://note")!
+            let url = URL(string: "nextcloudnotes://")!
 
             if UIApplication.shared.canOpenURL(url)
             {
@@ -541,6 +540,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             } else {
                 UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-notes/id813973264")!)
             }
+        } else if item.url == "openAppStore" {
+            UIApplication.shared.open(URL(string: "https://www.apple.com/us/search/nextcloud?src=globalnav")!)
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }
@@ -569,24 +570,3 @@ class CCCellMore: UITableViewCell {
     }
 }
 
-class NCMoreUserCell: UITableViewCell {
-
-    @IBOutlet weak var displayName: UILabel!
-    @IBOutlet weak var avatar: UIImageView!
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var status: MarqueeLabel!
-    
-    override var frame: CGRect {
-        get {
-            return super.frame
-        }
-        set (newFrame) {
-            var frame = newFrame
-            let newWidth = frame.width * 0.90
-            let space = (frame.width - newWidth) / 2
-            frame.size.width = newWidth
-            frame.origin.x += space
-            super.frame = frame
-        }
-    }
-}
