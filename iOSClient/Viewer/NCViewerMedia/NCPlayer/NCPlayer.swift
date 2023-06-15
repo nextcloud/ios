@@ -31,6 +31,7 @@ class NCPlayer: NSObject {
     internal let appDelegate = UIApplication.shared.delegate as! AppDelegate
     internal var url: URL?
     internal var player = VLCMediaPlayer()
+    internal var dialogProvider: VLCDialogProvider?
     internal var metadata: tableMetadata
     internal var singleTapGestureRecognizer: UITapGestureRecognizer?
     internal var activityIndicator: UIActivityIndicatorView
@@ -89,6 +90,9 @@ class NCPlayer: NSObject {
         print("Play URL: \(url)")
         player.media = VLCMedia(url: url)
         player.delegate = self
+
+        dialogProvider = VLCDialogProvider(library: VLCLibrary.shared(), customUI: true)
+        dialogProvider?.customRenderer = self
 
         // player?.media?.addOption("--network-caching=500")
         player.media?.addOption(":http-user-agent=\(userAgent)")
@@ -260,9 +264,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             print("Played mode: ENDED")
             break
         case .error:
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_something_wrong_")
-            NCContentPresenter.shared.showError(error: error, priority: .max)
-            playerToolBar?.removeFromSuperview()
             print("Played mode: ERROR")
             break
         case .playing:
@@ -339,4 +340,58 @@ extension NCPlayer: VLCMediaThumbnailerDelegate {
     func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) { }
 
     func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) { }
+}
+
+extension NCPlayer: VLCCustomDialogRendererProtocol {
+
+    func showError(withTitle error: String, message: String) {
+
+        let alert = UIAlertController(title: error, message: message, preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+            self.playerToolBar?.removeFromSuperview()
+            self.viewerMediaPage?.viewUnload()
+        }))
+
+        self.viewerMediaPage?.present(alert, animated: true)
+    }
+
+    func showLogin(withTitle title: String, message: String, defaultUsername username: String?, askingForStorage: Bool, withReference reference: NSValue) {
+        // UIAlertController other states...
+    }
+
+    func showQuestion(withTitle title: String, message: String, type questionType: VLCDialogQuestionType, cancel cancelString: String?, action1String: String?, action2String: String?, withReference reference: NSValue) {
+
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        if let action1String = action1String {
+            alert.addAction(UIAlertAction(title: action1String, style: .default, handler: { _ in
+                self.dialogProvider?.postAction(1, forDialogReference: reference)
+            }))
+        }
+        if let action2String = action2String {
+            alert.addAction(UIAlertAction(title: action2String, style: .default, handler: { _ in
+                self.dialogProvider?.postAction(2, forDialogReference: reference)
+            }))
+        }
+        if let cancelString = cancelString {
+            alert.addAction(UIAlertAction(title: cancelString, style: .cancel, handler: { _ in
+                self.dialogProvider?.postAction(3, forDialogReference: reference)
+            }))
+        }
+
+        self.viewerMediaPage?.present(alert, animated: true)
+    }
+
+    func showProgress(withTitle title: String, message: String, isIndeterminate: Bool, position: Float, cancel cancelString: String?, withReference reference: NSValue) {
+        // UIAlertController other states...
+    }
+
+    func updateProgress(withReference reference: NSValue, message: String?, position: Float) {
+        // UIAlertController other states...
+    }
+
+    func cancelDialog(withReference reference: NSValue) {
+        // UIAlertController other states...
+    }
 }
