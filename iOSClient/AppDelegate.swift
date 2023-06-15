@@ -944,10 +944,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
             guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
 
+            // If the account doesn't exist, return false which will open the app without switching
             if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
                 return false
             }
 
+            // Otherwise open the app and switch accounts
             return true
         } else {
             let applicationHandle = NCApplicationHandle()
