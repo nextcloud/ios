@@ -31,7 +31,7 @@ final class LoginUITests: XCTestCase {
     func test_logIn_withProperParams_shouldLogInAndGoToHomeScreen() throws {
         app.launch()
 
-        let loginButton = XCUIApplication().buttons["Log in"]
+        let loginButton = app.buttons["Log in"]
         XCTAssert(loginButton.waitForExistence(timeout: timeoutSeconds))
         loginButton.tap()
 
