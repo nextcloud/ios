@@ -39,7 +39,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var quotaMenu: [NKExternalSite] = []
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let defaultCornerRadius: CGFloat = 10.0
     let applicationHandle = NCApplicationHandle()
     
     var tabAccount: tableAccount?
@@ -55,7 +54,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .systemGroupedBackground
-        tableView.register(UINib(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
+        tableView.register(NCMoreUserCell.fromNib(), forCellReuseIdentifier: NCMoreUserCell.reuseIdentifier)
+        tableView.register(NCMoreAppSuggestionsCell.fromNib(), forCellReuseIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier)
 
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -98,28 +98,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuotaExternalSite.text = ""
         progressQuota.progressTintColor = NCBrandColor.shared.brandElement
 
-        // ITEM : Talk
-        item = NKExternalSite()
-        item.name = "Nextcloud Talk"
-        item.icon = "icon-talk"
-        item.url = "openTalk"
-        item.order = 0
-        moreAppsMenu.append(item)
-
-        // ITEM : Notes
-        item = NKExternalSite()
-        item.name = "Nextcloud Notes"
-        item.icon = "icon-notes"
-        item.url = "openNotes"
-        item.order = 1
-        moreAppsMenu.append(item)
-
         // ITEM : More apps
         item = NKExternalSite()
-        item.name = "More Nextcloud apps"
-        item.icon = "more"
-        item.url = "openAppStore"
-        item.order = 2
         moreAppsMenu.append(item)
 
         // ITEM : Transfer
@@ -314,9 +294,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if section == 0 {
             count = tabAccount == nil ? 0 : 1
         } else if section == 1 {
-            // Menu Normal
+            // Menu More apps
             count = moreAppsMenu.count
         } else if section == 2 {
+            // Menu function
             count = functionMenu.count
         } else {
             switch numberOfSections(in: tableView) {
@@ -346,11 +327,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         var item = NKExternalSite()
 
-        // change color selection and disclosure indicator
-        let selectionColor: UIView = UIView()
         if indexPath.section == 0 {
 
-            let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath) as! NCMoreUserCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreUserCell.reuseIdentifier, for: indexPath) as! NCMoreUserCell
 
             cell.avatar.image = nil
             cell.icon.image = nil
@@ -370,8 +349,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 }
                 cell.displayName.textColor = .label
             }
-            cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = .secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
             if NCGlobal.shared.capabilityUserStatusEnabled, let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
@@ -387,11 +364,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 }
             }
             
-            cell.layer.cornerRadius = defaultCornerRadius
             cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
 
             return cell
 
+        } else if indexPath.section == 1 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as! NCMoreAppSuggestionsCell
+
+            return cell
         } else {
 
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
@@ -419,18 +399,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = .label
 
-            cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = .secondarySystemGroupedBackground
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
             cell.separator.backgroundColor = .separator
             cell.separatorHeigth.constant = 0.4
             
-            cell.layer.cornerRadius = 0
             let rows = tableView.numberOfRows(inSection: indexPath.section)
             
             if indexPath.row == 0 {
-                cell.layer.cornerRadius = defaultCornerRadius
                 if indexPath.row == rows - 1 {
                     cell.separator.backgroundColor = .clear
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -438,9 +414,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
                 }
             } else if indexPath.row == rows - 1 {
-                cell.layer.cornerRadius = defaultCornerRadius
                 cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
                 cell.separator.backgroundColor = .clear
+            } else {
+                cell.layer.cornerRadius = 0
             }
             
             return cell
@@ -521,52 +498,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionYes)
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
-
-        } else if item.url == "openTalk" {
-            let url = URL(string: "nextcloudtalk://")!
-
-            if UIApplication.shared.canOpenURL(url)
-            {
-                UIApplication.shared.open(url)
-            } else {
-                UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-talk/id1296825574")!)
-            }
-        } else if item.url == "openNotes" {
-            let url = URL(string: "nextcloudnotes://")!
-
-            if UIApplication.shared.canOpenURL(url)
-            {
-                UIApplication.shared.open(url)
-            } else {
-                UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-notes/id813973264")!)
-            }
-        } else if item.url == "openAppStore" {
-            UIApplication.shared.open(URL(string: "https://www.apple.com/us/search/nextcloud?src=globalnav")!)
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }
     }
 }
-
-class CCCellMore: UITableViewCell {
-
-    @IBOutlet weak var labelText: UILabel!
-    @IBOutlet weak var imageIcon: UIImageView!
-    @IBOutlet weak var separator: UIView!
-    @IBOutlet weak var separatorHeigth: NSLayoutConstraint!
-
-    override var frame: CGRect {
-        get {
-            return super.frame
-        }
-        set (newFrame) {
-            var frame = newFrame
-            let newWidth = frame.width * 0.90
-            let space = (frame.width - newWidth) / 2
-            frame.size.width = newWidth
-            frame.origin.x += space
-            super.frame = frame
-        }
-    }
-}
-
