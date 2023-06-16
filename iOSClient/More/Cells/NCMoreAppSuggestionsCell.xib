@@ -58,8 +58,8 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Ee5-yx-6bi">
                                 <rect key="frame" x="301" y="0.0" width="60" height="36"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="more-template" translatesAutoresizingMaskIntoConstraints="NO" id="bV3-px-nXF" userLabel="Icon">
-                                        <rect key="frame" x="0.0" y="0.0" width="60" height="24"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="more-apps-template" translatesAutoresizingMaskIntoConstraints="NO" id="bV3-px-nXF" userLabel="Icon">
+                                        <rect key="frame" x="14" y="0.0" width="32" height="24"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="More apps" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E4W-1U-Rhu">
                                         <rect key="frame" x="4.6666666666666856" y="24" width="51" height="12"/>
@@ -95,7 +95,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="more-template" width="425" height="425"/>
+        <image name="more-apps-template" width="32" height="32"/>
         <image name="notes-template" width="24" height="24"/>
         <image name="talk-template" width="600" height="600"/>
     </resources>
