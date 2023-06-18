@@ -32,7 +32,8 @@ class NCApplicationHandle: NSObject {
 
     // class: AppDelegate
     // func nextcloudPushNotificationAction(data: [String: AnyObject])
-    func nextcloudPushNotificationAction(data: [String: AnyObject]) {
+    func nextcloudPushNotificationAction(data: [String: AnyObject], completion: @escaping (_ detected: Bool) -> Void) {
+        completion(false)
     }
 
     // class: AppDelegate

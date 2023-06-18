@@ -440,7 +440,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
-        NCApplicationHandle().nextcloudPushNotificationAction(data: data)
+        NCApplicationHandle().nextcloudPushNotificationAction(data: data) { detected in
+            if !detected {
+                let accounts = NCManageDatabase.shared.getAllAccount()
+                for account in accounts {
+                    /*
+                    let urlBase = URL(string: account.urlBase)
+                    if url.contains(urlBase?.host ?? "") && userId == account.userId {
+                        changeAccount(account.account)
+                        return account
+                    }
+                    */
+                }
+                if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                    let navigationController = UINavigationController(rootViewController: viewController)
+                    navigationController.modalPresentationStyle = .fullScreen
+                    self.window?.rootViewController?.present(navigationController, animated: true)
+                }
+            }
+        }
     }
 
     // MARK: - Login & checkErrorNetworking
