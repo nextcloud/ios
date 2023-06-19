@@ -72,6 +72,9 @@ extension NCNetworking {
 
             start()
 
+            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+            let serverUrlFileNameDestination = metadata.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
+
             for fileName in filesNames {
 
                 let serverUrlFileName = chunkFolderPath + "/" + fileName
@@ -84,7 +87,7 @@ extension NCNetworking {
 
                 let semaphore = DispatchSemaphore(value: 0)
 
-                NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
+                NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, addCustomHeaders: ["Destination" : serverUrlFileNameDestination], requestHandler: { request in
 
                     self.uploadRequest[fileNameLocalPath] = request
 
@@ -140,8 +143,6 @@ extension NCNetworking {
 
             // Assembling the chunks
             let serverUrlFileNameSource = chunkFolderPath + "/.file"
-            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
-            let serverUrlFileNameDestination = metadata.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
 
             var customHeader: [String: String] = [:]
             let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
