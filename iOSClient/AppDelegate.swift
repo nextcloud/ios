@@ -442,6 +442,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
         NCApplicationHandle().nextcloudPushNotificationAction(data: data) { detected in
             if !detected {
+
+                let json = "Converted successfully: \(data)"
+                let alertController = UIAlertController(title: "x", message: json, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
+                self.window?.rootViewController?.present(alertController, animated: true)
+
+                /*
                 let accounts = NCManageDatabase.shared.getAllAccount()
                 for account in accounts {
                     /*
@@ -457,6 +464,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     navigationController.modalPresentationStyle = .fullScreen
                     self.window?.rootViewController?.present(navigationController, animated: true)
                 }
+                */
             }
         }
     }
