@@ -78,4 +78,11 @@ final class FilesIntegrationTests: XCTestCase {
         
         waitForExpectations(timeout: 100)
     }
+
+    func test_uploadChunkedFile_withProperParams_shouldUploadChunksAndAssembleFile() {
+//        let metadata = NCManageDatabase.shared.createMetadata(account: account, user: user, userId: userId, fileName: "testFile", fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: uploadAssets.userBaseUrl.urlBase, url: "", contentType: "", isLivePhoto: livePhoto)
+//        NCNetworking.shared.uploadChunkedFile(metadata: tableMetadata.init()) { error in
+//            <#code#>
+//        }
+    }
 }

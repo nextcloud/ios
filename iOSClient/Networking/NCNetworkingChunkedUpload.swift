@@ -149,6 +149,7 @@ extension NCNetworking {
 
             customHeader["X-OC-CTime"] = creationDate
             customHeader["X-OC-MTime"] = modificationDate
+            customHeader["Destination"] = serverUrlFileNameDestination
 
             // Calculate Assemble Timeout
             let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
