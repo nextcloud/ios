@@ -27,6 +27,22 @@ final class LoginUITests: XCTestCase {
         app.launchArguments += ["UI_TESTING"]
     }
 
+    private func waitForEnabled(object: Any?) {
+        let predicate = NSPredicate(format: "enabled == true")
+        expectation(for: predicate, evaluatedWith: object, handler: nil)
+        waitForExpectations(timeout: timeoutSeconds, handler: nil)
+    }
+
+   private func waitForHittable(object: Any?) {
+        let predicate = NSPredicate(format: "hittable == true")
+        expectation(for: predicate, evaluatedWith: object, handler: nil)
+        waitForExpectations(timeout: timeoutSeconds, handler: nil)
+    }
+
+    private func waitForEnabledAndHittable(object: Any?) {
+        waitForEnabled(object: object)
+        waitForHittable(object: object)
+    }
 
     func test_logIn_withProperParams_shouldLogInAndGoToHomeScreen() throws {
         app.launch()
@@ -44,6 +60,7 @@ final class LoginUITests: XCTestCase {
         let webViewsQuery = app.webViews.webViews.webViews
         let loginButton2 = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Log in"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].buttons[\"Log in\"]",".buttons[\"Log in\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(loginButton2.waitForExistence(timeout: timeoutSeconds))
+        waitForEnabledAndHittable(object: loginButton2)
         loginButton2.tap()
 
         let element = webViewsQuery/*@START_MENU_TOKEN@*/.otherElements["main"]/*[[".otherElements[\"Login – Nextcloud\"].otherElements[\"main\"]",".otherElements[\"main\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.children(matching: .other).element(boundBy: 1)
@@ -60,6 +77,7 @@ final class LoginUITests: XCTestCase {
 
         let grantAccessButton = webViewsQuery/*@START_MENU_TOKEN@*/.buttons["Grant access"]/*[[".otherElements.matching(identifier: \"Nextcloud\")",".otherElements[\"main\"].buttons[\"Grant access\"]",".buttons[\"Grant access\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/
         XCTAssert(grantAccessButton.waitForExistence(timeout: timeoutSeconds))
+        waitForEnabledAndHittable(object: grantAccessButton)
         grantAccessButton.tap()
 
         // Check if we are in the home screen
