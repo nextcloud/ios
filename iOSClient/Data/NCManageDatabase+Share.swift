@@ -25,8 +25,8 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
-typealias tableShare = tableShareV2
-class tableShareV2: Object {
+typealias tableShare = tableShareV3
+class tableShareV3: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var canEdit: Bool = false
@@ -67,11 +67,56 @@ class tableShareV2: Object {
     @objc dynamic var userIcon = ""
     @objc dynamic var userMessage = ""
     @objc dynamic var userStatus = ""
+//    @objc dynamic var attributes = ""
+    let attributes = List<ShareAttribute>()
+
+//    let attributes = List<NKShare.Attribute>()
 
     override static func primaryKey() -> String {
         return "primaryKey"
     }
 }
+
+class ShareAttribute: Object {
+    @objc dynamic var scope: String = ""
+    @objc dynamic var key: String = ""
+    @objc dynamic var enabled: Bool = false
+
+    convenience init(scope: String, key: String, enabled: Bool) {
+        self.init()
+
+        self.scope = scope
+        self.key = key
+        self.enabled = enabled
+    }
+}
+
+//    convenience init(account: String, group: String, permission: Int) {
+//        self.init()
+//
+//        self.account = account
+//        self.group = group
+//        self.permission = permission
+//    }
+
+//extension NKShare.Attribute : RealmCollectionValue {
+//
+//    public static func _rlmDefaultValue() -> Self {
+//        <#code#>
+//    }
+//
+//    public typealias PersistedType = <#type#>
+//
+//    public static func _rlmFromObjc(_ value: Any, insideOptional: Bool) -> Self? {
+//        <#code#>
+//    }
+//
+//    public var _rlmObjcValue: Any {
+//        <#code#>
+//    }
+//
+//
+//}
 
 extension NCManageDatabase {
 
@@ -133,6 +178,10 @@ extension NCManageDatabase {
                     object.userIcon = share.userIcon
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
+
+                    for element in share.attributes {
+                        object.attributes.append(ShareAttribute(scope: element.scope, key: element.key, enabled: element.enabled))
+                    }
 
                     realm.add(object, update: .all)
                 }

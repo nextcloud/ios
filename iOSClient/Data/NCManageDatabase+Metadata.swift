@@ -333,6 +333,8 @@ extension NCManageDatabase {
             }
         }
 
+//        metadata.attributes = file.attributes
+
         return metadata
     }
 
