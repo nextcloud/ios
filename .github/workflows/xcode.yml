@@ -42,8 +42,10 @@ jobs:
       run: carthage bootstrap --use-xcframeworks --platform iOS
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
-    - name: Set up Docker
-      uses: douglascamata/setup-docker-macos-action@v1-alpha
+    - name: Install docker
+      run: |
+        brew install docker
+        colima start
     - name: Create docker test server and export enviroment variables
       run: |
         source ./create-docker-test-server.sh
