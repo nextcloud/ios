@@ -8,7 +8,7 @@
 
 import XCTest
 
-final class LoginUITests: XCTestCase {
+final class LoginUITests: BaseUIXCTestCase {
     private let baseUrl = EnvVars.testServerUrl
     private let user = EnvVars.testUser
     private let userId = EnvVars.testUser
@@ -17,31 +17,8 @@ final class LoginUITests: XCTestCase {
 
     let app = XCUIApplication()
 
-    let timeoutSeconds: Double = 100
-    
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
-        false
-    }
-
     override func setUp() {
         app.launchArguments += ["UI_TESTING"]
-    }
-
-    private func waitForEnabled(object: Any?) {
-        let predicate = NSPredicate(format: "enabled == true")
-        expectation(for: predicate, evaluatedWith: object, handler: nil)
-        waitForExpectations(timeout: timeoutSeconds, handler: nil)
-    }
-
-   private func waitForHittable(object: Any?) {
-        let predicate = NSPredicate(format: "hittable == true")
-        expectation(for: predicate, evaluatedWith: object, handler: nil)
-        waitForExpectations(timeout: timeoutSeconds, handler: nil)
-    }
-
-    private func waitForEnabledAndHittable(object: Any?) {
-        waitForEnabled(object: object)
-        waitForHittable(object: object)
     }
 
     func test_logIn_withProperParams_shouldLogInAndGoToHomeScreen() throws {
