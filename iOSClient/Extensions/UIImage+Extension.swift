@@ -152,7 +152,7 @@ extension UIImage {
             }
         }
     }
-
+    
     func isEqualToImage(image: UIImage?) -> Bool {
         if image == nil { return false }
         let data1: NSData = self.pngData()! as NSData
