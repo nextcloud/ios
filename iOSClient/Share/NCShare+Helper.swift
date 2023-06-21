@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import Foundation
 
 extension tableShare: NCTableShareable { }
 extension NKShare: NCTableShareable { }
@@ -40,6 +41,8 @@ protocol NCTableShareable: AnyObject {
     var note: String { get set }
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
+//    var allowDownload: Bool { get set }
+    var attributes: [NKShare.Attribute] { get set }
 }
 
 extension NCTableShareable {
@@ -74,6 +77,7 @@ class NCTableShareOptions: NCTableShareable {
     var note: String = ""
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
+//    var attributes = [NKShare.Attribute]()
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
         if metadata.e2eEncrypted {

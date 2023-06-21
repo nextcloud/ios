@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NextcloudKit
 
 protocol NCShareCellConfig {
     var title: String { get }
@@ -43,6 +44,13 @@ extension NCToggleCellConfig {
         didChange(share, to: !isOn(for: share))
     }
 }
+
+//protocol NCAttribute: NCToggleCellConfig {
+//    static var forDirectory: [Self] { get }
+//    static var forDirectoryE2EE: [Self] { get }
+//    static var forFile: [Self] { get }
+//    func hasAttribute(for parentAttribute: Int) -> Bool
+//}
 
 protocol NCPermission: NCToggleCellConfig {
     static var forDirectory: [Self] { get }
@@ -207,18 +215,46 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
     static let forUser: [NCShareDetails] = [.expirationDate, .note]
 }
 
+enum NCShareAttributes: NCToggleCellConfig {
+    func isOn(for share: NCTableShareable) -> Bool {
+        <#code#>
+    }
+
+    func didChange(_ share: NCTableShareable, to newValue: Bool) {
+        <#code#>
+    }
+
+    var title: String {
+        switch self {
+
+        }
+    }
+
+//    func getCell(for share: NCTableShareable) -> UITableViewCell {
+//        <#code#>
+//    }
+//
+//    func didSelect(for share: NCTableShareable) {
+//        <#code#>
+//    }
+
+    case permissionDownload
+}
+
 struct NCShareConfig {
     let permissions: [NCPermission]
     let advanced: [NCShareDetails]
     let share: NCTableShareable
     let resharePermission: Int
+    let attributes: [ShareAttribute]
 
-    init(parentMetadata: tableMetadata, share: NCTableShareable) {
+    init(parentMetadata: tableMetadata, share: NCTableShareable, attributes: [ShareAttribute]) {
         self.share = share
         self.resharePermission = parentMetadata.sharePermissionsCollaborationServices
         let type: NCPermission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE : type.forDirectory) : type.forFile
         self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
+        self.attributes = attributes
     }
 
     func cellFor(indexPath: IndexPath) -> UITableViewCell? {
@@ -240,7 +276,9 @@ struct NCShareConfig {
     func config(for indexPath: IndexPath) -> NCShareCellConfig? {
         if indexPath.section == 0, indexPath.row < permissions.count {
             return permissions[indexPath.row]
-        } else if indexPath.section == 1, indexPath.row < advanced.count {
+        } else if indexPath.section == 1 {
+            return attributes[indexPath.row]
+        } else if indexPath.section == 2, indexPath.row < advanced.count {
             return advanced[indexPath.row]
         } else { return nil }
     }

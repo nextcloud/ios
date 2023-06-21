@@ -62,13 +62,13 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
+        self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share, attributes: ShareAttribute.toArray(attributes: oldTableShare!.attributes) ?? [])
 
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableView.automaticDimension
         self.setNavigationTitle()
         self.navigationItem.hidesBackButton = true
-        // disbale pull to dimiss
+        // disbale pull to dismiss
         isModalInPresentation = true
     }
 
@@ -124,6 +124,8 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             let maxPermission = metadata.directory ? NCGlobal.shared.permissionMaxFolderShare : NCGlobal.shared.permissionMaxFileShare
             return shareConfig.resharePermission != maxPermission ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
         } else if section == 1 {
+            return shareConfig.attributes.count
+        } else if section == 2 {
             return shareConfig.advanced.count
         } else { return 0 }
     }
