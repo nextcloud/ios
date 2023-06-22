@@ -34,7 +34,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     var emptyDataSet: NCEmptyDataSet?
     var isReloadDataSourceNetworkInProgress: Bool = false
 
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -47,6 +46,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
         tableView.backgroundColor = .systemBackground
+
+        refreshControl?.addTarget(self, action: #selector(getNetwokingNotification), for: .valueChanged)
 
         // Empty
         let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
@@ -294,7 +295,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     // MARK: - Load notification networking
 
-    func getNetwokingNotification() {
+   @objc func getNetwokingNotification() {
 
         isReloadDataSourceNetworkInProgress = true
         self.tableView.reloadData()
@@ -309,6 +310,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                     }
                     self.notifications.append(notification as! NKNotifications)
                 }
+                self.refreshControl?.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.tableView.reloadData()
             }

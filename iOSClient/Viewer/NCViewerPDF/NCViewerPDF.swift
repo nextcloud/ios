@@ -30,7 +30,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @IBOutlet weak var pdfContainer: UIView!
 
-    var metadata = tableMetadata()
+    var metadata: tableMetadata?
+    var url: URL?
+    var titleView: String?
     var imageIcon: UIImage?
 
     private var filePath = ""
@@ -65,14 +67,18 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     override func viewDidLoad() {
 
-        filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
+        if let url = self.url {
+            pdfDocument = PDFDocument(url: url)
+        } else if let metadata = self.metadata {
+            filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+        }
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
 
         navigationController?.navigationBar.prefersLargeTitles = false
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
-        navigationItem.title = metadata.fileNameView
+        navigationItem.title = titleView
 
         // TIP
 
@@ -122,6 +128,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             pdfView.trailingAnchor.constraint(equalTo: pdfContainer.safeAreaLayoutGuide.trailingAnchor),
             pdfView.bottomAnchor.constraint(equalTo: pdfContainer.bottomAnchor)
         ])
+
+        // MODAL
+        if self.navigationController?.presentingViewController != nil {
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(viewDismiss))
+        }
 
         // NOTIFIFICATION
 
@@ -281,6 +292,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         navigationController?.popViewController(animated: true)
     }
 
+    @objc func viewDismiss() {
+        self.dismiss(animated: true)
+    }
+
     // MARK: - Tip
 
     func showTip() {
@@ -298,9 +313,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.metadata.serverUrl,
+              serverUrl == self.metadata?.serverUrl,
               let fileName = userInfo["fileName"] as? String,
-              fileName == self.metadata.fileName
+              fileName == self.metadata?.fileName
         else { return }
 
         NCActivityIndicator.shared.start()
@@ -310,9 +325,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.metadata.serverUrl,
+              serverUrl == self.metadata?.serverUrl,
               let fileName = userInfo["fileName"] as? String,
-              fileName == self.metadata.fileName,
+              fileName == self.metadata?.fileName,
               let error = userInfo["error"] as? NKError
         else {
             return
@@ -331,7 +346,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata.ocId,
+              ocId == self.metadata?.ocId,
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
 
@@ -342,7 +357,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata.ocId,
+              ocId == self.metadata?.ocId,
               let ocIdNew = userInfo["ocIdNew"] as? String,
               let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew)
         else { return }
@@ -357,7 +372,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
               let error = userInfo["error"] as? NKError
         else { return }
 
-        if error == .success, let ocId = ocId.first, metadata.ocId == ocId {
+        if error == .success,
+           let ocId = ocId.first,
+           metadata?.ocId == ocId {
             viewUnload()
         }
     }
@@ -366,7 +383,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata.ocId,
+              ocId == self.metadata?.ocId,
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
         else { return }
 
@@ -410,7 +427,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     @objc func openMenuMore() {
 
-        if imageIcon == nil { imageIcon = UIImage(named: "file_pdf") }
+        guard let metadata = self.metadata else { return }
+        if imageIcon == nil {
+            imageIcon = UIImage(named: "file_pdf")
+        }
+
         NCViewer.shared.toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
     }
 
