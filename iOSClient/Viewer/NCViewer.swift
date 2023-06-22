@@ -100,6 +100,7 @@ class NCViewer: NSObject {
                     let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
 
                     viewController.metadata = metadata
+                    viewController.titleView = metadata.fileNameView
                     viewController.imageIcon = imageIcon
 
                     navigationController.pushViewController(viewController, animated: true)
