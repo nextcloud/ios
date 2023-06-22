@@ -68,15 +68,13 @@ class tableShareV3: Object {
     @objc dynamic var userMessage = ""
     @objc dynamic var userStatus = ""
 //    @objc dynamic var attributes = ""
-    @objc dynamic var allowDownload = false
+//    @objc dynamic var allowDownload = false
 
     // arrays dont work in realm, and we need to change this to List or one of these: https://www.mongodb.com/docs/realm-sdks/swift/latest/Classes/Object.html
 //    @objc dynamic var attributes = [NKShare.Attribute]()
     let attributesInternal = List<ShareAttribute>()
 
-    var attributes: [ShareAttribute] {
-        return ShareAttribute.toArray(attributes: attributesInternal)
-    }
+    var attributes = [NKShare.Attribute]()
 
     override static func primaryKey() -> String {
         return "primaryKey"
@@ -96,13 +94,13 @@ class ShareAttribute: Object {
         self.enabled = enabled
     }
 
-    static func toAttributeArray(attributes: List<ShareAttribute>) -> [NKShare.Attribute] {
-        var array = [NKShare.Attribute]()
-        attributes.forEach {
-            array.append(NKShare.Attribute(from: <#T##Decoder#>)
-        }
-        return array
-    }
+//    static func toAttributeArray(attributes: List<ShareAttribute>) -> [NKShare.Attribute] {
+//        var array = [NKShare.Attribute]()
+//        attributes.forEach { attribute in
+//            array.append(NKShare.Attribute(scope: attribute.scope))
+//        }
+//        return array
+//    }
 }
 
 //    convenience init(account: String, group: String, permission: Int) {
@@ -197,6 +195,8 @@ extension NCManageDatabase {
                     for element in share.attributes {
 //                        object.attributes.append(element)
                         object.attributesInternal.append(ShareAttribute(scope: element.scope, key: element.key, enabled: element.enabled))
+
+                        object.attributes.append(element)
                     }
 
                     realm.add(object, update: .all)

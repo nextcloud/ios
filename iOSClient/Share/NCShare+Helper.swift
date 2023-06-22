@@ -77,7 +77,7 @@ class NCTableShareOptions: NCTableShareable {
     var note: String = ""
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
-//    var attributes = [NKShare.Attribute]()
+    var attributes = [NKShare.Attribute]()
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
         if metadata.e2eEncrypted {

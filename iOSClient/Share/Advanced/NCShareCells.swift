@@ -170,6 +170,36 @@ enum NCLinkPermission: NCPermission {
     static let forDirectoryE2EE: [NCLinkPermission] = [.secureFileDrop]
 }
 
+enum NCShareAttribute: NCToggleCellConfig {
+    func isOn(for share: NCTableShareable) -> Bool {
+        print(share.attributes.first(where: { $0.scope == "permission" && $0.key == "download" })?.enabled == true)
+        switch self {
+        case.allowDownload: return share.attributes.first(where: { $0.scope == "permission" && $0.key == "download" })?.enabled == true
+        }
+    }
+
+    func didChange(_ share: NCTableShareable, to newValue: Bool) {
+        // TODO: implement
+    }
+
+    var title: String {
+        switch self {
+        case .allowDownload: return NSLocalizedString("_share_attribute_allow_download_", comment: "")
+        }
+    }
+
+//    func getCell(for share: NCTableShareable) -> UITableViewCell {
+//        <#code#>
+//    }
+//
+//    func didSelect(for share: NCTableShareable) {
+//        <#code#>
+//    }
+
+    case allowDownload
+    static let forAll: [NCShareAttribute] = [.allowDownload]
+}
+
 enum NCShareDetails: CaseIterable, NCShareCellConfig {
     func didSelect(for share: NCTableShareable) {
         switch self {
@@ -215,46 +245,20 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
     static let forUser: [NCShareDetails] = [.expirationDate, .note]
 }
 
-enum NCShareAttributes: NCToggleCellConfig {
-    func isOn(for share: NCTableShareable) -> Bool {
-        <#code#>
-    }
-
-    func didChange(_ share: NCTableShareable, to newValue: Bool) {
-        <#code#>
-    }
-
-    var title: String {
-        switch self {
-
-        }
-    }
-
-//    func getCell(for share: NCTableShareable) -> UITableViewCell {
-//        <#code#>
-//    }
-//
-//    func didSelect(for share: NCTableShareable) {
-//        <#code#>
-//    }
-
-    case permissionDownload
-}
-
 struct NCShareConfig {
     let permissions: [NCPermission]
     let advanced: [NCShareDetails]
     let share: NCTableShareable
     let resharePermission: Int
-    let attributes: [ShareAttribute]
+    let attributes: [NCShareAttribute]
 
-    init(parentMetadata: tableMetadata, share: NCTableShareable, attributes: [ShareAttribute]) {
+    init(parentMetadata: tableMetadata, share: NCTableShareable) {
         self.share = share
         self.resharePermission = parentMetadata.sharePermissionsCollaborationServices
         let type: NCPermission.Type = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE : type.forDirectory) : type.forFile
         self.advanced = share.shareType == NCShareCommon.shared.SHARE_TYPE_LINK ? NCShareDetails.forLink : NCShareDetails.forUser
-        self.attributes = attributes
+        self.attributes = NCShareAttribute.forAll
     }
 
     func cellFor(indexPath: IndexPath) -> UITableViewCell? {

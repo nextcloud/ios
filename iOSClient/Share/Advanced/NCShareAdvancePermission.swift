@@ -62,7 +62,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share, attributes: ShareAttribute.toArray(attributes: oldTableShare!.attributes) ?? [])
+        self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
 
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableView.automaticDimension
@@ -110,6 +110,8 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         if section == 0 {
             return NSLocalizedString("_permissions_", comment: "")
         } else if section == 1 {
+            return NSLocalizedString("_attributes_", comment: "")
+        } else if section == 2 {
             return NSLocalizedString("_advanced_", comment: "")
         } else { return nil }
     }
