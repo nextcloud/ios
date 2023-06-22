@@ -21,6 +21,7 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        backgroundColor = .clear
 
         talkView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(talkTapped)))
         notesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(notesTapped)))
@@ -33,7 +34,7 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         } else {
-            UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-talk/id1296825574")!)
+            UIApplication.shared.open(URL(string: NCGlobal.shared.talkAppStoreUrl)!)
         }
     }
 
@@ -43,11 +44,11 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         } else {
-            UIApplication.shared.open(URL(string: "https://apps.apple.com/de/app/nextcloud-notes/id813973264")!)
+            UIApplication.shared.open(URL(string: NCGlobal.shared.notesAppStoreUrl)!)
         }
     }
 
     @objc func moreAppsTapped() {
-        UIApplication.shared.open(URL(string: "https://www.apple.com/us/search/nextcloud?src=globalnav")!)
+        UIApplication.shared.open(URL(string: NCGlobal.shared.moreAppsUrl)!)
     }
 }

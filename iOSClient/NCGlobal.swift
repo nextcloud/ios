@@ -441,4 +441,9 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+
+    // MORE APPS
+    let talkAppStoreUrl                                         = "https://apps.apple.com/de/app/nextcloud-talk/id1296825574"
+    let notesAppStoreUrl                                        = "https://apps.apple.com/de/app/nextcloud-notes/id813973264"
+    let moreAppsUrl                                             = "https://www.apple.com/us/search/nextcloud?src=globalnav"
 }
