@@ -441,4 +441,7 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+
+    // SNAPSHOT PREVIEW
+    let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
 }

@@ -42,6 +42,7 @@ disabled_rules:
 excluded:
   - Carthage
   - Pods
+  - Tests
 
   # iOS Files Quarantine
 
