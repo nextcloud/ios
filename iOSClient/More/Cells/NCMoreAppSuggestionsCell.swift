@@ -52,7 +52,6 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
 
     @objc func moreAppsTapped() {
         guard let url = URL(string: NCGlobal.shared.moreAppsUrl) else { return }
-
         UIApplication.shared.open(url)
     }
 }
