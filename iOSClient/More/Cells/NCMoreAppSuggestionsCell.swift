@@ -29,26 +29,30 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     }
 
     @objc func talkTapped() {
-        let url = URL(string: "nextcloudtalk://")!
+        guard let url = URL(string: NCGlobal.shared.talkSchemeUrl) else { return }
 
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         } else {
-            UIApplication.shared.open(URL(string: NCGlobal.shared.talkAppStoreUrl)!)
+            guard let url = URL(string: NCGlobal.shared.talkAppStoreUrl) else { return }
+            UIApplication.shared.open(url)
         }
     }
 
     @objc func notesTapped() {
-        let url = URL(string: "nextcloudnotes://")!
+        guard let url = URL(string: NCGlobal.shared.notesSchemeUrl) else { return }
 
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         } else {
-            UIApplication.shared.open(URL(string: NCGlobal.shared.notesAppStoreUrl)!)
+            guard let url = URL(string: NCGlobal.shared.notesAppStoreUrl) else { return }
+            UIApplication.shared.open(url)
         }
     }
 
     @objc func moreAppsTapped() {
-        UIApplication.shared.open(URL(string: NCGlobal.shared.moreAppsUrl)!)
+        guard let url = URL(string: NCGlobal.shared.moreAppsUrl) else { return }
+
+        UIApplication.shared.open(url)
     }
 }
