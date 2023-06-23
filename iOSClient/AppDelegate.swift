@@ -59,7 +59,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     private var privacyProtectionWindow: UIWindow?
 
+    var isUiTestingEnabled: Bool {
+         get {
+             return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
+         }
+     }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if isUiTestingEnabled {
+            deleteAllAccounts()
+        }
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
@@ -623,6 +632,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         }
+    }
+
+    @objc func deleteAllAccounts() {
+        let accounts = NCManageDatabase.shared.getAccounts()
+        accounts?.forEach({ account in
+            deleteAccount(account, wipe: true)
+        })
     }
 
     @objc func changeAccount(_ account: String) {
