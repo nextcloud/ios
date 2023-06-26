@@ -672,7 +672,7 @@
     NSString *size = [UICKeyChainStore stringForKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
     
     if (size == nil) {
-        return 0;
+        return 100;
     } else {
         return [size integerValue];
     }

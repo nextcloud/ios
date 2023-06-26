@@ -116,7 +116,7 @@
     [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
     [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
     [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
-    [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
+    [row.cellConfigAtConfigure setObject:@1000 forKey:@"stepControl.maximumValue"];
     [section addFormRow:row];
 
     // Section : Privacy --------------------------------------------------------------
