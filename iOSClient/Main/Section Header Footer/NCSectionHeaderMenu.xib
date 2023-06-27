@@ -24,7 +24,8 @@
                                 <constraint firstAttribute="width" constant="25" id="D76-X9-Tw9"/>
                                 <constraint firstAttribute="height" constant="25" id="izT-Ru-XYG"/>
                             </constraints>
-                            <state key="normal" image="switchList"/>
+                            <color key="tintColor" systemColor="systemGrayColor"/>
+                            <state key="normal" image="list.bullet" catalog="system"/>
                             <connections>
                                 <action selector="touchUpInsideSwitch:" destination="tys-A2-nDX" eventType="touchUpInside" id="iT8-1j-fib"/>
                             </connections>
@@ -32,9 +33,7 @@
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-yl-t5k">
                             <rect key="frame" x="45" y="11" width="163" height="28"/>
                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                            <state key="normal" title="Sort by name (from A to Z)">
-                                <color key="titleColor" systemColor="darkTextColor"/>
-                            </state>
+                            <state key="normal" title="Sort by name (from A to Z)"/>
                             <connections>
                                 <action selector="touchUpInsideOrder:" destination="tys-A2-nDX" eventType="touchUpInside" id="oiL-3O-hMQ"/>
                             </connections>
@@ -138,13 +137,13 @@
         </collectionReusableView>
     </objects>
     <resources>
+        <image name="list.bullet" catalog="system" width="128" height="87"/>
         <image name="moreBig" width="50" height="50"/>
-        <image name="switchList" width="25" height="25"/>
-        <systemColor name="darkTextColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="labelColor">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
