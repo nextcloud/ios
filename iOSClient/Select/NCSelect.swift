@@ -599,7 +599,6 @@ extension NCSelect: UICollectionViewDataSource {
 
                 header.delegate = self
 
-//                header.setButtonsCommand(heigt: 0)
                 header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
                 header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
                 header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
