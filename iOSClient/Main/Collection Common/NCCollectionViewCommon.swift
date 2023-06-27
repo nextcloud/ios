@@ -72,7 +72,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var titleCurrentFolder = ""
     internal var titlePreviusFolder: String?
     internal var enableSearchBar: Bool = false
-    internal var headerMenuButtonsCommand: Bool = true
     internal var headerMenuButtonsView: Bool = true
     internal var headerRichWorkspaceDisable:Bool = false
     internal var emptyImage: UIImage?
@@ -1698,19 +1697,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                if headerMenuButtonsCommand && !isSearchingMode {
-                    let imageButton2 = isDirectoryE2EE ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
-                    let titleButton2 = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
-                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(systemName: "doc.text.viewfinder"), titleButton3: NSLocalizedString("_scan_", comment: ""))
-                } else {
-                    header.setButtonsCommand(heigt: 0)
-                }
+
                 if headerMenuButtonsView {
                     header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
-                    header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
+                    header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
                     header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
                 } else {
-                    header.setButtonsView(heigt: 0)
+                    header.setButtonsView(height: 0)
                 }
 
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
@@ -1785,9 +1778,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var size: CGFloat = 0
 
-        if headerMenuButtonsCommand && !isSearchingMode {
-            size += NCGlobal.shared.heightButtonsCommand
-        }
         if headerMenuButtonsView {
             size += NCGlobal.shared.heightButtonsView
         }

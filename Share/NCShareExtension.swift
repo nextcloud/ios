@@ -83,7 +83,7 @@ class NCShareExtension: UIViewController {
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.collectionViewLayout = NCListLayout()
 
-        collectionView.addSubview(refreshControl)
+        collectionView.refreshControl = refreshControl
         refreshControl.tintColor = NCBrandColor.shared.brandText
         refreshControl.backgroundColor = .systemBackground
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
