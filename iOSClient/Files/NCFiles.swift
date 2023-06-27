@@ -38,7 +38,6 @@ class NCFiles: NCCollectionViewCommon {
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
-        headerMenuButtonsCommand = true
         headerMenuButtonsView = true
         headerRichWorkspaceDisable = false
         emptyImage = UIImage(named: "folder")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)

@@ -34,7 +34,6 @@ class NCShares: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_list_shares_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
-        headerMenuButtonsCommand = false
         headerMenuButtonsView = true
         headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "share")?.image(color: .gray, size: UIScreen.main.bounds.width)
