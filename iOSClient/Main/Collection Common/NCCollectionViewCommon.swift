@@ -67,6 +67,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     private var tipView: EasyTipView?
 
+    private var isLastPage: Bool = false
+
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -522,7 +524,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        // do not exists metadata ?
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
             reloadDataSource()
             return
@@ -905,14 +906,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
-
             return nil
-
         }, actionProvider: { _ in
-
-            // let share = UIAction(title: "Share Pupper", image: UIImage(systemName: "square.and.arrow.up")) { action in
-            // }
-            // return UIMenu(title: "Main Menu", children: [share])
             return nil
         })
     }
@@ -983,6 +978,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
 
+        isLastPage = false
         isReloadDataSourceNetworkInProgress = true
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
@@ -1035,19 +1031,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
 
-        guard let metadataForSection = metadataForSection, let searchResult = metadataForSection.lastSearchResult, let cursor = searchResult.cursor, let term = literalSearch else { return }
+        guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { account, searchResult, metadatas, error in
-
+        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { account, searchResult, metadatas, error in
             if error != .success {
                 NCContentPresenter.shared.showError(error: error)
             }
 
             metadataForSection.unifiedSearchInProgress = false
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
+            self.isLastPage = searchResult.entries.isEmpty
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
             DispatchQueue.main.async {
@@ -1408,14 +1404,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         NCOperationQueue.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
                     }
                 }
-
-//                if metadata.iconName.contains("contacts"), let subline = metadata.subline, !subline.isEmpty, let cell = cell as? NCCellProtocol {
-//                    let components = subline.components(separatedBy: "@")
-//                    if let user = components.first {
-//                        let fileName = metadata.userBaseUrl + "-" + user + ".png"
-//                        NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
-//                    }
-//                }
             }
         }
 
@@ -1752,9 +1740,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
-                if isSearchingMode && isPaginated && metadatasCount > 0 {
+
+                if isSearchingMode && isPaginated && metadatasCount > 0 && !isLastPage {
                     footer.buttonIsHidden(false)
                 }
+
                 if unifiedSearchInProgress {
                     footer.showActivityIndicatorSection()
                 }
