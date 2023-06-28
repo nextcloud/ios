@@ -57,9 +57,6 @@ class NCEmptyDataSet: NSObject {
         emptyView.isHidden = true
         emptyView.translatesAutoresizingMaskIntoConstraints = false
 
-        emptyView.emptyTitle.sizeToFit()
-        emptyView.emptyDescription.sizeToFit()
-
         view.addSubview(emptyView)
 
         emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
