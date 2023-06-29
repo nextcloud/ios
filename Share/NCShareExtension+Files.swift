@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UniformTypeIdentifiers
 
 extension NCShareExtension {
 
@@ -89,7 +90,7 @@ extension NCShareExtension {
 
 class NCFilesExtensionHandler {
     var itemsProvider: [NSItemProvider] = []
-    lazy var filesName: [String] = []
+    lazy var fileNames: [String] = []
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH-mm-ss-"
@@ -102,20 +103,24 @@ class NCFilesExtensionHandler {
         var counter = 0
 
         self.itemsProvider = items.compactMap({ $0.attachments }).flatMap { $0.filter({
-            $0.hasItemConformingToTypeIdentifier(kUTTypeItem as String) || $0.hasItemConformingToTypeIdentifier("public.url")
+            $0.hasItemConformingToTypeIdentifier(UTType.item.identifier as String) || $0.hasItemConformingToTypeIdentifier("public.url")
         }) }
 
         for (ix, provider) in itemsProvider.enumerated() {
             provider.loadItem(forTypeIdentifier: provider.typeIdentifier) { [self] item, error in
                 defer {
                     counter += 1
-                    if counter == itemsProvider.count { completion(self.filesName) }
+                    if counter == itemsProvider.count { completion(self.fileNames) }
                 }
                 guard error == nil else { return }
                 var originalName = (dateFormatter.string(from: Date())) + String(ix)
 
                 if let url = item as? URL, url.isFileURL, !url.lastPathComponent.isEmpty {
                     originalName = url.lastPathComponent
+
+                    if fileNames.contains(originalName), let incrementalNumber = CCUtility.getIncrementalNumber() {
+                        originalName = "\(url.deletingPathExtension().lastPathComponent) \(incrementalNumber).\(url.pathExtension)"
+                    }
                 }
 
                 var fileName: String?
@@ -131,7 +136,9 @@ class NCFilesExtensionHandler {
                 default: return
                 }
 
-                if let fileName = fileName, !filesName.contains(fileName) { filesName.append(fileName) }
+                if let fileName, !fileNames.contains(fileName) {
+                    fileNames.append(fileName)
+                }
             }
         }
     }
@@ -140,8 +147,7 @@ class NCFilesExtensionHandler {
     func getItem(image: UIImage, fileName: String) -> String? {
         var fileUrl = URL(fileURLWithPath: NSTemporaryDirectory() + fileName)
         if fileUrl.pathExtension.isEmpty { fileUrl.appendPathExtension("png") }
-        guard let pngImageData = image.pngData(),
-              (try? pngImageData.write(to: fileUrl, options: [.atomic])) != nil
+        guard let pngImageData = image.pngData(), (try? pngImageData.write(to: fileUrl, options: [.atomic])) != nil
         else { return nil }
         return fileUrl.lastPathComponent
     }
@@ -151,7 +157,7 @@ class NCFilesExtensionHandler {
     func getItem(url: URL, fileName: String) -> String? {
         var fileName = fileName
         guard url.isFileURL else {
-            guard !filesName.contains(url.lastPathComponent) else { return nil }
+            guard !fileNames.contains(url.lastPathComponent) else { return nil }
             if !url.deletingPathExtension().lastPathComponent.isEmpty { fileName = url.deletingPathExtension().lastPathComponent }
             fileName += "." + (url.pathExtension.isEmpty ? "html" : url.pathExtension)
             let filenamePath = NSTemporaryDirectory() + fileName

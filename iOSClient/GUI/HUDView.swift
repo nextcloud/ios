@@ -22,6 +22,7 @@
 //
 
 import SwiftUI
+import PreviewSnapshots
 
 struct HUDView: View {
 
@@ -93,6 +94,16 @@ struct ContentView: View {
 
 struct HUDView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        snapshots.previews.previewLayout(.sizeThatFits)
+    }
+
+    static var snapshots: PreviewSnapshots<String> {
+        PreviewSnapshots(
+            configurations: [
+                .init(name: NCGlobal.shared.defaultSnapshotConfiguration, state: "")
+            ],
+            configure: { _ in
+                ContentView().frameForPreview()
+            })
     }
 }

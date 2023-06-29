@@ -166,7 +166,6 @@ class NCGlobal: NSObject {
 
     // Standard height sections header/footer
     //
-    let heightButtonsCommand: CGFloat               = 50
     let heightButtonsView: CGFloat                  = 50
     let heightSection: CGFloat                      = 30
     let heightFooter: CGFloat                       = 1
@@ -441,4 +440,14 @@ class NCGlobal: NSObject {
     @objc var capabilityUserStatusEnabled: Bool                 = false
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
+
+    // MORE APPS
+    let talkSchemeUrl                                           = "nextcloudtalk://"
+    let notesSchemeUrl                                          = "nextcloudnotes://"
+    let talkAppStoreUrl                                         = "https://apps.apple.com/de/app/nextcloud-talk/id1296825574"
+    let notesAppStoreUrl                                        = "https://apps.apple.com/de/app/nextcloud-notes/id813973264"
+    let moreAppsUrl                                             = "https://www.apple.com/us/search/nextcloud?src=globalnav"
+
+    // SNAPSHOT PREVIEW
+    let defaultSnapshotConfiguration                            = "DefaultPreviewConfiguration"
 }

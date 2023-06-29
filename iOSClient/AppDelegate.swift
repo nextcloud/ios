@@ -59,7 +59,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     private var privacyProtectionWindow: UIWindow?
 
+    var isUiTestingEnabled: Bool {
+         get {
+             return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
+         }
+     }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if isUiTestingEnabled {
+            deleteAllAccounts()
+        }
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
@@ -625,6 +634,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
+    @objc func deleteAllAccounts() {
+        let accounts = NCManageDatabase.shared.getAccounts()
+        accounts?.forEach({ account in
+            deleteAccount(account, wipe: true)
+        })
+    }
+
     @objc func changeAccount(_ account: String) {
 
         NCManageDatabase.shared.setAccountActive(account)
@@ -930,6 +946,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName)
                 }
             }
+            return true
+
+        /*
+         Example:
+         nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
+         */
+
+        } else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
+            guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return false }
+            let queryItems = urlComponents.queryItems
+
+            guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
+            guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
+
+            // If the account doesn't exist, return false which will open the app without switching
+            if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
+                return false
+            }
+
+            // Otherwise open the app and switch accounts
             return true
         } else {
             let applicationHandle = NCApplicationHandle()
