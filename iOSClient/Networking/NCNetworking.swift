@@ -1188,18 +1188,18 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION
-            Task {
-                if let metadataLive = metadataLive {
-                    let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
-                    if error == .success {
-                        return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
-                    } else {
-                        return error
-                    }
-                } else {
+            if let metadataLive = metadataLive {
+                let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
+                if error == .success {
                     return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                } else {
+                    return error
                 }
+            } else {
+                return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
             }
+#else
+            return NKError()
 #endif
         } else {
             if let metadataLive = metadataLive {
@@ -1213,7 +1213,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 return await deleteMetadataPlain(metadata)
             }
         }
-        return NKError()
     }
 
     func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> (NKError) {
