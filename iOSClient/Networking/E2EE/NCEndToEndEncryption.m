@@ -826,8 +826,9 @@
 
     // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx)
+    if (!ctx) {
         return NO;
+    }
 
     // Initialise the encryption operation
     if (keyLen == AES_KEY_128_LENGTH)
@@ -835,18 +836,24 @@
     else if (keyLen == AES_KEY_256_LENGTH)
         status = EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
 
-    if (status <= 0)
+    if (status <= 0) {
+        EVP_CIPHER_CTX_free(ctx);
         return NO;
+    }
 
     // Set IV length. Not necessary if this is 12 bytes (96 bits)
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, (int)sizeof(cIV), NULL);
-    if (status <= 0)
+    if (status <= 0) {
+        EVP_CIPHER_CTX_free(ctx);
         return NO;
+    }
 
     // Initialise key and IV
     status = EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIV);
-    if (status <= 0)
+    if (status <= 0) {
+        EVP_CIPHER_CTX_free(ctx);
         return NO;
+    }
 
     NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:fileName];
     NSOutputStream *outStream = [NSOutputStream outputStreamToFileAtPath:fileNameCipher append:false];
@@ -856,55 +863,64 @@
     Byte buffer[streamBuffer];
     NSInteger totalNumberOfBytesWritten = 0;
     int cCipherLen = 0;
-    NSMutableData *cipher;
     unsigned char *cCipher;
 
-    while ([inStream hasBytesAvailable])
-    {
+    while ([inStream hasBytesAvailable]) {
+
         NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
-        NSData *inData = [NSData dataWithBytes:buffer length:bytesRead];
 
         if (bytesRead > 0) {
-            cipher = [NSMutableData dataWithLength:bytesRead];
-            cCipher = [cipher mutableBytes];
 
-            status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [inData bytes], (int)bytesRead);
+            cCipher = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
+            status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
+            if (status <= 0) {
+                [inStream close];
+                [outStream close];
+                return NO;
+            }
 
             if ([outStream hasSpaceAvailable]) {
                 totalNumberOfBytesWritten = [outStream write:cCipher maxLength:cCipherLen];
                 if (totalNumberOfBytesWritten != cCipherLen) {
                     [inStream close];
                     [outStream close];
-                    // Free
                     EVP_CIPHER_CTX_free(ctx);
-                    return -1;
+                    return NO;
                 }
             }
         }
     }
 
+    [inStream close];
+
     status = EVP_EncryptFinal_ex(ctx, cCipher, &cCipherLen);
-    if (status <= 0)
+    if (status <= 0) {
+        [outStream close];
+        EVP_CIPHER_CTX_free(ctx);
         return NO;
+    }
 
     // Get the tag
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
+    if (status <= 0) {
+        [outStream close];
+        EVP_CIPHER_CTX_free(ctx);
+        return NO;
+    }
     *authenticationTag = [NSData dataWithBytes:cTag length:sizeof(cTag)];
 
     // Append TAG
     if ([outStream hasSpaceAvailable]) {
         totalNumberOfBytesWritten = [outStream write:cTag maxLength:sizeof(cTag)];
         if (totalNumberOfBytesWritten != sizeof(cTag)) {
-            status = -1;
+            status = NO;
         }
     } else {
-        status = -1;
+        status = NO;
     }
 
-    [inStream close];
     [outStream close];
 
-    // Free
     EVP_CIPHER_CTX_free(ctx);
 
     return status; // OpenSSL uses 1 for success
