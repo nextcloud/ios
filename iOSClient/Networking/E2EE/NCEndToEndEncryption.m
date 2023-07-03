@@ -44,6 +44,8 @@
 #define fileNamePrivateKey          @"privateKey.pem"
 #define fileNamePubliceKey          @"publicKey.pem"
 
+#define streamBuffer                1024
+
 #define AES_KEY_128_LENGTH          16
 #define AES_KEY_256_LENGTH          32
 #define AES_IVEC_LENGTH             16
@@ -852,49 +854,42 @@
     [inStream open];
     [outStream open];
 
-    Byte buffer[1024];
+    Byte buffer[streamBuffer];
+    NSInteger totalNumberOfBytesWritten = 0;
+    int cCipherLen = 0;
+    NSMutableData *cipher;
+    unsigned char *cCipher;
+
     while ([inStream hasBytesAvailable])
     {
-        int bytesRead = [inStream read:buffer maxLength:1024];
+        NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
         NSData *inData = [NSData dataWithBytes:buffer length:bytesRead];
 
-        NSMutableData *cipher;
-        unsigned char *cCipher = [cipher mutableBytes];
-        int cCipherLen = 0;
+        if (bytesRead > 0) {
+            cipher = [NSMutableData dataWithLength:bytesRead];
+            cCipher = [cipher mutableBytes];
 
-        status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [inData bytes], bytesRead);
-        [outStream write:cCipher maxLength:cCipherLen];
+            status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [inData bytes], (int)bytesRead);
+
+            if ([outStream hasSpaceAvailable]) {
+                totalNumberOfBytesWritten = [outStream write:cCipher maxLength:cCipherLen];
+            }
+        }
     }
 
-    // Finalise the encryption
-    //status = EVP_EncryptFinal_ex(ctx, cCipher+cCipherLen, &len);
-
-
-    [inStream close];
-    [outStream close];
-
-    /*
-    // Provide the message to be encrypted, and obtain the encrypted output
-    *cipher = [NSMutableData dataWithLength:[plain length]];
-    unsigned char * cCipher = [*cipher mutableBytes];
-    int cCipherLen = 0;
-    status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [plain bytes], (int)[plain length]);
+    status = EVP_EncryptFinal_ex(ctx, cCipher, &cCipherLen);
     if (status <= 0)
         return NO;
 
-    // Finalise the encryption
-    len = cCipherLen;
-    status = EVP_EncryptFinal_ex(ctx, cCipher+cCipherLen, &len);
-    if (status <= 0)
-        return NO;
-     */
-    
     // Get the tag
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
     *authenticationTag = [NSData dataWithBytes:cTag length:sizeof(cTag)];
-
+    
     // Append TAG
-//    [*cipher appendData:*authenticationTag];
+    totalNumberOfBytesWritten = [outStream write:cTag maxLength:sizeof(cTag)];
+
+    [inStream close];
+    [outStream close];
 
     // Free
     EVP_CIPHER_CTX_free(ctx);
