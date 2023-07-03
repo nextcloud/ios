@@ -856,12 +856,13 @@
     }
 
     NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:fileName];
-    NSOutputStream *outStream = [NSOutputStream outputStreamToFileAtPath:fileNameCipher append:false];
     [inStream open];
+    NSOutputStream *outStream = [NSOutputStream outputStreamToFileAtPath:fileNameCipher append:false];
     [outStream open];
 
     Byte buffer[streamBuffer];
     NSInteger totalNumberOfBytesWritten = 0;
+
     int cCipherLen = 0;
     unsigned char *cCipher;
 
@@ -876,6 +877,7 @@
             if (status <= 0) {
                 [inStream close];
                 [outStream close];
+                EVP_CIPHER_CTX_free(ctx);
                 return NO;
             }
 
