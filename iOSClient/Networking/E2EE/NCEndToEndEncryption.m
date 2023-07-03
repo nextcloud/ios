@@ -784,8 +784,7 @@
         return NO;
     
     // Finalise the encryption
-    len = cCipherLen;
-    status = EVP_EncryptFinal_ex(ctx, cCipher+cCipherLen, &len);
+    status = EVP_EncryptFinal_ex(ctx, cCipher, &cCipherLen);
     if (status <= 0)
         return NO;
     
@@ -873,6 +872,13 @@
 
             if ([outStream hasSpaceAvailable]) {
                 totalNumberOfBytesWritten = [outStream write:cCipher maxLength:cCipherLen];
+                if (totalNumberOfBytesWritten != cCipherLen) {
+                    [inStream close];
+                    [outStream close];
+                    // Free
+                    EVP_CIPHER_CTX_free(ctx);
+                    return -1;
+                }
             }
         }
     }
@@ -884,9 +890,16 @@
     // Get the tag
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
     *authenticationTag = [NSData dataWithBytes:cTag length:sizeof(cTag)];
-    
+
     // Append TAG
-    totalNumberOfBytesWritten = [outStream write:cTag maxLength:sizeof(cTag)];
+    if ([outStream hasSpaceAvailable]) {
+        totalNumberOfBytesWritten = [outStream write:cTag maxLength:sizeof(cTag)];
+        if (totalNumberOfBytesWritten != sizeof(cTag)) {
+            status = -1;
+        }
+    } else {
+        status = -1;
+    }
 
     [inStream close];
     [outStream close];
