@@ -848,7 +848,10 @@
         return NO;
 
     NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:fileName];
+    NSOutputStream *outStream = [NSOutputStream outputStreamToFileAtPath:fileNameCipher append:false];
     [inStream open];
+    [outStream open];
+
     Byte buffer[1024];
     while ([inStream hasBytesAvailable])
     {
@@ -860,8 +863,15 @@
         int cCipherLen = 0;
 
         status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [inData bytes], bytesRead);
+        [outStream write:cCipher maxLength:cCipherLen];
     }
+
+    // Finalise the encryption
+    //status = EVP_EncryptFinal_ex(ctx, cCipher+cCipherLen, &len);
+
+
     [inStream close];
+    [outStream close];
 
     /*
     // Provide the message to be encrypted, and obtain the encrypted output
