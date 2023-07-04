@@ -94,16 +94,16 @@ class NCGlobal: NSObject {
 
     // Nextcloud version
     //
-    let nextcloudVersion12: Int                     =  12
-    let nextcloudVersion15: Int                     =  15
-    let nextcloudVersion17: Int                     =  17
-    let nextcloudVersion18: Int                     =  18
-    let nextcloudVersion20: Int                     =  20
-    let nextcloudVersion23: Int                     =  23
-    let nextcloudVersion24: Int                     =  24
-    let nextcloudVersion25: Int                     =  25
-    let nextcloudVersion26: Int                     =  26
-    let nextcloudVersion27: Int                     =  27
+    let nextcloudVersion12: Int                     = 12
+    let nextcloudVersion15: Int                     = 15
+    let nextcloudVersion17: Int                     = 17
+    let nextcloudVersion18: Int                     = 18
+    let nextcloudVersion20: Int                     = 20
+    let nextcloudVersion23: Int                     = 23
+    let nextcloudVersion24: Int                     = 24
+    let nextcloudVersion25: Int                     = 25
+    let nextcloudVersion26: Int                     = 26
+    let nextcloudVersion27: Int                     = 27
 
     // Nextcloud unsupported
     //
@@ -127,7 +127,6 @@ class NCGlobal: NSObject {
 
     // E2EE
     //
-    let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeReadVersions                      = ["1.1", "1.2"]
 
