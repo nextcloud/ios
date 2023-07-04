@@ -1493,7 +1493,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user)
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
-                cell.titleInfoTrailingFull()
             }
         } else {
             cell.fileTitleLabel?.text = metadata.fileNameView
@@ -1666,6 +1665,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Add TAGS
         cell.setTags(tags: Array(metadata.tags))
+
+        // Hide buttons
+        if metadata.name != NCGlobal.shared.appName {
+            cell.titleInfoTrailingFull()
+            cell.hideButtonShare(true)
+            cell.hideButtonMore(true)
+        }
 
         // ** IMPORT MUST BE AT THE END **
         //
