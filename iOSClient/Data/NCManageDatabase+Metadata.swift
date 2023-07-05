@@ -672,13 +672,12 @@ extension NCManageDatabase {
 
     func setMetadataEtagResource(ocId: String, etagResource: String?) {
 
-        var result: tableMetadata?
         guard let etagResource = etagResource else { return }
 
         do {
             let realm = try Realm()
             try realm.write {
-                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.etagResource = etagResource
             }
         } catch let error {
