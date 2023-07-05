@@ -76,9 +76,8 @@ extension NCManageDatabase {
 
     @objc func addE2eEncryption(_ e2e: tableE2eEncryption) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 realm.add(e2e, update: .all)
             }
@@ -89,11 +88,9 @@ extension NCManageDatabase {
 
     @objc func deleteE2eEncryption(predicate: NSPredicate) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 let results = realm.objects(tableE2eEncryption.self).filter(predicate)
                 realm.delete(results)
             }
@@ -104,32 +101,35 @@ extension NCManageDatabase {
 
     @objc func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else { return nil }
+            return tableE2eEncryption.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableE2eEncryption.init(value: result)
+        return nil
     }
 
     @objc func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption]? {
 
-        guard self.getActiveAccount() != nil else {
-            return nil
+        guard self.getActiveAccount() != nil else { return nil }
+
+        do {
+            let realm = try Realm()
+            let results: Results<tableE2eEncryption>
+            results = realm.objects(tableE2eEncryption.self).filter(predicate)
+            if results.isEmpty {
+                return nil
+            } else {
+                return Array(results.map { tableE2eEncryption.init(value: $0) })
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        let realm = try! Realm()
-
-        let results: Results<tableE2eEncryption>
-
-        results = realm.objects(tableE2eEncryption.self).filter(predicate)
-
-        if results.count > 0 {
-            return Array(results.map { tableE2eEncryption.init(value: $0) })
-        } else {
-            return nil
-        }
+        return nil
     }
 
     @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
@@ -168,41 +168,44 @@ extension NCManageDatabase {
 
     @objc func getE2ETokenLock(account: String, serverUrl: String) -> tableE2eEncryptionLock? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
+            return tableE2eEncryptionLock.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableE2eEncryptionLock.init(value: result)
+        return nil
     }
 
     @objc func getE2EAllTokenLock(account: String) -> [tableE2eEncryptionLock] {
 
-        let realm = try! Realm()
-
-        let results = realm.objects(tableE2eEncryptionLock.self).filter("account == %@", account)
-
-        if results.count > 0 {
-            return Array(results.map { tableE2eEncryptionLock.init(value: $0) })
-        } else {
-            return []
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableE2eEncryptionLock.self).filter("account == %@", account)
+            if results.isEmpty {
+                return []
+            } else {
+                return Array(results.map { tableE2eEncryptionLock.init(value: $0) })
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return []
     }
 
     @objc func setE2ETokenLock(account: String, serverUrl: String, fileId: String, e2eToken: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let addObject = tableE2eEncryptionLock()
-
                 addObject.account = account
                 addObject.fileId = fileId
                 addObject.serverUrl = serverUrl
                 addObject.e2eToken = e2eToken
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -212,9 +215,8 @@ extension NCManageDatabase {
 
     @objc func deleteE2ETokenLock(account: String, serverUrl: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first {
                     realm.delete(result)
@@ -230,28 +232,27 @@ extension NCManageDatabase {
 
     func getE2eMetadata(account: String, serverUrl: String) -> tableE2eMetadata? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableE2eMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableE2eMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
+            return tableE2eMetadata.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableE2eMetadata.init(value: result)
+        return nil
     }
 
     func setE2eMetadata(account: String, serverUrl: String, metadataKey: String, version: Double) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let addObject = tableE2eMetadata()
-
                 addObject.account = account
                 addObject.metadataKey = metadataKey
                 addObject.serverUrl = serverUrl
                 addObject.version = version
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
