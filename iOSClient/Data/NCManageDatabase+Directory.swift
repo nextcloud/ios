@@ -48,19 +48,16 @@ extension NCManageDatabase {
 
     func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, account: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 var addObject = tableDirectory()
                 let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
-
                 if result != nil {
                     addObject = result!
                 } else {
                     addObject.ocId = ocId
                 }
-
                 addObject.account = account
                 addObject.e2eEncrypted = encrypted
                 addObject.favorite = favorite
@@ -72,7 +69,6 @@ extension NCManageDatabase {
                     addObject.permissions = permissions
                 }
                 addObject.serverUrl = serverUrl
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -82,19 +78,13 @@ extension NCManageDatabase {
 
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 
-        let realm = try! Realm()
-
-        let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
-
-        // Delete table Metadata & LocalFile
-        for result in results {
-
-            self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
-            self.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", result.ocId))
-        }
-
-        // Delete table Dirrectory
         do {
+            let realm = try Realm()
+            let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
+            for result in results {
+                self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
+                self.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", result.ocId))
+            }
             try realm.write {
                 realm.delete(results)
             }
@@ -105,19 +95,12 @@ extension NCManageDatabase {
 
     func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
-                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-                    return
-                }
-
+                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return }
                 let directory = tableDirectory.init(value: result)
-
                 realm.delete(result)
-
                 directory.e2eEncrypted = encrypted
                 if let etag = etag {
                     directory.etag = etag
@@ -134,7 +117,6 @@ extension NCManageDatabase {
                 if let richWorkspace = richWorkspace {
                     directory.richWorkspace = richWorkspace
                 }
-
                 realm.add(directory, update: .all)
             }
         } catch let error {
@@ -144,33 +126,38 @@ extension NCManageDatabase {
 
     func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableDirectory.self).filter(predicate).first else { return nil }
+            return tableDirectory.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableDirectory.init(value: result)
+        return nil
     }
 
     func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
 
-        let realm = try! Realm()
-
-        let results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-
-        if results.count > 0 {
-            return Array(results.map { tableDirectory.init(value: $0) })
-        } else {
-            return nil
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            if results.isEmpty {
+                return nil
+            } else {
+                return Array(results.map { tableDirectory.init(value: $0) })
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return nil
     }
 
     func renameDirectory(ocId: String, serverUrl: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
                 result?.serverUrl = serverUrl
@@ -182,9 +169,8 @@ extension NCManageDatabase {
 
     func setDirectory(serverUrl: String, offline: Bool, account: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.offline = offline
@@ -197,10 +183,10 @@ extension NCManageDatabase {
     @discardableResult
     func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
 
-        let realm = try! Realm()
         var result: tableDirectory?
 
         do {
+            let realm = try Realm()
             try realm.write {
                 result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.richWorkspace = richWorkspace
@@ -219,10 +205,10 @@ extension NCManageDatabase {
     @discardableResult
     func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
 
-        let realm = try! Realm()
         var result: tableDirectory?
 
         do {
+            let realm = try Realm()
             try realm.write {
                 result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.colorFolder = colorFolder
