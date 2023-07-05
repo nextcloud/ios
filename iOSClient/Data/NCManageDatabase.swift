@@ -271,7 +271,6 @@ class NCManageDatabase: NSObject {
 
     func getChunks(account: String, ocId: String) -> [String] {
 
-        let realm = try! Realm()
         var filesNames: [String] = []
 
         do {
@@ -285,7 +284,7 @@ class NCManageDatabase: NSObject {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return []
+        return filesNames
     }
 
     func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
@@ -414,9 +413,6 @@ class NCManageDatabase: NSObject {
     }
 
     func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
-
-        let realm = try! Realm()
-        let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
 
         do {
             let realm = try Realm()
