@@ -76,6 +76,9 @@ extension NCShareExtension: NCEmptyDataSetDelegate, NCAccountRequestDelegate {
         }
         self.activeAccount = activeAccount
 
+        // CAPABILITIES
+        NCManageDatabase.shared.setCapabilities(account: account)
+
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
         NCBrandColor.shared.createUserColors()

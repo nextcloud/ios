@@ -156,16 +156,7 @@ extension NCTrash: UICollectionViewDataSource {
             header.delegate = self
             header.setStatusButtonsView(enable: !datasource.isEmpty)
             header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
-            if isEditMode {
-                header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand,
-                                         imageButton1: UIImage(named: "restore"), titleButton1: NSLocalizedString("_trash_restore_selected_", comment: ""),
-                                         imageButton2: UIImage(named: "trash"), titleButton2: NSLocalizedString("_trash_delete_selected_", comment: ""))
-            } else {
-                header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand,
-                                         imageButton1: UIImage(named: "restore"), titleButton1: NSLocalizedString("_trash_restore_all_", comment: ""),
-                                         imageButton2: UIImage(named: "trash"), titleButton2: NSLocalizedString("_trash_delete_all_", comment: ""))
-            }
-            header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
+            header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
             header.setRichWorkspaceHeight(0)
             header.setSectionHeight(0)
 
@@ -188,7 +179,7 @@ extension NCTrash: UICollectionViewDataSource {
 extension NCTrash: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightButtonsView + NCGlobal.shared.heightButtonsCommand)
+        return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightButtonsView)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
