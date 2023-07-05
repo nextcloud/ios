@@ -297,9 +297,8 @@ extension NCManageDatabase {
 
     func addComments(_ comments: [NKComments], account: String, objectId: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
                 realm.delete(results)

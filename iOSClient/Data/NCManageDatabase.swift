@@ -149,7 +149,11 @@ class NCManageDatabase: NSObject {
         }
 
         // Open Real
-        _ = try! Realm()
+        do {
+            _ = try Realm()
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not open database: \(error)")
+        }
     }
 
     // MARK: -

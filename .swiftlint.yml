@@ -37,7 +37,6 @@ disabled_rules:
   - cyclomatic_complexity
   - nesting
   - shorthand_operator
-  - force_try
   - type_name
     
 excluded:

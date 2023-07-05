@@ -134,31 +134,19 @@ extension NCManageDatabase {
 
     @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
 
-        guard let activeAccount = self.getActiveAccount() else {
-            return
-        }
-
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", activeAccount.account, serverUrl, fileNameIdentifier).first else {
-            realm.cancelWrite()
-            return
-        }
-
-        let object = tableE2eEncryption.init(value: result)
-
-        realm.delete(result)
-
-        object.fileName = newFileName
-        object.fileNamePath = newFileNamePath
-
-        realm.add(object)
+        guard let activeAccount = self.getActiveAccount() else { return }
 
         do {
-            try realm.commitWrite()
-        } catch let error {
+            let realm = try Realm()
+            try realm.write {
+                guard let result = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", activeAccount.account, serverUrl, fileNameIdentifier).first else { return }
+                let object = tableE2eEncryption.init(value: result)
+                realm.delete(result)
+                object.fileName = newFileName
+                object.fileNamePath = newFileNamePath
+                realm.add(object)
+            }
+        } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }

@@ -182,12 +182,16 @@ extension NCManageDatabase {
 
     func getTableShares(account: String, serverUrl: String) -> [tableShare] {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
+            return Array(results.map { tableShare.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
-
-        return Array(results.map { tableShare.init(value: $0) })
+        return []
     }
 
     func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
