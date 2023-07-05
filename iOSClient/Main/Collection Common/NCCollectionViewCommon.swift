@@ -67,8 +67,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     private var tipView: EasyTipView?
 
-    private var isLastPage: Bool = false
-
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -978,7 +976,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
 
-        isLastPage = false
         isReloadDataSourceNetworkInProgress = true
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
@@ -1043,7 +1040,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             metadataForSection.unifiedSearchInProgress = false
             guard let searchResult = searchResult, let metadatas = metadatas else { return }
-            self.isLastPage = searchResult.entries.isEmpty
             self.dataSource.appendMetadatasToSection(metadatas, metadataForSection: metadataForSection, lastSearchResult: searchResult)
 
             DispatchQueue.main.async {
@@ -1736,12 +1732,19 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             footer.buttonIsHidden(true)
             footer.hideActivityIndicatorSection()
 
+
             if isSearchingMode {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
 
-                if isSearchingMode && isPaginated && metadatasCount > 0 && !isLastPage {
+                // If the number of entries(metadatas) is lower than the cursor, then there are no more entries.
+                // The blind spot in this is when the number of entries is the same as the cursor. If so, we don't have a way of knowing if there are no more entries.
+                // This is as good as it gets for determining last page without server-side flag.
+                let isLastPageTest = (metadatasCount < metadataForSection?.lastSearchResult?.cursor ?? 0) || metadataForSection?.lastSearchResult?.entries.isEmpty == true
+
+                print(metadatasCount)
+                if isSearchingMode && isPaginated && metadatasCount > 0 && !isLastPageTest {
                     footer.buttonIsHidden(false)
                 }
 
