@@ -41,19 +41,14 @@ extension NCManageDatabase {
 
     func addAvatar(fileName: String, etag: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
-                // Add new
                 let addObject = tableAvatar()
-
                 addObject.date = NSDate()
                 addObject.etag = etag
                 addObject.fileName = fileName
                 addObject.loaded = true
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -63,22 +58,22 @@ extension NCManageDatabase {
 
     func getTableAvatar(fileName: String) -> tableAvatar? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else { return nil }
+            return tableAvatar.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableAvatar.init(value: result)
+        return nil
     }
 
     func clearAllAvatarLoaded() {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 let results = realm.objects(tableAvatar.self)
                 for result in results {
                     result.loaded = false
@@ -93,11 +88,11 @@ extension NCManageDatabase {
     @discardableResult
     func setAvatarLoaded(fileName: String) -> UIImage? {
 
-        let realm = try! Realm()
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
         var image: UIImage?
 
         do {
+            let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
                     if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
@@ -117,18 +112,23 @@ extension NCManageDatabase {
 
     func getImageAvatarLoaded(fileName: String) -> UIImage? {
 
-        let realm = try! Realm()
         let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
 
-        let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
-        if result == nil {
-            NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
-            return nil
-        } else if result?.loaded == false {
-            return nil
+        do {
+            let realm = try Realm()
+            let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
+            if result == nil {
+                NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
+                return nil
+            } else if result?.loaded == false {
+                return nil
+            }
+            return UIImage(contentsOfFile: fileNameLocalPath)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return UIImage(contentsOfFile: fileNameLocalPath)
+        NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
+        return nil
     }
-
 }
