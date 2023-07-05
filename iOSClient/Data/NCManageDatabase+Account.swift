@@ -81,19 +81,6 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var website = ""
     @objc dynamic var zip = ""
 
-    // HC
-    @objc dynamic var hcIsTrial: Bool = false
-    @objc dynamic var hcTrialExpired: Bool = false
-    @objc dynamic var hcTrialRemainingSec: Int64 = 0
-    @objc dynamic var hcTrialEndTime: NSDate?
-    @objc dynamic var hcAccountRemoveExpired: Bool = false
-    @objc dynamic var hcAccountRemoveRemainingSec: Int64 = 0
-    @objc dynamic var hcAccountRemoveTime: NSDate?
-    @objc dynamic var hcNextGroupExpirationGroup = ""
-    @objc dynamic var hcNextGroupExpirationGroupExpired: Bool = false
-    @objc dynamic var hcNextGroupExpirationExpiresTime: NSDate?
-    @objc dynamic var hcNextGroupExpirationExpires = ""
-
     override static func primaryKey() -> String {
         return "account"
     }
