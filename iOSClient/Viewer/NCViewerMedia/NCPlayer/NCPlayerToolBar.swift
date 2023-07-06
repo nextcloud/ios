@@ -156,12 +156,12 @@ class NCPlayerToolBar: UIView {
 
     public func update() {
 
-        guard let ncplayer = self.ncplayer,
-              let length = ncplayer.player.media?.length.intValue
-        else { return }
+        guard let ncplayer = self.ncplayer, let length = ncplayer.player.media?.length.intValue else { return }
 
         let position = ncplayer.player.position
         let positionInSecond = position * Float(length / 1000)
+
+        print(position)
 
         // SLIDER & TIME
         if playbackSliderEvent == .ended {

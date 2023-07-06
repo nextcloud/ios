@@ -233,7 +233,7 @@ class NCViewerMediaPage: UIViewController {
                 progressView.isHidden = false
             }
 
-            if metadata.isMovie {
+            if metadata.isAudioOrVideo {
                 NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .black, titleColor: .label, tintColor: nil, withoutShadow: false)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
@@ -250,7 +250,7 @@ class NCViewerMediaPage: UIViewController {
             hideStatusBar = true
             progressView.isHidden = true
 
-            if metadata.isMovie {
+            if metadata.isVideo {
                 currentViewController.playerToolBar?.hide()
             }
 
@@ -282,7 +282,7 @@ class NCViewerMediaPage: UIViewController {
     @objc func autoHide() {
 
         let metadata = currentViewController.metadata
-        if metadata.isMovie, viewerMediaScreenMode == .normal {
+        if metadata.isVideo, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
         }
     }
@@ -301,7 +301,7 @@ class NCViewerMediaPage: UIViewController {
         let metadata = currentViewController.metadata
 
         if metadata.ocId == ocId,
-           metadata.isMovie,
+           metadata.isAudioOrVideo,
            CCUtility.fileProviderStorageExists(metadata),
            let ncplayer = currentViewController.ncplayer {
             let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
