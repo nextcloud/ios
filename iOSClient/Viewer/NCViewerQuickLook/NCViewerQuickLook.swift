@@ -76,7 +76,7 @@ private var hasChangesQuickLook: Bool = false
         }
 
         if let metadata = metadata, metadata.isImage {
-            let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismission))
+            let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismiss))
             let buttonCrop = UIBarButtonItem(image: UIImage(systemName: "crop"), style: .plain, target: self, action: #selector(crop))
             navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
             startTimer(navigationItem: navigationItem)
@@ -94,7 +94,7 @@ private var hasChangesQuickLook: Bool = false
         super.viewDidDisappear(animated)
 
         if let metadata = metadata, metadata.classFile != NKCommon.TypeClassFile.image.rawValue {
-            dismission()
+            dismiss()
         }
     }
 
@@ -116,7 +116,7 @@ private var hasChangesQuickLook: Bool = false
         })
     }
 
-    @objc func dismission() {
+    @objc func dismiss() {
 
         guard isEditingEnabled, hasChangesQuickLook, let metadata = metadata else {
             dismiss(animated: true)
@@ -256,12 +256,15 @@ extension NCViewerQuickLook: CropViewControllerDelegate {
 
     func cropViewControllerDidCrop(_ cropViewController: Mantis.CropViewController, cropped: UIImage, transformation: Mantis.Transformation, cropInfo: Mantis.CropInfo) {
         cropViewController.dismiss(animated: true)
-        guard let data = cropped.jpegData(compressionQuality: 1) else { return }
+        guard let data = cropped.jpegData(compressionQuality: 0.9) else { return }
+
         do {
             try data.write(to: self.url)
             hasChangesQuickLook = true
             reloadData()
-        } catch {  }
+        } catch {
+            print(error)
+        }
     }
 
     func cropViewControllerDidCancel(_ cropViewController: Mantis.CropViewController, original: UIImage) {
