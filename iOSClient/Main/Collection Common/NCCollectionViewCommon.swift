@@ -1719,7 +1719,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 // This is as good as it gets for determining last page without server-side flag.
                 let isLastPage = (metadatasCount < metadataForSection?.lastSearchResult?.cursor ?? 0) || metadataForSection?.lastSearchResult?.entries.isEmpty == true
 
-                print(metadatasCount)
                 if isSearchingMode && isPaginated && metadatasCount > 0 && !isLastPage {
                     footer.buttonIsHidden(false)
                 }
