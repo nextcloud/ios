@@ -37,7 +37,7 @@ disabled_rules:
   - cyclomatic_complexity
   - nesting
   - shorthand_operator
-  - force_try
+  - type_name
     
 excluded:
   - Carthage
@@ -70,21 +70,6 @@ excluded:
   - iOSClient/AppDelegate.swift
   - iOSClient/BackgroundImageColor/NCBackgroundImageColor.swift
   - iOSClient/BrowserWeb/NCBrowserWeb.swift
-  - iOSClient/Data/NCDataSource.swift
-  - iOSClient/Data/NCDatabase.swift
-  - iOSClient/Data/NCElementsJSON.swift
-  - iOSClient/Data/NCManageDatabase+Capabilities.swift
-  - iOSClient/Data/NCManageDatabase+Account.swift
-  - iOSClient/Data/NCManageDatabase+Activity.swift
-  - iOSClient/Data/NCManageDatabase+Avatar.swift
-  - iOSClient/Data/NCManageDatabase+E2EE.swift
-  - iOSClient/Data/NCManageDatabase.swift
-  - iOSClient/Data/NCManageDatabase+Metadata.swift
-  - iOSClient/Data/NCManageDatabase+Directory.swift
-  - iOSClient/Data/NCManageDatabase+Share.swift
-  - iOSClient/Data/NCManageDatabase+Video.swift
-  - iOSClient/Data/NCManageDatabase+LayoutForView.swift
-  - iOSClient/Data/NCManageDatabase+DashboardWidget.swift
   - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
   - iOSClient/EmptyView/NCEmptyDataSet.swift
   - iOSClient/Extensions/UIColor+Extensions.swift

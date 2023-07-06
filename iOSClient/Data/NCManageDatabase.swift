@@ -149,7 +149,11 @@ class NCManageDatabase: NSObject {
         }
 
         // Open Real
-        _ = try! Realm()
+        do {
+            _ = try Realm()
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not open database: \(error)")
+        }
     }
 
     // MARK: -
@@ -157,9 +161,8 @@ class NCManageDatabase: NSObject {
 
     @objc func clearTable(_ table: Object.Type, account: String? = nil) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 var results: Results<Object>
 
@@ -232,21 +235,24 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func getThreadConfined(_ object: Object) -> Any {
+    func getThreadConfined(_ object: Object) -> Any {
 
-        // id tradeReference = [[NCManageDatabase shared] getThreadConfined:metadata];
         return ThreadSafeReference(to: object)
     }
 
-    @objc func putThreadConfined(_ tableRef: Any) -> Object? {
+    func putThreadConfined(_ tableRef: ThreadSafeReference<Object>) -> Object? {
 
-        // tableMetadata *metadataThread = (tableMetadata *)[[NCManageDatabase shared] putThreadConfined:tradeReference];
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            return realm.resolve(tableRef)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        return realm.resolve(tableRef as! ThreadSafeReference<Object>)
+        return nil
     }
 
-    @objc func isTableInvalidated(_ object: Object) -> Bool {
+    func isTableInvalidated(_ object: Object) -> Bool {
 
         return object.isInvalidated
     }
@@ -256,10 +262,12 @@ class NCManageDatabase: NSObject {
 
     func getChunkFolder(account: String, ocId: String) -> String {
 
-        let realm = try! Realm()
-
-        if let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first {
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first else { return NSUUID().uuidString }
             return result.chunkFolder
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         return NSUUID().uuidString
@@ -267,12 +275,17 @@ class NCManageDatabase: NSObject {
 
     func getChunks(account: String, ocId: String) -> [String] {
 
-        let realm = try! Realm()
         var filesNames: [String] = []
 
-        let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
-        for result in results {
-            filesNames.append(result.fileName)
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
+            for result in results {
+                filesNames.append(result.fileName)
+            }
+            return filesNames
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         return filesNames
@@ -280,10 +293,10 @@ class NCManageDatabase: NSObject {
 
     func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
 
-        let realm = try! Realm()
         var size: Int64 = 0
 
         do {
+            let realm = try Realm()
             try realm.write {
 
                 for fileName in fileNames {
@@ -308,22 +321,22 @@ class NCManageDatabase: NSObject {
 
     func getChunk(account: String, fileName: String) -> tableChunk? {
 
-        let realm = try! Realm()
-
-        if let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first {
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first else { return nil }
             return tableChunk.init(value: result)
-        } else {
-            return nil
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return nil
     }
 
     func deleteChunk(account: String, ocId: String, fileName: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName))
                 realm.delete(result)
             }
@@ -334,9 +347,8 @@ class NCManageDatabase: NSObject {
 
     func deleteChunks(account: String, ocId: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
 
                 let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
@@ -352,9 +364,8 @@ class NCManageDatabase: NSObject {
 
     func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
 
                 let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
@@ -407,39 +418,53 @@ class NCManageDatabase: NSObject {
 
     func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
 
-        let realm = try! Realm()
-        let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
-
-        if results.count > 0 {
-            return Array(results.map { tableDirectEditingCreators.init(value: $0) })
-        } else {
-            return nil
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
+            if results.isEmpty {
+                return nil
+            } else {
+                return Array(results.map { tableDirectEditingCreators.init(value: $0) })
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return nil
     }
 
     func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
 
-        let realm = try! Realm()
-
-        let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
-
-        if results.count > 0 {
-            return Array(results.map { tableDirectEditingCreators.init(value: $0) })
-        } else {
-            return nil
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
+            if results.isEmpty {
+                return nil
+            } else {
+                return Array(results.map { tableDirectEditingCreators.init(value: $0) })
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return nil
     }
 
     func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
 
-        let realm = try! Realm()
-        let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
-
-        if results.count > 0 {
-            return Array(results.map { tableDirectEditingEditors.init(value: $0) })
-        } else {
-            return nil
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
+            if results.isEmpty {
+                return nil
+            } else {
+                return Array(results.map { tableDirectEditingEditors.init(value: $0) })
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return nil
     }
 
     // MARK: -
@@ -447,9 +472,8 @@ class NCManageDatabase: NSObject {
 
     func addExternalSites(_ externalSite: NKExternalSite, account: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let addObject = tableExternalSites()
 
@@ -470,9 +494,8 @@ class NCManageDatabase: NSObject {
 
     func deleteExternalSites(account: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let results = realm.objects(tableExternalSites.self).filter("account == %@", account)
                 realm.delete(results)
@@ -484,15 +507,19 @@ class NCManageDatabase: NSObject {
 
     func getAllExternalSites(account: String) -> [tableExternalSites]? {
 
-        let realm = try! Realm()
-
-        let results = realm.objects(tableExternalSites.self).filter("account == %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
-
-        if results.count > 0 {
-            return Array(results.map { tableExternalSites.init(value: $0) })
-        } else {
-            return nil
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableExternalSites.self).filter("account == %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
+            if results.isEmpty {
+                return nil
+            } else {
+                return Array(results.map { tableExternalSites.init(value: $0) })
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return nil
     }
 
     // MARK: -
@@ -500,43 +527,37 @@ class NCManageDatabase: NSObject {
 
     @objc func addGeocoderLocation(_ location: String, placemarkAdministrativeArea: String, placemarkCountry: String, placemarkLocality: String, placemarkPostalCode: String, placemarkThoroughfare: String, latitude: String, longitude: String) {
 
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        // Verify if exists
-        guard realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first == nil else {
-            realm.cancelWrite()
-            return
-        }
-
-        // Add new GPS
-        let addObject = tableGPS()
-
-        addObject.latitude = latitude
-        addObject.location = location
-        addObject.longitude = longitude
-        addObject.placemarkAdministrativeArea = placemarkAdministrativeArea
-        addObject.placemarkCountry = placemarkCountry
-        addObject.placemarkLocality = placemarkLocality
-        addObject.placemarkPostalCode = placemarkPostalCode
-        addObject.placemarkThoroughfare = placemarkThoroughfare
-
-        realm.add(addObject)
-
         do {
-            try realm.commitWrite()
-        } catch let error {
+            let realm = try Realm()
+            guard realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first == nil else { return }
+            try realm.write {
+                let addObject = tableGPS()
+                addObject.latitude = latitude
+                addObject.location = location
+                addObject.longitude = longitude
+                addObject.placemarkAdministrativeArea = placemarkAdministrativeArea
+                addObject.placemarkCountry = placemarkCountry
+                addObject.placemarkLocality = placemarkLocality
+                addObject.placemarkPostalCode = placemarkPostalCode
+                addObject.placemarkThoroughfare = placemarkThoroughfare
+                realm.add(addObject)
+            }
+        } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
     @objc func getLocationFromGeoLatitude(_ latitude: String, longitude: String) -> String? {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first
+            return result?.location
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first
-        return result?.location
+        return nil
     }
 
     // MARK: -
@@ -544,13 +565,10 @@ class NCManageDatabase: NSObject {
 
     func addLocalFile(metadata: tableMetadata) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
-
                 addObject.account = metadata.account
                 addObject.etag = metadata.etag
                 addObject.exifDate = NSDate()
@@ -558,7 +576,6 @@ class NCManageDatabase: NSObject {
                 addObject.exifLongitude = "-1"
                 addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -568,13 +585,10 @@ class NCManageDatabase: NSObject {
 
     func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 let addObject = tableLocalFile()
-
                 addObject.account = account
                 addObject.etag = etag
                 addObject.exifDate = NSDate()
@@ -582,7 +596,6 @@ class NCManageDatabase: NSObject {
                 addObject.exifLongitude = "-1"
                 addObject.ocId = ocId
                 addObject.fileName = fileName
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -592,9 +605,8 @@ class NCManageDatabase: NSObject {
 
     func deleteLocalFile(predicate: NSPredicate) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let results = realm.objects(tableLocalFile.self).filter(predicate)
                 realm.delete(results)
@@ -606,9 +618,8 @@ class NCManageDatabase: NSObject {
 
     func setLocalFile(ocId: String, fileName: String?, etag: String?) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
                 if let fileName = fileName {
@@ -625,9 +636,8 @@ class NCManageDatabase: NSObject {
 
     @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first {
                     result.exifDate = exifDate
@@ -645,36 +655,47 @@ class NCManageDatabase: NSObject {
 
     func getTableLocalFile(account: String) -> [tableLocalFile] {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
+            return Array(results.map { tableLocalFile.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
-        return Array(results.map { tableLocalFile.init(value: $0) })
+        return []
     }
 
     func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else { return nil }
+            return tableLocalFile.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableLocalFile.init(value: result)
+        return nil
     }
 
     func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            return Array(results.map { tableLocalFile.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-        return Array(results.map { tableLocalFile.init(value: $0) })
+        return []
     }
 
     func setLocalFile(ocId: String, offline: Bool) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
                 result?.offline = offline
@@ -690,16 +711,12 @@ class NCManageDatabase: NSObject {
     @discardableResult
     func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 for asset in assets {
-
                     var creationDateString = ""
                     let addObject = tablePhotoLibrary()
-
                     addObject.account = account
                     addObject.assetLocalIdentifier = asset.localIdentifier
                     addObject.mediaType = asset.mediaType.rawValue
@@ -711,7 +728,6 @@ class NCManageDatabase: NSObject {
                         addObject.modificationDate = modificationDate as NSDate
                     }
                     addObject.idAsset = account + asset.localIdentifier + creationDateString
-
                     realm.add(addObject, update: .all)
                 }
             }
@@ -725,46 +741,40 @@ class NCManageDatabase: NSObject {
 
     func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
 
-        let realm = try! Realm()
         var predicate = NSPredicate()
 
         if image && video {
-
             predicate = NSPredicate(format: "account == %@ AND (mediaType == %d OR mediaType == %d)", account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
-
         } else if image {
-
             predicate = NSPredicate(format: "account == %@ AND mediaType == %d", account, PHAssetMediaType.image.rawValue)
-
         } else if video {
-
             predicate = NSPredicate(format: "account == %@ AND mediaType == %d", account, PHAssetMediaType.video.rawValue)
         }
 
-        let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
+            let idsAsset = results.map { $0.idAsset }
+            return Array(idsAsset)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let idsAsset = results.map { $0.idAsset }
-
-        return Array(idsAsset)
+        return nil
     }
-    
+
     // MARK: -
     // MARK: Table Tag
 
     func addTag(_ ocId: String, tagIOS: Data?, account: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
-                // Add new
                 let addObject = tableTag()
-
                 addObject.account = account
                 addObject.ocId = ocId
                 addObject.tagIOS = tagIOS
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -774,15 +784,12 @@ class NCManageDatabase: NSObject {
 
     func deleteTag(_ ocId: String) {
 
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let result = realm.objects(tableTag.self).filter("ocId == %@", ocId)
-        realm.delete(result)
-
         do {
-            try realm.commitWrite()
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableTag.self).filter("ocId == %@", ocId)
+                realm.delete(results)
+            }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
@@ -790,22 +797,28 @@ class NCManageDatabase: NSObject {
 
     func getTags(predicate: NSPredicate) -> [tableTag] {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableTag.self).filter(predicate)
+            return Array(results.map { tableTag.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let results = realm.objects(tableTag.self).filter(predicate)
-
-        return Array(results.map { tableTag.init(value: $0) })
+        return []
     }
 
     func getTag(predicate: NSPredicate) -> tableTag? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableTag.self).filter(predicate).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableTag.self).filter(predicate).first else { return nil }
+            return tableTag.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableTag.init(value: result)
+        return nil
     }
 
     // MARK: -
@@ -813,12 +826,15 @@ class NCManageDatabase: NSObject {
 
     func tipExists(_ tipName: String) -> Bool {
 
-        let realm = try! Realm()
-
-        guard (realm.objects(tableTip.self).where {
-            $0.tipName == tipName
-        }.first) == nil else {
-            return true
+        do {
+            let realm = try Realm()
+            guard (realm.objects(tableTip.self).where {
+                $0.tipName == tipName
+            }.first) == nil else {
+                return true
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
         return false
@@ -826,9 +842,8 @@ class NCManageDatabase: NSObject {
 
     func addTip(_ tipName: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let addObject = tableTip()
                 addObject.tipName = tipName
@@ -844,13 +859,11 @@ class NCManageDatabase: NSObject {
 
     func addTrash(account: String, items: [NKTrash]) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 for trash in items {
                     let object = tableTrash()
-
                     object.account = account
                     object.contentType = trash.contentType
                     object.date = trash.date
@@ -865,7 +878,6 @@ class NCManageDatabase: NSObject {
                     object.trashbinFileName = trash.trashbinFileName
                     object.trashbinOriginalLocation = trash.trashbinOriginalLocation
                     object.classFile = trash.classFile
-
                     realm.add(object, update: .all)
                 }
             }
@@ -876,18 +888,16 @@ class NCManageDatabase: NSObject {
 
     func deleteTrash(filePath: String?, account: String) {
 
-        let realm = try! Realm()
         var predicate = NSPredicate()
 
         do {
+            let realm = try Realm()
             try realm.write {
-
                 if filePath == nil {
                     predicate = NSPredicate(format: "account == %@", account)
                 } else {
                     predicate = NSPredicate(format: "account == %@ AND filePath == %@", account, filePath!)
                 }
-
                 let result = realm.objects(tableTrash.self).filter(predicate)
                 realm.delete(result)
             }
@@ -898,18 +908,16 @@ class NCManageDatabase: NSObject {
 
     func deleteTrash(fileId: String?, account: String) {
 
-        let realm = try! Realm()
         var predicate = NSPredicate()
 
         do {
+            let realm = try Realm()
             try realm.write {
-
                 if fileId == nil {
                     predicate = NSPredicate(format: "account == %@", account)
                 } else {
                     predicate = NSPredicate(format: "account == %@ AND fileId == %@", account, fileId!)
                 }
-
                 let result = realm.objects(tableTrash.self).filter(predicate)
                 realm.delete(result)
             }
@@ -920,24 +928,31 @@ class NCManageDatabase: NSObject {
 
     func getTrash(filePath: String, sort: String?, ascending: Bool?, account: String) -> [tableTrash]? {
 
-        let realm = try! Realm()
         let sort = sort ?? "date"
         let ascending = ascending ?? false
 
-        let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
+            return Array(results.map { tableTrash.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        return Array(results.map { tableTrash.init(value: $0) })
+        return nil
     }
 
     func getTrashItem(fileId: String, account: String) -> tableTrash? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else { return nil }
+            return tableTrash.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableTrash.init(value: result)
+        return nil
     }
 
     // MARK: -
@@ -945,18 +960,13 @@ class NCManageDatabase: NSObject {
 
     func addUserStatus(_ userStatuses: [NKUserStatus], account: String, predefined: Bool) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 let results = realm.objects(tableUserStatus.self).filter("account == %@ AND predefined == %@", account, predefined)
                 realm.delete(results)
-
                 for userStatus in userStatuses {
-
                     let object = tableUserStatus()
-
                     object.account = account
                     object.clearAt = userStatus.clearAt
                     object.clearAtTime = userStatus.clearAtTime
@@ -967,7 +977,6 @@ class NCManageDatabase: NSObject {
                     object.predefined = userStatus.predefined
                     object.status = userStatus.status
                     object.userId = userStatus.userId
-
                     realm.add(object)
                 }
             }
