@@ -242,7 +242,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             activityIndicator.stopAnimating()
         }
 
-        print (aNotification)
         switch player.state {
         case .stopped:
             playerToolBar?.playButtonPlay()
@@ -307,7 +306,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
     }
 
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
-        print(player.position)
         activityIndicator.stopAnimating()
         playerToolBar?.update()
     }

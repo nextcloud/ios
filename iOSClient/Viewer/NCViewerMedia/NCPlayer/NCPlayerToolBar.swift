@@ -161,8 +161,6 @@ class NCPlayerToolBar: UIView {
         let position = ncplayer.player.position
         let positionInSecond = position * Float(length / 1000)
 
-        print(position)
-
         // SLIDER & TIME
         if playbackSliderEvent == .ended {
             playbackSlider.value = position
