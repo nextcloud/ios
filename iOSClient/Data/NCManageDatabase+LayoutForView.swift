@@ -44,15 +44,13 @@ extension NCManageDatabase {
     @discardableResult
     func setLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil, sort: String? = nil, ascending: Bool? = nil, groupBy: String? = nil, directoryOnTop: Bool? = nil, titleButtonHeader: String? = nil, itemForLine: Int? = nil) -> NCDBLayoutForView? {
 
-        let realm = try! Realm()
-
         var keyStore = key
         if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
-
         var addObject = NCDBLayoutForView()
 
         do {
+            let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(NCDBLayoutForView.self).filter("index == %@", index).first {
                     addObject = result
@@ -91,16 +89,16 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return NCDBLayoutForView.init(value: addObject)
+        return NCDBLayoutForView(value: addObject)
     }
 
     @discardableResult
     func setLayoutForView(layoutForView: NCDBLayoutForView) -> NCDBLayoutForView? {
 
-        let realm = try! Realm()
-        let result = NCDBLayoutForView.init(value: layoutForView)
+        let result = NCDBLayoutForView(value: layoutForView)
 
         do {
+            let realm = try Realm()
             try realm.write {
                 realm.add(result, update: .all)
             }
@@ -108,21 +106,26 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
             return nil
         }
-        return NCDBLayoutForView.init(value: result)
+        return NCDBLayoutForView(value: result)
     }
 
     func getLayoutForView(account: String, key: String, serverUrl: String) -> NCDBLayoutForView? {
-
-        let realm = try! Realm()
 
         var keyStore = key
         if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
 
-        if let result = realm.objects(NCDBLayoutForView.self).filter("index == %@", index).first {
-            return NCDBLayoutForView.init(value: result)
-        } else {
-            return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
+        do {
+            let realm = try Realm()
+            if let result = realm.objects(NCDBLayoutForView.self).filter("index == %@", index).first {
+                return NCDBLayoutForView(value: result)
+            } else {
+                return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
     }
 }
