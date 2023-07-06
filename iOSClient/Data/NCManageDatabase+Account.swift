@@ -33,7 +33,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var alias = ""
     @objc dynamic var autoUpload: Bool = false
     @objc dynamic var autoUploadCreateSubfolder: Bool = false
-    @objc dynamic var autoUploadSubfolderGranularity: Int64 = 1
+    @objc dynamic var autoUploadSubfolderGranularity: Int = NCGlobal.shared.subfolderGranularityMonthly
     @objc dynamic var autoUploadDirectory = ""
     @objc dynamic var autoUploadFileName = ""
     @objc dynamic var autoUploadFull: Bool = false
@@ -262,17 +262,17 @@ extension NCManageDatabase {
         return folderPhotos
     }
 
-    @objc func getAccountAutoUploadSubfolderGranularity() -> Int64 {
+    @objc func getAccountAutoUploadSubfolderGranularity() -> Int {
 
         do {
             let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return 1 }
+            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return NCGlobal.shared.subfolderGranularityMonthly }
             return result.autoUploadSubfolderGranularity
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return 1
+        return NCGlobal.shared.subfolderGranularityMonthly
     }
 
     @discardableResult
@@ -333,7 +333,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAutoUploadGranularity(_ property: String, state: Int64) {
+    @objc func setAccountAutoUploadGranularity(_ property: String, state: Int) {
 
         do {
             let realm = try Realm()
