@@ -310,6 +310,12 @@ class NCGlobal: NSObject {
     //
     let includeHiddenFiles: [String]                = [".LivePhoto"]
 
+    // Auto upload subfolder granularity
+    //
+    @objc let subfolderGranularityDaily             = 2
+    @objc let subfolderGranularityMonthly           = 1
+    @objc let subfolderGranularityYearly            = 0
+
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
