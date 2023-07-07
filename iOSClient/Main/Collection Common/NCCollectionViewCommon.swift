@@ -874,14 +874,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
-
             return nil
-
         }, actionProvider: { _ in
-
-            // let share = UIAction(title: "Share Pupper", image: UIImage(systemName: "square.and.arrow.up")) { action in
-            // }
-            // return UIMenu(title: "Main Menu", children: [share])
             return nil
         })
     }
@@ -1004,13 +998,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
 
-        guard let metadataForSection = metadataForSection, let searchResult = metadataForSection.lastSearchResult, let cursor = searchResult.cursor, let term = literalSearch else { return }
+        guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: searchResult.id, term: term, limit: 5, cursor: cursor) { account, searchResult, metadatas, error in
-
+        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { account, searchResult, metadatas, error in
             if error != .success {
                 NCContentPresenter.shared.showError(error: error)
             }
@@ -1377,14 +1370,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         NCOperationQueue.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
                     }
                 }
-
-//                if metadata.iconName.contains("contacts"), let subline = metadata.subline, !subline.isEmpty, let cell = cell as? NCCellProtocol {
-//                    let components = subline.components(separatedBy: "@")
-//                    if let user = components.first {
-//                        let fileName = metadata.userBaseUrl + "-" + user + ".png"
-//                        NCOperationQueue.shared.downloadAvatar(user: user, dispalyName: nil, fileName: fileName, cell: cell, view: collectionView, cellImageView: cell.filePreviewImageView)
-//                    }
-//                }
             }
         }
 
@@ -1723,13 +1708,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             footer.buttonIsHidden(true)
             footer.hideActivityIndicatorSection()
 
+
             if isSearchingMode {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
-                if isSearchingMode && isPaginated && metadatasCount > 0 {
+
+                // If the number of entries(metadatas) is lower than the cursor, then there are no more entries.
+                // The blind spot in this is when the number of entries is the same as the cursor. If so, we don't have a way of knowing if there are no more entries.
+                // This is as good as it gets for determining last page without server-side flag.
+                let isLastPage = (metadatasCount < metadataForSection?.lastSearchResult?.cursor ?? 0) || metadataForSection?.lastSearchResult?.entries.isEmpty == true
+
+                if isSearchingMode && isPaginated && metadatasCount > 0 && !isLastPage {
                     footer.buttonIsHidden(false)
                 }
+
                 if unifiedSearchInProgress {
                     footer.showActivityIndicatorSection()
                 }
