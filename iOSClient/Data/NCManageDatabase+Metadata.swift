@@ -144,7 +144,7 @@ extension tableMetadata {
         sharePermissionsCollaborationServices == NCGlobal.shared.permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
     }
 
-    var isMovie: Bool {
+    var isAudioOrVideo: Bool {
         return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
     }
 
