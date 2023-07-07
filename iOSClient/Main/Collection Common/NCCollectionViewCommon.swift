@@ -72,7 +72,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var titleCurrentFolder = ""
     internal var titlePreviusFolder: String?
     internal var enableSearchBar: Bool = false
-    internal var headerMenuButtonsCommand: Bool = true
     internal var headerMenuButtonsView: Bool = true
     internal var headerRichWorkspaceDisable:Bool = false
     internal var emptyImage: UIImage?
@@ -434,23 +433,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadStartFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
-        if let indexPath = indexPath {
-            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                collectionView?.reloadItems(at: [indexPath])
-            } else {
-                self.collectionView?.reloadData()
-            }
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -515,34 +504,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        // do not exists metadata ?
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
-            reloadDataSource()
-            return
-        }
-        
-        let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
-        if let indexPath = indexPath {
-            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                collectionView?.performBatchUpdates({
-                    collectionView?.reloadItems(at: [indexPath])
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            } else {
-                self.collectionView?.reloadData()
-            }
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
@@ -1304,10 +1272,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
-            if metadata.isImage || metadata.isMovie {
+            if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
                 var metadatas: [tableMetadata] = []
                 for metadata in metadataSourceForAllSections {
-                    if metadata.isImage || metadata.isMovie {
+                    if metadata.isImage || metadata.isAudioOrVideo {
                         metadatas.append(metadata)
                     }
                 }
@@ -1494,7 +1462,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + NCUtilityFileSystem.shared.getPath(path: metadata.path, user: metadata.user)
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
-                cell.titleInfoTrailingFull()
             }
         } else {
             cell.fileTitleLabel?.text = metadata.fileNameView
@@ -1668,6 +1635,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Add TAGS
         cell.setTags(tags: Array(metadata.tags))
 
+        // Hide buttons
+        if metadata.name != NCGlobal.shared.appName {
+            cell.titleInfoTrailingFull()
+            cell.hideButtonShare(true)
+            cell.hideButtonMore(true)
+        }
+
         // ** IMPORT MUST BE AT THE END **
         //
 
@@ -1698,19 +1672,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 header.delegate = self
-                if headerMenuButtonsCommand && !isSearchingMode {
-                    let imageButton2 = isDirectoryE2EE ? UIImage(named: "folderEncrypted") : UIImage(named: "folder")
-                    let titleButton2 = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
-                    header.setButtonsCommand(heigt: NCGlobal.shared.heightButtonsCommand, imageButton1: UIImage(named: "addImage"), titleButton1: NSLocalizedString("_upload_", comment: ""), imageButton2: imageButton2, titleButton2: titleButton2, imageButton3: UIImage(systemName: "doc.text.viewfinder"), titleButton3: NSLocalizedString("_scan_", comment: ""))
-                } else {
-                    header.setButtonsCommand(heigt: 0)
-                }
+
                 if headerMenuButtonsView {
                     header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
-                    header.setButtonsView(heigt: NCGlobal.shared.heightButtonsView)
+                    header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
                     header.setSortedTitle(layoutForView?.titleButtonHeader ?? "")
                 } else {
-                    header.setButtonsView(heigt: 0)
+                    header.setButtonsView(height: 0)
                 }
 
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
@@ -1785,9 +1753,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var size: CGFloat = 0
 
-        if headerMenuButtonsCommand && !isSearchingMode {
-            size += NCGlobal.shared.heightButtonsCommand
-        }
         if headerMenuButtonsView {
             size += NCGlobal.shared.heightButtonsView
         }

@@ -151,9 +151,9 @@
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
     row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     row.selectorOptions = @[
-        [XLFormOptionsObject formOptionsObjectWithValue:@(0) displayText:NSLocalizedString(@"_yearly_", nil)],
-        [XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_monthly_", nil)],
-        [XLFormOptionsObject formOptionsObjectWithValue:@(2) displayText:NSLocalizedString(@"_daily_", nil)]
+        [XLFormOptionsObject formOptionsObjectWithValue:@(NCGlobal.shared.subfolderGranularityYearly) displayText:NSLocalizedString(@"_yearly_", nil)],
+        [XLFormOptionsObject formOptionsObjectWithValue:@(NCGlobal.shared.subfolderGranularityMonthly) displayText:NSLocalizedString(@"_monthly_", nil)],
+        [XLFormOptionsObject formOptionsObjectWithValue:@(NCGlobal.shared.subfolderGranularityDaily) displayText:NSLocalizedString(@"_daily_", nil)]
         ];
     row.value = row.selectorOptions[activeAccount.autoUploadSubfolderGranularity];
     row.required = true;

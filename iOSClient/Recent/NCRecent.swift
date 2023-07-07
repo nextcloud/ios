@@ -34,7 +34,6 @@ class NCRecent: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
-        headerMenuButtonsCommand = false
         headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
         emptyImage = NCUtility.shared.loadImage(named: "clock.arrow.circlepath", color: .gray, size: UIScreen.main.bounds.width)

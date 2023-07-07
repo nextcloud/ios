@@ -30,17 +30,11 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
 
-    @IBOutlet weak var button1: UIButton!
-    @IBOutlet weak var button2: UIButton!
-    @IBOutlet weak var button3: UIButton!
-
-    @IBOutlet weak var viewButtonsCommand: UIView!
     @IBOutlet weak var viewButtonsView: UIView!
     @IBOutlet weak var viewSeparator: UIView!
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var viewSection: UIView!
 
-    @IBOutlet weak var viewButtonsCommandHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewButtonsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
@@ -61,35 +55,11 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         backgroundColor = .clear
 
-        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: .systemGray, size: 25), for: .normal)
+        buttonSwitch.setImage(UIImage(systemName: "list.bullet")!.image(color: .systemGray, size: 25), for: .normal)
 
         buttonOrder.setTitle("", for: .normal)
         buttonOrder.setTitleColor(.systemBlue, for: .normal)
         buttonMore.setImage(UIImage(named: "more")!.image(color: .systemGray, size: 25), for: .normal)
-
-        button1.setImage(nil, for: .normal)
-        button1.isHidden = true
-        button1.backgroundColor = .clear
-        button1.setTitleColor(.systemBlue, for: .normal)
-        button1.layer.borderColor = UIColor.systemGray.cgColor
-        button1.layer.borderWidth = 0.4
-        button1.layer.cornerRadius = 3
-
-        button2.setImage(nil, for: .normal)
-        button2.isHidden = true
-        button2.backgroundColor = .clear
-        button2.setTitleColor(.systemBlue, for: .normal)
-        button2.layer.borderColor = UIColor.systemGray.cgColor
-        button2.layer.borderWidth = 0.4
-        button2.layer.cornerRadius = 3
-
-        button3.setImage(nil, for: .normal)
-        button3.isHidden = true
-        button3.backgroundColor = .clear
-        button3.setTitleColor(.systemBlue, for: .normal)
-        button3.layer.borderColor = UIColor.systemGray.cgColor
-        button3.layer.borderWidth = 0.4
-        button3.layer.cornerRadius = 3
 
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
@@ -127,47 +97,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         setInterfaceColor()
     }
 
-    //MARK: - Command
-
-    func setStatusButtonsCommand(enable: Bool) {
-
-        button1.isEnabled = enable
-        button2.isEnabled = enable
-        button3.isEnabled = enable
-    }
-
-    func setButtonsCommand(heigt :CGFloat, imageButton1: UIImage? = nil, titleButton1: String? = nil, imageButton2: UIImage? = nil, titleButton2: String? = nil, imageButton3: UIImage? = nil, titleButton3: String? = nil) {
-
-        viewButtonsCommandHeightConstraint.constant = heigt
-        if heigt == 0 {
-            viewButtonsView.isHidden = true
-            button1.isHidden = true
-            button2.isHidden = true
-            button3.isHidden = true
-        } else {
-            viewButtonsView.isHidden = false
-            if var image = imageButton1, let title = titleButton1 {
-                image = image.image(color: .systemGray, size: 25)
-                button1.setImage(image, for: .normal)
-                button1.isHidden = false
-                button1.setTitle(title.firstUppercased, for: .normal)
-            }
-            if var image = imageButton2, let title = titleButton2 {
-                image = image.image(color: .systemGray, size: 25)
-                button2.setImage(image, for: .normal)
-                button2.isHidden = false
-                button2.setTitle(title.firstUppercased, for: .normal)
-            }
-            if var image = imageButton3, let title = titleButton3 {
-                image = image.image(color: .systemGray, size: 25)
-                button3.setImage(image, for: .normal)
-                button3.isHidden = false
-                button3.setTitle(title.firstUppercased, for: .normal)
-            }
-        }
-    }
-
-    //MARK: - View
+    // MARK: - View
 
     func setStatusButtonsView(enable: Bool) {
 
@@ -183,18 +113,18 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     func setImageSwitchList() {
 
-        buttonSwitch.setImage(UIImage(named: "switchList")!.image(color: .systemGray, size: 50), for: .normal)
+        buttonSwitch.setImage(UIImage(systemName: "list.bullet")!.image(color: .systemGray, width: 20, height: 15), for: .normal)
     }
 
     func setImageSwitchGrid() {
 
-        buttonSwitch.setImage(UIImage(named: "switchGrid")!.image(color: .systemGray, size: 50), for: .normal)
+        buttonSwitch.setImage(UIImage(systemName: "square.grid.2x2")!.image(color: .systemGray, size: 20), for: .normal)
     }
 
-    func setButtonsView(heigt :CGFloat) {
+    func setButtonsView(height: CGFloat) {
 
-        viewButtonsViewHeightConstraint.constant = heigt
-        if heigt == 0 {
+        viewButtonsViewHeightConstraint.constant = height
+        if height == 0 {
             viewButtonsView.isHidden = true
         } else {
             viewButtonsView.isHidden = false
@@ -204,12 +134,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     func setSortedTitle(_ title: String) {
 
         let title = NSLocalizedString(title, comment: "")
-        //let size = title.size(withAttributes: [.font: buttonOrder.titleLabel?.font as Any])
-
         buttonOrder.setTitle(title, for: .normal)
     }
 
-    //MARK: - RichWorkspace
+    // MARK: - RichWorkspace
 
     func setRichWorkspaceHeight(_ size: CGFloat) {
 
@@ -239,9 +167,9 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
-    //MARK: - Section
+    // MARK: - Section
 
-    func setSectionHeight(_ size:CGFloat) {
+    func setSectionHeight(_ size: CGFloat) {
 
         viewSectionHeightConstraint.constant = size
         if size == 0 {
@@ -359,9 +287,9 @@ class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
             filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
         }
 
-        if foldersText == "" {
+        if foldersText.isEmpty {
             labelSection.text = filesText
-        } else if filesText == "" {
+        } else if filesText.isEmpty {
             labelSection.text = foldersText
         } else {
             labelSection.text = foldersText + ", " + filesText

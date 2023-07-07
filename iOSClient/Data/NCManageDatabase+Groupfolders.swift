@@ -57,9 +57,8 @@ extension NCManageDatabase {
 
     func addGroupfolders(account: String, groupfolders: [NKGroupfolders]) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
 
                 let tableGroupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
@@ -69,9 +68,7 @@ extension NCManageDatabase {
                 realm.delete(tableGroupfoldersGroups)
 
                 for groupfolder in groupfolders {
-
                     let obj = TableGroupfolders()
-
                     obj.account = account
                     obj.acl = groupfolder.acl
                     for group in groupfolder.groups ?? [:] {
@@ -83,7 +80,6 @@ extension NCManageDatabase {
                     obj.mountPoint = groupfolder.mountPoint
                     obj.quota = groupfolder.quota
                     obj.size = groupfolder.size
-
                     realm.add(obj)
                 }
             }

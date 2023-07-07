@@ -87,7 +87,7 @@ class NCViewerMedia: UIViewController {
             statusLabel.text = ""
         }
         
-        if metadata.isMovie {
+        if metadata.isAudioOrVideo {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
@@ -146,7 +146,7 @@ class NCViewerMedia: UIViewController {
 
         viewerMediaPage?.clearCommandCenter()
         
-        if metadata.isMovie {
+        if metadata.isAudioOrVideo {
             if let ncplayer = self.ncplayer {
                 if ncplayer.url == nil {
                     NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium)
