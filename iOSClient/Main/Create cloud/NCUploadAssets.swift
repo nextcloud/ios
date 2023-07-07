@@ -243,9 +243,9 @@ struct UploadAssetsView: View {
                 let monthString = dateFormatter.string(from: creationDate)
                 dateFormatter.dateFormat = "dd"
                 let dayString = dateFormatter.string(from: creationDate)
-                if autoUploadSubfolderGranularity == 0 {
+                if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
                     serverUrl = autoUploadPath + "/" + yearString
-                } else if autoUploadSubfolderGranularity == 2 {
+                } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
                     serverUrl = autoUploadPath + "/" + yearString + "/" + monthString + "/" + dayString
                 } else {  // Month Granularity is default
                     serverUrl = autoUploadPath + "/" + yearString + "/" + monthString

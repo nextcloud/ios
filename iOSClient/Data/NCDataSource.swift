@@ -124,14 +124,14 @@ class NCDataSource: NSObject {
 
         // Unified search
         if let providers = self.providers, !providers.isEmpty {
-            let sectionsDictionary = ThreadSafeDictionary<String,Int>()
+            let sectionsDictionary = ThreadSafeDictionary<String, Int>()
             for section in self.sectionsValue {
                 if let provider = providers.filter({ $0.id == section}).first {
                     sectionsDictionary[section] = provider.order
                 }
             }
             self.sectionsValue.removeAll()
-            let sectionsDictionarySorted = sectionsDictionary.sorted(by: { $0.value < $1.value } )
+            let sectionsDictionarySorted = sectionsDictionary.sorted(by: {$0.value < $1.value })
             for section in sectionsDictionarySorted {
                 if section.key == NCGlobal.shared.appName {
                     self.sectionsValue.insert(section.key, at: 0)
@@ -173,15 +173,15 @@ class NCDataSource: NSObject {
             searchResult = searchResults.filter({ $0.id == sectionValue}).first
         }
         let metadatas = self.metadatas.filter({ getSectionValue(metadata: $0) == sectionValue})
-        let metadataForSection = NCMetadataForSection.init(sectionValue: sectionValue,
-                                                            metadatas: metadatas,
-                                                            localFiles: self.localFiles,
-                                                            lastSearchResult: searchResult,
-                                                            sort: self.sort,
-                                                            ascending: self.ascending,
-                                                            directoryOnTop: self.directoryOnTop,
-                                                            favoriteOnTop: self.favoriteOnTop,
-                                                            filterLivePhoto: self.filterLivePhoto)
+        let metadataForSection = NCMetadataForSection(sectionValue: sectionValue,
+                                                      metadatas: metadatas,
+                                                      localFiles: self.localFiles,
+                                                      lastSearchResult: searchResult,
+                                                      sort: self.sort,
+                                                      ascending: self.ascending,
+                                                      directoryOnTop: self.directoryOnTop,
+                                                      favoriteOnTop: self.favoriteOnTop,
+                                                      filterLivePhoto: self.filterLivePhoto)
         metadatasForSection.append(metadataForSection)
     }
 
@@ -200,8 +200,8 @@ class NCDataSource: NSObject {
 
     @discardableResult
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) -> [IndexPath] {
-        
-        guard let sectionIndex =  getSectionIndex(metadataForSection.sectionValue) else { return [] }
+
+        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue) else { return [] }
         var indexPaths: [IndexPath] = []
 
         self.metadatas.append(contentsOf: metadatas)
@@ -268,7 +268,7 @@ class NCDataSource: NSObject {
         let (indexPath, metadataForSection) = self.getIndexPathMetadata(ocId: ocId)
         if let indexPath = indexPath, let metadataForSection = metadataForSection, indexPath.row < metadataForSection.metadatas.count {
             metadataForSection.metadatas.remove(at: indexPath.row)
-            if metadataForSection.metadatas.count == 0 {
+            if metadataForSection.metadatas.isEmpty {
                 // REMOVE sectionsValue / metadatasForSection
                 sectionValue = metadataForSection.sectionValue
                 if let sectionIndex = getSectionIndex(sectionValue) {
@@ -329,32 +329,32 @@ class NCDataSource: NSObject {
     }
 
     func isSameNumbersOfSections(numberOfSections: Int) -> Bool {
-        guard self.metadatasForSection.count > 0 else { return false }
+        guard !self.metadatasForSection.isEmpty else { return false }
         return numberOfSections == self.numberOfSections()
     }
 
     func numberOfSections() -> Int {
-        guard self.sectionsValue.count > 0 else { return 1 }
+        guard !self.sectionsValue.isEmpty else { return 1 }
         return self.sectionsValue.count
     }
-    
+
     func numberOfItemsInSection(_ section: Int) -> Int {
-        guard self.sectionsValue.count > 0 && self.metadatas.count > 0, let metadataForSection = getMetadataForSection(section) else { return 0}
+        guard !self.sectionsValue.isEmpty && !self.metadatas.isEmpty, let metadataForSection = getMetadataForSection(section) else { return 0}
         return metadataForSection.metadatas.count
     }
 
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
-        guard metadatasForSection.count > 0 && indexPath.section < metadatasForSection.count, let metadataForSection = getMetadataForSection(indexPath.section), indexPath.row < metadataForSection.metadatas.count else { return nil }
+        guard !metadatasForSection.isEmpty && indexPath.section < metadatasForSection.count, let metadataForSection = getMetadataForSection(indexPath.section), indexPath.row < metadataForSection.metadatas.count else { return nil }
         return metadataForSection.metadatas[indexPath.row]
     }
 
     func getSectionValue(indexPath: IndexPath) -> String {
-        guard metadatasForSection.count > 0 , let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
+        guard !metadatasForSection.isEmpty, let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
         return metadataForSection.sectionValue
     }
 
     func getSectionValueLocalization(indexPath: IndexPath) -> String {
-        guard metadatasForSection.count > 0 , let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
+        guard !metadatasForSection.isEmpty, let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
         if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
             return searchResult.name
         }
@@ -423,7 +423,7 @@ class NCMetadataForSection: NSObject {
     var lastSearchResult: NKSearchResult?
     var unifiedSearchInProgress: Bool = false
 
-    private var sort : String
+    private var sort: String
     private var ascending: Bool
     private var directoryOnTop: Bool
     private var favoriteOnTop: Bool
@@ -478,7 +478,7 @@ class NCMetadataForSection: NSObject {
 
         // Metadata order
         //
-        if sort != "none" && sort != "" {
+        if sort != "none" && !sort.isEmpty {
             metadatasSorted = metadatas.sorted {
 
                 switch sort {
@@ -543,7 +543,6 @@ class NCMetadataForSection: NSObject {
                 metadatasFile.append(metadata)
             }
 
-            //Info
             if metadata.directory {
                 ocIds.append(metadata.ocId)
                 numDirectory += 1

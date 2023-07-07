@@ -49,12 +49,11 @@ extension NCManageDatabase {
     func addVideo(metadata: tableMetadata, position: Float? = nil, width: Int? = nil, height: Int? = nil, length: Int? = nil, currentAudioTrackIndex: Int? = nil, currentVideoSubTitleIndex: Int? = nil) {
 
         if metadata.livePhoto { return }
-        let realm = try! Realm()
 
         do {
+            let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
-
                     if let position = position {
                         result.position = position
                     }
@@ -73,16 +72,11 @@ extension NCManageDatabase {
                     if let currentVideoSubTitleIndex = currentVideoSubTitleIndex {
                         result.currentVideoSubTitleIndex = currentVideoSubTitleIndex
                     }
-
                     realm.add(result, update: .all)
-
                 } else {
-
                     let result = tableVideo()
-
                     result.account = metadata.account
                     result.ocId = metadata.ocId
-
                     if let position = position {
                         result.position = position
                     }
@@ -101,7 +95,6 @@ extension NCManageDatabase {
                     if let currentVideoSubTitleIndex = currentVideoSubTitleIndex {
                         result.currentVideoSubTitleIndex = currentVideoSubTitleIndex
                     }
-                    
                     realm.add(result, update: .all)
                 }
             }
@@ -112,9 +105,8 @@ extension NCManageDatabase {
 
     func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, codecMaxCompatibility: Bool, codecQuality: String?) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
                     if let codecNameVideo = codecNameVideo { result.codecNameVideo = codecNameVideo }
@@ -143,21 +135,24 @@ extension NCManageDatabase {
     }
 
     func getVideo(metadata: tableMetadata?) -> tableVideo? {
+
         guard let metadata = metadata else { return nil }
 
-        let realm = try! Realm()
-        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else { return nil }
+            return tableVideo.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableVideo.init(value: result)
+        return nil
     }
-    
+
     func deleteVideo(metadata: tableMetadata) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
                 realm.delete(result)

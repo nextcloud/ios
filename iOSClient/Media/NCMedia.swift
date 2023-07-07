@@ -402,7 +402,7 @@ extension NCMedia: UICollectionViewDataSource {
             cell.fileObjectId = metadata.ocId
             cell.fileUser = metadata.ownerId
 
-            if metadata.isMovie {
+            if metadata.isAudioOrVideo {
                 cell.imageStatus.image = cacheImages.cellPlayImage
             } else if metadata.livePhoto && livePhoto {
                 cell.imageStatus.image = cacheImages.cellLivePhotoImage

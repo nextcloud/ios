@@ -77,26 +77,18 @@ extension NCManageDatabase {
 
     func addShare(account: String, home: String, shares: [NKShare]) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
-
                 for share in shares {
-
                     let serverUrlPath = home + share.path
-                    guard let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else {
-                        continue
-                    }
-
+                    guard let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else { continue }
                     let object = tableShare()
-
                     object.account = account
                     if let fileName = share.path.components(separatedBy: "/").last {
                         object.fileName = fileName
                     }
                     object.serverUrl = serverUrl
-
                     object.canEdit = share.canEdit
                     object.canDelete = share.canDelete
                     object.date = share.date
@@ -133,7 +125,6 @@ extension NCManageDatabase {
                     object.userIcon = share.userIcon
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
-
                     realm.add(object, update: .all)
                 }
             }
@@ -144,89 +135,102 @@ extension NCManageDatabase {
 
     func getTableShares(account: String) -> [tableShare] {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
+            let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(by: sortProperties)
+            return Array(results.map { tableShare.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(by: sortProperties)
-
-        return Array(results.map { tableShare.init(value: $0) })
+        return []
     }
 
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?, share: [tableShare]?) {
 
-        let realm = try! Realm()
-
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == 3", metadata.account, metadata.serverUrl, metadata.fileName).first
-
-        if let firstShareLink = firstShareLink {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idShare != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink.idShare).sorted(by: sortProperties)
-            return(firstShareLink: tableShare.init(value: firstShareLink), share: Array(results.map { tableShare.init(value: $0) }))
-        } else {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(by: sortProperties)
-            return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value: $0) }))
+        do {
+            let realm = try Realm()
+            let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
+            let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == 3", metadata.account, metadata.serverUrl, metadata.fileName).first
+            if let firstShareLink = firstShareLink {
+                let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idShare != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink.idShare).sorted(by: sortProperties)
+                return(firstShareLink: tableShare.init(value: firstShareLink), share: Array(results.map { tableShare.init(value: $0) }))
+            } else {
+                let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(by: sortProperties)
+                return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value: $0) }))
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+
+        return (nil, nil)
     }
 
     func getTableShare(account: String, idShare: Int) -> tableShare? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableShare.self).filter("account = %@ AND idShare = %d", account, idShare).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableShare.self).filter("account = %@ AND idShare = %d", account, idShare).first else { return nil }
+            return tableShare.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return tableShare.init(value: result)
+        return nil
     }
 
     func getTableShares(account: String, serverUrl: String) -> [tableShare] {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
+            return Array(results.map { tableShare.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
-
-        return Array(results.map { tableShare.init(value: $0) })
+        return []
     }
 
     func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
 
-        let realm = try! Realm()
+        do {
+            let realm = try Realm()
+            let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).sorted(by: sortProperties)
+            return Array(results.map { tableShare.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
-        let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).sorted(by: sortProperties)
-
-        return Array(results.map { tableShare.init(value: $0) })
+        return []
     }
 
     func deleteTableShare(account: String, idShare: Int) {
 
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let result = realm.objects(tableShare.self).filter("account == %@ AND idShare == %d", account, idShare)
-        realm.delete(result)
-
         do {
-            try realm.commitWrite()
-        } catch let error {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableShare.self).filter("account == %@ AND idShare == %d", account, idShare)
+                realm.delete(result)
+            }
+        } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
 
     func deleteTableShare(account: String) {
 
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let result = realm.objects(tableShare.self).filter("account == %@", account)
-        realm.delete(result)
-
         do {
-            try realm.commitWrite()
-        } catch let error {
+            let realm = try Realm()
+
+            try realm.write {
+                let result = realm.objects(tableShare.self).filter("account == %@", account)
+                realm.delete(result)
+            }
+        } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
