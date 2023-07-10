@@ -88,9 +88,10 @@ class NCGlobal: NSObject {
 
     // Name
     //
-    @objc let appName                               = "files"
-    @objc let talkName                              = "talk-message"
-    @objc let appScheme                             = "nextcloud"
+    let appName                                     = "files"
+    let talkName                                    = "talk-message"
+    let twofactorNotificatioName                    = "twofactor_nextcloud_notification"
+    let appScheme                                   = "nextcloud"
 
     // Nextcloud version
     //

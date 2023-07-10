@@ -443,28 +443,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCApplicationHandle().nextcloudPushNotificationAction(data: data) { detected in
             if !detected {
 
-                let json = "Converted successfully: \(data)"
-                let alertController = UIAlertController(title: "x", message: json, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in }))
-                self.window?.rootViewController?.present(alertController, animated: true)
+                var openNotification: Bool = false
 
-                /*
-                let accounts = NCManageDatabase.shared.getAllAccount()
-                for account in accounts {
-                    /*
-                    let urlBase = URL(string: account.urlBase)
-                    if url.contains(urlBase?.host ?? "") && userId == account.userId {
-                        changeAccount(account.account)
-                        return account
+                if let accountPush = data["account"] as? String,
+                   let app = data["app"] as? String,
+                   app == NCGlobal.shared.twofactorNotificatioName {
+                    if accountPush == self.account {
+                        openNotification = true
+                    } else {
+                        let accounts = NCManageDatabase.shared.getAllAccount()
+                        for account in accounts {
+                            if account.account == accountPush {
+                                self.changeAccount(account.account)
+                                openNotification = true
+                            }
+                        }
                     }
-                    */
+                    if openNotification, let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            let navigationController = UINavigationController(rootViewController: viewController)
+                            navigationController.modalPresentationStyle = .fullScreen
+                            self.window?.rootViewController?.present(navigationController, animated: true)
+                        }
+                    }
                 }
-                if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                    let navigationController = UINavigationController(rootViewController: viewController)
-                    navigationController.modalPresentationStyle = .fullScreen
-                    self.window?.rootViewController?.present(navigationController, animated: true)
-                }
-                */
             }
         }
     }
