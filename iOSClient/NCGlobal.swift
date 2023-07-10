@@ -90,6 +90,7 @@ class NCGlobal: NSObject {
     //
     let appName                                     = "files"
     let talkName                                    = "talk-message"
+    let spreedName                                  = "spreed"
     let twofactorNotificatioName                    = "twofactor_nextcloud_notification"
     let appScheme                                   = "nextcloud"
 
