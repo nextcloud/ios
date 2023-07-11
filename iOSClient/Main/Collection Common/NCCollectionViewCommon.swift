@@ -445,23 +445,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
 
-        let (indexPath, sameSections) = dataSource.reloadMetadata(ocId: ocId)
-        if let indexPath = indexPath {
-            if sameSections && (indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)) {
-                collectionView?.reloadItems(at: [indexPath])
-            } else {
-                self.collectionView?.reloadData()
-            }
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
