@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 protocol NCShareCellConfig {
     var title: String { get }
@@ -171,15 +172,24 @@ enum NCLinkPermission: NCPermission {
 }
 
 enum NCShareAttribute: NCToggleCellConfig {
+    private func getAttributes(share: NCTableShareable) -> List<ShareAttribute>? {
+        return NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare)?.attributes
+    }
+
+    private func getDownloadPermissionAttribute(share: NCTableShareable) -> ShareAttribute? {
+        return getAttributes(share: share)?.first(where: { $0.scope == "permissions" && $0.key == "download" })
+    }
+
     func isOn(for share: NCTableShareable) -> Bool {
-        print(share.attributes.first(where: { $0.scope == "permission" && $0.key == "download" })?.enabled == true)
+        let attributes = NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare)?.attributes
+
         switch self {
-        case.allowDownload: return share.attributes.first(where: { $0.scope == "permission" && $0.key == "download" })?.enabled == true
+        case.allowDownload: return getDownloadPermissionAttribute(share: share)?.enabled ?? true // true by default
         }
     }
 
     func didChange(_ share: NCTableShareable, to newValue: Bool) {
-        // TODO: implement
+        getDownloadPermissionAttribute(share: share)?.enabled = newValue
     }
 
     var title: String {
@@ -187,14 +197,6 @@ enum NCShareAttribute: NCToggleCellConfig {
         case .allowDownload: return NSLocalizedString("_share_attribute_allow_download_", comment: "")
         }
     }
-
-//    func getCell(for share: NCTableShareable) -> UITableViewCell {
-//        <#code#>
-//    }
-//
-//    func didSelect(for share: NCTableShareable) {
-//        <#code#>
-//    }
 
     case allowDownload
     static let forAll: [NCShareAttribute] = [.allowDownload]

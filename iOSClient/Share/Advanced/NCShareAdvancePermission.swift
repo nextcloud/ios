@@ -62,6 +62,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
 
         tableView.estimatedRowHeight = tableView.rowHeight
@@ -117,7 +118,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

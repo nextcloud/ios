@@ -41,8 +41,7 @@ protocol NCTableShareable: AnyObject {
     var note: String { get set }
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
-//    var allowDownload: Bool { get set }
-    var attributes: [NKShare.Attribute] { get set }
+    var account: String { get set }
 }
 
 extension NCTableShareable {
@@ -77,7 +76,7 @@ class NCTableShareOptions: NCTableShareable {
     var note: String = ""
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
-    var attributes = [NKShare.Attribute]()
+    var account: String = ""
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
         if metadata.e2eEncrypted {

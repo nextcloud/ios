@@ -72,63 +72,25 @@ class tableShareV3: Object {
 
     // arrays dont work in realm, and we need to change this to List or one of these: https://www.mongodb.com/docs/realm-sdks/swift/latest/Classes/Object.html
 //    @objc dynamic var attributes = [NKShare.Attribute]()
-    let attributesInternal = List<ShareAttribute>()
-
-    var attributes = [NKShare.Attribute]()
+    let attributes = List<ShareAttribute>()
 
     override static func primaryKey() -> String {
         return "primaryKey"
     }
 }
 
-class ShareAttribute: Object {
+class ShareAttribute: EmbeddedObject {
     @objc dynamic var scope: String = ""
     @objc dynamic var key: String = ""
     @objc dynamic var enabled: Bool = false
 
     convenience init(scope: String, key: String, enabled: Bool) {
         self.init()
-
         self.scope = scope
         self.key = key
         self.enabled = enabled
     }
-
-//    static func toAttributeArray(attributes: List<ShareAttribute>) -> [NKShare.Attribute] {
-//        var array = [NKShare.Attribute]()
-//        attributes.forEach { attribute in
-//            array.append(NKShare.Attribute(scope: attribute.scope))
-//        }
-//        return array
-//    }
 }
-
-//    convenience init(account: String, group: String, permission: Int) {
-//        self.init()
-//
-//        self.account = account
-//        self.group = group
-//        self.permission = permission
-//    }
-
-//extension NKShare.Attribute : RealmCollectionValue {
-//
-//    public static func _rlmDefaultValue() -> Self {
-//        <#code#>
-//    }
-//
-//    public typealias PersistedType = <#type#>
-//
-//    public static func _rlmFromObjc(_ value: Any, insideOptional: Bool) -> Self? {
-//        <#code#>
-//    }
-//
-//    public var _rlmObjcValue: Any {
-//        <#code#>
-//    }
-//
-//
-//}
 
 extension NCManageDatabase {
 
@@ -182,13 +144,10 @@ extension NCManageDatabase {
                     object.userIcon = share.userIcon
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
-//                    object.allowDownload = share.attributes.first(where: { $0.scope == "permissions" && $0.key == "download"})?.enabled
 
                     for element in share.attributes {
-//                        object.attributes.append(element)
-                        object.attributesInternal.append(ShareAttribute(scope: element.scope, key: element.key, enabled: element.enabled))
-
-                        object.attributes.append(element)
+                        let attribute = ShareAttribute(scope: element.scope, key: element.key, enabled: element.enabled)
+                        object.attributes.append(attribute)
                     }
 
                     realm.add(object, update: .all)
