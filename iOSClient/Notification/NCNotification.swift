@@ -287,7 +287,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         self.notifications.remove(at: index)
                     }
                     self.tableView.reloadData()
-                    if self.navigationController?.presentingViewController != nil, notification.app == NCGlobal.shared.twofactorNotificatioName {
+                    if self.navigationController?.presentingViewController != nil, notification.app == NCGlobal.shared.twoFactorNotificatioName {
                         self.dismiss(animated: true)
                     }
                 } else if error != .success {
