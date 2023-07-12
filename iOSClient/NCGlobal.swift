@@ -61,14 +61,6 @@ class NCGlobal: NSObject {
         return result.reduce(0, { $0 + $1 }) % maximum
     }
 
-    // Struct for Progress
-    //
-    struct progressType {
-        var progress: Float
-        var totalBytes: Int64
-        var totalBytesExpected: Int64
-    }
-
     // Directory on Group
     //
     @objc let directoryProviderStorage              = "File Provider Storage"
