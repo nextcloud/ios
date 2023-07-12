@@ -11,7 +11,7 @@ empty_count:
 
 line_length:
   warning: 400
-  error: 400
+  error: 5000
 
 function_body_length:
    warning: 200
