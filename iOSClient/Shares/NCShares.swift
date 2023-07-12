@@ -52,33 +52,29 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        DispatchQueue.global().async {
-            let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
-            var metadatas: [tableMetadata] = []
-            for share in sharess {
-                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
-                    if !(metadatas.contains { $0.ocId == metadata.ocId }) {
-                        metadatas.append(metadata)
-                    }
+        let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
+        var metadatas: [tableMetadata] = []
+        for share in sharess {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
+                if !(metadatas.contains { $0.ocId == metadata.ocId }) {
+                    metadatas.append(metadata)
                 }
             }
-
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: self.appDelegate.account,
-                                           sort: self.layoutForView?.sort,
-                                           ascending: self.layoutForView?.ascending,
-                                           directoryOnTop: self.layoutForView?.directoryOnTop,
-                                           favoriteOnTop: true,
-                                           filterLivePhoto: true,
-                                           groupByField: self.groupByField,
-                                           providers: self.providers,
-                                           searchResults: self.searchResults)
-
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
         }
+        self.dataSource = NCDataSource(metadatas: metadatas,
+                                       account: self.appDelegate.account,
+                                       sort: self.layoutForView?.sort,
+                                       ascending: self.layoutForView?.ascending,
+                                       directoryOnTop: self.layoutForView?.directoryOnTop,
+                                       favoriteOnTop: true,
+                                       filterLivePhoto: true,
+                                       groupByField: self.groupByField,
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
+
+
+        self.refreshControl.endRefreshing()
+        self.collectionView.reloadData()
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
