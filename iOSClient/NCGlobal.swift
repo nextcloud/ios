@@ -86,13 +86,13 @@ class NCGlobal: NSObject {
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
 
-    // Name
+    // App
     //
     let appName                                     = "files"
+    let appScheme                                   = "nextcloud"
     let talkName                                    = "talk-message"
     let spreedName                                  = "spreed"
     let twofactorNotificatioName                    = "twofactor_nextcloud_notification"
-    let appScheme                                   = "nextcloud"
 
     // Nextcloud version
     //
