@@ -271,6 +271,41 @@ class NCEndToEndMetadata: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
         }
 
+        func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String?, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
+
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+
+                let object = tableE2eEncryption()
+
+                object.account = account
+                object.authenticationTag = authenticationTag ?? ""
+                object.blob = "files"
+                object.fileName = filename
+                object.fileNameIdentifier = fileNameIdentifier
+                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
+                object.key = key
+                object.initializationVector = initializationVector
+                object.metadataKey = metadataKey
+                object.metadataVersion = metadataVersion
+                object.mimeType = mimetype
+                object.serverUrl = serverUrl
+
+                // Write file parameter for decrypted on DB
+                NCManageDatabase.shared.addE2eEncryption(object)
+
+                // Update metadata on tableMetadata
+                metadata.fileNameView = filename
+
+                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: filename, mimeType: metadata.contentType, directory: metadata.directory)
+
+                metadata.contentType = results.mimeType
+                metadata.iconName = results.iconName
+                metadata.classFile = results.classFile
+
+                NCManageDatabase.shared.addMetadata(metadata)
+            }
+        }
+
         let decoder = JSONDecoder()
         let privateKey = CCUtility.getEndToEndPrivateKey(account)
         var metadataVersion: Double = 0
@@ -283,6 +318,9 @@ class NCEndToEndMetadata: NSObject {
             let users = json.users
             let filedrop = json.filedrop
             metadataVersion = Double(json.version) ?? 0
+
+            // DATA
+            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
             //
             // users
@@ -323,11 +361,16 @@ class NCEndToEndMetadata: NSObject {
                                 print(jsonText)
                             }
                             if let json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
+
                                 let keyChecksums = json["keyChecksums"]
                                 let deleted = json["deleted"]
-                                let folders = json["folders"]
                                 let files = json["files"]
-                                print("")
+
+                                if let folders = json["folders"] as? [String: String] {
+                                    for folder in folders {
+                                        addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: plainUser.metadataKey, initializationVector: metadata.nonce, metadataKey: plainUser.metadataKey, mimetype: "httpd/unix-directory")
+                                    }
+                                }
                             }
                         } catch let error {
                             print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
