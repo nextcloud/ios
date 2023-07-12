@@ -51,8 +51,8 @@ class NCNetworkingE2EEDelete: NSObject {
                 return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
             }
 
-            let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
-            if result.error != .success { return result.error }
+            let error = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+            if error != .success { return error }
 
             // delete
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))

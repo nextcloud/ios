@@ -1075,11 +1075,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
                         NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, _, data, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
-                                let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
-                                if result.error == .success {
+                                let error = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
+                                if error == .success {
                                     self.reloadDataSource()
                                 } else {
-                                    NCContentPresenter.shared.showError(error: result.error)
+                                    NCContentPresenter.shared.showError(error: error)
                                 }
                             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                                 NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_"))

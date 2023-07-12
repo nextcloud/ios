@@ -48,8 +48,8 @@ class NCNetworkingE2EERename: NSObject {
                 return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
             }
 
-            let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
-            if result.error != .success { return result.error }
+            error = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+            if error != .success { return error }
 
             // rename
             NCManageDatabase.shared.renameFileE2eEncryption(serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account))
