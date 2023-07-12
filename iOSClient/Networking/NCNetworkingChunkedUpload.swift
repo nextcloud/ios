@@ -144,11 +144,14 @@ extension NCNetworking {
             let serverUrlFileNameDestination = metadata.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
 
             var customHeader: [String: String] = [:]
-            let creationDate = "\(metadata.creationDate.timeIntervalSince1970)"
-            let modificationDate = "\(metadata.date.timeIntervalSince1970)"
 
-            customHeader["X-OC-CTime"] = creationDate
-            customHeader["X-OC-MTime"] = modificationDate
+            if metadata.creationDate.timeIntervalSince1970 > 0 {
+                customHeader["X-OC-CTime"] = "\(metadata.creationDate.timeIntervalSince1970)"
+            }
+
+            if metadata.date.timeIntervalSince1970 > 0 {
+                customHeader["X-OC-MTime"] = "\(metadata.date.timeIntervalSince1970)"
+            }
 
             // Calculate Assemble Timeout
             let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
