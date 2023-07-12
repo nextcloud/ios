@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import Gzip
 
 class NCEndToEndMetadata: NSObject {
 
@@ -273,7 +274,20 @@ class NCEndToEndMetadata: NSObject {
             let filedrop = json.filedrop
             metadataVersion = Double(json.version) ?? 0
 
-            print("")
+            let ciphertextData = Data(base64Encoded: metadata.ciphertext)
+
+            NCEndToEndEncryption.sharedManager().verifySignatureCMS(data, data: nil, publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId)
+
+
+            if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(ciphertextData, privateKey: privateKey),
+                let keyData = Data(base64Encoded: decrypted),
+                let key = String(data: keyData, encoding: .utf8) {
+                metadataKey = key
+            } else {
+                return (metadataVersion, "", NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt metadataKey"))
+            }
+
+
             /* TEST CMS
 
             if let cmsData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(data, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
