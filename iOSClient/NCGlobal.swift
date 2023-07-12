@@ -129,7 +129,7 @@ class NCGlobal: NSObject {
     // E2EE
     //
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
-    @objc let e2eeReadVersions                      = ["1.1", "1.2"]
+    @objc let e2eeReadVersions                      = ["1.1", "1.2", "2.0"]
 
     // CHUNK
     let chunkSizeMBCellular                         = 10000000
