@@ -51,6 +51,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         view.backgroundColor = .systemGroupedBackground
 
+        tableView.insetsContentViewsToSafeArea = false
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .systemGroupedBackground
@@ -309,11 +310,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 }
             case 4:
                 // Menu External Site
-                if section == 4 {
+                if section == 3 {
                     count = externalSiteMenu.count
                 }
                 // Menu Settings
-                if section == 5 {
+                if section == 4 {
                     count = settingsMenu.count
                 }
             default:
