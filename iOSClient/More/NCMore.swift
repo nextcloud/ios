@@ -162,9 +162,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 70
         functionMenu.append(item)
 
-        externalSiteMenu.append(item)
-        externalSiteMenu.append(item)
-
         // ITEM : Trash
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
             item = NKExternalSite()
@@ -305,26 +302,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cont = numberOfSections(in: tableView) == 4 ? settingsMenu.count : externalSiteMenu.count
         } else if section == 4 {
             cont = settingsMenu.count
-            //        } else {
-            //            switch numberOfSections(in: tableView) {
-            //            case 4:
-            //                // Menu Settings
-            //                if section == 3 {
-            //                    cont = settingsMenu.count
-            //                }
-            //            case 5:
-            //                // Menu External Site
-            //                if section == 3 {
-            //                    cont = externalSiteMenu.count
-            //                }
-            //                // Menu Settings
-            //                if section == 4 {
-            //                    cont = settingsMenu.count
-            //                }
-            //            default:
-            //                cont = 0
         }
-
 
         return cont
     }
@@ -343,10 +321,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.displayName.text = ""
 
             if let account = tabAccount {
-                cell.avatar.image = NCUtility.shared.loadUserImage(
-                    for: account.user,
-                       displayName: account.displayName,
-                       userBaseUrl: appDelegate)
+                cell.avatar.image = NCUtility.shared.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
 
                 if account.alias == "" {
                     cell.displayName?.text = account.displayName
