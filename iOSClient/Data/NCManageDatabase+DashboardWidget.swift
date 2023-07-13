@@ -51,42 +51,47 @@ class tableDashboardWidgetButton: Object {
 extension NCManageDatabase {
 
     func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, [tableDashboardWidgetButton]?) {
-     
-        let realm = try! Realm()
-        guard let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else {
-            return (nil, nil)
+
+        do {
+            let realm = try Realm()
+            guard let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else { return (nil, nil) }
+            let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id).sorted(byKeyPath: "type", ascending: true)
+            return (tableDashboardWidget.init(value: resultDashboard), Array(resultsButton.map { tableDashboardWidgetButton.init(value: $0) }))
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
-        let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id).sorted(byKeyPath: "type", ascending: true)
-        
-        return (tableDashboardWidget.init(value: resultDashboard), Array(resultsButton.map { tableDashboardWidgetButton.init(value: $0) }))
+
+        return (nil, nil)
     }
 
     func getDashboardWidgetApplications(account: String) -> [tableDashboardWidget] {
 
-        let realm = try! Realm()
-        let sortProperties = [SortDescriptor(keyPath: "order", ascending: true), SortDescriptor(keyPath: "title", ascending: true)]
-        let results = realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(by: sortProperties)
+        do {
+            let realm = try Realm()
+            let sortProperties = [SortDescriptor(keyPath: "order", ascending: true), SortDescriptor(keyPath: "title", ascending: true)]
+            let results = realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(by: sortProperties)
+            return Array(results.map { tableDashboardWidget.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
 
-        return Array(results.map { tableDashboardWidget.init(value: $0) })
+        return []
     }
-    
+
     func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
-        
-        let realm = try! Realm()
 
         do {
+            let realm = try Realm()
             try realm.write {
-                
+
                 let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@", account)
                 realm.delete(resultDashboard)
-                
+
                 let resultDashboardButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@", account)
                 realm.delete(resultDashboardButton)
-                
+
                 for widget in dashboardWidgets {
-                    
                     let addObject = tableDashboardWidget()
-                    
                     addObject.index = account + " " + widget.id
                     addObject.account = account
                     addObject.id = widget.id
@@ -96,23 +101,18 @@ extension NCManageDatabase {
                     addObject.iconUrl = widget.iconUrl
                     addObject.widgetUrl = widget.widgetUrl
                     addObject.itemIconsRound = widget.itemIconsRound
-
                     if let buttons = widget.button {
                         for button in buttons {
-                            
                             let addObject = tableDashboardWidgetButton()
-                            
                             addObject.account = account
                             addObject.id = widget.id
                             addObject.type = button.type
                             addObject.text = button.text
                             addObject.link = button.link
                             addObject.index = account + " " + widget.id + " " + button.type
-                            
                             realm.add(addObject, update: .all)
                         }
                     }
-                    
                     realm.add(addObject, update: .all)
                 }
             }

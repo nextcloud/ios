@@ -116,10 +116,14 @@ extension UIImage {
     }
 
     @objc func image(color: UIColor, size: CGFloat) -> UIImage {
+        return image(color: color, width: size, height: size)
+    }
 
-        let size = CGSize(width: size, height: size)
+    @objc func image(color: UIColor, width: CGFloat, height: CGFloat) -> UIImage {
 
-        UIGraphicsBeginImageContextWithOptions(size, false, self.scale)
+        let size = CGSize(width: width, height: height)
+
+        UIGraphicsBeginImageContextWithOptions(.init(width: width, height: height), false, self.scale)
         color.setFill()
 
         let context = UIGraphicsGetCurrentContext()

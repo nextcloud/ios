@@ -49,36 +49,30 @@ class NCEmptyDataSet: NSObject {
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
 
-        if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
+        guard let emptyView = NCEmptyView.fromNib().instantiate(withOwner: self, options: nil).first as? NCEmptyView else { return }
 
-            self.delegate = delegate
-            self.emptyView = emptyView
+        self.delegate = delegate
+        self.emptyView = emptyView
 
-            emptyView.isHidden = true
-            emptyView.translatesAutoresizingMaskIntoConstraints = false
+        emptyView.isHidden = true
+        emptyView.translatesAutoresizingMaskIntoConstraints = false
 
-//            emptyView.backgroundColor = .red
-//            emptyView.isHidden = false
+        view.addSubview(emptyView)
 
-            emptyView.emptyTitle.sizeToFit()
-            emptyView.emptyDescription.sizeToFit()
+        emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
+        emptyView.heightAnchor.constraint(equalToConstant: 250).isActive = true
 
-            view.addSubview(emptyView)
-
-            emptyView.widthAnchor.constraint(equalToConstant: 350).isActive = true
-            emptyView.heightAnchor.constraint(equalToConstant: 250).isActive = true
-
-            if let view = view.superview {
-                centerXAnchor = emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-                centerYAnchor = emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset)
-            } else {
-                centerXAnchor = emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-                centerYAnchor = emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset)
-            }
-
-            centerXAnchor?.isActive = true
-            centerYAnchor?.isActive = true
+        if let view = view.superview {
+            centerXAnchor = emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            centerYAnchor = emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset)
+        } else {
+            centerXAnchor = emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            centerYAnchor = emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset)
         }
+
+        centerXAnchor?.isActive = true
+        centerYAnchor?.isActive = true
+
     }
 
     func setOffset(_ offset: CGFloat) {
@@ -123,6 +117,10 @@ public class NCEmptyView: UIView {
     @IBOutlet weak var emptyImage: UIImageView!
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
+
+    static func fromNib() -> UINib {
+        return UINib(nibName: "NCEmptyView", bundle: nil)
+    }
 
     public override func awakeFromNib() {
         super.awakeFromNib()

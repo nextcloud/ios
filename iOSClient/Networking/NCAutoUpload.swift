@@ -139,10 +139,10 @@ class NCAutoUpload: NSObject {
                 }
 
                 if account.autoUploadCreateSubfolder {
-                    if (autoUploadSubfolderGranularity == 0) {
+                    if (autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly) {
                         serverUrl = autoUploadPath + "/" + year
                     }
-                    else if (autoUploadSubfolderGranularity == 2) {
+                    else if (autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily) {
                         serverUrl = autoUploadPath + "/" + year + "/" + month + "/" + day
                     }
                     else {  // Month Granularity is default

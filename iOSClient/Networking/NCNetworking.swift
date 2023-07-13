@@ -1120,9 +1120,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 let month = dateFormatter.string(from: date)
                 dateFormatter.dateFormat = "dd"
                 let day = dateFormatter.string(from: date)
-                if autoUploadSubfolderGranularity == 0 {
+                if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
                     datesSubFolder.append("\(year)")
-                } else if autoUploadSubfolderGranularity == 2 {
+                } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
                     datesSubFolder.append("\(year)/\(month)/\(day)")
                 } else {  // Month Granularity is default
                     datesSubFolder.append("\(year)/\(month)")
@@ -1140,11 +1140,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 let year = subfolderArray[0]
                 let serverUrlYear = autoUploadPath
                 result = createFolder(fileName: String(year), serverUrl: serverUrlYear)  // Year always present independently of preference value
-                if result && autoUploadSubfolderGranularity >= 1 {
+                if result && autoUploadSubfolderGranularity >= NCGlobal.shared.subfolderGranularityMonthly {
                     let month = subfolderArray[1]
                     let serverUrlMonth = autoUploadPath + "/" + year
                     result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
-                    if result && autoUploadSubfolderGranularity == 2 {
+                    if result && autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
                         let day = subfolderArray[2]
                         let serverUrlDay = autoUploadPath + "/" + year + "/" + month
                         result = createFolder(fileName: String(day), serverUrl: serverUrlDay)
@@ -1188,18 +1188,18 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION
-            Task {
-                if let metadataLive = metadataLive {
-                    let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
-                    if error == .success {
-                        return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
-                    } else {
-                        return error
-                    }
-                } else {
+            if let metadataLive = metadataLive {
+                let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
+                if error == .success {
                     return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                } else {
+                    return error
                 }
+            } else {
+                return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
             }
+#else
+            return NKError()
 #endif
         } else {
             if let metadataLive = metadataLive {
@@ -1213,7 +1213,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 return await deleteMetadataPlain(metadata)
             }
         }
-        return NKError()
     }
 
     func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> (NKError) {

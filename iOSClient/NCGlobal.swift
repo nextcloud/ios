@@ -86,24 +86,26 @@ class NCGlobal: NSObject {
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
 
-    // Name
+    // App
     //
-    @objc let appName                               = "files"
-    @objc let talkName                              = "talk-message"
-    @objc let appScheme                             = "nextcloud"
+    let appName                                     = "files"
+    let appScheme                                   = "nextcloud"
+    let talkName                                    = "talk-message"
+    let spreedName                                  = "spreed"
+    let twofactorNotificatioName                    = "twofactor_nextcloud_notification"
 
     // Nextcloud version
     //
-    let nextcloudVersion12: Int                     =  12
-    let nextcloudVersion15: Int                     =  15
-    let nextcloudVersion17: Int                     =  17
-    let nextcloudVersion18: Int                     =  18
-    let nextcloudVersion20: Int                     =  20
-    let nextcloudVersion23: Int                     =  23
-    let nextcloudVersion24: Int                     =  24
-    let nextcloudVersion25: Int                     =  25
-    let nextcloudVersion26: Int                     =  26
-    let nextcloudVersion27: Int                     =  27
+    let nextcloudVersion12: Int                     = 12
+    let nextcloudVersion15: Int                     = 15
+    let nextcloudVersion17: Int                     = 17
+    let nextcloudVersion18: Int                     = 18
+    let nextcloudVersion20: Int                     = 20
+    let nextcloudVersion23: Int                     = 23
+    let nextcloudVersion24: Int                     = 24
+    let nextcloudVersion25: Int                     = 25
+    let nextcloudVersion26: Int                     = 26
+    let nextcloudVersion27: Int                     = 27
 
     // Nextcloud unsupported
     //
@@ -127,7 +129,6 @@ class NCGlobal: NSObject {
 
     // E2EE
     //
-    let e2eeMaxFileSize: UInt64                     = 500000000     // 500 MB
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeReadVersions                      = ["1.1", "1.2"]
 
@@ -166,7 +167,6 @@ class NCGlobal: NSObject {
 
     // Standard height sections header/footer
     //
-    let heightButtonsCommand: CGFloat               = 50
     let heightButtonsView: CGFloat                  = 50
     let heightSection: CGFloat                      = 30
     let heightFooter: CGFloat                       = 1
@@ -311,6 +311,12 @@ class NCGlobal: NSObject {
     //  Hidden files included in the read
     //
     let includeHiddenFiles: [String]                = [".LivePhoto"]
+
+    // Auto upload subfolder granularity
+    //
+    @objc let subfolderGranularityDaily             = 2
+    @objc let subfolderGranularityMonthly           = 1
+    @objc let subfolderGranularityYearly            = 0
 
     // Notification Center
     //

@@ -40,15 +40,12 @@ extension NCManageDatabase {
 
     func addCapabilitiesJSon(_ data: Data, account: String) {
 
-        let realm = try! Realm()
-
         do {
+            let realm = try Realm()
             try realm.write {
                 let addObject = tableCapabilities()
-
                 addObject.account = account
                 addObject.jsondata = data
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {
@@ -58,28 +55,35 @@ extension NCManageDatabase {
 
     func getCapabilities(account: String) -> Data? {
 
-        let realm = try! Realm()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else { return nil }
+            return result.jsondata
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return result.jsondata
+        return nil
     }
 
     func setCapabilities(account: String, data: Data? = nil) {
 
-        let realm = try! Realm()
         let json: JSON?
 
         if let data = data {
             json = JSON(data)
         } else {
-            guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
-                  let data = result.jsondata else {
+            do {
+                let realm = try Realm()
+                guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
+                      let data = result.jsondata else {
+                    return
+                }
+                json = JSON(data)
+            } catch let error as NSError {
+                NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
                 return
             }
-            json = JSON(data)
         }
 
         guard let json = json else { return }
@@ -105,7 +109,6 @@ extension NCManageDatabase {
 
         NCGlobal.shared.capabilityE2EEEnabled = json["ocs", "data", "capabilities", "end-to-end-encryption", "enabled"].boolValue
         NCGlobal.shared.capabilityE2EEApiVersion = json["ocs", "data", "capabilities", "end-to-end-encryption", "api-version"].stringValue
-
 
         NCGlobal.shared.capabilityRichdocumentsMimetypes.removeAll()
         let mimetypes = json["ocs", "data", "capabilities", "richdocuments", "mimetypes"].arrayValue

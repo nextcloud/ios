@@ -309,30 +309,6 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         activityIndicator.stopAnimating()
         playerToolBar?.update()
     }
-
-    func mediaPlayerTitleChanged(_ aNotification: Notification) {
-        // Handle other states...
-    }
-
-    func mediaPlayerChapterChanged(_ aNotification: Notification) {
-        // Handle other states...
-    }
-
-    func mediaPlayerLoudnessChanged(_ aNotification: Notification) {
-        // Handle other states...
-    }
-
-    func mediaPlayerSnapshot(_ aNotification: Notification) {
-        // Handle other states...
-    }
-
-    func mediaPlayerStartedRecording(_ player: VLCMediaPlayer) {
-        // Handle other states...
-    }
-
-    func mediaPlayer(_ player: VLCMediaPlayer, recordingStoppedAtPath path: String) {
-        // Handle other states...
-    }
 }
 
 extension NCPlayer: VLCMediaThumbnailerDelegate {

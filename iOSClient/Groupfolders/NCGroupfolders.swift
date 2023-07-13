@@ -34,7 +34,6 @@ class NCGroupfolders: NCCollectionViewCommon {
         titleCurrentFolder = NSLocalizedString("_group_folders_", comment: "")
         layoutKey = NCGlobal.shared.layoutViewGroupfolders
         enableSearchBar = false
-        headerMenuButtonsCommand = false
         headerMenuButtonsView = true
         headerRichWorkspaceDisable = true
         emptyImage = UIImage(named: "folder_group")?.image(color: NCBrandColor.shared.brandElement, size: UIScreen.main.bounds.width)
