@@ -172,24 +172,26 @@ enum NCLinkPermission: NCPermission {
 }
 
 enum NCShareAttribute: NCToggleCellConfig {
-    private func getAttributes(share: NCTableShareable) -> List<ShareAttribute>? {
-        return NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare)?.attributes
-    }
-
     private func getDownloadPermissionAttribute(share: NCTableShareable) -> ShareAttribute? {
-        return getAttributes(share: share)?.first(where: { $0.scope == "permissions" && $0.key == "download" })
+        return share.attributes.first(where: { $0.scope == "permissions" && $0.key == "download" })
     }
 
     func isOn(for share: NCTableShareable) -> Bool {
-        let attributes = NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare)?.attributes
+//        let attributes = NCManageDatabase.shared.getTableShare(account: share.account, idShare: share.idShare)?.attributes
+        let attributes = share.attributes
 
+        print(attributes)
         switch self {
         case.allowDownload: return getDownloadPermissionAttribute(share: share)?.enabled ?? true // true by default
         }
     }
 
     func didChange(_ share: NCTableShareable, to newValue: Bool) {
-        getDownloadPermissionAttribute(share: share)?.enabled = newValue
+        switch self {
+        case.allowDownload:
+            let index = share.attributes.firstIndex(where: { $0.scope == "permissions" && $0.key == "download" })!
+            share.attributes[index] = ShareAttribute(scope: "permissions", key: "download", enabled: newValue)
+        }
     }
 
     var title: String {

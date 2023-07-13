@@ -72,7 +72,7 @@ class tableShareV3: Object {
 
     // arrays dont work in realm, and we need to change this to List or one of these: https://www.mongodb.com/docs/realm-sdks/swift/latest/Classes/Object.html
 //    @objc dynamic var attributes = [NKShare.Attribute]()
-    let attributes = List<ShareAttribute>()
+    var attributes = List<ShareAttribute>()
 
     override static func primaryKey() -> String {
         return "primaryKey"
@@ -90,6 +90,10 @@ class ShareAttribute: EmbeddedObject {
         self.key = key
         self.enabled = enabled
     }
+
+//    static func toArray(attributes: List<ShareAttribute>) -> [NKShare.Attribute] {
+////        return NKShare.Attribute
+//    }
 }
 
 extension NCManageDatabase {

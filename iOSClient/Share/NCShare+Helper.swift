@@ -24,9 +24,10 @@
 import UIKit
 import NextcloudKit
 import Foundation
+import RealmSwift
 
 extension tableShare: NCTableShareable { }
-extension NKShare: NCTableShareable { }
+//extension NKShare: NCTableShareable { }
 
 protocol NCTableShareable: AnyObject {
     var shareType: Int { get set }
@@ -42,6 +43,7 @@ protocol NCTableShareable: AnyObject {
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
     var account: String { get set }
+    var attributes: List<ShareAttribute> { get set }
 }
 
 extension NCTableShareable {
@@ -77,6 +79,7 @@ class NCTableShareOptions: NCTableShareable {
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
     var account: String = ""
+    var attributes = List<ShareAttribute>()
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
         if metadata.e2eEncrypted {
