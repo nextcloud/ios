@@ -162,6 +162,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 70
         functionMenu.append(item)
 
+        externalSiteMenu.append(item)
+        externalSiteMenu.append(item)
+
         // ITEM : Trash
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
             item = NKExternalSite()
@@ -271,12 +274,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        let defaultSections = 4
-
-        if externalSiteMenu.count == 0 {
-            return defaultSections
+        if externalSiteMenu.isEmpty {
+            return 4
         } else {
-            return defaultSections + 1
+            return 5
         }
     }
     
@@ -291,40 +292,43 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var count = 0
-
+        var cont = 0
+        
         if section == 0 {
-            count = tabAccount == nil ? 0 : 1
+            cont = tabAccount == nil ? 0 : 1
         } else if section == 1 {
-            // Menu More apps
-            count = moreAppsMenu.count
+            // Menu Normal
+            cont = moreAppsMenu.count
         } else if section == 2 {
-            // Menu function
-            count = functionMenu.count
-        } else {
-            switch numberOfSections(in: tableView) {
-            case 3:
-                // Menu Settings
-                if section == 3 {
-                    count = settingsMenu.count
-                }
-            case 4:
-                // Menu External Site
-                if section == 3 {
-                    count = externalSiteMenu.count
-                }
-                // Menu Settings
-                if section == 4 {
-                    count = settingsMenu.count
-                }
-            default:
-                count = 0
-            }
+            cont = functionMenu.count
+        } else if section == 3 {
+            cont = numberOfSections(in: tableView) == 4 ? settingsMenu.count : externalSiteMenu.count
+        } else if section == 4 {
+            cont = settingsMenu.count
+            //        } else {
+            //            switch numberOfSections(in: tableView) {
+            //            case 4:
+            //                // Menu Settings
+            //                if section == 3 {
+            //                    cont = settingsMenu.count
+            //                }
+            //            case 5:
+            //                // Menu External Site
+            //                if section == 3 {
+            //                    cont = externalSiteMenu.count
+            //                }
+            //                // Menu Settings
+            //                if section == 4 {
+            //                    cont = settingsMenu.count
+            //                }
+            //            default:
+            //                cont = 0
         }
 
-        return count
+
+        return cont
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         var item = NKExternalSite()
@@ -375,15 +379,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             return cell
         } else {
-
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
 
-            // Menu More Apps
-            if indexPath.section == 1 {
-                item = moreAppsMenu[indexPath.row]
-            }
-
-            // Menu Function
+            // Menu Normal
             if indexPath.section == 2 {
                 item = functionMenu[indexPath.row]
             }
