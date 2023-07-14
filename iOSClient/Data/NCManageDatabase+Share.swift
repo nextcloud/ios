@@ -67,6 +67,7 @@ class tableShareV2: Object {
     @objc dynamic var userIcon = ""
     @objc dynamic var userMessage = ""
     @objc dynamic var userStatus = ""
+    @objc dynamic var attributes: String?
 
     override static func primaryKey() -> String {
         return "primaryKey"
@@ -127,6 +128,7 @@ extension NCManageDatabase {
                     object.userIcon = share.userIcon
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
+                    object.attributes = share.attributes
                     realm.add(object, update: .all)
                 }
             }
