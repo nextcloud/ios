@@ -230,9 +230,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Request TouchID, FaceID
         enableTouchFaceID()
         
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterApplicationWillEnterForeground)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
 
     // L' applicazione si dimetterà dallo stato di attivo
@@ -440,37 +439,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
-        NCApplicationHandle().nextcloudPushNotificationAction(data: data) { detected in
-            if !detected {
+        NCApplicationHandle().nextcloudPushNotificationAction(data: data) {
 
-                var findAccount: Bool = false
+            var findAccount: Bool = false
 
-                if let accountPush = data["account"] as? String,
-                   let app = data["app"] as? String,
-                   app == NCGlobal.shared.twofactorNotificatioName {
-                    if accountPush == self.account {
-                        findAccount = true
-                    } else {
-                        let accounts = NCManageDatabase.shared.getAllAccount()
-                        for account in accounts {
-                            if account.account == accountPush {
-                                self.changeAccount(account.account)
-                                findAccount = true
-                            }
+            if let accountPush = data["account"] as? String,
+               let app = data["app"] as? String,
+               app == NCGlobal.shared.twoFactorNotificatioName {
+                if accountPush == self.account {
+                    findAccount = true
+                } else {
+                    let accounts = NCManageDatabase.shared.getAllAccount()
+                    for account in accounts {
+                        if account.account == accountPush {
+                            self.changeAccount(account.account)
+                            findAccount = true
                         }
                     }
-                    if findAccount, let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            let navigationController = UINavigationController(rootViewController: viewController)
-                            navigationController.modalPresentationStyle = .fullScreen
-                            self.window?.rootViewController?.present(navigationController, animated: true)
-                        }
-                    } else if !findAccount {
-                        let message = NSLocalizedString("_the_account_", comment: "") + " " + accountPush + " " + NSLocalizedString("_does_not_exist_", comment: "")
-                        let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self.window?.rootViewController?.present(alertController, animated: true, completion: { })
+                }
+                if findAccount, let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        let navigationController = UINavigationController(rootViewController: viewController)
+                        navigationController.modalPresentationStyle = .fullScreen
+                        self.window?.rootViewController?.present(navigationController, animated: true)
                     }
+                } else if !findAccount {
+                    let message = NSLocalizedString("_the_account_", comment: "") + " " + accountPush + " " + NSLocalizedString("_does_not_exist_", comment: "")
+                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                    self.window?.rootViewController?.present(alertController, animated: true, completion: { })
                 }
             }
         }
