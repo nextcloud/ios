@@ -366,6 +366,9 @@ class NCEndToEndMetadata: NSObject {
                                 let deleted = json["deleted"]
                                 let files = json["files"]
 
+                                // TEST hash
+                                let hash = NCEndToEndEncryption.sharedManager().createSHA256(plainUser.metadataKey)
+
                                 if let folders = json["folders"] as? [String: String] {
                                     for folder in folders {
                                         addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: plainUser.metadataKey, initializationVector: metadata.nonce, metadataKey: plainUser.metadataKey, mimetype: "httpd/unix-directory")
