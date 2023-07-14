@@ -31,6 +31,14 @@ class BaseNCMoreCell: UITableViewCell {
 
         selectedBackgroundView = selectionColor
         backgroundColor = .secondarySystemGroupedBackground
+        applyCornerRadius()
+    }
+
+    func applyCornerRadius() {
         layer.cornerRadius = defaultCornerRadius
+    }
+
+    func removeCornerRadius() {
+        layer.cornerRadius = 0
     }
 }

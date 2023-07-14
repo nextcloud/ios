@@ -378,10 +378,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             cell.separator.backgroundColor = .separator
             cell.separatorHeigth.constant = 0.4
-            
+
+            cell.removeCornerRadius()
             let rows = tableView.numberOfRows(inSection: indexPath.section)
             
             if indexPath.row == 0 {
+                cell.applyCornerRadius()
                 if indexPath.row == rows - 1 {
                     cell.separator.backgroundColor = .clear
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -389,12 +391,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
                 }
             } else if indexPath.row == rows - 1 {
+                cell.applyCornerRadius()
                 cell.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
                 cell.separator.backgroundColor = .clear
-            } else {
-                cell.layer.cornerRadius = 0
             }
-            
+
             return cell
         }
     }
