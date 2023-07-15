@@ -113,7 +113,7 @@ class NCShareNetworking: NSObject {
 
     func updateShare(option: NCTableShareable) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload) { account, share, data, error in
+        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload, attributes: option.attributes) { account, share, data, error in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)

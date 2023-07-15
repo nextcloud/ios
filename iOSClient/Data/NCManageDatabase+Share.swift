@@ -260,6 +260,7 @@ extension NCManageDatabase {
         }
     }
 
+    // There is currently only one share attribute “download” from the scope “permissions”. This attribute is only valid for user and group shares, not for public link shares.
     func setAttibuteDownload(state: Bool) -> String? {
         if state {
             return nil
