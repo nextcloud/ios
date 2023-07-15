@@ -74,6 +74,27 @@ class tableShareV2: Object {
     }
 }
 
+extension tableShare {
+
+    var isAttributeDownloadEnabled: Bool {
+        if let attributes = attributes, let data = attributes.data(using: .utf8) {
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [Dictionary<String, Any>] {
+                    for sub in json {
+                        let key = sub["key"] as? String
+                        let enabled = sub["enabled"] as? Bool
+                        let scope = sub["scope"] as? String
+                        if key == "download", enabled == false, scope == "permissions" {
+                            return false
+                        }
+                    }
+                }
+            } catch let error as NSError { print(error) }
+        }
+        return true
+    }
+}
+
 extension NCManageDatabase {
 
     func addShare(account: String, home: String, shares: [NKShare]) {

@@ -78,21 +78,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     func isOn(for share: NCTableShareable) -> Bool {
         if self == .download {
-            if let attributes = share.attributes, let data = attributes.data(using: .utf8) {
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data) as? [Dictionary<String, Any>] {
-                        for sub in json {
-                            let key = sub["key"] as? String
-                            let enabled = sub["enabled"] as? Bool
-                            let scope = sub["scope"] as? String
-                            if key == "download", enabled == false, scope == "permissions" {
-                                return false
-                            }
-                        }
-                    }
-                } catch let error as NSError { print(error) }
-            }
-            return true
+            return share.isAttributeDownloadEnabled
         } else {
             return (share.permissions & permissionBitFlag) != 0
         }
