@@ -73,7 +73,6 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 
     func didChange(_ share: NCTableShareable, to newValue: Bool) {
-        // ATTRIBUTES
         if self == .download {
             share.attributes = NCManageDatabase.shared.setAttibuteDownload(state: newValue)
         } else {
@@ -120,7 +119,7 @@ enum NCLinkPermission: NCPermission {
     }
 
     func hasDownload() -> Bool {
-        return true
+        return false
     }
 
     var permissionValue: Int {
