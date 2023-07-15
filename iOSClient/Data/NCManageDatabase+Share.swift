@@ -259,4 +259,12 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
+
+    func setAttibuteDownload(state: Bool) -> String? {
+        if state {
+            return nil
+        } else {
+            return "[{\"scope\":\"permissions\",\"key\":\"download\",\"enabled\":false}]"
+        }
+    }
 }
