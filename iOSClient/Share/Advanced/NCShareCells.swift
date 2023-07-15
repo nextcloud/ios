@@ -49,11 +49,17 @@ protocol NCPermission: NCToggleCellConfig {
     static var forDirectoryE2EE: [Self] { get }
     static var forFile: [Self] { get }
     func hasResharePermission(for parentPermission: Int) -> Bool
+    func hasDownload() -> Bool
 }
 
 enum NCUserPermission: CaseIterable, NCPermission {
     func hasResharePermission(for parentPermission: Int) -> Bool {
+        if self == .download { return true }
         return ((permissionBitFlag & parentPermission) != 0)
+    }
+
+    func hasDownload() -> Bool {
+        return self == .download
     }
 
     var permissionBitFlag: Int {
@@ -62,6 +68,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
         case .edit: return NCGlobal.shared.permissionUpdateShare
         case .create: return NCGlobal.shared.permissionCreateShare
         case .delete: return NCGlobal.shared.permissionDeleteShare
+        case .download: return NCGlobal.shared.permissionDownloadShare
         }
     }
 
@@ -70,10 +77,28 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 
     func isOn(for share: NCTableShareable) -> Bool {
-        return (share.permissions & permissionBitFlag) != 0
+        if self == .download {
+            if let attributes = share.attributes, let data = attributes.data(using: .utf8) {
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [Dictionary<String, Any>] {
+                        for sub in json {
+                            let key = sub["key"] as? String
+                            let enabled = sub["enabled"] as? Bool
+                            let scope = sub["scope"] as? String
+                            if key == "download", enabled == false, scope == "permissions" {
+                                return false
+                            }
+                        }
+                    }
+                } catch let error as NSError { print(error) }
+            }
+            return true
+        } else {
+            return (share.permissions & permissionBitFlag) != 0
+        }
     }
 
-    case reshare, edit, create, delete
+    case reshare, edit, create, delete, download
     static let forDirectory: [NCUserPermission] = NCUserPermission.allCases
     static let forDirectoryE2EE: [NCUserPermission] = []
     static let forFile: [NCUserPermission] = [.reshare, .edit]
@@ -84,11 +109,13 @@ enum NCUserPermission: CaseIterable, NCPermission {
         case .edit: return NSLocalizedString("_share_can_change_", comment: "")
         case .create: return NSLocalizedString("_share_can_create_", comment: "")
         case .delete: return NSLocalizedString("_share_can_delete_", comment: "")
+        case .download: return NSLocalizedString("_share_can_download_", comment: "")
         }
     }
 }
 
 enum NCLinkPermission: NCPermission {
+
     func didChange(_ share: NCTableShareable, to newValue: Bool) {
         guard self != .allowEdit || newValue else {
             share.permissions = NCGlobal.shared.permissionReadShare
@@ -99,6 +126,10 @@ enum NCLinkPermission: NCPermission {
 
     func hasResharePermission(for parentPermission: Int) -> Bool {
         permissionValue & parentPermission == permissionValue
+    }
+
+    func hasDownload() -> Bool {
+        return true
     }
 
     var permissionValue: Int {
@@ -225,7 +256,7 @@ struct NCShareConfig {
         let cellConfig = config(for: indexPath)
         let cell = cellConfig?.getCell(for: share)
         cell?.textLabel?.text = cellConfig?.title
-        if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: resharePermission) {
+        if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: resharePermission), !cellConfig.hasDownload() {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }

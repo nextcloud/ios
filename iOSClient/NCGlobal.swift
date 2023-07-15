@@ -257,6 +257,8 @@ class NCGlobal: NSObject {
     @objc let permissionMaxFolderShare: Int         = 31
     @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
     @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
+    // ATTRIBUTES
+    @objc let permissionDownloadShare: Int          = 0
 
     // Filename Mask and Type
     //
