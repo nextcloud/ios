@@ -73,7 +73,11 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 
     func didChange(_ share: NCTableShareable, to newValue: Bool) {
-        share.permissions ^= permissionBitFlag
+        if self == .download {
+            // ATTRIBUTES
+        } else {
+            share.permissions ^= permissionBitFlag
+        }
     }
 
     func isOn(for share: NCTableShareable) -> Bool {

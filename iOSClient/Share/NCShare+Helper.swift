@@ -43,6 +43,7 @@ protocol NCTableShareable: AnyObject {
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
 
+    var attributes: String? { get set }
     var isAttributeDownloadEnabled: Bool { get }
 }
 
@@ -80,6 +81,7 @@ class NCTableShareOptions: NCTableShareable {
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
 
+    var attributes: String?
     var isAttributeDownloadEnabled: Bool = true
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
