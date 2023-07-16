@@ -84,8 +84,8 @@ extension tableShare {
                         let key = sub["key"] as? String
                         let enabled = sub["enabled"] as? Bool
                         let scope = sub["scope"] as? String
-                        if key == "download", enabled == false, scope == "permissions" {
-                            return false
+                        if key == "download", scope == "permissions", let enabled = enabled {
+                            return enabled
                         }
                     }
                 }
