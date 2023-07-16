@@ -82,7 +82,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     func isOn(for share: NCTableShareable) -> Bool {
         if self == .download {
-            return share.isAttributeDownloadEnabled
+            return NCManageDatabase.shared.isAttributeDownloadEnabled(attributes: share.attributes)
         } else {
             return (share.permissions & permissionBitFlag) != 0
         }
