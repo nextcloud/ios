@@ -155,36 +155,51 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
+            let serverUrl = appDelegate.activeServerUrl
+
+            var metadatas = [tableMetadata]()
+            var metadatasInConflict = [tableMetadata]()
 
             for urlIn in urls {
+                let ocId = NSUUID().uuidString
 
                 let fileName = urlIn.lastPathComponent
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                 let urlOut = URL(fileURLWithPath: toPath)
-                let serverUrl = appDelegate.activeServerUrl
 
                 guard let url = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+
 
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
-
-                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
-
-                        conflict.delegate = appDelegate
-                        conflict.serverUrl = serverUrl
-                        conflict.metadatasUploadInConflict = [metadataForUpload]
-
-                        appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
-                    }
+                if let metadataInConflict = NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
+                    metadatasInConflict.append(metadataInConflict)
 
                 } else {
-                    NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
+                    metadatas.append(metadataForUpload)
+                }
+//                } else {
+//                    NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
+//                }
+
+
+            }
+
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in })
+
+            if !metadatasInConflict.isEmpty {
+                if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+
+                    conflict.delegate = appDelegate
+                    conflict.serverUrl = serverUrl
+                    conflict.metadatasUploadInConflict = metadatasInConflict
+
+                    appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                 }
             }
         }
