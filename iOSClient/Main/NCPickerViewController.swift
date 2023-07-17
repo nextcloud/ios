@@ -165,7 +165,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                 let urlOut = URL(fileURLWithPath: toPath)
 
-                guard let url = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
+                guard let _ = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
