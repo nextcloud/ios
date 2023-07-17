@@ -138,13 +138,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-
-        let ocId = NSUUID().uuidString
-
         if isViewerMedia,
             let urlIn = urls.first,
             let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
             let viewController = self.viewController {
+            let ocId = NSUUID().uuidString
 
             let fileName = url.lastPathComponent
             let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
@@ -178,7 +176,6 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 if let _ = NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
                     metadatasInConflict.append(metadataForUpload)
-
                 } else {
                     metadatas.append(metadataForUpload)
                 }
