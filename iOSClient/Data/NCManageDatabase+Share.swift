@@ -67,6 +67,7 @@ class tableShareV2: Object {
     @objc dynamic var userIcon = ""
     @objc dynamic var userMessage = ""
     @objc dynamic var userStatus = ""
+    @objc dynamic var attributes: String?
 
     override static func primaryKey() -> String {
         return "primaryKey"
@@ -80,6 +81,8 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
+                let result = realm.objects(tableShare.self).filter("account == %@", account)
+                realm.delete(result)
                 for share in shares {
                     let serverUrlPath = home + share.path
                     guard let serverUrl = NCUtilityFileSystem.shared.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else { continue }
@@ -125,6 +128,7 @@ extension NCManageDatabase {
                     object.userIcon = share.userIcon
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
+                    object.attributes = share.attributes
                     realm.add(object, update: .all)
                 }
             }
@@ -234,4 +238,32 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
     }
+
+    // There is currently only one share attribute “download” from the scope “permissions”. This attribute is only valid for user and group shares, not for public link shares.
+    func setAttibuteDownload(state: Bool) -> String? {
+        if state {
+            return nil
+        } else {
+            return "[{\"scope\":\"permissions\",\"key\":\"download\",\"enabled\":false}]"
+        }
+    }
+
+    func isAttributeDownloadEnabled(attributes: String?) -> Bool {
+        if let attributes = attributes, let data = attributes.data(using: .utf8) {
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [Dictionary<String, Any>] {
+                    for sub in json {
+                        let key = sub["key"] as? String
+                        let enabled = sub["enabled"] as? Bool
+                        let scope = sub["scope"] as? String
+                        if key == "download", scope == "permissions", let enabled = enabled {
+                            return enabled
+                        }
+                    }
+                }
+            } catch let error as NSError { print(error) }
+        }
+        return true
+    }
+
 }
