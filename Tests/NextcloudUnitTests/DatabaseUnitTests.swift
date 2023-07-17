@@ -15,15 +15,12 @@ import RealmSwift
  NOTE: Please only write tests here if it's not possible to write them on NextcloudKit.
  */
 class NextcloudUnitTests: XCTestCase {
-    var realm: Realm!
-
     private let file1Name = "file-sample1.pdf"
     private let file2Name = "file-sample2.pdf"
     private let file3Name = "file-sample3.pdf"
 
     override func setUp() {
         Realm.Configuration.defaultConfiguration.inMemoryIdentifier = self.name
-        realm = try! Realm()
     }
 
     func testDbCreateProcessUpload_withProperParams_shouldReturnProperResult() throws {
