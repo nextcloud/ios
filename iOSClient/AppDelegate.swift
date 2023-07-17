@@ -875,8 +875,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 guard let userScheme = CCUtility.value(forKey: "user", fromQueryItems: queryItems) else { return false }
                 guard let urlScheme = CCUtility.value(forKey: "url", fromQueryItems: queryItems) else { return false }
                 if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
-                    let message = String(format: NSLocalizedString("_account_not_exists_", comment: ""), userScheme, urlScheme)
-
+                    let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
                     let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
