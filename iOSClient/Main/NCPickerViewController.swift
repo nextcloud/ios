@@ -138,13 +138,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-
-        let ocId = NSUUID().uuidString
-
         if isViewerMedia,
             let urlIn = urls.first,
             let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
             let viewController = self.viewController {
+            let ocId = NSUUID().uuidString
 
             let fileName = url.lastPathComponent
             let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
@@ -155,15 +153,19 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
+            let serverUrl = appDelegate.activeServerUrl
+
+            var metadatas = [tableMetadata]()
+            var metadatasInConflict = [tableMetadata]()
 
             for urlIn in urls {
+                let ocId = NSUUID().uuidString
 
                 let fileName = urlIn.lastPathComponent
                 let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
                 let urlOut = URL(fileURLWithPath: toPath)
-                let serverUrl = appDelegate.activeServerUrl
 
-                guard let url = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
+                guard let _ = self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) else { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
@@ -172,19 +174,23 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
-
-                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
-
-                        conflict.delegate = appDelegate
-                        conflict.serverUrl = serverUrl
-                        conflict.metadatasUploadInConflict = [metadataForUpload]
-
-                        appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
-                    }
-
+                if let _ = NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
+                    metadatasInConflict.append(metadataForUpload)
                 } else {
-                    NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
+                    metadatas.append(metadataForUpload)
+                }
+            }
+
+            NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in })
+
+            if !metadatasInConflict.isEmpty {
+                if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+
+                    conflict.delegate = appDelegate
+                    conflict.serverUrl = serverUrl
+                    conflict.metadatasUploadInConflict = metadatasInConflict
+
+                    appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
                 }
             }
         }
