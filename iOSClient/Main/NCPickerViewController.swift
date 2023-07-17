@@ -171,23 +171,17 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
 
-
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
 
-                if let metadataInConflict = NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
-                    metadatasInConflict.append(metadataInConflict)
+                if let _ = NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) {
+                    metadatasInConflict.append(metadataForUpload)
 
                 } else {
                     metadatas.append(metadataForUpload)
                 }
-//                } else {
-//                    NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: [metadataForUpload], completion: { _ in })
-//                }
-
-
             }
 
             NCNetworkingProcessUpload.shared.createProcessUploads(metadatas: metadatas, completion: { _ in })
