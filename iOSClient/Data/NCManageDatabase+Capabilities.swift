@@ -24,7 +24,6 @@
 import Foundation
 import RealmSwift
 import NextcloudKit
-import SwiftyJSON
 
 class tableCapabilities: Object {
 
@@ -68,10 +67,204 @@ extension NCManageDatabase {
 
     func setCapabilities(account: String, data: Data? = nil) {
 
-        let json: JSON?
+        let jsonData: Data?
+
+        struct CapabilityNextcloud: Codable {
+
+            struct Ocs: Codable {
+                let meta: Meta
+                let data: Data
+
+                struct Meta: Codable {
+                    let status: String?
+                    let message: String?
+                    let statuscode: Int?
+                }
+
+                struct Data: Codable {
+                    let version: Version
+                    let capabilities: Capabilities
+
+                    struct Version: Codable {
+                        let string: String
+                        let major: Int
+                    }
+
+                    struct Capabilities: Codable {
+                        let filessharing: FilesSharing?
+                        let theming: Theming?
+                        let endtoendencryption: EndToEndEncryption?
+                        let richdocuments: RichDocuments?
+                        let activity: Activity?
+                        let notifications: Notifications?
+                        let files: Files?
+                        let userstatus: UserStatus?
+                        let external: External?
+                        let groupfolders: GroupFolders?
+
+                        enum CodingKeys: String, CodingKey {
+                            case filessharing = "files_sharing"
+                            case theming
+                            case endtoendencryption = "end-to-end-encryption"
+                            case richdocuments, activity, notifications, files
+                            case userstatus = "user_status"
+                            case external, groupfolders
+                        }
+
+                        struct FilesSharing: Codable {
+                            let apienabled: Bool?
+                            let groupsharing: Bool?
+                            let resharing: Bool?
+                            let defaultpermissions: Int?
+                            let ncpublic: Public?
+
+                            enum CodingKeys: String, CodingKey {
+                                case apienabled = "api_enabled"
+                                case groupsharing = "group_sharing"
+                                case resharing
+                                case defaultpermissions = "default_permissions"
+                                case ncpublic = "public"
+                            }
+
+                            struct Public: Codable {
+                                let upload: Bool
+                                let enabled: Bool
+                                let password: Password?
+                                let sendmail: Bool
+                                let uploadfilesdrop: Bool
+                                let multiplelinks: Bool
+                                let expiredate: ExpireDate?
+                                let expiredateinternal: ExpireDate?
+                                let expiredateremote: ExpireDate?
+
+                                enum CodingKeys: String, CodingKey {
+                                    case upload, enabled, password
+                                    case sendmail = "send_mail"
+                                    case uploadfilesdrop = "upload_files_drop"
+                                    case multiplelinks = "multiple_links"
+                                    case expiredate = "expire_date"
+                                    case expiredateinternal = "expire_date_internal"
+                                    case expiredateremote = "expire_date_remote"
+                                }
+
+                                struct Password: Codable {
+                                    let enforced: Bool?
+                                    let askForOptionalPassword: Bool?
+                                }
+
+                                struct ExpireDate: Codable {
+                                    let enforced: Bool?
+                                    let days: Int?
+                                }
+                            }
+                        }
+
+                        struct Theming: Codable {
+                            let color: String?
+                            let colorelement: String?
+                            let colortext: String?
+                            let colorelementbright: String?
+                            let backgrounddefault: Bool?
+                            let backgroundplain: Bool?
+                            let colorelementdark: String?
+                            let name: String?
+                            let slogan: String?
+                            let url: String?
+                            let logo: String?
+                            let background: String?
+                            let logoheader: String?
+                            let favicon: String?
+
+                            enum CodingKeys: String, CodingKey {
+                                case color
+                                case colorelement = "color-element"
+                                case colortext = "color-text"
+                                case colorelementbright = "color-element-bright"
+                                case backgrounddefault = "background-default"
+                                case backgroundplain = "background-plain"
+                                case colorelementdark = "color-element-dark"
+                                case name, slogan, url, logo, background, logoheader, favicon
+                            }
+                        }
+
+                        struct EndToEndEncryption: Codable {
+                            let enabled: Bool?
+                            let apiversion: String?
+                            let keysexist: Bool?
+
+                            enum CodingKeys: String, CodingKey {
+                                case enabled
+                                case apiversion = "api-version"
+                                case keysexist = "keys-exist"
+                            }
+                        }
+
+                        struct RichDocuments: Codable {
+                            let mimetypes: [String]?
+                        }
+
+                        struct Activity: Codable {
+                            let apiv2: [String]?
+                        }
+
+                        struct Notifications: Codable {
+                            let ocsendpoints: [String]?
+
+                            enum CodingKeys: String, CodingKey {
+                                case ocsendpoints = "ocs-endpoints"
+                            }
+                        }
+
+                        struct Files: Codable {
+                            let undelete: Bool?
+                            let locking: String?
+                            let comments: Bool?
+                            let versioning: Bool?
+                            let directEditing: DirectEditing?
+                            let bigfilechunking: Bool?
+                            let versiondeletion: Bool?
+                            let versionlabeling: Bool?
+
+                            enum CodingKeys: String, CodingKey {
+                                case undelete, locking, comments, versioning, directEditing, bigfilechunking
+                                case versiondeletion = "version_deletion"
+                                case versionlabeling = "version_labeling"
+                            }
+
+                            struct DirectEditing: Codable {
+                                let url: String?
+                                let etag: String?
+                                let supportsFileId: Bool?
+                            }
+                        }
+
+                        struct UserStatus: Codable {
+                            let enabled: Bool?
+                            let restore: Bool?
+                            let supportsemoji: Bool?
+
+                            enum CodingKeys: String, CodingKey {
+                                case enabled, restore
+                                case supportsemoji = "supports_emoji"
+                            }
+                        }
+
+                        struct External: Codable {
+                            let v1: [String]?
+                        }
+
+                        struct GroupFolders: Codable {
+                            let hasGroupFolders: Bool?
+                        }
+                    }
+                }
+            }
+
+            let ocs: Ocs
+        }
 
         if let data = data {
-            json = JSON(data)
+            jsonData = data
         } else {
             do {
                 let realm = try Realm()
@@ -79,61 +272,71 @@ extension NCManageDatabase {
                       let data = result.jsondata else {
                     return
                 }
-                json = JSON(data)
+                jsonData = data
             } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("I cannot access to database: \(error)")
                 return
             }
         }
+        guard let jsonData = jsonData else { return }
 
-        guard let json = json else { return }
+        do {
+            let json = try JSONDecoder().decode(CapabilityNextcloud.self, from: jsonData)
+            NCGlobal.shared.capabilityServerVersion = json.ocs.data.version.string
+            NCGlobal.shared.capabilityServerVersionMajor = json.ocs.data.version.major
 
-        NCGlobal.shared.capabilityServerVersion = json["ocs", "data", "version", "string"].stringValue
-        NCGlobal.shared.capabilityServerVersionMajor = json["ocs", "data", "version", "major"].intValue
+            NCGlobal.shared.capabilityFileSharingApiEnabled = json.ocs.data.capabilities.filessharing?.apienabled ?? false
+            NCGlobal.shared.capabilityFileSharingDefaultPermission = json.ocs.data.capabilities.filessharing?.defaultpermissions ?? 0
+            NCGlobal.shared.capabilityFileSharingPubPasswdEnforced = json.ocs.data.capabilities.filessharing?.ncpublic?.password?.enforced ?? false
+            NCGlobal.shared.capabilityFileSharingPubExpireDateEnforced = json.ocs.data.capabilities.filessharing?.ncpublic?.expiredate?.enforced ?? false
+            NCGlobal.shared.capabilityFileSharingPubExpireDateDays = json.ocs.data.capabilities.filessharing?.ncpublic?.expiredate?.days ?? 0
+            NCGlobal.shared.capabilityFileSharingInternalExpireDateEnforced = json.ocs.data.capabilities.filessharing?.ncpublic?.expiredateinternal?.enforced ?? false
+            NCGlobal.shared.capabilityFileSharingInternalExpireDateDays = json.ocs.data.capabilities.filessharing?.ncpublic?.expiredateinternal?.days ?? 0
+            NCGlobal.shared.capabilityFileSharingRemoteExpireDateEnforced = json.ocs.data.capabilities.filessharing?.ncpublic?.expiredateremote?.enforced ?? false
+            NCGlobal.shared.capabilityFileSharingRemoteExpireDateDays = json.ocs.data.capabilities.filessharing?.ncpublic?.expiredateremote?.days ?? 0
 
-        NCGlobal.shared.capabilityFileSharingApiEnabled = json["ocs", "data", "capabilities", "files_sharing", "api_enabled"].boolValue
-        NCGlobal.shared.capabilityFileSharingPubPasswdEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "password", "enforced"].boolValue
-        NCGlobal.shared.capabilityFileSharingPubExpireDateEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "enforced"].boolValue
-        NCGlobal.shared.capabilityFileSharingPubExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date", "days"].intValue
-        NCGlobal.shared.capabilityFileSharingInternalExpireDateEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "enforced"].boolValue
-        NCGlobal.shared.capabilityFileSharingInternalExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_internal", "days"].intValue
-        NCGlobal.shared.capabilityFileSharingRemoteExpireDateEnforced = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "enforced"].boolValue
-        NCGlobal.shared.capabilityFileSharingRemoteExpireDateDays = json["ocs", "data", "capabilities", "files_sharing", "public", "expire_date_remote", "days"].intValue
-        NCGlobal.shared.capabilityFileSharingDefaultPermission = json["ocs", "data", "capabilities", "files_sharing", "default_permissions"].intValue
+            NCGlobal.shared.capabilityThemingColor = json.ocs.data.capabilities.theming?.color ?? ""
+            NCGlobal.shared.capabilityThemingColorElement = json.ocs.data.capabilities.theming?.colorelement ?? ""
+            NCGlobal.shared.capabilityThemingColorText = json.ocs.data.capabilities.theming?.colortext ?? ""
+            NCGlobal.shared.capabilityThemingName = json.ocs.data.capabilities.theming?.name ?? ""
+            NCGlobal.shared.capabilityThemingSlogan = json.ocs.data.capabilities.theming?.slogan ?? ""
 
-        NCGlobal.shared.capabilityThemingColor = json["ocs", "data", "capabilities", "theming", "color"].stringValue
-        NCGlobal.shared.capabilityThemingColorElement = json["ocs", "data", "capabilities", "theming", "color-element"].stringValue
-        NCGlobal.shared.capabilityThemingColorText = json["ocs", "data", "capabilities", "theming", "color-text"].stringValue
-        NCGlobal.shared.capabilityThemingName = json["ocs", "data", "capabilities", "theming", "name"].stringValue
-        NCGlobal.shared.capabilityThemingSlogan = json["ocs", "data", "capabilities", "theming", "slogan"].stringValue
+            NCGlobal.shared.capabilityE2EEEnabled = json.ocs.data.capabilities.endtoendencryption?.enabled ?? false
+            NCGlobal.shared.capabilityE2EEApiVersion = json.ocs.data.capabilities.endtoendencryption?.apiversion ?? ""
 
-        NCGlobal.shared.capabilityE2EEEnabled = json["ocs", "data", "capabilities", "end-to-end-encryption", "enabled"].boolValue
-        NCGlobal.shared.capabilityE2EEApiVersion = json["ocs", "data", "capabilities", "end-to-end-encryption", "api-version"].stringValue
+            NCGlobal.shared.capabilityRichdocumentsMimetypes.removeAll()
+            if let mimetypes = json.ocs.data.capabilities.richdocuments?.mimetypes {
+                for mimetype in mimetypes {
+                    NCGlobal.shared.capabilityRichdocumentsMimetypes.append(mimetype)
+                }
+            }
 
-        NCGlobal.shared.capabilityRichdocumentsMimetypes.removeAll()
-        let mimetypes = json["ocs", "data", "capabilities", "richdocuments", "mimetypes"].arrayValue
-        for mimetype in mimetypes {
-            NCGlobal.shared.capabilityRichdocumentsMimetypes.append(mimetype.stringValue)
+            NCGlobal.shared.capabilityActivity.removeAll()
+            if let activities = json.ocs.data.capabilities.activity?.apiv2 {
+                for activity in activities {
+                    NCGlobal.shared.capabilityActivity.append(activity)
+                }
+            }
+
+            NCGlobal.shared.capabilityNotification.removeAll()
+            if let notifications = json.ocs.data.capabilities.notifications?.ocsendpoints {
+                for notification in notifications {
+                    NCGlobal.shared.capabilityNotification.append(notification)
+                }
+            }
+
+            NCGlobal.shared.capabilityFilesUndelete = json.ocs.data.capabilities.files?.undelete ?? false
+            NCGlobal.shared.capabilityFilesLockVersion = json.ocs.data.capabilities.files?.locking ?? ""
+            NCGlobal.shared.capabilityFilesComments = json.ocs.data.capabilities.files?.comments ?? false
+
+            NCGlobal.shared.capabilityUserStatusEnabled = json.ocs.data.capabilities.files?.undelete ?? false
+            if json.ocs.data.capabilities.external != nil {
+                NCGlobal.shared.capabilityExternalSites = true
+            }
+            NCGlobal.shared.capabilityGroupfoldersEnabled = json.ocs.data.capabilities.groupfolders?.hasGroupFolders ?? false
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("I cannot access to database: \(error)")
+            return
         }
-
-        NCGlobal.shared.capabilityActivity.removeAll()
-        let activities = json["ocs", "data", "capabilities", "activity", "apiv2"].arrayValue
-        for activity in activities {
-            NCGlobal.shared.capabilityActivity.append(activity.stringValue)
-        }
-
-        NCGlobal.shared.capabilityNotification.removeAll()
-        let notifications = json["ocs", "data", "capabilities", "notifications", "ocs-endpoints"].arrayValue
-        for notify in notifications {
-            NCGlobal.shared.capabilityNotification.append(notify.stringValue)
-        }
-
-        NCGlobal.shared.capabilityFilesUndelete = json["ocs", "data", "capabilities", "files", "undelete"].boolValue
-        NCGlobal.shared.capabilityFilesLockVersion = json["ocs", "data", "capabilities", "files", "locking"].stringValue
-        NCGlobal.shared.capabilityFilesComments = json["ocs", "data", "capabilities", "files", "comments"].boolValue
-
-        NCGlobal.shared.capabilityUserStatusEnabled = json["ocs", "data", "capabilities", "user_status", "enabled"].boolValue
-        NCGlobal.shared.capabilityExternalSites = json["ocs", "data", "capabilities", "external"].exists()
-        NCGlobal.shared.capabilityGroupfoldersEnabled = json["ocs", "data", "capabilities", "groupfolders", "hasGroupFolders"].boolValue
     }
 }
