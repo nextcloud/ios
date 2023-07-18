@@ -24,7 +24,6 @@
 import UIKit
 import SVGKit
 import NextcloudKit
-import SwiftyJSON
 
 class NCService: NSObject {
     @objc static let shared: NCService = {

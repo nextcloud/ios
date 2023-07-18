@@ -24,7 +24,6 @@
 import Foundation
 import RealmSwift
 import NextcloudKit
-import SwiftyJSON
 
 class TableGroupfolders: Object {
 

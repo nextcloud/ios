@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import SwiftyJSON
 
 class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
