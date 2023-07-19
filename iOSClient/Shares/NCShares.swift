@@ -52,39 +52,33 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        DispatchQueue.global().async {
-            let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
-            var metadatas: [tableMetadata] = []
-            for share in sharess {
-                if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
-                    if !(metadatas.contains { $0.ocId == metadata.ocId }) {
-                        metadatas.append(metadata)
-                    }
+        let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
+        var metadatas: [tableMetadata] = []
+        for share in sharess {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
+                if !(metadatas.contains { $0.ocId == metadata.ocId }) {
+                    metadatas.append(metadata)
                 }
             }
-
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: self.appDelegate.account,
-                                           sort: self.layoutForView?.sort,
-                                           ascending: self.layoutForView?.ascending,
-                                           directoryOnTop: self.layoutForView?.directoryOnTop,
-                                           favoriteOnTop: true,
-                                           filterLivePhoto: true,
-                                           groupByField: self.groupByField,
-                                           providers: self.providers,
-                                           searchResults: self.searchResults)
-
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
         }
+        self.dataSource = NCDataSource(metadatas: metadatas,
+                                       account: self.appDelegate.account,
+                                       sort: self.layoutForView?.sort,
+                                       ascending: self.layoutForView?.ascending,
+                                       directoryOnTop: self.layoutForView?.directoryOnTop,
+                                       favoriteOnTop: true,
+                                       filterLivePhoto: true,
+                                       groupByField: self.groupByField,
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
+
+
+        self.refreshControl.endRefreshing()
+        self.collectionView.reloadData()
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-
-        if UIApplication.shared.applicationState != .active { return }
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
@@ -95,10 +89,11 @@ class NCShares: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
 
             if error == .success {
-                NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
                     let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                     NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
+                } else {
+                    NCManageDatabase.shared.deleteTableShare(account: account)
                 }
                 self.reloadDataSource()
 

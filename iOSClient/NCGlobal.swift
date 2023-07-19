@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import SwiftyJSON
 
 class NCGlobal: NSObject {
     @objc static let shared: NCGlobal = {
@@ -86,11 +85,13 @@ class NCGlobal: NSObject {
     let refreshTask                                 = "com.nextcloud.refreshTask"
     let processingTask                              = "com.nextcloud.processingTask"
 
-    // Name
+    // App
     //
-    @objc let appName                               = "files"
-    @objc let talkName                              = "talk-message"
-    @objc let appScheme                             = "nextcloud"
+    let appName                                     = "files"
+    let appScheme                                   = "nextcloud"
+    let talkName                                    = "talk-message"
+    let spreedName                                  = "spreed"
+    let twoFactorNotificatioName                    = "twofactor_nextcloud_notification"
 
     // Nextcloud version
     //
@@ -255,6 +256,8 @@ class NCGlobal: NSObject {
     @objc let permissionMaxFolderShare: Int         = 31
     @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
     @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
+    // ATTRIBUTES
+    @objc let permissionDownloadShare: Int          = 0
 
     // Filename Mask and Type
     //
@@ -319,7 +322,6 @@ class NCGlobal: NSObject {
     // Notification Center
     //
     @objc let notificationCenterApplicationDidEnterBackground   = "applicationDidEnterBackground"
-    let notificationCenterApplicationWillEnterForeground        = "applicationWillEnterForeground"
     let notificationCenterApplicationDidBecomeActive            = "applicationDidBecomeActive"
     let notificationCenterApplicationWillResignActive           = "applicationWillResignActive"
 

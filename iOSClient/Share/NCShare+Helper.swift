@@ -40,6 +40,8 @@ protocol NCTableShareable: AnyObject {
     var note: String { get set }
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
+
+    var attributes: String? { get set }
 }
 
 extension NCTableShareable {
@@ -62,6 +64,7 @@ extension NCTableShareable {
 }
 
 class NCTableShareOptions: NCTableShareable {
+
     var shareType: Int
     var permissions: Int
 
@@ -74,6 +77,8 @@ class NCTableShareOptions: NCTableShareable {
     var note: String = ""
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
+
+    var attributes: String?
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
         if metadata.e2eEncrypted {

@@ -464,9 +464,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                for metadata in metadatas {
-                    realm.add(metadata, update: .all)
-                }
+                realm.add(metadatas, update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")

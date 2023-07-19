@@ -49,6 +49,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
         refreshControl?.addTarget(self, action: #selector(getNetwokingNotification), for: .valueChanged)
 
+        // Navigation controller is being presented modally
+        if navigationController?.presentingViewController != nil {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, action: { [weak self] in
+                self?.dismiss(animated: true)
+            })
+        }
+
         // Empty
         let offset = (self.navigationController?.navigationBar.bounds.height ?? 0) - 20
         emptyDataSet = NCEmptyDataSet(view: tableView, offset: -offset, delegate: self)
@@ -258,7 +265,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     }
 
     func tapAction(with notification: NKNotifications, label: String) {
-        if notification.app == "spreed",
+        if notification.app == NCGlobal.shared.spreedName,
            let roomToken = notification.objectId.split(separator: "/").first,
            let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(roomToken)"),
            UIApplication.shared.canOpenURL(talkUrl) {
@@ -280,11 +287,15 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                         self.notifications.remove(at: index)
                     }
                     self.tableView.reloadData()
+                    if self.navigationController?.presentingViewController != nil, notification.app == NCGlobal.shared.twoFactorNotificatioName {
+                        self.dismiss(animated: true)
+                    }
                 } else if error != .success {
                     NCContentPresenter.shared.showError(error: error)
                 } else {
                     print("[Error] The user has been changed during networking process.")
                 }
+
             }
         } // else: Action not found
     }
