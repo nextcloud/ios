@@ -385,7 +385,7 @@
     if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
         NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
         XLFormRowDescriptor *row;
-        
+
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
 
         if (chunkSize > 100) {
