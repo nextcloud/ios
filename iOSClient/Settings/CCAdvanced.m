@@ -114,9 +114,17 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
-    [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
+
+    NSInteger currentValue = [row.value integerValue]; // Get the current value as an integer
+//
+//    if (currentValue > 100) {
+//        [row.cellConfigAtConfigure setObject:@50 forKey:@"stepControl.stepValue"]; // Change the step value to 10 (you can adjust this value as needed)
+//    } else {
+//        [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.stepValue"];
+//    }
+    [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.stepValue"];
     [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
-    [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
+    [row.cellConfigAtConfigure setObject:@5000 forKey:@"stepControl.maximumValue"];
     [section addFormRow:row];
 
     // Section : Privacy --------------------------------------------------------------
@@ -375,8 +383,17 @@
     }
     
     if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
-        
         NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
+        XLFormRowDescriptor *row;
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
+
+        if (chunkSize > 100) {
+            [row.cellConfigAtConfigure setObject:@50 forKey:@"stepControl.stepValue"]; // Change the step value to 10 (you can adjust this value as needed)
+        } else {
+            [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.stepValue"];
+        }
+
         [CCUtility setChunkSize:chunkSize];
     }
     
