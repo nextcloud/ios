@@ -261,7 +261,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i && status != %i", NCGlobal.shared.metadataStatusNormal, NCGlobal.shared.metadataStatusDownloadError), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
             self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
 
             DispatchQueue.main.async {
