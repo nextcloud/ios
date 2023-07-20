@@ -157,11 +157,12 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            let hud = JGProgressHUD()
                             var downloadRequest: DownloadRequest?
 
+                            let hud = JGProgressHUD()
                             hud.indicatorView = JGProgressHUDRingIndicatorView()
-                            hud.textLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+                            hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
+                            hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
                             if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView { indicatorView.ringWidth = 1.5 }
                             hud.tapOnHUDViewBlock = { _ in
                                 if let request = downloadRequest {
@@ -171,6 +172,7 @@ class NCViewerMedia: UIViewController {
                             if let view = self.appDelegate.window?.rootViewController?.view {
                                 hud.show(in: view)
                             }
+
                             NCNetworking.shared.download(metadata: self.metadata, selector: "", notificationCenterProgressTask: false) { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
