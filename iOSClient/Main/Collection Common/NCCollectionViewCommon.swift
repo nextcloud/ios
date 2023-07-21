@@ -68,6 +68,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var tipView: EasyTipView?
 
     private var headerTransfer: Bool = false
+    private var ocIdTransfer: String?
 
     // DECLARE
     internal var layoutKey = ""
@@ -492,7 +493,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         dataSource.addMetadata(metadata)
         // Header view trasfer
         if metadata.chunk || metadata.e2eEncrypted {
-            headerTransfer = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.headerTransfer = true
+                self.ocIdTransfer = ocId
+            }
         } else {
             headerTransfer = false
         }
@@ -542,6 +546,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if chunk || e2eEncrypted {
             if !headerTransfer {
                 headerTransfer = true
+                ocIdTransfer = ocId
                 collectionView.reloadData()
             }
             self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
@@ -842,7 +847,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonTransfer(_ sender: Any) {
-
+        if let ocId = ocIdTransfer, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            NCNetworking.shared.cancelTransferMetadata(metadata) { }
+        }
     }
 
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -1650,10 +1657,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.delegate = self
 
                 if headerTransfer && !isSearchingMode {
+
                     let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                    header.setTransfer(isHidden: false, text: text)
+                    header.setViewTransfer(isHidden: false, ocId: ocIdTransfer, text: text)
+
                 } else {
-                    header.setTransfer(isHidden: true)
+                    header.setViewTransfer(isHidden: true)
                 }
 
                 if headerMenuButtonsView {

@@ -177,15 +177,19 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     // MARK: - Transfer
 
-    func setTransfer(isHidden: Bool, image: UIImage? = nil, text: String? = nil) {
+    func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil) {
 
-        buttonTransfer.setImage(image, for: .normal)
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0
         } else {
+            if let ocId = ocId,
+               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)
+                buttonTransfer.setImage(image, for: .normal)
+            }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
         }
     }
