@@ -75,14 +75,14 @@ class NCShareNetworking: NSObject {
         // NOTE: Permissions don't work for creating with file drop!
         // https://github.com/nextcloud/server/issues/17504
 
-        // NOTE: Can't save label, expirationDate, and note in same request.
+        // NOTE: Can't save label and expirationDate in the same request.
         // Library update needed:
         // https://github.com/nextcloud/ios-communication-library/pull/104
 
         NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
 
-        NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, permissions: option.permissions, attributes: option.attributes) { (account, share, data, error) in
+        NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, note: option.note, permissions: option.permissions, attributes: option.attributes) { (account, share, data, error) in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 option.idShare = share.idShare
