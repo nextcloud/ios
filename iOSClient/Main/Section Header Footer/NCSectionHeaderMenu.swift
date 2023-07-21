@@ -32,6 +32,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonTransfer: UIButton!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
+    @IBOutlet weak var transferSeparatorTop: UIView!
+    @IBOutlet weak var transferSeparatorBottom: UIView!
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var viewTransfer: UIView!
@@ -39,11 +41,14 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var viewSeparator: UIView!
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var viewSection: UIView!
+
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewButtonsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var transferSeparatorTopHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
 
@@ -86,10 +91,16 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         viewSectionHeightConstraint.constant = 0
 
         buttonTransfer.setImage(nil, for: .normal)
+        buttonTransfer.layer.cornerRadius = 6
+        buttonTransfer.layer.masksToBounds = true
         labelTransfer.text = ""
         progressTransfer.tintColor = NCBrandColor.shared.brandElement
         progressTransfer.transform = CGAffineTransform(scaleX: 1.0, y: 0.7)
         progressTransfer.trackTintColor = .clear
+        transferSeparatorTop.backgroundColor = .separator
+        transferSeparatorBottom.backgroundColor = .separator
+        transferSeparatorTopHeightConstraint.constant = 0.5
+        transferSeparatorBottomHeightConstraint.constant = 0.5
     }
 
     override func layoutSublayers(of layer: CALayer) {
