@@ -67,6 +67,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     private var tipView: EasyTipView?
 
+    private var headerTransfer: Bool = false
+    private var ocIdTransfer: String?
+
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -488,6 +491,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard !isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
         dataSource.addMetadata(metadata)
+        // Header view trasfer
+        if metadata.chunk || metadata.e2eEncrypted {
+            headerTransfer = true
+            ocIdTransfer = ocId
+        } else {
+            headerTransfer = false
+            ocIdTransfer = nil
+        }
         self.collectionView?.reloadData()
     }
 
@@ -500,6 +511,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
+        headerTransfer = false
         reloadDataSource()
     }
 
@@ -512,6 +524,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
+        headerTransfer = false
         reloadDataSource()
     }
 
@@ -526,6 +539,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+        // Header Transfer
+        if headerTransfer, headerMenu?.ocIdTransfer == ocId {
+            headerMenu?.progressTransfer.progress = progressNumber.floatValue
+        }
         if let cell = collectionView?.cellForItem(at: indexPath) {
             if let cell = cell as? NCCellProtocol {
                 if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
@@ -778,29 +795,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
 
-    func tapButton1(_ sender: Any) {
-
-        NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: self) { hasPermission in
-            if hasPermission {
-                NCPhotosPickerViewController.init(viewController: self, maxSelectedAssets: 0, singleSelectedMode: false)
-            }
-        }
-    }
-
-    func tapButton2(_ sender: Any) {
-
-        guard !appDelegate.activeServerUrl.isEmpty else { return }
-        let alertController = UIAlertController.createFolder(serverUrl: appDelegate.activeServerUrl, urlBase: appDelegate)
-        appDelegate.window?.rootViewController?.present(alertController, animated: true, completion: nil)
-    }
-
-    func tapButton3(_ sender: Any) {
-
-        if let viewController = appDelegate.window?.rootViewController {
-            NCDocumentCamera.shared.openScannerDocument(viewController: viewController)
-        }
-    }
-
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, sender: sender)
     }
@@ -842,6 +836,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
         unifiedSearchMore(metadataForSection: metadataForSection)
+    }
+
+    func tapButtonTransfer(_ sender: Any) {
+
     }
 
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -1648,6 +1646,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
 
+                if headerTransfer && !isSearchingMode {
+                    header.setTransfer(isHidden: false, ocId: ocIdTransfer)
+                } else {
+                    header.setTransfer(isHidden: true, ocId: ocIdTransfer)
+                }
+
                 if headerMenuButtonsView {
                     header.setStatusButtonsView(enable: !dataSource.getMetadataSourceForAllSections().isEmpty)
                     header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
@@ -1736,6 +1740,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         var size: CGFloat = 0
 
+        if headerTransfer && !isSearchingMode {
+            size += NCGlobal.shared.heightHeaderTransfer
+        }
         if headerMenuButtonsView {
             size += NCGlobal.shared.heightButtonsView
         }

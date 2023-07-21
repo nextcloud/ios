@@ -29,19 +29,21 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
-
+    @IBOutlet weak var buttonTransfer: UIButton!
+    @IBOutlet weak var labelTransfer: UILabel!
+    @IBOutlet weak var progressTransfer: UIProgressView!
+    @IBOutlet weak var textViewRichWorkspace: UITextView!
+    @IBOutlet weak var labelSection: UILabel!
+    @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewButtonsView: UIView!
     @IBOutlet weak var viewSeparator: UIView!
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var viewSection: UIView!
-
+    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewButtonsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
-
-    @IBOutlet weak var textViewRichWorkspace: UITextView!
-    @IBOutlet weak var labelSection: UILabel!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
 
@@ -49,6 +51,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
     private let gradient: CAGradientLayer = CAGradientLayer()
+
+    var ocIdTransfer: String?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -82,6 +86,12 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
+
+        buttonTransfer.setImage(nil, for: .normal)
+        labelTransfer.text = ""
+        progressTransfer.tintColor = NCBrandColor.shared.brandElement
+        progressTransfer.transform = CGAffineTransform(scaleX: 1.0, y: 0.7)
+        progressTransfer.trackTintColor = .clear
     }
 
     override func layoutSublayers(of layer: CALayer) {
@@ -167,6 +177,22 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
+    // MARK: - Transfer
+
+    func setTransfer(isHidden: Bool, image: UIImage? = nil, text: String? = nil, ocId: String?) {
+
+        buttonTransfer.setImage(image, for: .normal)
+        labelTransfer.text = text
+        viewTransfer.isHidden = isHidden
+        ocIdTransfer = ocId
+
+        if isHidden {
+            viewTransferHeightConstraint.constant = 0
+        } else {
+            viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+        }
+    }
+
     // MARK: - Section
 
     func setSectionHeight(_ size: CGFloat) {
@@ -193,16 +219,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         delegate?.tapButtonMore(sender)
     }
 
-    @IBAction func touchUpInsideButton1(_ sender: Any) {
-       delegate?.tapButton1(sender)
-    }
-
-    @IBAction func touchUpInsideButton2(_ sender: Any) {
-        delegate?.tapButton2(sender)
-    }
-
-    @IBAction func touchUpInsideButton3(_ sender: Any) {
-        delegate?.tapButton3(sender)
+    @IBAction func touchUpTransfer(_ sender: Any) {
+       delegate?.tapButtonTransfer(sender)
     }
 
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
@@ -214,9 +232,7 @@ protocol NCSectionHeaderMenuDelegate: AnyObject {
     func tapButtonSwitch(_ sender: Any)
     func tapButtonOrder(_ sender: Any)
     func tapButtonMore(_ sender: Any)
-    func tapButton1(_ sender: Any)
-    func tapButton2(_ sender: Any)
-    func tapButton3(_ sender: Any)
+    func tapButtonTransfer(_ sender: Any)
     func tapRichWorkspace(_ sender: Any)
 }
 
@@ -225,9 +241,7 @@ extension NCSectionHeaderMenuDelegate {
     func tapButtonSwitch(_ sender: Any) {}
     func tapButtonOrder(_ sender: Any) {}
     func tapButtonMore(_ sender: Any) {}
-    func tapButton1(_ sender: Any) {}
-    func tapButton2(_ sender: Any) {}
-    func tapButton3(_ sender: Any) {}
+    func tapButtonTransfer(_ sender: Any) {}
     func tapRichWorkspace(_ sender: Any) {}
 }
 
