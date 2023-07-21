@@ -683,7 +683,7 @@
 + (void)setChunkSize:(NSInteger)size
 {
     if (size < 10) size = 0;
-    
+
     NSString *sizeString = [@(size) stringValue];
     [UICKeyChainStore setString:sizeString forKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
 }

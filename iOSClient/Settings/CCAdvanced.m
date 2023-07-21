@@ -110,6 +110,15 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
+//
+//    NSInteger chunkSize = CCUtility.getChunkSize;
+//
+//    if (chunkSize == 0) {
+//        row.value = NSLocalizedString(@"disabled", nil);
+//    } else {
+//        row.value = [NSString stringWithFormat:@"%ld", chunkSize];
+//    }
+//
     row.value = [NSString stringWithFormat:@"%ld", CCUtility.getChunkSize];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
@@ -384,15 +393,15 @@
     
     if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
         NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
-        XLFormRowDescriptor *row;
-
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
-
-        if (chunkSize > 100) {
-            [row.cellConfigAtConfigure setObject:@50 forKey:@"stepControl.stepValue"]; // Change the step value to 10 (you can adjust this value as needed)
-        } else {
-            [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.stepValue"];
-        }
+//        XLFormRowDescriptor *row;
+//
+//        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
+//
+//        if (chunkSize > 100) {
+//            [row.cellConfigAtConfigure setObject:@50 forKey:@"stepControl.stepValue"]; // Change the step value to 10 (you can adjust this value as needed)
+//        } else {
+//            [row.cellConfigAtConfigure setObject:@20 forKey:@"stepControl.stepValue"];
+//        }
 
         [CCUtility setChunkSize:chunkSize];
     }
