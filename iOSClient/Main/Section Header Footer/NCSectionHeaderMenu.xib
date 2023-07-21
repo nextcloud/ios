@@ -131,12 +131,12 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FOe-YO-km8">
-                            <rect key="frame" x="0.0" y="46" width="574" height="4"/>
+                            <rect key="frame" x="-1" y="46" width="576" height="4"/>
                         </progressView>
                     </subviews>
                     <constraints>
                         <constraint firstItem="Pgk-le-540" firstAttribute="centerX" secondItem="aS9-DV-CXI" secondAttribute="centerX" id="3fo-qC-duA"/>
-                        <constraint firstAttribute="trailing" secondItem="FOe-YO-km8" secondAttribute="trailing" id="3gk-sW-WeV"/>
+                        <constraint firstAttribute="trailing" secondItem="FOe-YO-km8" secondAttribute="trailing" constant="-1" id="3gk-sW-WeV"/>
                         <constraint firstItem="Pgk-le-540" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="3hl-za-XZ9"/>
                         <constraint firstAttribute="bottom" secondItem="McE-3D-mc5" secondAttribute="bottom" id="697-ky-07J"/>
                         <constraint firstAttribute="height" constant="50" id="86k-97-oGl"/>
@@ -150,7 +150,7 @@
                         <constraint firstItem="eER-Zj-8iK" firstAttribute="leading" secondItem="aS9-DV-CXI" secondAttribute="trailing" constant="10" id="idn-9t-2Ap"/>
                         <constraint firstItem="aS9-DV-CXI" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" constant="10" id="jIP-Fr-dnx"/>
                         <constraint firstItem="M4W-T2-oMp" firstAttribute="top" secondItem="I6b-6a-TKg" secondAttribute="top" id="joy-xV-VQm"/>
-                        <constraint firstItem="FOe-YO-km8" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" id="oDR-51-azX"/>
+                        <constraint firstItem="FOe-YO-km8" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" constant="-1" id="oDR-51-azX"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f9U-NY-4OS">
