@@ -185,9 +185,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         if isHidden {
             viewTransferHeightConstraint.constant = 0
         } else {
+            var image: UIImage?
             if let ocId = ocId,
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                let image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)
+                image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)
+                if image == nil {
+                    image = UIImage(named: metadata.iconName)
+                }
                 buttonTransfer.setImage(image, for: .normal)
             }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
