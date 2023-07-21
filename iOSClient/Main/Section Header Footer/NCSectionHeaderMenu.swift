@@ -30,6 +30,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonTransfer: UIButton!
+    @IBOutlet weak var imageButtonTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
     @IBOutlet weak var transferSeparatorTop: UIView!
@@ -93,6 +94,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonTransfer.setImage(nil, for: .normal)
         buttonTransfer.layer.cornerRadius = 6
         buttonTransfer.layer.masksToBounds = true
+        imageButtonTransfer.image = UIImage(systemName: "stop.circle")
+        imageButtonTransfer.tintColor = .white
         labelTransfer.text = ""
         progressTransfer.tintColor = NCBrandColor.shared.brand
         progressTransfer.trackTintColor = .clear
@@ -100,6 +103,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorTopHeightConstraint.constant = 0.5
         transferSeparatorBottomHeightConstraint.constant = 0.5
+
+        //buttonTransfer.addoverlay(color: .black, alpha: 0.1)
     }
 
     override func layoutSublayers(of layer: CALayer) {
@@ -379,4 +384,18 @@ protocol NCSectionFooterDelegate: AnyObject {
 // optional func
 extension NCSectionFooterDelegate {
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {}
+}
+
+extension UIButton {
+    func addoverlay(color: UIColor = .black, alpha: CGFloat = 0.6) {
+        let overlay = UIView()
+        overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        overlay.frame = bounds
+        overlay.backgroundColor = color
+        overlay.alpha = alpha
+        overlay.isUserInteractionEnabled = true
+        overlay.layer.cornerRadius = 6
+        overlay.layer.masksToBounds = true
+        addSubview(overlay)
+    }
 }

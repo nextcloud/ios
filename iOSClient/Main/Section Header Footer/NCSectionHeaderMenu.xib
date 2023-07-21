@@ -194,6 +194,7 @@
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
                 <outlet property="buttonTransfer" destination="aS9-DV-CXI" id="Qsu-aQ-Vh7"/>
+                <outlet property="imageButtonTransfer" destination="Pgk-le-540" id="ljU-AW-YSt"/>
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
                 <outlet property="labelTransfer" destination="eER-Zj-8iK" id="ARz-bB-Hg9"/>
                 <outlet property="progressTransfer" destination="FOe-YO-km8" id="vyd-rg-H9B"/>
