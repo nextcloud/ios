@@ -360,7 +360,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }, progressHandler: { (progress) in
             
             if notificationCenterProgressTask {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "fileName":metadata.fileName, "serverUrl":metadata.serverUrl, "status":NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask, object: nil, userInfo: ["account": metadata.account, "ocId": metadata.ocId, "fileName": metadata.fileName, "serverUrl": metadata.serverUrl, "chunk": metadata.chunk, "e2eEncrypted": metadata.e2eEncrypted, "status": NSNumber(value: NCGlobal.shared.metadataStatusInDownload), "progress": NSNumber(value: progress.fractionCompleted), "totalBytes": NSNumber(value: progress.totalUnitCount), "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
             }
             progressHandler(progress)
                                         
@@ -639,6 +639,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                         "fileName": metadata.fileName,
                         "serverUrl": serverUrl,
                         "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                        "chunk": metadata.chunk,
+                        "e2eEncrypted": metadata.e2eEncrypted,
                         "progress": NSNumber(value: progress),
                         "totalBytes": NSNumber(value: totalBytes),
                         "totalBytesExpected": NSNumber(value: totalBytesExpected)])

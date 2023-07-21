@@ -52,8 +52,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     private var textViewColor: UIColor?
     private let gradient: CAGradientLayer = CAGradientLayer()
 
-    var ocIdTransfer: String?
-
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -179,12 +177,11 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     // MARK: - Transfer
 
-    func setTransfer(isHidden: Bool, image: UIImage? = nil, text: String? = nil, ocId: String?) {
+    func setTransfer(isHidden: Bool, image: UIImage? = nil, text: String? = nil) {
 
         buttonTransfer.setImage(image, for: .normal)
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
-        ocIdTransfer = ocId
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0

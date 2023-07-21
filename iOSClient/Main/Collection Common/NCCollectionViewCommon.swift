@@ -68,7 +68,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var tipView: EasyTipView?
 
     private var headerTransfer: Bool = false
-    private var ocIdTransfer: String?
 
     // DECLARE
     internal var layoutKey = ""
@@ -494,10 +493,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Header view trasfer
         if metadata.chunk || metadata.e2eEncrypted {
             headerTransfer = true
-            ocIdTransfer = ocId
         } else {
             headerTransfer = false
-            ocIdTransfer = nil
         }
         self.collectionView?.reloadData()
     }
@@ -535,13 +532,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
               let ocId = userInfo["ocId"] as? String,
+              let chunk = userInfo["chunk"] as? Bool,
+              let e2eEncrypted = userInfo["e2eEncrypted"] as? Bool,
               let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadataForSection?)
         else { return }
 
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
         // Header Transfer
-        if headerTransfer, headerMenu?.ocIdTransfer == ocId {
-            headerMenu?.progressTransfer.progress = progressNumber.floatValue
+        if chunk || e2eEncrypted {
+            if !headerTransfer {
+                headerTransfer = true
+                collectionView.reloadData()
+            }
+            self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
         }
         if let cell = collectionView?.cellForItem(at: indexPath) {
             if let cell = cell as? NCCellProtocol {
@@ -1647,9 +1650,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.delegate = self
 
                 if headerTransfer && !isSearchingMode {
-                    header.setTransfer(isHidden: false, ocId: ocIdTransfer)
+                    let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
+                    header.setTransfer(isHidden: false, text: text)
                 } else {
-                    header.setTransfer(isHidden: true, ocId: ocIdTransfer)
+                    header.setTransfer(isHidden: true)
                 }
 
                 if headerMenuButtonsView {

@@ -109,6 +109,8 @@ extension NCNetworking {
                                 "fileName": metadata.fileName,
                                 "serverUrl": metadata.serverUrl,
                                 "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                                "chunk": metadata.chunk,
+                                "e2eEncrypted": metadata.e2eEncrypted,
                                 "progress": NSNumber(value: fractionCompleted),
                                 "totalBytes": NSNumber(value: totalBytes),
                                 "totalBytesExpected": NSNumber(value: totalBytesExpected)])
