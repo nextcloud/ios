@@ -131,7 +131,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FOe-YO-km8">
-                            <rect key="frame" x="0.0" y="45" width="574" height="4"/>
+                            <rect key="frame" x="0.0" y="46" width="574" height="4"/>
                         </progressView>
                     </subviews>
                     <constraints>
@@ -140,7 +140,7 @@
                         <constraint firstItem="Pgk-le-540" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="3hl-za-XZ9"/>
                         <constraint firstAttribute="bottom" secondItem="McE-3D-mc5" secondAttribute="bottom" id="697-ky-07J"/>
                         <constraint firstAttribute="height" constant="50" id="86k-97-oGl"/>
-                        <constraint firstAttribute="bottom" secondItem="FOe-YO-km8" secondAttribute="bottom" constant="1" id="ESd-Gt-Xcc"/>
+                        <constraint firstAttribute="bottom" secondItem="FOe-YO-km8" secondAttribute="bottom" id="ESd-Gt-Xcc"/>
                         <constraint firstItem="aS9-DV-CXI" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="Mli-mT-whp"/>
                         <constraint firstAttribute="trailing" secondItem="M4W-T2-oMp" secondAttribute="trailing" id="RcT-Bi-cl4"/>
                         <constraint firstItem="McE-3D-mc5" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" id="TRt-jh-ZEo"/>

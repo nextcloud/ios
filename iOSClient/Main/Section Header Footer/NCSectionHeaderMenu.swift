@@ -94,8 +94,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonTransfer.layer.cornerRadius = 6
         buttonTransfer.layer.masksToBounds = true
         labelTransfer.text = ""
-        progressTransfer.tintColor = NCBrandColor.shared.brandElement
-        progressTransfer.transform = CGAffineTransform(scaleX: 1.0, y: 0.7)
+        progressTransfer.tintColor = NCBrandColor.shared.brand
         progressTransfer.trackTintColor = .clear
         transferSeparatorTop.backgroundColor = .separator
         transferSeparatorBottom.backgroundColor = .separator
