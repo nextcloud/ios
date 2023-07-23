@@ -67,8 +67,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     private var tipView: EasyTipView?
 
-    private var headerTransfer: Bool = false
-    private var ocIdTransfer: String?
+    private var ocIdTransferInForeground: String?
 
     // DECLARE
     internal var layoutKey = ""
@@ -494,10 +493,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Header view trasfer
         if metadata.chunk || metadata.e2eEncrypted {
-            self.headerTransfer = true
-            self.ocIdTransfer = ocId
+            self.ocIdTransferInForeground = ocId
         } else {
-            headerTransfer = false
             dataSource.addMetadata(metadata)
         }
 
@@ -513,7 +510,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        headerTransfer = false
         reloadDataSource()
     }
 
@@ -526,7 +522,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        headerTransfer = false
         reloadDataSource()
     }
 
@@ -543,9 +538,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Header Transfer
         if chunk || e2eEncrypted {
-            if !headerTransfer {
-                headerTransfer = true
-                ocIdTransfer = ocId
+            if ocIdTransferInForeground == nil {
+                ocIdTransferInForeground = ocId
                 collectionView.reloadData()
             }
             self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
@@ -850,7 +844,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonTransfer(_ sender: Any) {
-        if let ocId = ocIdTransfer, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+        if let ocId = ocIdTransferInForeground,
+           let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }
     }
@@ -1659,10 +1654,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
 
-                if headerTransfer && !isSearchingMode {
+                if ocIdTransferInForeground != nil, !isSearchingMode {
 
                     let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                    header.setViewTransfer(isHidden: false, ocId: ocIdTransfer, text: text)
+                    header.setViewTransfer(isHidden: false, ocId: ocIdTransferInForeground, text: text)
 
                 } else {
                     header.setViewTransfer(isHidden: true)
@@ -1755,10 +1750,18 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func getHeaderHeight() -> CGFloat {
 
         var size: CGFloat = 0
+        var headerTransfer = false
 
-        if headerTransfer && !isSearchingMode {
-            size += NCGlobal.shared.heightHeaderTransfer
+        // transfer in progress
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTransferInForeground),
+           (metadata.status > 0 && (metadata.chunk || metadata.e2eEncrypted)) {
+            if !isSearchingMode {
+                size += NCGlobal.shared.heightHeaderTransfer
+            }
+        } else {
+            ocIdTransferInForeground = nil
         }
+
         if headerMenuButtonsView {
             size += NCGlobal.shared.heightButtonsView
         }
