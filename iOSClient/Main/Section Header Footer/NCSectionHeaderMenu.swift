@@ -103,8 +103,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorTopHeightConstraint.constant = 0.5
         transferSeparatorBottomHeightConstraint.constant = 0.5
-
-        //buttonTransfer.addoverlay(color: .black, alpha: 0.1)
     }
 
     override func layoutSublayers(of layer: CALayer) {
@@ -384,18 +382,4 @@ protocol NCSectionFooterDelegate: AnyObject {
 // optional func
 extension NCSectionFooterDelegate {
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {}
-}
-
-extension UIButton {
-    func addoverlay(color: UIColor = .black, alpha: CGFloat = 0.6) {
-        let overlay = UIView()
-        overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        overlay.frame = bounds
-        overlay.backgroundColor = color
-        overlay.alpha = alpha
-        overlay.isUserInteractionEnabled = true
-        overlay.layer.cornerRadius = 6
-        overlay.layer.masksToBounds = true
-        addSubview(overlay)
-    }
 }
