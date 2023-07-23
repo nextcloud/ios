@@ -246,6 +246,10 @@ extension tableMetadata {
             return false
         }
     }
+
+    func isTransferInForeground() -> Bool {
+        return (status > 0 && (chunk || e2eEncrypted))
+    }
 }
 
 extension NCManageDatabase {

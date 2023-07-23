@@ -97,6 +97,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         imageButtonTransfer.image = UIImage(systemName: "stop.circle")
         imageButtonTransfer.tintColor = .white
         labelTransfer.text = ""
+        progressTransfer.progress = 0
         progressTransfer.tintColor = NCBrandColor.shared.brand
         progressTransfer.trackTintColor = .clear
         transferSeparatorTop.backgroundColor = .separator
@@ -194,6 +195,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
+        progressTransfer.progress = 0
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0

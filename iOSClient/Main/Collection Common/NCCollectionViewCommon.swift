@@ -1750,11 +1750,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func getHeaderHeight() -> CGFloat {
 
         var size: CGFloat = 0
-        var headerTransfer = false
 
         // transfer in progress
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTransferInForeground),
-           (metadata.status > 0 && (metadata.chunk || metadata.e2eEncrypted)) {
+           metadata.isTransferInForeground() {
             if !isSearchingMode {
                 size += NCGlobal.shared.heightHeaderTransfer
             }
