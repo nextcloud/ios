@@ -51,7 +51,8 @@ class NCDataSource: NSObject {
         super.init()
 
         self.metadatas = metadatas.filter({
-            !NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView)
+            !NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) ||
+            ($0.status > 0 && ($0.chunk || $0.e2eEncrypted))
         })
         self.directory = directory
         self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
@@ -114,10 +115,6 @@ class NCDataSource: NSObject {
         for metadata in self.metadatas {
             // skipped livePhoto
             if filterLivePhoto && metadata.livePhoto && (metadata.fileNameView as NSString).pathExtension.lowercased() == "mov" {
-                continue
-            }
-            // skipped
-            if metadata.status > 0 && (metadata.chunk || metadata.e2eEncrypted) {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
