@@ -74,6 +74,12 @@ extension NCNetworking {
             for fileName in filesNames {
 
                 let serverUrlFileName = chunkFolderPath + "/" + fileName
+                let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: fileName)
+                if fileSize == 0 {
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    return completion(NKError())
+                }
                 let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
 
                 var size: Int64?
