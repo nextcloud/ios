@@ -489,17 +489,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
-        guard !isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-        dataSource.addMetadata(metadata)
+        guard !isSearchingMode,
+              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+
         // Header view trasfer
         if metadata.chunk || metadata.e2eEncrypted {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.headerTransfer = true
-                self.ocIdTransfer = ocId
-            }
+            self.headerTransfer = true
+            self.ocIdTransfer = ocId
         } else {
             headerTransfer = false
+            dataSource.addMetadata(metadata)
         }
+
         self.collectionView?.reloadData()
     }
 
@@ -537,11 +538,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
               let ocId = userInfo["ocId"] as? String,
               let chunk = userInfo["chunk"] as? Bool,
-              let e2eEncrypted = userInfo["e2eEncrypted"] as? Bool,
-              let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadataForSection?)
+              let e2eEncrypted = userInfo["e2eEncrypted"] as? Bool
         else { return }
 
-        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
         // Header Transfer
         if chunk || e2eEncrypted {
             if !headerTransfer {
@@ -551,7 +550,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
         }
-        if let cell = collectionView?.cellForItem(at: indexPath) {
+
+        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+
+        if let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: ocId) as? (IndexPath, NCMetadataForSection?),
+           let cell = collectionView?.cellForItem(at: indexPath) {
             if let cell = cell as? NCCellProtocol {
                 if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
                     cell.fileProgressView?.isHidden = true

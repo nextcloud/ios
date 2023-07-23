@@ -116,6 +116,10 @@ class NCDataSource: NSObject {
             if filterLivePhoto && metadata.livePhoto && (metadata.fileNameView as NSString).pathExtension.lowercased() == "mov" {
                 continue
             }
+            // skipped
+            if metadata.status > 0 && (metadata.chunk || metadata.e2eEncrypted) {
+                continue
+            }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
             if !self.sectionsValue.contains(section) {
                 self.sectionsValue.append(section)
