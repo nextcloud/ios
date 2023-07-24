@@ -48,6 +48,7 @@ class NCCameraRoll: NSObject {
                 metadataSource.date = date
             }
             metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
+            metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
                 metadatas.append(metadata)
@@ -95,6 +96,7 @@ class NCCameraRoll: NSObject {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
+                    metadata.e2eEncrypted = metadata.isDirectoryE2EE
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
                         metadataReturn = metadata
@@ -260,6 +262,7 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 metadataLivePhoto.status = metadata.status
                 metadataLivePhoto.chunk = chunckSize != 0 && metadata.size > chunckSize
+                metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
