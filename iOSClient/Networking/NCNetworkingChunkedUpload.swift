@@ -75,8 +75,10 @@ extension NCNetworking {
 
                 let serverUrlFileName = chunkFolderPath + "/" + fileName
                 let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: fileName)
+                // ops! the upload has probably been cancelled
                 if fileSize == 0 {
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     return completion(NKError())
                 }
