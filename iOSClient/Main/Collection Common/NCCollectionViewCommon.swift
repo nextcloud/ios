@@ -1522,7 +1522,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Button More
-        if metadata.isDownloadUpload {
+        if metadata.isInTransfer || metadata.isWaitingTransfer {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCBrandColor.cacheImages.buttonStop)
         } else if metadata.lock == true {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCBrandColor.cacheImages.buttonMoreLock)

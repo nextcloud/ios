@@ -340,7 +340,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             NCManageDatabase.shared.addMetadata(tableMetadata.init(value: metadata))
         }
 
-        if metadata.isDownloadUpload { return }
+        if metadata.isInTransfer { return }
 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusInDownload)
 

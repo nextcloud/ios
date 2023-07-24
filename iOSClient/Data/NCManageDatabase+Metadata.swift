@@ -211,8 +211,16 @@ extension tableMetadata {
         return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 
-    var isDownloadUpload: Bool {
+    var isWaitingTransfer: Bool {
+        status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploadError
+    }
+
+    var isInTransfer: Bool {
         status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+    }
+
+    func isTransferInForeground() -> Bool {
+        return (status > 0 && (chunk || e2eEncrypted))
     }
 
     var isDownload: Bool {
@@ -245,10 +253,6 @@ extension tableMetadata {
         } else {
             return false
         }
-    }
-
-    func isTransferInForeground() -> Bool {
-        return (status > 0 && (chunk || e2eEncrypted))
     }
 }
 
