@@ -117,8 +117,8 @@
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="text" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eER-Zj-8iK">
-                            <rect key="frame" x="50" y="17" width="23.5" height="16"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <rect key="frame" x="50" y="16" width="514" height="18"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
@@ -134,6 +134,7 @@
                         <constraint firstAttribute="height" constant="50" id="86k-97-oGl"/>
                         <constraint firstAttribute="bottom" secondItem="FOe-YO-km8" secondAttribute="bottom" id="ESd-Gt-Xcc"/>
                         <constraint firstItem="aS9-DV-CXI" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="Mli-mT-whp"/>
+                        <constraint firstAttribute="trailing" secondItem="eER-Zj-8iK" secondAttribute="trailing" constant="10" id="QyZ-Z4-0tw"/>
                         <constraint firstItem="McE-3D-mc5" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" id="TRt-jh-ZEo"/>
                         <constraint firstItem="eER-Zj-8iK" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="cse-7W-4ay"/>
                         <constraint firstAttribute="trailing" secondItem="McE-3D-mc5" secondAttribute="trailing" id="fjz-bk-gcP"/>
