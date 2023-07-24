@@ -51,7 +51,7 @@ class NCDataSource: NSObject {
         super.init()
 
         self.metadatas = metadatas.filter({
-            NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView)
+            !(NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) || $0.isTransferInForeground())
         })
         self.directory = directory
         self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
