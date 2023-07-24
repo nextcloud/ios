@@ -39,6 +39,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         enableSearchBar = false
         headerMenuButtonsView = false
         headerRichWorkspaceDisable = true
+        headerMenuTransferView = true
         emptyImage = NCUtility.shared.loadImage(named: "arrow.left.arrow.right", color: .gray, size: UIScreen.main.bounds.width)
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"

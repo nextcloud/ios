@@ -33,7 +33,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var imageButtonTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
-    @IBOutlet weak var transferSeparatorTop: UIView!
     @IBOutlet weak var transferSeparatorBottom: UIView!
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var labelSection: UILabel!
@@ -48,7 +47,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var transferSeparatorTopHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
@@ -100,10 +98,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         labelTransfer.text = ""
         progressTransfer.progress = 0
         progressTransfer.tintColor = NCBrandColor.shared.brand
-        progressTransfer.trackTintColor = .clear
-        transferSeparatorTop.backgroundColor = .separator
+        progressTransfer.trackTintColor = NCBrandColor.shared.brand.withAlphaComponent(0.2)
         transferSeparatorBottom.backgroundColor = .separator
-        transferSeparatorTopHeightConstraint.constant = 0.5
         transferSeparatorBottomHeightConstraint.constant = 0.5
     }
 

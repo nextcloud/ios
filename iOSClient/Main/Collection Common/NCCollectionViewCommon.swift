@@ -74,6 +74,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var titleCurrentFolder = ""
     internal var titlePreviusFolder: String?
     internal var enableSearchBar: Bool = false
+    internal var headerMenuTransferView = false
     internal var headerMenuButtonsView: Bool = true
     internal var headerRichWorkspaceDisable:Bool = false
     internal var emptyImage: UIImage?
@@ -537,7 +538,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         // Header Transfer
-        if chunk || e2eEncrypted {
+        if headerMenuTransferView && (chunk || e2eEncrypted) {
             if ocIdTransferInForeground == nil {
                 ocIdTransferInForeground = ocId
                 collectionView.reloadData()
@@ -1654,7 +1655,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
 
-                if ocIdTransferInForeground != nil, !isSearchingMode {
+                if !isSearchingMode, headerMenuTransferView, ocIdTransferInForeground != nil {
 
                     let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
                     header.setViewTransfer(isHidden: false, ocId: ocIdTransferInForeground, text: text)
@@ -1752,11 +1753,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         var size: CGFloat = 0
 
         // transfer in progress
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTransferInForeground),
+        if headerMenuTransferView,
+           !isSearchingMode,
+           let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTransferInForeground),
            metadata.isTransferInForeground() {
-            if !isSearchingMode {
-                size += NCGlobal.shared.heightHeaderTransfer
-            }
+            size += NCGlobal.shared.heightHeaderTransfer
         } else {
             ocIdTransferInForeground = nil
         }

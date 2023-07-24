@@ -91,14 +91,6 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I6b-6a-TKg" userLabel="View Transfer">
                     <rect key="frame" x="0.0" y="368" width="574" height="50"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M4W-T2-oMp">
-                            <rect key="frame" x="0.0" y="0.0" width="574" height="1"/>
-                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="1" id="Jzq-cX-5Eh"/>
-                            </constraints>
-                        </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="McE-3D-mc5">
                             <rect key="frame" x="0.0" y="49" width="574" height="1"/>
                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -142,14 +134,11 @@
                         <constraint firstAttribute="height" constant="50" id="86k-97-oGl"/>
                         <constraint firstAttribute="bottom" secondItem="FOe-YO-km8" secondAttribute="bottom" id="ESd-Gt-Xcc"/>
                         <constraint firstItem="aS9-DV-CXI" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="Mli-mT-whp"/>
-                        <constraint firstAttribute="trailing" secondItem="M4W-T2-oMp" secondAttribute="trailing" id="RcT-Bi-cl4"/>
                         <constraint firstItem="McE-3D-mc5" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" id="TRt-jh-ZEo"/>
-                        <constraint firstItem="M4W-T2-oMp" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" id="bmM-Vq-DP8"/>
                         <constraint firstItem="eER-Zj-8iK" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="cse-7W-4ay"/>
                         <constraint firstAttribute="trailing" secondItem="McE-3D-mc5" secondAttribute="trailing" id="fjz-bk-gcP"/>
                         <constraint firstItem="eER-Zj-8iK" firstAttribute="leading" secondItem="aS9-DV-CXI" secondAttribute="trailing" constant="10" id="idn-9t-2Ap"/>
                         <constraint firstItem="aS9-DV-CXI" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" constant="10" id="jIP-Fr-dnx"/>
-                        <constraint firstItem="M4W-T2-oMp" firstAttribute="top" secondItem="I6b-6a-TKg" secondAttribute="top" id="joy-xV-VQm"/>
                         <constraint firstItem="FOe-YO-km8" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" constant="-1" id="oDR-51-azX"/>
                     </constraints>
                 </view>
@@ -201,8 +190,6 @@
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
                 <outlet property="transferSeparatorBottom" destination="McE-3D-mc5" id="kJU-kh-04F"/>
                 <outlet property="transferSeparatorBottomHeightConstraint" destination="bJs-JY-WbC" id="P9i-Em-ycA"/>
-                <outlet property="transferSeparatorTop" destination="M4W-T2-oMp" id="8mM-2N-T5k"/>
-                <outlet property="transferSeparatorTopHeightConstraint" destination="Jzq-cX-5Eh" id="Fbb-mN-NWa"/>
                 <outlet property="viewButtonsView" destination="s4I-Jo-yCE" id="FOI-ZK-1oj"/>
                 <outlet property="viewButtonsViewHeightConstraint" destination="vvG-dH-6c1" id="SEQ-Tn-EE0"/>
                 <outlet property="viewRichWorkspace" destination="NC1-5C-E5z" id="NyN-tr-sJl"/>

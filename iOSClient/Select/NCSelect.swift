@@ -606,6 +606,8 @@ extension NCSelect: UICollectionViewDataSource {
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
 
+                header.setViewTransfer(isHidden: true)
+
                 header.setSectionHeight(heightHeaderSection)
                 if heightHeaderSection == 0 {
                     header.labelSection.text = ""
