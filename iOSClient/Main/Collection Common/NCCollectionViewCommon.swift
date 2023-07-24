@@ -484,22 +484,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              let account = userInfo["account"] as? String
         else { return }
 
-        guard !isSearchingMode,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        guard !isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         // Header view trasfer
         if metadata.isTransferInForeground() {
             self.ocIdTransferInForeground = ocId
-        } else {
+            self.collectionView?.reloadData()
+        } else if serverUrl == self.serverUrl, account == appDelegate.account {
             dataSource.addMetadata(metadata)
+            self.collectionView?.reloadData()
         }
-
-        self.collectionView?.reloadData()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -511,6 +508,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
+        self.ocIdTransferInForeground = nil
         reloadDataSource()
     }
 
@@ -523,6 +521,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == appDelegate.account
         else { return }
 
+        self.ocIdTransferInForeground = nil
         reloadDataSource()
     }
 
