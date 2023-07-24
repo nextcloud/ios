@@ -102,7 +102,7 @@ extension NCNetworking {
 
                     if let size = size {
                         let totalBytesExpected = metadata.size
-                        let totalBytes = size + progress.completedUnitCount
+                        let totalBytes = size
                         let fractionCompleted = Double(totalBytes) / Double(totalBytesExpected)
 
                         NotificationCenter.default.postOnMainThread(
