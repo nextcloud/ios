@@ -492,7 +492,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         // Header view trasfer
-        if metadata.chunk || metadata.e2eEncrypted {
+        if metadata.isTransferInForeground() {
             self.ocIdTransferInForeground = ocId
         } else {
             dataSource.addMetadata(metadata)

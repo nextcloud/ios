@@ -420,7 +420,6 @@ extension NCManageDatabase {
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
         metadata.account = account
-        metadata.chunk = false
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
