@@ -4941,7 +4941,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = "2521-external-share-with-email-2-mails-sent-instead-of-1";
+				branch = develop;
 				kind = branch;
 			};
 		};
