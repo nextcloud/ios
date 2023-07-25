@@ -70,6 +70,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 10
 
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
+        searchField.autocorrectionType = .no
 
         tableView.dataSource = self
         tableView.delegate = self

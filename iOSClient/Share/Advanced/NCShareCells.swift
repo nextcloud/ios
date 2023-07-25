@@ -310,7 +310,7 @@ class NCShareDateCell: UITableViewCell {
             self.resignFirstResponder()
             share.expirationDate = nil
             self.onReload?()
-        } completion: {
+        } onDone: {
             self.resignFirstResponder()
             share.expirationDate = self.picker.date as NSDate
             self.onReload?()

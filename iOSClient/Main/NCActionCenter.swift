@@ -339,7 +339,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _, _ in
+                NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false, completion: { _, _ in
                     if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
                 })
@@ -534,14 +534,14 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             DispatchQueue.main.async(execute: hud.dismiss)
 
             // do 5 downloads in parallel to optimize efficiency
-            let parallelizer = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
+            let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadatas.count, hudView: hudView)
 
             for metadata in downloadMetadatas {
-                parallelizer.execute { completion in
-                    NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in completion() }
+                processor.execute { completion in
+                    NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false) { _, _ in completion() }
                 }
             }
-            parallelizer.completeWork {
+            processor.completeWork {
                 items.append(contentsOf: downloadMetadatas.compactMap({ $0.toPasteBoardItem() }))
                 UIPasteboard.general.setItems(items, options: [:])
             }
@@ -551,7 +551,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func pastePasteboard(serverUrl: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        let parallelizer = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: appDelegate.window?.rootViewController?.view)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
@@ -584,12 +584,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)!
                 do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
-                parallelizer.execute { completion in
+                processor.execute { completion in
                     uploadPastePasteboard(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)
                 }
             }
         }
-        parallelizer.completeWork()
+        processor.completeWork()
     }
 
     // MARK: -

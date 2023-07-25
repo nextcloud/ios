@@ -52,9 +52,10 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
             self.noteTextField.resignFirstResponder()
             self.noteTextField.text = ""
             self.share.note = ""
-        } completion: {
+        } onDone: {
             self.noteTextField.resignFirstResponder()
             self.share.note = self.noteTextField.text
+            self.navigationController?.popViewController(animated: true)
         }
 
         noteTextField.inputAccessoryView = toolbar.wrappedSafeAreaContainer
