@@ -488,7 +488,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !isSearchingMode, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         // Header view trasfer
-        if metadata.isTransferInForeground() {
+        if metadata.isTransferInForeground {
             NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(progress: 0, ocId: ocId)
             self.collectionView?.reloadData()
         } else if serverUrl == self.serverUrl, account == appDelegate.account {
@@ -1762,7 +1762,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         if headerMenuTransferView,
            !isSearchingMode,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
-           metadata.isTransferInForeground() {
+           metadata.isTransferInForeground {
             size += NCGlobal.shared.heightHeaderTransfer
         } else {
             NCNetworking.shared.transferInForegorund = nil

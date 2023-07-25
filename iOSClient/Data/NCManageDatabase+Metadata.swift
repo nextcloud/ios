@@ -219,8 +219,8 @@ extension tableMetadata {
         status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
     }
 
-    func isTransferInForeground() -> Bool {
-        return (status > 0 && (chunk || e2eEncrypted))
+    var isTransferInForeground: Bool {
+        (status > 0 && (chunk || e2eEncrypted))
     }
 
     var isDownload: Bool {

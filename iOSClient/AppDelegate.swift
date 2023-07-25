@@ -278,8 +278,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppRefresh()
         scheduleAppProcessing()
 
-        NCNetworking.shared.transferInForegorund = nil
-
         // Passcode
         presentPasscode { }
 
