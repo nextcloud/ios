@@ -42,7 +42,7 @@ extension NCNetworking {
         var uploadError = NKError()
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
-        print(filesNames)
+
         if filesNames.count == 0 {
             NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
             filesNames = NextcloudKit.shared.nkCommonInstance.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)

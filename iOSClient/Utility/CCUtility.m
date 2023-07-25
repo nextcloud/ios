@@ -671,8 +671,9 @@
 + (NSInteger)getChunkSize
 {
     NSString *size = [UICKeyChainStore stringForKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (size == nil) {
+    NSInteger sizeInt = [size integerValue];
+
+    if (size == nil || sizeInt < 10) {
         return 0;
     } else {
         return [size integerValue];
