@@ -448,12 +448,13 @@ class NCGlobal: NSObject {
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
 
-    // MORE APPS
+    // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/de/app/nextcloud-talk/id1296825574"
     let notesAppStoreUrl                                        = "https://apps.apple.com/de/app/nextcloud-notes/id813973264"
     let moreAppsUrl                                             = "https://www.apple.com/us/search/nextcloud?src=globalnav"
+    var showMoreAppsSection                                     = false
 
     // SNAPSHOT PREVIEW
     let defaultSnapshotConfiguration                            = "DefaultPreviewConfiguration"
