@@ -79,12 +79,7 @@ class ParallelWorker {
             task {
                 self.completedTasks += 1
                 DispatchQueue.main.async {
-                    self.hud?.textLabel.text = "\(NSLocalizedString(self.titleKey, comment: "")) \(self.completedTasks) "
-                    if let totalTasks = self.totalTasks {
-                        self.hud?.textLabel.text?.append("\(NSLocalizedString("_of_", comment: "")) \(totalTasks)")
-                    } else {
-                        self.hud?.textLabel.text?.append(NSLocalizedString("_files_", comment: ""))
-                    }
+                    self.hud?.textLabel.text = "\(NSLocalizedString(self.titleKey, comment: ""))"
                 }
                 self.semaphore.signal()
                 self.completionGroup.leave()
