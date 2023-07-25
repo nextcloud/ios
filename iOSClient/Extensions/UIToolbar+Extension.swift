@@ -24,7 +24,7 @@
 import UIKit
 
 extension UIToolbar {
-    static func toolbar(onClear: (() -> Void)?, completion: @escaping () -> Void) -> UIToolbar {
+    static func toolbar(onClear: (() -> Void)?, onDone: @escaping () -> Void) -> UIToolbar {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         var buttons: [UIBarButtonItem] = []
@@ -37,7 +37,7 @@ extension UIToolbar {
         }
         buttons.append(UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil))
         let doneButton = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) {
-            completion()
+            onDone()
         }
         buttons.append(doneButton)
         toolbar.setItems(buttons, animated: false)
