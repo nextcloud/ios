@@ -45,6 +45,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return instance
     }()
 
+    public struct TransferInForegorund {
+        var progress: Float
+        var ocId: String
+    }
+
     weak var delegate: NCNetworkingDelegate?
 
     var lastReachability: Bool = true
@@ -52,6 +57,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let downloadRequest = ThreadSafeDictionary<String,DownloadRequest>()
     let uploadRequest = ThreadSafeDictionary<String,UploadRequest>()
     let uploadMetadataInBackground = ThreadSafeDictionary<String,tableMetadata>()
+    var transferInForegorund: TransferInForegorund?
 
     lazy var nkBackground: NKBackground = {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)

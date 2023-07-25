@@ -67,8 +67,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     private var tipView: EasyTipView?
 
-    private var ocIdTransferInForeground: String?
-
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -491,7 +489,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Header view trasfer
         if metadata.isTransferInForeground() {
-            self.ocIdTransferInForeground = ocId
+            NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(progress: 0, ocId: ocId)
             self.collectionView?.reloadData()
         } else if serverUrl == self.serverUrl, account == appDelegate.account {
             dataSource.addMetadata(metadata)
@@ -507,8 +505,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocId == ocIdTransferInForeground {
-            ocIdTransferInForeground = nil
+        if ocId == NCNetworking.shared.transferInForegorund?.ocId {
+            NCNetworking.shared.transferInForegorund = nil
             self.collectionView?.reloadData()
         }
 
@@ -525,8 +523,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocId == ocIdTransferInForeground {
-            ocIdTransferInForeground = nil
+        if ocId == NCNetworking.shared.transferInForegorund?.ocId {
+            NCNetworking.shared.transferInForegorund = nil
             self.collectionView?.reloadData()
         }
 
@@ -548,8 +546,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Header Transfer
         if headerMenuTransferView && (chunk || e2eEncrypted) {
-            if ocIdTransferInForeground == nil {
-                ocIdTransferInForeground = ocId
+            NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
+            print(progressNumber.floatValue)
+            if NCNetworking.shared.transferInForegorund?.ocId != ocId {
                 collectionView.reloadData()
             }
             self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
@@ -854,7 +853,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonTransfer(_ sender: Any) {
-        if let ocId = ocIdTransferInForeground,
+        if let ocId = NCNetworking.shared.transferInForegorund?.ocId,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }
@@ -1664,11 +1663,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.delegate = self
 
-                if !isSearchingMode, headerMenuTransferView, ocIdTransferInForeground != nil {
-
+                if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
                     let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                    header.setViewTransfer(isHidden: false, ocId: ocIdTransferInForeground, text: text)
-
+                    header.setViewTransfer(isHidden: false, ocId: ocId, text: text, progress: NCNetworking.shared.transferInForegorund?.progress)
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
@@ -1764,11 +1761,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         // transfer in progress
         if headerMenuTransferView,
            !isSearchingMode,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdTransferInForeground),
+           let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
            metadata.isTransferInForeground() {
             size += NCGlobal.shared.heightHeaderTransfer
         } else {
-            ocIdTransferInForeground = nil
+            NCNetworking.shared.transferInForegorund = nil
         }
 
         if headerMenuButtonsView {

@@ -188,7 +188,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil) {
+    func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
 
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
@@ -210,6 +210,9 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
                 buttonTransfer.setImage(image, for: .normal)
             }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+            if let progress {
+                progressTransfer.progress = progress
+            }
         }
     }
 
