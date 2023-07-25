@@ -489,7 +489,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // Header view trasfer
         if metadata.isTransferInForeground {
-            NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(progress: 0, ocId: ocId)
+            NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: 0)
             self.collectionView?.reloadData()
         } else if serverUrl == self.serverUrl, account == appDelegate.account {
             dataSource.addMetadata(metadata)
@@ -544,11 +544,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let e2eEncrypted = userInfo["e2eEncrypted"] as? Bool
         else { return }
 
+        print("\(progressNumber.floatValue)")
+
         // Header Transfer
         if headerMenuTransferView && (chunk || e2eEncrypted) {
-            NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
-            print(progressNumber.floatValue)
-            if NCNetworking.shared.transferInForegorund?.ocId != ocId {
+            if NCNetworking.shared.transferInForegorund?.ocId == ocId {
+                NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
+            } else {
+                NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
                 collectionView.reloadData()
             }
             self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
@@ -1760,10 +1763,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
         // transfer in progress
         if headerMenuTransferView,
-           !isSearchingMode,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
-           metadata.isTransferInForeground {
-            size += NCGlobal.shared.heightHeaderTransfer
+            metadata.isTransferInForeground {
+            if !isSearchingMode {
+                size += NCGlobal.shared.heightHeaderTransfer
+            }
         } else {
             NCNetworking.shared.transferInForegorund = nil
         }

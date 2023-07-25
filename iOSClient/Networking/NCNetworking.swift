@@ -46,8 +46,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
     }()
 
     public struct TransferInForegorund {
-        var progress: Float
         var ocId: String
+        var progress: Float
     }
 
     weak var delegate: NCNetworkingDelegate?
