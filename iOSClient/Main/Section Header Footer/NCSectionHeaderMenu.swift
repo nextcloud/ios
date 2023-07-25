@@ -198,7 +198,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
             viewTransferHeightConstraint.constant = 0
         } else {
             var image: UIImage?
-            if let ocId = ocId,
+            if let ocId,
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
                 if image == nil {

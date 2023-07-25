@@ -874,7 +874,7 @@ extension NCManageDatabase {
 
     func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
 
-        guard let ocId = ocId else { return nil }
+        guard let ocId else { return nil }
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else { return nil }
