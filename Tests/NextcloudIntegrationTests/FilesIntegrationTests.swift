@@ -10,13 +10,7 @@ import XCTest
 import NextcloudKit
 @testable import Nextcloud
 
-final class FilesIntegrationTests: XCTestCase {
-    private let baseUrl = EnvVars.testServerUrl
-    private let user = EnvVars.testUser
-    private let userId = EnvVars.testUser
-    private let password = EnvVars.testAppPassword
-    private lazy var account = "\(userId) \(baseUrl)"
-
+final class FilesIntegrationTests: BaseIntegrationXCTestCase {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     override func setUp() {
@@ -26,7 +20,7 @@ final class FilesIntegrationTests: XCTestCase {
     func test_createReadDeleteFolder_withProperParams_shouldCreateReadDeleteFolder() throws {
         let expectation = expectation(description: "Should finish last callback")
 
-        let folderName = "TestFolder10"
+        let folderName = "TestFolder\(randomInt)"
         let serverUrl = "\(baseUrl)/remote.php/dav/files/\(userId)"
         let serverUrlFileName = "\(serverUrl)/\(folderName)"
 
