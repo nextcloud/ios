@@ -502,27 +502,37 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              let account = userInfo["account"] as? String
         else { return }
 
-        self.ocIdTransferInForeground = nil
-        reloadDataSource()
+        if ocId == ocIdTransferInForeground {
+            ocIdTransferInForeground = nil
+            self.collectionView?.reloadData()
+        }
+
+        if account == appDelegate.account, serverUrl == self.serverUrl {
+            reloadDataSource()
+        }
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              let account = userInfo["account"] as? String
         else { return }
 
-        self.ocIdTransferInForeground = nil
-        reloadDataSource()
+        if ocId == ocIdTransferInForeground {
+            ocIdTransferInForeground = nil
+            self.collectionView?.reloadData()
+        }
+
+        if account == appDelegate.account, serverUrl == self.serverUrl {
+            reloadDataSource()
+        }
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
