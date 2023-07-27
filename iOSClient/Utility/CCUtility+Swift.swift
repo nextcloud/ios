@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import 
+
 @objc extension CCUtility {
     func setExif(metadata: tableMetadata, completionHandler: @escaping (Double, Double, String, Date?, String) -> Void) {
         var dateTime: String?
