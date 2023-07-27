@@ -193,8 +193,6 @@
 "_print_"                   = "Print";
 "_alias_"                   = "Alias";
 "_alias_footer_"            = "Give your account names a descriptive name such as Home, Office, School …";
-"_upload_chunk_"            = "The file you are uploading is large, keep the app in the foreground until complete";
-"_upload_e2ee_"             = "The file you are uploading is encrypted, keep the app in the foreground until complete";
 "_chunk_size_mb_"           = "Chunk size in MB";
 "_chunk_footer_title_"      = "Chunked file upload (0 is disabled)\nImportant: the chunked upload works only when the app is \"active\".";
 "_privacy_legal_"           = "Privacy and Legal Policy";
@@ -970,6 +968,7 @@
 "_add_subtitle_"            = "Add an external subtitle";
 "_add_audio_"               = "Add an external audio";
 "_maintenance_mode_"        = "Server is currently in maintenance mode";
+"_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

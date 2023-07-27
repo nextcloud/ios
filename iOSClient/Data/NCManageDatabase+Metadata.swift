@@ -211,8 +211,16 @@ extension tableMetadata {
         return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
     }
 
-    var isDownloadUpload: Bool {
+    var isWaitingTransfer: Bool {
+        status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploadError
+    }
+
+    var isInTransfer: Bool {
         status == NCGlobal.shared.metadataStatusInDownload || status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusInUpload || status == NCGlobal.shared.metadataStatusUploading
+    }
+
+    var isTransferInForeground: Bool {
+        (status > 0 && (chunk || e2eEncrypted))
     }
 
     var isDownload: Bool {
@@ -416,7 +424,6 @@ extension NCManageDatabase {
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
         metadata.account = account
-        metadata.chunk = false
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
@@ -867,15 +874,27 @@ extension NCManageDatabase {
 
     func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
 
+        guard let ocId else { return nil }
         do {
             let realm = try Realm()
-            guard let ocId = ocId else { return nil }
             guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else { return nil }
             return tableMetadata.init(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
+        return nil
+    }
+
+    func getTableMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
+
+        guard let ocId else { return nil }
+        do {
+            let realm = try Realm()
+            return realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+        }
         return nil
     }
 

@@ -29,19 +29,25 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonMore: UIButton!
-
+    @IBOutlet weak var buttonTransfer: UIButton!
+    @IBOutlet weak var imageButtonTransfer: UIImageView!
+    @IBOutlet weak var labelTransfer: UILabel!
+    @IBOutlet weak var progressTransfer: UIProgressView!
+    @IBOutlet weak var transferSeparatorBottom: UIView!
+    @IBOutlet weak var textViewRichWorkspace: UITextView!
+    @IBOutlet weak var labelSection: UILabel!
+    @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewButtonsView: UIView!
     @IBOutlet weak var viewSeparator: UIView!
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var viewSection: UIView!
 
+    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewButtonsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSeparatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
-
-    @IBOutlet weak var textViewRichWorkspace: UITextView!
-    @IBOutlet weak var labelSection: UILabel!
+    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionHeaderMenuDelegate?
 
@@ -82,6 +88,19 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
 
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
+
+        buttonTransfer.backgroundColor = .clear
+        buttonTransfer.setImage(nil, for: .normal)
+        buttonTransfer.layer.cornerRadius = 6
+        buttonTransfer.layer.masksToBounds = true
+        imageButtonTransfer.image = UIImage(systemName: "stop.circle")
+        imageButtonTransfer.tintColor = .white
+        labelTransfer.text = ""
+        progressTransfer.progress = 0
+        progressTransfer.tintColor = NCBrandColor.shared.brand
+        progressTransfer.trackTintColor = NCBrandColor.shared.brand.withAlphaComponent(0.2)
+        transferSeparatorBottom.backgroundColor = .separator
+        transferSeparatorBottomHeightConstraint.constant = 0.5
     }
 
     override func layoutSublayers(of layer: CALayer) {
@@ -167,6 +186,36 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         }
     }
 
+    // MARK: - Transfer
+
+    func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
+
+        labelTransfer.text = text
+        viewTransfer.isHidden = isHidden
+        progressTransfer.progress = 0
+
+        if isHidden {
+            viewTransferHeightConstraint.constant = 0
+        } else {
+            var image: UIImage?
+            if let ocId,
+               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                image = NCUtility.shared.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                if image == nil {
+                    image = UIImage(named: metadata.iconName)
+                    buttonTransfer.backgroundColor = .lightGray
+                } else {
+                    buttonTransfer.backgroundColor = .clear
+                }
+                buttonTransfer.setImage(image, for: .normal)
+            }
+            viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+            if let progress {
+                progressTransfer.progress = progress
+            }
+        }
+    }
+
     // MARK: - Section
 
     func setSectionHeight(_ size: CGFloat) {
@@ -193,16 +242,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         delegate?.tapButtonMore(sender)
     }
 
-    @IBAction func touchUpInsideButton1(_ sender: Any) {
-       delegate?.tapButton1(sender)
-    }
-
-    @IBAction func touchUpInsideButton2(_ sender: Any) {
-        delegate?.tapButton2(sender)
-    }
-
-    @IBAction func touchUpInsideButton3(_ sender: Any) {
-        delegate?.tapButton3(sender)
+    @IBAction func touchUpTransfer(_ sender: Any) {
+       delegate?.tapButtonTransfer(sender)
     }
 
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
@@ -214,9 +255,7 @@ protocol NCSectionHeaderMenuDelegate: AnyObject {
     func tapButtonSwitch(_ sender: Any)
     func tapButtonOrder(_ sender: Any)
     func tapButtonMore(_ sender: Any)
-    func tapButton1(_ sender: Any)
-    func tapButton2(_ sender: Any)
-    func tapButton3(_ sender: Any)
+    func tapButtonTransfer(_ sender: Any)
     func tapRichWorkspace(_ sender: Any)
 }
 
@@ -225,9 +264,7 @@ extension NCSectionHeaderMenuDelegate {
     func tapButtonSwitch(_ sender: Any) {}
     func tapButtonOrder(_ sender: Any) {}
     func tapButtonMore(_ sender: Any) {}
-    func tapButton1(_ sender: Any) {}
-    func tapButton2(_ sender: Any) {}
-    func tapButton3(_ sender: Any) {}
+    func tapButtonTransfer(_ sender: Any) {}
     func tapRichWorkspace(_ sender: Any) {}
 }
 
@@ -350,4 +387,59 @@ protocol NCSectionFooterDelegate: AnyObject {
 // optional func
 extension NCSectionFooterDelegate {
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {}
+}
+
+// https://stackoverflow.com/questions/16278463/darken-an-uiimage
+public extension UIImage {
+
+    private enum BlendMode {
+        case multiply // This results in colors that are at least as dark as either of the two contributing sample colors
+        case screen // This results in colors that are at least as light as either of the two contributing sample colors
+    }
+
+    // A level of zero yeilds the original image, a level of 1 results in black
+    func darken(level: CGFloat = 0.5) -> UIImage? {
+        return blend(mode: .multiply, level: level)
+    }
+
+    // A level of zero yeilds the original image, a level of 1 results in white
+    func lighten(level: CGFloat = 0.5) -> UIImage? {
+        return blend(mode: .screen, level: level)
+    }
+
+    private func blend(mode: BlendMode, level: CGFloat) -> UIImage? {
+        let context = CIContext(options: nil)
+
+        var level = level
+        if level < 0 {
+            level = 0
+        } else if level > 1 {
+            level = 1
+        }
+
+        let filterName: String
+        switch mode {
+        case .multiply: // As the level increases we get less white
+            level = abs(level - 1.0)
+            filterName = "CIMultiplyBlendMode"
+        case .screen: // As the level increases we get more white
+            filterName = "CIScreenBlendMode"
+        }
+
+        let blender = CIFilter(name: filterName)!
+        let backgroundColor = CIColor(color: UIColor(white: level, alpha: 1))
+
+        guard let inputImage = CIImage(image: self) else { return nil }
+        blender.setValue(inputImage, forKey: kCIInputImageKey)
+
+        guard let backgroundImageGenerator = CIFilter(name: "CIConstantColorGenerator") else { return nil }
+        backgroundImageGenerator.setValue(backgroundColor, forKey: kCIInputColorKey)
+        guard let backgroundImage = backgroundImageGenerator.outputImage?.cropped(to: CGRect(origin: CGPoint.zero, size: self.size)) else { return nil }
+        blender.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
+
+        guard let blendedImage = blender.outputImage else { return nil }
+
+        guard let cgImage = context.createCGImage(blendedImage, from: blendedImage.extent) else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
 }
