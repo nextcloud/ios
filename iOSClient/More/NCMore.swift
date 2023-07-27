@@ -251,7 +251,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             sections.append(Section(items: [NKExternalSite()], type: .account))
         }
 
-        if NCGlobal.shared.showMoreAppsSection {
+        if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             sections.append(Section(items: [NKExternalSite()], type: .moreApps))
         }
 
