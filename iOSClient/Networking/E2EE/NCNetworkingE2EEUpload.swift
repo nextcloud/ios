@@ -186,7 +186,6 @@ class NCNetworkingE2EEUpload: NSObject {
         return await withCheckedContinuation({ continuation in
             NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
                 uploadE2EEDelegate?.start()
-                NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_e2ee_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: NCGlobal.shared.dismissAfterSecond, priority: .max)
             } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                 uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
             } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in

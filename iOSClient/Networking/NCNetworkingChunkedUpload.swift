@@ -43,7 +43,6 @@ extension NCNetworking {
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         if filesNames.count == 0 {
-            NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
             filesNames = NextcloudKit.shared.nkCommonInstance.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
@@ -75,6 +74,14 @@ extension NCNetworking {
             for fileName in filesNames {
 
                 let serverUrlFileName = chunkFolderPath + "/" + fileName
+                let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: fileName)
+                // ops! the upload has probably been cancelled
+                if fileSize == 0 {
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    return completion(NKError())
+                }
                 let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
 
                 var size: Int64?
@@ -97,7 +104,7 @@ extension NCNetworking {
 
                     if let size = size {
                         let totalBytesExpected = metadata.size
-                        let totalBytes = size + progress.completedUnitCount
+                        let totalBytes = size
                         let fractionCompleted = Double(totalBytes) / Double(totalBytesExpected)
 
                         NotificationCenter.default.postOnMainThread(
@@ -109,6 +116,8 @@ extension NCNetworking {
                                 "fileName": metadata.fileName,
                                 "serverUrl": metadata.serverUrl,
                                 "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                                "chunk": metadata.chunk,
+                                "e2eEncrypted": metadata.e2eEncrypted,
                                 "progress": NSNumber(value: fractionCompleted),
                                 "totalBytes": NSNumber(value: totalBytes),
                                 "totalBytesExpected": NSNumber(value: totalBytesExpected)])
