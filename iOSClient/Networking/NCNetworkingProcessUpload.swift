@@ -312,6 +312,9 @@ class NCNetworkingProcessUpload: NSObject {
 
         // metadataStatusUploading OR metadataStatusInUpload (FOREGROUND)
         let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d OR status == %d)", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload, NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusInUpload))
+        if metadatasUploading.isEmpty {
+            NCNetworking.shared.transferInForegorund = nil
+        }
         for metadata in metadatasUploading {
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
