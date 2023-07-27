@@ -184,8 +184,8 @@
                                                     <action selector="touchLocation:" destination="P8R-4f-zAl" eventType="touchUpInside" id="Z9s-pM-WsS"/>
                                                 </connections>
                                             </button>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Z0h-yS-myv">
-                                                <rect key="frame" x="10" y="10" width="394" height="314.66666666666669"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Z0h-yS-myv">
+                                                <rect key="frame" x="10" y="10" width="394" height="326.66666666666669"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Orp-ek-gxO">
                                                         <rect key="frame" x="0.0" y="0.0" width="221.33333333333334" height="20.333333333333332"/>
@@ -223,13 +223,13 @@
                                                         </subviews>
                                                     </stackView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="IMG_003" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PVW-g9-z43" userLabel="Title">
-                                                        <rect key="frame" x="0.0" y="28.333333333333314" width="70.333333333333329" height="20.333333333333329"/>
+                                                        <rect key="frame" x="0.0" y="32.333333333333314" width="70.333333333333329" height="20.333333333333329"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" systemColor="secondaryLabelColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YSP-f2-T7B">
-                                                        <rect key="frame" x="0.0" y="56.666666666666686" width="394" height="100"/>
+                                                        <rect key="frame" x="0.0" y="64.666666666666686" width="394" height="100"/>
                                                         <subviews>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ucG-To-acr">
                                                                 <rect key="frame" x="0.0" y="0.0" width="394" height="35"/>
@@ -241,7 +241,7 @@
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                 </subviews>
-                                                                <color key="backgroundColor" systemColor="systemGray3Color"/>
+                                                                <color key="backgroundColor" systemColor="systemGray4Color"/>
                                                                 <constraints>
                                                                     <constraint firstItem="cA8-2k-F4N" firstAttribute="leading" secondItem="ucG-To-acr" secondAttribute="leading" constant="5" id="SUB-is-irh"/>
                                                                     <constraint firstAttribute="height" constant="35" id="rKP-vs-CL4"/>
@@ -290,7 +290,7 @@
                                                                 </subviews>
                                                             </stackView>
                                                         </subviews>
-                                                        <color key="backgroundColor" systemColor="systemGray4Color"/>
+                                                        <color key="backgroundColor" systemColor="systemGray5Color"/>
                                                         <constraints>
                                                             <constraint firstItem="ucG-To-acr" firstAttribute="top" secondItem="YSP-f2-T7B" secondAttribute="top" id="Dcv-Ag-2Q0"/>
                                                             <constraint firstItem="d4R-Eg-BEV" firstAttribute="top" secondItem="ucG-To-acr" secondAttribute="bottom" constant="8" symbolic="YES" id="J6Z-nR-AgG"/>
@@ -308,8 +308,7 @@
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJP-ZX-iug">
-                                                        <rect key="frame" x="0.0" y="164.66666666666669" width="394" height="150"/>
-                                                        <color key="backgroundColor" systemColor="tintColor"/>
+                                                        <rect key="frame" x="0.0" y="176.66666666666669" width="394" height="150"/>
                                                         <gestureRecognizers/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="150" id="LdR-cg-NxA"/>
@@ -332,7 +331,7 @@
                                                 </constraints>
                                             </stackView>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="systemGray5Color"/>
+                                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="335" id="060-gB-sax"/>
                                             <constraint firstItem="GWF-lf-c8t" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="0Ub-x3-dQs"/>
@@ -474,17 +473,14 @@
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
-        <systemColor name="systemGray3Color">
-            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="systemGray4Color">
             <color red="0.81960784310000001" green="0.81960784310000001" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
             <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
-        <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

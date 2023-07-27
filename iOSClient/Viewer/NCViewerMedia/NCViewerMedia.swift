@@ -461,12 +461,12 @@ extension NCViewerMedia {
 
         self.dismissTip()
 
-//        CCUtility.setExifTest()
         NCUtility.shared.setExif(metadata: metadata) { latitude, longitude, location, date, lensModel in
+//        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
             if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
-                self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
+                self.detailViewHeighConstraint.constant = 335
             } else {
-                self.detailViewHeighConstraint.constant = 170
+                self.detailViewHeighConstraint.constant = 335
             }
 
             self.view.layoutIfNeeded()
@@ -518,7 +518,8 @@ extension NCViewerMedia {
     func reloadDetail() {
 
         if self.detailView.isShow() {
-            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
+            NCUtility.shared.setExif(metadata: metadata) { (latitude, longitude, location, date, lensModel) in
+//            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
                 self.detailView.show(
                     metadata: self.metadata,
                     image: self.image,
