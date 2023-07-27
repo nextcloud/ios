@@ -1363,10 +1363,10 @@
     return canEdit;
     
 }
-//
-//#pragma --------------------------------------------------------------------------------------------
-//#pragma mark ===== EXIF =====
-//#pragma --------------------------------------------------------------------------------------------
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== EXIF =====
+#pragma --------------------------------------------------------------------------------------------
 
 //+ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date, NSString *lensModel))completition
 //{

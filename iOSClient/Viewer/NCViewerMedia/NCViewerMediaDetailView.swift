@@ -36,7 +36,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var sizeValue: UILabel!
-    @IBOutlet weak var dateLabel: UILabel!
+//    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var dateValue: UILabel!
     @IBOutlet weak var dimLabel: UILabel!
     @IBOutlet weak var dimValue: UILabel!
@@ -45,6 +45,10 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var messageButton: UIButton!
     @IBOutlet weak var mapContainer: UIView!
     @IBOutlet weak var locationButton: UIButton!
+
+    @IBOutlet weak var dayLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var timeLabel: UILabel!
 
     var latitude: Double = 0
     var longitude: Double = 0

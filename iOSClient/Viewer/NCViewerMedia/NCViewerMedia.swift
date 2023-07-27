@@ -41,7 +41,7 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
-
+    
     private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
 
@@ -462,7 +462,7 @@ extension NCViewerMedia {
         self.dismissTip()
 
 //        CCUtility.setExifTest()
-        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
+        NCUtility.shared.setExif(metadata: metadata) { latitude, longitude, location, date, lensModel in
             if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
                 self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
             } else {
