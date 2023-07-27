@@ -350,7 +350,6 @@ class NCManageDatabase: NSObject {
         do {
             let realm = try Realm()
             try realm.write {
-
                 let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
                 realm.delete(result)
             }

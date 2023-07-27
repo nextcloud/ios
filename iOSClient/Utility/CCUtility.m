@@ -667,19 +667,24 @@
     [UICKeyChainStore setString:sSet forKey:@"accountRequest" service:NCGlobal.shared.serviceShareKeyChain];
 }
 
+/// In megabytes (MB)
 + (NSInteger)getChunkSize
 {
     NSString *size = [UICKeyChainStore stringForKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
-    
-    if (size == nil) {
+    NSInteger sizeInt = [size integerValue];
+
+    if (size == nil || sizeInt < 10) {
         return 0;
     } else {
         return [size integerValue];
     }
 }
 
+/// In megabytes (MB)
 + (void)setChunkSize:(NSInteger)size
 {
+    if (size < 10) size = 0;
+
     NSString *sizeString = [@(size) stringValue];
     [UICKeyChainStore setString:sizeString forKey:@"chunkSize" service:NCGlobal.shared.serviceShareKeyChain];
 }

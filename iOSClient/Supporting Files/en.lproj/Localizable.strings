@@ -156,6 +156,7 @@
 "_professional_"            = "Professional";
 "_current_"                 = "Current";
 "_buy_"                     = "Buy";
+"_disabled_"                = "Disabled";
 
 /* MARK: Files lock */
 
