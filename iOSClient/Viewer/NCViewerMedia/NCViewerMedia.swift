@@ -406,19 +406,7 @@ class NCViewerMedia: UIViewController {
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
         switch gestureRecognizer.state {
-
-        case .began:
-
-//        let velocity = gestureRecognizer.velocity(in: self.view)
-
-//            gesture moving Up
-//            if velocity.y < 0 {
-
-//            }
-            break
-
         case .ended:
-
             if detailView.isShow() {
                 self.imageViewTopConstraint.constant = -imageViewConstraint
                 self.imageViewBottomConstraint.constant = imageViewConstraint
@@ -428,7 +416,6 @@ class NCViewerMedia: UIViewController {
             }
 
         case .changed:
-
             imageViewTopConstraint.constant = (currentLocation.y - imageViewConstraint)
             imageViewBottomConstraint.constant = -(currentLocation.y - imageViewConstraint)
 
@@ -473,14 +460,15 @@ extension NCViewerMedia {
     private func openDetail() {
 
         self.dismissTip()
-        
-        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
 
+//        CCUtility.setExifTest()
+        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
             if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
                 self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
             } else {
                 self.detailViewHeighConstraint.constant = 170
             }
+
             self.view.layoutIfNeeded()
             self.detailView.show(
                 metadata: self.metadata,
@@ -506,7 +494,6 @@ extension NCViewerMedia {
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
                 self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
                 self.view.layoutIfNeeded()
-            } completion: { _ in
             }
 
             self.scrollView.pinchGestureRecognizer?.isEnabled = false
@@ -523,7 +510,6 @@ extension NCViewerMedia {
             self.imageViewBottomConstraint.constant = 0
             self.detailViewTopConstraint.constant = 0
             self.view.layoutIfNeeded()
-        } completion: { _ in
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
