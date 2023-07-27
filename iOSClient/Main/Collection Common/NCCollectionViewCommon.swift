@@ -491,9 +491,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if metadata.isTransferInForeground {
             NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: 0)
             self.collectionView?.reloadData()
-        } else if serverUrl == self.serverUrl, account == appDelegate.account {
-            dataSource.addMetadata(metadata)
-            self.collectionView?.reloadData()
+        }
+
+        if serverUrl == self.serverUrl, account == appDelegate.account {
+            reloadDataSource()
         }
     }
 
@@ -543,8 +544,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let chunk = userInfo["chunk"] as? Bool,
               let e2eEncrypted = userInfo["e2eEncrypted"] as? Bool
         else { return }
-
-        print("\(progressNumber.floatValue)")
 
         // Header Transfer
         if headerMenuTransferView && (chunk || e2eEncrypted) {
@@ -1555,12 +1554,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             break
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.fileLocalImage?.image = nil
             break
         case NCGlobal.shared.metadataStatusInUpload:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
+            cell.fileLocalImage?.image = nil
             break
         case NCGlobal.shared.metadataStatusUploading:
             cell.fileInfoLabel?.text = CCUtility.transformedSize(metadata.size) + " - ↑ …"
+            cell.fileLocalImage?.image = nil
             break
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError != "" {
