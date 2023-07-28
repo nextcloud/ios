@@ -13,7 +13,7 @@
 //  (at your option) any later version.
 //
 //  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  but WITHOUT ANY WARRANTY without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
@@ -237,7 +237,7 @@ class NCUtility: NSObject {
         let userAgent: String = CCUtility.getUserAgent()
         if UIDevice.current.userInterfaceIdiom == .phone {
             // NOTE: Hardcoded (May 2022)
-            // Tested for iPhone SE (1st), iOS 12; iPhone Pro Max, iOS 15.4
+            // Tested for iPhone SE (1st), iOS 12 iPhone Pro Max, iOS 15.4
             // 605.1.15 = WebKit build version
             // 15E148 = frozen iOS build number according to: https://chromestatus.com/feature/4558585463832576
             return userAgent + " " + "AppleWebKit/605.1.15 Mobile/15E148"
@@ -797,14 +797,47 @@ class NCUtility: NSObject {
         
         return titleView
     }
-    
-    func setExif(metadata: tableMetadata, completionHandler: @escaping (Double, Double, String, Date?, String) -> Void) {
+
+    public struct ExifData {
+        var colorModel: String?
+        var pixelWidth: Double?
+        var pixelHeight: Double?
+        var dpiWidth: Int?
+        var dpiHeight: Int?
+        var depth: Int?
+        var orientation: Int?
+        var apertureValue: String?
+        var brightnessValue: String?
+        var dateTimeDigitized: String?
+        var dateTimeOriginal: String?
+        var offsetTime: String?
+        var offsetTimeDigitized: String?
+        var offsetTimeOriginal: String?
+        var model: String?
+        var software: String?
+        var tileLength: Double?
+        var tileWidth: Double?
+        var xResolution: Double?
+        var yResolution: Double?
+        var altitude: String?
+        var destBearing: String?
+        var hPositioningError: String?
+        var imgDirection: String?
+        var latitude: Double?
+        var longitude: Double?
+        var speed: Double?
+        var location: String?
+        var lensModel: String?
+        var date: Date?
+    }
+
+    func setExif(metadata: tableMetadata, completion: @escaping (ExifData) -> Void) {
         var dateTime: String?
         var latitudeRef: String?
         var longitudeRef: String?
         var stringLatitude = "0"
         var stringLongitude = "0"
-        var location = ""
+        //        var location = ""
         var latitude = 0.0
         var longitude = 0.0
         var date: Date?
@@ -814,90 +847,132 @@ class NCUtility: NSObject {
         var lensModel = ""
 
         if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
-            completionHandler(latitude, longitude, location, date, lensModel)
+            print("Storage exists or file is not an image")
             return
         }
 
         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
         guard let originalSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-            completionHandler(latitude, longitude, location, date, lensModel)
+            print("Storage exists or file is not an image")
             return
         }
 
-        guard let fileProperties = CGImageSourceCopyProperties(originalSource, nil) as NSDictionary? else {
-            completionHandler(latitude, longitude, location, date, lensModel)
+        guard let fileProperties = CGImageSourceCopyProperties(originalSource, nil) as NSDictionary?,
+              let fileSizeNumber = fileProperties[kCGImagePropertyFileSize] as? NSNumber,
+              let imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, nil) as NSDictionary? else {
+            print("Could not get file properties")
             return
         }
 
-        // FILE PROPERTIES
-        if let fileSizeNumber = fileProperties[kCGImagePropertyFileSize] as? NSNumber {
-            fileSize = fileSizeNumber.int64Value
-        }
+        fileSize = fileSizeNumber.int64Value
 
-        guard let imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, nil) as NSDictionary? else {
-            completionHandler(latitude, longitude, location, date, lensModel)
-            return
-        }
+        var data = ExifData()
 
-        if let exif = imageProperties[kCGImagePropertyExifDictionary] as? NSDictionary {
-            if let sPixelX = exif[kCGImagePropertyExifPixelXDimension] as? Int,
-               let sPixelY = exif[kCGImagePropertyExifPixelYDimension] as? Int,
-               let sLensModel = exif[kCGImagePropertyExifLensModel] as? String,
-               let dateTime = exif[kCGImagePropertyExifDateTimeOriginal] as? String {
+        //        if let imgSrc = CGImageSourceCreateWithData(data, options as CFDictionary) {
+        data.colorModel = imageProperties[kCGImagePropertyColorModel] as? String
+        data.pixelWidth = imageProperties[kCGImagePropertyPixelWidth] as? Double
+        data.pixelHeight = imageProperties[kCGImagePropertyPixelHeight] as? Double
+        data.dpiWidth = imageProperties[kCGImagePropertyDPIWidth] as? Int
+        data.dpiHeight = imageProperties[kCGImagePropertyDPIHeight] as? Int
+        data.depth = imageProperties[kCGImagePropertyDepth] as? Int
+        data.orientation = imageProperties[kCGImagePropertyOrientation] as? Int
 
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
+        if let tiffData = imageProperties[kCGImagePropertyTIFFDictionary] as? NSDictionary {
+            data.model = tiffData[kCGImagePropertyTIFFModel] as? String
+            data.software = tiffData[kCGImagePropertyTIFFSoftware] as? String
+            data.tileLength = tiffData[kCGImagePropertyTIFFTileLength] as? Double
+            data.tileWidth = tiffData[kCGImagePropertyTIFFTileWidth] as? Double
+            data.xResolution = tiffData[kCGImagePropertyTIFFXResolution] as? Double
+            data.yResolution = tiffData[kCGImagePropertyTIFFYResolution] as? Double
 
-                pixelX = sPixelX
-                pixelY = sPixelY
-                lensModel = sLensModel
-                date = dateFormatter.date(from: dateTime as String)
-
-                // Use the pixelX, pixelY, lensModel, and date variables as needed.
-            }
-        }
-
-        if let tiff = imageProperties[kCGImagePropertyTIFFDictionary] as? NSDictionary {
-            dateTime = tiff[kCGImagePropertyTIFFDateTime] as? String
+            let dateTime = tiffData[kCGImagePropertyTIFFDateTime] as? String
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
             date = dateFormatter.date(from: dateTime ?? "")
         }
 
-        if let gps = imageProperties[kCGImagePropertyGPSDictionary] as? NSDictionary,
-           let latitudeRefString = gps[kCGImagePropertyGPSLatitudeRef] as? NSString,
-           let longitudeRefString = gps[kCGImagePropertyGPSLongitudeRef] as? NSString {
-            latitude = gps[kCGImagePropertyGPSLatitude] as? Double ?? 0
-            longitude = gps[kCGImagePropertyGPSLongitude] as? Double ?? 0
-
-            latitudeRef = latitudeRefString as String
-            longitudeRef = longitudeRefString as String
-
-            // conversion 4 decimal +N -S
-            // The latitude in degrees. Positive values indicate latitudes north of the equator. Negative values indicate latitudes south of the equator.
-            if latitudeRef == "N" {
-                stringLatitude = "+\(String(format: "%.4f", latitude))"
-            } else {
-                stringLatitude = "-\(String(format: "%.4f", latitude))"
-                latitude *= -1
-            }
-
-            // conversion 4 decimal +E -W
-            // The longitude in degrees. Measurements are relative to the zero meridian, with positive values extending east of the meridian
-            // and negative values extending west of the meridian.
-            if longitudeRef == "E" {
-                stringLongitude = "+\(String(format: "%.4f", longitude))"
-            } else {
-                stringLongitude = "-\(String(format: "%.4f", longitude))"
-                longitude *= -1
-            }
-
-            if latitude == 0 || longitude == 0 {
-                stringLatitude = "0"
-                stringLongitude = "0"
-            }
+        if let exifData = imageProperties[kCGImagePropertyExifDictionary] as? NSDictionary {
+            data.apertureValue = exifData[kCGImagePropertyExifApertureValue] as? String
+            data.brightnessValue = exifData[kCGImagePropertyExifBrightnessValue] as? String
+            data.dateTimeDigitized = exifData[kCGImagePropertyExifDateTimeDigitized] as? String
+            data.dateTimeOriginal = exifData[kCGImagePropertyExifDateTimeOriginal] as? String
+            data.offsetTime = exifData[kCGImagePropertyExifOffsetTime] as? String
+            data.offsetTimeDigitized = exifData[kCGImagePropertyExifOffsetTimeDigitized] as? String
+            data.offsetTimeOriginal = exifData[kCGImagePropertyExifOffsetTimeOriginal] as? String
+            data.lensModel = exifData[kCGImagePropertyExifLensModel] as? String
         }
+
+        if let gpsData = imageProperties[kCGImagePropertyGPSDictionary] as? NSDictionary {
+            data.altitude = gpsData[kCGImagePropertyGPSAltitude] as? String
+            data.destBearing = gpsData[kCGImagePropertyGPSDestBearing] as? String
+            data.hPositioningError = gpsData[kCGImagePropertyGPSHPositioningError] as? String
+            data.imgDirection = gpsData[kCGImagePropertyGPSImgDirection] as? String
+            data.latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double
+            data.longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double
+            data.speed = gpsData[kCGImagePropertyGPSSpeed] as? Double
+        }
+
+        completion(data)
+
+        //        if let exif = imageProperties[kCGImagePropertyExifDictionary] as? NSDictionary {
+        //            if let sPixelX = exif[kCGImagePropertyExifPixelXDimension] as? Int,
+        //               let sPixelY = exif[kCGImagePropertyExifPixelYDimension] as? Int,
+        //               let sLensModel = exif[kCGImagePropertyExifLensModel] as? String,
+        //               let dateTime = exif[kCGImagePropertyExifDateTimeOriginal] as? String {
+        //
+        //                let dateFormatter = DateFormatter()
+        //                dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
+        //
+        //                pixelX = sPixelX
+        //                pixelY = sPixelY
+        //                lensModel = sLensModel
+        //                date = dateFormatter.date(from: dateTime as String)
+        //
+        //                // Use the pixelX, pixelY, lensModel, and date variables as needed.
+        //            }
+        //        }
+        //
+        //        if let tiff = imageProperties[kCGImagePropertyTIFFDictionary] as? NSDictionary {
+        //            dateTime = tiff[kCGImagePropertyTIFFDateTime] as? String
+        //            let dateFormatter = DateFormatter()
+        //            dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
+        //            date = dateFormatter.date(from: dateTime ?? "")
+        //        }
+        //
+        //        if let gps = imageProperties[kCGImagePropertyGPSDictionary] as? NSDictionary,
+        //           let latitudeRefString = gps[kCGImagePropertyGPSLatitudeRef] as? NSString,
+        //           let longitudeRefString = gps[kCGImagePropertyGPSLongitudeRef] as? NSString {
+        //            latitude = gps[kCGImagePropertyGPSLatitude] as? Double ?? 0
+        //            longitude = gps[kCGImagePropertyGPSLongitude] as? Double ?? 0
+        //
+        //            latitudeRef = latitudeRefString as String
+        //            longitudeRef = longitudeRefString as String
+        //
+        //            // conversion 4 decimal +N -S
+        //            // The latitude in degrees. Positive values indicate latitudes north of the equator. Negative values indicate latitudes south of the equator.
+        //            if latitudeRef == "N" {
+        //                stringLatitude = "+\(String(format: "%.4f", latitude))"
+        //            } else {
+        //                stringLatitude = "-\(String(format: "%.4f", latitude))"
+        //                latitude *= -1
+        //            }
+        //
+        //            // conversion 4 decimal +E -W
+        //            // The longitude in degrees. Measurements are relative to the zero meridian, with positive values extending east of the meridian
+        //            // and negative values extending west of the meridian.
+        //            if longitudeRef == "E" {
+        //                stringLongitude = "+\(String(format: "%.4f", longitude))"
+        //            } else {
+        //                stringLongitude = "-\(String(format: "%.4f", longitude))"
+        //                longitude *= -1
+        //            }
+        //
+        //            if latitude == 0 || longitude == 0 {
+        //                stringLatitude = "0"
+        //                stringLongitude = "0"
+        //            }
+        //        }
 
         // Write data EXIF in DB
         if imageProperties[kCGImagePropertyTIFFDictionary] != nil || imageProperties[kCGImagePropertyGPSDictionary] != nil {
@@ -905,10 +980,11 @@ class NCUtility: NSObject {
 
             if Double(stringLatitude) != 0 || Double(stringLongitude) != 0 {
                 // If exists already geocoder data in TableGPS exit
-                location = NCManageDatabase.shared.getLocationFromGeoLatitude(stringLatitude, longitude: stringLongitude) ?? ""
+                let location = NCManageDatabase.shared.getLocationFromGeoLatitude(stringLatitude, longitude: stringLongitude) ?? ""
 
                 if !location.isEmpty {
-                    completionHandler(latitude, longitude, location, date, lensModel)
+                    data.location = location
+                    completion(data)
                     return
                 }
 
@@ -939,22 +1015,21 @@ class NCUtility: NSObject {
                             country = placemarkCountry
                         }
 
-                        location = "\(thoroughfare) \(postalCode) \(locality) \(administrativeArea) \(country)"
-                        location = location.trimmingCharacters(in: .whitespaces)
+                        data.location = "\(thoroughfare) \(postalCode) \(locality) \(administrativeArea) \(country)".trimmingCharacters(in: .whitespaces)
 
                         // GPS
-                        if !location.isEmpty {
+                        if let location = data.location, location.isEmpty {
                             NCManageDatabase.shared.addGeocoderLocation(location, placemarkAdministrativeArea: administrativeArea, placemarkCountry: country, placemarkLocality: locality, placemarkPostalCode: postalCode, placemarkThoroughfare: thoroughfare, latitude: stringLatitude, longitude: stringLongitude)
                         }
 
-                        completionHandler(latitude, longitude, location, date, lensModel)
+                        completion(data)
                     }
                 }
             } else {
-                completionHandler(latitude, longitude, location, date, lensModel)
+                completion(data)
             }
         } else {
-            completionHandler(latitude, longitude, location, date, lensModel)
+            completion(data)
         }
     }
 }

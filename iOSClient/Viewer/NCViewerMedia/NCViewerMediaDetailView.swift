@@ -25,7 +25,7 @@ import UIKit
 import MapKit
 import NextcloudKit
 
-typealias NCImageMetadata = (latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?)
+//typealias NCImageMetadata = (latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?)
 
 public protocol NCViewerMediaDetailViewDelegate: AnyObject {
     func downloadFullResolution()
@@ -50,8 +50,8 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
 
-    var latitude: Double = 0
-    var longitude: Double = 0
+    var latitude: Double?
+    var longitude: Double?
     var location: String?
     var date: Date?
     var lensModel: String?
@@ -86,20 +86,20 @@ class NCViewerMediaDetailView: UIView {
     func show(metadata: tableMetadata,
               image: UIImage?,
               textColor: UIColor?,
-              mediaMetadata: NCImageMetadata,
+              exif: NCUtility.ExifData,
               ncplayer: NCPlayer?,
               delegate: NCViewerMediaDetailViewDelegate?) {
 
         self.metadata = metadata
-        self.latitude = mediaMetadata.latitude
-        self.longitude = mediaMetadata.longitude
-        self.location = mediaMetadata.location
-        self.date = mediaMetadata.date
-        self.lensModel = mediaMetadata.lensModel
+        self.latitude = exif.latitude
+        self.longitude = exif.longitude
+        self.location = exif.location
+        self.date = exif.date
+        self.lensModel = exif.lensModel
         self.ncplayer = ncplayer
         self.delegate = delegate
 
-        if mapView == nil && (latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0) {
+        if mapView == nil, let latitude, let longitude {
 
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -116,7 +116,6 @@ class NCViewerMediaDetailView: UIView {
                 mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor)
             ])
 
-            mapView.layer.cornerRadius = 6
             mapView.isZoomEnabled = true
             mapView.isScrollEnabled = false
             mapView.isUserInteractionEnabled = false
@@ -190,14 +189,13 @@ class NCViewerMediaDetailView: UIView {
     // MARK: - Action
 
     @IBAction func touchLocation(_ sender: Any) {
+        guard let latitude, let longitude else { return }
 
-        guard latitude != -1, latitude != 0, longitude != -1, longitude != 0 else { return }
-
-        let latitude: CLLocationDegrees = self.latitude
-        let longitude: CLLocationDegrees = self.longitude
+        let latitudeDeg: CLLocationDegrees = latitude
+        let longitudeDeg: CLLocationDegrees = longitude
 
         let regionDistance: CLLocationDistance = 10000
-        let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
+        let coordinates = CLLocationCoordinate2DMake(latitudeDeg, longitudeDeg)
         let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
         let options = [
             MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),

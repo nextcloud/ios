@@ -461,9 +461,9 @@ extension NCViewerMedia {
 
         self.dismissTip()
 
-        NCUtility.shared.setExif(metadata: metadata) { latitude, longitude, location, date, lensModel in
+        NCUtility.shared.setExif(metadata: metadata) { exif in
 //        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
-            if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
+            if exif.latitude != -1 && exif.latitude != 0 && exif.longitude != -1 && exif.longitude != 0 {
                 self.detailViewHeighConstraint.constant = 335
             } else {
                 self.detailViewHeighConstraint.constant = 335
@@ -474,7 +474,7 @@ extension NCViewerMedia {
                 metadata: self.metadata,
                 image: self.image,
                 textColor: self.viewerMediaPage?.textColor,
-                mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                exif: exif,
                 ncplayer: self.ncplayer,
                 delegate: self)
                 
@@ -518,13 +518,13 @@ extension NCViewerMedia {
     func reloadDetail() {
 
         if self.detailView.isShow() {
-            NCUtility.shared.setExif(metadata: metadata) { (latitude, longitude, location, date, lensModel) in
+            NCUtility.shared.setExif(metadata: metadata) { exif in
 //            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
                 self.detailView.show(
                     metadata: self.metadata,
                     image: self.image,
                     textColor: self.viewerMediaPage?.textColor,
-                    mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
+                    exif: exif,
                     ncplayer: self.ncplayer,
                     delegate: self)
             }
