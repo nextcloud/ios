@@ -171,28 +171,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              let ocIds = userInfo["ocId"] as? [String],
-              let error = userInfo["error"] as? NKError
+              account == appDelegate.account
         else { return }
 
-        if error == .success, account == appDelegate.account {
-            var items: [IndexPath] = []
-            var index: Int = 0
-            for metadata in metadatas {
-                if ocIds.contains(metadata.ocId) {
-                    self.metadatas.remove(at: index)
-                    items.append(IndexPath(row: index, section: 0))
-                }
-                if ocIds.count == items.count { break }
-                index += 1
-            }
-            if ocIds.count == items.count {
-                self.collectionView?.deleteItems(at: items)
-            } else {
-                self.reloadDataSourceWithCompletion { _ in }
-            }
-        }
-        self.updateMediaControlVisibility()
+        self.reloadDataSourceWithCompletion { _ in }
     }
 
     @objc func moveFile(_ notification: NSNotification) {

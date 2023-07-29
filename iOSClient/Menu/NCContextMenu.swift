@@ -158,16 +158,23 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
+                let hud = JGProgressHUD()
+                hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                   let view = appDelegate.window?.rootViewController?.view {
+                    hud.show(in: view)
+                }
                 Task {
-                    var ocId: [String] = []
+                    var ocIds: [String] = []
                     let account: String = metadata.account
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                    await hud.dismiss()
                     if error == .success {
-                        ocId.append(metadata.ocId)
+                        ocIds.append(metadata.ocId)
                     } else {
                         NCContentPresenter.shared.showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocIds": ocIds, "error": error])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
@@ -177,15 +184,15 @@ class NCContextMenu: NSObject {
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
                                           image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
             Task {
-                var ocId: [String] = []
+                var ocIds: [String] = []
                 let account: String = metadata.account
                 let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                 if error == .success {
-                    ocId.append(metadata.ocId)
+                    ocIds.append(metadata.ocId)
                 } else {
                     NCContentPresenter.shared.showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocIds": ocIds, "error": error])
             }
         }
 

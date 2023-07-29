@@ -25,6 +25,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import JGProgressHUD
 
 class NCMenuAction {
     let title: String
@@ -145,20 +146,29 @@ extension NCMenuAction {
                     preferredStyle: .alert)
                 if canDeleteServer {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+                        let hud = JGProgressHUD()
+                        hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
+                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                           let view = appDelegate.window?.rootViewController?.view {
+                            hud.show(in: view)
+                        }
                         Task {
                             var error = NKError()
-                            var ocId: [String] = []
+                            var ocIds: [String] = []
                             let account = selectedMetadatas.first?.account ?? ""
+                            var counter = 0
                             for metadata in selectedMetadatas where error == .success {
+                                counter += 1
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                                 if error == .success {
-                                    ocId.append(metadata.ocId)
+                                    ocIds.append(metadata.ocId)
                                 }
                             }
+                            await hud.dismiss()
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocIds": ocIds, "error": error])
                         }
                         completion?()
                     })
@@ -167,20 +177,27 @@ extension NCMenuAction {
                 // NCMedia removes image from collection view if removed from cache
                 if !(viewController is NCMedia) {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
+                        let hud = JGProgressHUD()
+                        hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
+                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                           let view = appDelegate.window?.rootViewController?.view {
+                            hud.show(in: view)
+                        }
                         Task {
                             var error = NKError()
-                            var ocId: [String] = []
+                            var ocIds: [String] = []
                             let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                                 if error == .success {
-                                    ocId.append(metadata.ocId)
+                                    ocIds.append(metadata.ocId)
                                 }
                             }
+                            await hud.dismiss()
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocIds": ocIds, "error": error])
                         }
                         completion?()
                     })
