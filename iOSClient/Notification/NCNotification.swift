@@ -127,6 +127,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCNotificationCell
         cell.delegate = self
         cell.selectionStyle = .none
+        cell.indexPath = indexPath
 
         let notification = notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
@@ -347,10 +348,16 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var secondaryWidth: NSLayoutConstraint!
 
     private var user = ""
+    private var index = IndexPath()
 
     weak var delegate: NCNotificationCellDelegate?
     var notification: NKNotifications?
 
+
+    var indexPath: IndexPath {
+        get { return index }
+        set { index = newValue }
+    }
     var fileAvatarImageView: UIImageView? {
         get { return avatar }
     }

@@ -40,6 +40,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isDirectoryE2EE = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
+    internal var selectIndexPath: [IndexPath] = []
     internal var metadataFolder: tableMetadata?
     internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
@@ -295,6 +296,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode {
             isEditMode = !isEditMode
             selectOcId.removeAll()
+            selectIndexPath.removeAll()
         }
 
         if self.view?.window != nil {
@@ -355,7 +357,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate.account,
+              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
         else { return }
 
         reloadDataSource()
@@ -383,6 +386,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func renameFile(_ notification: NSNotification) {
 
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
+              account == appDelegate.account,
+              let indexPath = userInfo["indexPath"] as? IndexPath
+        else { return }
+        
         if isSearchingMode {
             reloadDataSourceNetwork()
         } else {
@@ -809,11 +818,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         sortMenu.toggleMenu(viewController: self, account: appDelegate.account, key: layoutKey, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
 
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
-        tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, sender: sender)
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, indexPath: indexPath, sender: sender)
     }
 
-    func tapShareListItem(with objectId: String, sender: Any) {
+    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
 
         if isEditMode { return }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
@@ -821,14 +830,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
 
         if isEditMode { return }
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
-            toggleMenu(metadata: metadata, imageIcon: image)
+            toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }
@@ -859,16 +868,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
     }
 
-    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
     }
 
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
     }
 
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
     }
 
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
@@ -1248,8 +1257,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
                 selectOcId.remove(at: index)
+                selectIndexPath.removeAll(where: { $0 == indexPath })
             } else {
                 selectOcId.append(metadata.ocId)
+                selectIndexPath.append(indexPath)
             }
             collectionView.reloadItems(at: [indexPath])
             return
@@ -1319,7 +1330,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         }, actionProvider: { _ in
 
-            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, indexPath: indexPath, viewController: self, image: image)
         })
     }
 
@@ -1438,6 +1449,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.filePreviewImageView?.image = nil
         cell.filePreviewImageView?.backgroundColor = nil
         cell.fileObjectId = metadata.ocId
+        cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.fileProgressView?.isHidden = true
         cell.fileProgressView?.progress = 0.0

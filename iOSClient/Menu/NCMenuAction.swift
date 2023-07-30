@@ -106,7 +106,7 @@ extension NCMenuAction {
     }
 
     /// Delete files either from cache or from Nextcloud
-    static func deleteAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func deleteAction(selectedMetadatas: [tableMetadata], selectIndexPath: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         if selectedMetadatas.count > 1 {
             titleDelete = NSLocalizedString("_delete_selected_files_", comment: "")
@@ -154,21 +154,21 @@ extension NCMenuAction {
                         }
                         Task {
                             var error = NKError()
-                            var ocIds: [String] = []
+                            var ocId: [String] = []
                             let account = selectedMetadatas.first?.account ?? ""
                             var counter = 0
                             for metadata in selectedMetadatas where error == .success {
                                 counter += 1
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                                 if error == .success {
-                                    ocIds.append(metadata.ocId)
+                                    ocId.append(metadata.ocId)
                                 }
                             }
                             await hud.dismiss()
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocIds": ocIds, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": selectIndexPath, "onlyLocalCache": false, "error": error])
                         }
                         completion?()
                     })
@@ -185,19 +185,19 @@ extension NCMenuAction {
                         }
                         Task {
                             var error = NKError()
-                            var ocIds: [String] = []
+                            var ocId: [String] = []
                             let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                                 if error == .success {
-                                    ocIds.append(metadata.ocId)
+                                    ocId.append(metadata.ocId)
                                 }
                             }
                             await hud.dismiss()
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocIds": ocIds, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": selectIndexPath, "onlyLocalCache": true, "error": error])
                         }
                         completion?()
                     })

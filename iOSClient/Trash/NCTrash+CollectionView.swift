@@ -90,6 +90,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell = gridCell
         }
 
+        cell.indexPath = indexPath
         cell.setupCellUI(tableTrash: tableTrash, image: image)
         cell.selectMode(isEditMode)
         if isEditMode {

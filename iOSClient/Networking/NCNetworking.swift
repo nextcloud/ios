@@ -1333,7 +1333,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Rename
 
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, viewController: UIViewController?, completion: @escaping (_ error: NKError) -> Void) {
 
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1343,26 +1343,26 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
-                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadataLive, fileNameNew: fileNameNew)
+                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadataLive, fileNameNew: fileNameNew, indexPath: indexPath)
                     if error == .success {
-                        let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew)
+                        let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                         DispatchQueue.main.async { completion(error) }
                     } else {
                         DispatchQueue.main.async { completion(error) }
                     }
                 } else {
-                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew)
+                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                     DispatchQueue.main.async { completion(error) }
                 }
             }
 #endif
         } else {
             if metadataLive == nil {
-                renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
+                renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
             } else {
-                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNewLive) { error in
+                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNewLive, indexPath: indexPath) { error in
                     if error == .success {
-                        self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
+                        self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
                     } else {
                         completion(error)
                     }
@@ -1371,7 +1371,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ error: NKError) -> Void) {
+    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath, completion: @escaping (_ error: NKError) -> Void) {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
@@ -1428,7 +1428,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 }
 
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
                 }
             }
 

@@ -32,6 +32,7 @@ class NCScanCell: UICollectionViewCell {
 
     weak var delegate: NCScanCellCellDelegate?
     var index = 0
+    var indexPath = IndexPath()
 
     @IBAction func touchUpInsideDelete(_ sender: Any) {
         delegate?.delete(with: index, sender: sender)

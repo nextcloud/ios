@@ -213,6 +213,7 @@ extension NCActivity: UITableViewDataSource {
             return UITableViewCell()
         }
 
+        cell.indexPath = indexPath
         cell.tableComments = comment
         cell.delegate = self
         cell.sizeToFit()
@@ -247,7 +248,7 @@ extension NCActivity: UITableViewDataSource {
         var orderKeysId: [String] = []
 
         cell.idActivity = activity.idActivity
-
+        cell.indexPath = indexPath
         cell.avatar.image = nil
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10

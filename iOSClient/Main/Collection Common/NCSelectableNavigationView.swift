@@ -40,6 +40,7 @@ protocol NCSelectableNavigationView: AnyObject {
     var collectionView: UICollectionView! { get set }
     var isEditMode: Bool { get set }
     var selectOcId: [String] { get set }
+    var selectIndexPath: [IndexPath] { get set }
     var titleCurrentFolder: String { get }
     var navigationItem: UINavigationItem { get }
     var navigationController: UINavigationController? { get }
@@ -77,6 +78,7 @@ extension NCSelectableNavigationView {
     func tapSelect() {
         isEditMode = !isEditMode
         selectOcId.removeAll()
+        selectIndexPath.removeAll()
         self.setNavigationItem()
         self.collectionView.reloadData()
     }
@@ -158,7 +160,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
 
         actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, completion: tapSelect))
         actions.append(.copyAction(selectOcId: selectOcId, hudView: self.view, completion: tapSelect))
-        actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
+        actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, selectIndexPath: selectIndexPath, viewController: self, completion: tapSelect))
         return actions
     }
 }

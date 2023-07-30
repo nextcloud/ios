@@ -41,6 +41,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
+    internal var selectIndexPath: [IndexPath] = []
 
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?

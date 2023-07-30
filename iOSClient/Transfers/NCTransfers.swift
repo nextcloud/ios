@@ -98,7 +98,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: TAP EVENT
 
-    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
 
@@ -114,7 +114,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
 
-    override func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
 
@@ -178,6 +178,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.delegate = self
 
         cell.fileObjectId = metadata.ocId
+        cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
         cell.imageItem.image = NCBrandColor.cacheImages.file

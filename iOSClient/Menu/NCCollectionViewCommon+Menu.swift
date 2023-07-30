@@ -32,7 +32,7 @@ import Queuer
 
 extension NCCollectionViewCommon {
 
-    func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
+    func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
 
         var actions = [NCMenuAction]()
 
@@ -317,6 +317,7 @@ extension NCCollectionViewCommon {
 
                             vcRename.metadata = metadata
                             vcRename.imagePreview = imageIcon
+                            vcRename.indexPath = indexPath
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
 
@@ -386,7 +387,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         if metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 170))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], selectIndexPath: [indexPath], metadataFolder: metadataFolder, viewController: self, order: 170))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: &actions)

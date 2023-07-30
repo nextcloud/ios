@@ -368,11 +368,11 @@ class NCViewerMediaPage: UIViewController {
               let appDelegate = UIApplication.shared.delegate as? AppDelegate,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              let ocIds = userInfo["ocIds"] as? [String],
+              let ocId = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError
         else { return }
 
-        if error == .success, let ocId = ocIds.first {
+        if error == .success, let ocId = ocId.first {
             // Stop media
             if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
                 ncplayer.playerPause()

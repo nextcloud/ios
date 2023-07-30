@@ -38,9 +38,9 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
 
     private var objectId = ""
     private var user = ""
-
-    weak var delegate: NCTransferCellDelegate?
     var indexPath = IndexPath()
+    
+    weak var delegate: NCTransferCellDelegate?
     var namedButtonMore = ""
 
     var fileObjectId: String? {
@@ -109,19 +109,19 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-        delegate?.tapShareListItem(with: objectId, sender: sender)
+        delegate?.tapShareListItem(with: objectId, indexPath: indexPath, sender: sender)
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
+        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
+        delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
+        delegate?.longPressListItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     func hideButtonMore(_ status: Bool) {
@@ -146,8 +146,8 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
 }
 
 protocol NCTransferCellDelegate: AnyObject {
-    func tapShareListItem(with objectId: String, sender: Any)
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any)
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
-    func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any)
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
 }

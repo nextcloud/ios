@@ -31,6 +31,7 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
 
     var fileId = ""
+    var indexPath = IndexPath()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -49,12 +50,17 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
 
     private var user: String = ""
+    private var index = IndexPath()
 
     var idActivity: Int = 0
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController = UIViewController()
 
+    var indexPath: IndexPath {
+        get { return index }
+        set { index = newValue }
+    }
     var fileAvatarImageView: UIImageView? {
         get { return avatar }
     }
@@ -145,6 +151,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
         let cell: NCActivityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as! NCActivityCollectionViewCell
 
         cell.imageView.image = nil
+        cell.indexPath = indexPath
 
         let activityPreview = activityPreviews[indexPath.row]
         let fileId = String(activityPreview.fileId)

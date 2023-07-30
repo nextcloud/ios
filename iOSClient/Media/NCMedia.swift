@@ -43,6 +43,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
+    internal var selectIndexPath: [IndexPath] = []
 
     internal var filterClassTypeImage = false
     internal var filterClassTypeVideo = false
@@ -171,9 +172,12 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate.account,
+              let ocId = userInfo["ocId"] as? [String],
+              let indexPath = userInfo["indexPath"] as? [IndexPath]
         else { return }
 
+        let visibleCells = self.collectionView?.indexPathsForVisibleItems
         self.reloadDataSourceWithCompletion { _ in }
     }
 
@@ -191,7 +195,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == appDelegate.account,
+              let indexPath = userInfo["indexPath"] as? IndexPath
         else { return }
 
         self.reloadDataSourceWithCompletion { _ in }
@@ -296,8 +301,10 @@ extension NCMedia: UICollectionViewDelegate {
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
                 selectOcId.remove(at: index)
+                selectIndexPath.removeAll(where: { $0 == indexPath })
             } else {
                 selectOcId.append(metadata.ocId)
+                selectIndexPath.append(indexPath)
             }
             if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                 collectionView.reloadItems(at: [indexPath])
@@ -320,7 +327,7 @@ extension NCMedia: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image)
         }, actionProvider: { _ in
-            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, indexPath: indexPath, viewController: self, image: image)
         })
     }
 
@@ -382,6 +389,7 @@ extension NCMedia: UICollectionViewDataSource {
 
             cell.date = metadata.date as Date
             cell.fileObjectId = metadata.ocId
+            cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
 
             if metadata.isAudioOrVideo {
