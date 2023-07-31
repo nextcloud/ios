@@ -107,6 +107,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         externalSiteMenu.removeAll()
         settingsMenu.removeAll()
         quotaMenu.removeAll()
+        sections.removeAll()
         labelQuotaExternalSite.text = ""
         progressQuota.progressTintColor = NCBrandColor.shared.brandElement
 
