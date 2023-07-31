@@ -53,7 +53,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @objc var enableSelectFile = false
     @objc var type = ""
     @objc var items: [tableMetadata] = []
-    @objc var indexPathSelected: [IndexPath] = []
+    @objc var selectIndexPath: [IndexPath] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -241,17 +241,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func selectButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: indexPathSelected, overwrite: overwrite, copy: false, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: false)
         self.dismiss(animated: true, completion: nil)
     }
 
     func copyButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: indexPathSelected, overwrite: overwrite, copy: true, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: true, move: false)
         self.dismiss(animated: true, completion: nil)
     }
 
     func moveButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: indexPathSelected, overwrite: overwrite, copy: false, move: true)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: true)
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -315,7 +315,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.type = type
         viewController.overwrite = overwrite
         viewController.items = items
-        viewController.indexPathSelected = indexPathSelected
+        viewController.selectIndexPath = selectIndexPath
 
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.serverUrl = serverUrlPush
@@ -348,7 +348,7 @@ extension NCSelect: UICollectionViewDelegate {
 
         } else {
 
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, indexPath: indexPathSelected, overwrite: overwrite, copy: false, move: false)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, indexPath: selectIndexPath, overwrite: overwrite, copy: false, move: false)
             self.dismiss(animated: true, completion: nil)
         }
     }

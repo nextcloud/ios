@@ -365,14 +365,10 @@ class NCViewerMediaPage: UIViewController {
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account,
-              let ocId = userInfo["ocId"] as? [String],
-              let error = userInfo["error"] as? NKError
+              let ocId = userInfo["ocId"] as? [String]
         else { return }
 
-        if error == .success, let ocId = ocId.first {
+        if let ocId = ocId.first {
             // Stop media
             if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
                 ncplayer.playerPause()
@@ -385,6 +381,10 @@ class NCViewerMediaPage: UIViewController {
             if ocId == currentViewController.metadata.ocId {
                 shiftCurrentPage()
             }
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
         }
     }
 

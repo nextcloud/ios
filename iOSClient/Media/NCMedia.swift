@@ -172,8 +172,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account,
               let ocIds = userInfo["ocId"] as? [String],
               let indexPath = userInfo["indexPath"] as? [IndexPath]
         else { return }
@@ -293,7 +291,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     // MARK: Select Path
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         guard let serverUrl = serverUrl else { return }
         let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account) ?? ""

@@ -91,6 +91,7 @@ extension NCMedia {
                         viewController.delegate = self
                         viewController.typeOfCommandView = .select
                         viewController.type = "mediaFolder"
+                        viewController.selectIndexPath = self.selectIndexPath
 
                         self.present(navigationController, animated: true, completion: nil)
                     }
@@ -208,7 +209,7 @@ extension NCMedia {
             //
             // COPY - MOVE
             //
-            actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, completion: tapSelect))
+            actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, completion: tapSelect))
 
             //
             // COPY

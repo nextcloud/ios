@@ -652,21 +652,49 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - NCSelect + Delegate
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        if serverUrl != nil && !items.isEmpty {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+        if let serverUrl, !items.isEmpty {
+            let hud = JGProgressHUD()
+            hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+               let view = appDelegate.window?.rootViewController?.view {
+                hud.show(in: view)
+            }
             if copy {
-                for case let metadata as tableMetadata in items {
-                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: false)
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for case let metadata as tableMetadata in items where error == .success {
+                        error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": [ocId], "serverUrlTo": serverUrl, "hud": hud])
                 }
-            } else if move {
-                for case let metadata as tableMetadata in items {
-                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: true)
+            } else {
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for case let metadata as tableMetadata in items where error == .success {
+                        error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": [ocId], "serverUrlTo": serverUrl, "hud": hud])
                 }
             }
         }
     }
 
-    func openSelectView(items: [tableMetadata]) {
+    func openSelectView(items: [tableMetadata], indexPath: [IndexPath]) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
@@ -701,6 +729,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             vc.typeOfCommandView = .copyMove
             vc.items = copyItems
             vc.serverUrl = serverUrl
+            vc.selectIndexPath = indexPath
 
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)

@@ -25,6 +25,7 @@ import UIKit
 import PDFKit
 import EasyTipView
 import NextcloudKit
+import JGProgressHUD
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
@@ -368,14 +369,16 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? [String],
-              let error = userInfo["error"] as? NKError
+              let ocId = userInfo["ocId"] as? [String]
         else { return }
 
-        if error == .success,
-           let ocId = ocId.first,
-           metadata?.ocId == ocId {
+        if let ocId = ocId.first,
+            metadata?.ocId == ocId {
             viewUnload()
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
         }
     }
 

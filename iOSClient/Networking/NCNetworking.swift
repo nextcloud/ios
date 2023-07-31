@@ -1438,80 +1438,67 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - WebDav Move
 
-    @objc func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    @objc func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { error in
-                if error == .success {
-                    self.moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
-                } else {
-                    completion(error)
-                }
+            let error = await moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
+            if error == .success {
+                return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
+            } else {
+                return error
             }
-        } else {
-            moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
         }
+        return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
     }
 
-    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
 
-        let serverUrlFrom = metadata.serverUrl
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { account, error in
-
-            if error == .success {
-                if metadata.directory {
-                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: account)
-                }
-                NCManageDatabase.shared.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "serverUrlFrom": serverUrlFrom])
+        let result = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite)
+        if result.error == .success {
+            if metadata.directory {
+                NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
             }
-
-            completion(error)
+            NCManageDatabase.shared.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
         }
+
+        return result.error
     }
 
     // MARK: - WebDav Copy
 
-    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
 
         if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
-            copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { error in
-                if error == .success {
-                    self.copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
-                } else {
-                    completion(error)
-                }
+            let error = await copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
+            if error == .success {
+                return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
+            } else {
+                return error
             }
-        } else {
-            copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
         }
+        return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
     }
 
-    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ error: NKError) -> Void) {
+    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> (NKError) {
 
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: NCGlobal.shared.permissionCanRename)
         if !(metadata.permissions == "") && !permission {
-            return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
 
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { _, error in
-
-            if error == .success {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": metadata.ocId, "serverUrlTo": serverUrlTo])
-            }
-            completion(error)
-        }
+        let result = await NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite)
+        return result.error
     }
 
     // MARK: - Direct Download

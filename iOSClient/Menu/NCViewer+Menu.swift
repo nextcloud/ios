@@ -197,7 +197,7 @@ extension NCViewer {
         // COPY - MOVE
         //
         if !webView, metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata]))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: []))
         }
 
         //

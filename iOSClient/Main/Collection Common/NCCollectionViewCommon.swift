@@ -357,8 +357,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account,
               let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
               let ocIds = userInfo["ocId"] as? [String],
               let indexPath = userInfo["indexPath"] as? [IndexPath]
@@ -417,8 +415,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account,
-              let indexPath = userInfo["indexPath"] as? IndexPath
+              account == appDelegate.account
         else { return }
         
         if isSearchingMode {
