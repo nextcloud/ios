@@ -389,25 +389,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func moveFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
-
-        if let ocIds = userInfo["ocId"] as? [String],
-           let ocId = ocIds.first {
-
-            // Stop media
-            if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-                ncplayer.playerPause()
-            }
-
-            if metadatas.firstIndex(where: {$0.ocId == ocId}) != nil {
-                deleteFile(notification)
-            }
-        }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
+        deleteFile(notification)
     }
 
     @objc func renameFile(_ notification: NSNotification) {
