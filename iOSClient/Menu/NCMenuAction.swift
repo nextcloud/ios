@@ -164,7 +164,7 @@ extension NCMenuAction {
                                     ocId.append(metadata.ocId)
                                 }
                             }
-                            await hud.dismiss()
+                            await hud.dismiss(afterDelay: 0.5)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
@@ -193,7 +193,7 @@ extension NCMenuAction {
                                     ocId.append(metadata.ocId)
                                 }
                             }
-                            await hud.dismiss()
+                            await hud.dismiss(afterDelay: 0.5)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }

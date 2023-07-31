@@ -358,7 +358,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              // let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
+              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
               let ocIds = userInfo["ocId"] as? [String],
               let indexPath = userInfo["indexPath"] as? [IndexPath]
         else { return }
@@ -377,13 +377,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         self.queryDB(forced: true)
-        collectionView?.performBatchUpdates({
-            collectionView?.deleteItems(at: deleteItems)
-        }, completion: { _ in
+        if deleteItems.isEmpty || onlyLocalCache {
             self.collectionView?.reloadData()
-        })
-        print("x")
-        //reloadDataSource()
+        } else {
+            collectionView?.performBatchUpdates({
+                collectionView?.deleteItems(at: deleteItems)
+            }, completion: { _ in
+                self.collectionView?.reloadData()
+            })
+        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
