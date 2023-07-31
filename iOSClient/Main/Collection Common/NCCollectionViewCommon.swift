@@ -358,7 +358,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool
+              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
+              let ocIds = userInfo["ocId"] as? [String],
+              let indexPath = userInfo["indexPath"] as? [IndexPath]
         else { return }
 
         reloadDataSource()

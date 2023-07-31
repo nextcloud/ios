@@ -160,7 +160,7 @@ extension NCSelectableNavigationView where Self: UIViewController {
 
         actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, completion: tapSelect))
         actions.append(.copyAction(selectOcId: selectOcId, hudView: self.view, completion: tapSelect))
-        actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, selectIndexPath: selectIndexPath, viewController: self, completion: tapSelect))
+        actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, viewController: self, completion: tapSelect))
         return actions
     }
 }

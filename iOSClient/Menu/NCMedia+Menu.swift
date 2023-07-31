@@ -219,7 +219,7 @@ extension NCMedia {
             // DELETE
             // can't delete from cache because is needed for NCMedia view, and if locked can't delete from server either.
             if !selectedMetadatas.contains(where: { $0.lock && $0.lockOwner != appDelegate.userId }) {
-                actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, selectIndexPath: selectIndexPath ,metadataFolder: nil, viewController: self, completion: tapSelect))
+                actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath ,metadataFolder: nil, viewController: self, completion: tapSelect))
             }
         }
     }

@@ -106,7 +106,7 @@ extension NCMenuAction {
     }
 
     /// Delete files either from cache or from Nextcloud
-    static func deleteAction(selectedMetadatas: [tableMetadata], selectIndexPath: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func deleteAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         if selectedMetadatas.count > 1 {
             titleDelete = NSLocalizedString("_delete_selected_files_", comment: "")
@@ -168,7 +168,7 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": selectIndexPath, "onlyLocalCache": false, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error])
                         }
                         completion?()
                     })
@@ -197,7 +197,7 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": selectIndexPath, "onlyLocalCache": true, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": indexPath, "onlyLocalCache": true, "error": error])
                         }
                         completion?()
                     })
