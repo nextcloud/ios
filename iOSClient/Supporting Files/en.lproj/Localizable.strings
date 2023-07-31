@@ -946,6 +946,8 @@
 "_play_from_url_"           = "Play movie by URL";
 "_valid_video_url_"         = "Insert a valid URL";
 "_deletion_progess_"        = "Deletion in progress";
+"_copying_progess_"         = "Copying in progress";
+"_moving_progess_"          = "Moving in progress";
 
 // Video
 "_select_trace_"            = "Select the trace";
