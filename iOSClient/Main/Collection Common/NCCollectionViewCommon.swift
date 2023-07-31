@@ -356,34 +356,35 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
-              let ocIds = userInfo["ocId"] as? [String],
-              let indexPath = userInfo["indexPath"] as? [IndexPath]
-        else { return }
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        var deleteItems: [IndexPath] = []
-        let visibleCells = self.collectionView.indexPathsForVisibleItems
+        if let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
+           let ocIds = userInfo["ocId"] as? [String],
+           let indexPath = userInfo["indexPath"] as? [IndexPath] {
 
-        for item in indexPath {
-            if visibleCells.contains(item) {
-                if let cell = self.collectionView.cellForItem(at: item) as? NCCellProtocol,
-                   let ocId = cell.fileObjectId,
-                   ocIds.contains(ocId) {
-                    deleteItems.append(item)
+            var deleteItems: [IndexPath] = []
+            let visibleCells = self.collectionView.indexPathsForVisibleItems
+
+            for item in indexPath {
+                if visibleCells.contains(item) {
+                    if let cell = self.collectionView.cellForItem(at: item) as? NCCellProtocol,
+                       let ocId = cell.fileObjectId,
+                       ocIds.contains(ocId) {
+                        deleteItems.append(item)
+                    }
                 }
             }
-        }
 
-        self.queryDB(forced: true)
-        if deleteItems.isEmpty || onlyLocalCache {
-            self.collectionView?.reloadData()
-        } else {
-            collectionView?.performBatchUpdates({
-                collectionView?.deleteItems(at: deleteItems)
-            }, completion: { _ in
+            self.queryDB(forced: true)
+            if deleteItems.isEmpty || onlyLocalCache {
                 self.collectionView?.reloadData()
-            })
+            } else {
+                collectionView?.performBatchUpdates({
+                    collectionView?.deleteItems(at: deleteItems)
+                }, completion: { _ in
+                    self.collectionView?.reloadData()
+                })
+            }
         }
 
         if let hud = userInfo["hud"] as? JGProgressHUD {
@@ -393,22 +394,47 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrlFrom = userInfo["serverUrlFrom"] as? String,
-              serverUrlFrom == self.serverUrl
-        else { return }
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        reloadDataSource()
+        if let ocIds = userInfo["ocId"] as? [String],
+           let indexPath = userInfo["indexPath"] as? [IndexPath] {
+            var deleteItems: [IndexPath] = []
+            let visibleCells = self.collectionView.indexPathsForVisibleItems
+
+            for item in indexPath {
+                if visibleCells.contains(item) {
+                    if let cell = self.collectionView.cellForItem(at: item) as? NCCellProtocol,
+                       let ocId = cell.fileObjectId,
+                       ocIds.contains(ocId) {
+                        deleteItems.append(item)
+                    }
+                }
+            }
+
+            self.queryDB(forced: true)
+            if deleteItems.isEmpty {
+                self.collectionView?.reloadData()
+            } else {
+                collectionView?.performBatchUpdates({
+                    collectionView?.deleteItems(at: deleteItems)
+                }, completion: { _ in
+                    self.collectionView?.reloadData()
+                })
+            }
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
     }
 
     @objc func copyFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrlTo = userInfo["serverUrlTo"] as? String,
-              serverUrlTo == self.serverUrl
-        else { return }
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        reloadDataSource()
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
