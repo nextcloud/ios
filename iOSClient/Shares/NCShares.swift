@@ -49,11 +49,11 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
-        super.reloadDataSource()
+    override func queryDB(forced: Bool) {
 
         let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
         var metadatas: [tableMetadata] = []
+
         for share in sharess {
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
                 if !(metadatas.contains { $0.ocId == metadata.ocId }) {
@@ -61,6 +61,7 @@ class NCShares: NCCollectionViewCommon {
                 }
             }
         }
+
         self.dataSource = NCDataSource(metadatas: metadatas,
                                        account: self.appDelegate.account,
                                        sort: self.layoutForView?.sort,
@@ -71,8 +72,12 @@ class NCShares: NCCollectionViewCommon {
                                        groupByField: self.groupByField,
                                        providers: self.providers,
                                        searchResults: self.searchResults)
+    }
 
+    override func reloadDataSource(forced: Bool = true) {
+        super.reloadDataSource()
 
+        self.queryDB(forced: forced)
         self.refreshControl.endRefreshing()
         self.collectionView.reloadData()
     }

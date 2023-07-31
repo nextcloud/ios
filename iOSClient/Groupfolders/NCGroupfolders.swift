@@ -49,8 +49,7 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
-        super.reloadDataSource()
+    override func queryDB(forced: Bool) {
 
         var metadatas: [tableMetadata] = []
 
@@ -71,7 +70,12 @@ class NCGroupfolders: NCCollectionViewCommon {
             groupByField: self.groupByField,
             providers: self.providers,
             searchResults: self.searchResults)
+    }
 
+    override func reloadDataSource(forced: Bool = true) {
+        super.reloadDataSource()
+
+        self.queryDB(forced: forced)
         DispatchQueue.main.async {
             self.isReloadDataSourceNetworkInProgress = false
             self.refreshControl.endRefreshing()

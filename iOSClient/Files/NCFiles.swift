@@ -83,6 +83,35 @@ class NCFiles: NCCollectionViewCommon {
     // forced: do no make the etag of directory test (default)
     //
 
+    override func queryDB(forced: Bool) {
+
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+        let metadataTransfer = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl))
+        if self.metadataFolder == nil {
+            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
+        }
+
+        // FORCED false: test the directory.etag
+        if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
+            return
+        }
+
+        self.richWorkspaceText = directory?.richWorkspace
+        self.dataSource = NCDataSource(
+            metadatas: metadatas,
+            account: self.appDelegate.account,
+            directory: directory,
+            sort: self.layoutForView?.sort,
+            ascending: self.layoutForView?.ascending,
+            directoryOnTop: self.layoutForView?.directoryOnTop,
+            favoriteOnTop: true,
+            filterLivePhoto: true,
+            groupByField: self.groupByField,
+            providers: self.providers,
+            searchResults: self.searchResults)
+    }
+
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
@@ -90,31 +119,7 @@ class NCFiles: NCCollectionViewCommon {
         DispatchQueue.global().async {
             guard !self.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
 
-            let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-            if self.metadataFolder == nil {
-                self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
-            }
-            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-            let metadataTransfer = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "status != %i AND serverUrl == %@", NCGlobal.shared.metadataStatusNormal, self.serverUrl))
-            self.richWorkspaceText = directory?.richWorkspace
-
-            // FORCED false: test the directory.etag
-            if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
-                return
-            }
-
-            self.dataSource = NCDataSource(
-                metadatas: metadatas,
-                account: self.appDelegate.account,
-                directory: directory,
-                sort: self.layoutForView?.sort,
-                ascending: self.layoutForView?.ascending,
-                directoryOnTop: self.layoutForView?.directoryOnTop,
-                favoriteOnTop: true,
-                filterLivePhoto: true,
-                groupByField: self.groupByField,
-                providers: self.providers,
-                searchResults: self.searchResults)
+            self.queryDB(forced: forced)
 
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
