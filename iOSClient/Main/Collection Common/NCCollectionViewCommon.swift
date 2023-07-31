@@ -358,10 +358,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        if let onlyLocalCache = userInfo["onlyLocalCache"] as? Bool,
-           let ocIds = userInfo["ocId"] as? [String],
+        if let ocIds = userInfo["ocId"] as? [String],
            let indexPath = userInfo["indexPath"] as? [IndexPath] {
 
+            let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
             var deleteItems: [IndexPath] = []
             let visibleCells = self.collectionView.indexPathsForVisibleItems
 
@@ -393,44 +393,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func moveFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
-
-        if let ocIds = userInfo["ocId"] as? [String],
-           let indexPath = userInfo["indexPath"] as? [IndexPath] {
-            var deleteItems: [IndexPath] = []
-            let visibleCells = self.collectionView.indexPathsForVisibleItems
-
-            for item in indexPath {
-                if visibleCells.contains(item) {
-                    if let cell = self.collectionView.cellForItem(at: item) as? NCCellProtocol,
-                       let ocId = cell.fileObjectId,
-                       ocIds.contains(ocId) {
-                        deleteItems.append(item)
-                    }
-                }
-            }
-
-            self.queryDB(forced: true)
-            if deleteItems.isEmpty {
-                self.collectionView?.reloadData()
-            } else {
-                collectionView?.performBatchUpdates({
-                    collectionView?.deleteItems(at: deleteItems)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            }
-        }
-
-        if let hud = userInfo["hud"] as? JGProgressHUD {
-            hud.dismiss()
-        }
+        deleteFile(notification)
     }
 
     @objc func copyFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
+
+        reloadDataSourceNetwork()
 
         if let hud = userInfo["hud"] as? JGProgressHUD {
             hud.dismiss()
