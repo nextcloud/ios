@@ -174,34 +174,18 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
-        
-        if let ocIds = userInfo["ocId"] as? [String],
-           let indexPath = userInfo["indexPath"] as? [IndexPath] {
+        let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-            let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
-            var deleteItems: [IndexPath] = []
-            let visibleCells = self.collectionView.indexPathsForVisibleItems
-            
-            for item in indexPath {
-                if visibleCells.contains(item) {
-                    if let cell = self.collectionView.cellForItem(at: item) as? NCCellProtocol,
-                       let ocId = cell.fileObjectId,
-                       ocIds.contains(ocId) {
-                        deleteItems.append(item)
-                    }
-                }
-            }
-            
-            self.queryDB(forced: true)
-            if deleteItems.isEmpty || onlyLocalCache {
+        self.queryDB(forced: true)
+
+        if let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
+            collectionView?.performBatchUpdates({
+                collectionView?.deleteItems(at: indexPath)
+            }, completion: { _ in
                 self.collectionView?.reloadData()
-            } else {
-                collectionView?.performBatchUpdates({
-                    collectionView?.deleteItems(at: deleteItems)
-                }, completion: { _ in
-                    self.collectionView?.reloadData()
-                })
-            }
+            })
+        } else {
+            self.collectionView?.reloadData()
         }
 
         if let hud = userInfo["hud"] as? JGProgressHUD {
