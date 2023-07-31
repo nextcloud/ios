@@ -414,8 +414,8 @@
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
 "_diagnostics_"                 = "Diagnostics";
-"_view_log_"                    = "View Log file";
-"_clear_log_"                   = "Clear Log file";
+"_view_log_"                    = "View log file";
+"_clear_log_"                   = "Clear log file";
 "_level_log_"                   = "Set Log level (disabled, standard, maximum)";
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_server_is_trusted_"           = "Do you consider this server trusted?";
