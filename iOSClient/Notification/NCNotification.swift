@@ -366,14 +366,9 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         delegate?.tapAction(with: notification, label: label)
     }
 
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        guard let notification = notification else { return }
-        delegate?.tapMore(with: notification)
-    }
 }
 
 protocol NCNotificationCellDelegate: AnyObject {
     func tapRemove(with notification: NKNotifications)
     func tapAction(with notification: NKNotifications, label: String)
-    func tapMore(with notification: NKNotifications)
 }
