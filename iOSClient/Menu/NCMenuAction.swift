@@ -167,7 +167,7 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error, "hud": hud])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error, "hud": hud])
                         }
                         completion?()
                     })
@@ -189,7 +189,7 @@ extension NCMenuAction {
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": indexPath, "onlyLocalCache": true, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": true, "error": error])
                         }
                         completion?()
                     })
@@ -270,13 +270,13 @@ extension NCMenuAction {
     }
 
     /// Open view that lets the user move or copy the files within Nextcloud
-    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
             icon: NCUtility.shared.loadImage(named: "arrow.up.right.square"),
             order: order,
             action: { _ in
-                NCActionCenter.shared.openSelectView(items: selectedMetadatas)
+                NCActionCenter.shared.openSelectView(items: selectedMetadatas, indexPath: indexPath)
                 completion?()
             }
         )
