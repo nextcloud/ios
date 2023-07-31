@@ -177,12 +177,6 @@ extension NCMenuAction {
                 // NCMedia removes image from collection view if removed from cache
                 if !(viewController is NCMedia) {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
-                        let hud = JGProgressHUD()
-                        hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
-                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                           let view = appDelegate.window?.rootViewController?.view {
-                            hud.show(in: view)
-                        }
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
@@ -193,7 +187,6 @@ extension NCMenuAction {
                                     ocId.append(metadata.ocId)
                                 }
                             }
-                            await hud.dismiss(afterDelay: 0.5)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
