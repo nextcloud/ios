@@ -35,7 +35,7 @@ class NCViewerMediaDetailView: UIView {
 
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!
-    @IBOutlet weak var sizeValue: UILabel!
+//    @IBOutlet weak var sizeValue: UILabel!
 //    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var dateValue: UILabel!
     @IBOutlet weak var dimLabel: UILabel!
@@ -49,23 +49,31 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var dayLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var modelLabel: UILabel!
+    @IBOutlet weak var deviceContainer: UIView!
+    @IBOutlet weak var outerContainer: UIView!
+    @IBOutlet weak var lensLabel: UILabel!
+    @IBOutlet weak var megaPixelLabel: UILabel!
+    @IBOutlet weak var resolutionLabel: UILabel!
 
-    var latitude: Double?
-    var longitude: Double?
-    var location: String?
-    var date: Date?
-    var lensModel: String?
+
+//    var latitude: Double?
+//    var longitude: Double?
+//    var location: String?
+//    var date: Date?
     var metadata: tableMetadata?
     var mapView: MKMapView?
     var ncplayer: NCPlayer?
     weak var delegate: NCViewerMediaDetailViewDelegate?
+
+    var exif: NCUtility.ExifData?
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
         separator.backgroundColor = .separator
         sizeLabel.text = ""
-        sizeValue.text = ""
         dateLabel.text = ""
         dateValue.text = ""
         dimLabel.text = ""
@@ -91,15 +99,11 @@ class NCViewerMediaDetailView: UIView {
               delegate: NCViewerMediaDetailViewDelegate?) {
 
         self.metadata = metadata
-        self.latitude = exif.latitude
-        self.longitude = exif.longitude
-        self.location = exif.location
-        self.date = exif.date
-        self.lensModel = exif.lensModel
+        self.exif = exif
         self.ncplayer = ncplayer
         self.delegate = delegate
 
-        if mapView == nil, let latitude, let longitude {
+        if mapView == nil, let latitude = exif.latitude, let longitude = exif.longitude {
 
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -123,41 +127,45 @@ class NCViewerMediaDetailView: UIView {
             mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
         }
 
+        if let make = exif.make, let model = exif.model {
+            modelLabel.text = "\(make) \(model)"
+        }
+
         // Size
-        sizeLabel.text = NSLocalizedString("_size_", comment: "")
-        sizeValue.text = CCUtility.transformedSize(metadata.size)
-        sizeValue.textColor = textColor
+        sizeLabel.text = CCUtility.transformedSize(metadata.size)
 
         // Date
-        if let date = date {
+        if let date = exif.date {
             let formatter = DateFormatter()
-            formatter.dateStyle = .full
-            formatter.timeStyle = .medium
-            let dateString = formatter.string(from: date as Date)
 
-            dateLabel.text = NSLocalizedString("_date_", comment: "")
-            dateValue.text = dateString
+            formatter.dateFormat = "EEEE"
+            let dayString = formatter.string(from: date as Date)
+            dayLabel.text = dayString
+
+            formatter.dateFormat = "d MMM yyyy"
+            let dateString = formatter.string(from: date as Date)
+            dateLabel.text = dateString
+
+            formatter.dateFormat = "HH:mm"
+            let timeString = formatter.string(from: date as Date)
+            timeLabel.text = timeString
         } else {
             dateLabel.text = NSLocalizedString("_date_", comment: "")
             dateValue.text = NSLocalizedString("_not_available_", comment: "")
         }
         dateValue.textColor = textColor
 
-        // Dimension
         if let image = image {
-            dimLabel.text = NSLocalizedString("_resolution_", comment: "")
-            dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
-        }
-        dimValue.textColor = textColor
-
-        // Model
-        if let lensModel = lensModel {
-            lensModelLabel.text = NSLocalizedString("_model_", comment: "")
-            lensModelValue.text = lensModel
-            lensModelValue.textColor = textColor
+            resolutionLabel.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
+            megaPixelLabel.text = "\(round((image.size.width * image.size.height) * 10)) MP"
         }
 
-        // Message
+        if let lensModel = exif.lensModel {
+            lensLabel.text = lensModel
+        }
+
+//        if let megapixel = exif
+
         if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
             messageButton.isHidden = false
@@ -166,8 +174,7 @@ class NCViewerMediaDetailView: UIView {
             messageButton.isHidden = true
         }
 
-        // Location
-        if let location = location {
+        if let location = exif.location {
             locationButton.setTitle(location, for: .normal)
             locationButton.isHidden = false
         } else {
@@ -189,7 +196,7 @@ class NCViewerMediaDetailView: UIView {
     // MARK: - Action
 
     @IBAction func touchLocation(_ sender: Any) {
-        guard let latitude, let longitude else { return }
+        guard let latitude = exif?.latitude, let longitude = exif?.longitude else { return }
 
         let latitudeDeg: CLLocationDegrees = latitude
         let longitudeDeg: CLLocationDegrees = longitude
@@ -203,12 +210,12 @@ class NCViewerMediaDetailView: UIView {
         ]
         let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
         let mapItem = MKMapItem(placemark: placemark)
-        mapItem.name = location
+
+        if let location = exif?.location {
+            mapItem.name = location
+        }
+
         mapItem.openInMaps(launchOptions: options)
-    }
-
-    @IBAction func touchFavorite(_ sender: Any) {
-
     }
 
     @IBAction func touchMessage(_ sender: Any) {

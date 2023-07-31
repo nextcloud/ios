@@ -519,7 +519,6 @@ extension NCViewerMedia {
 
         if self.detailView.isShow() {
             NCUtility.shared.setExif(metadata: metadata) { exif in
-//            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
                 self.detailView.show(
                     metadata: self.metadata,
                     image: self.image,

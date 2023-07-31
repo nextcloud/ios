@@ -813,6 +813,7 @@ class NCUtility: NSObject {
         var offsetTime: String?
         var offsetTimeDigitized: String?
         var offsetTimeOriginal: String?
+        var make: String?
         var model: String?
         var software: String?
         var tileLength: Double?
@@ -837,7 +838,7 @@ class NCUtility: NSObject {
         var longitudeRef: String?
         var stringLatitude = "0"
         var stringLongitude = "0"
-        //        var location = ""
+        var location = ""
         var latitude = 0.0
         var longitude = 0.0
         var date: Date?
@@ -869,7 +870,6 @@ class NCUtility: NSObject {
 
         var data = ExifData()
 
-        //        if let imgSrc = CGImageSourceCreateWithData(data, options as CFDictionary) {
         data.colorModel = imageProperties[kCGImagePropertyColorModel] as? String
         data.pixelWidth = imageProperties[kCGImagePropertyPixelWidth] as? Double
         data.pixelHeight = imageProperties[kCGImagePropertyPixelHeight] as? Double
@@ -879,6 +879,7 @@ class NCUtility: NSObject {
         data.orientation = imageProperties[kCGImagePropertyOrientation] as? Int
 
         if let tiffData = imageProperties[kCGImagePropertyTIFFDictionary] as? NSDictionary {
+            data.make = tiffData[kCGImagePropertyTIFFMake] as? String
             data.model = tiffData[kCGImagePropertyTIFFModel] as? String
             data.software = tiffData[kCGImagePropertyTIFFSoftware] as? String
             data.tileLength = tiffData[kCGImagePropertyTIFFTileLength] as? Double
@@ -889,7 +890,7 @@ class NCUtility: NSObject {
             let dateTime = tiffData[kCGImagePropertyTIFFDateTime] as? String
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
-            date = dateFormatter.date(from: dateTime ?? "")
+            data.date = dateFormatter.date(from: dateTime ?? "")
         }
 
         if let exifData = imageProperties[kCGImagePropertyExifDictionary] as? NSDictionary {

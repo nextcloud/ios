@@ -253,6 +253,13 @@
                                                                     <constraint firstItem="cA8-2k-F4N" firstAttribute="centerY" secondItem="ucG-To-acr" secondAttribute="centerY" id="yG7-dQ-2xn"/>
                                                                 </constraints>
                                                             </view>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PAH-Zm-6f7" userLabel="Separator">
+                                                                <rect key="frame" x="0.0" y="35" width="394" height="1"/>
+                                                                <color key="backgroundColor" systemColor="separatorColor"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="1" id="oDS-NK-8Fh"/>
+                                                                </constraints>
+                                                            </view>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ultra Wide Camera - 13 mm " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d4R-Eg-BEV">
                                                                 <rect key="frame" x="5" y="43" width="215.33333333333334" height="20.333333333333329"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -303,8 +310,11 @@
                                                             <constraint firstItem="d4R-Eg-BEV" firstAttribute="leading" secondItem="YSP-f2-T7B" secondAttribute="leadingMargin" constant="-3" id="cN3-Aw-QGZ"/>
                                                             <constraint firstAttribute="trailing" secondItem="ucG-To-acr" secondAttribute="trailing" id="edf-ki-HLP"/>
                                                             <constraint firstItem="6cz-nf-75X" firstAttribute="leading" secondItem="d4R-Eg-BEV" secondAttribute="leading" id="gQO-FC-4Uz"/>
+                                                            <constraint firstItem="PAH-Zm-6f7" firstAttribute="top" secondItem="ucG-To-acr" secondAttribute="bottom" id="jt5-Mj-0b5"/>
                                                             <constraint firstAttribute="height" constant="100" id="oKU-pH-dI1"/>
                                                             <constraint firstItem="6cz-nf-75X" firstAttribute="top" secondItem="d4R-Eg-BEV" secondAttribute="bottom" constant="7" id="qea-qA-A9N"/>
+                                                            <constraint firstItem="PAH-Zm-6f7" firstAttribute="leading" secondItem="YSP-f2-T7B" secondAttribute="leading" id="tQZ-L6-6SM"/>
+                                                            <constraint firstAttribute="trailing" secondItem="PAH-Zm-6f7" secondAttribute="trailing" id="vQ3-9j-Ttg"/>
                                                         </constraints>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -313,7 +323,7 @@
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJP-ZX-iug">
-                                                        <rect key="frame" x="0.0" y="168.66666666666663" width="394" height="150"/>
+                                                        <rect key="frame" x="0.0" y="168.66666666666669" width="394" height="150"/>
                                                         <gestureRecognizers/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="150" id="LdR-cg-NxA"/>
@@ -391,16 +401,22 @@
                                             <outlet property="dateLabel" destination="4LY-PI-0gT" id="dpX-Q9-Aaw"/>
                                             <outlet property="dateValue" destination="hBd-KD-Jq5" id="ple-nX-OpH"/>
                                             <outlet property="dayLabel" destination="f9E-HN-L3Y" id="yks-Cu-1pt"/>
+                                            <outlet property="deviceContainer" destination="ucG-To-acr" id="B2F-qe-NwF"/>
                                             <outlet property="dimLabel" destination="uaE-Lv-t0Q" id="MkZ-ko-UrJ"/>
                                             <outlet property="dimValue" destination="n1C-OB-gq2" id="Ln4-gV-wXg"/>
+                                            <outlet property="lensLabel" destination="d4R-Eg-BEV" id="ZaX-do-ccU"/>
                                             <outlet property="lensModelLabel" destination="uYI-ic-d8g" id="DUn-uJ-sVj"/>
                                             <outlet property="lensModelValue" destination="ix8-uQ-chU" id="GNF-8F-10P"/>
                                             <outlet property="locationButton" destination="oov-9f-Oeu" id="cGg-Gb-m5S"/>
                                             <outlet property="mapContainer" destination="dJP-ZX-iug" id="xqo-Mi-GOO"/>
+                                            <outlet property="megaPixelLabel" destination="sxI-vc-KfJ" id="Uz6-l8-4aI"/>
                                             <outlet property="messageButton" destination="GWF-lf-c8t" id="cls-X9-Urf"/>
+                                            <outlet property="modelLabel" destination="cA8-2k-F4N" id="Lwb-L5-0Hs"/>
+                                            <outlet property="nameLabel" destination="PVW-g9-z43" id="CC5-mu-Ftr"/>
+                                            <outlet property="outerContainer" destination="YSP-f2-T7B" id="hxB-u3-8vl"/>
+                                            <outlet property="resolutionLabel" destination="6A5-qu-7x1" id="5Ei-Rx-Q4s"/>
                                             <outlet property="separator" destination="HRq-3M-yeb" id="ENP-xc-AWZ"/>
-                                            <outlet property="sizeLabel" destination="WXS-Lw-DkI" id="JG0-G0-oHg"/>
-                                            <outlet property="sizeValue" destination="XLb-0a-du9" id="9jm-Ku-sgt"/>
+                                            <outlet property="sizeLabel" destination="yOh-G2-fPm" id="4ZL-ki-KhM"/>
                                             <outlet property="timeLabel" destination="POq-uU-ask" id="ue5-U7-Ub1"/>
                                         </connections>
                                     </view>
@@ -474,6 +490,9 @@
         <image name="networkInProgress" width="300" height="300"/>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="separatorColor">
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
