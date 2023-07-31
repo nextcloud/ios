@@ -199,6 +199,7 @@ class NCViewerMediaPage: UIViewController {
         viewerMedia.index = index
         viewerMedia.metadata = metadata
         viewerMedia.viewerMediaPage = self
+        viewerMedia.delegate = self
 
         singleTapGestureRecognizer.require(toFail: viewerMedia.doubleTapGestureRecognizer)
 
@@ -240,11 +241,11 @@ class NCViewerMediaPage: UIViewController {
                 textColor = .white
             } else {
                 NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
-                view.backgroundColor = .systemBackground
+                view.backgroundColor = .systemGray6
                 textColor = .label
             }
 
-        } else {
+        } else if !currentViewController.detailView.isShown() {
 
             navigationController?.setNavigationBarHidden(true, animated: true)
             hideStatusBar = true
@@ -280,7 +281,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func autoHide() {
-
         let metadata = currentViewController.metadata
         if metadata.isVideo, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
@@ -569,6 +569,10 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
+
+        if nextViewController.detailView.isShown() {
+            changeScreenMode(mode: .normal)
+        }
     }
 
     // END TRANSITION
@@ -675,3 +679,11 @@ extension UIPageViewController {
         }
     }
 }
+
+extension NCViewerMediaPage: NCViewerMediaViewDelegate {
+    func hasShownDetail() {
+        changeScreenMode(mode: .normal)
+    }
+}
+
+

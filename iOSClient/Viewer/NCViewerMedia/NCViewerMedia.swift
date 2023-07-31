@@ -30,6 +30,10 @@ import MobileVLCKit
 import JGProgressHUD
 import Alamofire
 
+public protocol NCViewerMediaViewDelegate: AnyObject {
+    func hasShownDetail()
+}
+
 class NCViewerMedia: UIViewController {
 
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
@@ -55,6 +59,7 @@ class NCViewerMedia: UIViewController {
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
+    weak var delegate: NCViewerMediaViewDelegate?
 
     // MARK: - View Life Cycle
 
@@ -237,7 +242,7 @@ class NCViewerMedia: UIViewController {
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
-                if self.detailView.isShow() {
+                if self.detailView.isShown() {
                     self.openDetail()
                 }
             }
@@ -382,7 +387,7 @@ class NCViewerMedia: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        guard metadata.isImage, !detailView.isShow()  else { return }
+        guard metadata.isImage, !detailView.isShown()  else { return }
 
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
@@ -407,7 +412,7 @@ class NCViewerMedia: UIViewController {
 
         switch gestureRecognizer.state {
         case .ended:
-            if detailView.isShow() {
+            if detailView.isShown() {
                 self.imageViewTopConstraint.constant = -imageViewConstraint
                 self.imageViewBottomConstraint.constant = imageViewConstraint
             } else {
@@ -458,11 +463,11 @@ extension NCViewerMedia {
     }
 
     private func openDetail() {
-
+        delegate?.hasShownDetail()
         self.dismissTip()
+        
 
         NCUtility.shared.setExif(metadata: metadata) { exif in
-//        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
             if exif.latitude != -1 && exif.latitude != 0 && exif.longitude != -1 && exif.longitude != 0 {
                 self.detailViewHeighConstraint.constant = 335
             } else {
@@ -517,7 +522,7 @@ extension NCViewerMedia {
 
     func reloadDetail() {
 
-        if self.detailView.isShow() {
+        if self.detailView.isShown() {
             NCUtility.shared.setExif(metadata: metadata) { exif in
                 self.detailView.show(
                     metadata: self.metadata,
@@ -549,9 +554,9 @@ extension NCViewerMedia: UIScrollViewDelegate {
                 let ratio = ratioW < ratioH ? ratioW : ratioH
                 let newWidth = image.size.width * ratio
                 let newHeight = image.size.height * ratio
-                let conditionLeft = newWidth*scrollView.zoomScale > imageVideoContainer.frame.width
+                let conditionLeft = newWidth * scrollView.zoomScale > imageVideoContainer.frame.width
                 let left = 0.5 * (conditionLeft ? newWidth - imageVideoContainer.frame.width : (scrollView.frame.width - scrollView.contentSize.width))
-                let conditioTop = newHeight*scrollView.zoomScale > imageVideoContainer.frame.height
+                let conditioTop = newHeight * scrollView.zoomScale > imageVideoContainer.frame.height
 
                 let top = 0.5 * (conditioTop ? newHeight - imageVideoContainer.frame.height : (scrollView.frame.height - scrollView.contentSize.height))
 

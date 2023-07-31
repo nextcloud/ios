@@ -25,8 +25,6 @@ import UIKit
 import MapKit
 import NextcloudKit
 
-//typealias NCImageMetadata = (latitude: Double, longitude: Double, location: String?, date: Date?, lensModel: String?)
-
 public protocol NCViewerMediaDetailViewDelegate: AnyObject {
     func downloadFullResolution()
 }
@@ -35,8 +33,6 @@ class NCViewerMediaDetailView: UIView {
 
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!
-//    @IBOutlet weak var sizeValue: UILabel!
-//    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var dateValue: UILabel!
     @IBOutlet weak var dimLabel: UILabel!
     @IBOutlet weak var dimValue: UILabel!
@@ -57,11 +53,6 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var megaPixelLabel: UILabel!
     @IBOutlet weak var resolutionLabel: UILabel!
 
-
-//    var latitude: Double?
-//    var longitude: Double?
-//    var location: String?
-//    var date: Date?
     var metadata: tableMetadata?
     var mapView: MKMapView?
     var ncplayer: NCPlayer?
@@ -127,14 +118,15 @@ class NCViewerMediaDetailView: UIView {
             mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
         }
 
-        if let make = exif.make, let model = exif.model {
+        if let make = exif.make, let model = exif.model, let lensModel = exif.lensModel {
             modelLabel.text = "\(make) \(model)"
+            lensLabel.text = lensModel.replacingOccurrences(of: make, with: "").replacingOccurrences(of: model, with: "").trimmingCharacters(in: .whitespacesAndNewlines).firstUppercased
         }
 
-        // Size
+        nameLabel.text = metadata.fileNameView
+
         sizeLabel.text = CCUtility.transformedSize(metadata.size)
 
-        // Date
         if let date = exif.date {
             let formatter = DateFormatter()
 
@@ -153,18 +145,13 @@ class NCViewerMediaDetailView: UIView {
             dateLabel.text = NSLocalizedString("_date_", comment: "")
             dateValue.text = NSLocalizedString("_not_available_", comment: "")
         }
+
         dateValue.textColor = textColor
 
         if let image = image {
             resolutionLabel.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
-            megaPixelLabel.text = "\(round((image.size.width * image.size.height) * 10)) MP"
+            megaPixelLabel.text = "\(Int(floor((image.size.width * image.size.height) / 1000000))) MP"
         }
-
-        if let lensModel = exif.lensModel {
-            lensLabel.text = lensModel
-        }
-
-//        if let megapixel = exif
 
         if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
@@ -189,7 +176,7 @@ class NCViewerMediaDetailView: UIView {
         self.isHidden = true
     }
 
-    func isShow() -> Bool {
+    func isShown() -> Bool {
         return !self.isHidden
     }
 
