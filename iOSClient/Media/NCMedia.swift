@@ -173,12 +173,33 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
               account == appDelegate.account,
-              let ocId = userInfo["ocId"] as? [String],
+              let ocIds = userInfo["ocId"] as? [String],
               let indexPath = userInfo["indexPath"] as? [IndexPath]
         else { return }
 
-        let visibleCells = self.collectionView?.indexPathsForVisibleItems
-        self.reloadDataSourceWithCompletion { _ in }
+        var deleteItems: [IndexPath] = []
+        let visibleCells = self.collectionView.indexPathsForVisibleItems
+
+        for item in indexPath {
+            if visibleCells.contains(item) {
+                if let cell = self.collectionView.cellForItem(at: item) as? NCCellProtocol,
+                   let ocId = cell.fileObjectId,
+                   ocIds.contains(ocId) {
+                    deleteItems.append(item)
+                }
+            }
+        }
+
+        //self.queryDB(forced: true)
+        if deleteItems.isEmpty {
+            self.collectionView?.reloadData()
+        } else {
+            collectionView?.performBatchUpdates({
+                collectionView?.deleteItems(at: deleteItems)
+            }, completion: { _ in
+                self.collectionView?.reloadData()
+            })
+        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {

@@ -25,6 +25,7 @@ import UIKit
 import Realm
 import NextcloudKit
 import EasyTipView
+import JGProgressHUD
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate, UIContextMenuInteractionDelegate, NCAccountRequestDelegate, NCSelectableNavigationView {
 
@@ -385,6 +386,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }, completion: { _ in
                 self.collectionView?.reloadData()
             })
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
         }
     }
 

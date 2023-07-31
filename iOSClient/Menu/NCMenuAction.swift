@@ -164,11 +164,10 @@ extension NCMenuAction {
                                     ocId.append(metadata.ocId)
                                 }
                             }
-                            await hud.dismiss(afterDelay: 0.5)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error, "hud": hud])
                         }
                         completion?()
                     })

@@ -168,13 +168,12 @@ class NCContextMenu: NSObject {
                     var ocId: [String] = []
                     let account: String = metadata.account
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                    await hud.dismiss(afterDelay: 0.5)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     } else {
                         NCContentPresenter.shared.showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["account": account, "ocId": ocId, "indexPath": [indexPath], "onlyLocalCache": false, "error": error, "hud": hud])
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
