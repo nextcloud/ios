@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import JGProgressHUD
 
 class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
@@ -190,7 +191,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             }
         }
 
-        //self.queryDB(forced: true)
+        self.queryDB(forced: true)
         if deleteItems.isEmpty {
             self.collectionView?.reloadData()
         } else {
@@ -199,6 +200,10 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             }, completion: { _ in
                 self.collectionView?.reloadData()
             })
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
         }
     }
 
@@ -454,14 +459,7 @@ extension NCMedia {
 
     // MARK: - Datasource
 
-    @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-        guard !appDelegate.account.isEmpty else { return }
-
-        if account != appDelegate.account {
-            self.metadatas = []
-            account = appDelegate.account
-            collectionView?.reloadData()
-        }
+    func queryDB(forced: Bool) {
 
         livePhoto = CCUtility.getLivePhoto()
 
@@ -481,18 +479,32 @@ extension NCMedia {
         }
 
         guard let predicate = predicate else { return }
+
+        self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: self.livePhoto)
+
+        switch CCUtility.getMediaSortDate() {
+        case "date":
+            self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )
+        case "creationDate":
+            self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)} )
+        case "uploadDate":
+            self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)} )
+        default:
+            break
+        }
+    }
+
+    @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+        guard !appDelegate.account.isEmpty else { return }
+
+        if account != appDelegate.account {
+            self.metadatas = []
+            account = appDelegate.account
+            collectionView?.reloadData()
+        }
+
         DispatchQueue.global().async {
-            self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: self.livePhoto)
-            switch CCUtility.getMediaSortDate() {
-            case "date":
-                self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )
-            case "creationDate":
-                self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)} )
-            case "uploadDate":
-                self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)} )
-            default:
-                break
-            }
+            self.queryDB(forced: true)
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
