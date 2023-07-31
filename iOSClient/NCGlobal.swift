@@ -352,8 +352,8 @@ class NCGlobal: NSObject {
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, hud?
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], serverUrlTo, hud?
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], serverUrlTo, hud?
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], hud?
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], hud?
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 

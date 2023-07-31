@@ -400,8 +400,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        reloadDataSourceNetwork()
-
         if let hud = userInfo["hud"] as? JGProgressHUD {
             hud.dismiss()
         }

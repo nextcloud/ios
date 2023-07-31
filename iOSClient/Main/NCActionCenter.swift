@@ -655,7 +655,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
         if let serverUrl, !items.isEmpty {
             let hud = JGProgressHUD()
-            hud.textLabel.text = NSLocalizedString("_deletion_progess_", comment: "")
+            hud.textLabel.text = copy ? NSLocalizedString("_copying_progess_", comment: "") : NSLocalizedString("_moving_progess_", comment: "")
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
                let view = appDelegate.window?.rootViewController?.view {
                 hud.show(in: view)
@@ -673,7 +673,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     if error != .success {
                         NCContentPresenter.shared.showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": [ocId], "serverUrlTo": serverUrl, "hud": hud])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "hud": hud])
                 }
             } else {
                 Task {
@@ -688,7 +688,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     if error != .success {
                         NCContentPresenter.shared.showError(error: error)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": [ocId], "serverUrlTo": serverUrl, "hud": hud])
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "hud": hud])
                 }
             }
         }
