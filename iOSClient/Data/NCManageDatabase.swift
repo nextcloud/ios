@@ -264,6 +264,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first else { return NSUUID().uuidString }
             return result.chunkFolder
         } catch let error as NSError {
@@ -279,6 +280,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
             for result in results {
                 filesNames.append(result.fileName)
@@ -323,6 +325,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first else { return nil }
             return tableChunk.init(value: result)
         } catch let error as NSError {
@@ -419,6 +422,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
             if results.isEmpty {
                 return nil
@@ -436,6 +440,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
             if results.isEmpty {
                 return nil
@@ -453,6 +458,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
             if results.isEmpty {
                 return nil
@@ -508,6 +514,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableExternalSites.self).filter("account == %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
             if results.isEmpty {
                 return nil
@@ -550,6 +557,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first
             return result?.location
         } catch let error as NSError {
@@ -656,6 +664,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
             return Array(results.map { tableLocalFile.init(value: $0) })
         } catch let error as NSError {
@@ -669,6 +678,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else { return nil }
             return tableLocalFile.init(value: result)
         } catch let error as NSError {
@@ -682,6 +692,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
             return Array(results.map { tableLocalFile.init(value: $0) })
         } catch let error as NSError {
@@ -752,6 +763,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
             let idsAsset = results.map { $0.idAsset }
             return Array(idsAsset)
@@ -798,6 +810,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableTag.self).filter(predicate)
             return Array(results.map { tableTag.init(value: $0) })
         } catch let error as NSError {
@@ -811,6 +824,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableTag.self).filter(predicate).first else { return nil }
             return tableTag.init(value: result)
         } catch let error as NSError {
@@ -932,6 +946,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
             return Array(results.map { tableTrash.init(value: $0) })
         } catch let error as NSError {
@@ -945,6 +960,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else { return nil }
             return tableTrash.init(value: result)
         } catch let error as NSError {

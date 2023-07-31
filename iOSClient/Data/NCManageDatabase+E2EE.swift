@@ -102,6 +102,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else { return nil }
             return tableE2eEncryption.init(value: result)
         } catch let error as NSError {
@@ -117,6 +118,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results: Results<tableE2eEncryption>
             results = realm.objects(tableE2eEncryption.self).filter(predicate)
             if results.isEmpty {
@@ -157,6 +159,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
             return tableE2eEncryptionLock.init(value: result)
         } catch let error as NSError {
@@ -170,6 +173,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableE2eEncryptionLock.self).filter("account == %@", account)
             if results.isEmpty {
                 return []
@@ -221,6 +225,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableE2eMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
             return tableE2eMetadata.init(value: result)
         } catch let error as NSError {

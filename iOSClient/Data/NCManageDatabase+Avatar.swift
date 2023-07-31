@@ -60,6 +60,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first else { return nil }
             return tableAvatar.init(value: result)
         } catch let error as NSError {
@@ -116,6 +117,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
             if result == nil {
                 NCUtilityFileSystem.shared.deleteFile(filePath: fileNameLocalPath)
