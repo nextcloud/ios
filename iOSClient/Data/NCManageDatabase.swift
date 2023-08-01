@@ -523,44 +523,6 @@ class NCManageDatabase: NSObject {
     }
 
     // MARK: -
-    // MARK: Table GPS
-
-    @objc func addGeocoderLocation(_ location: String, placemarkAdministrativeArea: String, placemarkCountry: String, placemarkLocality: String, placemarkPostalCode: String, placemarkThoroughfare: String, latitude: String, longitude: String) {
-
-        do {
-            let realm = try Realm()
-            guard realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first == nil else { return }
-            try realm.write {
-                let addObject = tableGPS()
-                addObject.latitude = latitude
-                addObject.location = location
-                addObject.longitude = longitude
-                addObject.placemarkAdministrativeArea = placemarkAdministrativeArea
-                addObject.placemarkCountry = placemarkCountry
-                addObject.placemarkLocality = placemarkLocality
-                addObject.placemarkPostalCode = placemarkPostalCode
-                addObject.placemarkThoroughfare = placemarkThoroughfare
-                realm.add(addObject)
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func getLocationFromGeoLatitude(_ latitude: String, longitude: String) -> String? {
-
-        do {
-            let realm = try Realm()
-            let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first
-            return result?.location
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return nil
-    }
-
-    // MARK: -
     // MARK: Table LocalFile
 
     func addLocalFile(metadata: tableMetadata) {
@@ -571,9 +533,6 @@ class NCManageDatabase: NSObject {
                 let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
                 addObject.account = metadata.account
                 addObject.etag = metadata.etag
-                addObject.exifDate = NSDate()
-                addObject.exifLatitude = "-1"
-                addObject.exifLongitude = "-1"
                 addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
                 realm.add(addObject, update: .all)
@@ -591,9 +550,6 @@ class NCManageDatabase: NSObject {
                 let addObject = tableLocalFile()
                 addObject.account = account
                 addObject.etag = etag
-                addObject.exifDate = NSDate()
-                addObject.exifLatitude = "-1"
-                addObject.exifLongitude = "-1"
                 addObject.ocId = ocId
                 addObject.fileName = fileName
                 realm.add(addObject, update: .all)
@@ -627,25 +583,6 @@ class NCManageDatabase: NSObject {
                 }
                 if let etag = etag {
                     result?.etag = etag
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first {
-                    result.exifDate = exifDate
-                    result.exifLatitude = exifLatitude
-                    result.exifLongitude = exifLongitude
-                    if exifLensModel?.count ?? 0 > 0 {
-                        result.exifLensModel = exifLensModel
-                    }
                 }
             }
         } catch let error {

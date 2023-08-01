@@ -178,7 +178,9 @@ class NCViewerMediaDetailView: UIView {
 
         if let image = image {
             resolutionLabel.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
-            megaPixelLabel.text = "\(Int(floor(image.size.width * image.size.height) / 1000000)) MP"
+
+            let megaPixels: Double = floor(image.size.width * image.size.height) / 1000000
+            megaPixelLabel.text = megaPixels < 1 ? String(format: "%.1f MP", megaPixels) : "\(Int(megaPixels)) MP"
         }
 
         if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {

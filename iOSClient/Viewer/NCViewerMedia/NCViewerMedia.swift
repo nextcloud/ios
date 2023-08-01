@@ -465,44 +465,43 @@ extension NCViewerMedia {
     private func openDetail() {
         delegate?.hasShownDetail()
         self.dismissTip()
-        
 
-        NCUtility.shared.setExif(metadata: metadata) { exif in
-            if exif.latitude != -1 && exif.latitude != 0 && exif.longitude != -1 && exif.longitude != 0 {
-                self.detailViewHeighConstraint.constant = 335
-            } else {
-                self.detailViewHeighConstraint.constant = 335
-            }
+        guard let exif = NCUtility.shared.getExif(metadata: metadata) else { return }
 
-            self.view.layoutIfNeeded()
-            self.detailView.show(
-                metadata: self.metadata,
-                image: self.image,
-                textColor: self.viewerMediaPage?.textColor,
-                exif: exif,
-                ncplayer: self.ncplayer,
-                delegate: self)
-                
-            if let image = self.imageVideoContainer.image {
-                let ratioW = self.imageVideoContainer.frame.width / image.size.width
-                let ratioH = self.imageVideoContainer.frame.height / image.size.height
-                let ratio = ratioW < ratioH ? ratioW : ratioH
-                let imageHeight = image.size.height * ratio
-                let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
-                let height = max(imageHeight, VideoContainerHeight)
-                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
-                if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
-            }
-
-            UIView.animate(withDuration: 0.3) {
-                self.imageViewTopConstraint.constant = -self.imageViewConstraint
-                self.imageViewBottomConstraint.constant = self.imageViewConstraint
-                self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
-                self.view.layoutIfNeeded()
-            }
-
-            self.scrollView.pinchGestureRecognizer?.isEnabled = false
+        if exif.latitude == nil && exif.longitude == nil {
+            self.detailViewHeighConstraint.constant = 195
+        } else {
+            self.detailViewHeighConstraint.constant = 355
         }
+
+        self.view.layoutIfNeeded()
+        self.detailView.show(
+            metadata: self.metadata,
+            image: self.image,
+            textColor: self.viewerMediaPage?.textColor,
+            exif: exif,
+            ncplayer: self.ncplayer,
+            delegate: self)
+
+        if let image = self.imageVideoContainer.image {
+            let ratioW = self.imageVideoContainer.frame.width / image.size.width
+            let ratioH = self.imageVideoContainer.frame.height / image.size.height
+            let ratio = ratioW < ratioH ? ratioW : ratioH
+            let imageHeight = image.size.height * ratio
+            let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
+            let height = max(imageHeight, VideoContainerHeight)
+            self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
+            if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
+        }
+
+        UIView.animate(withDuration: 0.3) {
+            self.imageViewTopConstraint.constant = -self.imageViewConstraint
+            self.imageViewBottomConstraint.constant = self.imageViewConstraint
+            self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
+            self.view.layoutIfNeeded()
+        }
+
+        self.scrollView.pinchGestureRecognizer?.isEnabled = false
     }
 
     private func closeDetail() {
@@ -521,17 +520,16 @@ extension NCViewerMedia {
     }
 
     func reloadDetail() {
-
         if self.detailView.isShown() {
-            NCUtility.shared.setExif(metadata: metadata) { exif in
-                self.detailView.show(
-                    metadata: self.metadata,
-                    image: self.image,
-                    textColor: self.viewerMediaPage?.textColor,
-                    exif: exif,
-                    ncplayer: self.ncplayer,
-                    delegate: self)
-            }
+            guard let exif = NCUtility.shared.getExif(metadata: metadata) else { return }
+
+            self.detailView.show(
+                metadata: self.metadata,
+                image: self.image,
+                textColor: self.viewerMediaPage?.textColor,
+                exif: exif,
+                ncplayer: self.ncplayer,
+                delegate: self)
         }
     }
 }
