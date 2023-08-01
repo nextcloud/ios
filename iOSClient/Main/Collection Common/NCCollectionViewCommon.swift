@@ -681,6 +681,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
         }
+        navigationItem.title = titleCurrentFolder
     }
 
     func getNavigationTitle() -> String {
