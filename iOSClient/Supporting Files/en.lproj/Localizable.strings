@@ -445,6 +445,8 @@
 "_no_photo_load_"                           = "No photo or video";
 "_tutorial_autoupload_view_"                = "You can enable auto uploads from \"Settings\"";
 "_no_date_"                                 = "No date";
+"_no_time_"                                 = "No time";
+"_no_day_"                                  = "No day";
 "_today_"                                   = "Today";
 "_yesterday_"                               = "Yesterday";
 "_time_"                                    = "Time: %@\n\n%@";

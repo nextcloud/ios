@@ -142,15 +142,16 @@ class NCViewerMediaDetailView: UIView {
             let timeString = formatter.string(from: date as Date)
             timeLabel.text = timeString
         } else {
-            dateLabel.text = NSLocalizedString("_date_", comment: "")
-            dateValue.text = NSLocalizedString("_not_available_", comment: "")
+            dayLabel.text = NSLocalizedString("no_day_", comment: "")
+            dateLabel.text = NSLocalizedString("no_date_", comment: "")
+            timeLabel.text = NSLocalizedString("no_time_", comment: "")
         }
 
         dateValue.textColor = textColor
 
         if let image = image {
             resolutionLabel.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
-            megaPixelLabel.text = "\(Int(floor((image.size.width * image.size.height) / 1000000))) MP"
+            megaPixelLabel.text = "\(Int(floor(image.size.width * image.size.height) / 1000000)) MP"
         }
 
         if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
