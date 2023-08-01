@@ -30,7 +30,6 @@ public protocol NCViewerMediaDetailViewDelegate: AnyObject {
 }
 
 class NCViewerMediaDetailView: UIView {
-
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var dateValue: UILabel!
@@ -52,13 +51,19 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var lensLabel: UILabel!
     @IBOutlet weak var megaPixelLabel: UILabel!
     @IBOutlet weak var resolutionLabel: UILabel!
+    @IBOutlet weak var extensionLabel: UILabel!
+    @IBOutlet weak var isoLabel: UILabel!
+    @IBOutlet weak var lensSizeLabel: UILabel!
+    @IBOutlet weak var exposureValueLabel: UILabel!
+    @IBOutlet weak var apertureLabel: UILabel!
+    @IBOutlet weak var shutterSpeedLabel: UILabel!
 
-    var metadata: tableMetadata?
-    var mapView: MKMapView?
-    var ncplayer: NCPlayer?
+    private var metadata: tableMetadata?
+    private var mapView: MKMapView?
+    private var ncplayer: NCPlayer?
     weak var delegate: NCViewerMediaDetailViewDelegate?
 
-    var exif: NCUtility.ExifData?
+    private var exif: NCUtility.ExifData?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -121,11 +126,33 @@ class NCViewerMediaDetailView: UIView {
         if let make = exif.make, let model = exif.model, let lensModel = exif.lensModel {
             modelLabel.text = "\(make) \(model)"
             lensLabel.text = lensModel.replacingOccurrences(of: make, with: "").replacingOccurrences(of: model, with: "").trimmingCharacters(in: .whitespacesAndNewlines).firstUppercased
+        } else {
+            modelLabel.text = NSLocalizedString("_no_camera_information_", comment: "")
+            lensLabel.text = NSLocalizedString("_no_lens_information_", comment: "")
         }
 
-        nameLabel.text = metadata.fileNameView
-
+        nameLabel.text = (metadata.fileNameView as NSString).deletingPathExtension
         sizeLabel.text = CCUtility.transformedSize(metadata.size)
+
+        if let shutterSpeedApex = exif.shutterSpeedApex {
+            shutterSpeedLabel.text = "1/\(Int(pow(2, shutterSpeedApex))) s"
+        }
+
+        if let iso = exif.iso {
+            isoLabel.text = "ISO \(iso)"
+        }
+
+        if let apertureValue = exif.apertureValue {
+            apertureLabel.text = "ƒ\(apertureValue)"
+        }
+
+        if let exposureValue = exif.exposureValue {
+            exposureValueLabel.text = "\(exposureValue) ev"
+        }
+
+        if let lensLength = exif.lensLength {
+            lensSizeLabel.text = "\(lensLength) mm"
+        }
 
         if let date = exif.date {
             let formatter = DateFormatter()
@@ -142,9 +169,9 @@ class NCViewerMediaDetailView: UIView {
             let timeString = formatter.string(from: date as Date)
             timeLabel.text = timeString
         } else {
-            dayLabel.text = NSLocalizedString("no_day_", comment: "")
-            dateLabel.text = NSLocalizedString("no_date_", comment: "")
-            timeLabel.text = NSLocalizedString("no_time_", comment: "")
+            dayLabel.text = NSLocalizedString("_no_day_", comment: "")
+            dateLabel.text = NSLocalizedString("_no_date_", comment: "")
+            timeLabel.text = NSLocalizedString("_no_time_", comment: "")
         }
 
         dateValue.textColor = textColor
@@ -169,6 +196,8 @@ class NCViewerMediaDetailView: UIView {
             locationButton.setTitle("", for: .normal)
             locationButton.isHidden = true
         }
+
+        extensionLabel.text = metadata.fileExtension.uppercased()
 
         self.isHidden = false
     }

@@ -806,7 +806,11 @@ class NCUtility: NSObject {
         var dpiHeight: Int?
         var depth: Int?
         var orientation: Int?
-        var apertureValue: String?
+        var apertureValue: Double?
+        var exposureValue: Int?
+        var shutterSpeedApex: Double?
+        var iso: Int?
+        var lensLength: Int?
         var brightnessValue: String?
         var dateTimeDigitized: String?
         var dateTimeOriginal: String?
@@ -866,7 +870,7 @@ class NCUtility: NSObject {
             return
         }
 
-        fileSize = fileSizeNumber.int64Value
+//        fileSize = fileSizeNumber.int64Value
 
         var data = ExifData()
 
@@ -894,7 +898,12 @@ class NCUtility: NSObject {
         }
 
         if let exifData = imageProperties[kCGImagePropertyExifDictionary] as? NSDictionary {
-            data.apertureValue = exifData[kCGImagePropertyExifApertureValue] as? String
+            
+            data.apertureValue = exifData[kCGImagePropertyExifFNumber] as? Double
+            data.exposureValue = exifData[kCGImagePropertyExifExposureBiasValue] as? Int
+            data.shutterSpeedApex = exifData[kCGImagePropertyExifShutterSpeedValue] as? Double
+            data.iso = (exifData[kCGImagePropertyExifISOSpeedRatings] as? Array<Int>)?[0]
+            data.lensLength = exifData[kCGImagePropertyExifFocalLenIn35mmFilm] as? Int
             data.brightnessValue = exifData[kCGImagePropertyExifBrightnessValue] as? String
             data.dateTimeDigitized = exifData[kCGImagePropertyExifDateTimeDigitized] as? String
             data.dateTimeOriginal = exifData[kCGImagePropertyExifDateTimeOriginal] as? String

@@ -447,6 +447,8 @@
 "_no_date_"                                 = "No date";
 "_no_time_"                                 = "No time";
 "_no_day_"                                  = "No day";
+"_no_camera_information_"                   = "No camera information";
+"_no_lens_information_"                     = "No lens information";
 "_today_"                                   = "Today";
 "_yesterday_"                               = "Yesterday";
 "_time_"                                    = "Time: %@\n\n%@";
