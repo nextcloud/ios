@@ -1436,7 +1436,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
-        let tableDirectory = dataSource.metadatasForSection[indexPath.section].directories?.filter({ $0.ocId == metadata.ocId }).first
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -1488,6 +1487,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         if metadata.directory {
 
+            let tableDirectory = NCManageDatabase.shared.getTableDirectory(ocId: metadata.ocId)
+
             if metadata.e2eEncrypted {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderEncrypted
             } else if isShare {
@@ -1509,7 +1510,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
 
             // Local image: offline
-            if let tableDirectory = tableDirectory, tableDirectory.offline {
+            if let tableDirectory, tableDirectory.offline {
                 cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
             }
 
@@ -1519,7 +1520,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
 
             // image local
-            if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
+            if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
                 cell.fileLocalImage?.image = NCBrandColor.cacheImages.offlineFlag
             } else if CCUtility.fileProviderStorageExists(metadata) {

@@ -388,7 +388,7 @@ extension NCSelect: UICollectionViewDataSource {
             cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
 
             // image local
-            if dataSource.metadatasForSection[indexPath.section].metadataOffLine.contains(metadata.ocId) {
+            if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
                 cell.imageLocal.image = NCBrandColor.cacheImages.offlineFlag
             } else if CCUtility.fileProviderStorageExists(metadata) {
                 cell.imageLocal.image = NCBrandColor.cacheImages.local

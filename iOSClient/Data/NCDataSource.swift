@@ -35,7 +35,6 @@ class NCDataSource: NSObject {
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
-    private var localFiles: [tableLocalFile] = []
 
     private var ascending: Bool = true
     private var sort: String = ""
@@ -54,7 +53,6 @@ class NCDataSource: NSObject {
             !(NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) || $0.isTransferInForeground)
         })
         self.directory = directory
-        self.localFiles = NCManageDatabase.shared.getTableLocalFile(account: account)
         self.sort = sort ?? "none"
         self.ascending = ascending ?? false
         self.directoryOnTop = directoryOnTop ?? true
@@ -78,7 +76,6 @@ class NCDataSource: NSObject {
         self.sectionsValue.removeAll()
         self.providers = nil
         self.searchResults = nil
-        self.localFiles.removeAll()
     }
 
     func clearDirectory() {
@@ -175,7 +172,6 @@ class NCDataSource: NSObject {
         let metadatas = self.metadatas.filter({ getSectionValue(metadata: $0) == sectionValue})
         let metadataForSection = NCMetadataForSection(sectionValue: sectionValue,
                                                       metadatas: metadatas,
-                                                      localFiles: self.localFiles,
                                                       lastSearchResult: searchResult,
                                                       sort: self.sort,
                                                       ascending: self.ascending,
@@ -341,7 +337,6 @@ class NCMetadataForSection: NSObject {
 
     var sectionValue: String
     var metadatas: [tableMetadata]
-    var localFiles: [tableLocalFile]
     var lastSearchResult: NKSearchResult?
     var unifiedSearchInProgress: Bool = false
 
@@ -360,14 +355,11 @@ class NCMetadataForSection: NSObject {
     public var numDirectory: Int = 0
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
-    public var metadataOffLine: [String] = []
-    public var directories: [tableDirectory]?
 
-    init(sectionValue: String, metadatas: [tableMetadata], localFiles: [tableLocalFile], lastSearchResult: NKSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
 
         self.sectionValue = sectionValue
         self.metadatas = metadatas
-        self.localFiles = localFiles
         self.lastSearchResult = lastSearchResult
         self.sort = sort
         self.ascending = ascending
@@ -389,7 +381,6 @@ class NCMetadataForSection: NSObject {
         metadatasFavoriteFile.removeAll()
         metadatasDirectory.removeAll()
         metadatasFile.removeAll()
-        metadataOffLine.removeAll()
 
         numDirectory = 0
         numFile = 0
@@ -473,8 +464,6 @@ class NCMetadataForSection: NSObject {
                 totalSize += metadata.size
             }
         }
-
-        directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "ocId IN %@", ocIds), sorted: "serverUrl", ascending: true)
 
         metadatas.removeAll()
 

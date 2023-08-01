@@ -696,10 +696,22 @@ class NCManageDatabase: NSObject {
             let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
             return Array(results.map { tableLocalFile.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
         }
 
         return []
+    }
+
+    func getTableLocalFile(ocId: String) -> tableLocalFile? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+        }
+        return nil
     }
 
     func setLocalFile(ocId: String, offline: Bool) {

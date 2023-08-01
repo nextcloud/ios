@@ -138,6 +138,18 @@ extension NCManageDatabase {
         return nil
     }
 
+    func getTableDirectory(ocId: String) -> tableDirectory? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+        }
+        return nil
+    }
+
     func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
 
         do {
