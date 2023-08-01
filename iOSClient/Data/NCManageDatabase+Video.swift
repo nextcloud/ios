@@ -144,7 +144,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else { return nil }
             return tableVideo.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
         }
 
         return nil
