@@ -77,9 +77,13 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSource(forced: Bool = true) {
         super.reloadDataSource()
 
-        self.queryDB(forced: forced)
-        self.refreshControl.endRefreshing()
-        self.collectionView.reloadData()
+        DispatchQueue.global().async {
+            self.queryDB(forced: forced)
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
+        }
     }
 
     override func reloadDataSourceNetwork(forced: Bool = false) {
