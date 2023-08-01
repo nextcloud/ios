@@ -489,7 +489,7 @@ extension NCMedia {
         if account != appDelegate.account {
             self.metadatas = []
             account = appDelegate.account
-            collectionView?.reloadData()
+            DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
         DispatchQueue.global().async {
@@ -525,7 +525,14 @@ extension NCMedia {
     private func searchOldMedia(value: Int = -30, limit: Int = 300) {
 
         if oldInProgress { return } else { oldInProgress = true }
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+            var bottom: CGFloat = 0
+            if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
+                bottom = -mainTabBar.getHight()
+            }
+            NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
+        }
 
         var lessDate = Date()
         if predicateDefault != nil {
@@ -541,19 +548,15 @@ extension NCMedia {
             greaterDate = Calendar.current.date(byAdding: .day, value: value, to: lessDate)!
         }
 
-        var bottom: CGFloat = 0
-        if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-            bottom = -mainTabBar.getHight()
-        }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
-
-        let options = NKRequestOptions(timeout: 300)
+        let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         
         NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
 
             self.oldInProgress = false
-            NCActivityIndicator.shared.stop()
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                NCActivityIndicator.shared.stop()
+                self.collectionView.reloadData()
+            }
 
             if error == .success && account == self.appDelegate.account {
                 if files.count > 0 {
@@ -628,12 +631,14 @@ extension NCMedia {
 
         reloadDataThenPerform {
 
-            let options = NKRequestOptions(timeout: 300)
+            let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             
             NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
 
                 self.newInProgress = false
-                self.mediaCommandView?.activityIndicator.stopAnimating()
+                DispatchQueue.main.async {
+                    self.mediaCommandView?.activityIndicator.stopAnimating()
+                }
 
                 if error == .success && account == self.appDelegate.account && files.count > 0 {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in
