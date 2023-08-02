@@ -50,6 +50,7 @@ class NCShareNetworking: NSObject {
 
         NextcloudKit.shared.readShares(parameters: parameter) { account, shares, data, error in
             if error == .success, let shares = shares {
+                NCManageDatabase.shared.deleteTableShare(account: account)
                 let home = NCUtilityFileSystem.shared.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
                 NCManageDatabase.shared.addShare(account: self.metadata.account, home:home, shares: shares)
                 NextcloudKit.shared.getGroupfolders() { account, results, data, error in
