@@ -24,7 +24,6 @@
 import UIKit
 import NextcloudKit
 import MediaPlayer
-import JGProgressHUD
 import Alamofire
 
 enum ScreenMode {
