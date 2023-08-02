@@ -173,18 +173,22 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
         let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
         self.queryDB(forced: true)
 
-        if let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
+        if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
             collectionView?.performBatchUpdates({
                 collectionView?.deleteItems(at: indexPath)
             }, completion: { _ in
                 self.collectionView?.reloadData()
             })
         } else {
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
+            }
             self.collectionView?.reloadData()
         }
 

@@ -156,16 +156,11 @@ extension NCMenuAction {
                             var error = NKError()
                             var ocId: [String] = []
                             let account = selectedMetadatas.first?.account ?? ""
-                            var counter = 0
                             for metadata in selectedMetadatas where error == .success {
-                                counter += 1
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                                 if error == .success {
                                     ocId.append(metadata.ocId)
                                 }
-                            }
-                            if error != .success {
-                                NCContentPresenter.shared.showError(error: error)
                             }
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "onlyLocalCache": false, "error": error, "hud": hud])
                         }
