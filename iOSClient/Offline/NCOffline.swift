@@ -49,7 +49,7 @@ class NCOffline: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(forced: Bool) {
+    override func queryDB(isForced: Bool) {
 
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []
@@ -82,11 +82,11 @@ class NCOffline: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            self.queryDB(forced: forced)
+            self.queryDB(isForced: isForced)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -94,8 +94,8 @@ class NCOffline: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
         guard !serverUrl.isEmpty else {
             self.reloadDataSource()
@@ -105,7 +105,7 @@ class NCOffline: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+        networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
             if error == .success, let metadatas = metadatas {
                 for metadata in metadatas where (!metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: true)) {
                     NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
@@ -116,7 +116,7 @@ class NCOffline: NCCollectionViewCommon {
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.richWorkspaceText = tableDirectory?.richWorkspace
-                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
+                if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || isForced {
                     self.reloadDataSource()
                 } else {
                     self.collectionView?.reloadData()

@@ -49,7 +49,7 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(forced: Bool) {
+    override func queryDB(isForced: Bool) {
 
         let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
         var metadatas: [tableMetadata] = []
@@ -74,11 +74,11 @@ class NCShares: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            self.queryDB(forced: forced)
+            self.queryDB(isForced: isForced)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -86,8 +86,8 @@ class NCShares: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

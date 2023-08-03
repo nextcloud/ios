@@ -106,7 +106,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else { return nil }
             return tableE2eEncryption.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -127,7 +127,7 @@ extension NCManageDatabase {
                 return Array(results.map { tableE2eEncryption.init(value: $0) })
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -163,7 +163,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
             return tableE2eEncryptionLock.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -181,7 +181,7 @@ extension NCManageDatabase {
                 return Array(results.map { tableE2eEncryptionLock.init(value: $0) })
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return []
@@ -229,7 +229,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableE2eMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
             return tableE2eMetadata.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil

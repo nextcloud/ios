@@ -124,7 +124,7 @@ extension NCManageDatabase {
                 return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return setLayoutForView(account: account, key: key, serverUrl: serverUrl)

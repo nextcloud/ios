@@ -74,7 +74,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.initialize()
 
-        reloadDataSource(forced: false)
+        reloadDataSource(isForced: false)
         reloadDataSourceNetwork()
     }
 
@@ -83,7 +83,7 @@ class NCFiles: NCCollectionViewCommon {
     // forced: do no make the etag of directory test (default)
     //
 
-    override func queryDB(forced: Bool) {
+    override func queryDB(isForced: Bool) {
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
@@ -92,8 +92,7 @@ class NCFiles: NCCollectionViewCommon {
             self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, serverUrl: self.serverUrl)
         }
 
-        // FORCED false: test the directory.etag
-        if !forced, let directory = directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
+        if !isForced, let directory, directory.etag == self.dataSource.directory?.etag, metadataTransfer == nil, self.fileNameBlink == nil, self.fileNameOpen == nil {
             return
         }
 
@@ -112,14 +111,14 @@ class NCFiles: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.main.async { self.refreshControl.endRefreshing() }
         DispatchQueue.global().async {
             guard !self.isSearchingMode, !self.appDelegate.account.isEmpty, !self.appDelegate.urlBase.isEmpty, !self.serverUrl.isEmpty else { return }
 
-            self.queryDB(forced: forced)
+            self.queryDB(isForced: isForced)
 
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
@@ -133,8 +132,8 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
         guard !isSearchingMode else {
             networkSearch()
             return
@@ -142,7 +141,7 @@ class NCFiles: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        networkReadFolder(forced: forced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
+        networkReadFolder(isForced: isForced) { tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error in
             if error == .success {
                 for metadata in metadatas ?? [] where !metadata.directory && NCManageDatabase.shared.isDownloadMetadata(metadata, download: false) {
                     NCOperationQueue.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile)
@@ -152,7 +151,7 @@ class NCFiles: NCCollectionViewCommon {
             self.isReloadDataSourceNetworkInProgress = false
             self.richWorkspaceText = tableDirectory?.richWorkspace
 
-            if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || forced {
+            if metadatasUpdate?.count ?? 0 > 0 || metadatasDelete?.count ?? 0 > 0 || isForced {
                 self.reloadDataSource()
             } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
                 DispatchQueue.main.async {

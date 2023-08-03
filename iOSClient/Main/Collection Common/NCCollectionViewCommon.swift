@@ -129,7 +129,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.clearDirectory()
-            self.reloadDataSourceNetwork(forced: true)
+            self.reloadDataSourceNetwork(isForced: true)
         }
 
         // Empty
@@ -212,7 +212,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         setNavigationItem()
 
-        reloadDataSource(forced: false)
+        reloadDataSource(isForced: false)
         if !isSearchingMode {
             reloadDataSourceNetwork()
         }
@@ -342,7 +342,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
 
         if !isSearchingMode {
-            reloadDataSourceNetwork(forced: true)
+            reloadDataSourceNetwork(isForced: true)
         }
     }
 
@@ -360,7 +360,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError else { return }
         let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        self.queryDB(forced: true)
+        self.queryDB(isForced: true)
 
         if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
             collectionView?.performBatchUpdates({
@@ -420,7 +420,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if e2ee {
-            reloadDataSourceNetwork(forced: true)
+            reloadDataSourceNetwork(isForced: true)
         } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)  {
             reloadDataSource()
             if withPush {
@@ -940,9 +940,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource + NC Endpoint
 
-    func queryDB(forced: Bool) { }
+    func queryDB(isForced: Bool) { }
 
-    @objc func reloadDataSource(forced: Bool = true) {
+    @objc func reloadDataSource(isForced: Bool = true) {
         guard !appDelegate.account.isEmpty else { return }
 
         // E2EE
@@ -962,7 +962,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func reloadDataSourceNetwork(forced: Bool = false) { }
+    @objc func reloadDataSourceNetwork(isForced: Bool = false) { }
 
     @objc func networkSearch() {
         guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
@@ -1043,7 +1043,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
+    @objc func networkReadFolder(isForced: Bool, completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ metadatasDelete: [tableMetadata]?, _ error: NKError) -> Void) {
 
         var tableDirectory: tableDirectory?
 
@@ -1056,7 +1056,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadataFolder = metadataFolder {
                 tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             }
-            if forced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
+            if isForced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? false {
                 NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, error in
                     guard error == .success else {
                         completion(tableDirectory, nil, nil, nil, error)

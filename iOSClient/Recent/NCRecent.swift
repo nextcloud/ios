@@ -49,7 +49,7 @@ class NCRecent: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(forced: Bool) {
+    override func queryDB(isForced: Bool) {
 
         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
         self.dataSource = NCDataSource(metadatas: metadatas,
@@ -61,11 +61,11 @@ class NCRecent: NCCollectionViewCommon {
                                        searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            self.queryDB(forced: forced)
+            self.queryDB(isForced: isForced)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -73,8 +73,8 @@ class NCRecent: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
         let requestBodyRecent =
         """

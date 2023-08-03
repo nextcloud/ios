@@ -232,7 +232,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     // MARK: - DataSource
 
-    @objc func reloadDataSource(forced: Bool = true) {
+    @objc func reloadDataSource(isForced: Bool = true) {
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         datasource.removeAll()

@@ -132,7 +132,7 @@ extension NCManageDatabase {
             guard let result = realm.objects(tableDirectory.self).filter(predicate).first else { return nil }
             return tableDirectory.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -145,7 +145,7 @@ extension NCManageDatabase {
             realm.refresh()
             return realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
         return nil
     }
@@ -162,7 +162,7 @@ extension NCManageDatabase {
                 return Array(results.map { tableDirectory.init(value: $0) })
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil

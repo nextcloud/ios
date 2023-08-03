@@ -49,7 +49,7 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(forced: Bool) {
+    override func queryDB(isForced: Bool) {
 
         var metadatas: [tableMetadata] = []
 
@@ -72,10 +72,10 @@ class NCGroupfolders: NCCollectionViewCommon {
             searchResults: self.searchResults)
     }
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
-        self.queryDB(forced: forced)
+        self.queryDB(isForced: isForced)
         DispatchQueue.main.async {
             self.isReloadDataSourceNetworkInProgress = false
             self.refreshControl.endRefreshing()
@@ -83,8 +83,8 @@ class NCGroupfolders: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
@@ -123,8 +123,7 @@ class NCGroupfolders: NCCollectionViewCommon {
             }
         } else {
 
-            networkReadFolder(forced: forced) { _, _, _, _, _ in
-
+            networkReadFolder(isForced: isForced) { _, _, _, _, _ in
                 self.reloadDataSource()
             }
         }

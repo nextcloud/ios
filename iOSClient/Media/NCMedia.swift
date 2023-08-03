@@ -177,7 +177,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
               let error = userInfo["error"] as? NKError else { return }
         let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        self.queryDB(forced: true)
+        self.queryDB(isForced: true)
 
         if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
             collectionView?.performBatchUpdates({
@@ -452,7 +452,7 @@ extension NCMedia {
 
     // MARK: - Datasource
 
-    func queryDB(forced: Bool) {
+    func queryDB(isForced: Bool) {
 
         livePhoto = CCUtility.getLivePhoto()
 
@@ -497,7 +497,7 @@ extension NCMedia {
         }
 
         DispatchQueue.global().async {
-            self.queryDB(forced: true)
+            self.queryDB(isForced: true)
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
@@ -535,7 +535,7 @@ extension NCMedia {
             if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
                 bottom = -mainTabBar.getHight()
             }
-            NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
+            NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
         }
 
         var lessDate = Date()

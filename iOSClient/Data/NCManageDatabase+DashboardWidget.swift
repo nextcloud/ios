@@ -59,7 +59,7 @@ extension NCManageDatabase {
             let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id).sorted(byKeyPath: "type", ascending: true)
             return (tableDashboardWidget.init(value: resultDashboard), Array(resultsButton.map { tableDashboardWidgetButton.init(value: $0) }))
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return (nil, nil)
@@ -74,7 +74,7 @@ extension NCManageDatabase {
             let results = realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(by: sortProperties)
             return Array(results.map { tableDashboardWidget.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return []

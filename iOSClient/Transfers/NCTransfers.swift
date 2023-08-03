@@ -259,23 +259,22 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB(forced: Bool) {
+    override func queryDB(isForced: Bool) {
 
         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i && status != %i", NCGlobal.shared.metadataStatusNormal, NCGlobal.shared.metadataStatusDownloadError), page: 1, limit: 50, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
     }
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
-        self.queryDB(forced: forced)
+        self.queryDB(isForced: isForced)
         self.refreshControl.endRefreshing()
         self.collectionView.reloadData()
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
-
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
         reloadDataSource()
     }
 }
