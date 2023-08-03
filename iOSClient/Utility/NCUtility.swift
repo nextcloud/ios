@@ -836,7 +836,7 @@ class NCUtility: NSObject {
         var date: Date?
     }
     
-    func getExif(metadata: tableMetadata) -> ExifData? {
+    func getExif(metadata: tableMetadata) async -> ExifData? {
         //        var dateTime: String?
         //        var latitudeRef: String?
         //        var longitudeRef: String?
@@ -850,19 +850,19 @@ class NCUtility: NSObject {
         //        var pixelY = 0
         //        var pixelX = 0
         //        var lensModel = ""
-        
+
         if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
             print("Storage exists or file is not an image")
             return nil
         }
-        
+
         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        
+
         guard let originalSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
             print("Storage exists or file is not an image")
             return nil
         }
-        
+
         guard let fileProperties = CGImageSourceCopyProperties(originalSource, nil) as NSDictionary?,
               let fileSizeNumber = fileProperties[kCGImagePropertyFileSize] as? NSNumber,
               let imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, nil) as NSDictionary? else {
@@ -871,7 +871,7 @@ class NCUtility: NSObject {
         }
 
         var data = ExifData()
-        
+
         data.colorModel = imageProperties[kCGImagePropertyColorModel] as? String
         data.pixelWidth = imageProperties[kCGImagePropertyPixelWidth] as? Double
         data.pixelHeight = imageProperties[kCGImagePropertyPixelHeight] as? Double
@@ -879,7 +879,7 @@ class NCUtility: NSObject {
         data.dpiHeight = imageProperties[kCGImagePropertyDPIHeight] as? Int
         data.depth = imageProperties[kCGImagePropertyDepth] as? Int
         data.orientation = imageProperties[kCGImagePropertyOrientation] as? Int
-        
+
         if let tiffData = imageProperties[kCGImagePropertyTIFFDictionary] as? NSDictionary {
             data.make = tiffData[kCGImagePropertyTIFFMake] as? String
             data.model = tiffData[kCGImagePropertyTIFFModel] as? String
@@ -888,15 +888,15 @@ class NCUtility: NSObject {
             data.tileWidth = tiffData[kCGImagePropertyTIFFTileWidth] as? Double
             data.xResolution = tiffData[kCGImagePropertyTIFFXResolution] as? Double
             data.yResolution = tiffData[kCGImagePropertyTIFFYResolution] as? Double
-            
+
             let dateTime = tiffData[kCGImagePropertyTIFFDateTime] as? String
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
             data.date = dateFormatter.date(from: dateTime ?? "")
         }
-        
+
         if let exifData = imageProperties[kCGImagePropertyExifDictionary] as? NSDictionary {
-            
+
             data.apertureValue = exifData[kCGImagePropertyExifFNumber] as? Double
             data.exposureValue = exifData[kCGImagePropertyExifExposureBiasValue] as? Int
             data.shutterSpeedApex = exifData[kCGImagePropertyExifShutterSpeedValue] as? Double
@@ -910,7 +910,7 @@ class NCUtility: NSObject {
             data.offsetTimeOriginal = exifData[kCGImagePropertyExifOffsetTimeOriginal] as? String
             data.lensModel = exifData[kCGImagePropertyExifLensModel] as? String
         }
-        
+
         if let gpsData = imageProperties[kCGImagePropertyGPSDictionary] as? NSDictionary {
             data.altitude = gpsData[kCGImagePropertyGPSAltitude] as? String
             data.destBearing = gpsData[kCGImagePropertyGPSDestBearing] as? String
@@ -920,41 +920,53 @@ class NCUtility: NSObject {
             data.longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double
             data.speed = gpsData[kCGImagePropertyGPSSpeed] as? Double
         }
-        
+
         if let latitude = data.latitude, let longitude = data.longitude {
             let geocoder = CLGeocoder()
             let llocation = CLLocation(latitude: latitude, longitude: longitude)
             
-            geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
-                if error == nil, let placemark = placemarks?.last {
-                    var thoroughfare = ""
-                    var postalCode = ""
-                    var locality = ""
-                    var administrativeArea = ""
-                    var country = ""
-                    
-                    if let placemarkThoroughfare = placemark.thoroughfare {
-                        thoroughfare = placemarkThoroughfare
-                    }
-                    if let placemarkPostalCode = placemark.postalCode {
-                        postalCode = placemarkPostalCode
-                    }
-                    if let placemarkLocality = placemark.locality {
-                        locality = placemarkLocality
-                    }
-                    if let placemarkAdministrativeArea = placemark.administrativeArea {
-                        administrativeArea = placemarkAdministrativeArea
-                    }
-                    if let placemarkCountry = placemark.country {
-                        country = placemarkCountry
-                    }
-                    
-                    data.location = "\(thoroughfare), \(postalCode), \(locality), \(administrativeArea), \(country)".trimmingCharacters(in: .whitespaces)
+            do {
+                let placemarks = try await geocoder.reverseGeocodeLocation(llocation)
+                if !placemarks.isEmpty, let placemark = placemarks.last {
+                    let locationComponents: [String] = [placemark.thoroughfare, placemark.postalCode, placemark.locality, placemark.administrativeArea, placemark.country]
+                        .compactMap{$0}
+
+                    data.location = locationComponents.joined(separator: ", ")
                 }
+            } catch {
+                print("Could not fetch location")
             }
+
+
+            //            geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
+            //                if error == nil, let placemark = placemarks?.last {
+            //                    let locationComponents: [String] = [placemark.thoroughfare, placemark.postalCode, placemark.locality, placemark.administrativeArea, placemark.country]
+            //                        .compactMap{$0}
+            //
+            ////                    if let placemarkThoroughfare = placemark.thoroughfare {
+            ////                        locationComponents.append(thoroughfare)
+            ////                    }
+            ////                    if let placemarkPostalCode = placemark.postalCode {
+            ////                        locationComponents.append(postalCode)
+            ////                    }
+            ////                    if let placemarkLocality = placemark.locality {
+            ////                        locationComponents.append(locality)
+            ////                    }
+            ////                    if let placemarkAdministrativeArea = placemark.administrativeArea {
+            ////                        locationComponents.append(administrativeArea)
+            ////                    }
+            ////                    if let placemarkCountry = placemark.country {
+            ////                        locationComponents.append(country)
+            ////                    }
+            //
+            //
+            //                    data.location = locationComponents.joined(separator: ", ")
+            ////                    return data
         }
 
+        //        } else {
         return data
+        //        }
     }
 }
 

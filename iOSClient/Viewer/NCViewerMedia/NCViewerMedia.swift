@@ -138,7 +138,7 @@ class NCViewerMedia: UIViewController {
         super.viewWillAppear(animated)
 
         viewerMediaPage?.navigationController?.navigationBar.prefersLargeTitles = false
-        viewerMediaPage?.navigationItem.title = metadata.fileNameView
+        viewerMediaPage?.navigationItem.title = (metadata.fileNameView as NSString).deletingPathExtension
 
         if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
@@ -466,22 +466,24 @@ extension NCViewerMedia {
         delegate?.hasShownDetail()
         self.dismissTip()
 
-        guard let exif = NCUtility.shared.getExif(metadata: metadata) else { return }
+        Task {
+            guard let exif = await NCUtility.shared.getExif(metadata: metadata) else { return }
 
-        if exif.latitude == nil && exif.longitude == nil {
-            self.detailViewHeighConstraint.constant = 195
-        } else {
-            self.detailViewHeighConstraint.constant = 390
+            if exif.latitude == nil && exif.longitude == nil {
+                self.detailViewHeighConstraint.constant = 195
+            } else {
+                self.detailViewHeighConstraint.constant = 390
+            }
+
+            self.view.layoutIfNeeded()
+            self.detailView.show(
+                metadata: self.metadata,
+                image: self.image,
+                textColor: self.viewerMediaPage?.textColor,
+                exif: exif,
+                ncplayer: self.ncplayer,
+                delegate: self)
         }
-
-        self.view.layoutIfNeeded()
-        self.detailView.show(
-            metadata: self.metadata,
-            image: self.image,
-            textColor: self.viewerMediaPage?.textColor,
-            exif: exif,
-            ncplayer: self.ncplayer,
-            delegate: self)
 
         if let image = self.imageVideoContainer.image {
             let ratioW = self.imageVideoContainer.frame.width / image.size.width
@@ -521,15 +523,17 @@ extension NCViewerMedia {
 
     func reloadDetail() {
         if self.detailView.isShown() {
-            guard let exif = NCUtility.shared.getExif(metadata: metadata) else { return }
+            Task {
+                guard let exif = await NCUtility.shared.getExif(metadata: metadata) else { return }
 
-            self.detailView.show(
-                metadata: self.metadata,
-                image: self.image,
-                textColor: self.viewerMediaPage?.textColor,
-                exif: exif,
-                ncplayer: self.ncplayer,
-                delegate: self)
+                self.detailView.show(
+                    metadata: self.metadata,
+                    image: self.image,
+                    textColor: self.viewerMediaPage?.textColor,
+                    exif: exif,
+                    ncplayer: self.ncplayer,
+                    delegate: self)
+            }
         }
     }
 }

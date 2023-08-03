@@ -48,6 +48,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var exposureValueLabel: UILabel!
     @IBOutlet weak var apertureLabel: UILabel!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
+    @IBOutlet weak var locationLabel: UILabel!
 
     private var metadata: tableMetadata?
     private var mapView: MKMapView?
@@ -158,6 +159,7 @@ class NCViewerMediaDetailView: UIView {
         }
 
         extensionLabel.text = metadata.fileExtension.uppercased()
+        locationLabel.text = exif.location
 
         self.isHidden = false
     }

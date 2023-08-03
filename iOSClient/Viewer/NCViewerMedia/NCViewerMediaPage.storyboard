@@ -357,7 +357,7 @@
                                                         <subviews>
                                                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJP-ZX-iug">
                                                                 <rect key="frame" x="0.0" y="0.0" width="384" height="150"/>
-                                                                <color key="backgroundColor" red="0.4036219325" green="0.80000000000000004" blue="0.71445474529999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <color key="backgroundColor" systemColor="systemGray6Color"/>
                                                                 <gestureRecognizers/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="150" id="fJT-bf-c1B"/>
@@ -430,6 +430,7 @@
                                             <outlet property="isoLabel" destination="6Cs-pM-Ful" id="lGL-oS-88h"/>
                                             <outlet property="lensLabel" destination="d4R-Eg-BEV" id="ZaX-do-ccU"/>
                                             <outlet property="lensSizeLabel" destination="crU-0D-RI9" id="ERb-7F-G0b"/>
+                                            <outlet property="locationLabel" destination="bOA-Hx-qza" id="O8Y-V8-Xzp"/>
                                             <outlet property="mapContainer" destination="dJP-ZX-iug" id="xqo-Mi-GOO"/>
                                             <outlet property="megaPixelLabel" destination="sxI-vc-KfJ" id="Uz6-l8-4aI"/>
                                             <outlet property="modelLabel" destination="cA8-2k-F4N" id="Lwb-L5-0Hs"/>
@@ -457,7 +458,6 @@
                             </scrollView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Yo6-7W-moG"/>
-                        <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
                             <constraint firstAttribute="trailing" secondItem="CdQ-LC-Trx" secondAttribute="trailing" id="IwE-oE-d3Y"/>
@@ -486,6 +486,7 @@
                 <tapGestureRecognizer id="fvW-pC-4g1">
                     <connections>
                         <action selector="touchLocation:" destination="P8R-4f-zAl" id="qyd-d2-RyB"/>
+                        <outlet property="delegate" destination="HcW-yY-GaX" id="YJT-UT-XvU"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
