@@ -25,6 +25,7 @@ import UIKit
 import PDFKit
 import EasyTipView
 import NextcloudKit
+import JGProgressHUD
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
@@ -353,31 +354,36 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         self.metadata = metadata
     }
 
-    @objc func moveFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata?.ocId,
-              let ocIdNew = userInfo["ocIdNew"] as? String,
-              let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew)
-        else { return }
-
-        self.metadata = metadataNew
-    }
-
     @objc func deleteFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? [String],
-              let error = userInfo["error"] as? NKError
-        else { return }
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        if error == .success,
+        if let ocId = userInfo["ocId"] as? [String],
            let ocId = ocId.first,
            metadata?.ocId == ocId {
             viewUnload()
         }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
     }
+
+    @objc func moveFile(_ notification: NSNotification) {
+
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+
+        if let ocIds = userInfo["ocId"] as? [String],
+           let ocId = ocIds.first,
+           let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            self.metadata = metadataNew
+        }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
+    }
+
 
     @objc func renameFile(_ notification: NSNotification) {
 

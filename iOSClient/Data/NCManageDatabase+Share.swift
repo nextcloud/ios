@@ -141,11 +141,12 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
             let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(by: sortProperties)
             return Array(results.map { tableShare.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return []
@@ -155,6 +156,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
             let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == 3", metadata.account, metadata.serverUrl, metadata.fileName).first
             if let firstShareLink = firstShareLink {
@@ -165,7 +167,7 @@ extension NCManageDatabase {
                 return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value: $0) }))
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return (nil, nil)
@@ -175,10 +177,11 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableShare.self).filter("account = %@ AND idShare = %d", account, idShare).first else { return nil }
             return tableShare.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -188,11 +191,12 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
             let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
             return Array(results.map { tableShare.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return []
@@ -202,11 +206,12 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
             let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).sorted(by: sortProperties)
             return Array(results.map { tableShare.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return []
@@ -229,7 +234,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-
             try realm.write {
                 let result = realm.objects(tableShare.self).filter("account == %@", account)
                 realm.delete(result)

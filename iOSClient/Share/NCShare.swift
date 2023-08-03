@@ -335,6 +335,7 @@ extension NCShare: UITableViewDataSource {
         // LINK
         if tableShare.shareType == NCShareCommon.shared.SHARE_TYPE_LINK {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
+                cell.indexPath = indexPath
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.setupCellUI()
@@ -343,6 +344,7 @@ extension NCShare: UITableViewDataSource {
         } else {
         // USER / GROUP etc.
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
+                cell.indexPath = indexPath
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.setupCellUI(userId: appDelegate.userId)

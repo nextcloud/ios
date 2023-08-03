@@ -364,14 +364,11 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let account = userInfo["account"] as? String,
-              let ocId = userInfo["ocId"] as? [String],
-              let error = userInfo["error"] as? NKError
-        else { return }
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        if error == .success, let ocId = ocId.first, account == appDelegate.account {
+        if let ocIds = userInfo["ocId"] as? [String],
+           let ocId = ocIds.first {
+
             // Stop media
             if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
                 ncplayer.playerPause()
@@ -380,11 +377,19 @@ class NCViewerMediaPage: UIViewController {
             let metadatas = self.metadatas.filter { $0.ocId != ocId }
             if self.metadatas.count == metadatas.count { return }
             self.metadatas = metadatas
-            
+
             if ocId == currentViewController.metadata.ocId {
                 shiftCurrentPage()
             }
         }
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
+    }
+
+    @objc func moveFile(_ notification: NSNotification) {
+        deleteFile(notification)
     }
 
     @objc func renameFile(_ notification: NSNotification) {
@@ -405,22 +410,6 @@ class NCViewerMediaPage: UIViewController {
             navigationItem.title = metadata.fileNameView
             currentViewController.metadata = metadata
             self.currentViewController.metadata = metadata
-        }
-    }
-
-    @objc func moveFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
-
-        // Stop media
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-            ncplayer.playerPause()
-        }
-
-        if metadatas.firstIndex(where: {$0.ocId == ocId}) != nil {
-            deleteFile(notification)
         }
     }
 

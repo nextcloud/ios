@@ -30,6 +30,8 @@ class NCIntroCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
 
+    var indexPath = IndexPath()
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }

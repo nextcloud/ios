@@ -40,13 +40,14 @@ protocol NCSelectableNavigationView: AnyObject {
     var collectionView: UICollectionView! { get set }
     var isEditMode: Bool { get set }
     var selectOcId: [String] { get set }
+    var selectIndexPath: [IndexPath] { get set }
     var titleCurrentFolder: String { get }
     var navigationItem: UINavigationItem { get }
     var navigationController: UINavigationController? { get }
     var layoutKey: String { get }
     var selectActions: [NCMenuAction] { get }
 
-    func reloadDataSource(forced: Bool)
+    func reloadDataSource(isForced: Bool)
     func setNavigationItem()
 
     func tapSelectMenu()
@@ -77,6 +78,7 @@ extension NCSelectableNavigationView {
     func tapSelect() {
         isEditMode = !isEditMode
         selectOcId.removeAll()
+        selectIndexPath.removeAll()
         self.setNavigationItem()
         self.collectionView.reloadData()
     }
@@ -152,13 +154,13 @@ extension NCSelectableNavigationView where Self: UIViewController {
             actions.append(.saveMediaAction(selectedMediaMetadatas: selectedMediaMetadatas, completion: tapSelect))
         }
         actions.append(.setAvailableOfflineAction(selectedMetadatas: selectedMetadatas, isAnyOffline: isAnyOffline, viewController: self, completion: {
-            self.reloadDataSource(forced: true)
+            self.reloadDataSource(isForced: true)
             self.tapSelect()
         }))
 
-        actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, completion: tapSelect))
+        actions.append(.moveOrCopyAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, completion: tapSelect))
         actions.append(.copyAction(selectOcId: selectOcId, hudView: self.view, completion: tapSelect))
-        actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, viewController: self, completion: tapSelect))
+        actions.append(.deleteAction(selectedMetadatas: selectedMetadatas, indexPath: selectIndexPath, viewController: self, completion: tapSelect))
         return actions
     }
 }

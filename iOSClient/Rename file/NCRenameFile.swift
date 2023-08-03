@@ -48,6 +48,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     let height: CGFloat = 310
 
     var metadata: tableMetadata?
+    var indexPath: IndexPath = IndexPath()
     var fileName: String?
     var imagePreview: UIImage?
     var disableChangeExt: Bool = false
@@ -173,7 +174,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             if metadata.directory {
 
                 fileNameNew = fileNameNoExtensionNew
-                renameMetadata(metadata, fileNameNew: fileNameNew)
+                renameMetadata(metadata, fileNameNew: fileNameNew, indexPath: indexPath)
 
             } else {
 
@@ -193,7 +194,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                     alertController.addAction(UIAlertAction(title: title, style: .default, handler: { _ in
 
                         fileNameNew = fileNameNoExtensionNew + "." + extNew
-                        self.renameMetadata(metadata, fileNameNew: fileNameNew)
+                        self.renameMetadata(metadata, fileNameNew: fileNameNew, indexPath: self.indexPath)
                     }))
 
                     title = NSLocalizedString("_keep_", comment: "") + " ." + extCurrent
@@ -206,7 +207,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                 } else {
 
                     fileNameNew = fileNameNoExtensionNew + "." + extNew
-                    renameMetadata(metadata, fileNameNew: fileNameNew)
+                    renameMetadata(metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                 }
             }
 
@@ -229,7 +230,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     // MARK: - Networking
 
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) {
 
         // verify if already exists
         if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -239,7 +240,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
         NCActivityIndicator.shared.start()
 
-        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, viewController: self) { error in
+        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, indexPath: indexPath, viewController: self) { error in
 
             NCActivityIndicator.shared.stop()
 

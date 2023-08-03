@@ -32,7 +32,6 @@ import NextcloudKit
     }()
 
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -42,7 +41,6 @@ import NextcloudKit
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
-        copyMoveCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
         downloadThumbnailActivityCancelAll()
@@ -73,19 +71,6 @@ import NextcloudKit
             return true
         }
         return false
-    }
-
-    // MARK: - Copy Move file
-
-    func copyMove(metadata: tableMetadata, serverUrl: String, overwrite: Bool, move: Bool) {
-        for case let operation as NCOperationCopyMove in copyMoveQueue.operations where operation.metadata.ocId == metadata.ocId {
-            return
-        }
-        copyMoveQueue.addOperation(NCOperationCopyMove(metadata: metadata, serverUrlTo: serverUrl, overwrite: overwrite, move: move))
-    }
-
-    func copyMoveCancelAll() {
-        copyMoveQueue.cancelAll()
     }
 
     // MARK: - Synchronization
@@ -237,45 +222,6 @@ class NCOperationDownload: ConcurrentOperation {
         } else {
             NCNetworking.shared.download(metadata: metadata, selector: self.selector) { _, _ in
                 self.finish()
-            }
-        }
-    }
-}
-
-// MARK: -
-
-class NCOperationCopyMove: ConcurrentOperation {
-
-    var metadata: tableMetadata
-    var serverUrlTo: String
-    var overwrite: Bool
-    var move: Bool
-
-    init(metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, move: Bool) {
-        self.metadata = tableMetadata.init(value: metadata)
-        self.serverUrlTo = serverUrlTo
-        self.overwrite = overwrite
-        self.move = move
-    }
-
-    override func start() {
-        if isCancelled {
-            self.finish()
-        } else {
-            if move {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { error in
-                    if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
-                    }
-                    self.finish()
-                }
-            } else {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { error in
-                    if error != .success {
-                        NCContentPresenter.shared.showError(error: error)
-                    }
-                    self.finish()
-                }
             }
         }
     }

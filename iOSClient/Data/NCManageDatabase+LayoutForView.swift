@@ -117,13 +117,14 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             if let result = realm.objects(NCDBLayoutForView.self).filter("index == %@", index).first {
                 return NCDBLayoutForView(value: result)
             } else {
                 return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return setLayoutForView(account: account, key: key, serverUrl: serverUrl)

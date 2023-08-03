@@ -34,9 +34,15 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var labelDate: UILabel!
     @IBOutlet weak var labelMessage: UILabel!
 
+    private var index = IndexPath()
+
     var tableComments: tableComments?
     weak var delegate: NCShareCommentsCellDelegate?
 
+    var indexPath: IndexPath {
+        get { return index }
+        set { index = newValue }
+    }
     var fileAvatarImageView: UIImageView? {
         return imageItem
     }

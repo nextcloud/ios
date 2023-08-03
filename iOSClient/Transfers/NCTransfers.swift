@@ -98,7 +98,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: TAP EVENT
 
-    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
 
@@ -114,7 +114,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
 
-    override func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
 
         if gestureRecognizer.state != .began { return }
 
@@ -178,6 +178,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.delegate = self
 
         cell.fileObjectId = metadata.ocId
+        cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
         cell.imageItem.image = NCBrandColor.cacheImages.file
@@ -258,19 +259,22 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
-        super.reloadDataSource()
+    override func queryDB(isForced: Bool) {
 
         let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "status != %i && status != %i", NCGlobal.shared.metadataStatusNormal, NCGlobal.shared.metadataStatusDownloadError), page: 1, limit: 50, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account)
+    }
 
+    override func reloadDataSource(isForced: Bool = true) {
+        super.reloadDataSource()
+
+        self.queryDB(isForced: isForced)
         self.refreshControl.endRefreshing()
         self.collectionView.reloadData()
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
-
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
         reloadDataSource()
     }
 }

@@ -146,12 +146,10 @@ class NCGlobal: NSObject {
     let layoutList                                  = "typeLayoutList"
     let layoutGrid                                  = "typeLayoutGrid"
 
-    let layoutViewMove                              = "LayoutMove"
     let layoutViewTrash                             = "LayoutTrash"
     let layoutViewOffline                           = "LayoutOffline"
     let layoutViewFavorite                          = "LayoutFavorite"
     let layoutViewFiles                             = "LayoutFiles"
-    let layoutViewViewInFolder                      = "LayoutViewInFolder"
     let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
@@ -351,10 +349,10 @@ class NCGlobal: NSObject {
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: account, ocIds, error
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, hud?
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], hud?
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], hud?
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
     let notificationCenterOperationReadFile                     = "operationReadFile"               // userInfo: ocId

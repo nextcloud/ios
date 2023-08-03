@@ -56,10 +56,11 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else { return nil }
             return result.jsondata
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil

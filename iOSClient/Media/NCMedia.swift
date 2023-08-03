@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import JGProgressHUD
 
 class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
@@ -43,6 +44,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
+    internal var selectIndexPath: [IndexPath] = []
 
     internal var filterClassTypeImage = false
     internal var filterClassTypeVideo = false
@@ -120,6 +122,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
@@ -140,6 +143,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
     }
@@ -170,39 +174,41 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              let ocIds = userInfo["ocId"] as? [String],
-              let error = userInfo["error"] as? NKError
-        else { return }
+              let error = userInfo["error"] as? NKError else { return }
+        let onlyLocalCache: Bool = userInfo["onlyLocalCache"] as? Bool ?? false
 
-        if error == .success, account == appDelegate.account {
-            var items: [IndexPath] = []
-            var index: Int = 0
-            for metadata in metadatas {
-                if ocIds.contains(metadata.ocId) {
-                    self.metadatas.remove(at: index)
-                    items.append(IndexPath(row: index, section: 0))
-                }
-                if ocIds.count == items.count { break }
-                index += 1
+        self.queryDB(isForced: true)
+
+        if error == .success, let indexPath = userInfo["indexPath"] as? [IndexPath], !indexPath.isEmpty, !onlyLocalCache {
+            collectionView?.performBatchUpdates({
+                collectionView?.deleteItems(at: indexPath)
+            }, completion: { _ in
+                self.collectionView?.reloadData()
+            })
+        } else {
+            if error != .success {
+                NCContentPresenter.shared.showError(error: error)
             }
-            if ocIds.count == items.count {
-                self.collectionView?.deleteItems(at: items)
-            } else {
-                self.reloadDataSourceWithCompletion { _ in }
-            }
+            self.collectionView?.reloadData()
         }
-        self.updateMediaControlVisibility()
+
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
     }
 
     @objc func moveFile(_ notification: NSNotification) {
 
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
-        else { return }
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        self.reloadDataSourceWithCompletion { _ in }
+        if let hud = userInfo["hud"] as? JGProgressHUD {
+            hud.dismiss()
+        }
+    }
+
+    @objc func copyFile(_ notification: NSNotification) {
+
+        moveFile(notification)
     }
 
     @objc func renameFile(_ notification: NSNotification) {
@@ -280,7 +286,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
 
     // MARK: Select Path
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
 
         guard let serverUrl = serverUrl else { return }
         let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account) ?? ""
@@ -314,8 +320,10 @@ extension NCMedia: UICollectionViewDelegate {
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
                 selectOcId.remove(at: index)
+                selectIndexPath.removeAll(where: { $0 == indexPath })
             } else {
                 selectOcId.append(metadata.ocId)
+                selectIndexPath.append(indexPath)
             }
             if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                 collectionView.reloadItems(at: [indexPath])
@@ -338,7 +346,7 @@ extension NCMedia: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image)
         }, actionProvider: { _ in
-            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, indexPath: indexPath, viewController: self, image: image)
         })
     }
 
@@ -400,6 +408,7 @@ extension NCMedia: UICollectionViewDataSource {
 
             cell.date = metadata.date as Date
             cell.fileObjectId = metadata.ocId
+            cell.indexPath = indexPath
             cell.fileUser = metadata.ownerId
 
             if metadata.isAudioOrVideo {
@@ -443,14 +452,7 @@ extension NCMedia {
 
     // MARK: - Datasource
 
-    @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-        guard !appDelegate.account.isEmpty else { return }
-
-        if account != appDelegate.account {
-            self.metadatas = []
-            account = appDelegate.account
-            collectionView?.reloadData()
-        }
+    func queryDB(isForced: Bool) {
 
         livePhoto = CCUtility.getLivePhoto()
 
@@ -470,18 +472,32 @@ extension NCMedia {
         }
 
         guard let predicate = predicate else { return }
+
+        self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: self.livePhoto)
+
+        switch CCUtility.getMediaSortDate() {
+        case "date":
+            self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )
+        case "creationDate":
+            self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)} )
+        case "uploadDate":
+            self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)} )
+        default:
+            break
+        }
+    }
+
+    @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+        guard !appDelegate.account.isEmpty else { return }
+
+        if account != appDelegate.account {
+            self.metadatas = []
+            account = appDelegate.account
+            DispatchQueue.main.async { self.collectionView?.reloadData() }
+        }
+
         DispatchQueue.global().async {
-            self.metadatas = NCManageDatabase.shared.getMetadatasMedia(predicate: predicate, livePhoto: self.livePhoto)
-            switch CCUtility.getMediaSortDate() {
-            case "date":
-                self.metadatas = self.metadatas.sorted(by: {($0.date as Date) > ($1.date as Date)} )
-            case "creationDate":
-                self.metadatas = self.metadatas.sorted(by: {($0.creationDate as Date) > ($1.creationDate as Date)} )
-            case "uploadDate":
-                self.metadatas = self.metadatas.sorted(by: {($0.uploadDate as Date) > ($1.uploadDate as Date)} )
-            default:
-                break
-            }
+            self.queryDB(isForced: true)
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
@@ -513,7 +529,14 @@ extension NCMedia {
     private func searchOldMedia(value: Int = -30, limit: Int = 300) {
 
         if oldInProgress { return } else { oldInProgress = true }
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+            var bottom: CGFloat = 0
+            if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
+                bottom = -mainTabBar.getHight()
+            }
+            NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
+        }
 
         var lessDate = Date()
         if predicateDefault != nil {
@@ -529,19 +552,15 @@ extension NCMedia {
             greaterDate = Calendar.current.date(byAdding: .day, value: value, to: lessDate)!
         }
 
-        var bottom: CGFloat = 0
-        if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-            bottom = -mainTabBar.getHight()
-        }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
-
-        let options = NKRequestOptions(timeout: 300)
+        let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         
         NextcloudKit.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
 
             self.oldInProgress = false
-            NCActivityIndicator.shared.stop()
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                NCActivityIndicator.shared.stop()
+                self.collectionView.reloadData()
+            }
 
             if error == .success && account == self.appDelegate.account {
                 if files.count > 0 {
@@ -616,12 +635,14 @@ extension NCMedia {
 
         reloadDataThenPerform {
 
-            let options = NKRequestOptions(timeout: 300)
+            let options = NKRequestOptions(timeout: 300, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             
             NextcloudKit.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
 
                 self.newInProgress = false
-                self.mediaCommandView?.activityIndicator.stopAnimating()
+                DispatchQueue.main.async {
+                    self.mediaCommandView?.activityIndicator.stopAnimating()
+                }
 
                 if error == .success && account == self.appDelegate.account && files.count > 0 {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, _, metadatas in

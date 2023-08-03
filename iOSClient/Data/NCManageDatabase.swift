@@ -264,6 +264,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first else { return NSUUID().uuidString }
             return result.chunkFolder
         } catch let error as NSError {
@@ -279,6 +280,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
             for result in results {
                 filesNames.append(result.fileName)
@@ -323,6 +325,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first else { return nil }
             return tableChunk.init(value: result)
         } catch let error as NSError {
@@ -419,6 +422,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
             if results.isEmpty {
                 return nil
@@ -436,6 +440,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
             if results.isEmpty {
                 return nil
@@ -453,6 +458,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
             if results.isEmpty {
                 return nil
@@ -508,6 +514,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableExternalSites.self).filter("account == %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
             if results.isEmpty {
                 return nil
@@ -550,6 +557,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first
             return result?.location
         } catch let error as NSError {
@@ -557,151 +565,6 @@ class NCManageDatabase: NSObject {
         }
 
         return nil
-    }
-
-    // MARK: -
-    // MARK: Table LocalFile
-
-    func addLocalFile(metadata: tableMetadata) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
-                addObject.account = metadata.account
-                addObject.etag = metadata.etag
-                addObject.exifDate = NSDate()
-                addObject.exifLatitude = "-1"
-                addObject.exifLongitude = "-1"
-                addObject.ocId = metadata.ocId
-                addObject.fileName = metadata.fileName
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let addObject = tableLocalFile()
-                addObject.account = account
-                addObject.etag = etag
-                addObject.exifDate = NSDate()
-                addObject.exifLatitude = "-1"
-                addObject.exifLongitude = "-1"
-                addObject.ocId = ocId
-                addObject.fileName = fileName
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func deleteLocalFile(predicate: NSPredicate) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableLocalFile.self).filter(predicate)
-                realm.delete(results)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func setLocalFile(ocId: String, fileName: String?, etag: String?) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                if let fileName = fileName {
-                    result?.fileName = fileName
-                }
-                if let etag = etag {
-                    result?.etag = etag
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first {
-                    result.exifDate = exifDate
-                    result.exifLatitude = exifLatitude
-                    result.exifLongitude = exifLongitude
-                    if exifLensModel?.count ?? 0 > 0 {
-                        result.exifLensModel = exifLensModel
-                    }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func getTableLocalFile(account: String) -> [tableLocalFile] {
-
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
-            return Array(results.map { tableLocalFile.init(value: $0) })
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return []
-    }
-
-    func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
-
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else { return nil }
-            return tableLocalFile.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return nil
-    }
-
-    func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
-
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            return Array(results.map { tableLocalFile.init(value: $0) })
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return []
-    }
-
-    func setLocalFile(ocId: String, offline: Bool) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                result?.offline = offline
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
     }
 
     // MARK: -
@@ -752,6 +615,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
             let idsAsset = results.map { $0.idAsset }
             return Array(idsAsset)
@@ -798,6 +662,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableTag.self).filter(predicate)
             return Array(results.map { tableTag.init(value: $0) })
         } catch let error as NSError {
@@ -811,6 +676,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableTag.self).filter(predicate).first else { return nil }
             return tableTag.init(value: result)
         } catch let error as NSError {
@@ -932,6 +798,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
             return Array(results.map { tableTrash.init(value: $0) })
         } catch let error as NSError {
@@ -945,6 +812,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else { return nil }
             return tableTrash.init(value: result)
         } catch let error as NSError {

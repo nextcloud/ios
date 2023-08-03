@@ -48,6 +48,7 @@ extension NCScan: UICollectionViewDataSource {
                 image = image.resizeImage(size: CGSize(width: 595, height: 842)) ?? image
             }
 
+            cell.indexPath = indexPath
             cell.customImageView?.image = image
             cell.delete.action(for: .touchUpInside) { sender in
 
@@ -69,6 +70,7 @@ extension NCScan: UICollectionViewDataSource {
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as? NCScanCell)!
             cell.delegate = self
             cell.index = indexPath.row
+            cell.indexPath = indexPath
 
             var image = imagesDestination[indexPath.row]
 
