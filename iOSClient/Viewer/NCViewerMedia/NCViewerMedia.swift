@@ -45,7 +45,7 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
-    
+
     private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
 
@@ -93,7 +93,7 @@ class NCViewerMedia: UIViewController {
             statusViewImage.image = nil
             statusLabel.text = ""
         }
-        
+
         if metadata.isAudioOrVideo {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
@@ -152,7 +152,7 @@ class NCViewerMedia: UIViewController {
         super.viewDidAppear(animated)
 
         viewerMediaPage?.clearCommandCenter()
-        
+
         if metadata.isAudioOrVideo {
             if let ncplayer = self.ncplayer {
                 if ncplayer.url == nil {
@@ -466,8 +466,8 @@ extension NCViewerMedia {
         delegate?.hasShownDetail()
         self.dismissTip()
 
-        Task {
-            guard let exif = await NCUtility.shared.getExif(metadata: metadata) else { return }
+        NCUtility.shared.getExif(metadata: metadata) { exif in
+            guard let exif else { return }
 
             if exif.latitude == nil && exif.longitude == nil {
                 self.detailViewHeighConstraint.constant = 195
@@ -523,8 +523,8 @@ extension NCViewerMedia {
 
     func reloadDetail() {
         if self.detailView.isShown() {
-            Task {
-                guard let exif = await NCUtility.shared.getExif(metadata: metadata) else { return }
+            NCUtility.shared.getExif(metadata: metadata) { exif in
+                guard let exif else { return }
 
                 self.detailView.show(
                     metadata: self.metadata,
