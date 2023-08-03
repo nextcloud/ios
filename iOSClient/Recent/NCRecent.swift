@@ -49,19 +49,23 @@ class NCRecent: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
+    override func queryDB(isForced: Bool) {
+
+        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
+        self.dataSource = NCDataSource(metadatas: metadatas,
+                                       account: self.appDelegate.account,
+                                       directoryOnTop: false,
+                                       favoriteOnTop: false,
+                                       groupByField: self.groupByField,
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
+    }
+
+    override func reloadDataSource(isForced: Bool = true) {
         super.reloadDataSource()
 
         DispatchQueue.global().async {
-            let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: self.appDelegate.account,
-                                           directoryOnTop: false,
-                                           favoriteOnTop: false,
-                                           groupByField: self.groupByField,
-                                           providers: self.providers,
-                                           searchResults: self.searchResults)
-
+            self.queryDB(isForced: isForced)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -69,8 +73,8 @@ class NCRecent: NCCollectionViewCommon {
         }
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
         let requestBodyRecent =
         """

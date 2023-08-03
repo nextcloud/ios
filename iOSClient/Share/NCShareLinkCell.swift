@@ -33,6 +33,7 @@ class NCShareLinkCell: UITableViewCell {
     var tableShare: tableShare?
     weak var delegate: NCShareLinkCellDelegate?
     var isInternalLink = false
+    var indexPath = IndexPath()
 
     override func prepareForReuse() {
         super.prepareForReuse()

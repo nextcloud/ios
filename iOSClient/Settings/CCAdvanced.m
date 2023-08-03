@@ -114,7 +114,8 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
     [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
-    [row.cellConfigAtConfigure setObject:@1 forKey:@"stepControl.stepValue"];
+
+    [row.cellConfigAtConfigure setObject:@10 forKey:@"stepControl.stepValue"];
     [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
     [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
     [section addFormRow:row];
@@ -254,7 +255,6 @@
                             [XLFormOptionsObject formOptionsObjectWithValue:@(90) displayText:NSLocalizedString(@"_3_months_", nil)],
                             [XLFormOptionsObject formOptionsObjectWithValue:@(30) displayText:NSLocalizedString(@"_1_month_", nil)],
                             [XLFormOptionsObject formOptionsObjectWithValue:@(7) displayText:NSLocalizedString(@"_1_week_", nil)],
-                            //[XLFormOptionsObject formOptionsObjectWithValue:@(1) displayText:NSLocalizedString(@"_1_day_", nil)],
                             ];
     [sectionSize addFormRow:row];
     
@@ -375,7 +375,6 @@
     }
     
     if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
-        
         NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
         [CCUtility setChunkSize:chunkSize];
     }

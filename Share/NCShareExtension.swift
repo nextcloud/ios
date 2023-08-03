@@ -339,6 +339,8 @@ extension NCShareExtension {
         metadata.classFile = results.classFile
         // CHUNCK
         metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
+        // E2EE
+        metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
         hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(filesName.count)"
         hud.show(in: self.view)

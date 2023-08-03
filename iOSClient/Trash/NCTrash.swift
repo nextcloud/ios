@@ -41,6 +41,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     internal var isEditMode = false
     internal var selectOcId: [String] = []
+    internal var selectIndexPath: [IndexPath] = []
 
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
@@ -231,7 +232,7 @@ class NCTrash: UIViewController, NCSelectableNavigationView, NCTrashListCellDele
 
     // MARK: - DataSource
 
-    @objc func reloadDataSource(forced: Bool = true) {
+    @objc func reloadDataSource(isForced: Bool = true) {
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
         datasource.removeAll()

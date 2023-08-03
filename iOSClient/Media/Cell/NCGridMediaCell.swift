@@ -32,7 +32,8 @@ class NCGridMediaCell: UICollectionViewCell, NCCellProtocol {
 
     private var objectId: String = ""
     private var user: String = ""
-
+    var indexPath = IndexPath()
+    
     var date: Date?
 
     var filePreviewImageView: UIImageView? {

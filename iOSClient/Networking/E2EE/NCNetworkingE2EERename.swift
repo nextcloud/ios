@@ -32,7 +32,7 @@ class NCNetworkingE2EERename: NSObject {
         return instance
     }()
 
-    func rename(metadata: tableMetadata, fileNameNew: String) async -> (NKError) {
+    func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> (NKError) {
 
         if let error = NCNetworkingE2EE.shared.isE2EEVersionWriteable(account: metadata.account) {
             return error
@@ -93,7 +93,7 @@ class NCNetworkingE2EERename: NSObject {
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
         
         if error == .success {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
         }
 
         return error

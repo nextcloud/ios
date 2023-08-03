@@ -49,11 +49,11 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func reloadDataSource(forced: Bool = true) {
-        super.reloadDataSource()
+    override func queryDB(isForced: Bool) {
 
         let sharess = NCManageDatabase.shared.getTableShares(account: self.appDelegate.account)
         var metadatas: [tableMetadata] = []
+
         for share in sharess {
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
                 if !(metadatas.contains { $0.ocId == metadata.ocId }) {
@@ -61,6 +61,7 @@ class NCShares: NCCollectionViewCommon {
                 }
             }
         }
+
         self.dataSource = NCDataSource(metadatas: metadatas,
                                        account: self.appDelegate.account,
                                        sort: self.layoutForView?.sort,
@@ -71,14 +72,22 @@ class NCShares: NCCollectionViewCommon {
                                        groupByField: self.groupByField,
                                        providers: self.providers,
                                        searchResults: self.searchResults)
-
-
-        self.refreshControl.endRefreshing()
-        self.collectionView.reloadData()
     }
 
-    override func reloadDataSourceNetwork(forced: Bool = false) {
-        super.reloadDataSourceNetwork(forced: forced)
+    override func reloadDataSource(isForced: Bool = true) {
+        super.reloadDataSource()
+
+        DispatchQueue.global().async {
+            self.queryDB(isForced: isForced)
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
+        }
+    }
+
+    override func reloadDataSourceNetwork(isForced: Bool = false) {
+        super.reloadDataSourceNetwork(isForced: isForced)
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()

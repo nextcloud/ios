@@ -127,6 +127,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
         vcRename.delegate = self
         vcRename.fileName = fileName
+        vcRename.indexPath = IndexPath()
         if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
             vcRename.imagePreview = previewImage
         } else {

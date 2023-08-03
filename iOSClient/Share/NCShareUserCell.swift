@@ -35,9 +35,15 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var labelQuickStatus: UILabel!
     @IBOutlet weak var imageDownArrow: UIImageView!
 
+    private var index = IndexPath()
+
     var tableShare: tableShare?
     weak var delegate: NCShareUserCellDelegate?
 
+    var indexPath: IndexPath {
+        get { return index }
+        set { index = newValue }
+    }
     var fileAvatarImageView: UIImageView? {
         return imageItem
     }
@@ -132,7 +138,12 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
 
     private var user: String = ""
+    private var index = IndexPath()
 
+    var indexPath: IndexPath {
+        get { return index }
+        set { index = newValue }
+    }
     var fileAvatarImageView: UIImageView? {
         return imageItem
     }

@@ -146,12 +146,10 @@ class NCGlobal: NSObject {
     let layoutList                                  = "typeLayoutList"
     let layoutGrid                                  = "typeLayoutGrid"
 
-    let layoutViewMove                              = "LayoutMove"
     let layoutViewTrash                             = "LayoutTrash"
     let layoutViewOffline                           = "LayoutOffline"
     let layoutViewFavorite                          = "LayoutFavorite"
     let layoutViewFiles                             = "LayoutFiles"
-    let layoutViewViewInFolder                      = "LayoutViewInFolder"
     let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
@@ -167,6 +165,7 @@ class NCGlobal: NSObject {
     // Standard height sections header/footer
     //
     let heightButtonsView: CGFloat                  = 50
+    let heightHeaderTransfer: CGFloat               = 50
     let heightSection: CGFloat                      = 30
     let heightFooter: CGFloat                       = 1
     let heightFooterButton: CGFloat                 = 30
@@ -347,13 +346,13 @@ class NCGlobal: NSObject {
     @objc let notificationCenterUploadedFile                    = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
     let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
 
-    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: account, ocIds, error
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: ocId, account, serverUrlFrom
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: ocId, serverUrlTo
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, hud?
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], hud?
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], hud?
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 
     let notificationCenterOperationReadFile                     = "operationReadFile"               // userInfo: ocId
@@ -448,7 +447,7 @@ class NCGlobal: NSObject {
     var capabilityExternalSites: Bool                           = false
     var capabilityGroupfoldersEnabled: Bool                     = false // NC27
 
-    // MORE APPS
+    // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/de/app/nextcloud-talk/id1296825574"

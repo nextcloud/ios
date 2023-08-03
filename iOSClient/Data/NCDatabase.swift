@@ -109,20 +109,6 @@ class tableGPS: Object {
     @objc dynamic var placemarkThoroughfare = ""
 }
 
-class tableLocalFile: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var etag = ""
-    @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileName = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var offline: Bool = false
-
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
-}
-
 class tablePhotoLibrary: Object {
 
     @objc dynamic var account = ""

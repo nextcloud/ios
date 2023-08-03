@@ -102,6 +102,7 @@
 		F31F69662A2F929600162F76 /* PreviewSnapshotsTesting in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69652A2F929600162F76 /* PreviewSnapshotsTesting */; };
 		F31F69692A2F92F000162F76 /* SnapshotTestingHEIC in Frameworks */ = {isa = PBXBuildFile; productRef = F31F69682A2F92F000162F76 /* SnapshotTestingHEIC */; };
 		F32ED5062A2F254400EABA81 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F30A96302A27AEBF00D7BCFE /* EnvVars.generated.swift */; };
+		F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */; };
 		F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
 		F343A4B42A1E084100DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
 		F343A4B52A1E084200DDA874 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */; };
@@ -116,8 +117,13 @@
 		F343A4BF2A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F343A4C02A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F343A4C12A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
 		F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */; };
+		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
+		F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */; };
+		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
+		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
@@ -178,7 +184,6 @@
 		F7148041262EBE4000693E51 /* NCShareExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7148040262EBE4000693E51 /* NCShareExtension.swift */; };
 		F714804F262ED4F900693E51 /* NCGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4521903D010088454D /* NCGridCell.xib */; };
 		F7148054262ED51000693E51 /* NCListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4321903CF20088454D /* NCListCell.xib */; };
-		F7148059262ED52200693E51 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */; };
 		F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F7148063262ED66200693E51 /* NCEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7239876253D86D300257F49 /* NCEmptyView.xib */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
@@ -457,6 +462,13 @@
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F785EEA62461A4FB00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		F7864ACC2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
+		F7864ACD2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
+		F7864ACE2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
+		F7864ACF2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
+		F7864AD02A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
+		F7864AD12A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
+		F7864AD22A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
 		F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F787AC08298BCB4A0001BB00 /* SVGKitSwift */; };
 		F787AC0B298BCB540001BB00 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F787AC0A298BCB540001BB00 /* SVGKitSwift */; };
@@ -477,7 +489,6 @@
 		F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4921903F850088454D /* NCTrashListCell.xib */; };
 		F78ACD52219046DC0088454D /* NCSectionHeaderMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderMenu.swift */; };
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
-		F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */; };
 		F78C6FDE296D677300C952C3 /* NCContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C6FDD296D677300C952C3 /* NCContextMenu.swift */; };
 		F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
 		F78E2D6629AF02DB0024D4F3 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E2D6429AF02DB0024D4F3 /* Database.swift */; };
@@ -547,6 +558,8 @@
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
+		F7B398422A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
+		F7B398432A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */; };
 		F7B6B70427C4E7FA00A7F6EB /* NCScan+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B6B70327C4E7FA00A7F6EB /* NCScan+CollectionView.swift */; };
 		F7B7504B2397D38F004E13EC /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */; };
 		F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8B82F25681C3400967775 /* GoogleService-Info.plist */; };
@@ -589,7 +602,6 @@
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
 		F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB689F254169530050EC94 /* NCSettings.storyboard */; };
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
-		F7CF16A32A4D7C7A000FF107 /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F7D56B192972405500FA46C4 /* Mantis */; };
 		F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CA212C25F1333200826ABB /* NCAccountRequest.storyboard */; };
@@ -810,10 +822,16 @@
 		F31F69442A2F6D4600162F76 /* NextcloudSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextcloudSnapshotTests.swift; sourceTree = "<group>"; };
 		F31F694F2A2F707E00162F76 /* SwiftUIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUIView+Extensions.swift"; sourceTree = "<group>"; };
 		F31F69602A2F907800162F76 /* __Snapshots__ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = __Snapshots__; sourceTree = "<group>"; };
+		F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMoreUserCell.xib; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
+		F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNCMoreCell.swift; sourceTree = "<group>"; };
 		F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseIntegrationXCTestCase.swift; sourceTree = "<group>"; };
 		F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUIXCTestCase.swift; sourceTree = "<group>"; };
+		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
+		F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreUserCell.swift; sourceTree = "<group>"; };
+		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
+		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
 		F700510222DF6897003A3356 /* Parchment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parchment.framework; path = Carthage/Build/iOS/Parchment.framework; sourceTree = "<group>"; };
@@ -1089,6 +1107,7 @@
 		F783031028B4C86200B84583 /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
 		F783031128B4C86200B84583 /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
 		F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EE.swift; sourceTree = "<group>"; };
+		F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+LocalFile.swift"; sourceTree = "<group>"; };
 		F787704E22E7019900F287A9 /* NCShareLinkCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkCell.xib; sourceTree = "<group>"; };
 		F78A10BE29322E8A008499B8 /* NCManageDatabase+Directory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Directory.swift"; sourceTree = "<group>"; };
 		F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichWorkspaceWebView.swift; sourceTree = "<group>"; };
@@ -1102,7 +1121,6 @@
 		F78ACD4921903F850088454D /* NCTrashListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashListCell.xib; sourceTree = "<group>"; };
 		F78ACD51219046DC0088454D /* NCSectionHeaderMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeaderMenu.swift; sourceTree = "<group>"; };
 		F78ACD53219047D40088454D /* NCSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionFooter.xib; sourceTree = "<group>"; };
-		F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionHeaderMenu.xib; sourceTree = "<group>"; };
 		F78C6FDD296D677300C952C3 /* NCContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCContextMenu.swift; sourceTree = "<group>"; };
 		F78D6F461F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F4D1F0B7CE4002F9619 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1191,6 +1209,7 @@
 		F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TOPasscodeViewController.framework; path = Carthage/Build/iOS/TOPasscodeViewController.framework; sourceTree = "<group>"; };
 		F7B1076C25D3CF2800E72DE2 /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = System/Library/Frameworks/BackgroundTasks.framework; sourceTree = SDKROOT; };
 		F7B1A7761EBB3C8000BFB6D1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeaderMenu.xib; sourceTree = "<group>"; };
 		F7B6B70327C4E7FA00A7F6EB /* NCScan+CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCScan+CollectionView.swift"; sourceTree = "<group>"; };
 		F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		F7B8B82F25681C3400967775 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -1586,6 +1605,27 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		F33AAF982A601465006ECCBD /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		F3BB46502A39EC2D00461F6E /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */,
+				F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */,
+				F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */,
+				F3BB464E2A39EBE500461F6E /* NCMoreUserCell.swift */,
+				F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */,
+				F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -1964,7 +2004,7 @@
 			children = (
 				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
 				F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */,
-				F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */,
+				F7B398412A6A91D5007538D6 /* NCSectionHeaderMenu.xib */,
 				F78ACD51219046DC0088454D /* NCSectionHeaderMenu.swift */,
 			);
 			path = "Section Header Footer";
@@ -2140,6 +2180,7 @@
 				F72FD3B4297ED49A00075D28 /* NCManageDatabase+E2EE.swift */,
 				F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */,
 				F7BF9D812934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift */,
+				F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */,
 				AF4BF61827562A4B0081CEEF /* NCManageDatabase+Metadata.swift */,
 				F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */,
 				F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */,
@@ -2268,7 +2309,7 @@
 		F7CB68942541670D0050EC94 /* More */ = {
 			isa = PBXGroup;
 			children = (
-				F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */,
+				F3BB46502A39EC2D00461F6E /* Cells */,
 				F7CB68992541676B0050EC94 /* NCMore.storyboard */,
 				F73F537E1E929C8500F8678D /* NCMore.swift */,
 			);
@@ -2373,6 +2414,7 @@
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				F31F69422A2F6D4500162F76 /* NextcloudSnapshotTests.xctest */,
+				F33AAF982A601465006ECCBD /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3063,11 +3105,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7148059262ED52200693E51 /* NCSectionHeaderMenu.xib in Resources */,
 				F714803B262EBE3900693E51 /* MainInterface.storyboard in Resources */,
 				F7148054262ED51000693E51 /* NCListCell.xib in Resources */,
 				F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */,
 				AF22B209277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.xib in Resources */,
+				F7B398432A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */,
 				F7148063262ED66200693E51 /* NCEmptyView.xib in Resources */,
 				AF22B207277B4E4C00DAB0CC /* NCCreateFormUploadConflict.storyboard in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
@@ -3105,6 +3147,7 @@
 				F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */,
 				F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */,
 				F78ACD4421903CF20088454D /* NCListCell.xib in Resources */,
+				F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */,
 				F7F4F10727ECDBDB008676F9 /* Inconsolata-Black.ttf in Resources */,
 				F761856D29E98543006EB3B0 /* NCIntroCollectionViewCell.xib in Resources */,
 				F78ACD4621903D010088454D /* NCGridCell.xib in Resources */,
@@ -3118,6 +3161,7 @@
 				F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */,
 				F758B45A212C564000515F55 /* NCScan.storyboard in Resources */,
 				F70D87CF25EE6E58008CBBBD /* NCRenameFile.storyboard in Resources */,
+				F33AAF9A2A60394C006ECCBD /* NCMoreUserCell.xib in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F702F30225EE5D2C008F8E80 /* english.txt in Resources */,
@@ -3166,7 +3210,6 @@
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
 				F7EDE509262DA9D600414FE6 /* NCSelectCommandViewSelect.xib in Resources */,
 				F732D23327CF8AED000B0F1B /* NCPlayerToolBar.xib in Resources */,
-				F7CF16A32A4D7C7A000FF107 /* NCMoreUserCell.xib in Resources */,
 				F73D11FA253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard in Resources */,
 				F7EDE51B262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib in Resources */,
 				F73B422B2476764F00A30FD3 /* NCNotification.storyboard in Resources */,
@@ -3179,7 +3222,7 @@
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
 				F7EDE514262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib in Resources */,
-				F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */,
+				F7B398422A6A91D5007538D6 /* NCSectionHeaderMenu.xib in Resources */,
 				F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */,
 				F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */,
 				F77910A525DD517B00CEDB9E /* Settings.bundle in Resources */,
@@ -3254,6 +3297,7 @@
 				F72FD3BA297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7E98C1927E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
+				F7864AD22A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */,
 				F7D68FD028CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F343A4C12A1E734600DDA874 /* Optional+Extension.swift in Sources */,
@@ -3345,6 +3389,7 @@
 				F7490E6C29882AEA009DCE94 /* String+Extension.swift in Sources */,
 				F7490E6B29882A92009DCE94 /* NCGlobal.swift in Sources */,
 				F7490E7529882BE2009DCE94 /* NCManageDatabase+Directory.swift in Sources */,
+				F7864AD12A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F7490E8729882CA8009DCE94 /* ThreadSafeDictionary.swift in Sources */,
 				F757CC8729E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F7490E8229882C80009DCE94 /* NCManageDatabase+E2EE.swift in Sources */,
@@ -3357,6 +3402,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7864ACF2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F7245925289BB59100474787 /* ThreadSafeDictionary.swift in Sources */,
 				F7EDE4E5262D7BBE00414FE6 /* NCSectionHeaderMenu.swift in Sources */,
 				F7BF9D852934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
@@ -3445,6 +3491,7 @@
 				F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */,
 				F749B64B297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F7817CF929801A3500FFBC65 /* Data+Extension.swift in Sources */,
+				F7864ACD2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F343A4B42A1E084100DDA874 /* PHAsset+Extension.swift in Sources */,
 				F793E59F28B764F6005E4B02 /* NCContentPresenter.swift in Sources */,
 				F76DEE9828F808AF0041B1C9 /* LockscreenWidgetProvider.swift in Sources */,
@@ -3502,6 +3549,7 @@
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
 				F798F0E725880609000DAFFD /* UIColor+Extension.swift in Sources */,
 				F7D68FCF28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
+				F7864AD02A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				AF4BF61B27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F78A10C329322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
@@ -3601,6 +3649,7 @@
 				F7B8CD91261AF3F7007C1359 /* NCNetworkingChunkedUpload.swift in Sources */,
 				F757CC8D29E82D0500F31428 /* NCGroupfolders.swift in Sources */,
 				F760329F252F0F8E0015A421 /* NCTransferCell.swift in Sources */,
+				F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */,
 				AF68326A27BE65A90010BF0B /* NCMenuAction.swift in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
@@ -3610,6 +3659,7 @@
 				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
 				AF817EF1274BC781009ED85B /* NCUserBaseUrl.swift in Sources */,
+				F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */,
 				AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */,
 				F7E41316294A19B300839300 /* UIView+Extension.swift in Sources */,
 				F31F69502A2F707E00162F76 /* SwiftUIView+Extensions.swift in Sources */,
@@ -3667,6 +3717,7 @@
 				F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
 				F7134186259747BA00768D21 /* NCPushNotification.m in Sources */,
+				F3BB464F2A39EBE500461F6E /* NCMoreUserCell.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */,
@@ -3696,6 +3747,7 @@
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
+				F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F343A4BB2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
@@ -3711,6 +3763,7 @@
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* NCScanCell.swift in Sources */,
 				F7581D1A25EFDA61004DC699 /* NCLoginWeb+Menu.swift in Sources */,
+				F7864ACC2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F7F4F11027ECDC4A008676F9 /* UIDevice+Extension.swift in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F70D8D8124A4A9BF000A5756 /* NCNetworkingProcessUpload.swift in Sources */,
@@ -3754,6 +3807,7 @@
 				F72FD3B7297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7A8D74128F18254008BBE1C /* UIColor+Extension.swift in Sources */,
 				F7A8D73428F17E12008BBE1C /* NCDatabase.swift in Sources */,
+				F7864ACE2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F7A8D74028F18212008BBE1C /* UIImage+Extension.swift in Sources */,
 				F757CC8429E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F78E2D6729AF02DB0024D4F3 /* Database.swift in Sources */,
@@ -4570,7 +4624,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4635,7 +4689,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;

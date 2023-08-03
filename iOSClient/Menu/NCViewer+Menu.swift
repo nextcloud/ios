@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCViewer {
 
-    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?) {
+    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
 
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
         
@@ -182,6 +182,7 @@ extension NCViewer {
                             vcRename.metadata = metadata
                             vcRename.disableChangeExt = true
                             vcRename.imagePreview = imageIcon
+                            vcRename.indexPath = indexPath
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
 
@@ -196,7 +197,7 @@ extension NCViewer {
         // COPY - MOVE
         //
         if !webView, metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata]))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], indexPath: []))
         }
 
         //
@@ -269,7 +270,7 @@ extension NCViewer {
         // DELETE
         //
         if !webView, metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, viewController: viewController))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPath: [], metadataFolder: nil, viewController: viewController))
         }
 
         viewController.presentMenu(with: actions)

@@ -36,7 +36,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
 
-    internal var objectId = ""
+    var objectId = ""
+    var indexPath = IndexPath()
     private var user = ""
 
     weak var delegate: NCGridCellDelegate?
@@ -99,7 +100,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
 
-        progressView.tintColor = NCBrandColor.shared.brandElement
+        progressView.tintColor = NCBrandColor.shared.brand
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
 
@@ -134,15 +135,15 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, sender: sender)
+        delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
+        delegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressGridItem(with: objectId, gestureRecognizer: gestureRecognizer)
+        delegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     fileprivate func setA11yActions() {
@@ -180,7 +181,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func selected(_ status: Bool) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isDownloadUpload else {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isInTransfer else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
             return
@@ -218,16 +219,16 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 }
 
 protocol NCGridCellDelegate: AnyObject {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any)
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
-    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
 // optional func
 extension NCGridCellDelegate {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, sender: Any) {}
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {}
-    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {}
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {}
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
+    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
 }
 
 // MARK: - Grid Layout

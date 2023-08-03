@@ -42,8 +42,8 @@ extension NCNetworking {
         var uploadError = NKError()
 
         var filesNames = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
+
         if filesNames.count == 0 {
-            NCContentPresenter.shared.noteTop(text: NSLocalizedString("_upload_chunk_", comment: ""), image: nil, type: NCContentPresenter.messageType.info, delay: .infinity, priority: .max)
             filesNames = NextcloudKit.shared.nkCommonInstance.chunkedFile(inputDirectory: directoryProviderStorageOcId, outputDirectory: directoryProviderStorageOcId, fileName: metadata.fileName, chunkSizeMB: chunkSize)
             if filesNames.count > 0 {
                 NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, fileNames: filesNames)
@@ -58,7 +58,13 @@ extension NCNetworking {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         }
 
-        createChunkedFolder(chunkFolderPath: chunkFolderPath, account: metadata.account) { error in
+        let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
+        let serverUrlFileNameDestination = metadata.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
+
+        let destinationHeader: [String: String] = ["Destination" : serverUrlFileNameDestination]
+
+        // Create folder for chunks
+        createChunkedFolder(customHeaders: destinationHeader, chunkFolderPath: chunkFolderPath, account: metadata.account) { error in
 
             NCContentPresenter.shared.dismiss(after: NCGlobal.shared.dismissAfterSecond)
 
@@ -72,9 +78,18 @@ extension NCNetworking {
 
             start()
 
+            // Upload the chunks
             for fileName in filesNames {
 
                 let serverUrlFileName = chunkFolderPath + "/" + fileName
+                let fileSize = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: fileName)
+                // ops! the upload has probably been cancelled
+                if fileSize == 0 {
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    return completion(NKError())
+                }
                 let fileNameChunkLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)!
 
                 var size: Int64?
@@ -84,7 +99,7 @@ extension NCNetworking {
 
                 let semaphore = DispatchSemaphore(value: 0)
 
-                NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, requestHandler: { request in
+                NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameChunkLocalPath, addCustomHeaders: destinationHeader, requestHandler: { request in
 
                     self.uploadRequest[fileNameLocalPath] = request
 
@@ -97,7 +112,7 @@ extension NCNetworking {
 
                     if let size = size {
                         let totalBytesExpected = metadata.size
-                        let totalBytes = size + progress.completedUnitCount
+                        let totalBytes = size
                         let fractionCompleted = Double(totalBytes) / Double(totalBytesExpected)
 
                         NotificationCenter.default.postOnMainThread(
@@ -109,6 +124,8 @@ extension NCNetworking {
                                 "fileName": metadata.fileName,
                                 "serverUrl": metadata.serverUrl,
                                 "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                                "chunk": metadata.chunk,
+                                "e2eEncrypted": metadata.e2eEncrypted,
                                 "progress": NSNumber(value: fractionCompleted),
                                 "totalBytes": NSNumber(value: totalBytes),
                                 "totalBytesExpected": NSNumber(value: totalBytesExpected)])
@@ -138,20 +155,20 @@ extension NCNetworking {
                 return
             }
 
-            // Assembling the chunks
+            // Assemble the chunks
             let serverUrlFileNameSource = chunkFolderPath + "/.file"
-            let pathServerUrl = CCUtility.returnPathfromServerUrl(metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)!
-            let serverUrlFileNameDestination = metadata.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/files/" + metadata.userId + pathServerUrl + "/" + metadata.fileName
 
-            var customHeader: [String: String] = [:]
+            var customHeaders: [String: String] = [:]
 
             if metadata.creationDate.timeIntervalSince1970 > 0 {
-                customHeader["X-OC-CTime"] = "\(metadata.creationDate.timeIntervalSince1970)"
+                customHeaders["X-OC-CTime"] = "\(metadata.creationDate.timeIntervalSince1970)"
             }
 
             if metadata.date.timeIntervalSince1970 > 0 {
-                customHeader["X-OC-MTime"] = "\(metadata.date.timeIntervalSince1970)"
+                customHeaders["X-OC-MTime"] = "\(metadata.date.timeIntervalSince1970)"
             }
+
+            destinationHeader.forEach { customHeaders[$0] = $1 }
 
             // Calculate Assemble Timeout
             let ASSEMBLE_TIME_PER_GB: Double    = 3 * 60            // 3  min
@@ -159,7 +176,7 @@ extension NCNetworking {
             let ASSEMBLE_TIME_MAX: Double       = 30 * 60           // 30 min
             let timeout = max(ASSEMBLE_TIME_MIN, min(ASSEMBLE_TIME_PER_GB * fileSizeInGB, ASSEMBLE_TIME_MAX))
 
-            let options = NKRequestOptions(customHeader: customHeader, timeout: timeout, queue: DispatchQueue.global())
+            let options = NKRequestOptions(customHeader: customHeaders, timeout: timeout, queue: DispatchQueue.global())
             
             NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, options: options) { _, error in
 
@@ -214,10 +231,10 @@ extension NCNetworking {
         }
     }
 
-    private func createChunkedFolder(chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: NKError) -> Void) {
+    private func createChunkedFolder(customHeaders: [String : String], chunkFolderPath: String, account: String, completion: @escaping (_ errorCode: NKError) -> Void) {
 
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        
+        let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: chunkFolderPath, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, _, _, error in
 
             if error == .success {

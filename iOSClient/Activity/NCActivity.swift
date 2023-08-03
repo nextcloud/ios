@@ -213,6 +213,7 @@ extension NCActivity: UITableViewDataSource {
             return UITableViewCell()
         }
 
+        cell.indexPath = indexPath
         cell.tableComments = comment
         cell.delegate = self
         cell.sizeToFit()
@@ -247,7 +248,7 @@ extension NCActivity: UITableViewDataSource {
         var orderKeysId: [String] = []
 
         cell.idActivity = activity.idActivity
-
+        cell.indexPath = indexPath
         cell.avatar.image = nil
         cell.avatar.isHidden = true
         cell.subjectTrailingConstraint.constant = 10
@@ -360,7 +361,7 @@ extension NCActivity {
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
             bottom = -mainTabBar.getHight()
         }
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom-5, style: .medium)
+        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 5, style: .medium)
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)

@@ -90,6 +90,7 @@ extension NCTrash: UICollectionViewDataSource {
             cell = gridCell
         }
 
+        cell.indexPath = indexPath
         cell.setupCellUI(tableTrash: tableTrash, image: image)
         cell.selectMode(isEditMode)
         if isEditMode {
@@ -159,6 +160,7 @@ extension NCTrash: UICollectionViewDataSource {
             header.setButtonsView(height: NCGlobal.shared.heightButtonsView)
             header.setRichWorkspaceHeight(0)
             header.setSectionHeight(0)
+            header.setViewTransfer(isHidden: true)
 
             return header
 

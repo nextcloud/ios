@@ -339,7 +339,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: appDelegate.window?.rootViewController?.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                NCNetworking.shared.download(metadata: metadata, selector: "", notificationCenterProgressTask: false, completion: { _, _ in
+                NCNetworking.shared.download(metadata: metadata, selector: "", completion: { _, _ in
                     if CCUtility.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
                 })
@@ -652,21 +652,49 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - NCSelect + Delegate
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        if serverUrl != nil && !items.isEmpty {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], indexPath: [IndexPath], overwrite: Bool, copy: Bool, move: Bool) {
+        if let serverUrl, !items.isEmpty {
+            let hud = JGProgressHUD()
+            hud.textLabel.text = copy ? NSLocalizedString("_copying_progess_", comment: "") : NSLocalizedString("_moving_progess_", comment: "")
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+               let view = appDelegate.window?.rootViewController?.view {
+                hud.show(in: view)
+            }
             if copy {
-                for case let metadata as tableMetadata in items {
-                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: false)
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for case let metadata as tableMetadata in items where error == .success {
+                        error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "hud": hud])
                 }
-            } else if move {
-                for case let metadata as tableMetadata in items {
-                    NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: true)
+            } else {
+                Task {
+                    var error = NKError()
+                    var ocId: [String] = []
+                    for case let metadata as tableMetadata in items where error == .success {
+                        error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                        if error == .success {
+                            ocId.append(metadata.ocId)
+                        }
+                    }
+                    if error != .success {
+                        NCContentPresenter.shared.showError(error: error)
+                    }
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "indexPath": indexPath, "hud": hud])
                 }
             }
         }
     }
 
-    func openSelectView(items: [tableMetadata]) {
+    func openSelectView(items: [tableMetadata], indexPath: [IndexPath]) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
@@ -701,6 +729,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             vc.typeOfCommandView = .copyMove
             vc.items = copyItems
             vc.serverUrl = serverUrl
+            vc.selectIndexPath = indexPath
 
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)

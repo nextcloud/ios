@@ -148,10 +148,11 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return nil }
             return tableAccount.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -161,12 +162,13 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
             if !results.isEmpty {
                 return Array(results.map { $0.account })
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -176,10 +178,11 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter(predicate).first else { return nil }
             return tableAccount.init(value: result)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return nil
@@ -189,11 +192,12 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "user", ascending: true)]
             let results = realm.objects(tableAccount.self).sorted(by: sorted)
             return Array(results.map { tableAccount.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return []
@@ -203,11 +207,12 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "alias", ascending: true), SortDescriptor(keyPath: "user", ascending: true)]
             let results = realm.objects(tableAccount.self).sorted(by: sorted)
             return Array(results.map { tableAccount.init(value: $0) })
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return []
@@ -217,6 +222,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadFileName.isEmpty {
                 return NCBrandOptions.shared.folderDefaultAutoUpload
@@ -224,7 +230,7 @@ extension NCManageDatabase {
                 return result.autoUploadFileName
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return ""
@@ -234,6 +240,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadDirectory.isEmpty {
                 return NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId)
@@ -246,7 +253,7 @@ extension NCManageDatabase {
                 }
             }
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return ""
@@ -266,10 +273,11 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return NCGlobal.shared.subfolderGranularityMonthly }
             return result.autoUploadSubfolderGranularity
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
         return NCGlobal.shared.subfolderGranularityMonthly
@@ -283,7 +291,6 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-
                 let results = realm.objects(tableAccount.self)
                 for result in results {
                     if result.account == account {
@@ -307,7 +314,6 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-
                 if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                     result.password = "********"
                 }
