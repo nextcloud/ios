@@ -280,13 +280,13 @@ class NCViewerMedia: UIViewController {
                 }
             }
 
-//            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in
-//                let image = getImageMetadata(metadata)
-//                if self.metadata.ocId == metadata.ocId {
-//                    self.image = image
-//                    self.imageVideoContainer.image = image
-//                }
-//            }
+            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in
+                let image = getImageMetadata(metadata)
+                if self.metadata.ocId == metadata.ocId {
+                    self.image = image
+                    self.imageVideoContainer.image = image
+                }
+            }
         }
 
         // Get image
@@ -471,7 +471,7 @@ extension NCViewerMedia {
         if exif.latitude == nil && exif.longitude == nil {
             self.detailViewHeighConstraint.constant = 195
         } else {
-            self.detailViewHeighConstraint.constant = 355
+            self.detailViewHeighConstraint.constant = 390
         }
 
         self.view.layoutIfNeeded()

@@ -30,17 +30,8 @@ public protocol NCViewerMediaDetailViewDelegate: AnyObject {
 }
 
 class NCViewerMediaDetailView: UIView {
-    @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!
-    @IBOutlet weak var dateValue: UILabel!
-    @IBOutlet weak var dimLabel: UILabel!
-    @IBOutlet weak var dimValue: UILabel!
-    @IBOutlet weak var lensModelLabel: UILabel!
-    @IBOutlet weak var lensModelValue: UILabel!
-    @IBOutlet weak var messageButton: UIButton!
     @IBOutlet weak var mapContainer: UIView!
-    @IBOutlet weak var locationButton: UIButton!
-
     @IBOutlet weak var dayLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
@@ -64,21 +55,6 @@ class NCViewerMediaDetailView: UIView {
     weak var delegate: NCViewerMediaDetailViewDelegate?
 
     private var exif: NCUtility.ExifData?
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-        separator.backgroundColor = .separator
-        sizeLabel.text = ""
-        dateLabel.text = ""
-        dateValue.text = ""
-        dimLabel.text = ""
-        dimValue.text = ""
-        lensModelLabel.text = ""
-        lensModelValue.text = ""
-        messageButton.setTitle("", for: .normal)
-        locationButton.setTitle("", for: .normal)
-    }
 
     deinit {
         print("deinit NCViewerMediaDetailView")
@@ -174,29 +150,11 @@ class NCViewerMediaDetailView: UIView {
             timeLabel.text = NSLocalizedString("_no_time_", comment: "")
         }
 
-        dateValue.textColor = textColor
-
         if let image = image {
             resolutionLabel.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
 
             let megaPixels: Double = floor(image.size.width * image.size.height) / 1000000
             megaPixelLabel.text = megaPixels < 1 ? String(format: "%.1f MP", megaPixels) : "\(Int(megaPixels)) MP"
-        }
-
-        if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
-            messageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
-            messageButton.isHidden = false
-        } else {
-            messageButton.setTitle("", for: .normal)
-            messageButton.isHidden = true
-        }
-
-        if let location = exif.location {
-            locationButton.setTitle(location, for: .normal)
-            locationButton.isHidden = false
-        } else {
-            locationButton.setTitle("", for: .normal)
-            locationButton.isHidden = true
         }
 
         extensionLabel.text = metadata.fileExtension.uppercased()
