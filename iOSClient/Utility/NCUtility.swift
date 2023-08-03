@@ -837,20 +837,6 @@ class NCUtility: NSObject {
     }
     
     func getExif(metadata: tableMetadata, completion: @escaping (ExifData?) -> Void) {
-        //        var dateTime: String?
-        //        var latitudeRef: String?
-        //        var longitudeRef: String?
-        //        var stringLatitude = "0"
-        //        var stringLongitude = "0"
-        //        var location = ""
-        //        var latitude = 0.0
-        //        var longitude = 0.0
-        //        var date: Date?
-        //        var fileSize: Int64 = 0
-        //        var pixelY = 0
-        //        var pixelX = 0
-        //        var lensModel = ""
-        
         if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
             print("Storage exists or file is not an image")
             return
@@ -938,6 +924,8 @@ class NCUtility: NSObject {
                 completion(data)
             }
         }
+
+        completion(data)
     }
 }
 

@@ -86,6 +86,8 @@ class NCViewerMedia: UIViewController {
 
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
+        parent?.navigationItem.rightBarButtonItems?.append((UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: nil)))
+
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
             statusLabel.text = "LIVE"
@@ -454,12 +456,15 @@ class NCViewerMedia: UIViewController {
 // MARK: -
 
 extension NCViewerMedia {
-
     @objc func openDetail(_ notification: NSNotification) {
 
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, ocId == metadata.ocId {
             openDetail()
         }
+    }
+
+    func toggleDetail () {
+        detailView.isShown() ? closeDetail() : openDetail()
     }
 
     private func openDetail() {
@@ -483,27 +488,27 @@ extension NCViewerMedia {
                 exif: exif,
                 ncplayer: self.ncplayer,
                 delegate: self)
-        }
 
-        if let image = self.imageVideoContainer.image {
-            let ratioW = self.imageVideoContainer.frame.width / image.size.width
-            let ratioH = self.imageVideoContainer.frame.height / image.size.height
-            let ratio = ratioW < ratioH ? ratioW : ratioH
-            let imageHeight = image.size.height * ratio
-            let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
-            let height = max(imageHeight, VideoContainerHeight)
-            self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
-            if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
-        }
+            if let image = self.imageVideoContainer.image {
+                let ratioW = self.imageVideoContainer.frame.width / image.size.width
+                let ratioH = self.imageVideoContainer.frame.height / image.size.height
+                let ratio = ratioW < ratioH ? ratioW : ratioH
+                let imageHeight = image.size.height * ratio
+                let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
+                let height = max(imageHeight, VideoContainerHeight)
+                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
+                if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
+            }
 
-        UIView.animate(withDuration: 0.3) {
-            self.imageViewTopConstraint.constant = -self.imageViewConstraint
-            self.imageViewBottomConstraint.constant = self.imageViewConstraint
-            self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
-            self.view.layoutIfNeeded()
-        }
+            UIView.animate(withDuration: 0.3) {
+                self.imageViewTopConstraint.constant = -self.imageViewConstraint
+                self.imageViewBottomConstraint.constant = self.imageViewConstraint
+                self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
+                self.view.layoutIfNeeded()
+            }
 
-        self.scrollView.pinchGestureRecognizer?.isEnabled = false
+            self.scrollView.pinchGestureRecognizer?.isEnabled = false
+        }
     }
 
     private func closeDetail() {

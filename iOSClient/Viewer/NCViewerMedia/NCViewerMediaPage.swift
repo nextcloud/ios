@@ -65,15 +65,10 @@ class NCViewerMediaPage: UIViewController {
     var previousTrackCommand: Any?
 
     var timerAutoHide: Timer?
-    var timerAutoHideSeconds: Double {
-        get {
-            if NCUtility.shared.isSimulator() {
-                return 4
-            } else {
-                return 4
-            }
-        }
-    }
+    private var timerAutoHideSeconds: Double = 4
+
+    private lazy var moreNavigationItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(openMenuMore))
+    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: UIImage(systemName: "info.circle")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(toggleDetail))
 
     // MARK: - View Life Cycle
 
@@ -92,10 +87,12 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+//        moreNavigationItem.target = self
+
         if metadatas.count == 1, let metadata = metadatas.first, !metadata.url.isEmpty {
             // it's a video from URL
         } else {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+            navigationItem.rightBarButtonItems = [moreNavigationItem]
         }
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
@@ -115,7 +112,6 @@ class NCViewerMediaPage: UIViewController {
         progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
-
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
@@ -137,6 +133,10 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        if currentViewController.metadata.isImage {
+            navigationItem.rightBarButtonItems?.append(imageDetailNavigationItem)
+        }
     }
 
     deinit {
@@ -193,7 +193,7 @@ class NCViewerMediaPage: UIViewController {
     // MARK: -
     
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
-        
+    
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
         viewerMedia.index = index
         viewerMedia.metadata = metadata
@@ -206,14 +206,17 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func viewUnload() {
-
         navigationController?.popViewController(animated: true)
     }
 
-    @objc func openMenuMore() {
+    @objc private func openMenuMore() {
 
         let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
+    }
+
+    @objc private func toggleDetail() {
+        currentViewController.toggleDetail()
     }
 
     func changeScreenMode(mode: ScreenMode) {
@@ -568,6 +571,12 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
+
+        if nextViewController.metadata.isImage {
+            navigationItem.rightBarButtonItems?.append(imageDetailNavigationItem)
+        } else {
+            navigationItem.rightBarButtonItems?.removeAll(where: { $0 === imageDetailNavigationItem })
+        }
 
         if nextViewController.detailView.isShown() {
             changeScreenMode(mode: .normal)
