@@ -55,7 +55,7 @@ class NCViewerMediaDetailView: UIView {
     private var ncplayer: NCPlayer?
     weak var delegate: NCViewerMediaDetailViewDelegate?
 
-    private var exif: NCUtility.ExifData?
+    private var exif: ExifData?
 
     deinit {
         print("deinit NCViewerMediaDetailView")
@@ -67,7 +67,7 @@ class NCViewerMediaDetailView: UIView {
     func show(metadata: tableMetadata,
               image: UIImage?,
               textColor: UIColor?,
-              exif: NCUtility.ExifData,
+              exif: ExifData,
               ncplayer: NCPlayer?,
               delegate: NCViewerMediaDetailViewDelegate?) {
 
@@ -77,7 +77,6 @@ class NCViewerMediaDetailView: UIView {
         self.delegate = delegate
 
         if mapView == nil, let latitude = exif.latitude, let longitude = exif.longitude {
-
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
 

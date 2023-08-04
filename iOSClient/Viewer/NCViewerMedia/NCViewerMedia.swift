@@ -453,8 +453,6 @@ class NCViewerMedia: UIViewController {
     }
 }
 
-// MARK: -
-
 extension NCViewerMedia {
     @objc func openDetail(_ notification: NSNotification) {
 
@@ -471,33 +469,41 @@ extension NCViewerMedia {
         delegate?.hasShownDetail()
         self.dismissTip()
 
-        NCUtility.shared.getExif(metadata: metadata) { exif in
-            guard let exif else { return }
+
+
+        NCUtility.shared.getExif(metadata: metadata) { [weak self] exif in
+            guard let self else { return }
+
+//            var finalExif: ExifData?
+//
+//            if let exif {
+//                finalExif = exif
+//            } else if metadata.latitude != 0, metadata.longitude != 0 {
+//                NCUtility.shared.getLocation(latitude: metadata.latitude, longitude: metadata.longitude) { location in
+//                    finalExif = ExifData(latitude: self.metadata.latitude, longitude: self.metadata.latitude, location: location)
+//                }
+//            }
+//
+//            guard let finalExif else { return }
 
             if exif.latitude == nil && exif.longitude == nil {
-                self.detailViewHeighConstraint.constant = 195
+                detailViewHeighConstraint.constant = 195
             } else {
-                self.detailViewHeighConstraint.constant = 390
+                detailViewHeighConstraint.constant = 390
             }
 
-            self.view.layoutIfNeeded()
-            self.detailView.show(
-                metadata: self.metadata,
-                image: self.image,
-                textColor: self.viewerMediaPage?.textColor,
-                exif: exif,
-                ncplayer: self.ncplayer,
-                delegate: self)
+            view.layoutIfNeeded()
+            showDetailView(exif: exif)
 
-            if let image = self.imageVideoContainer.image {
-                let ratioW = self.imageVideoContainer.frame.width / image.size.width
-                let ratioH = self.imageVideoContainer.frame.height / image.size.height
+            if let image = imageVideoContainer.image {
+                let ratioW = imageVideoContainer.frame.width / image.size.width
+                let ratioH = imageVideoContainer.frame.height / image.size.height
                 let ratio = ratioW < ratioH ? ratioW : ratioH
                 let imageHeight = image.size.height * ratio
-                let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
+                let VideoContainerHeight = imageVideoContainer.frame.height * ratio
                 let height = max(imageHeight, VideoContainerHeight)
-                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
-                if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
+                imageViewConstraint = detailView.frame.height - ((view.frame.height - height) / 2) + view.safeAreaInsets.bottom
+                if imageViewConstraint < 0 { imageViewConstraint = 0 }
             }
 
             UIView.animate(withDuration: 0.3) {
@@ -507,12 +513,11 @@ extension NCViewerMedia {
                 self.view.layoutIfNeeded()
             }
 
-            self.scrollView.pinchGestureRecognizer?.isEnabled = false
+            scrollView.pinchGestureRecognizer?.isEnabled = false
         }
     }
 
     private func closeDetail() {
-
         self.detailView.hide()
         imageViewConstraint = 0
 
@@ -526,24 +531,24 @@ extension NCViewerMedia {
         scrollView.pinchGestureRecognizer?.isEnabled = true
     }
 
+    private func showDetailView(exif: ExifData) {
+        self.detailView.show(
+            metadata: self.metadata,
+            image: self.image,
+            textColor: self.viewerMediaPage?.textColor,
+            exif: exif,
+            ncplayer: self.ncplayer,
+            delegate: self)
+    }
+
     func reloadDetail() {
         if self.detailView.isShown() {
             NCUtility.shared.getExif(metadata: metadata) { exif in
-                guard let exif else { return }
-
-                self.detailView.show(
-                    metadata: self.metadata,
-                    image: self.image,
-                    textColor: self.viewerMediaPage?.textColor,
-                    exif: exif,
-                    ncplayer: self.ncplayer,
-                    delegate: self)
+                self.showDetailView(exif: exif)
             }
         }
     }
 }
-
-// MARK: -
 
 extension NCViewerMedia: UIScrollViewDelegate {
 

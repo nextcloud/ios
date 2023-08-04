@@ -88,8 +88,6 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        moreNavigationItem.target = self
-
         if metadatas.count == 1, let metadata = metadatas.first, !metadata.url.isEmpty {
             // it's a video from URL
         } else {
@@ -191,8 +189,6 @@ class NCViewerMediaPage: UIViewController {
         return hideStatusBar
     }
 
-    // MARK: -
-    
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
     
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia

@@ -100,6 +100,8 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var urlBase = ""
     @objc dynamic var user = ""
     @objc dynamic var userId = ""
+    @objc dynamic var latitude: Double = 0
+    @objc dynamic var longitude: Double = 0
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -327,6 +329,8 @@ extension NCManageDatabase {
         metadata.urlBase = file.urlBase
         metadata.user = file.user
         metadata.userId = file.userId
+        metadata.latitude = file.latitude
+        metadata.longitude = file.longitude
 
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
