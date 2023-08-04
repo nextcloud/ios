@@ -58,23 +58,14 @@ extension NCUtility {
         if let latitude = data.latitude, let longitude = data.longitude {
             getLocation(latitude: latitude, longitude: longitude) { location in
                 data.location = location
-                completion(data)
             }
         }
 
         if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
             print("Storage exists or file is not an image")
-//            completion(data)
-//            return
         }
 
         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-
-//        guard let originalSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-//            print("Storage exists or file is not an image")
-//            completion(data)
-//            return
-//        }
 
         guard let originalSource = CGImageSourceCreateWithURL(url as CFURL, nil),
               let imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, nil) as NSDictionary? else {
@@ -145,18 +136,4 @@ extension NCUtility {
 
         completion(data)
     }
-
-//    private func tryToGetLocation(_ metadata: tableMetadata, _ exif: ExifData, completion: @escaping (ExifData) -> Void) {
-//        if metadata.latitude != 0, metadata.longitude != 0 {
-//            if exif.latitude == nil { exif.latitude = metadata.latitude }
-//            if exif.longitude == nil { exif.longitude = metadata.longitude }
-//        }
-//
-//        if let latitude = exif.latitude, let longitude = exif.longitude {
-//            getLocation(latitude: latitude, longitude: longitude) { location in
-//                exif.location = location
-//                completion(exif)
-//            }
-//        }
-//    }
 }

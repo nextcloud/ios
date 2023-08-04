@@ -88,12 +88,6 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if metadatas.count == 1, let metadata = metadatas.first, !metadata.url.isEmpty {
-            // it's a video from URL
-        } else {
-            navigationItem.rightBarButtonItems = [moreNavigationItem]
-        }
-
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
         longtapGestureRecognizer = UILongPressGestureRecognizer()
@@ -134,7 +128,9 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
 
         if currentViewController.metadata.isImage {
-            navigationItem.rightBarButtonItems?.append(imageDetailNavigationItem)
+            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+        } else {
+            navigationItem.rightBarButtonItems = [moreNavigationItem]
         }
     }
 
@@ -274,7 +270,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func startTimerAutoHide() {
-
         timerAutoHide?.invalidate()
         timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(autoHide), userInfo: nil, repeats: true)
     }
@@ -559,9 +554,9 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
         nextIndex = nextViewController.index
 
         if nextViewController.metadata.isImage {
-            navigationItem.rightBarButtonItems?.append(imageDetailNavigationItem)
+            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
         } else {
-            navigationItem.rightBarButtonItems?.removeAll(where: { $0 === imageDetailNavigationItem })
+            navigationItem.rightBarButtonItems = [moreNavigationItem]
         }
 
         if nextViewController.detailView.isShown() {

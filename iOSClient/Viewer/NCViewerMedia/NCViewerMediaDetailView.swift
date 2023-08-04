@@ -32,6 +32,7 @@ public protocol NCViewerMediaDetailViewDelegate: AnyObject {
 class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var mapContainer: UIView!
+    @IBOutlet weak var outerMapContainer: UIView!
     @IBOutlet weak var dayLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
@@ -49,6 +50,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var apertureLabel: UILabel!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet weak var downloadImageButton: UIButton!
 
     private var metadata: tableMetadata?
     private var mapView: MKMapView?
@@ -76,6 +78,8 @@ class NCViewerMediaDetailView: UIView {
         self.ncplayer = ncplayer
         self.delegate = delegate
 
+        outerMapContainer.isHidden = true
+
         if mapView == nil, let latitude = exif.latitude, let longitude = exif.longitude {
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -97,6 +101,8 @@ class NCViewerMediaDetailView: UIView {
             mapView.isUserInteractionEnabled = false
             mapView.addAnnotation(annotation)
             mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
+
+            outerMapContainer.isHidden = false
         }
 
         if let make = exif.make, let model = exif.model, let lensModel = exif.lensModel {

@@ -469,27 +469,13 @@ extension NCViewerMedia {
         delegate?.hasShownDetail()
         self.dismissTip()
 
-
-
         NCUtility.shared.getExif(metadata: metadata) { [weak self] exif in
             guard let self else { return }
 
-//            var finalExif: ExifData?
-//
-//            if let exif {
-//                finalExif = exif
-//            } else if metadata.latitude != 0, metadata.longitude != 0 {
-//                NCUtility.shared.getLocation(latitude: metadata.latitude, longitude: metadata.longitude) { location in
-//                    finalExif = ExifData(latitude: self.metadata.latitude, longitude: self.metadata.latitude, location: location)
-//                }
-//            }
-//
-//            guard let finalExif else { return }
-
             if exif.latitude == nil && exif.longitude == nil {
-                detailViewHeighConstraint.constant = 195
+                detailViewHeighConstraint.constant = 245
             } else {
-                detailViewHeighConstraint.constant = 390
+                detailViewHeighConstraint.constant = 450
             }
 
             view.layoutIfNeeded()
