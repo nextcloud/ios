@@ -418,7 +418,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 #endif
         } else if metadata.chunk {
-            uploadChunkedFile(metadata: metadata, start: start, progressHandler: progressHandler) { error in
+            uploadChunkFile(metadata: metadata, start: start, progressHandler: progressHandler) { error in
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
@@ -476,6 +476,65 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask, error: error)
             }
             completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
+        }
+    }
+
+    private func uploadChunkFile(metadata: tableMetadata,
+                                 start: @escaping () -> () = { },
+                                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
+                                 completion: @escaping (_ error: NKError) -> Void) {
+
+
+        let directory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let chunkFolderServer = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
+        let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
+
+        NextcloudKit.shared.uploadChunk(directory: directory,
+                                        fileName: metadata.fileName,
+                                        date: metadata.date as Date,
+                                        creationDate: metadata.creationDate as Date,
+                                        serverUrl: metadata.serverUrl,
+                                        chunkFolderServer: chunkFolderServer,
+                                        filesChunk: filesChunk,
+                                        chunkSizeInMB: 10) {
+
+            start()
+
+        } requestHandler: { request in
+
+            self.uploadRequest[fileNameLocalPath] = request
+
+        } taskHandler: { task in
+
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: NCGlobal.shared.metadataStatusUploading)
+
+        } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+
+            NotificationCenter.default.postOnMainThread(
+                name: NCGlobal.shared.notificationCenterProgressTask,
+                object: nil,
+                userInfo: [
+                    "account": metadata.account,
+                    "ocId": metadata.ocId,
+                    "fileName": metadata.fileName,
+                    "serverUrl": metadata.serverUrl,
+                    "status": NSNumber(value: NCGlobal.shared.metadataStatusInUpload),
+                    "chunk": metadata.chunk,
+                    "e2eEncrypted": metadata.e2eEncrypted,
+                    "progress": NSNumber(value: fractionCompleted),
+                    "totalBytes": NSNumber(value: totalBytes),
+                    "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+
+            progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
+
+        } completion: { account, filesChunk, file, error in
+
+            self.uploadRequest.removeValue(forKey: fileNameLocalPath)
+            
+            if error == .success {
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            }
         }
     }
 
@@ -662,6 +721,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             })
         })
     }
+
+
 
     // MARK: - Transfer (Download Upload)
 

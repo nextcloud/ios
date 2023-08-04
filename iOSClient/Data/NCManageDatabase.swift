@@ -274,74 +274,41 @@ class NCManageDatabase: NSObject {
         return NSUUID().uuidString
     }
 
-    func getChunks(account: String, ocId: String) -> [String] {
+    func getChunks(account: String, ocId: String) -> Array<(fileName: String, size: Int64)> {
 
-        var filesNames: [String] = []
+        var filesChunk: Array<(fileName: String, size: Int64)> = []
 
         do {
             let realm = try Realm()
             realm.refresh()
-            let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
+            let results =  realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
             for result in results {
-                filesNames.append(result.fileName)
+                filesChunk.append((fileName: result.fileName, size: result.size))
             }
-            return filesNames
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
 
-        return filesNames
+        return filesChunk
     }
 
-    func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
-
-        var size: Int64 = 0
+    func addChunks(account: String, ocId: String, chunkFolder: String, filesChunk: Array<(fileName: String, size: Int64)>) {
 
         do {
             let realm = try Realm()
             try realm.write {
-
-                for fileName in fileNames {
-
+                let results = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
+                realm.delete(results)
+                for fileChunk in filesChunk {
                     let object = tableChunk()
-                    size += NCUtilityFileSystem.shared.getFileSize(filePath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
-
                     object.account = account
                     object.chunkFolder = chunkFolder
-                    object.fileName = fileName
-                    object.index = ocId + fileName
+                    object.fileName = fileChunk.fileName
+                    object.index = ocId + fileChunk.fileName
                     object.ocId = ocId
-                    object.size = size
-
+                    object.size = fileChunk.size
                     realm.add(object, update: .all)
                 }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func getChunk(account: String, fileName: String) -> tableChunk? {
-
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            guard let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first else { return nil }
-            return tableChunk.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return nil
-    }
-
-    func deleteChunk(account: String, ocId: String, fileName: String) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName))
-                realm.delete(result)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
