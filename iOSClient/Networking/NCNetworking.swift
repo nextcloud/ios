@@ -539,9 +539,29 @@ class NCNetworking: NSObject, NKCommonDelegate {
         } completion: { account, filesChunk, file, error in
 
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            
+
             if error == .success {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            }
+
+            switch error.errorCode {
+            case NKError.chunkResourceNotFound:
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            case NKError.chunkNoEnoughMemory:
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            case NKError.chunkCreateFolder:
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            case NKError.chunkFilesNull:
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            case NKError.chunkFileNull:
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            case NKError.chunkFileUpload:
+                break
+            case NKError.chunkMoveFile:
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            case NKError.chunkReadFile:
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+            default: break
             }
 
             if withUploadComplete, let file, let uploadTask {
