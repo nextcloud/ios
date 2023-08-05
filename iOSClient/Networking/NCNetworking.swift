@@ -427,6 +427,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     metadata.date = file.date
                     metadata.etag = file.etag
                     metadata.ocId = file.ocId
+                    metadata.session = ""
+                    metadata.sessionError = ""
+                    metadata.sessionTaskIdentifier = 0
+                    metadata.status = NCGlobal.shared.metadataStatusNormal
                     NCManageDatabase.shared.addMetadata(metadata)
 
                     // Delete Asset on Photos album
