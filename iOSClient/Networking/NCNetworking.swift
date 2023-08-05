@@ -418,7 +418,31 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 #endif
         } else if metadata.chunk {
-            uploadChunkFile(metadata: metadata, start: start, progressHandler: progressHandler) { error in
+            uploadChunkFile(metadata: metadata, start: start, progressHandler: progressHandler) { account, file, error in
+                if error == .success, let file {
+
+                    let ocIdTemp = metadata.ocId
+
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND ocId == %@", account, ocIdTemp))
+                    metadata.date = file.date
+                    metadata.etag = file.etag
+                    metadata.ocId = file.ocId
+                    NCManageDatabase.shared.addMetadata(metadata)
+
+                    // Delete Asset on Photos album
+                    if CCUtility.getRemovePhotoCameraRoll() && !metadata.assetLocalIdentifier.isEmpty {
+                        metadata.deleteAssetLocalIdentifier = true
+                    }
+
+                    if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
+                        NCUtilityFileSystem.shared.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: metadata.fileName), toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName))
+                        NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                    } else {
+                        NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: metadata.fileName))
+                    }
+
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error])
+                }
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
@@ -482,8 +506,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
     private func uploadChunkFile(metadata: tableMetadata,
                                  start: @escaping () -> () = { },
                                  progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
-                                 completion: @escaping (_ error: NKError) -> Void) {
-
+                                 completion: @escaping (_ account: String, _ file: NKFile?, _ error: NKError) -> Void) {
 
         let directory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -540,6 +563,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
             if error == .success {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
             }
+
+            completion(account, file, error)
         }
     }
 

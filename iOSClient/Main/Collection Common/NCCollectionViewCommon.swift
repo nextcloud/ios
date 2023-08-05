@@ -516,12 +516,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocId == NCNetworking.shared.transferInForegorund?.ocId {
+        if ocIdTemp == NCNetworking.shared.transferInForegorund?.ocId {
             NCNetworking.shared.transferInForegorund = nil
             self.collectionView?.reloadData()
         }
