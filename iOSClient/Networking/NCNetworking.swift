@@ -549,23 +549,24 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
             case NKError.chunkNoEnoughMemory:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCContentPresenter.shared.messageNotification("error", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
             case NKError.chunkCreateFolder:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCContentPresenter.shared.messageNotification("error", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
             case NKError.chunkFilesNull:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
-            case NKError.chunkFileNull:
+                NCContentPresenter.shared.messageNotification("error", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+            case NKError.chunkFileNull: // (cancel)
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
             case NKError.chunkFileUpload:
                 break
             case NKError.chunkMoveFile:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
-            case NKError.chunkReadFile:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
             default: break
             }
 
-            if withUploadComplete, let file, let uploadTask {
-                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file.ocId, etag: file.etag, date: file.date, size: file.size, description: metadata.ocId, task: uploadTask, error: error)
+            if withUploadComplete, let uploadTask {
+                self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, description: metadata.ocId, task: uploadTask, error: error)
             }
 
             completion(account, file, error)
