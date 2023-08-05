@@ -487,7 +487,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         let directory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let chunkFolderServer = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
+        let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
 
         NextcloudKit.shared.uploadChunk(directory: directory,
@@ -495,11 +495,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                         date: metadata.date as Date,
                                         creationDate: metadata.creationDate as Date,
                                         serverUrl: metadata.serverUrl,
-                                        chunkFolderServer: chunkFolderServer,
+                                        chunkFolder: chunkFolder,
                                         filesChunk: filesChunk,
-                                        chunkSizeInMB: 10) {
+                                        chunkSizeInMB: 10) { filesChunk in
 
             start()
+            NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
 
         } requestHandler: { request in
 
@@ -527,6 +528,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
                     "totalBytesExpected": NSNumber(value: totalBytesExpected)])
 
             progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
+
+        } uploaded: { fileChunk in
+
+            NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileChunk: fileChunk)
 
         } completion: { account, filesChunk, file, error in
 
