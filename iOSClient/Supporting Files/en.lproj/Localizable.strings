@@ -948,6 +948,10 @@
 "_deletion_progess_"        = "Deletion in progress";
 "_copying_progess_"         = "Copying in progress";
 "_moving_progess_"          = "Moving in progress";
+"_chunk_enough_memory_"     = "It seems there is not enough space to send the file";
+"_chunk_create_folder_"     = "The file could not be sent, please check the server log";
+"_chunk_files_null_"        = "The file for sending could not be created";
+"_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
 
 // Video
 "_select_trace_"            = "Select the trace";

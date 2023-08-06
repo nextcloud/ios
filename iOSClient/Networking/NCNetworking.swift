@@ -549,19 +549,20 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
             case NKError.chunkNoEnoughMemory:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
-                NCContentPresenter.shared.messageNotification("error", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.messageNotification("_chunk_enough_memory_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkCreateFolder:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
-                NCContentPresenter.shared.messageNotification("error", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.messageNotification("_chunk_create_folder_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkFilesNull:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
-                NCContentPresenter.shared.messageNotification("error", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)
+                NCContentPresenter.shared.messageNotification("_chunk_files_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkFileNull: // (cancel)
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
             case NKError.chunkFileUpload:
+                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                 break
             case NKError.chunkMoveFile:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCContentPresenter.shared.messageNotification("_chunk_move_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             default: break
             }
 
