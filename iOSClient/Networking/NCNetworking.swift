@@ -418,7 +418,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 #endif
         } else if metadata.chunk {
-            uploadChunkFile(metadata: metadata, start: start, progressHandler: progressHandler) { _, _, error in
+            uploadChunkFile(metadata: metadata, start: start, progressHandler: progressHandler) { _, _, _, error in
                 completion(error)
             }
         } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
@@ -433,7 +433,10 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    func uploadFile(metadata: tableMetadata, fileNameLocalPath: String, withUploadComplete: Bool = true, addCustomHeaders: [String: String]? = nil,
+    func uploadFile(metadata: tableMetadata,
+                    fileNameLocalPath: String,
+                    withUploadComplete: Bool = true,
+                    addCustomHeaders: [String: String]? = nil,
                     start: @escaping () -> () = { },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
                     completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: NSDate?, _ size: Int64, _ allHeaderFields: [AnyHashable : Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
@@ -479,11 +482,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    private func uploadChunkFile(metadata: tableMetadata,
-                                 withUploadComplete: Bool = true,
-                                 start: @escaping () -> () = { },
-                                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
-                                 completion: @escaping (_ account: String, _ file: NKFile?, _ error: NKError) -> Void) {
+    func uploadChunkFile(metadata: tableMetadata,
+                         withUploadComplete: Bool = true,
+                         addCustomHeaders: [String: String] = [:],
+                         start: @escaping () -> () = { },
+                         progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> () = { _, _, _ in },
+                         completion: @escaping (_ account: String, _ file: NKFile?, _ afError: AFError?, _ error: NKError) -> Void) {
 
         let directory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -498,7 +502,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                         serverUrl: metadata.serverUrl,
                                         chunkFolder: chunkFolder,
                                         filesChunk: filesChunk,
-                                        chunkSizeInMB: 10) { filesChunk in
+                                        chunkSizeInMB: 10,
+                                        addCustomHeaders: addCustomHeaders) { filesChunk in
 
             start()
             NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
@@ -536,7 +541,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
             NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileChunk: fileChunk)
 
-        } completion: { account, filesChunk, file, error in
+        } completion: { account, filesChunk, file, afError, error in
 
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
 
@@ -570,7 +575,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: file?.ocId, etag: file?.etag, date: file?.date, size: file?.size ?? 0, description: metadata.ocId, task: uploadTask, error: error)
             }
 
-            completion(account, file, error)
+            completion(account, file, afError, error)
         }
     }
 

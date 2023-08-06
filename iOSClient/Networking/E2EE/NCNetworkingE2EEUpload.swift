@@ -193,4 +193,17 @@ class NCNetworkingE2EEUpload: NSObject {
             }
         })
     }
+
+    private func sendFileChunk(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
+
+        return await withCheckedContinuation({ continuation in
+            NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false) {
+                uploadE2EEDelegate?.start()
+            } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+                uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
+            } completion: { account, file, afError, error in
+                continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date ,afError: afError, error: error))
+            }
+        })
+    }
 }
