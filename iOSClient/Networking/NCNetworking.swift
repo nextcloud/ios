@@ -563,7 +563,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
             case NKError.chunkFileNull: // (cancel)
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
             case NKError.chunkFileUpload:
-                NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                if let afError, !afError.isExplicitlyCancelledError {
+                    NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                }
                 break
             case NKError.chunkMoveFile:
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)

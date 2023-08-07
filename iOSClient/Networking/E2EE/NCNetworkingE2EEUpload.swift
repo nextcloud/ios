@@ -91,7 +91,7 @@ class NCNetworkingE2EEUpload: NSObject {
         // ** Unlock **
         await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
-        if sendFileResults.afError?.isExplicitlyCancelledError ?? false {
+        if let afError = sendFileResults.afError, afError.isExplicitlyCancelledError {
 
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -181,29 +181,30 @@ class NCNetworkingE2EEUpload: NSObject {
 
     private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
 
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        if metadata.chunk {
 
-        return await withCheckedContinuation({ continuation in
-            NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
-                uploadE2EEDelegate?.start()
-            } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
-                uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
-            } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in
-                continuation.resume(returning: (ocId: ocId, etag: etag, date: date ,afError: afError, error: error))
-            }
-        })
-    }
+            return await withCheckedContinuation({ continuation in
+                NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false) {
+                    uploadE2EEDelegate?.start()
+                } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+                    uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
+                } completion: { account, file, afError, error in
+                    continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date ,afError: afError, error: error))
+                }
+            })
 
-    private func sendFileChunk(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
+        } else {
 
-        return await withCheckedContinuation({ continuation in
-            NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false) {
-                uploadE2EEDelegate?.start()
-            } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
-                uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
-            } completion: { account, file, afError, error in
-                continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date ,afError: afError, error: error))
-            }
-        })
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+            return await withCheckedContinuation({ continuation in
+                NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {
+                    uploadE2EEDelegate?.start()
+                } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
+                    uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
+                } completion: { account, ocId, etag, date, size, allHeaderFields, afError, error in
+                    continuation.resume(returning: (ocId: ocId, etag: etag, date: date ,afError: afError, error: error))
+                }
+            })
+        }
     }
 }
