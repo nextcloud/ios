@@ -34,10 +34,6 @@ class NCNetworkingE2EEDelete: NSObject {
 
     func delete(metadata: tableMetadata) async -> (NKError) {
 
-        if let error = NCNetworkingE2EE.shared.isE2EEVersionWriteable(account: metadata.account) {
-            return error
-        }
-
         var error = NKError()
 
         func sendE2EMetadata(e2eToken: String, fileId: String) async -> (NKError) {

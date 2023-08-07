@@ -31,15 +31,6 @@ class NCNetworkingE2EE: NSObject {
         return instance
     }()
 
-    func isE2EEVersionWriteable(account: String) -> NKError? {
-
-        if NCGlobal.shared.e2eeReadVersions.last == NCGlobal.shared.capabilityE2EEApiVersion {
-            return nil
-        }
-        
-        return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_not_versionwriteable_")
-    }
-
     func generateRandomIdentifier() -> String {
 
         var UUID = NSUUID().uuidString

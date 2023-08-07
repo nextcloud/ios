@@ -34,10 +34,6 @@ class NCNetworkingE2EERename: NSObject {
 
     func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> (NKError) {
 
-        if let error = NCNetworkingE2EE.shared.isE2EEVersionWriteable(account: metadata.account) {
-            return error
-        }
-        
         var error = NKError()
 
         func sendE2EMetadata(e2eToken: String, fileId: String) async -> (NKError) {

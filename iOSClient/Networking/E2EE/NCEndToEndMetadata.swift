@@ -126,12 +126,23 @@ class NCEndToEndMetadata: NSObject {
         let filedropKey: String
     }
 
-
     // --------------------------------------------------------------------------------------------
-    // MARK: Encode JSON Metadata V2.0
+    // MARK: Encode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
     func encoderMetadata(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> String? {
+
+        let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
+
+        switch e2EEApiVersion {
+        case "1.2":
+            return encoderMetadataV12(items, account: account, serverUrl: serverUrl)
+        default:
+            return nil
+        }
+    }
+
+    func encoderMetadataV12(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> String? {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
