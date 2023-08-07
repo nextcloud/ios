@@ -516,6 +516,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
               let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
@@ -526,8 +527,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.collectionView?.reloadData()
         }
 
-        if account == appDelegate.account, serverUrl == self.serverUrl {
-            reloadDataSource()
+        if account == appDelegate.account, serverUrl == self.serverUrl, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if metadata.e2eEncrypted || metadata.chunk {
+                reloadDataSourceNetwork(isForced: true)
+            } else {
+                reloadDataSource()
+            }
         }
     }
 
