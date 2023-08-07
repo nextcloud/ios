@@ -647,6 +647,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             metadata.uploadDate = date ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
+            metadata.chunk = 0
 
             if let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId

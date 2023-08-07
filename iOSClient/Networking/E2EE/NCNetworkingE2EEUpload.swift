@@ -105,6 +105,7 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.date = sendFileResults.date ?? NSDate()
             metadata.etag = sendFileResults.etag ?? ""
             metadata.ocId = ocId
+            metadata.chunk = 0
 
             metadata.session = ""
             metadata.sessionError = ""
