@@ -528,7 +528,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if account == appDelegate.account, serverUrl == self.serverUrl, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            if metadata.e2eEncrypted || metadata.chunk {
+            if metadata.e2eEncrypted {
                 reloadDataSourceNetwork(isForced: true)
             } else {
                 reloadDataSource()
@@ -560,10 +560,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String,
-              let chunk = userInfo["chunk"] as? Bool,
-              let e2eEncrypted = userInfo["e2eEncrypted"] as? Bool
+              let ocId = userInfo["ocId"] as? String
         else { return }
+
+        let chunk: Bool = userInfo["chunk"] as? Bool ?? false
+        let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
         // Header Transfer
         if headerMenuTransferView && (chunk || e2eEncrypted) {
