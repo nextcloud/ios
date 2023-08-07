@@ -41,6 +41,7 @@ class NCContextMenu: NSObject {
 
         let hud = JGProgressHUD()
         hud.indicatorView = JGProgressHUDRingIndicatorView()
+        hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
         hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView { indicatorView.ringWidth = 1.5 }
         hud.tapOnHUDViewBlock = { _ in
