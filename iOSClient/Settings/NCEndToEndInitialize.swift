@@ -153,7 +153,7 @@ class NCEndToEndInitialize: NSObject {
 
                     let publicKey = CCUtility.getEndToEndCertificate(self.appDelegate.account)
 
-                    if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey)),
+                    if let privateKeyData = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
                        let keyData = Data(base64Encoded: privateKeyData) {
                         let privateKey = String(data: keyData, encoding: .utf8)
                         CCUtility.setEndToEndPrivateKey(self.appDelegate.account, privateKey: privateKey)
@@ -259,7 +259,7 @@ class NCEndToEndInitialize: NSObject {
 
         var privateKeyString: NSString?
 
-        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
+        guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.userId, directory: CCUtility.getDirectoryUserData(), passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Serious internal error to create PrivateKey chiper")
             NCContentPresenter.shared.messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return

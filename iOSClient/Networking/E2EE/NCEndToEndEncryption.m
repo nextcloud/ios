@@ -33,7 +33,6 @@
 
 #define IV_DELIMITER_ENCODED_OLD    @"fA=="
 #define IV_DELIMITER_ENCODED        @"|"
-#define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 //#define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
@@ -332,7 +331,7 @@
     return csr;
 }
 
-- (NSString *)encryptPrivateKey:(NSString *)userId directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey
+- (NSString *)encryptPrivateKey:(NSString *)userId directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey iterationCount:(unsigned int)iterationCount
 {
     NSMutableData *cipher = [NSMutableData new];
 
@@ -347,7 +346,7 @@
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, key.mutableBytes, key.length);
+    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, iterationCount, key.mutableBytes, key.length);
     
     NSData *initializationVector = [self generateIV:AES_IVEC_LENGTH];
     NSData *authenticationTag = [NSData new];
@@ -373,7 +372,7 @@
     }
 }
 
-- (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
+- (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey iterationCount:(unsigned int)iterationCount
 {
     NSMutableData *plain = [NSMutableData new];
 
@@ -401,7 +400,7 @@
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, key.mutableBytes, key.length);
+    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, iterationCount, key.mutableBytes, key.length);
     
     BOOL result = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
     
