@@ -539,7 +539,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         } uploaded: { fileChunk in
 
-            NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileChunk: fileChunk)
+            NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileChunk: fileChunk, directory: directory)
 
         } completion: { account, filesChunk, file, afError, error in
 
