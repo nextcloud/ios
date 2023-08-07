@@ -50,10 +50,10 @@ class NCCameraRoll: NSObject {
             if let date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) {
                 metadataSource.date = date
             }
-            if metadata.size > chunkSize {
-                metadata.chunk = chunkSize
+            if metadataSource.size > chunkSize {
+                metadataSource.chunk = chunkSize
             } else {
-                metadata.chunk = 0
+                metadataSource.chunk = 0
             }
             metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
             if metadataSource.chunk > 0 || metadataSource.e2eEncrypted {
@@ -284,7 +284,7 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
                 metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 metadataLivePhoto.status = metadata.status
-                if metadata.size > chunkSize {
+                if metadataLivePhoto.size > chunkSize {
                     metadataLivePhoto.chunk = chunkSize
                 } else {
                     metadataLivePhoto.chunk = 0

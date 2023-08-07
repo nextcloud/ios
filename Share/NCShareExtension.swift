@@ -344,7 +344,7 @@ extension NCShareExtension {
         if metadata.size > chunkSize {
             metadata.chunk = chunkSize
         } else {
-            metadata.chunk = 0 
+            metadata.chunk = 0
         }
         // E2EE
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
