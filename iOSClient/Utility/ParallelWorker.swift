@@ -51,6 +51,10 @@ class ParallelWorker {
 
         DispatchQueue.main.async {
             let hud = JGProgressHUD()
+            hud.indicatorView = JGProgressHUDRingIndicatorView()
+            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                indicatorView.ringWidth = 1.5
+            }
             hud.textLabel.text = NSLocalizedString(self.titleKey, comment: "")
             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
             hud.show(in: hudView)
