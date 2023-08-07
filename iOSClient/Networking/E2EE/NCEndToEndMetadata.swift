@@ -123,6 +123,7 @@ class NCEndToEndMetadata: NSObject {
         let userId: String
         let certificate: String
         let metadataKey: String
+        let decryptedMetadataKey: Data
         let filedropKey: String
     }
 
@@ -341,10 +342,12 @@ class NCEndToEndMetadata: NSObject {
 
                 var metadataKey = ""
                 var filedropKey = ""
+                var decryptedMetadataKey = Data()
 
                 if let encryptedMetadataKey = user.encryptedMetadataKey {
                     let data = Data(base64Encoded: encryptedMetadataKey)
                     if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey) {
+                        decryptedMetadataKey = decrypted
                         metadataKey = decrypted.base64EncodedString()
                     }
                 }
@@ -356,7 +359,7 @@ class NCEndToEndMetadata: NSObject {
                     }
                 }
 
-                plainUsers.append(PlainUsers(userId: user.userId, certificate: user.certificate, metadataKey: metadataKey, filedropKey: filedropKey))
+                plainUsers.append(PlainUsers(userId: user.userId, certificate: user.certificate, metadataKey: metadataKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey))
             }
 
             //
@@ -373,12 +376,30 @@ class NCEndToEndMetadata: NSObject {
                             }
                             if let json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
 
-                                let keyChecksums = json["keyChecksums"]
+                                let keyChecksums = json["keyChecksums"] as? [String]
                                 let deleted = json["deleted"]
-                                let files = json["files"]
 
                                 // TEST hash
-                                let hash = NCEndToEndEncryption.sharedManager().createSHA256(plainUser.metadataKey)
+                                if let keyChecksums,
+                                   let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: plainUser.decryptedMetadataKey),
+                                   !keyChecksums.contains(hash) {
+                                    print("error")
+                                }
+
+                                if let files = json["files"] as? [String: Any] {
+                                    for file in files {
+                                        let uid = file.key
+                                        if let dic = file.value as? [String: String] {
+                                            if let authenticationTag = dic["authenticationTag"],
+                                               let nonce = dic["nonce"],
+                                               let mimetype = dic["mimetype"],
+                                               let key = dic["key"],
+                                               let filename = dic["filename"] {
+                                                addE2eEncryption(fileNameIdentifier: uid, filename: filename, authenticationTag: authenticationTag, key: key, initializationVector: nonce, metadataKey: plainUser.metadataKey, mimetype: mimetype)
+                                            }
+                                        }
+                                    }
+                                }
 
                                 if let folders = json["folders"] as? [String: String] {
                                     for folder in folders {
