@@ -383,7 +383,7 @@ class NCEndToEndMetadata: NSObject {
                                 if let keyChecksums,
                                    let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: plainUser.decryptedMetadataKey),
                                    !keyChecksums.contains(hash) {
-                                    print("error")
+                                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e3ee_keyChecksum_", comment: ""))
                                 }
 
                                 if let files = json["files"] as? [String: Any] {

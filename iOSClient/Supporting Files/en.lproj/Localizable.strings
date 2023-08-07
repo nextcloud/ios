@@ -952,6 +952,7 @@
 "_chunk_create_folder_"     = "The file could not be sent, please check the server log";
 "_chunk_files_null_"        = "The file for sending could not be created";
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
+"_e3ee_keyChecksum_"        = "The key Checksum result incorrrect, it's impossible the decryption the files";
 
 // Video
 "_select_trace_"            = "Select the trace";
