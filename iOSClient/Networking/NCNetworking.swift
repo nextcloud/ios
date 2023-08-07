@@ -408,7 +408,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 completion: @escaping (_ error: NKError) -> () = { error in }) {
 
         let metadata = tableMetadata.init(value: metadata)
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNCK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
@@ -417,7 +417,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 completion(error)
             }
 #endif
-        } else if metadata.chunk {
+        } else if metadata.chunk > 0 {
             uploadChunkFile(metadata: metadata, start: start, progressHandler: progressHandler) { _, _, _, error in
                 completion(error)
             }
@@ -495,6 +495,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         var uploadTask: URLSessionTask?
 
+        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        }
+
         NextcloudKit.shared.uploadChunk(directory: directory,
                                         fileName: metadata.fileName,
                                         date: metadata.date as Date,
@@ -502,7 +507,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                         serverUrl: metadata.serverUrl,
                                         chunkFolder: chunkFolder,
                                         filesChunk: filesChunk,
-                                        chunkSizeInMB: 10,
+                                        chunkSize: chunkSize,
                                         addCustomHeaders: addCustomHeaders) { filesChunk in
 
             start()
@@ -782,7 +787,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
             return completion()
         }
 
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload || metadata.chunk {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload || metadata.chunk > 0 {
 
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             if let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView),

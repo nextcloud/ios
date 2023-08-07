@@ -101,24 +101,6 @@
         [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
         [section addFormRow:row];
     }
-    
-    // Section : Chunk --------------------------------------------------------------
-
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_chunk_footer_title_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"chunk" rowType:XLFormRowDescriptorTypeStepCounter title:NSLocalizedString(@"_chunk_size_mb_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = UIColor.secondarySystemGroupedBackgroundColor;
-    row.value = [NSString stringWithFormat:@"%ld", CCUtility.getChunkSize];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:UIColor.labelColor forKey:@"textLabel.textColor"];
-    [row.cellConfigAtConfigure setObject:@YES forKey:@"stepControl.wraps"];
-
-    [row.cellConfigAtConfigure setObject:@10 forKey:@"stepControl.stepValue"];
-    [row.cellConfigAtConfigure setObject:@0 forKey:@"stepControl.minimumValue"];
-    [row.cellConfigAtConfigure setObject:@100 forKey:@"stepControl.maximumValue"];
-    [section addFormRow:row];
 
     // Section : Privacy --------------------------------------------------------------
 
@@ -373,12 +355,7 @@
         [CCUtility setLogLevel:levelLog];
         [[[NextcloudKit shared] nkCommonInstance] setLevelLog:levelLog];
     }
-    
-    if ([rowDescriptor.tag isEqualToString:@"chunk"]) {
-        NSInteger chunkSize = [[rowDescriptor.value valueData] intValue];
-        [CCUtility setChunkSize:chunkSize];
-    }
-    
+
     if ([rowDescriptor.tag isEqualToString:@"deleteoldfiles"]) {
         
         NSInteger days = [[rowDescriptor.value valueData] intValue];
@@ -502,7 +479,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.section == 5 && indexPath.row == 2) {
+    if (indexPath.section == 4 && indexPath.row == 2) {
         return 80;
     } else {
         return NCGlobal.shared.heightCellSettings;

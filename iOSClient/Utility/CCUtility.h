@@ -169,9 +169,6 @@
 + (BOOL)getAccountRequest;
 + (void)setAccountRequest:(BOOL)set;
 
-+ (NSInteger)getChunkSize;
-+ (void)setChunkSize:(NSInteger)size;
-
 + (NSInteger)getCleanUpDay;
 + (void)setCleanUpDay:(NSInteger)days;
 

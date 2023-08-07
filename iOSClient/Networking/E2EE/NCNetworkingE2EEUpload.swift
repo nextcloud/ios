@@ -181,7 +181,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
 
-        if metadata.chunk {
+        if metadata.chunk > 0 {
 
             return await withCheckedContinuation({ continuation in
                 NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false, addCustomHeaders: ["e2e-token": e2eToken]) {

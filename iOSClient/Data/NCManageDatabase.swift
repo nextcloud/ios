@@ -98,8 +98,9 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableVideo.className())
                     }
 
-                    if oldSchemaVersion < 303 {
+                    if oldSchemaVersion < 304 {
                         migration.deleteData(forType: tableChunk.className())
+                        migration.deleteData(forType: tableMetadata.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in

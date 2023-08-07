@@ -563,11 +563,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocId = userInfo["ocId"] as? String
         else { return }
 
-        let chunk: Bool = userInfo["chunk"] as? Bool ?? false
+        let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
         // Header Transfer
-        if headerMenuTransferView && (chunk || e2eEncrypted) {
+        if headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
             if NCNetworking.shared.transferInForegorund?.ocId == ocId {
                 NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
             } else {
