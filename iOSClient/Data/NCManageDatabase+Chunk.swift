@@ -105,13 +105,17 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteChunks(account: String, ocId: String) {
+    func deleteChunks(account: String, ocId: String, directory: String) {
 
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
-                realm.delete(result)
+                let results = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
+                for result in results {
+                    let filePath = directory + "/\(result.fileName)"
+                    NCUtilityFileSystem.shared.deleteFile(filePath: filePath)
+                }
+                realm.delete(results)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")

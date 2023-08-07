@@ -546,29 +546,29 @@ class NCNetworking: NSObject, NKCommonDelegate {
             self.uploadRequest.removeValue(forKey: fileNameLocalPath)
 
             if error == .success {
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             }
 
             switch error.errorCode {
             case NKError.chunkResourceNotFound:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             case NKError.chunkNoEnoughMemory:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter.shared.messageNotification("_chunk_enough_memory_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkCreateFolder:
                 NCContentPresenter.shared.messageNotification("_chunk_create_folder_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkFilesNull:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter.shared.messageNotification("_chunk_files_null_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             case NKError.chunkFileNull: // (cancel)
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             case NKError.chunkFileUpload:
                 if let afError, !afError.isExplicitlyCancelledError {
                     NCContentPresenter.shared.messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                 }
                 break
             case NKError.chunkMoveFile:
-                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId)
+                NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 NCContentPresenter.shared.messageNotification("_chunk_move_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
             default: break
             }
