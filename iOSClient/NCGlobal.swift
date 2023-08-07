@@ -131,6 +131,10 @@ class NCGlobal: NSObject {
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeReadVersions                      = ["1.1", "1.2"]
 
+    // CHUNK
+    let chunkSizeMBCellular                         = 10000000
+    let chunkSizeMBEthernetOrWiFi                   = 100000000
+
     // Video
     //
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
