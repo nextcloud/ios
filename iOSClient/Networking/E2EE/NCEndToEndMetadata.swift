@@ -438,118 +438,6 @@ class NCEndToEndMetadata: NSObject {
     }
 
     // --------------------------------------------------------------------------------------------
-    // MARK: Decode JSON Metadata V1.1
-    // --------------------------------------------------------------------------------------------
-
-    func decoderMetadataV1(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String) -> NKError {
-
-        guard let data = json.data(using: .utf8) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
-        }
-
-        let decoder = JSONDecoder()
-        let privateKey = CCUtility.getEndToEndPrivateKey(account)
-        var metadataVersion: Double = 0
-
-        do {
-            let json = try decoder.decode(E2eeV1.self, from: data)
-
-            let metadata = json.metadata
-            let files = json.files
-            var metadataKeys: [String: String] = [:]
-
-            metadataVersion = metadata.version
-
-            // DATA
-            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
-
-            //
-            // metadata
-            //
-            for metadataKey in metadata.metadataKeys {
-                let data = Data(base64Encoded: metadataKey.value)
-                if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey),
-                   let keyData = Data(base64Encoded: decrypted) {
-                    let key = String(data: keyData, encoding: .utf8)
-                    metadataKeys[metadataKey.key] = key
-                }
-            }
-
-            //
-            // verify version
-            //
-            if let tableE2eMetadata = NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) {
-                if tableE2eMetadata.version > metadataVersion {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify version \(tableE2eMetadata.version)")
-                }
-            }
-
-            //
-            // files
-            //
-            if let files = files {
-                for files in files {
-                    let fileNameIdentifier = files.key
-                    let files = files.value as E2eeV1.Files
-
-                    let encrypted = files.encrypted
-                    let authenticationTag = files.authenticationTag
-                    guard let metadataKey = metadataKeys["\(files.metadataKey)"] else { continue }
-                    let metadataKeyIndex = files.metadataKey
-                    let initializationVector = files.initializationVector
-
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(encrypted, key: metadataKey),
-                       let decryptedData = Data(base64Encoded: decrypted) {
-                        do {
-                            let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
-
-                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
-
-                                let object = tableE2eEncryption()
-
-                                object.account = account
-                                object.authenticationTag = authenticationTag ?? ""
-                                object.blob = "files"
-                                object.fileName = encrypted.filename
-                                object.fileNameIdentifier = fileNameIdentifier
-                                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
-                                object.key = encrypted.key
-                                object.initializationVector = initializationVector
-                                object.metadataKey = metadataKey
-                                object.metadataKeyIndex = metadataKeyIndex
-                                object.metadataVersion = metadataVersion
-                                object.mimeType = encrypted.mimetype
-                                object.serverUrl = serverUrl
-
-                                // Write file parameter for decrypted on DB
-                                NCManageDatabase.shared.addE2eEncryption(object)
-
-                                // Update metadata on tableMetadata
-                                metadata.fileNameView = encrypted.filename
-
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
-
-                                metadata.contentType = results.mimeType
-                                metadata.iconName = results.iconName
-                                metadata.classFile = results.classFile
-
-                                NCManageDatabase.shared.addMetadata(metadata)
-                            }
-
-                        } catch let error {
-                            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt file: " + error.localizedDescription)
-                        }
-                    }
-                }
-            }
-        } catch let error {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: error.localizedDescription)
-        }
-
-        return NKError()
-    }
-
-    // --------------------------------------------------------------------------------------------
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
@@ -715,6 +603,118 @@ class NCEndToEndMetadata: NSObject {
             let checksum = NCEndToEndEncryption.sharedManager().createSHA256(passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey)
             if metadata.checksum != checksum {
                 return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error checksum")
+            }
+        } catch let error {
+            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: error.localizedDescription)
+        }
+
+        return NKError()
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // MARK: Decode JSON Metadata V1.1
+    // --------------------------------------------------------------------------------------------
+
+    func decoderMetadataV1(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String) -> NKError {
+
+        guard let data = json.data(using: .utf8) else {
+            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
+        }
+
+        let decoder = JSONDecoder()
+        let privateKey = CCUtility.getEndToEndPrivateKey(account)
+        var metadataVersion: Double = 0
+
+        do {
+            let json = try decoder.decode(E2eeV1.self, from: data)
+
+            let metadata = json.metadata
+            let files = json.files
+            var metadataKeys: [String: String] = [:]
+
+            metadataVersion = metadata.version
+
+            // DATA
+            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+
+            //
+            // metadata
+            //
+            for metadataKey in metadata.metadataKeys {
+                let data = Data(base64Encoded: metadataKey.value)
+                if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey),
+                   let keyData = Data(base64Encoded: decrypted) {
+                    let key = String(data: keyData, encoding: .utf8)
+                    metadataKeys[metadataKey.key] = key
+                }
+            }
+
+            //
+            // verify version
+            //
+            if let tableE2eMetadata = NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) {
+                if tableE2eMetadata.version > metadataVersion {
+                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify version \(tableE2eMetadata.version)")
+                }
+            }
+
+            //
+            // files
+            //
+            if let files = files {
+                for files in files {
+                    let fileNameIdentifier = files.key
+                    let files = files.value as E2eeV1.Files
+
+                    let encrypted = files.encrypted
+                    let authenticationTag = files.authenticationTag
+                    guard let metadataKey = metadataKeys["\(files.metadataKey)"] else { continue }
+                    let metadataKeyIndex = files.metadataKey
+                    let initializationVector = files.initializationVector
+
+                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(encrypted, key: metadataKey),
+                       let decryptedData = Data(base64Encoded: decrypted) {
+                        do {
+                            let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
+
+                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+
+                                let object = tableE2eEncryption()
+
+                                object.account = account
+                                object.authenticationTag = authenticationTag ?? ""
+                                object.blob = "files"
+                                object.fileName = encrypted.filename
+                                object.fileNameIdentifier = fileNameIdentifier
+                                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
+                                object.key = encrypted.key
+                                object.initializationVector = initializationVector
+                                object.metadataKey = metadataKey
+                                object.metadataKeyIndex = metadataKeyIndex
+                                object.metadataVersion = metadataVersion
+                                object.mimeType = encrypted.mimetype
+                                object.serverUrl = serverUrl
+
+                                // Write file parameter for decrypted on DB
+                                NCManageDatabase.shared.addE2eEncryption(object)
+
+                                // Update metadata on tableMetadata
+                                metadata.fileNameView = encrypted.filename
+
+                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
+
+                                metadata.contentType = results.mimeType
+                                metadata.iconName = results.iconName
+                                metadata.classFile = results.classFile
+
+                                NCManageDatabase.shared.addMetadata(metadata)
+                            }
+
+                        } catch let error {
+                            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt file: " + error.localizedDescription)
+                        }
+                    }
+                }
             }
         } catch let error {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: error.localizedDescription)
