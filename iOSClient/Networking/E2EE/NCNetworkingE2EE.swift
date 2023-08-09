@@ -59,7 +59,7 @@ class NCNetworkingE2EE: NSObject {
             e2eToken = tableLock.e2eToken
         }
 
-        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "POST")
+        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: nil, method: "POST")
         if lockE2EEFolderResults.error == .success, let e2eToken = lockE2EEFolderResults.e2eToken {
             NCManageDatabase.shared.setE2ETokenLock(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken)
         }
@@ -73,7 +73,7 @@ class NCNetworkingE2EE: NSObject {
             return
         }
 
-        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE")
+        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, e2eCounter: nil, method: "DELETE")
         if lockE2EEFolderResults.error == .success {
             NCManageDatabase.shared.deleteE2ETokenLock(account: account, serverUrl: serverUrl)
         }
@@ -86,7 +86,7 @@ class NCNetworkingE2EE: NSObject {
 
         Task {
             for result in NCManageDatabase.shared.getE2EAllTokenLock(account: account) {
-                let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: result.fileId, e2eToken: result.e2eToken, method: "DELETE")
+                let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE")
                 if lockE2EEFolderResults.error == .success {
                     NCManageDatabase.shared.deleteE2ETokenLock(account: account, serverUrl: result.serverUrl)
                 }

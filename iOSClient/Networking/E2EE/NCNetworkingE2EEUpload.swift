@@ -175,7 +175,7 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         // send metadata
-        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: method)
+        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, signature: nil, method: method)
         
         return putE2EEMetadataResults.error
     }
