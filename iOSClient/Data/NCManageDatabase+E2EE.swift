@@ -71,7 +71,6 @@ class tableE2eMetadata: Object {
     @Persisted var version: Double = 0
 }
 
-
 // MARK: -
 // MARK: Table V2
 

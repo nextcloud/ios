@@ -123,7 +123,7 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Encode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadata(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> String? {
+    func encoderMetadata(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
 
         let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
 
@@ -133,11 +133,11 @@ class NCEndToEndMetadata: NSObject {
         case "2.0":
             return encoderMetadataV20(items, account: account, serverUrl: serverUrl)
         default:
-            return nil
+            return (nil, nil)
         }
     }
 
-    func encoderMetadataV12(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> String? {
+    func encoderMetadataV12(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -186,7 +186,7 @@ class NCEndToEndMetadata: NSObject {
                     fileNameIdentifiers.append(item.fileNameIdentifier)
                 } catch let error {
                     print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
-                    return nil
+                    return (nil, nil)
                 }
             }
 
@@ -213,7 +213,7 @@ class NCEndToEndMetadata: NSObject {
                     }
                 } catch let error {
                     print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
-                    return nil
+                    return (nil, nil)
                 }
             }
         }
@@ -235,16 +235,16 @@ class NCEndToEndMetadata: NSObject {
             if NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) == nil {
                 NCManageDatabase.shared.setE2eMetadata(account: account, serverUrl: serverUrl, metadataKey: metadataKey, version: metadataVersion)
             }
-            return jsonString
+            return (jsonString, nil)
         } catch let error {
             print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
-            return nil
+            return (nil, nil)
         }
     }
 
-    func encoderMetadataV20(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> String? {
+    func encoderMetadataV20(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
 
-        return nil
+        return (nil, nil)
     }
 
     // --------------------------------------------------------------------------------------------

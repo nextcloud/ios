@@ -32,6 +32,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return instance
     }()
 
+    let errorEncodeMetadata = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+
     func createFolderAndMarkE2EE(fileName: String, serverUrl: String, account: String) async -> NKError {
 
         let serverUrlFileName = serverUrl + "/" + fileName
@@ -61,8 +63,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
             let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrlFileName)
             if lockResults.error != .success { return lockResults.error }
 
-            let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrlFileName)
-            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: file.fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: e2eMetadataNew, signature: nil, method: "POST")
+            let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrlFileName)
+            if resultEncoder.metadata == nil {
+                return errorEncodeMetadata
+            }
+
+            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: file.fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: resultEncoder.metadata, signature: resultEncoder.signature, method: "POST")
             error = putE2EEMetadataResults.error
 
             // UNLOCK
@@ -151,12 +157,17 @@ class NCNetworkingE2EECreateFolder: NSObject {
         NCManageDatabase.shared.addE2eEncryption(object)
 
         // Rebuild metadata for send it
-        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)), let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: account, serverUrl: serverUrl) else {
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
+            return errorEncodeMetadata
+        }
+
+        let resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: account, serverUrl: serverUrl)
+        if resultEncoder.metadata == nil {
+            return errorEncodeMetadata
         }
 
         // send metadata
-        let putE2EEMetadataResults =  await NextcloudKit.shared.putE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, signature: nil, method: method)
+        let putE2EEMetadataResults =  await NextcloudKit.shared.putE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken, e2eMetadata: resultEncoder.metadata, signature: resultEncoder.signature, method: method)
         return putE2EEMetadataResults.error
     }
 
@@ -173,8 +184,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
         if lockResults.error != .success { return lockResults.error }
 
-        let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrl)
-        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: e2eMetadataNew, signature: nil, method: "POST")
+        let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrl)
+        if resultEncoder.metadata == nil {
+            return errorEncodeMetadata
+        }
+        
+        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: resultEncoder.metadata, signature: resultEncoder.signature, method: "POST")
         let error = putE2EEMetadataResults.error
 
         // UNLOCK
