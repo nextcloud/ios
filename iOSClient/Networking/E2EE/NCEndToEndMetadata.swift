@@ -130,6 +130,8 @@ class NCEndToEndMetadata: NSObject {
         switch e2EEApiVersion {
         case "1.2":
             return encoderMetadataV12(items, account: account, serverUrl: serverUrl)
+        case "2.0":
+            return encoderMetadataV20(items, account: account, serverUrl: serverUrl)
         default:
             return nil
         }
@@ -238,6 +240,11 @@ class NCEndToEndMetadata: NSObject {
             print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
             return nil
         }
+    }
+
+    func encoderMetadataV20(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> String? {
+
+        return nil
     }
 
     // --------------------------------------------------------------------------------------------
@@ -373,7 +380,7 @@ class NCEndToEndMetadata: NSObject {
                                 let deleted = json["deleted"] as? Bool ?? false
                                 let counter = json["counter"] as? Int ?? 0
 
-                                // TEST hash
+                                // Signature
                                 if let keyChecksums,
                                    let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: tableE2eUsersV2.decryptedMetadataKey),
                                    !keyChecksums.contains(hash) {
