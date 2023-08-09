@@ -540,10 +540,6 @@
 {
     NSData *authenticationTagData;
    
-    NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directory, fileName]];
-    if (plainData == nil)
-        return false;
-    
     NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
     NSData *initializationVectorData = [self generateIV:AES_IVEC_LENGTH];
 
