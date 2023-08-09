@@ -539,7 +539,6 @@
 - (BOOL)encryptFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSData *authenticationTagData;
-   
     NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
     NSData *initializationVectorData = [self generateIV:AES_IVEC_LENGTH];
 
@@ -860,7 +859,6 @@
     unsigned char *cCipher;
 
     while ([inStream hasBytesAvailable]) {
-
         @autoreleasepool {
             NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
             if (bytesRead > 0) {
@@ -1068,7 +1066,6 @@
     unsigned char *cPlain;
 
     while ([inStream hasBytesAvailable]) {
-
         @autoreleasepool {
             NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
             if (bytesRead > 0) {
