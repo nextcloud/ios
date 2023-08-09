@@ -861,26 +861,27 @@
 
     while ([inStream hasBytesAvailable]) {
 
-        NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
+        @autoreleasepool {
+            NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
+            if (bytesRead > 0) {
 
-        if (bytesRead > 0) {
-
-            cCipher = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
-            status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
-            if (status <= 0) {
-                [inStream close];
-                [outStream close];
-                EVP_CIPHER_CTX_free(ctx);
-                return NO;
-            }
-
-            if ([outStream hasSpaceAvailable]) {
-                totalNumberOfBytesWritten = [outStream write:cCipher maxLength:cCipherLen];
-                if (totalNumberOfBytesWritten != cCipherLen) {
+                cCipher = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
+                status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
+                if (status <= 0) {
                     [inStream close];
                     [outStream close];
                     EVP_CIPHER_CTX_free(ctx);
                     return NO;
+                }
+
+                if ([outStream hasSpaceAvailable]) {
+                    totalNumberOfBytesWritten = [outStream write:cCipher maxLength:cCipherLen];
+                    if (totalNumberOfBytesWritten != cCipherLen) {
+                        [inStream close];
+                        [outStream close];
+                        EVP_CIPHER_CTX_free(ctx);
+                        return NO;
+                    }
                 }
             }
         }
@@ -1068,26 +1069,27 @@
 
     while ([inStream hasBytesAvailable]) {
 
-        NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
+        @autoreleasepool {
+            NSInteger bytesRead = [inStream read:buffer maxLength:streamBuffer];
+            if (bytesRead > 0) {
 
-        if (bytesRead > 0) {
-
-            cPlain = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
-            status = EVP_DecryptUpdate(ctx, cPlain, &cPlainLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
-            if (status <= 0) {
-                [inStream close];
-                [outStream close];
-                EVP_CIPHER_CTX_free(ctx);
-                return NO;
-            }
-
-            if ([outStream hasSpaceAvailable]) {
-                totalNumberOfBytesWritten = [outStream write:cPlain maxLength:cPlainLen];
-                if (totalNumberOfBytesWritten != cPlainLen) {
+                cPlain = [[NSMutableData dataWithLength:bytesRead] mutableBytes];
+                status = EVP_DecryptUpdate(ctx, cPlain, &cPlainLen, [[NSData dataWithBytes:buffer length:bytesRead] bytes], (int)bytesRead);
+                if (status <= 0) {
                     [inStream close];
                     [outStream close];
                     EVP_CIPHER_CTX_free(ctx);
                     return NO;
+                }
+
+                if ([outStream hasSpaceAvailable]) {
+                    totalNumberOfBytesWritten = [outStream write:cPlain maxLength:cPlainLen];
+                    if (totalNumberOfBytesWritten != cPlainLen) {
+                        [inStream close];
+                        [outStream close];
+                        EVP_CIPHER_CTX_free(ctx);
+                        return NO;
+                    }
                 }
             }
         }
