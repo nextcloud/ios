@@ -66,7 +66,7 @@
 - (void)Encodedkey:(NSString **)key initializationVector:(NSString **)initializationVector;
 - (NSData *)generateKey;
 - (NSString *)createSHA512:(NSString *)string;
-- (NSString *)createSHA256:(NSString *)string;
+- (NSString *)createSHA256FromString:(NSString *)string;
 - (NSString *)createSHA256FromData:(NSData *)data;
 - (NSString *)extractPublicKeyFromCertificate:(NSString *)pemCertificate;
 

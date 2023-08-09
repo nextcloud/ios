@@ -111,7 +111,7 @@ extension NCEndToEndMetadata {
 
         // Create checksum
         let passphrase = CCUtility.getEndToEndPassphrase(account).replacingOccurrences(of: " ", with: "")
-        let checksum = NCEndToEndEncryption.sharedManager().createSHA256(passphrase + fileNameIdentifiers.sorted().joined() + metadataKey)
+        let checksum = NCEndToEndEncryption.sharedManager().createSHA256(from: passphrase + fileNameIdentifiers.sorted().joined() + metadataKey)
 
         // Create Json
         let metadata = E2eeV12.Metadata(metadataKey: metadataKey, version: metadataVersion, checksum: checksum)
@@ -296,7 +296,7 @@ extension NCEndToEndMetadata {
 
             // verify checksum
             let passphrase = CCUtility.getEndToEndPassphrase(account).replacingOccurrences(of: " ", with: "")
-            let checksum = NCEndToEndEncryption.sharedManager().createSHA256(passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey)
+            let checksum = NCEndToEndEncryption.sharedManager().createSHA256(from: passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey)
             if metadata.checksum != checksum {
                 return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error checksum")
             }

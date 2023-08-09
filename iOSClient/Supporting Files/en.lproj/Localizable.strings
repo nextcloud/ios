@@ -952,7 +952,7 @@
 "_chunk_create_folder_"     = "The file could not be sent, please check the server log";
 "_chunk_files_null_"        = "The file for sending could not be created";
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log";
-"_e2ee_signature_error_"    = "The signature result incorrrect, it's impossible the decryption the files";
+"_e2ee_checksums_error_"    = "The checksums result incorrrect, it's impossible the decryption the files";
 
 // Video
 "_select_trace_"            = "Select the trace";

@@ -1232,7 +1232,7 @@
     *initializationVector = [ivData base64EncodedStringWithOptions:0];
 }
 
-- (NSString *)createSHA256:(NSString *)string
+- (NSString *)createSHA256FromString:(NSString *)string
 {
     const char *cstr = [string cStringUsingEncoding:NSASCIIStringEncoding];
     NSData *data = [NSData dataWithBytes:cstr length:string.length];
@@ -1247,8 +1247,6 @@
 
 - (NSString *)createSHA256FromData:(NSData *)data
 {
-    //const char *cstr = [string cStringUsingEncoding:NSASCIIStringEncoding];
-    //NSData *data = [NSData dataWithBytes:cstr length:string.length];
     uint8_t digest[CC_SHA256_DIGEST_LENGTH];
     CC_SHA256(data.bytes, (unsigned int)data.length, digest);
     NSMutableString* output = [NSMutableString  stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
