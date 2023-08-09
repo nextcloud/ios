@@ -524,7 +524,7 @@
 
     BOOL result = [self decryptData:cipher plain:&plain key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:authenticationTagData];
 
-    if (plain != nil && result) {
+    if (plain != nil && result && plain.length > 0) {
         return plain;
     }
 

@@ -419,11 +419,13 @@ class NCEndToEndMetadata: NSObject {
                                 }
                             }
                         } catch let error {
-                            print("Serious internal error in decoding metadata (" + error.localizedDescription + ")")
+                            return NKError(error: error)
                         }
                     } else {
-                        print("Serious internal error in decoding metadata")
+                        return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error unzip ciphertext")
                     }
+                } else {
+                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt ciphertext")
                 }
             }
 
