@@ -31,15 +31,15 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV20(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV20(_ items: [tableE2eEncryption], account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
 
         var signature: String?
 
         // Signature
 
-        let dataMetadata = Data(base64Encoded: "cmsTest")
-        if let cmsData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: "userId") {
-            signature = cmsData.base64EncodedString()
+        let dataMetadata = Data(base64Encoded: "metadata")
+        if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
+            signature = signatureData.base64EncodedString()
         }
         return (nil, signature)
     }

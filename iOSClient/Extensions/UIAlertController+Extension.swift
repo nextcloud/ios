@@ -38,7 +38,7 @@ extension UIAlertController {
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
             if markE2ee {
                 Task {
-                    let error = await NCNetworkingE2EECreateFolder.shared.createFolderAndMarkE2EE(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account)
+                    let error = await NCNetworkingE2EECreateFolder.shared.createFolderAndMarkE2EE(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account, userId: urlBase.userId)
                     if error != .success {
                         NCContentPresenter.shared.showError(error: error)
                     }

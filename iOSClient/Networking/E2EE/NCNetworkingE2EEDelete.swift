@@ -57,9 +57,9 @@ class NCNetworkingE2EEDelete: NSObject {
 
             // Rebuild metadata
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: metadata.account, serverUrl: metadata.serverUrl)
+                resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
             } else {
-                resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: metadata.account, serverUrl: metadata.serverUrl)
+                resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
             }
 
             if resultEncoder.metadata == nil {

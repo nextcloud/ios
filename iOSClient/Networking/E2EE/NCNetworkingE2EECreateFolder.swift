@@ -34,7 +34,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
     let errorEncodeMetadata = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
 
-    func createFolderAndMarkE2EE(fileName: String, serverUrl: String, account: String) async -> NKError {
+    func createFolderAndMarkE2EE(fileName: String, serverUrl: String, account: String, userId: String) async -> NKError {
 
         let serverUrlFileName = serverUrl + "/" + fileName
         var error = NKError()
@@ -63,7 +63,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrlFileName)
             if lockResults.error != .success { return lockResults.error }
 
-            let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrlFileName)
+            let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrlFileName, userId: userId)
             if resultEncoder.metadata == nil {
                 return errorEncodeMetadata
             }
@@ -161,7 +161,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             return errorEncodeMetadata
         }
 
-        let resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: account, serverUrl: serverUrl)
+        let resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: account, serverUrl: serverUrl, userId: userId)
         if resultEncoder.metadata == nil {
             return errorEncodeMetadata
         }
@@ -171,7 +171,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return putE2EEMetadataResults.error
     }
 
-    func markE2EEFolder(account: String, serverUrl: String, fileId: String, ocId: String) async -> (NKError) {
+    func markE2EEFolder(account: String, serverUrl: String, fileId: String, ocId: String, userId: String) async -> (NKError) {
 
         let markE2EEFolderResult = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
         if markE2EEFolderResult.error != .success { return markE2EEFolderResult.error }
@@ -184,7 +184,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
         if lockResults.error != .success { return lockResults.error }
 
-        let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrl)
+        let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrl, userId: userId)
         if resultEncoder.metadata == nil {
             return errorEncodeMetadata
         }
