@@ -41,6 +41,7 @@ extension NCEndToEndMetadata {
         if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
             signature = signatureData.base64EncodedString()
         }
+
         return (nil, signature)
     }
 
