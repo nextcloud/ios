@@ -392,7 +392,7 @@ class NCEndToEndMetadata: NSObject {
                                 if let keyChecksums,
                                    let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: tableE2eUsersV2.decryptedMetadataKey),
                                    !keyChecksums.contains(hash) {
-                                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e3ee_keyChecksum_", comment: ""))
+                                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_signature_error_", comment: ""))
                                 }
 
                                 NCManageDatabase.shared.setE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: keyChecksums, deleted: deleted, counter: counter, folders: json["folders"] as? [String: String], version: version)
