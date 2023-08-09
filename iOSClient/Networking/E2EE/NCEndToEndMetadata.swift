@@ -137,6 +137,10 @@ class NCEndToEndMetadata: NSObject {
         }
     }
 
+    // --------------------------------------------------------------------------------------------
+    // MARK: Ecode JSON Metadata V1.2
+    // --------------------------------------------------------------------------------------------
+
     func encoderMetadataV12(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
 
         let encoder = JSONEncoder()
@@ -241,6 +245,10 @@ class NCEndToEndMetadata: NSObject {
             return (nil, nil)
         }
     }
+
+    // --------------------------------------------------------------------------------------------
+    // MARK: Ecode JSON Metadata V2.0
+    // --------------------------------------------------------------------------------------------
 
     func encoderMetadataV20(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
 
