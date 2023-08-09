@@ -322,9 +322,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     // MARK: - Download
 
-    func cancelDownload(ocId: String, serverUrl: String, fileNameView: String) {
+    func cancelDownload(ocId: String, serverUrl: String, fileName: String) {
 
-        guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView) else { return }
+        guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName) else { return }
 
         if let request = downloadRequest[fileNameLocalPath] {
             request.cancel()
@@ -784,7 +784,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
 
-            NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
+            NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             return completion()
         }
 
@@ -871,7 +871,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: NCGlobal.shared.metadataStatusNormal)
             }
             if metadata.status == NCGlobal.shared.metadataStatusDownloading && metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-                cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
+                cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             }
         }
 
