@@ -41,6 +41,8 @@ class NCNetworkingE2EE: NSObject {
     func lock(account: String, serverUrl: String) async -> (fileId: String?, e2eToken: String?, error: NKError) {
 
         var e2eToken: String?
+        let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
+        var e2eCounter: String?
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
             return (nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_lock_"))
@@ -50,7 +52,11 @@ class NCNetworkingE2EE: NSObject {
             e2eToken = tableLock.e2eToken
         }
 
-        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: nil, method: "POST")
+        if e2EEApiVersion == "2.0", let result = NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl) {
+            e2eCounter = "\(result.counter)"
+        }
+
+        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: e2eCounter, method: "POST")
         if lockE2EEFolderResults.error == .success, let e2eToken = lockE2EEFolderResults.e2eToken {
             NCManageDatabase.shared.setE2ETokenLock(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken)
         }
