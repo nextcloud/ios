@@ -119,14 +119,6 @@ class NCEndToEndMetadata: NSObject {
         let version: String
     }
 
-    struct PlainUsers {
-        let userId: String
-        let certificate: String
-        let metadataKey: String
-        let decryptedMetadataKey: Data
-        let filedropKey: String
-    }
-
     // --------------------------------------------------------------------------------------------
     // MARK: Encode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
@@ -298,7 +290,6 @@ class NCEndToEndMetadata: NSObject {
                 object.key = key
                 object.initializationVector = initializationVector
                 object.metadataKey = metadataKey
-                object.metadataVersion = metadataVersion
                 object.mimeType = mimetype
                 object.serverUrl = serverUrl
 
@@ -320,8 +311,6 @@ class NCEndToEndMetadata: NSObject {
 
         let decoder = JSONDecoder()
         let privateKey = CCUtility.getEndToEndPrivateKey(account)
-        var metadataVersion: Double = 0
-        var plainUsers: [PlainUsers] = []
 
         do {
             let json = try decoder.decode(E2eeV20.self, from: data)
@@ -329,9 +318,11 @@ class NCEndToEndMetadata: NSObject {
             let metadata = json.metadata
             let users = json.users
             let filedrop = json.filedrop
-            metadataVersion = Double(json.version) ?? 0
+            let version = json.version as String? ?? "2.0"
 
             // DATA
+            NCManageDatabase.shared.deleteE2eMetadataV2(account: account, serverUrl: serverUrl)
+            NCManageDatabase.shared.deleteE2EUsersV2(account: account, serverUrl: serverUrl)
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
             //
@@ -340,9 +331,10 @@ class NCEndToEndMetadata: NSObject {
 
             for user in users {
 
-                var metadataKey = ""
-                var filedropKey = ""
-                var decryptedMetadataKey = Data()
+                var decryptedMetadataKey: Data?
+                var decryptedFiledropKey: Data?
+                var metadataKey: String?
+                var filedropKey: String?
 
                 if let encryptedMetadataKey = user.encryptedMetadataKey {
                     let data = Data(base64Encoded: encryptedMetadataKey)
@@ -355,19 +347,20 @@ class NCEndToEndMetadata: NSObject {
                 if let encryptedFiledropKey = user.encryptedFiledropKey {
                     let data = Data(base64Encoded: encryptedFiledropKey)
                     if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey) {
+                        decryptedFiledropKey = decrypted
                         filedropKey = decrypted.base64EncodedString()
                     }
                 }
 
-                plainUsers.append(PlainUsers(userId: user.userId, certificate: user.certificate, metadataKey: metadataKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey))
+                NCManageDatabase.shared.setE2EUsersV2(account: account, serverUrl: serverUrl, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
             }
 
             //
             // metadata
             //
 
-            if let plainUser = plainUsers.first(where: { $0.userId == userId }) {
-                if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: plainUser.metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag) {
+            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId), let metadataKey = tableE2eUsersV2.metadataKey {
+                if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: tableE2eUsersV2.metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag) {
                     if decrypted.isGzipped {
                         do {
                             let data = try decrypted.gunzipped()
@@ -377,14 +370,17 @@ class NCEndToEndMetadata: NSObject {
                             if let json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
 
                                 let keyChecksums = json["keyChecksums"] as? [String]
-                                let deleted = json["deleted"]
+                                let deleted = json["deleted"] as? Bool ?? false
+                                let counter = json["counter"] as? Int ?? 0
 
                                 // TEST hash
                                 if let keyChecksums,
-                                   let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: plainUser.decryptedMetadataKey),
+                                   let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: tableE2eUsersV2.decryptedMetadataKey),
                                    !keyChecksums.contains(hash) {
                                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e3ee_keyChecksum_", comment: ""))
                                 }
+
+                                NCManageDatabase.shared.setE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: keyChecksums, deleted: deleted, counter: counter, folders: json["folders"] as? [String: String], version: version)
 
                                 if let files = json["files"] as? [String: Any] {
                                     for file in files {
@@ -395,7 +391,7 @@ class NCEndToEndMetadata: NSObject {
                                                let mimetype = dic["mimetype"],
                                                let key = dic["key"],
                                                let filename = dic["filename"] {
-                                                addE2eEncryption(fileNameIdentifier: uid, filename: filename, authenticationTag: authenticationTag, key: key, initializationVector: nonce, metadataKey: plainUser.metadataKey, mimetype: mimetype)
+                                                addE2eEncryption(fileNameIdentifier: uid, filename: filename, authenticationTag: authenticationTag, key: key, initializationVector: nonce, metadataKey: metadataKey, mimetype: mimetype)
                                             }
                                         }
                                     }
@@ -403,7 +399,7 @@ class NCEndToEndMetadata: NSObject {
 
                                 if let folders = json["folders"] as? [String: String] {
                                     for folder in folders {
-                                        addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: plainUser.metadataKey, initializationVector: metadata.nonce, metadataKey: plainUser.metadataKey, mimetype: "httpd/unix-directory")
+                                        addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory")
                                     }
                                 }
                             }

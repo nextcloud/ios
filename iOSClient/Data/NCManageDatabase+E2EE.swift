@@ -25,6 +25,19 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
+class tableE2eEncryptionLock: Object {
+
+    @objc dynamic var account = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var fileId = ""
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var e2eToken = ""
+
+    override static func primaryKey() -> String {
+        return "fileId"
+    }
+}
+
 class tableE2eEncryption: Object {
 
     @objc dynamic var account = ""
@@ -47,18 +60,8 @@ class tableE2eEncryption: Object {
     }
 }
 
-class tableE2eEncryptionLock: Object {
-
-    @objc dynamic var account = ""
-    @objc dynamic var date = NSDate()
-    @objc dynamic var fileId = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var e2eToken = ""
-
-    override static func primaryKey() -> String {
-        return "fileId"
-    }
-}
+// MARK: -
+// MARK: Table V1, V1.2
 
 class tableE2eMetadata: Object {
 
@@ -68,10 +71,38 @@ class tableE2eMetadata: Object {
     @Persisted var version: Double = 0
 }
 
+
+// MARK: -
+// MARK: Table V2
+
+class tableE2eMetadataV2: Object {
+
+    @Persisted(primaryKey: true) var accountServerUrl = ""
+    @Persisted var keyChecksums: String = ""
+    @Persisted var deleted: Bool = false
+    @Persisted var counter: Int = 0
+    @Persisted var folders: String = ""
+    @Persisted var version: String = "2.0"
+}
+
+class tableE2eUsersV2: Object {
+
+    @Persisted(primaryKey: true) var accountServerUrlUserId = ""
+    @Persisted var certificate = ""
+    @Persisted var encryptedFiledropKey: String?
+    @Persisted var encryptedMetadataKey: String?
+    @Persisted var decryptedFiledropKey: Data?
+    @Persisted var decryptedMetadataKey: Data?
+    @Persisted var filedropKey: String?
+    @Persisted var metadataKey: String?
+    @Persisted var serverUrl = ""
+    @Persisted var userId = ""
+}
+
 extension NCManageDatabase {
 
     // MARK: -
-    // MARK: Table e2e Encryption
+    // MARK: tableE2eEncryption
 
     @objc func addE2eEncryption(_ e2e: tableE2eEncryption) {
 
@@ -219,7 +250,7 @@ extension NCManageDatabase {
     }
 
     // MARK: -
-    // MARK: Table e2ee Metadata
+    // MARK: V1
 
     func getE2eMetadata(account: String, serverUrl: String) -> tableE2eMetadata? {
 
@@ -246,6 +277,121 @@ extension NCManageDatabase {
                 addObject.serverUrl = serverUrl
                 addObject.version = version
                 realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    // MARK: -
+    // MARK: V2
+
+    func setE2EUsersV2(account: String,
+                       serverUrl: String,
+                       userId: String,
+                       certificate: String,
+                       encryptedFiledropKey: String?,
+                       encryptedMetadataKey: String?,
+                       decryptedFiledropKey: Data?,
+                       decryptedMetadataKey: Data?,
+                       filedropKey: String?,
+                       metadataKey: String?) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let addObject = tableE2eUsersV2()
+                addObject.accountServerUrlUserId = account + serverUrl + userId
+                addObject.certificate = certificate
+                addObject.encryptedFiledropKey = encryptedFiledropKey
+                addObject.encryptedMetadataKey = encryptedMetadataKey
+                addObject.decryptedFiledropKey = decryptedFiledropKey
+                addObject.decryptedMetadataKey = decryptedMetadataKey
+                addObject.filedropKey = filedropKey
+                addObject.metadataKey = metadataKey
+                addObject.serverUrl = serverUrl
+                addObject.userId = userId
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func getE2EUsersV2(account: String, serverUrl: String, userId: String) -> tableE2eUsersV2? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableE2eUsersV2.self).filter("accountServerUrlUserId == %@", account + serverUrl + userId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func deleteE2EUsersV2(account: String, serverUrl: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                realm.delete(results)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func getE2eMetadataV2(account: String, serverUrl: String) -> tableE2eMetadataV2? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableE2eMetadataV2.self).filter("accountServerUrl == %@", account + serverUrl).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func setE2eMetadataV2(account: String, serverUrl: String, keyChecksums: [String]?, deleted: Bool, counter: Int, folders: [String: String]?, version: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let addObject = tableE2eMetadataV2()
+                addObject.accountServerUrl = account + serverUrl
+                if let keyChecksums {
+                    addObject.keyChecksums = keyChecksums.joined(separator: ",")
+                }
+                addObject.deleted = deleted
+                addObject.counter = counter
+                if let folders {
+                    var arrayFolders: [String] = []
+                    for folder in folders {
+                        let item = folder.key + ":" + folder.value
+                        arrayFolders.append(item)
+                    }
+                    addObject.folders = arrayFolders.joined(separator: ",")
+                }
+                addObject.version = version
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func deleteE2eMetadataV2(account: String, serverUrl: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableE2eMetadataV2.self).filter("accountServerUrl == %@", account + serverUrl)
+                realm.delete(results)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
