@@ -365,6 +365,20 @@ extension NCManageDatabase {
         return nil
     }
 
+    func incrementCounterE2eMetadataV2(account: String, serverUrl: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableE2eMetadataV2.self).filter("accountServerUrl == %@", account + serverUrl).first {
+                    result.counter += 1
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func addE2eMetadataV2(account: String, serverUrl: String, keyChecksums: [String]?, deleted: Bool, counter: Int, folders: [String: String]?, version: String) {
 
         do {

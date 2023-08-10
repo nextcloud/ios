@@ -86,11 +86,26 @@ class NCEndToEndMetadata: NSObject {
 
     struct E2eeV20: Codable {
 
+        struct Files: Codable {
+            let authenticationTag: String
+            let filename: String
+            let key: String
+            let mimetype: String
+            let nonce: String
+        }
+
+        struct ciphertext: Codable {
+            let counter: Int
+            let deleted: Bool
+            let keyChecksums: [String]?
+            let files: [String: Files]?
+            let folders: [String: String]?
+        }
+
         struct Metadata: Codable {
             let ciphertext: String
             let nonce: String
             let authenticationTag: String
-            let counter: Double?
         }
 
         struct Users: Codable {
