@@ -514,6 +514,10 @@
 {
     NSMutableData *plain;
 
+    // Remove initializationVector Tag if exists [ANDROID]
+    NSString *android = [@"|" stringByAppendingString: initializationVector];
+    encrypted = [encrypted stringByReplacingOccurrencesOfString:android withString:@""];
+
     NSData *cipher = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
     NSData *initializationVectorData = [[NSData alloc] initWithBase64EncodedString:initializationVector options:0];
