@@ -280,7 +280,7 @@ extension NCManageDatabase {
     // MARK: -
     // MARK: V2
 
-    func setE2EUsersV2(account: String,
+    func addE2EUsersV2(account: String,
                        serverUrl: String,
                        userId: String,
                        certificate: String,
@@ -313,7 +313,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getE2EUsersV2(account: String, serverUrl: String, userId: String?) -> Results<tableE2eUsersV2>? {
+    func getE2EUsersV2(account: String, serverUrl: String, userId: String? = nil) -> Results<tableE2eUsersV2>? {
 
         do {
             let realm = try Realm()
@@ -356,7 +356,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func setE2eMetadataV2(account: String, serverUrl: String, keyChecksums: [String]?, deleted: Bool, counter: Int, folders: [String: String]?, version: String) {
+    func addE2eMetadataV2(account: String, serverUrl: String, keyChecksums: [String]?, deleted: Bool, counter: Int, folders: [String: String]?, version: String) {
 
         do {
             let realm = try Realm()

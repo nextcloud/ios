@@ -33,12 +33,18 @@ extension NCEndToEndMetadata {
 
     func encoderMetadataV20(account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
 
-        var signature: String?
         let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
         let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl)
         let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId)
 
+        if e2eUsers == nil {
+
+        }
+
+
+
         // Signature
+        var signature: String?
 
         let dataMetadata = Data(base64Encoded: "metadata")
         if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
@@ -135,7 +141,7 @@ extension NCEndToEndMetadata {
                     }
                 }
 
-                NCManageDatabase.shared.setE2EUsersV2(account: account, serverUrl: serverUrl, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
+                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
             }
 
             //
@@ -165,7 +171,7 @@ extension NCEndToEndMetadata {
                                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_checksums_error_", comment: ""))
                                 }
 
-                                NCManageDatabase.shared.setE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: keyChecksums, deleted: deleted, counter: counter, folders: json["folders"] as? [String: String], version: version)
+                                NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: keyChecksums, deleted: deleted, counter: counter, folders: json["folders"] as? [String: String], version: version)
 
                                 if let files = json["files"] as? [String: Any] {
                                     for file in files {
