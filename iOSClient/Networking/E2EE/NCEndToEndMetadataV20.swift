@@ -98,8 +98,9 @@ extension NCEndToEndMetadata {
 
         do {
             let json = try JSONEncoder().encode(ciphertext)
-            let data = try json.gzipped()
-            let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: data, encoding: .utf8), key: encryptedMetadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
+            let dataCiphertext = try json.gzipped()
+            let base64Ciphertext = dataCiphertext.base64EncodedString()
+            let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(base64Ciphertext, key: encryptedMetadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
             guard let ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil)
             }
@@ -121,6 +122,7 @@ extension NCEndToEndMetadata {
                 signature = signatureData.base64EncodedString()
             }
         }
+
         return (e2eeJson, signature)
     }
 
