@@ -142,25 +142,19 @@ extension NCManageDatabase {
         return nil
     }
 
-    @objc func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption]? {
-
-        guard self.getActiveAccount() != nil else { return nil }
+    @objc func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption] {
 
         do {
             let realm = try Realm()
             realm.refresh()
             let results: Results<tableE2eEncryption>
             results = realm.objects(tableE2eEncryption.self).filter(predicate)
-            if results.isEmpty {
-                return nil
-            } else {
-                return Array(results.map { tableE2eEncryption.init(value: $0) })
-            }
+            return Array(results.map { tableE2eEncryption.init(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
 
-        return nil
+        return []
     }
 
     @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {

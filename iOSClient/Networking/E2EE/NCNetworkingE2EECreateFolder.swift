@@ -63,7 +63,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrlFileName)
             if lockResults.error != .success { return lockResults.error }
 
-            let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrlFileName, userId: userId)
+            let resultEncoder = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrlFileName, userId: userId)
             if resultEncoder.metadata == nil {
                 return errorEncodeMetadata
             }
@@ -156,12 +156,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         object.serverUrl = serverUrl
         NCManageDatabase.shared.addE2eEncryption(object)
 
-        // Rebuild metadata for send it
-        guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return errorEncodeMetadata
-        }
-
-        let resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: account, serverUrl: serverUrl, userId: userId)
+        let resultEncoder = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId)
         if resultEncoder.metadata == nil {
             return errorEncodeMetadata
         }
@@ -184,7 +179,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let lockResults = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
         if lockResults.error != .success { return lockResults.error }
 
-        let resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrl, userId: userId)
+        let resultEncoder = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId)
         if resultEncoder.metadata == nil {
             return errorEncodeMetadata
         }

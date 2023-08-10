@@ -122,15 +122,15 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Encode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadata(_ items: [tableE2eEncryption], account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadata(account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
 
         let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
 
         switch e2EEApiVersion {
         case "1.2":
-            return encoderMetadataV12(items, account: account, serverUrl: serverUrl)
+            return encoderMetadataV12(account: account, serverUrl: serverUrl)
         case "2.0":
-            return encoderMetadataV20(items, account: account, serverUrl: serverUrl, userId: userId)
+            return encoderMetadataV20(account: account, serverUrl: serverUrl, userId: userId)
         default:
             return (nil, nil)
         }

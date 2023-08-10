@@ -31,7 +31,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV20(_ items: [tableE2eEncryption], account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV20(account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
 
         var signature: String?
 

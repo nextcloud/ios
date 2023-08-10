@@ -53,12 +53,7 @@ class NCNetworkingE2EERename: NSObject {
             // rename
             NCManageDatabase.shared.renameFileE2eEncryption(serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account))
 
-            // Rebuild metadata
-            guard let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
-                return errorEncodeMetadata
-            }
-
-            let resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
+            let resultEncoder = NCEndToEndMetadata().encoderMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
             if resultEncoder.metadata == nil {
                 return errorEncodeMetadata
             }

@@ -40,8 +40,6 @@ class NCNetworkingE2EEDelete: NSObject {
 
         func sendE2EMetadata(e2eToken: String, fileId: String) async -> (NKError) {
 
-            var resultEncoder: (metadata: String?, signature: String?)
-
             // Get last metadata
             let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
 
@@ -55,13 +53,7 @@ class NCNetworkingE2EEDelete: NSObject {
             // delete
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))
 
-            // Rebuild metadata
-            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                resultEncoder = NCEndToEndMetadata().encoderMetadata(tableE2eEncryption, account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
-            } else {
-                resultEncoder = NCEndToEndMetadata().encoderMetadata([], account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
-            }
-
+            let resultEncoder = NCEndToEndMetadata().encoderMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
             if resultEncoder.metadata == nil {
                 return errorEncodeMetadata
             }

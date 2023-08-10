@@ -28,7 +28,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV12(_ items: [tableE2eEncryption], account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV12(account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -40,9 +40,7 @@ extension NCEndToEndMetadata {
         let privateKey = CCUtility.getEndToEndPrivateKey(account)
         var fileNameIdentifiers: [String] = []
 
-        // let shortVersion: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-        // var filesCodable: [String: E2eeV12.Files] = [String: E2eeV12.Files]()
-        // var filedropCodable: [String: E2eeV12.Filedrop] = [String: E2eeV12.Filedrop]()
+        let items = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
         //
         // metadata
