@@ -40,39 +40,39 @@ extension NCEndToEndMetadata {
         let privateKey = CCUtility.getEndToEndPrivateKey(account)
         var fileNameIdentifiers: [String] = []
 
-        let items = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
         //
         // metadata
         //
-        if items.isEmpty, let key = NCEndToEndEncryption.sharedManager()?.generateKey() as? NSData {
+        if e2eEncryptions.isEmpty, let key = NCEndToEndEncryption.sharedManager()?.generateKey() as? NSData {
 
             if let key = key.base64EncodedString().data(using: .utf8)?.base64EncodedString(),
                let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) {
                 metadataKey = metadataKeyEncrypted.base64EncodedString()
             }
 
-        } else if let metadatakey = (items.first!.metadataKey.data(using: .utf8)?.base64EncodedString()),
+        } else if let metadatakey = (e2eEncryptions.first!.metadataKey.data(using: .utf8)?.base64EncodedString()),
                   let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(metadatakey, publicKey: nil, privateKey: privateKey) {
 
             metadataKey = metadataKeyEncrypted.base64EncodedString()
         }
 
-        for item in items {
+        for e2eEncryption in e2eEncryptions {
 
             //
             // files
             //
-            if item.blob == "files" {
-                let encrypted = E2eeV12.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType)
+            if e2eEncryption.blob == "files" {
+                let encrypted = E2eeV12.Encrypted(key: e2eEncryption.key, filename: e2eEncryption.fileName, mimetype: e2eEncryption.mimeType)
                 do {
                     // Create "encrypted"
                     let json = try encoder.encode(encrypted)
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: json, encoding: .utf8), key: item.metadataKey) {
-                        let record = E2eeV12.Files(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, encrypted: encrypted)
-                        files.updateValue(record, forKey: item.fileNameIdentifier)
+                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: json, encoding: .utf8), key: e2eEncryption.metadataKey) {
+                        let record = E2eeV12.Files(initializationVector: e2eEncryption.initializationVector, authenticationTag: e2eEncryption.authenticationTag, encrypted: encrypted)
+                        files.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
-                    fileNameIdentifiers.append(item.fileNameIdentifier)
+                    fileNameIdentifiers.append(e2eEncryption.fileNameIdentifier)
                 } catch let error {
                     print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
                     return (nil, nil)
@@ -82,23 +82,23 @@ extension NCEndToEndMetadata {
             //
             // filedrop
             //
-            if item.blob == "filedrop" {
+            if e2eEncryption.blob == "filedrop" {
 
                 var encryptedKey: String?
                 var encryptedInitializationVector: NSString?
                 var encryptedTag: NSString?
 
-                if let metadataKeyFiledrop = (item.metadataKeyFiledrop.data(using: .utf8)?.base64EncodedString()),
+                if let metadataKeyFiledrop = (e2eEncryption.metadataKeyFiledrop.data(using: .utf8)?.base64EncodedString()),
                    let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(metadataKeyFiledrop, publicKey: nil, privateKey: privateKey) {
                     encryptedKey = metadataKeyEncrypted.base64EncodedString()
                 }
-                let encrypted = E2eeV12.Encrypted(key: item.key, filename: item.fileName, mimetype: item.mimeType)
+                let encrypted = E2eeV12.Encrypted(key: e2eEncryption.key, filename: e2eEncryption.fileName, mimetype: e2eEncryption.mimeType)
                 do {
                     // Create "encrypted"
                     let json = try encoder.encode(encrypted)
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: json, encoding: .utf8), key: item.metadataKeyFiledrop, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
-                        let record = E2eeV12.Filedrop(initializationVector: item.initializationVector, authenticationTag: item.authenticationTag, encrypted: encrypted, encryptedKey: encryptedKey, encryptedTag: encryptedTag as? String, encryptedInitializationVector: encryptedInitializationVector as? String)
-                        filedrop.updateValue(record, forKey: item.fileNameIdentifier)
+                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: json, encoding: .utf8), key: e2eEncryption.metadataKeyFiledrop, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
+                        let record = E2eeV12.Filedrop(initializationVector: e2eEncryption.initializationVector, authenticationTag: e2eEncryption.authenticationTag, encrypted: encrypted, encryptedKey: encryptedKey, encryptedTag: encryptedTag as? String, encryptedInitializationVector: encryptedInitializationVector as? String)
+                        filedrop.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
                 } catch let error {
                     print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
