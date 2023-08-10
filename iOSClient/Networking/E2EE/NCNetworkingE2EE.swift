@@ -42,7 +42,7 @@ class NCNetworkingE2EE: NSObject {
 
         var e2eToken: String?
         let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
-        var e2eCounter: String?
+        var e2eCounter = "0"
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
             return (nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_lock_"))
