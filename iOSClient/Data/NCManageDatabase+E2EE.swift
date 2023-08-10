@@ -77,10 +77,10 @@ class tableE2eMetadata: Object {
 class tableE2eMetadataV2: Object {
 
     @Persisted(primaryKey: true) var accountServerUrl = ""
-    @Persisted var keyChecksums: String = ""
+    @Persisted var keyChecksums = List<String>()
+    @Persisted var folders = Map<String, String>()
     @Persisted var deleted: Bool = false
     @Persisted var counter: Int = 0
-    @Persisted var folders: String = ""
     @Persisted var version: String = "2.0"
 }
 
@@ -364,17 +364,15 @@ extension NCManageDatabase {
                 let addObject = tableE2eMetadataV2()
                 addObject.accountServerUrl = account + serverUrl
                 if let keyChecksums {
-                    addObject.keyChecksums = keyChecksums.joined(separator: ",")
+                    addObject.keyChecksums.append(objectsIn: keyChecksums)
                 }
                 addObject.deleted = deleted
                 addObject.counter = counter
+                let foldersDictionary = addObject.folders
                 if let folders {
-                    var arrayFolders: [String] = []
                     for folder in folders {
-                        let item = folder.key + ":" + folder.value
-                        arrayFolders.append(item)
+                        foldersDictionary[folder.key] = folder.value
                     }
-                    addObject.folders = arrayFolders.joined(separator: ",")
                 }
                 addObject.version = version
                 realm.add(addObject, update: .all)
