@@ -79,7 +79,7 @@ extension NCEndToEndMetadata {
         // Create ciphertext
         let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
         var filesCodable: [String: E2eeV20.Files] = [:]
-        
+
         for e2eEncryption in e2eEncryptions {
             if e2eEncryption.blob == "files" {
                 let file = E2eeV20.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
@@ -100,7 +100,6 @@ extension NCEndToEndMetadata {
             let json = try JSONEncoder().encode(ciphertext)
             let data = try json.gzipped()
             let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: data, encoding: .utf8), key: encryptedMetadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
-
             guard let ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil)
             }
@@ -116,8 +115,6 @@ extension NCEndToEndMetadata {
         }
 
         // Signature
-
-
         if let e2eeJson {
             let dataMetadata = Data(base64Encoded: "e2eeJson")
             if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: publicKey, userId: userId) {
