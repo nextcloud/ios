@@ -87,6 +87,7 @@ class tableE2eMetadataV2: Object {
 class tableE2eUsersV2: Object {
 
     @Persisted(primaryKey: true) var accountServerUrlUserId = ""
+    @Persisted var account = ""
     @Persisted var certificate = ""
     @Persisted var encryptedFiledropKey: String?
     @Persisted var encryptedMetadataKey: String?
@@ -295,6 +296,7 @@ extension NCManageDatabase {
             try realm.write {
                 let addObject = tableE2eUsersV2()
                 addObject.accountServerUrlUserId = account + serverUrl + userId
+                addObject.account = account
                 addObject.certificate = certificate
                 addObject.encryptedFiledropKey = encryptedFiledropKey
                 addObject.encryptedMetadataKey = encryptedMetadataKey
@@ -311,12 +313,16 @@ extension NCManageDatabase {
         }
     }
 
-    func getE2EUsersV2(account: String, serverUrl: String, userId: String) -> tableE2eUsersV2? {
+    func getE2EUsersV2(account: String, serverUrl: String, userId: String?) -> Results<tableE2eUsersV2>? {
 
         do {
             let realm = try Realm()
             realm.refresh()
-            return realm.objects(tableE2eUsersV2.self).filter("accountServerUrlUserId == %@", account + serverUrl + userId).first
+            if let userId {
+                return realm.objects(tableE2eUsersV2.self).filter("accountServerUrlUserId == %@", account + serverUrl + userId)
+            } else {
+                return realm.objects(tableE2eUsersV2.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }

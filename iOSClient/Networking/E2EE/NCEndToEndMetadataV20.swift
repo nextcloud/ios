@@ -34,6 +34,9 @@ extension NCEndToEndMetadata {
     func encoderMetadataV20(account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
 
         var signature: String?
+        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl)
+        let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId)
 
         // Signature
 
@@ -139,8 +142,10 @@ extension NCEndToEndMetadata {
             // metadata
             //
 
-            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId), let metadataKey = tableE2eUsersV2.metadataKey {
-                if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: tableE2eUsersV2.metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag) {
+            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId),
+               let metadataKey = tableE2eUsersV2.first?.metadataKey,
+               let decryptedMetadataKey = tableE2eUsersV2.first?.decryptedMetadataKey {
+                if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag) {
                     if decrypted.isGzipped {
                         do {
                             let data = try decrypted.gunzipped()
@@ -155,7 +160,7 @@ extension NCEndToEndMetadata {
 
                                 // Checksums
                                 if let keyChecksums,
-                                   let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: tableE2eUsersV2.decryptedMetadataKey),
+                                   let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: decryptedMetadataKey),
                                    !keyChecksums.contains(hash) {
                                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_checksums_error_", comment: ""))
                                 }
