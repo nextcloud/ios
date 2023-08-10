@@ -33,25 +33,62 @@ extension NCEndToEndMetadata {
 
     func encoderMetadataV20(account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
 
-        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
-        let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl)
-        let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId)
-
-        if e2eUsers == nil {
-
+        guard let privateKey = CCUtility.getEndToEndPrivateKey(account),
+              let publicKey = CCUtility.getEndToEndPublicKey(account),
+              let certificate = CCUtility.getEndToEndCertificate(account) else {
+            return (nil, nil)
         }
 
+        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl)
 
+        var usersCodable: [E2eeV20.Users] = []
+        var metadataCodable: E2eeV20.Metadata = E2eeV20.Metadata(ciphertext: "", nonce: "", authenticationTag: "", counter: 0)
+        var filedropCodable: [String: E2eeV20.Filedrop] = [:]
+
+        var encryptedMetadataKey: String?
+        var e2eeJson: String?
+
+        if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId) {
+            encryptedMetadataKey = user.encryptedMetadataKey
+        } else {
+            if let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? NSData,
+               let key = keyGenerated.base64EncodedString().data(using: .utf8)?.base64EncodedString(),
+               let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) {
+                encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
+                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: nil)
+            }
+        }
+
+        guard let encryptedMetadataKey else { return (nil, nil) }
+
+        // Create E2eeV20.Users
+        if let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl) {
+            for user in e2eUsers {
+                usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, encryptedFiledropKey: user.encryptedFiledropKey))
+            }
+        }
+
+        let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: "2.0")
+        do {
+            let data = try JSONEncoder().encode(e2eeCodable)
+            data.printJson()
+            e2eeJson = String(data: data, encoding: .utf8)
+        } catch let error {
+            print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
+            return (nil, nil)
+        }
 
         // Signature
         var signature: String?
 
-        let dataMetadata = Data(base64Encoded: "metadata")
-        if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
-            signature = signatureData.base64EncodedString()
+        if let e2eeJson {
+            let dataMetadata = Data(base64Encoded: "e2eeJson")
+            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: publicKey, userId: userId) {
+                signature = signatureData.base64EncodedString()
+            }
         }
-
-        return (nil, signature)
+        return (e2eeJson, signature)
     }
 
     // --------------------------------------------------------------------------------------------
@@ -149,8 +186,8 @@ extension NCEndToEndMetadata {
             //
 
             if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId),
-               let metadataKey = tableE2eUsersV2.first?.metadataKey,
-               let decryptedMetadataKey = tableE2eUsersV2.first?.decryptedMetadataKey {
+               let metadataKey = tableE2eUsersV2.metadataKey,
+               let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey {
                 if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag) {
                     if decrypted.isGzipped {
                         do {

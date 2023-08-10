@@ -313,16 +313,25 @@ extension NCManageDatabase {
         }
     }
 
-    func getE2EUsersV2(account: String, serverUrl: String, userId: String? = nil) -> Results<tableE2eUsersV2>? {
+    func getE2EUsersV2(account: String, serverUrl: String) -> Results<tableE2eUsersV2>? {
 
         do {
             let realm = try Realm()
             realm.refresh()
-            if let userId {
-                return realm.objects(tableE2eUsersV2.self).filter("accountServerUrlUserId == %@", account + serverUrl + userId)
-            } else {
-                return realm.objects(tableE2eUsersV2.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
-            }
+            return realm.objects(tableE2eUsersV2.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
+    }
+
+    func getE2EUsersV2(account: String, serverUrl: String, userId: String) -> tableE2eUsersV2? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableE2eUsersV2.self).filter("accountServerUrlUserId == %@", account + serverUrl + userId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
