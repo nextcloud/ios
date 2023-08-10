@@ -39,15 +39,12 @@ extension NCEndToEndMetadata {
             return (nil, nil)
         }
 
-        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
-
-
         var usersCodable: [E2eeV20.Users] = []
-        var metadataCodable: E2eeV20.Metadata = E2eeV20.Metadata(ciphertext: "", nonce: "", authenticationTag: "")
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
 
         var encryptedMetadataKey: String?
         var e2eeJson: String?
+        var signature: String?
 
         if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId) {
             encryptedMetadataKey = user.encryptedMetadataKey
@@ -69,36 +66,57 @@ extension NCEndToEndMetadata {
             }
         }
 
-        // Counter
+        // tableE2eMetadataV2
         if NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl) == nil {
-            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: nil, deleted: false, counter: 1, folders: nil, version: "2.0nil")
+            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: nil, deleted: false, counter: 1, folders: nil, version: "2.0")
         } else {
             NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl)
         }
+        guard let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl) else {
+            return (nil, nil)
+        }
 
         // Create ciphertext
-
-
+        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        var filesCodable: [String: E2eeV20.Files] = [:]
+        
         for e2eEncryption in e2eEncryptions {
-
             if e2eEncryption.blob == "files" {
-                let encrypted = E2eeV12.Encrypted(key: e2eEncryption.key, filename: e2eEncryption.fileName, mimetype: e2eEncryption.mimeType)
-
+                let file = E2eeV20.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
+                filesCodable.updateValue(file, forKey: e2eEncryption.fileNameIdentifier)
             }
         }
 
-        let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: "2.0")
+        var keyChecksums = Array(e2eMetadataV2.keyChecksums.map { $0 })
+        if let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: encryptedMetadataKey) {
+            keyChecksums.append(hash)
+        }
+
+        let ciphertext = E2eeV20.ciphertext(counter: e2eMetadataV2.counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: [:])
+        var authenticationTag: NSString?
+        var initializationVector: NSString?
+
         do {
-            let data = try JSONEncoder().encode(e2eeCodable)
-            data.printJson()
-            e2eeJson = String(data: data, encoding: .utf8)
+            let json = try JSONEncoder().encode(ciphertext)
+            let data = try json.gzipped()
+            let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: data, encoding: .utf8), key: encryptedMetadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
+
+            guard let ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
+                return (nil, nil)
+            }
+            let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag)
+            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: "2.0")
+            let e2eeData = try JSONEncoder().encode(e2eeCodable)
+            e2eeData.printJson()
+            e2eeJson = String(data: e2eeData, encoding: .utf8)
+            print("")
         } catch let error {
             print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
             return (nil, nil)
         }
 
         // Signature
-        var signature: String?
+
 
         if let e2eeJson {
             let dataMetadata = Data(base64Encoded: "e2eeJson")
