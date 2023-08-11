@@ -50,24 +50,11 @@ extension NCEndToEndMetadata {
             encryptedMetadataKey = user.encryptedMetadataKey
         } else {
             guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else { return (nil, nil) }
-            let key = keyGenerated.base64EncodedString().data(using: .utf8)?.base64EncodedString()
-            guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) else { return (nil, nil) }
+            print(keyGenerated.base64EncodedString())
+            guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, publicKey: nil, privateKey: privateKey) else { return (nil, nil) }
             encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
-            /* TEST */
-            let data = Data(base64Encoded: encryptedMetadataKey!)
-            if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey) {
-
-                if let keyData = Data(base64Encoded: decrypted) {
-                    print(String(data: keyData, encoding: .utf8))
-                }
-
-                let metadataKey = decrypted.base64EncodedString() // GIUSTA
-                print(metadataKey)
-            }
-
             NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: nil)
-
         }
 
         guard let encryptedMetadataKey else { return (nil, nil) }
