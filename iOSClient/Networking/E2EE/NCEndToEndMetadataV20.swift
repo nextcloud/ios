@@ -98,13 +98,19 @@ extension NCEndToEndMetadata {
 
         do {
             let json = try JSONEncoder().encode(ciphertext)
+
             let dataCiphertext = try json.gzipped()
+
             let base64Ciphertext = dataCiphertext.base64EncodedString()
+
             let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(base64Ciphertext, key: encryptedMetadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
+
             guard let ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil)
             }
+
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag)
+
             let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: "2.0")
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
