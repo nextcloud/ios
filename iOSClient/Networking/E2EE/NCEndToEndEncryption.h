@@ -49,6 +49,7 @@
 // Encrypt/Decrypt asymmetric
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
+- (NSData *)encryptAsymmetricData:(NSData *)plainData publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
 - (NSData *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
 // Encrypt / Decrypt file
