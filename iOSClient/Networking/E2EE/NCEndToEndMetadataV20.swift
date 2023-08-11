@@ -136,11 +136,6 @@ extension NCEndToEndMetadata {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
         }
 
-        guard let privateKey = CCUtility.getEndToEndPrivateKey(account),
-              let publicKey = CCUtility.getEndToEndPublicKey(account) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
-        }
-
         func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
 
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
@@ -183,7 +178,13 @@ extension NCEndToEndMetadata {
             let filedrop = json.filedrop
             let version = json.version as String? ?? "2.0"
 
-
+            // Signature check
+            let metadataCodable = E2eeV20.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag)
+            let metadataData = try JSONEncoder().encode(metadataCodable)
+            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(metadataData, certificate: CCUtility.getEndToEndPublicKey(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
+                let signatureX = signatureData.base64EncodedString()
+                print(signatureX)
+            }
 
             // DATA
             NCManageDatabase.shared.deleteE2eMetadataV2(account: account, serverUrl: serverUrl)
@@ -203,7 +204,7 @@ extension NCEndToEndMetadata {
 
                 if let encryptedMetadataKey = user.encryptedMetadataKey {
                     let data = Data(base64Encoded: encryptedMetadataKey)
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey) {
+                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
                         decryptedMetadataKey = decrypted
                         metadataKey = decrypted.base64EncodedString()
                     }
@@ -211,7 +212,7 @@ extension NCEndToEndMetadata {
 
                 if let encryptedFiledropKey = user.encryptedFiledropKey {
                     let data = Data(base64Encoded: encryptedFiledropKey)
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey) {
+                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
                         decryptedFiledropKey = decrypted
                         filedropKey = decrypted.base64EncodedString()
                     }
@@ -237,17 +238,7 @@ extension NCEndToEndMetadata {
 
                             let json = try JSONDecoder().decode(E2eeV20.ciphertext.self, from: data)
 
-                            // Signature
-
-                            let metadataCodable = E2eeV20.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag)
-                            let metadataData = try JSONEncoder().encode(metadataCodable)
-
-                            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(metadataData, certificate: tableE2eUsersV2.certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: publicKey, userId: userId) {
-                                let signatureX = signatureData.base64EncodedString()
-                                print(signatureX)
-                            }
-
-                            // Checksums
+                            // Checksums check
                             if let keyChecksums = json.keyChecksums,
                                 let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: decryptedMetadataKey),
                                 !keyChecksums.contains(hash) {
