@@ -145,9 +145,9 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // SET FOLDER E2EE (ONLY ROOT)
+        // SET FOLDER E2EE -- IF > (ONLY ROOT) metadata.serverUrl == serverUrlHome,
         //
-        if metadata.serverUrl == serverUrlHome, metadata.isDirectoySettableE2EE {
+        if metadata.isDirectoySettableE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),

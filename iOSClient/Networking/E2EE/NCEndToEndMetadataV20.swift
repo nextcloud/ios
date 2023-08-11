@@ -49,12 +49,20 @@ extension NCEndToEndMetadata {
         if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId) {
             encryptedMetadataKey = user.encryptedMetadataKey
         } else {
-            if let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? NSData,
-               let key = keyGenerated.base64EncodedString().data(using: .utf8)?.base64EncodedString(),
-               let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) {
-                encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
-                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: nil)
+            guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? NSData else { return (nil, nil) }
+            let key = keyGenerated.base64EncodedString().data(using: .utf8)?.base64EncodedString()
+            guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) else { return (nil, nil) }
+            encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
+
+            /* TEST */
+            let data = Data(base64Encoded: encryptedMetadataKey!)
+            if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey) {
+                let metadataKey = decrypted.base64EncodedString() // GIUSTA
+                print(metadataKey)
             }
+
+            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: nil)
+
         }
 
         guard let encryptedMetadataKey else { return (nil, nil) }
@@ -118,7 +126,7 @@ extension NCEndToEndMetadata {
         // Signature
         if let e2eeJson {
             let dataMetadata = Data(base64Encoded: "e2eeJson")
-            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: publicKey, userId: userId) {
+            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: certificate, privateKey: privateKey, publicKey: publicKey, userId: userId) {
                 signature = signatureData.base64EncodedString()
             }
         }
