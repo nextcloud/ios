@@ -129,9 +129,9 @@ class NCNetworkingE2EECreateFolder: NSObject {
         var method = "POST"
 
         // Get last metadata
-        let getE2EEMetadataResults = await NextcloudKit.shared.getE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken)
-        if getE2EEMetadataResults.error == .success, let e2eMetadata = getE2EEMetadataResults.e2eMetadata {
-            let error = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: nil)
+        let results = await NextcloudKit.shared.getE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken)
+        if results.error == .success, let e2eMetadata = results.e2eMetadata {
+            let error = NCEndToEndMetadata().decoderMetadata(e2eMetadata, signature: results.signature, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: nil)
             if error != .success { return error }
             method = "PUT"
         }

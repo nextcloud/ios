@@ -130,9 +130,14 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV20(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decoderMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
+            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
+        }
+
+        guard let privateKey = CCUtility.getEndToEndPrivateKey(account),
+              let publicKey = CCUtility.getEndToEndPublicKey(account) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
         }
 
@@ -170,16 +175,15 @@ extension NCEndToEndMetadata {
             }
         }
 
-        let decoder = JSONDecoder()
-        let privateKey = CCUtility.getEndToEndPrivateKey(account)
-
         do {
-            let json = try decoder.decode(E2eeV20.self, from: data)
+            let json = try JSONDecoder().decode(E2eeV20.self, from: data)
 
             let metadata = json.metadata
             let users = json.users
             let filedrop = json.filedrop
             let version = json.version as String? ?? "2.0"
+
+
 
             // DATA
             NCManageDatabase.shared.deleteE2eMetadataV2(account: account, serverUrl: serverUrl)
@@ -231,7 +235,17 @@ extension NCEndToEndMetadata {
                                 print(jsonText)
                             }
 
-                            let json = try decoder.decode(E2eeV20.ciphertext.self, from: data)  // JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
+                            let json = try JSONDecoder().decode(E2eeV20.ciphertext.self, from: data)
+
+                            // Signature
+
+                            let metadataCodable = E2eeV20.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag)
+                            let metadataData = try JSONEncoder().encode(metadataCodable)
+
+                            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(metadataData, certificate: tableE2eUsersV2.certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: publicKey, userId: userId) {
+                                let signatureX = signatureData.base64EncodedString()
+                                print(signatureX)
+                            }
 
                             // Checksums
                             if let keyChecksums = json.keyChecksums,
@@ -240,7 +254,7 @@ extension NCEndToEndMetadata {
                                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_checksums_error_", comment: ""))
                             }
 
-                            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: json.keyChecksums, deleted: json.deleted, counter: json.counter, folders: json.folders, version: version)
+                            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, counter: json.counter, folders: json.folders, version: version)
 
                             if let files = json.files {
                                 for file in files {

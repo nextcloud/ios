@@ -96,7 +96,7 @@ class NCEndToEndMetadata: NSObject {
 
         struct ciphertext: Codable {
             let counter: Int
-            let deleted: Bool
+            let deleted: Bool?
             let keyChecksums: [String]?
             let files: [String: Files]?
             let folders: [String: String]?
@@ -155,7 +155,7 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Decode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadata(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decoderMetadata(_ json: String, signature: String?, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return (NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON"))
@@ -170,7 +170,7 @@ class NCEndToEndMetadata: NSObject {
         } else if (try? decoder.decode(E2eeV12.self, from: data)) != nil {
             return decoderMetadataV12(json, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else if (try? decoder.decode(E2eeV20.self, from: data)) != nil {
-            return decoderMetadataV20(json, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
+            return decoderMetadataV20(json, signature: signature, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Server E2EE version " + NCGlobal.shared.capabilityE2EEApiVersion + ", not compatible")
         }
