@@ -46,16 +46,18 @@ extension NCEndToEndMetadata {
         var metadataKey: String?
         var e2eeJson: String?
         var signature: String?
+        var decryptedMetadataKey: Data?
 
         if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId) {
             encryptedMetadataKey = user.encryptedMetadataKey
         } else {
             guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else { return (nil, nil) }
+            decryptedMetadataKey = keyGenerated
             metadataKey = keyGenerated.base64EncodedString()
             guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, privateKey: privateKey) else { return (nil, nil) }
             encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
-            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: metadataKey)
+            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
         }
 
         guard let encryptedMetadataKey, let metadataKey else { return (nil, nil) }
@@ -89,7 +91,7 @@ extension NCEndToEndMetadata {
         }
 
         var keyChecksums = Array(e2eMetadataV2.keyChecksums.map { $0 })
-        if let hash = NCEndToEndEncryption.sharedManager().createSHA256(encryptedMetadataKey.data(using: .utf8)) {
+        if let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey) {
             keyChecksums.append(hash)
         }
 
