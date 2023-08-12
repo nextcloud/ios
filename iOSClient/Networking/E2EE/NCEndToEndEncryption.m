@@ -420,8 +420,6 @@
     NSMutableData *cipher;
     NSData *authenticationTag = [NSData new];
 
-    encrypted = [[encrypted base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
-
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
 
@@ -447,8 +445,6 @@
 {
     NSMutableData *cipher;
     NSData *authenticationTagData = [NSData new];
-
-    encrypted = [[encrypted base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
 
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];

@@ -98,6 +98,9 @@ extension NCEndToEndMetadata {
         var initializationVector: NSString?
 
         do {
+
+            // CIPHERTEXT
+
             let json = try JSONEncoder().encode(ciphertext)
             let jsonZip = try json.gzipped()
             let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
@@ -119,7 +122,8 @@ extension NCEndToEndMetadata {
             return (nil, nil)
         }
 
-        // Signature
+        // SIGNATURE
+
         if let e2eeJson {
             let dataMetadata = Data(base64Encoded: "e2eeJson")
             if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: certificate, privateKey: privateKey, publicKey: publicKey, userId: userId) {
@@ -182,7 +186,8 @@ extension NCEndToEndMetadata {
             let filedrop = json.filedrop
             let version = json.version as String? ?? "2.0"
 
-            // Signature check
+            // SIGNATURE CHECK
+
             let metadataCodable = E2eeV20.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag)
             let metadataData = try JSONEncoder().encode(metadataCodable)
             if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(metadataData, certificate: CCUtility.getEndToEndPublicKey(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
@@ -232,6 +237,9 @@ extension NCEndToEndMetadata {
             if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId),
                let metadataKey = tableE2eUsersV2.metadataKey,
                let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey {
+
+                // CIPHERTEXT
+
                 if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(metadata.ciphertext, key: metadataKey, initializationVector: metadata.nonce, authenticationTag: metadata.authenticationTag) {
                     if decrypted.isGzipped {
                         do {
