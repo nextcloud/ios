@@ -50,6 +50,7 @@ extension NCEndToEndMetadata {
 
         if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId) {
             encryptedMetadataKey = user.encryptedMetadataKey
+            metadataKey = user.metadataKey
         } else {
             guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else { return (nil, nil) }
             decryptedMetadataKey = keyGenerated
@@ -107,9 +108,12 @@ extension NCEndToEndMetadata {
             let jsonZip = try json.gzipped()
             let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
 
-            guard let ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
+            guard var ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil)
             }
+
+            // Add initializationVector [ANDROID]
+            ciphertext = ciphertext + "|" + initializationVector
 
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag)
 
