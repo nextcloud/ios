@@ -88,7 +88,7 @@ extension NCEndToEndMetadata {
         }
 
         var keyChecksums = Array(e2eMetadataV2.keyChecksums.map { $0 })
-        if let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: encryptedMetadataKey) {
+        if let hash = NCEndToEndEncryption.sharedManager().createSHA256(encryptedMetadataKey.data(using: .utf8)) {
             keyChecksums.append(hash)
         }
 
@@ -246,7 +246,7 @@ extension NCEndToEndMetadata {
 
                             // Checksums check
                             if let keyChecksums = json.keyChecksums,
-                                let hash = NCEndToEndEncryption.sharedManager().createSHA256(from: decryptedMetadataKey),
+                                let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
                                 !keyChecksums.contains(hash) {
                                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_checksums_error_", comment: ""))
                             }
