@@ -41,8 +41,8 @@
 
 // Encrypt / Decrypt file material
 
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key;
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key;
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
 - (NSData *)decryptPayloadFile:(NSString *)encrypted key:(NSString *)key;
 - (NSData *)decryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
 

@@ -68,7 +68,7 @@ extension NCEndToEndMetadata {
                 do {
                     // Create "encrypted"
                     let json = try encoder.encode(encrypted)
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: json, encoding: .utf8), key: e2eEncryption.metadataKey) {
+                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(json, key: e2eEncryption.metadataKey) {
                         let record = E2eeV12.Files(initializationVector: e2eEncryption.initializationVector, authenticationTag: e2eEncryption.authenticationTag, encrypted: encrypted)
                         files.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
@@ -96,7 +96,7 @@ extension NCEndToEndMetadata {
                 do {
                     // Create "encrypted"
                     let json = try encoder.encode(encrypted)
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(String(data: json, encoding: .utf8), key: e2eEncryption.metadataKeyFiledrop, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
+                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(json, key: e2eEncryption.metadataKeyFiledrop, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
                         let record = E2eeV12.Filedrop(initializationVector: e2eEncryption.initializationVector, authenticationTag: e2eEncryption.authenticationTag, encrypted: encrypted, encryptedKey: encryptedKey, encryptedTag: encryptedTag as? String, encryptedInitializationVector: encryptedInitializationVector as? String)
                         filedrop.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }

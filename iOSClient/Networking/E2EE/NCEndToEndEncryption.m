@@ -415,41 +415,40 @@
 #pragma mark - Encrypt / Decrypt file material
 #
 
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key
 {
     NSMutableData *cipher;
     NSData *authenticationTag = [NSData new];
 
-    NSData *encryptedData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
-    encryptedData = [[encryptedData base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
+    encrypted = [[encrypted base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
 
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
 
     // Initialization Vector
     NSData *initializationVector = [self generateIV:AES_IVEC_LENGTH];
-    
-    BOOL result = [self encryptData:encryptedData cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVector authenticationTag:&authenticationTag];
-    
+
+    BOOL result = [self encryptData:encrypted cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVector authenticationTag:&authenticationTag];
+
     if (cipher != nil && result) {
-        
+
         NSString *cipherString = [cipher base64EncodedStringWithOptions:0];
         NSString *initializationVectorString = [initializationVector base64EncodedStringWithOptions:0];
         NSString *payload = [NSString stringWithFormat:@"%@%@%@", cipherString, IV_DELIMITER_ENCODED, initializationVectorString];
-        
+
         return payload;
     }
-    
+
     return nil;
 }
 
-- (NSString *)encryptPayloadFile:(NSString *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
+
+- (NSString *)encryptPayloadFile:(NSData *)encrypted key:(NSString *)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSMutableData *cipher;
     NSData *authenticationTagData = [NSData new];
 
-    NSData *encryptedData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
-    encryptedData = [[encryptedData base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
+    encrypted = [[encrypted base64EncodedStringWithOptions:0] dataUsingEncoding:NSUTF8StringEncoding];
 
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
@@ -457,7 +456,7 @@
     // Initialization Vector
     NSData *initializationVectorData = [self generateIV:AES_IVEC_LENGTH];
 
-    BOOL result = [self encryptData:encryptedData cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:&authenticationTagData];
+    BOOL result = [self encryptData:encrypted cipher:&cipher key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:&authenticationTagData];
 
     if (cipher != nil && result) {
 

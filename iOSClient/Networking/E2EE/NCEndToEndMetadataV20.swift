@@ -43,6 +43,7 @@ extension NCEndToEndMetadata {
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
 
         var encryptedMetadataKey: String?
+        var metadataKey: String?
         var e2eeJson: String?
         var signature: String?
 
@@ -50,14 +51,14 @@ extension NCEndToEndMetadata {
             encryptedMetadataKey = user.encryptedMetadataKey
         } else {
             guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else { return (nil, nil) }
-            print(keyGenerated.base64EncodedString())
+            metadataKey = keyGenerated.base64EncodedString()
             guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, privateKey: privateKey) else { return (nil, nil) }
             encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
-            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: nil)
+            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: metadataKey)
         }
 
-        guard let encryptedMetadataKey else { return (nil, nil) }
+        guard let encryptedMetadataKey, let metadataKey else { return (nil, nil) }
 
         // Create E2eeV20.Users
         if let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl) {
@@ -98,12 +99,8 @@ extension NCEndToEndMetadata {
 
         do {
             let json = try JSONEncoder().encode(ciphertext)
-
-            let dataCiphertext = try json.gzipped()
-
-            let base64Ciphertext = dataCiphertext.base64EncodedString()
-
-            let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(base64Ciphertext, key: encryptedMetadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
+            let jsonZip = try json.gzipped()
+            let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
 
             guard let ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
                 return (nil, nil)
@@ -116,6 +113,7 @@ extension NCEndToEndMetadata {
             e2eeData.printJson()
             e2eeJson = String(data: e2eeData, encoding: .utf8)
             print("")
+
         } catch let error {
             print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
             return (nil, nil)
