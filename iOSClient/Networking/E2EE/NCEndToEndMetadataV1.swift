@@ -47,13 +47,13 @@ extension NCEndToEndMetadata {
         //
         if e2eEncryptions.isEmpty, let key = NCEndToEndEncryption.sharedManager()?.generateKey() as? NSData {
 
-            if let key = key.base64EncodedString().data(using: .utf8)?.base64EncodedString(),
-               let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) {
+            if let key = key.base64EncodedString().data(using: .utf8)?.base64EncodedString().data(using: .utf8),
+               let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(key, privateKey: privateKey) {
                 metadataKey = metadataKeyEncrypted.base64EncodedString()
             }
 
-        } else if let metadatakey = (e2eEncryptions.first!.metadataKey.data(using: .utf8)?.base64EncodedString()),
-                  let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(metadatakey, publicKey: nil, privateKey: privateKey) {
+        } else if let metadatakey = (e2eEncryptions.first!.metadataKey.data(using: .utf8)?.base64EncodedString().data(using: .utf8)),
+                  let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(metadatakey, privateKey: privateKey) {
 
             metadataKey = metadataKeyEncrypted.base64EncodedString()
         }
@@ -88,8 +88,8 @@ extension NCEndToEndMetadata {
                 var encryptedInitializationVector: NSString?
                 var encryptedTag: NSString?
 
-                if let metadataKeyFiledrop = (e2eEncryption.metadataKeyFiledrop.data(using: .utf8)?.base64EncodedString()),
-                   let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(metadataKeyFiledrop, publicKey: nil, privateKey: privateKey) {
+                if let metadataKeyFiledrop = (e2eEncryption.metadataKeyFiledrop.data(using: .utf8)?.base64EncodedString().data(using: .utf8)),
+                   let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(metadataKeyFiledrop, privateKey: privateKey) {
                     encryptedKey = metadataKeyEncrypted.base64EncodedString()
                 }
                 let encrypted = E2eeV12.Encrypted(key: e2eEncryption.key, filename: e2eEncryption.fileName, mimetype: e2eEncryption.mimeType)

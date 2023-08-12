@@ -51,7 +51,7 @@ extension NCEndToEndMetadata {
         } else {
             guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else { return (nil, nil) }
             print(keyGenerated.base64EncodedString())
-            guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, publicKey: nil, privateKey: privateKey) else { return (nil, nil) }
+            guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, privateKey: privateKey) else { return (nil, nil) }
             encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
             NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: nil, filedropKey: nil, metadataKey: nil)
