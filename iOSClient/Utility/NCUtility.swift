@@ -760,6 +760,14 @@ class NCUtility: NSObject {
         }
         return false
     }
+    func isDirectoryE2EETop(serverUrl: String, account: String) -> Bool {
+        if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
+            if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, String(url.absoluteString.dropLast()))) {
+                return !directory.e2eEncrypted
+            }
+        }
+        return true
+    }
 
     func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {
 

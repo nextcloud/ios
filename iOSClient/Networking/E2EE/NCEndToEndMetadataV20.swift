@@ -39,6 +39,7 @@ extension NCEndToEndMetadata {
             return (nil, nil)
         }
 
+        var isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(serverUrl: serverUrl, account: account)
         var usersCodable: [E2eeV20.Users] = []
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
 
@@ -142,6 +143,8 @@ extension NCEndToEndMetadata {
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
         }
+
+        var isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(serverUrl: serverUrl, account: account)
 
         func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
 
