@@ -147,19 +147,15 @@ extension NCEndToEndMetadata {
 
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
-                let object = tableE2eEncryption()
+                let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
-                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
-                object.account = account
                 object.authenticationTag = authenticationTag
                 object.blob = "files"
                 object.fileName = filename
-                object.fileNameIdentifier = fileNameIdentifier
                 object.key = key
                 object.initializationVector = initializationVector
                 object.metadataKey = metadataKey
                 object.mimeType = mimetype
-                object.ocIdServerUrl = ocIdServerUrl
                 object.serverUrl = serverUrl
 
                 // Write file parameter for decrypted on DB
@@ -194,9 +190,6 @@ extension NCEndToEndMetadata {
                 let signatureX = signatureData.base64EncodedString()
                 print(signatureX)
             }
-
-            // DATA
-            // NCManageDatabase.shared.deleteE2EUsersV2(account: account, serverUrl: serverUrl)
 
             //
             // users

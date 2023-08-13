@@ -196,20 +196,16 @@ extension NCEndToEndMetadata {
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
-                                let object = tableE2eEncryption()
+                                let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
-                                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
-                                object.account = account
                                 object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "files"
                                 object.fileName = encrypted.filename
-                                object.fileNameIdentifier = fileNameIdentifier
                                 object.key = encrypted.key
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
-                                object.ocIdServerUrl = ocIdServerUrl
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
@@ -258,21 +254,17 @@ extension NCEndToEndMetadata {
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
-                                let object = tableE2eEncryption()
+                                let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
-                                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
-                                object.account = account
                                 object.authenticationTag = filedrop.authenticationTag ?? ""
                                 object.blob = "filedrop"
                                 object.fileName = encrypted.filename
-                                object.fileNameIdentifier = fileNameIdentifier
                                 object.key = encrypted.key
                                 object.metadataKeyFiledrop = metadataKeyFiledrop ?? ""
                                 object.initializationVector = filedrop.initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
-                                object.ocIdServerUrl = ocIdServerUrl
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
@@ -379,21 +371,17 @@ extension NCEndToEndMetadata {
 
                             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
-                                let object = tableE2eEncryption()
+                                let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
-                                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
-                                object.account = account
                                 object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "files"
                                 object.fileName = encrypted.filename
-                                object.fileNameIdentifier = fileNameIdentifier
                                 object.key = encrypted.key
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataKeyIndex = metadataKeyIndex
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
-                                object.ocIdServerUrl = ocIdServerUrl
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB

@@ -125,7 +125,6 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         var key: NSString?
         var initializationVector: NSString?
-        let object = tableE2eEncryption()
         var method = "POST"
 
         // Get last metadata
@@ -139,11 +138,9 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // Add new metadata
         NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
 
-        object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
-        object.account = account
+        let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
         object.authenticationTag = ""
         object.fileName = fileNameFolder
-        object.fileNameIdentifier = fileNameIdentifier
         object.key = key! as String
         object.initializationVector = initializationVector! as String
         if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
@@ -154,7 +151,6 @@ class NCNetworkingE2EECreateFolder: NSObject {
             object.metadataKeyIndex = 0
         }
         object.mimeType = "httpd/unix-directory"
-        object.ocIdServerUrl = ocIdServerUrl
         object.serverUrl = serverUrl
         NCManageDatabase.shared.addE2eEncryption(object)
 

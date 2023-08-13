@@ -126,7 +126,6 @@ class NCNetworkingE2EEUpload: NSObject {
     private func createE2Ee(metadata: tableMetadata, e2eToken: String, ocIdServerUrl: String, fileId: String) async -> (NKError) {
 
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
-        let object = tableE2eEncryption()
         var method = "POST"
 
         if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
@@ -145,6 +144,7 @@ class NCNetworkingE2EEUpload: NSObject {
         NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileNameView))
 
         // Add new metadata
+        let object = tableE2eEncryption.init(account: metadata.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: metadata.fileName)
         if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             object.metadataKey = result.metadataKey
             object.metadataKeyIndex = result.metadataKeyIndex
@@ -153,15 +153,11 @@ class NCNetworkingE2EEUpload: NSObject {
             object.metadataKey = key!.base64EncodedString()
             object.metadataKeyIndex = 0
         }
-        object.accountOcIdServerUrlFileNameIdentifier = metadata.account + ocIdServerUrl + metadata.fileName
-        object.account = metadata.account
         object.authenticationTag = authenticationTag! as String
         object.fileName = metadata.fileNameView
-        object.fileNameIdentifier = metadata.fileName
         object.key = key! as String
         object.initializationVector = initializationVector! as String
         object.mimeType = metadata.contentType
-        object.ocIdServerUrl = ocIdServerUrl
         object.serverUrl = metadata.serverUrl
         NCManageDatabase.shared.addE2eEncryption(object)
 

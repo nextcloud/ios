@@ -178,6 +178,10 @@ class NCEndToEndInitialize: NSObject {
                             // Clear Table
                             NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
                             NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
+                            NCManageDatabase.shared.clearTable(tableE2eEncryptionLock.self, account: account)
+                            NCManageDatabase.shared.clearTable(tableE2eMetadata.self, account: account)
+                            NCManageDatabase.shared.clearTable(tableE2eMetadataV2.self, account: account)
+                            NCManageDatabase.shared.clearTable(tableE2eUsersV2.self, account: account)
 
                             self.delegate?.endToEndInitializeSuccess()
 
@@ -285,6 +289,10 @@ class NCEndToEndInitialize: NSObject {
                         // Clear Table
                         NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
                         NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
+                        NCManageDatabase.shared.clearTable(tableE2eEncryptionLock.self, account: account)
+                        NCManageDatabase.shared.clearTable(tableE2eMetadata.self, account: account)
+                        NCManageDatabase.shared.clearTable(tableE2eMetadataV2.self, account: account)
+                        NCManageDatabase.shared.clearTable(tableE2eUsersV2.self, account: account)
 
                         if copyPassphrase {
                             UIPasteboard.general.string = e2ePassphrase
