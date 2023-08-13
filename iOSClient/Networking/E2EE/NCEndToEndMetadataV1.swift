@@ -28,7 +28,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV12(account: String, serverUrl: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV12(account: String, serverUrl: String, ocId: String) -> (metadata: String?, signature: String?) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -138,7 +138,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV12(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decoderMetadataV12(_ json: String, serverUrl: String, account: String, ocId: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
@@ -313,7 +313,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.1
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV1(_ json: String, serverUrl: String, account: String, urlBase: String, userId: String) -> NKError {
+    func decoderMetadataV1(_ json: String, serverUrl: String, account: String, ocId: String, urlBase: String, userId: String) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")

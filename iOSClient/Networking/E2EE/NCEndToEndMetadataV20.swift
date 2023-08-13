@@ -31,7 +31,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV20(account: String, serverUrl: String, userId: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV20(account: String, serverUrl: String, ocId: String, userId: String) -> (metadata: String?, signature: String?) {
 
         guard let privateKey = CCUtility.getEndToEndPrivateKey(account),
               let publicKey = CCUtility.getEndToEndPublicKey(account),
@@ -74,12 +74,7 @@ extension NCEndToEndMetadata {
         }
 
         // tableE2eMetadataV2
-        if NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl) == nil {
-            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, keyChecksums: nil, deleted: false, counter: 1, folders: nil, version: "2.0")
-        } else {
-            NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl)
-        }
-        guard let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, serverUrl: serverUrl) else {
+        guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, version: "2.0") else {
             return (nil, nil)
         }
 
@@ -142,7 +137,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decoderMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocId: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")

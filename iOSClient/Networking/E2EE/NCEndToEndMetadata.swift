@@ -141,11 +141,15 @@ class NCEndToEndMetadata: NSObject {
 
         let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
 
+        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
+            return (nil, nil)
+        }
+
         switch e2EEApiVersion {
         case "1.2":
-            return encoderMetadataV12(account: account, serverUrl: serverUrl)
+            return encoderMetadataV12(account: account, serverUrl: serverUrl, ocId: directory.ocId)
         case "2.0":
-            return encoderMetadataV20(account: account, serverUrl: serverUrl, userId: userId)
+            return encoderMetadataV20(account: account, serverUrl: serverUrl, ocId: directory.ocId, userId: userId)
         default:
             return (nil, nil)
         }
@@ -157,7 +161,7 @@ class NCEndToEndMetadata: NSObject {
 
     func decoderMetadata(_ json: String, signature: String?, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
-        guard let data = json.data(using: .utf8) else {
+        guard let data = json.data(using: .utf8), let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
             return (NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON"))
         }
 
@@ -166,11 +170,11 @@ class NCEndToEndMetadata: NSObject {
         let decoder = JSONDecoder()
 
         if (try? decoder.decode(E2eeV1.self, from: data)) != nil {
-            return decoderMetadataV1(json, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+            return decoderMetadataV1(json, serverUrl: serverUrl, account: account, ocId: directory.ocId, urlBase: urlBase, userId: userId)
         } else if (try? decoder.decode(E2eeV12.self, from: data)) != nil {
-            return decoderMetadataV12(json, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
+            return decoderMetadataV12(json, serverUrl: serverUrl, account: account, ocId: directory.ocId, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else if (try? decoder.decode(E2eeV20.self, from: data)) != nil {
-            return decoderMetadataV20(json, signature: signature, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, ownerId: ownerId)
+            return decoderMetadataV20(json, signature: signature, serverUrl: serverUrl, account: account, ocId: directory.ocId, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Server E2EE version " + NCGlobal.shared.capabilityE2EEApiVersion + ", not compatible")
         }
