@@ -112,10 +112,10 @@ class tableE2eUsersV2: Object {
 
     convenience init(account: String, ocIdServerUrl: String, userId: String) {
         self.init()
+        self.primaryKey = account + ocIdServerUrl + userId
         self.account = account
         self.ocIdServerUrl = ocIdServerUrl
         self.userId = userId
-        self.primaryKey = account + ocIdServerUrl + userId
      }
 }
 
@@ -345,7 +345,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            return realm.objects(tableE2eUsersV2.self).filter("account == %@ && ocIdServerUrl == %@ AND userId == %@", account + ocIdServerUrl + userId).first
+            return realm.objects(tableE2eUsersV2.self).filter("account == %@ && ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
         }
