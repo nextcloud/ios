@@ -125,8 +125,7 @@ class NCNetworkingE2EEUpload: NSObject {
     private func createE2Ee(metadata: tableMetadata, e2eToken: String, fileId: String) async -> (NKError) {
 
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
-        let objectE2eEncryption = tableE2eEncryption()
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        let object = tableE2eEncryption()
         var method = "POST"
 
         if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
@@ -146,23 +145,23 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // Add new metadata
         if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-            objectE2eEncryption.metadataKey = result.metadataKey
-            objectE2eEncryption.metadataKeyIndex = result.metadataKeyIndex
+            object.metadataKey = result.metadataKey
+            object.metadataKeyIndex = result.metadataKeyIndex
         } else {
             let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData?
-            objectE2eEncryption.metadataKey = key!.base64EncodedString()
-            objectE2eEncryption.metadataKeyIndex = 0
+            object.metadataKey = key!.base64EncodedString()
+            object.metadataKeyIndex = 0
         }
-        objectE2eEncryption.account = metadata.account
-        objectE2eEncryption.authenticationTag = authenticationTag! as String
-        objectE2eEncryption.fileName = metadata.fileNameView
-        objectE2eEncryption.fileNameIdentifier = metadata.fileName
-        objectE2eEncryption.fileNamePath = fileNameLocalPath
-        objectE2eEncryption.key = key! as String
-        objectE2eEncryption.initializationVector = initializationVector! as String
-        objectE2eEncryption.mimeType = metadata.contentType
-        objectE2eEncryption.serverUrl = metadata.serverUrl
-        NCManageDatabase.shared.addE2eEncryption(objectE2eEncryption)
+        object.account = metadata.account
+        object.authenticationTag = authenticationTag! as String
+        object.fileName = metadata.fileNameView
+        object.fileNameIdentifier = metadata.fileName
+        object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)
+        object.key = key! as String
+        object.initializationVector = initializationVector! as String
+        object.mimeType = metadata.contentType
+        object.serverUrl = metadata.serverUrl
+        NCManageDatabase.shared.addE2eEncryption(object)
 
         let resultEncoder = NCEndToEndMetadata().encoderMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
         if resultEncoder.metadata == nil {
