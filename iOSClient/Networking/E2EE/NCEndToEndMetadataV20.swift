@@ -202,12 +202,12 @@ extension NCEndToEndMetadata {
 
             if let users {
                 for user in users {
-                    
+
                     var decryptedMetadataKey: Data?
                     var decryptedFiledropKey: Data?
                     var metadataKey: String?
                     var filedropKey: String?
-                    
+
                     if let encryptedMetadataKey = user.encryptedMetadataKey {
                         let data = Data(base64Encoded: encryptedMetadataKey)
                         if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
@@ -215,7 +215,7 @@ extension NCEndToEndMetadata {
                             metadataKey = decrypted.base64EncodedString()
                         }
                     }
-                    
+
                     if let encryptedFiledropKey = user.encryptedFiledropKey {
                         let data = Data(base64Encoded: encryptedFiledropKey)
                         if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: CCUtility.getEndToEndPrivateKey(account)) {
@@ -223,7 +223,7 @@ extension NCEndToEndMetadata {
                             filedropKey = decrypted.base64EncodedString()
                         }
                     }
-                    
+
                     NCManageDatabase.shared.addE2EUsersV2(account: account,
                                                           serverUrl: serverUrl,
                                                           ocIdServerUrl: ocIdServerUrl,
