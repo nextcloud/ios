@@ -35,7 +35,8 @@ extension NCEndToEndMetadata {
 
         guard let privateKey = CCUtility.getEndToEndPrivateKey(account),
               let publicKey = CCUtility.getEndToEndPublicKey(account),
-              let certificate = CCUtility.getEndToEndCertificate(account) else {
+              let certificate = CCUtility.getEndToEndCertificate(account),
+              let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
             return (nil, nil)
         }
 
@@ -140,7 +141,8 @@ extension NCEndToEndMetadata {
 
     func decoderMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
-        guard let data = json.data(using: .utf8) else {
+        guard let data = json.data(using: .utf8),
+              let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
         }
 

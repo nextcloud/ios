@@ -750,9 +750,11 @@ class NCUtility: NSObject {
     func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
         return isDirectoryE2EE(serverUrl: serverUrl, account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId)
     }
+
     func isDirectoryE2EE(file: NKFile) -> Bool {
         return isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account, urlBase: file.urlBase, userId: file.userId)
     }
+
     @objc func isDirectoryE2EE(serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
@@ -760,6 +762,7 @@ class NCUtility: NSObject {
         }
         return false
     }
+
     func isDirectoryE2EETop(serverUrl: String, account: String) -> Bool {
         if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
             if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, String(url.absoluteString.dropLast()))) {
@@ -767,6 +770,23 @@ class NCUtility: NSObject {
             }
         }
         return true
+    }
+
+    func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
+        var serverUrl = serverUrl
+        var top = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        while true {
+            if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
+                serverUrl = String(url.absoluteString.dropLast())
+                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+                    if directory.e2eEncrypted {
+                        top = directory
+                    } else {
+                        return top
+                    }
+                } else { return top }
+            } else { return top }
+        }
     }
 
     func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {
