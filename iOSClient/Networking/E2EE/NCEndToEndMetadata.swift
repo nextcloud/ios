@@ -128,7 +128,7 @@ class NCEndToEndMetadata: NSObject {
         }
 
         let metadata: Metadata
-        let users: [Users]
+        let users: [Users]?
         let filedrop: [String: Filedrop]?
         let version: String
     }
