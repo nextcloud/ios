@@ -41,29 +41,25 @@ extension NCEndToEndMetadata {
         }
 
         var isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(serverUrl: serverUrl, account: account)
+        var metadataKey: String?
+        var keyChecksums: [String] = []
+
         var usersCodable: [E2eeV20.Users] = []
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
-
-        var encryptedMetadataKey: String?
-        var metadataKey: String?
         var e2eeJson: String?
         var signature: String?
-        var decryptedMetadataKey: Data?
-        var keyChecksums: [String] = []
 
         if isDirectoryTop {
 
-            if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId) {
-                encryptedMetadataKey = user.encryptedMetadataKey
-                metadataKey = user.metadataKey
-            } else {
-                guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else { return (nil, nil) }
-                decryptedMetadataKey = keyGenerated
-                metadataKey = keyGenerated.base64EncodedString()
-                guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, privateKey: privateKey) else { return (nil, nil) }
-                encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
+            if NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId) == nil {
 
-                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
+            guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data else { return (nil, nil) }
+            let decryptedMetadataKey = keyGenerated
+            let metadataKey = keyGenerated.base64EncodedString()
+            guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, privateKey: privateKey) else { return (nil, nil) }
+            let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
+
+            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
             }
         }
 
@@ -75,6 +71,9 @@ extension NCEndToEndMetadata {
                 }
                 if let hash = NCEndToEndEncryption.sharedManager().createSHA256(user.decryptedMetadataKey) {
                     keyChecksums.append(hash)
+                }
+                if user.userId == userId {
+                    metadataKey = user.metadataKey
                 }
             }
         }
