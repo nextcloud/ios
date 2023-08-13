@@ -123,7 +123,7 @@ extension NCEndToEndMetadata {
 
         // SIGNATURE
 
-        if let e2eeJson {
+        if e2eeJson != nil {
             let dataMetadata = Data(base64Encoded: "e2eeJson")
             if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: certificate, privateKey: privateKey, publicKey: publicKey, userId: userId) {
                 signature = signatureData.base64EncodedString()
@@ -196,7 +196,7 @@ extension NCEndToEndMetadata {
             }
 
             // DATA
-            //NCManageDatabase.shared.deleteE2EUsersV2(account: account, serverUrl: serverUrl)
+            // NCManageDatabase.shared.deleteE2EUsersV2(account: account, serverUrl: serverUrl)
 
             //
             // users
