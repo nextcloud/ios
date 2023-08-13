@@ -223,14 +223,24 @@ extension NCEndToEndMetadata {
                     }
                 }
 
-                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
+                NCManageDatabase.shared.addE2EUsersV2(account: account,
+                                                      serverUrl: serverUrl,
+                                                      ocIdServerUrl: ocIdServerUrl,
+                                                      userId: user.userId,
+                                                      certificate: user.certificate,
+                                                      encryptedFiledropKey: user.encryptedFiledropKey,
+                                                      encryptedMetadataKey: user.encryptedMetadataKey,
+                                                      decryptedFiledropKey: decryptedFiledropKey,
+                                                      decryptedMetadataKey: decryptedMetadataKey,
+                                                      filedropKey: filedropKey,
+                                                      metadataKey: metadataKey)
             }
 
             //
             // metadata
             //
 
-            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId),
+            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
                let metadataKey = tableE2eUsersV2.metadataKey,
                let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey {
 
