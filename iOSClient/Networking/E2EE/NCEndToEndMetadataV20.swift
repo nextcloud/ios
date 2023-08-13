@@ -31,7 +31,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV20(account: String, serverUrl: String, ocId: String, userId: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String) -> (metadata: String?, signature: String?) {
 
         guard let privateKey = CCUtility.getEndToEndPrivateKey(account),
               let publicKey = CCUtility.getEndToEndPublicKey(account),
@@ -49,7 +49,7 @@ extension NCEndToEndMetadata {
         var decryptedMetadataKey: Data?
         var keyChecksums: [String] = []
 
-        if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, ocId: ocId, userId: userId) {
+        if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId) {
             encryptedMetadataKey = user.encryptedMetadataKey
             metadataKey = user.metadataKey
         } else {
@@ -59,11 +59,11 @@ extension NCEndToEndMetadata {
             guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, privateKey: privateKey) else { return (nil, nil) }
             encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
-            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocId: ocId, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
+            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
         }
 
         // Create E2eeV20.Users
-        if let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, ocId: ocId) {
+        if let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl) {
             for user in e2eUsers {
                 usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, encryptedFiledropKey: user.encryptedFiledropKey))
 
@@ -74,7 +74,7 @@ extension NCEndToEndMetadata {
         }
 
         // tableE2eMetadataV2
-        guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocId: ocId, version: "2.0") else {
+        guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, version: "2.0") else {
             return (nil, nil)
         }
 
@@ -137,7 +137,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocId: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decoderMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
@@ -149,16 +149,17 @@ extension NCEndToEndMetadata {
 
                 let object = tableE2eEncryption()
 
+                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
                 object.account = account
                 object.authenticationTag = authenticationTag
                 object.blob = "files"
                 object.fileName = filename
                 object.fileNameIdentifier = fileNameIdentifier
-                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
                 object.key = key
                 object.initializationVector = initializationVector
                 object.metadataKey = metadataKey
                 object.mimeType = mimetype
+                object.ocIdServerUrl = ocIdServerUrl
                 object.serverUrl = serverUrl
 
                 // Write file parameter for decrypted on DB
@@ -195,9 +196,7 @@ extension NCEndToEndMetadata {
             }
 
             // DATA
-            //NCManageDatabase.shared.deleteE2eMetadataV2(account: account, serverUrl: serverUrl)
             //NCManageDatabase.shared.deleteE2EUsersV2(account: account, serverUrl: serverUrl)
-            //NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
             //
             // users
@@ -226,14 +225,14 @@ extension NCEndToEndMetadata {
                     }
                 }
 
-                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocId: ocId, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
+                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
             }
 
             //
             // metadata
             //
 
-            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocId: ocId, userId: userId),
+            if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl, userId: userId),
                let metadataKey = tableE2eUsersV2.metadataKey,
                let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey {
 
@@ -256,7 +255,7 @@ extension NCEndToEndMetadata {
                                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_checksums_error_", comment: ""))
                             }
 
-                            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocId: ocId, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, counter: json.counter, folders: json.folders, version: version)
+                            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, counter: json.counter, folders: json.folders, version: version)
 
                             if let files = json.files {
                                 for file in files {

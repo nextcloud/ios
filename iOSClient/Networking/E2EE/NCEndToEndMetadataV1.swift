@@ -28,7 +28,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV12(account: String, serverUrl: String, ocId: String) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) -> (metadata: String?, signature: String?) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -138,7 +138,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV12(_ json: String, serverUrl: String, account: String, ocId: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decoderMetadataV12(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
@@ -198,17 +198,18 @@ extension NCEndToEndMetadata {
 
                                 let object = tableE2eEncryption()
 
+                                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
                                 object.account = account
                                 object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "files"
                                 object.fileName = encrypted.filename
                                 object.fileNameIdentifier = fileNameIdentifier
-                                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
                                 object.key = encrypted.key
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
+                                object.ocIdServerUrl = ocIdServerUrl
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
@@ -259,18 +260,19 @@ extension NCEndToEndMetadata {
 
                                 let object = tableE2eEncryption()
 
+                                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
                                 object.account = account
                                 object.authenticationTag = filedrop.authenticationTag ?? ""
                                 object.blob = "filedrop"
                                 object.fileName = encrypted.filename
                                 object.fileNameIdentifier = fileNameIdentifier
-                                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
                                 object.key = encrypted.key
                                 object.metadataKeyFiledrop = metadataKeyFiledrop ?? ""
                                 object.initializationVector = filedrop.initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
+                                object.ocIdServerUrl = ocIdServerUrl
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
@@ -313,7 +315,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.1
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV1(_ json: String, serverUrl: String, account: String, ocId: String, urlBase: String, userId: String) -> NKError {
+    func decoderMetadataV1(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
@@ -379,18 +381,19 @@ extension NCEndToEndMetadata {
 
                                 let object = tableE2eEncryption()
 
+                                object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
                                 object.account = account
                                 object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "files"
                                 object.fileName = encrypted.filename
                                 object.fileNameIdentifier = fileNameIdentifier
-                                object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encrypted.filename, serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
                                 object.key = encrypted.key
                                 object.initializationVector = initializationVector
                                 object.metadataKey = metadataKey
                                 object.metadataKeyIndex = metadataKeyIndex
                                 object.metadataVersion = metadataVersion
                                 object.mimeType = encrypted.mimetype
+                                object.ocIdServerUrl = ocIdServerUrl
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB

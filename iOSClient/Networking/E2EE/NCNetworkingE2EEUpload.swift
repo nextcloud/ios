@@ -59,6 +59,7 @@ class NCNetworkingE2EEUpload: NSObject {
         metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
         metadata.sessionError = ""
         guard let result = NCManageDatabase.shared.addMetadata(metadata) else { return errorCreateEncrypted }
+        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate:  NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else { return errorCreateEncrypted }
         metadata = result
 
         // ** Lock **
@@ -71,7 +72,7 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         // Send e2e metadata
-        let createE2EeError = await createE2Ee(metadata: metadata, e2eToken: e2eToken, fileId: fileId)
+        let createE2EeError = await createE2Ee(metadata: metadata, e2eToken: e2eToken, ocIdServerUrl: directory.ocId, fileId: fileId)
         guard createE2EeError == .success else {
             // ** Unlock **
             await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
@@ -122,7 +123,7 @@ class NCNetworkingE2EEUpload: NSObject {
         return(sendFileResults.error)
     }
 
-    private func createE2Ee(metadata: tableMetadata, e2eToken: String, fileId: String) async -> (NKError) {
+    private func createE2Ee(metadata: tableMetadata, e2eToken: String, ocIdServerUrl: String, fileId: String) async -> (NKError) {
 
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
         let object = tableE2eEncryption()
@@ -152,14 +153,15 @@ class NCNetworkingE2EEUpload: NSObject {
             object.metadataKey = key!.base64EncodedString()
             object.metadataKeyIndex = 0
         }
+        object.accountOcIdServerUrlFileNameIdentifier = metadata.account + ocIdServerUrl + metadata.fileName
         object.account = metadata.account
         object.authenticationTag = authenticationTag! as String
         object.fileName = metadata.fileNameView
         object.fileNameIdentifier = metadata.fileName
-        object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account)
         object.key = key! as String
         object.initializationVector = initializationVector! as String
         object.mimeType = metadata.contentType
+        object.ocIdServerUrl = ocIdServerUrl
         object.serverUrl = metadata.serverUrl
         NCManageDatabase.shared.addE2eEncryption(object)
 

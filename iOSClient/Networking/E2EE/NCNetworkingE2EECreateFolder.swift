@@ -107,7 +107,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false)
                 error = markE2EEFolderResults.error
                 if error == .success {
-                    error = await createE2Ee(e2eToken: e2eToken, fileIdLock: fileIdLock, account: account, fileNameFolder: fileNameFolder, fileNameIdentifier: fileNameIdentifier, serverUrl: serverUrl, urlBase: urlBase, userId: userId)
+                    error = await createE2Ee(e2eToken: e2eToken, fileIdLock: fileIdLock, account: account, fileNameFolder: fileNameFolder, fileNameIdentifier: fileNameIdentifier, serverUrl: serverUrl, ocIdServerUrl: ocId!, urlBase: urlBase, userId: userId)
                 }
             }
         }
@@ -121,7 +121,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         return error
     }
 
-    private func createE2Ee(e2eToken: String, fileIdLock: String, account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String,  urlBase: String, userId: String) async -> (NKError) {
+    private func createE2Ee(e2eToken: String, fileIdLock: String, account: String, fileNameFolder: String, fileNameIdentifier: String, serverUrl: String, ocIdServerUrl: String, urlBase: String, userId: String) async -> (NKError) {
 
         var key: NSString?
         var initializationVector: NSString?
@@ -138,11 +138,12 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // Add new metadata
         NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
+
+        object.accountOcIdServerUrlFileNameIdentifier = account + ocIdServerUrl + fileNameIdentifier
         object.account = account
         object.authenticationTag = ""
         object.fileName = fileNameFolder
         object.fileNameIdentifier = fileNameIdentifier
-        object.fileNamePath = ""
         object.key = key! as String
         object.initializationVector = initializationVector! as String
         if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
@@ -153,6 +154,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             object.metadataKeyIndex = 0
         }
         object.mimeType = "httpd/unix-directory"
+        object.ocIdServerUrl = ocIdServerUrl
         object.serverUrl = serverUrl
         NCManageDatabase.shared.addE2eEncryption(object)
 
