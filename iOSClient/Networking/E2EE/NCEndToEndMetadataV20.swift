@@ -59,7 +59,7 @@ extension NCEndToEndMetadata {
             guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, privateKey: privateKey) else { return (nil, nil) }
             encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
-            NCManageDatabase.shared.addE2EUsersV2(account: account, ocId: ocId, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
+            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocId: ocId, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
         }
 
         // Create E2eeV20.Users
@@ -74,7 +74,7 @@ extension NCEndToEndMetadata {
         }
 
         // tableE2eMetadataV2
-        guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, ocId: ocId, version: "2.0") else {
+        guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocId: ocId, version: "2.0") else {
             return (nil, nil)
         }
 
@@ -226,7 +226,7 @@ extension NCEndToEndMetadata {
                     }
                 }
 
-                NCManageDatabase.shared.addE2EUsersV2(account: account, ocId: ocId, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
+                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocId: ocId, userId: user.userId, certificate: user.certificate, encryptedFiledropKey: user.encryptedFiledropKey, encryptedMetadataKey: user.encryptedMetadataKey, decryptedFiledropKey: decryptedFiledropKey, decryptedMetadataKey: decryptedMetadataKey, filedropKey: filedropKey, metadataKey: metadataKey)
             }
 
             //
@@ -256,7 +256,7 @@ extension NCEndToEndMetadata {
                                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_checksums_error_", comment: ""))
                             }
 
-                            NCManageDatabase.shared.addE2eMetadataV2(account: account, ocId: ocId, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, counter: json.counter, folders: json.folders, version: version)
+                            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocId: ocId, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, counter: json.counter, folders: json.folders, version: version)
 
                             if let files = json.files {
                                 for file in files {
