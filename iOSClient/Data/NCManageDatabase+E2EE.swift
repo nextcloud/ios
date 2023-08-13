@@ -154,9 +154,7 @@ extension NCManageDatabase {
         return []
     }
 
-    @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
-
-        guard let account = self.getActiveAccount() else { return }
+    @objc func renameFileE2eEncryption(account: String, serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
 
         do {
             let realm = try Realm()
