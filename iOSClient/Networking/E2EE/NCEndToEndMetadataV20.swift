@@ -47,6 +47,7 @@ extension NCEndToEndMetadata {
         var e2eeJson: String?
         var signature: String?
         var decryptedMetadataKey: Data?
+        var keyChecksums: [String] = []
 
         if let user = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId) {
             encryptedMetadataKey = user.encryptedMetadataKey
@@ -61,12 +62,14 @@ extension NCEndToEndMetadata {
             NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
         }
 
-        guard let encryptedMetadataKey, let metadataKey else { return (nil, nil) }
-
         // Create E2eeV20.Users
         if let e2eUsers = NCManageDatabase.shared.getE2EUsersV2(account: account, serverUrl: serverUrl) {
             for user in e2eUsers {
                 usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, encryptedFiledropKey: user.encryptedFiledropKey))
+
+                if let hash = NCEndToEndEncryption.sharedManager().createSHA256(user.decryptedMetadataKey) {
+                    keyChecksums.append(hash)
+                }
             }
         }
 
@@ -89,11 +92,6 @@ extension NCEndToEndMetadata {
                 let file = E2eeV20.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
                 filesCodable.updateValue(file, forKey: e2eEncryption.fileNameIdentifier)
             }
-        }
-
-        var keyChecksums = Array(e2eMetadataV2.keyChecksums.map { $0 })
-        if let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey) {
-            keyChecksums.append(hash)
         }
 
         let ciphertext = E2eeV20.ciphertext(counter: e2eMetadataV2.counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: [:])
