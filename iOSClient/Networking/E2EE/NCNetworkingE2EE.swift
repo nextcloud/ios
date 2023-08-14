@@ -38,21 +38,21 @@ class NCNetworkingE2EE: NSObject {
         return UUID
     }
 
-    func uploadMetadata(account: String, serverUrl: String, userId: String, shareUserId: String?) async -> (NKError) {
+    func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String?) async -> (NKError) {
 
         var error = NKError()
-        var shareUserIdCertificate: String?
+        var addCertificate: String?
 
-        if let shareUserId {
-            let results = await NextcloudKit.shared.getE2EECertificate(user: shareUserId)
+        if let addUserId {
+            let results = await NextcloudKit.shared.getE2EECertificate(user: addUserId)
             if results.error == .success, let certificateUser = results.certificateUser {
-                shareUserIdCertificate = certificateUser
+                addCertificate = certificateUser
             } else {
                 return results.error
             }
         }
 
-        let encoderResults = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId, shareUserId: shareUserId, shareUserIdCertificate: shareUserIdCertificate)
+        let encoderResults = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate)
 
         guard let metadata = encoderResults.metadata, let signature = encoderResults.signature else {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))

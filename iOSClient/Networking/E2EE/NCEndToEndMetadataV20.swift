@@ -31,10 +31,11 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, shareUserId: String?, shareUserIdCertificate: String?) -> (metadata: String?, signature: String?) {
+    func encoderMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, addUserId: String?, addCertificate: String?) -> (metadata: String?, signature: String?) {
 
         guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data,
-              let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
+              let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account),
+              let ownerId = NCManageDatabase.shared.getMetadataFromOcId(ocIdServerUrl)?.ownerId else {
             return (nil, nil)
         }
 
@@ -47,25 +48,36 @@ extension NCEndToEndMetadata {
         var e2eeJson: String?
         var signature: String?
 
-        func addUser(userId: String, certificate: String, privateKey: String?) -> Bool {
+        // USERS
+
+        func addUser(userId: String, certificate: String, privateKey: String? = nil) {
 
             let decryptedMetadataKey = keyGenerated
             let metadataKey = keyGenerated.base64EncodedString()
-            guard let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, certificate: certificate, privateKey: privateKey) else { return false }
-            let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
 
-            NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
+            if let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(keyGenerated, certificate: certificate, privateKey: privateKey) {
 
-            return true
+                let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
+                NCManageDatabase.shared.addE2EUsersV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedFiledropKey: nil, encryptedMetadataKey: encryptedMetadataKey, decryptedFiledropKey: nil, decryptedMetadataKey: decryptedMetadataKey, filedropKey: nil, metadataKey: metadataKey)
+            }
+        }
+
+        if userId == ownerId {
+            addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account))
         }
 
         if isDirectoryTop {
 
-            if !addUser(userId: userId, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account)) {
-                return (nil, nil)
+            if let addUserId, let addCertificate {
+                addUser(userId: addUserId, certificate: addCertificate)
             }
-            if let shareUserId, let shareUserIdCertificate, !addUser(userId: shareUserId, certificate: shareUserIdCertificate, privateKey: nil) {
-                return (nil, nil)
+
+            if let users = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: ocIdServerUrl) {
+                for user in users {
+                    if user.userId != ownerId {
+                        addUser(userId: user.userId, certificate: user.certificate)
+                    }
+                }
             }
         }
 
@@ -78,8 +90,8 @@ extension NCEndToEndMetadata {
                 if let hash = NCEndToEndEncryption.sharedManager().createSHA256(user.decryptedMetadataKey) {
                     keyChecksums.append(hash)
                 }
-                if let shareUserId {
-                    if user.userId == shareUserId {
+                if let addUserId {
+                    if user.userId == addUserId {
                         metadataKey = user.metadataKey
                     }
                 } else if user.userId == userId {
