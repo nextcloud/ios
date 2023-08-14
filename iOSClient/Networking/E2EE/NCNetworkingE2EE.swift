@@ -38,6 +38,40 @@ class NCNetworkingE2EE: NSObject {
         return UUID
     }
 
+    func uploadMetadata(account: String, serverUrl: String, userId: String, shareUserId: String?) async -> (NKError) {
+
+        var error = NKError()
+        var shareUserIdCertificate: String?
+
+        if let shareUserId {
+            let results = await NextcloudKit.shared.getE2EECertificate(user: shareUserId)
+            if results.error == .success, let certificateUser = results.certificateUser {
+                shareUserIdCertificate = certificateUser
+            } else {
+                return results.error
+            }
+        }
+
+        let encoderResults = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId, shareUserId: shareUserId, shareUserIdCertificate: shareUserIdCertificate)
+
+        guard let metadata = encoderResults.metadata, let signature = encoderResults.signature else {
+            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+        }
+
+        let results = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
+        error = results.error
+
+        if error == .success, let e2eToken = results.e2eToken, let fileId = results.fileId {
+
+            let results = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: metadata, signature: signature, method: "PUT")
+            error = results.error
+        }
+
+        await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
+
+        return error
+    }
+
     func lock(account: String, serverUrl: String) async -> (fileId: String?, e2eToken: String?, error: NKError) {
 
         var e2eToken: String?
