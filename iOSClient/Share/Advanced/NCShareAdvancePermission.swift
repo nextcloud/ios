@@ -45,10 +45,19 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             self.present(alert, animated: true)
             return
         }
-        if isNewShare {
-            networking?.createShare(option: share)
-        } else {
-            networking?.updateShare(option: share)
+        Task {
+            if metadata.e2eEncrypted {
+                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                let error = await NCNetworkingE2EE.shared.uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, shareUserId: share.shareWith)
+                if error != .success {
+                    NCContentPresenter.shared.showError(error: error)
+                }
+            }
+            if isNewShare {
+                networking?.createShare(option: share)
+            } else {
+                networking?.updateShare(option: share)
+            }
         }
         navigationController?.popViewController(animated: true)
     }
