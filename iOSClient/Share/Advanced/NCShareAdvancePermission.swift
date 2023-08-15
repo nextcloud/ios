@@ -46,7 +46,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             return
         }
         Task {
-            if metadata.e2eEncrypted {
+            if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                 let error = await NCNetworkingE2EE.shared.uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: share.shareWith)
                 if error != .success {

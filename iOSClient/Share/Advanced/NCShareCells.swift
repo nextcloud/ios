@@ -90,7 +90,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     case reshare, edit, create, delete, download
     static let forDirectory: [NCUserPermission] = NCUserPermission.allCases
-    static let forDirectoryE2EE: [NCUserPermission] = NCUserPermission.allCases // []
+    static let forDirectoryE2EE: [NCUserPermission] = NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 ? NCUserPermission.allCases : []
     static let forFile: [NCUserPermission] = [.reshare, .edit]
 
     var title: String {
@@ -180,7 +180,7 @@ enum NCLinkPermission: NCPermission {
     case allowEdit, viewOnly, uploadEdit, fileDrop, secureFileDrop
     static let forDirectory: [NCLinkPermission] = [.viewOnly, .uploadEdit, .fileDrop]
     static let forFile: [NCLinkPermission] = [.allowEdit]
-    static let forDirectoryE2EE: [NCLinkPermission] = [.viewOnly, .uploadEdit, .fileDrop] // [.secureFileDrop]
+    static let forDirectoryE2EE: [NCLinkPermission] = [.secureFileDrop]
 }
 
 enum NCShareDetails: CaseIterable, NCShareCellConfig {
