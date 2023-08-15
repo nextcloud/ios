@@ -579,40 +579,76 @@
 #pragma mark - Encrypt/Decrypt asymmetric
 #
 
-- (NSData *)encryptAsymmetricData:(NSData *)plainData certificate:(NSString *)certificate privateKey:(NSString *)privateKey
+- (NSData *)encryptAsymmetricData:(NSData *)plainData certificate:(NSString *)certificate
 {
     EVP_PKEY *key = NULL;
     int status = 0;
+    unsigned char *pKey = (unsigned char *)[certificate UTF8String];
 
-    if (privateKey != nil) {
+    // Extract real publicKey
+    BIO *bio = BIO_new_mem_buf(pKey, -1);
+    if (!bio)
+        return nil;
 
-        unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
+    X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
+    if (!x509)
+        return nil;
 
-        BIO *bio = BIO_new_mem_buf(pKey, -1);
-        if (!bio)
-            return nil;
+    key = X509_get_pubkey(x509);
+    if (!key)
+        return nil;
 
-        key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
-        if (!key)
-            return nil;
-        
-    } else if (certificate != nil) {
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
+    if (!ctx)
+        return nil;
 
-        unsigned char *pKey = (unsigned char *)[certificate UTF8String];
+    status = EVP_PKEY_encrypt_init(ctx);
+    if (status <= 0)
+        return nil;
 
-        // Extract real publicKey
-        BIO *bio = BIO_new_mem_buf(pKey, -1);
-        if (!bio)
-            return nil;
+    status = EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING);
+    if (status <= 0)
+        return nil;
 
-        X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
-        if (!x509)
-            return nil;
+    status = EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256());
+    if (status <= 0)
+        return nil;
 
-        key = X509_get_pubkey(x509);
-        if (!key)
-            return nil;
-    }
+    status = EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, EVP_sha256());
+    if (status <= 0)
+        return nil;
+
+    unsigned long outLen = 0;
+    status = EVP_PKEY_encrypt(ctx, NULL, &outLen, [plainData bytes], (int)[plainData length]);
+    if (status <= 0 || outLen == 0)
+        return nil;
+
+    unsigned char *out = (unsigned char *) malloc(outLen);
+    status = EVP_PKEY_encrypt(ctx, out, &outLen, [plainData bytes], (int)[plainData length]);
+    if (status <= 0)
+        return nil;
+
+    NSData *outData = [[NSData alloc] initWithBytes:out length:outLen];
+
+    if (out)
+        free(out);
+
+    return outData;
+}
+
+- (NSData *)encryptAsymmetricData:(NSData *)plainData privateKey:(NSString *)privateKey
+{
+    EVP_PKEY *key = NULL;
+    int status = 0;
+    unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
+
+    BIO *bio = BIO_new_mem_buf(pKey, -1);
+    if (!bio)
+        return nil;
+
+    key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+    if (!key)
+        return nil;
 
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
     if (!ctx)
