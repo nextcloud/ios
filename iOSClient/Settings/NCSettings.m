@@ -124,7 +124,7 @@
     BOOL isE2EEEnabled = [[NCGlobal shared] capabilityE2EEEnabled];
     NSString *versionE2EE = [[NCGlobal shared] capabilityE2EEApiVersion];
 
-    if (isE2EEEnabled == YES && [NCGlobal.shared.e2eeReadVersions containsObject:versionE2EE]) {
+    if (isE2EEEnabled == YES && [NCGlobal.shared.e2eeVersions containsObject:versionE2EE]) {
 
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
         [form addFormSection:section];

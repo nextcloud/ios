@@ -139,6 +139,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
 
         let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
+        object.blob = "folders"
         object.authenticationTag = ""
         object.fileName = fileNameFolder
         object.key = key! as String

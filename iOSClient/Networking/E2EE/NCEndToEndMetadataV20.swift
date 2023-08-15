@@ -41,9 +41,9 @@ extension NCEndToEndMetadata {
         let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(serverUrl: serverUrl, account: account)
         var metadataKey: String?
         var keyChecksums: [String] = []
-
         var usersCodable: [E2eeV20.Users] = []
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
+        var folders: [String:String] = [:]
         var e2eeJson: String?
         var signature: String?
 
@@ -91,7 +91,7 @@ extension NCEndToEndMetadata {
         }
 
         // tableE2eMetadataV2
-        guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, version: "2.0") else {
+        guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, version: NCGlobal.shared.e2eeVersion20) else {
             return (nil, nil)
         }
 
@@ -103,10 +103,12 @@ extension NCEndToEndMetadata {
             if e2eEncryption.blob == "files" {
                 let file = E2eeV20.Files(authenticationTag: e2eEncryption.authenticationTag, filename: e2eEncryption.fileName, key: e2eEncryption.key, mimetype: e2eEncryption.mimeType, nonce: e2eEncryption.initializationVector)
                 filesCodable.updateValue(file, forKey: e2eEncryption.fileNameIdentifier)
+            } else if e2eEncryption.blob == "folders" {
+                folders[e2eEncryption.fileNameIdentifier] = e2eEncryption.fileName
             }
         }
 
-        let ciphertext = E2eeV20.ciphertext(counter: e2eMetadataV2.counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: [:])
+        let ciphertext = E2eeV20.ciphertext(counter: e2eMetadataV2.counter, deleted: false, keyChecksums: keyChecksums, files: filesCodable, folders: folders)
         var authenticationTag: NSString?
         var initializationVector: NSString?
 
@@ -127,7 +129,7 @@ extension NCEndToEndMetadata {
 
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag)
 
-            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: "2.0")
+            let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: NCGlobal.shared.e2eeVersion20)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
             e2eeJson = String(data: e2eeData, encoding: .utf8)
@@ -163,14 +165,14 @@ extension NCEndToEndMetadata {
             return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
         }
 
-        func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
+        func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String, blob: String) {
 
             if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
 
                 let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
                 object.authenticationTag = authenticationTag
-                object.blob = "files"
+                object.blob = blob
                 object.fileName = filename
                 object.key = key
                 object.initializationVector = initializationVector
@@ -284,13 +286,13 @@ extension NCEndToEndMetadata {
 
                             if let files = json.files {
                                 for file in files {
-                                    addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype)
+                                    addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype, blob: "files")
                                 }
                             }
 
                             if let folders = json.folders {
                                 for folder in folders {
-                                    addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory")
+                                    addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory", blob: "folders")
                                 }
                             }
 

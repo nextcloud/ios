@@ -61,9 +61,9 @@ extension NCEndToEndMetadata {
         for e2eEncryption in e2eEncryptions {
 
             //
-            // files
+            // files & folders
             //
-            if e2eEncryption.blob == "files" {
+            if e2eEncryption.blob == "files" || e2eEncryption.blob == "folders" {
                 let encrypted = E2eeV12.Encrypted(key: e2eEncryption.key, filename: e2eEncryption.fileName, mimetype: e2eEncryption.mimeType)
                 do {
                     // Create "encrypted"

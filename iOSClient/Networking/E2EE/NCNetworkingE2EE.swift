@@ -86,7 +86,7 @@ class NCNetworkingE2EE: NSObject {
             e2eToken = tableLock.e2eToken
         }
 
-        if e2EEApiVersion == "2.0", let result = NCManageDatabase.shared.getE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId) {
+        if e2EEApiVersion == NCGlobal.shared.e2eeVersion20, let result = NCManageDatabase.shared.getE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId) {
             e2eCounter = "\(result.counter)"
         }
 
