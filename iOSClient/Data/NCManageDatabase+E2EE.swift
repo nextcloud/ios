@@ -124,7 +124,7 @@ extension NCManageDatabase {
     // MARK: -
     // MARK: tableE2eEncryption
 
-    @objc func addE2eEncryption(_ object: tableE2eEncryption) {
+    func addE2eEncryption(_ object: tableE2eEncryption) {
 
         do {
             let realm = try Realm()
@@ -136,7 +136,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func deleteE2eEncryption(predicate: NSPredicate) {
+    func deleteE2eEncryption(predicate: NSPredicate) {
 
         do {
             let realm = try Realm()
@@ -149,7 +149,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
+    func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
 
         do {
             let realm = try Realm()
@@ -163,7 +163,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    @objc func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption] {
+    func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption] {
 
         do {
             let realm = try Realm()
@@ -178,7 +178,7 @@ extension NCManageDatabase {
         return []
     }
 
-    @objc func renameFileE2eEncryption(account: String, serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
+    func renameFileE2eEncryption(account: String, serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
 
         do {
             let realm = try Realm()
@@ -196,7 +196,7 @@ extension NCManageDatabase {
     // MARK: -
     // MARK: Table e2e Encryption Lock
 
-    @objc func getE2ETokenLock(account: String, serverUrl: String) -> tableE2eEncryptionLock? {
+    func getE2ETokenLock(account: String, serverUrl: String) -> tableE2eEncryptionLock? {
 
         do {
             let realm = try Realm()
@@ -210,7 +210,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    @objc func getE2EAllTokenLock(account: String) -> [tableE2eEncryptionLock] {
+    func getE2EAllTokenLock(account: String) -> [tableE2eEncryptionLock] {
 
         do {
             let realm = try Realm()
@@ -228,7 +228,7 @@ extension NCManageDatabase {
         return []
     }
 
-    @objc func setE2ETokenLock(account: String, serverUrl: String, fileId: String, e2eToken: String) {
+    func setE2ETokenLock(account: String, serverUrl: String, fileId: String, e2eToken: String) {
 
         do {
             let realm = try Realm()
@@ -245,7 +245,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func deleteE2ETokenLock(account: String, serverUrl: String) {
+    func deleteE2ETokenLock(account: String, serverUrl: String) {
 
         do {
             let realm = try Realm()
@@ -327,7 +327,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func deleteE2EUsersV2(account: String, ocIdServerUrl: String, userId: String) {
+    func deleteE2EUsersV2(account: String, ocIdServerUrl: String, userId: String) {
 
         do {
             let realm = try Realm()
