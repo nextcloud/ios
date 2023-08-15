@@ -43,7 +43,7 @@ extension NCEndToEndMetadata {
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
-        var folders: [String:String] = [:]
+        var folders: [String: String] = [:]
         var e2eeJson: String?
         var signature: String?
 
