@@ -327,6 +327,20 @@ extension NCManageDatabase {
         }
     }
 
+    @objc func deleteE2EUsersV2(account: String, ocIdServerUrl: String, userId: String) {
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableE2eUsersV2.self).filter("account == %@ AND ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId).first {
+                    realm.delete(result)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
     func getE2EUsersV2(account: String, ocIdServerUrl: String) -> Results<tableE2eUsersV2>? {
 
         do {
