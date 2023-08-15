@@ -38,7 +38,7 @@ extension NCEndToEndMetadata {
             return (nil, nil)
         }
 
-        let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(serverUrl: serverUrl, account: account)
+        let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
         var metadataKey: String?
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []

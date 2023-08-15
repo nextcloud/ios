@@ -1150,7 +1150,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, userId: String, overwrite: Bool = false, withPush:Bool, completion: @escaping (_ error: NKError) -> Void) {
 
-        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+        let isDirectoryEncrypted = NCUtility.shared.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if isDirectoryEncrypted {

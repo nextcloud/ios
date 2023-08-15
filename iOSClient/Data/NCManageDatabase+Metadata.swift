@@ -232,7 +232,7 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId)
+        NCUtility.shared.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else

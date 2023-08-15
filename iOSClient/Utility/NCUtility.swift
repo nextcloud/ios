@@ -748,14 +748,14 @@ class NCUtility: NSObject {
     }
 
     func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
-        return isDirectoryE2EE(serverUrl: serverUrl, account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId)
+        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
     }
 
     func isDirectoryE2EE(file: NKFile) -> Bool {
-        return isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account, urlBase: file.urlBase, userId: file.userId)
+        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
     }
 
-    func isDirectoryE2EE(serverUrl: String, account: String, urlBase: String, userId: String) -> Bool {
+    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
             return directory.e2eEncrypted
@@ -763,7 +763,7 @@ class NCUtility: NSObject {
         return false
     }
 
-    func isDirectoryE2EETop(serverUrl: String, account: String) -> Bool {
+    func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
         if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
             if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, String(url.absoluteString.dropLast()))) {
                 return !directory.e2eEncrypted
