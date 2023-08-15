@@ -38,7 +38,7 @@ class NCNetworkingE2EE: NSObject {
         return UUID
     }
 
-    func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String?) async -> (NKError) {
+    func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String?, removeUserId: String?) async -> (NKError) {
 
         var error = NKError()
         var addCertificate: String?
@@ -52,7 +52,7 @@ class NCNetworkingE2EE: NSObject {
             }
         }
 
-        let encoderResults = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate)
+        let encoderResults = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
 
         guard let metadata = encoderResults.metadata, let signature = encoderResults.signature else {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
