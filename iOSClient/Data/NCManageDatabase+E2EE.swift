@@ -85,7 +85,7 @@ class tableE2eMetadataV2: Object {
     @Persisted var keyChecksums = List<String>()
     @Persisted var ocIdServerUrl: String = ""
     @Persisted var serverUrl: String = ""
-    @Persisted var version: String = NCGlobal.shared.e2eeVersion20
+    @Persisted var version: String = NCGlobal.shared.e2eeVersionV20
 
     convenience init(account: String, ocIdServerUrl: String) {
         self.init()

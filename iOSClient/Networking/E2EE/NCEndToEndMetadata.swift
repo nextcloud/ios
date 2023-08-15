@@ -146,9 +146,9 @@ class NCEndToEndMetadata: NSObject {
         }
 
         switch e2EEApiVersion {
-        case NCGlobal.shared.e2eeVersion12:
+        case NCGlobal.shared.e2eeVersionV12:
             return encoderMetadataV12(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId)
-        case NCGlobal.shared.e2eeVersion20:
+        case NCGlobal.shared.e2eeVersionV20:
             return encoderMetadataV20(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, userId: userId, addUserId: addUserId, addCertificate: addCertificate)
         default:
             return (nil, nil)
