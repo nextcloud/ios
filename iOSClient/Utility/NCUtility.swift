@@ -757,7 +757,7 @@ class NCUtility: NSObject {
 
     func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
         return false
@@ -765,7 +765,7 @@ class NCUtility: NSObject {
 
     func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
         if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
-            if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, String(url.absoluteString.dropLast()))) {
+            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: String(url.absoluteString.dropLast())) {
                 return !directory.e2eEncrypted
             }
         }
@@ -774,11 +774,11 @@ class NCUtility: NSObject {
 
     func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
         var serverUrl = serverUrl
-        var top = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        var top = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl)
         while true {
             if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
                 serverUrl = String(url.absoluteString.dropLast())
-                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+                if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
                     if directory.e2eEncrypted {
                         top = directory
                     } else {

@@ -235,17 +235,22 @@ extension tableMetadata {
         NCUtility.shared.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
     }
 
+    var isDirectoryTopE2EE: Bool {
+        NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
     }
 
-    // Return if is sharable (temp)
-    // TODO: modifify for E2EE 2.0
+    // Return if is sharable
     func isSharable() -> Bool {
         guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
 
-        if !e2eEncrypted && !isDirectoryE2EE {
+        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20, isDirectoryE2EE {
+            return !isDirectoryTopE2EE
+        } else if !e2eEncrypted && !isDirectoryE2EE {
             return true
         } else if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {
             // E2EE DIRECTORY SECURE FILE DROP (SHARE AVAILABLE)

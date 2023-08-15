@@ -38,8 +38,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
     internal var serverUrl: String = ""
-    internal var isDirectoryE2EE = false
-    internal var isDirectoryE2EETop = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var selectIndexPath: [IndexPath] = []
@@ -953,9 +951,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func reloadDataSource(isForced: Bool = true) {
         guard !appDelegate.account.isEmpty else { return }
 
-        // E2EE
-        isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, userBase: appDelegate)
-        isDirectoryE2EETop =  NCUtility.shared.isDirectoryE2EETop(account: appDelegate.account, serverUrl: serverUrl)
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
@@ -1622,11 +1617,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        // Disable Share Button
-        if appDelegate.disableSharesView || (isDirectoryE2EE && !isDirectoryE2EETop ) {
-            cell.hideButtonShare(true)
-        }
-
         // Separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearchingMode {
             cell.cellSeparatorView?.isHidden = true
@@ -1669,12 +1659,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // ** IMPORT MUST BE AT THE END **
-        //
-
-        if !metadata.isSharable() {
+        // Disable Share Button
+        if appDelegate.disableSharesView || !metadata.isSharable() {
             cell.hideButtonShare(true)
         }
-        
+
         return cell
     }
 
