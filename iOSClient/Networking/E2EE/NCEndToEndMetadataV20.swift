@@ -231,11 +231,9 @@ extension NCEndToEndMetadata {
                 print(base64)
                 if  let base64Data = base64.data(using: .utf8),
                     let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
-                    let signatureX = signatureData.base64EncodedString()
-                    print(signatureX)
+                    let signature = signatureData.base64EncodedString()
+                    print(signature)
                 }
-                //print(String(data: data, encoding: .utf8))
-                //let base64 = data.base64EncodedString()
             } catch {
                 print("Error: \(error.localizedDescription)")
             }
