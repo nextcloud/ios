@@ -27,6 +27,25 @@ import Gzip
 
 extension NCEndToEndMetadata {
 
+    struct E2eeV20Signature: Codable {
+
+        struct Metadata: Codable {
+            let ciphertext: String
+            let nonce: String
+            let authenticationTag: String
+        }
+
+        struct Users: Codable {
+            let userId: String
+            let certificate: String
+            let encryptedMetadataKey: String?
+        }
+
+        let metadata: Metadata
+        let users: [Users]?
+        let version: String
+    }
+
     // --------------------------------------------------------------------------------------------
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
@@ -249,13 +268,8 @@ extension NCEndToEndMetadata {
 
                 // SIGNATURE CHECK
                 if let signature,
-                   let data = Data(base64Encoded: signature),
-                   let signatureCalculate = createSignature(account: account, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate),
-                   let signatureCalculateData = signatureCalculate.data(using: .utf8) {
-                    let publicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: tableE2eUsersV2.certificate)
-                    NCEndToEndEncryption.sharedManager().verifySignatureCMS(data, data: signatureCalculateData, publicKey: publicKey, userId: userId)
-                } else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
+                    !verifySignature(signature: signature, account: account, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) {
+                    //return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
                 }
 
                 // CIPHERTEXT
@@ -311,25 +325,6 @@ extension NCEndToEndMetadata {
 
         guard let users else { return nil }
 
-        struct E2eeV20Signature: Codable {
-
-            struct Metadata: Codable {
-                let ciphertext: String
-                let nonce: String
-                let authenticationTag: String
-            }
-
-            struct Users: Codable {
-                let userId: String
-                let certificate: String
-                let encryptedMetadataKey: String?
-            }
-
-            let metadata: Metadata
-            let users: [Users]?
-            let version: String
-        }
-
         var usersSignatureCodable: [E2eeV20Signature.Users] = []
         for user in users {
             usersSignatureCodable.append(E2eeV20Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
@@ -348,6 +343,7 @@ extension NCEndToEndMetadata {
             print(base64)
             if let base64Data = base64.data(using: .utf8),
                let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), userId: userId) {
+                let result = NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: base64Data, publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId)
                 let signature = signatureData.base64EncodedString()
                 return signature
             }
@@ -356,6 +352,32 @@ extension NCEndToEndMetadata {
         }
 
         return nil
+    }
+
+    func verifySignature(signature: String, account: String, userId: String, metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String) -> Bool {
+
+        guard let users else { return false }
+
+        var usersSignatureCodable: [E2eeV20Signature.Users] = []
+        for user in users {
+            usersSignatureCodable.append(E2eeV20Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
+        }
+        let signatureCodable = E2eeV20Signature(metadata: E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
+
+        do {
+            let jsonEncoder = JSONEncoder()
+            let json = try jsonEncoder.encode(signatureCodable)
+            let dataSerialization = try JSONSerialization.jsonObject(with: json, options: [])
+            let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
+            let base64 = decoded!.base64EncodedString()
+            if let base64Data = Data(base64Encoded: base64) {
+                //NCEndToEndEncryption.sharedManager().verifySignatureCMS(Data(base64Encoded: signature), data: base64Data, certificate: certificate, userId: userId)
+            }
+        } catch {
+            print("Error: \(error.localizedDescription)")
+        }
+
+        return false
     }
 }
 
