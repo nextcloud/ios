@@ -210,11 +210,16 @@ extension NCEndToEndMetadata {
 
             // SIGNATURE CHECK
 
-            let metadataCodable = E2eeV20.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag)
-            let metadataData = try JSONEncoder().encode(metadataCodable)
-            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(metadataData, certificate: CCUtility.getEndToEndPublicKey(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
-                let signatureX = signatureData.base64EncodedString()
-                print(signatureX)
+            let jsonString = String(data: data, encoding: .utf8)
+            if let jsonString,
+               let data = jsonString.data(using: .utf8) {
+                let base64 = data.base64EncodedString()
+                print(base64)
+                if  let base64Data = base64.data(using: .utf8),
+                    let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
+                    let signatureX = signatureData.base64EncodedString()
+                    print(signatureX)
+                }
             }
 
             //
