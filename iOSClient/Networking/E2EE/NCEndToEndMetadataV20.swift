@@ -45,8 +45,6 @@ extension NCEndToEndMetadata {
         var usersCodable: [E2eeV20.Users] = []
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
         var folders: [String: String] = [:]
-        var e2eeJson: String?
-        var signature: String?
 
         // USERS
 
@@ -138,8 +136,8 @@ extension NCEndToEndMetadata {
             let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: NCGlobal.shared.e2eeVersionV20)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
-            e2eeJson = String(data: e2eeData, encoding: .utf8)
 
+            let e2eeJson = String(data: e2eeData, encoding: .utf8)
             let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: userCertificate)
             return (e2eeJson, signature)
 
@@ -251,11 +249,11 @@ extension NCEndToEndMetadata {
 
                 // SIGNATURE CHECK
                 if let signature,
-                   let signatureData = signature.data(using: .utf8) {
-                    let verifySignature = NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: nil, publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId)
-                    if !verifySignature {
-                        return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
-                    }
+                   let data = Data(base64Encoded: signature),
+                   let signatureCalculate = createSignature(account: account, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate),
+                   let signatureCalculateData = signatureCalculate.data(using: .utf8) {
+                    let publicKey = NCEndToEndEncryption.sharedManager().extractPublicKey(fromCertificate: tableE2eUsersV2.certificate)
+                    NCEndToEndEncryption.sharedManager().verifySignatureCMS(data, data: signatureCalculateData, publicKey: publicKey, userId: userId)
                 } else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
                 }
