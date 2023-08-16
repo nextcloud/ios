@@ -133,6 +133,25 @@ class NCEndToEndMetadata: NSObject {
         let version: String
     }
 
+    struct E2eeV20Signature: Codable {
+
+        struct Metadata: Codable {
+            let ciphertext: String
+            let nonce: String
+            let authenticationTag: String
+        }
+
+        struct Users: Codable {
+            let userId: String
+            let certificate: String
+            let encryptedMetadataKey: String?
+        }
+
+        let metadata: Metadata
+        let users: [Users]?
+        let version: String
+    }
+
     // --------------------------------------------------------------------------------------------
     // MARK: Encode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------

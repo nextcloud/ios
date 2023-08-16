@@ -208,6 +208,38 @@ extension NCEndToEndMetadata {
             let filedrop = json.filedrop
             let version = json.version as String? ?? "2.0"
 
+            // signature
+
+            var usersSignatureCodable: [E2eeV20Signature.Users] = []
+            var metadataSignatureCodable: E2eeV20Signature.Metadata = E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag)
+            if let users {
+                for user in users {
+                    usersSignatureCodable.append(E2eeV20Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
+                }
+            }
+            let signatureCodable = E2eeV20Signature(metadata: metadataSignatureCodable, users: usersSignatureCodable, version: version)
+
+            do {
+                let jsonEncoder = JSONEncoder()
+                let json = try jsonEncoder.encode(signatureCodable)
+                let dataSerialization = try JSONSerialization.jsonObject(with: json, options: [])
+                let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
+                if let jsonString = String(data: decoded!, encoding: .utf8) {
+                    print(jsonString)
+                }
+                let base64 = decoded!.base64EncodedString()
+                print(base64)
+                if  let base64Data = base64.data(using: .utf8),
+                    let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: CCUtility.getEndToEndCertificate(account), privateKey: CCUtility.getEndToEndPrivateKey(account), publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId) {
+                    let signatureX = signatureData.base64EncodedString()
+                    print(signatureX)
+                }
+                //print(String(data: data, encoding: .utf8))
+                //let base64 = data.base64EncodedString()
+            } catch {
+                print("Error: \(error.localizedDescription)")
+            }
+
             // SIGNATURE CHECK
 
             let jsonString = String(data: data, encoding: .utf8)
