@@ -40,6 +40,7 @@ extension NCEndToEndMetadata {
 
         let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
         var metadataKey: String?
+        var userCertificate: String = ""
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
@@ -88,8 +89,10 @@ extension NCEndToEndMetadata {
                 }
                 if let addUserId, user.userId == addUserId {
                     metadataKey = user.metadataKey
+                    userCertificate = user.certificate
                 } else if user.userId == userId {
                     metadataKey = user.metadataKey
+                    userCertificate = user.certificate
                 }
             }
         }
@@ -132,30 +135,18 @@ extension NCEndToEndMetadata {
             ciphertext = ciphertext + "|" + initializationVector
 
             let metadataCodable = E2eeV20.Metadata(ciphertext: ciphertext, nonce: initializationVector, authenticationTag: authenticationTag)
-
             let e2eeCodable = E2eeV20(metadata: metadataCodable, users: usersCodable, filedrop: filedropCodable, version: NCGlobal.shared.e2eeVersionV20)
             let e2eeData = try JSONEncoder().encode(e2eeCodable)
             e2eeData.printJson()
             e2eeJson = String(data: e2eeData, encoding: .utf8)
-            print("")
+
+            let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: userCertificate)
+            return (e2eeJson, signature)
 
         } catch let error {
             print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
             return (nil, nil)
         }
-
-        // SIGNATURE
-
-        if e2eeJson != nil {
-            let dataMetadata = Data(base64Encoded: "e2eeJson")
-            let privateKey = CCUtility.getEndToEndPrivateKey(account)
-            let publicKey = CCUtility.getEndToEndPublicKey(account)
-            if let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(dataMetadata, certificate: CCUtility.getEndToEndCertificate(account), privateKey: privateKey, userId: userId) {
-                signature = signatureData.base64EncodedString()
-            }
-        }
-
-        return (e2eeJson, signature)
     }
 
     // --------------------------------------------------------------------------------------------
@@ -259,12 +250,14 @@ extension NCEndToEndMetadata {
                let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey {
 
                 // SIGNATURE CHECK
-
-                guard let signatureCalculate = createSignature(account: account, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) else {
+                if let signature,
+                   let signatureData = signature.data(using: .utf8) {
+                    let verifySignature = NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: nil, publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId)
+                    if !verifySignature {
+                        return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
+                    }
+                } else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
-                }
-                if signatureCalculate != signature {
-                    print("noooooo")
                 }
 
                 // CIPHERTEXT
@@ -356,7 +349,6 @@ extension NCEndToEndMetadata {
             let base64 = decoded!.base64EncodedString()
             print(base64)
             if let base64Data = base64.data(using: .utf8),
-               let testData = "Test string".data(using: .utf8),
                let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), userId: userId) {
                 let signature = signatureData.base64EncodedString()
                 return signature
@@ -368,7 +360,6 @@ extension NCEndToEndMetadata {
         return nil
     }
 }
-
 
 /* TEST CMS
 
