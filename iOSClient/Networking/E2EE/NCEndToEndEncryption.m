@@ -1145,7 +1145,7 @@
 #pragma mark - CMS
 #
 
-- (NSData *)generateSignatureCMS:(NSData *)data certificate:(NSString *)certificate privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey userId:(NSString *)userId
+- (NSData *)generateSignatureCMS:(NSData *)data certificate:(NSString *)certificate privateKey:(NSString *)privateKey userId:(NSString *)userId
 {
     unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
     unsigned char *certKey = (unsigned char *)[certificate UTF8String];
@@ -1184,6 +1184,7 @@
     NSData *i2dCmsData = [NSData dataWithBytes:keyBytes length:len];
 
     // TEST
+    NSString *publicKey = [self extractPublicKeyFromCertificate:certificate];
     [self verifySignatureCMS:i2dCmsData data:data publicKey:publicKey userId:userId];
 
     BIO_free(printBIO);
