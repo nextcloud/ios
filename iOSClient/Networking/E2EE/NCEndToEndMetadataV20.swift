@@ -114,7 +114,6 @@ extension NCEndToEndMetadata {
             }
         }
 
-        // tableE2eMetadataV2
         guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, version: NCGlobal.shared.e2eeVersionV20) else {
             return (nil, nil)
         }
@@ -137,9 +136,6 @@ extension NCEndToEndMetadata {
         var initializationVector: NSString?
 
         do {
-
-            // CIPHERTEXT
-
             let json = try JSONEncoder().encode(ciphertext)
             let jsonZip = try json.gzipped()
             let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
