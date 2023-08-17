@@ -1192,7 +1192,6 @@
     return i2dCmsData;
 }
 
-/*
 - (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data publicKey:(NSString *)publicKey userId:(NSString *)userId
 {
     BIO *dataBIO = BIO_new_mem_buf((void*)data.bytes, (int)data.length);
@@ -1249,7 +1248,6 @@
 
     return verifyResult;
 }
-*/
 
 - (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data certificates:(NSArray*)certificates
 {
@@ -1259,12 +1257,12 @@
 
     CMS_ContentInfo *contentInfo = d2i_CMS_bio(cmsBIO, NULL);
     CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
-    BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
 
-    struct stack_st_CMS_SignerInfo* signerInfos = CMS_get0_SignerInfos(contentInfo);
+    BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
 
     if (verifyResult) {
 
+        struct stack_st_CMS_SignerInfo* signerInfos = CMS_get0_SignerInfos(contentInfo);
         STACK_OF(X509) *signers = CMS_get0_signers(contentInfo);
         int numSigners = sk_X509_num(signers);
 
@@ -1281,6 +1279,10 @@
             for (int i = 0; i < numSigners; ++i) {
                 struct CMS_SignerInfo_st *signerInfo = sk_CMS_SignerInfo_value(signerInfos, i);
                 if (CMS_SignerInfo_cert_cmp(signerInfo, certX509) == 0) {
+                    BIO_free(dataBIO);
+                    BIO_free(printBIO);
+                    BIO_free(cmsBIO);
+                    BIO_free(certBio);
                     return true;
                 }
             }
