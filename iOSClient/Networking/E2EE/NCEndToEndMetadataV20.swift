@@ -64,8 +64,6 @@ extension NCEndToEndMetadata {
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
         var folders: [String: String] = [:]
 
-        // USERS
-
         func addUser(userId: String?, certificate: String?) {
 
             guard let userId, let certificate else { return }
@@ -209,10 +207,6 @@ extension NCEndToEndMetadata {
             let filedrop = json.filedrop
             let version = json.version as String? ?? "2.0"
 
-            //
-            // users
-            //
-
             if let users {
                 for user in users {
 
@@ -251,17 +245,13 @@ extension NCEndToEndMetadata {
                 }
             }
 
-            //
-            // metadata
-            //
-
             if let tableE2eUsersV2 = NCManageDatabase.shared.getE2EUsersV2(account: account, ocIdServerUrl: directoryTop.ocId, userId: userId),
                let metadataKey = tableE2eUsersV2.metadataKey,
                let decryptedMetadataKey = tableE2eUsersV2.decryptedMetadataKey {
 
                 // SIGNATURE CHECK
                 if let signature,
-                    !verifySignature(signature: signature, account: account, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) {
+                    !verifySignature(account: account, signature: signature, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) {
                     return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
                 }
 
@@ -314,6 +304,8 @@ extension NCEndToEndMetadata {
         return NKError()
     }
 
+    // MARK: -
+
     func createSignature(account: String, userId: String, metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String) -> String? {
 
         guard let users else { return nil }
@@ -332,8 +324,7 @@ extension NCEndToEndMetadata {
             let base64 = decoded!.base64EncodedString()
             if let base64Data = base64.data(using: .utf8),
                let signatureData = NCEndToEndEncryption.sharedManager().generateSignatureCMS(base64Data, certificate: certificate, privateKey: CCUtility.getEndToEndPrivateKey(account), userId: userId) {
-                let signature = signatureData.base64EncodedString()
-                return signature
+                return signatureData.base64EncodedString()
             }
         } catch {
             print("Error: \(error.localizedDescription)")
@@ -342,7 +333,7 @@ extension NCEndToEndMetadata {
         return nil
     }
 
-    func verifySignature(signature: String, account: String, userId: String, metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String) -> Bool {
+    func verifySignature(account: String, signature: String, userId: String, metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String) -> Bool {
 
         guard let users else { return false }
 
