@@ -24,6 +24,64 @@ import NextcloudKit
 
 extension NCEndToEndMetadata {
 
+    struct E2eeV1: Codable {
+
+        struct Metadata: Codable {
+            let metadataKeys: [String: String]
+            let version: Double
+        }
+
+        struct Encrypted: Codable {
+            let key: String
+            let filename: String
+            let mimetype: String
+        }
+
+        struct Files: Codable {
+            let initializationVector: String
+            let authenticationTag: String?
+            let metadataKey: Int
+            let encrypted: String
+        }
+
+        let metadata: Metadata
+        let files: [String: Files]?
+    }
+
+    struct E2eeV12: Codable {
+
+        struct Metadata: Codable {
+            let metadataKey: String
+            let version: Double
+            let checksum: String?
+        }
+
+        struct Encrypted: Codable {
+            let key: String
+            let filename: String
+            let mimetype: String
+        }
+
+        struct Files: Codable {
+            let initializationVector: String
+            let authenticationTag: String?
+            let encrypted: String
+        }
+
+        struct Filedrop: Codable {
+            let initializationVector: String
+            let authenticationTag: String?
+            let encrypted: String
+            let encryptedKey: String?
+            let encryptedTag: String?
+            let encryptedInitializationVector: String?
+        }
+
+        let metadata: Metadata
+        let files: [String: Files]?
+        let filedrop: [String: Filedrop]?
+    }
+
     // --------------------------------------------------------------------------------------------
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------

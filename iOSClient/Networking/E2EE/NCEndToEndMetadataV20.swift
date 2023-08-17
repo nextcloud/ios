@@ -27,6 +27,55 @@ import Gzip
 
 extension NCEndToEndMetadata {
 
+    struct E2eeV20: Codable {
+
+        struct Files: Codable {
+            let authenticationTag: String
+            let filename: String
+            let key: String
+            let mimetype: String
+            let nonce: String
+        }
+
+        struct ciphertext: Codable {
+            let counter: Int
+            let deleted: Bool?
+            let keyChecksums: [String]?
+            let files: [String: Files]?
+            let folders: [String: String]?
+        }
+
+        struct Metadata: Codable {
+            let ciphertext: String
+            let nonce: String
+            let authenticationTag: String
+        }
+
+        struct Users: Codable {
+            let userId: String
+            let certificate: String
+            let encryptedMetadataKey: String?
+            let encryptedFiledropKey: String?
+        }
+
+        struct Filedrop: Codable {
+            let ciphertext: String?
+            let nonce: String?
+            let authenticationTag: String?
+            let users: [String: UsersFiledrop]?
+
+            struct UsersFiledrop: Codable {
+                let userId: String?
+                let encryptedFiledropKey: String?
+            }
+        }
+
+        let metadata: Metadata
+        let users: [Users]?
+        let filedrop: [String: Filedrop]?
+        let version: String
+    }
+
     struct E2eeV20Signature: Codable {
 
         struct Metadata: Codable {
