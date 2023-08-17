@@ -209,7 +209,7 @@ extension NCEndToEndMetadata {
 
             let metadata = json.metadata
             let users = json.users
-            // let filedrop = json.filedrop
+            let filedrop = json.filedrop
             let version = json.version as String? ?? "2.0"
 
             //
@@ -363,7 +363,9 @@ extension NCEndToEndMetadata {
             let base64 = decoded!.base64EncodedString()
             if let base64Data = base64.data(using: .utf8),
                let signatureData = Data(base64Encoded: signature) {
-                return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: base64Data, publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId)
+                let certificates = users.map { $0.certificate }
+                NCEndToEndEncryption.sharedManager().verifySignatureCMS2(signatureData, data: base64Data, certificates: certificates)
+                //return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: base64Data, publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId)
             }
 
         } catch {

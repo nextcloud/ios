@@ -1249,6 +1249,60 @@
     return verifyResult;
 }
 
+- (BOOL)verifySignatureCMS2:(NSData *)cmsContent data:(NSData *)data certificates:(NSArray*)certificates
+{
+    BIO *dataBIO = BIO_new_mem_buf((void*)data.bytes, (int)data.length);
+    BIO *printBIO = BIO_new_fp(stdout, BIO_NOCLOSE);
+    BIO *cmsBIO = BIO_new_mem_buf(cmsContent.bytes, (int)cmsContent.length);
+
+    CMS_ContentInfo *contentInfo = d2i_CMS_bio(cmsBIO, NULL);
+    CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
+    BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
+
+    if (verifyResult) {
+
+        /*
+        STACK_OF(X509) *signers = CMS_get0_signers(contentInfo);
+        int numSigners = sk_X509_num(signers);
+
+
+        for (int i = 0; i < numSigners; ++i) {
+
+            X509 *signer = sk_X509_value(signers, i);
+            int result = X509_verify(signer, pkey);
+            if (result <= 0) {
+                verifyResult = false;
+                break;
+            }
+
+            int cnDataLength = X509_NAME_get_text_by_NID(X509_get_subject_name(signer), NID_commonName, 0, 0);
+            cnDataLength += 1;
+            NSMutableData* cnData = [NSMutableData dataWithLength:cnDataLength];
+            X509_NAME_get_text_by_NID(X509_get_subject_name(signer), NID_commonName, [cnData mutableBytes], cnDataLength);
+            NSString *cn = [[NSString alloc] initWithCString:[cnData mutableBytes] encoding:NSUTF8StringEncoding];
+            if ([userId isEqualToString:cn]) {
+                verifyResult = true;
+                break;
+            } else {
+                verifyResult = false;
+            }
+        }
+
+        if (signers) {
+            sk_X509_free(signers);
+        }
+        signers = NULL;
+        */
+    }
+
+    BIO_free(dataBIO);
+    BIO_free(printBIO);
+    BIO_free(cmsBIO);
+    // BIO_free(publicKeyBIO);
+
+    return verifyResult;
+}
+
 #
 #pragma mark - Utility
 #
