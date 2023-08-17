@@ -152,7 +152,7 @@ extension NCEndToEndMetadata {
             return (e2eeJson, signature)
 
         } catch let error {
-            print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
+            print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
             return (nil, nil)
         }
     }
@@ -165,7 +165,7 @@ extension NCEndToEndMetadata {
 
         guard let data = json.data(using: .utf8),
               let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
+            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Serious internal error in decoding metadata")
         }
 
         func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String, blob: String) {
@@ -205,7 +205,7 @@ extension NCEndToEndMetadata {
             let metadata = json.metadata
             let users = json.users
             let filedrop = json.filedrop
-            let version = json.version as String? ?? "2.0"
+            let version = json.version as String? ?? NCGlobal.shared.e2eeVersionV20
 
             if let users {
                 for user in users {
@@ -252,7 +252,7 @@ extension NCEndToEndMetadata {
                 // SIGNATURE CHECK
                 if let signature,
                     !verifySignature(account: account, signature: signature, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature")
+                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature metadata")
                 }
 
                 // CIPHERTEXT
@@ -291,10 +291,10 @@ extension NCEndToEndMetadata {
                             return NKError(error: error)
                         }
                     } else {
-                        return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error unzip ciphertext")
+                        return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error unzip ciphertext metadata")
                     }
                 } else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt ciphertext")
+                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt ciphertext metadata")
                 }
             }
         } catch let error {
