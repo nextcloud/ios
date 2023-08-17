@@ -1260,6 +1260,10 @@
 
     BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
 
+    BIO_free(dataBIO);
+    BIO_free(printBIO);
+    BIO_free(cmsBIO);
+
     if (verifyResult) {
 
         struct stack_st_CMS_SignerInfo* signerInfos = CMS_get0_SignerInfos(contentInfo);
@@ -1279,19 +1283,12 @@
             for (int i = 0; i < numSigners; ++i) {
                 struct CMS_SignerInfo_st *signerInfo = sk_CMS_SignerInfo_value(signerInfos, i);
                 if (CMS_SignerInfo_cert_cmp(signerInfo, certX509) == 0) {
-                    BIO_free(dataBIO);
-                    BIO_free(printBIO);
-                    BIO_free(cmsBIO);
                     BIO_free(certBio);
                     return true;
                 }
             }
         }
     }
-
-    BIO_free(dataBIO);
-    BIO_free(printBIO);
-    BIO_free(cmsBIO);
 
     return verifyResult;
 }
