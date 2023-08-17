@@ -29,7 +29,10 @@ class NCCameraRoll: NSObject {
 
     func extractCameraRoll(from metadata: tableMetadata, viewController: UIViewController?, hud: JGProgressHUD, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
 
-        let chunckSize = CCUtility.getChunkSize() * 1000000
+        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        }
         var metadatas: [tableMetadata] = []
         let metadataSource = tableMetadata.init(value: metadata)
 
@@ -47,9 +50,13 @@ class NCCameraRoll: NSObject {
             if let date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: filePath) {
                 metadataSource.date = date
             }
-            metadataSource.chunk = chunckSize != 0 && metadata.size > chunckSize
+            if metadataSource.size > chunkSize {
+                metadataSource.chunk = chunkSize
+            } else {
+                metadataSource.chunk = 0
+            }
             metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
-            if metadataSource.chunk || metadataSource.e2eEncrypted {
+            if metadataSource.chunk > 0 || metadataSource.e2eEncrypted {
                 metadataSource.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
             }
             metadataSource.isExtractFile = true
@@ -89,8 +96,11 @@ class NCCameraRoll: NSObject {
 
         var fileNamePath: String?
         let metadata = tableMetadata.init(value: metadata)
-        let chunckSize = CCUtility.getChunkSize() * 1000000
         var compatibilityFormat: Bool = false
+        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        }
 
         func callCompletionWithError(_ error: Bool = true) {
             if error {
@@ -98,9 +108,13 @@ class NCCameraRoll: NSObject {
             } else {
                 var metadataReturn = metadata
                 if modifyMetadataForUpload {
-                    metadata.chunk = chunckSize != 0 && metadata.size > chunckSize
+                    if metadata.size > chunkSize {
+                        metadata.chunk = chunkSize
+                    } else {
+                        metadata.chunk = 0
+                    }
                     metadata.e2eEncrypted = metadata.isDirectoryE2EE
-                    if metadata.chunk || metadata.e2eEncrypted {
+                    if metadata.chunk > 0 || metadata.e2eEncrypted {
                         metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
                     }
                     metadata.isExtractFile = true
@@ -234,10 +248,13 @@ class NCCameraRoll: NSObject {
         let options = PHLivePhotoRequestOptions()
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
-        let chunckSize = CCUtility.getChunkSize() * 1000000
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!
+        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        }
 
         PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, _ in
             guard let livePhoto = livePhoto else { return completion(nil) }
@@ -267,9 +284,13 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
                 metadataLivePhoto.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNamePath)
                 metadataLivePhoto.status = metadata.status
-                metadataLivePhoto.chunk = chunckSize != 0 && metadata.size > chunckSize
+                if metadataLivePhoto.size > chunkSize {
+                    metadataLivePhoto.chunk = chunkSize
+                } else {
+                    metadataLivePhoto.chunk = 0
+                }
                 metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
-                if metadataLivePhoto.chunk || metadataLivePhoto.e2eEncrypted {
+                if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
                     metadataLivePhoto.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
                 }
                 metadataLivePhoto.creationDate = metadata.creationDate

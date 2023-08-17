@@ -517,17 +517,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocId == NCNetworking.shared.transferInForegorund?.ocId {
+        if ocIdTemp == NCNetworking.shared.transferInForegorund?.ocId {
             NCNetworking.shared.transferInForegorund = nil
             self.collectionView?.reloadData()
         }
 
-        if account == appDelegate.account, serverUrl == self.serverUrl {
-            reloadDataSource()
+        if account == appDelegate.account, serverUrl == self.serverUrl, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+            if metadata.e2eEncrypted {
+                reloadDataSourceNetwork(isForced: true)
+            } else {
+                reloadDataSource()
+            }
         }
     }
 
@@ -555,13 +560,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String,
-              let chunk = userInfo["chunk"] as? Bool,
-              let e2eEncrypted = userInfo["e2eEncrypted"] as? Bool
+              let ocId = userInfo["ocId"] as? String
         else { return }
 
+        let chunk: Int = userInfo["chunk"] as? Int ?? 0
+        let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
+
         // Header Transfer
-        if headerMenuTransferView && (chunk || e2eEncrypted) {
+        if headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
             if NCNetworking.shared.transferInForegorund?.ocId == ocId {
                 NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
             } else {

@@ -65,7 +65,7 @@ class NCNetworkingE2EEDelete: NSObject {
             }
 
             // Send metadata
-            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: "PUT")
+            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, signature: nil, method: "PUT")
             
             return putE2EEMetadataResults.error
         }

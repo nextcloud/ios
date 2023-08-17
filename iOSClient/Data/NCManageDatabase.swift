@@ -98,6 +98,11 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableVideo.className())
                     }
 
+                    if oldSchemaVersion < 304 {
+                        migration.deleteData(forType: tableChunk.className())
+                        migration.deleteData(forType: tableMetadata.className())
+                    }
+
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
 
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -255,110 +260,6 @@ class NCManageDatabase: NSObject {
     func isTableInvalidated(_ object: Object) -> Bool {
 
         return object.isInvalidated
-    }
-
-    // MARK: -
-    // MARK: Table Chunk
-
-    func getChunkFolder(account: String, ocId: String) -> String {
-
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            guard let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first else { return NSUUID().uuidString }
-            return result.chunkFolder
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return NSUUID().uuidString
-    }
-
-    func getChunks(account: String, ocId: String) -> [String] {
-
-        var filesNames: [String] = []
-
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
-            for result in results {
-                filesNames.append(result.fileName)
-            }
-            return filesNames
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return filesNames
-    }
-
-    func addChunks(account: String, ocId: String, chunkFolder: String, fileNames: [String]) {
-
-        var size: Int64 = 0
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-
-                for fileName in fileNames {
-
-                    let object = tableChunk()
-                    size += NCUtilityFileSystem.shared.getFileSize(filePath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
-
-                    object.account = account
-                    object.chunkFolder = chunkFolder
-                    object.fileName = fileName
-                    object.index = ocId + fileName
-                    object.ocId = ocId
-                    object.size = size
-
-                    realm.add(object, update: .all)
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func getChunk(account: String, fileName: String) -> tableChunk? {
-
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            guard let result = realm.objects(tableChunk.self).filter("account == %@ AND fileName == %@", account, fileName).first else { return nil }
-            return tableChunk.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-
-        return nil
-    }
-
-    func deleteChunk(account: String, ocId: String, fileName: String) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileName))
-                realm.delete(result)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func deleteChunks(account: String, ocId: String) {
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableChunk.self).filter(NSPredicate(format: "account == %@ AND ocId == %@", account, ocId))
-                realm.delete(result)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
     }
 
     // MARK: -

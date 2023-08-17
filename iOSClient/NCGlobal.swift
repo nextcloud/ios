@@ -131,6 +131,10 @@ class NCGlobal: NSObject {
     let e2eePassphraseTest                          = "more over television factory tendency independence international intellectual impress interest sentence pony"
     @objc let e2eeReadVersions                      = ["1.1", "1.2"]
 
+    // CHUNK
+    let chunkSizeMBCellular                         = 10000000
+    let chunkSizeMBEthernetOrWiFi                   = 100000000
+
     // Video
     //
     let maxHTTPCache: Int64                         = 10000000000   // 10 GB
@@ -349,9 +353,9 @@ class NCGlobal: NSObject {
     let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, e2ee, withPush
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, hud?
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], hud?
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], hud?
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], [indexPath], onlyLocalCache, error, hud?
+    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], [indexPath], error, hud?
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], [indexPath], error, hud?
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
 

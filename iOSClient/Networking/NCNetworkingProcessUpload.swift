@@ -124,7 +124,7 @@ class NCNetworkingProcessUpload: NSObject {
                 }
             }
             // CHUNK
-            if metadatasUpload.filter({ $0.chunk }).count > 0 {
+            if metadatasUpload.filter({ $0.chunk > 0 }).count > 0 {
                 self.pauseProcess = false
                 return completition(counterUpload)
             }
@@ -168,13 +168,13 @@ class NCNetworkingProcessUpload: NSObject {
                                     continue
                                 }
 
-                                if applicationState != .active && (isInDirectoryE2EE || metadata.chunk) {
+                                if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) {
                                     continue
                                 }
 
                                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusInUpload) {
                                     NCNetworking.shared.upload(metadata: metadata)
-                                    if isInDirectoryE2EE || metadata.chunk {
+                                    if isInDirectoryE2EE || metadata.chunk > 0 {
                                         maxConcurrentOperationUpload = 1
                                     }
                                     counterUpload += 1
@@ -263,7 +263,6 @@ class NCNetworkingProcessUpload: NSObject {
         for metadata in metadatasUploadShareExtension {
             let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)!
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NCManageDatabase.shared.deleteChunks(account: metadata.account, ocId: metadata.ocId)
             NCUtilityFileSystem.shared.deleteFile(filePath: path)
         }
 

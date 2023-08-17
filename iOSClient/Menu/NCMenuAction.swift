@@ -155,7 +155,6 @@ extension NCMenuAction {
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
-                            let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
                                 if error == .success {
@@ -174,7 +173,6 @@ extension NCMenuAction {
                         Task {
                             var error = NKError()
                             var ocId: [String] = []
-                            let account = selectedMetadatas.first?.account ?? ""
                             for metadata in selectedMetadatas where error == .success {
                                 error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
                                 if error == .success {

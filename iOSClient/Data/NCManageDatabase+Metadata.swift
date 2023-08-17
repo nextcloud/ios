@@ -38,7 +38,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var checksums = ""
-    @objc dynamic var chunk: Bool = false
+    @objc dynamic var chunk: Int = 0
     @objc dynamic var classFile = ""
     @objc dynamic var commentsUnread: Bool = false
     @objc dynamic var contentType = ""
@@ -222,7 +222,7 @@ extension tableMetadata {
     }
 
     var isTransferInForeground: Bool {
-        (status > 0 && (chunk || e2eEncrypted))
+        (status > 0 && (chunk > 0 || e2eEncrypted))
     }
 
     var isDownload: Bool {

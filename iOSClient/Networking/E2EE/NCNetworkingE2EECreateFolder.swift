@@ -66,7 +66,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             if lockResults.error != .success { return lockResults.error }
 
             let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrlFileName)
-            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: file.fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: e2eMetadataNew, method: "POST")
+            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: file.fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: e2eMetadataNew, signature: nil, method: "POST")
             error = putE2EEMetadataResults.error
 
             // UNLOCK
@@ -164,7 +164,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
 
         // send metadata
-        let putE2EEMetadataResults =  await NextcloudKit.shared.putE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, method: method)
+        let putE2EEMetadataResults =  await NextcloudKit.shared.putE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken, e2eMetadata: e2eMetadataNew, signature: nil, method: method)
         return putE2EEMetadataResults.error
     }
 
@@ -182,7 +182,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         if lockResults.error != .success { return lockResults.error }
 
         let e2eMetadataNew = NCEndToEndMetadata().encoderMetadata([], account: account, serverUrl: serverUrl)
-        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: e2eMetadataNew, method: "POST")
+        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: e2eMetadataNew, signature: nil, method: "POST")
         let error = putE2EEMetadataResults.error
 
         // UNLOCK
