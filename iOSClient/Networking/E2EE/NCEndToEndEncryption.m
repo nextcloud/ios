@@ -1192,6 +1192,7 @@
     return i2dCmsData;
 }
 
+/*
 - (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data publicKey:(NSString *)publicKey userId:(NSString *)userId
 {
     BIO *dataBIO = BIO_new_mem_buf((void*)data.bytes, (int)data.length);
@@ -1248,8 +1249,9 @@
 
     return verifyResult;
 }
+*/
 
-- (BOOL)verifySignatureCMS2:(NSData *)cmsContent data:(NSData *)data certificates:(NSArray*)certificates
+- (BOOL)verifySignatureCMS:(NSData *)cmsContent data:(NSData *)data certificates:(NSArray*)certificates
 {
     BIO *dataBIO = BIO_new_mem_buf((void*)data.bytes, (int)data.length);
     BIO *printBIO = BIO_new_fp(stdout, BIO_NOCLOSE);
@@ -1259,46 +1261,35 @@
     CMS_ContentInfo_print_ctx(printBIO, contentInfo, 0, NULL);
     BOOL verifyResult = CMS_verify(contentInfo, NULL, NULL, dataBIO, NULL, CMS_DETACHED | CMS_NO_SIGNER_CERT_VERIFY);
 
+    struct stack_st_CMS_SignerInfo* signerInfos = CMS_get0_SignerInfos(contentInfo);
+
     if (verifyResult) {
 
-        /*
         STACK_OF(X509) *signers = CMS_get0_signers(contentInfo);
         int numSigners = sk_X509_num(signers);
 
+        for (NSString *certificate in certificates) {
 
-        for (int i = 0; i < numSigners; ++i) {
-
-            X509 *signer = sk_X509_value(signers, i);
-            int result = X509_verify(signer, pkey);
-            if (result <= 0) {
-                verifyResult = false;
-                break;
+            const char *ptrCertificate = [certificate cStringUsingEncoding:NSUTF8StringEncoding];
+            BIO *certBio = BIO_new(BIO_s_mem());
+            BIO_write(certBio, ptrCertificate,(unsigned int)strlen(ptrCertificate));
+            X509 *certX509 = PEM_read_bio_X509(certBio, NULL, NULL, NULL);
+            if (!certX509) {
+                continue;
             }
 
-            int cnDataLength = X509_NAME_get_text_by_NID(X509_get_subject_name(signer), NID_commonName, 0, 0);
-            cnDataLength += 1;
-            NSMutableData* cnData = [NSMutableData dataWithLength:cnDataLength];
-            X509_NAME_get_text_by_NID(X509_get_subject_name(signer), NID_commonName, [cnData mutableBytes], cnDataLength);
-            NSString *cn = [[NSString alloc] initWithCString:[cnData mutableBytes] encoding:NSUTF8StringEncoding];
-            if ([userId isEqualToString:cn]) {
-                verifyResult = true;
-                break;
-            } else {
-                verifyResult = false;
+            for (int i = 0; i < numSigners; ++i) {
+                struct CMS_SignerInfo_st *signerInfo = sk_CMS_SignerInfo_value(signerInfos, i);
+                if (CMS_SignerInfo_cert_cmp(signerInfo, certX509) == 0) {
+                    return true;
+                }
             }
         }
-
-        if (signers) {
-            sk_X509_free(signers);
-        }
-        signers = NULL;
-        */
     }
 
     BIO_free(dataBIO);
     BIO_free(printBIO);
     BIO_free(cmsBIO);
-    // BIO_free(publicKeyBIO);
 
     return verifyResult;
 }

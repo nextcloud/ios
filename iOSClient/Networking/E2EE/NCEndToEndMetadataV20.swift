@@ -59,7 +59,6 @@ extension NCEndToEndMetadata {
 
         let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
         var metadataKey: String?
-        var userCertificate: String = ""
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
         var filedropCodable: [String: E2eeV20.Filedrop] = [:]
@@ -106,10 +105,8 @@ extension NCEndToEndMetadata {
                 }
                 if let addUserId, user.userId == addUserId {
                     metadataKey = user.metadataKey
-                    userCertificate = user.certificate
                 } else if user.userId == userId {
                     metadataKey = user.metadataKey
-                    userCertificate = user.certificate
                 }
             }
         }
@@ -153,7 +150,7 @@ extension NCEndToEndMetadata {
             e2eeData.printJson()
 
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
-            let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: userCertificate)
+            let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: CCUtility.getEndToEndCertificate(account))
             return (e2eeJson, signature)
 
         } catch let error {
@@ -364,8 +361,7 @@ extension NCEndToEndMetadata {
             if let base64Data = base64.data(using: .utf8),
                let signatureData = Data(base64Encoded: signature) {
                 let certificates = users.map { $0.certificate }
-                NCEndToEndEncryption.sharedManager().verifySignatureCMS2(signatureData, data: base64Data, certificates: certificates)
-                //return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: base64Data, publicKey: CCUtility.getEndToEndPublicKey(account), userId: userId)
+                return NCEndToEndEncryption.sharedManager().verifySignatureCMS(signatureData, data: base64Data, certificates: certificates)
             }
 
         } catch {
