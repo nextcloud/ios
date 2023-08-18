@@ -55,7 +55,7 @@ class NCEndToEndMetadata: NSObject {
     func decoderMetadata(_ json: String, signature: String?, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8), let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return (NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON"))
+            return (NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding E2EE metadata"))
         }
 
         data.printJson()
