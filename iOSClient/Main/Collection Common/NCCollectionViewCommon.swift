@@ -1071,7 +1071,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.metadataFolder = metadataFolder
                     // E2EE
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, data, error in
+                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, _, data, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
                                 let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
                                 if result.error == .success {
