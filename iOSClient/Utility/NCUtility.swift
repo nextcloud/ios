@@ -803,7 +803,7 @@ class NCUtility: NSObject {
         let llocation = CLLocation(latitude: latitude, longitude: longitude)
 
         geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
-            if error == nil, let placemark = placemarks?.last {
+            if error == nil, let placemark = placemarks?.first {
                 let locationComponents: [String] = [placemark.name, placemark.locality, placemark.country]
                     .compactMap{$0}
 

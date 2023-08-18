@@ -55,6 +55,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var downloadImageButton: UIButton!
     @IBOutlet weak var dateContainer: UIView!
+    @IBOutlet weak var lensInfoStackView: UIStackView!
 
     private var metadata: tableMetadata?
     private var mapView: MKMapView?
@@ -81,6 +82,8 @@ class NCViewerMediaDetailView: UIView {
         self.exif = exif
         self.ncplayer = ncplayer
         self.delegate = delegate
+
+        lensInfoStackView.setCustomSpacing(5, after: isoLabel)
 
         outerMapContainer.isHidden = true
 

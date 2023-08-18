@@ -55,6 +55,7 @@ extension NCUtility {
         if let latitude = data.latitude, let longitude = data.longitude {
             getLocation(latitude: latitude, longitude: longitude) { location in
                 data.location = location
+                completion(data)
             }
         }
 
