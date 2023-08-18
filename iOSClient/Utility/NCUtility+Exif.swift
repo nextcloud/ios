@@ -10,8 +10,8 @@ import Foundation
 
 public struct ExifData {
     var colorModel: String?
-    var pixelWidth: Double?
-    var pixelHeight: Double?
+    var width: Int?
+    var height: Int?
     var dpiWidth: Int?
     var dpiHeight: Int?
     var depth: Int?
@@ -61,6 +61,11 @@ extension NCUtility {
             }
         }
 
+        if metadata.height != 0, metadata.width != 0 {
+            if data.height == nil { data.height = metadata.height }
+            if data.width == nil { data.width = metadata.width }
+        }
+
         if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
             print("Storage exists or file is not an image")
         }
@@ -75,8 +80,8 @@ extension NCUtility {
         }
 
         data.colorModel = imageProperties[kCGImagePropertyColorModel] as? String
-        data.pixelWidth = imageProperties[kCGImagePropertyPixelWidth] as? Double
-        data.pixelHeight = imageProperties[kCGImagePropertyPixelHeight] as? Double
+        data.height = imageProperties[kCGImagePropertyPixelWidth] as? Int
+        data.width = imageProperties[kCGImagePropertyPixelHeight] as? Int
         data.dpiWidth = imageProperties[kCGImagePropertyDPIWidth] as? Int
         data.dpiHeight = imageProperties[kCGImagePropertyDPIHeight] as? Int
         data.depth = imageProperties[kCGImagePropertyDepth] as? Int
@@ -132,6 +137,11 @@ extension NCUtility {
                 data.location = location
                 completion(data)
             }
+        }
+
+        if metadata.height != 0, metadata.width != 0 {
+            if data.height == nil { data.height = metadata.height }
+            if data.width == nil { data.width = metadata.width }
         }
 
         completion(data)
