@@ -376,13 +376,13 @@
                                                                 <rect key="frame" x="0.0" y="150" width="384" height="35"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Berlin" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bOA-Hx-qza" userLabel="Location">
-                                                                        <rect key="frame" x="5" y="7.5" width="43.5" height="20.5"/>
-                                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                        <rect key="frame" x="5" y="8.5" width="39" height="18"/>
+                                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                                         <color key="textColor" systemColor="linkColor"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.right" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="1yH-o3-9JB">
-                                                                        <rect key="frame" x="48.5" y="9.5" width="20" height="16.5"/>
+                                                                        <rect key="frame" x="44" y="9.5" width="20" height="16.5"/>
                                                                         <color key="tintColor" systemColor="secondaryLabelColor"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="20" id="DXq-TZ-AgJ"/>
@@ -394,6 +394,7 @@
                                                                 <constraints>
                                                                     <constraint firstItem="1yH-o3-9JB" firstAttribute="centerY" secondItem="HcW-yY-GaX" secondAttribute="centerY" id="K0K-hv-VdN"/>
                                                                     <constraint firstItem="bOA-Hx-qza" firstAttribute="leading" secondItem="HcW-yY-GaX" secondAttribute="leading" constant="5" id="KKt-Eb-NmT"/>
+                                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="1yH-o3-9JB" secondAttribute="trailing" id="iUk-3x-ojN"/>
                                                                     <constraint firstItem="bOA-Hx-qza" firstAttribute="centerY" secondItem="HcW-yY-GaX" secondAttribute="centerY" id="quS-PT-b4t"/>
                                                                     <constraint firstAttribute="height" constant="35" id="xGF-2V-n2g"/>
                                                                     <constraint firstItem="1yH-o3-9JB" firstAttribute="leading" secondItem="bOA-Hx-qza" secondAttribute="trailing" id="xTF-7x-FMG"/>
