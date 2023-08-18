@@ -55,7 +55,11 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var downloadImageButton: UIButton!
     @IBOutlet weak var dateContainer: UIView!
-    @IBOutlet weak var lensInfoStackView: UIStackView!
+    @IBOutlet weak var lensInfoStackViewLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var lensInfoStackViewTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var lensInfoLeadingFakePadding: UILabel!
+    @IBOutlet weak var lensInfoTrailingFakePadding: UILabel!
+
 
     private var metadata: tableMetadata?
     private var mapView: MKMapView?
@@ -82,8 +86,6 @@ class NCViewerMediaDetailView: UIView {
         self.exif = exif
         self.ncplayer = ncplayer
         self.delegate = delegate
-
-        lensInfoStackView.setCustomSpacing(5, after: isoLabel)
 
         outerMapContainer.isHidden = true
 
@@ -128,10 +130,12 @@ class NCViewerMediaDetailView: UIView {
         sizeLabel.text = CCUtility.transformedSize(metadata.size)
 
         if let shutterSpeedApex = exif.shutterSpeedApex {
+            prepareLensInfoViewsForData()
             shutterSpeedLabel.text = "1/\(Int(pow(2, shutterSpeedApex))) s"
         }
 
         if let iso = exif.iso {
+            prepareLensInfoViewsForData()
             isoLabel.text = "ISO \(iso)"
         }
 
@@ -194,6 +198,13 @@ class NCViewerMediaDetailView: UIView {
 
     func isShown() -> Bool {
         return !self.isHidden
+    }
+
+    private func prepareLensInfoViewsForData() {
+        lensInfoLeadingFakePadding.isHidden = true
+        lensInfoTrailingFakePadding.isHidden = true
+        lensInfoStackViewLeadingConstraint.constant = 5
+        lensInfoStackViewTrailingConstraint.constant = 5
     }
 
     // MARK: - Action
