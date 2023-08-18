@@ -443,9 +443,7 @@
 "_pull_down_"                               = "Pull down to refresh";
 "_no_photo_load_"                           = "No photo or video";
 "_tutorial_autoupload_view_"                = "You can enable auto uploads from \"Settings\"";
-"_no_date_"                                 = "No date";
-"_no_time_"                                 = "No time";
-"_no_day_"                                  = "No day";
+"_no_date_information_"                     = "No date information";
 "_no_camera_information_"                   = "No camera information";
 "_no_lens_information_"                     = "No lens information";
 "_today_"                                   = "Today";

@@ -30,11 +30,11 @@ public protocol NCViewerMediaDetailViewDelegate: AnyObject {
 }
 
 class NCViewerMediaDetailView: UIView {
-    @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var mapContainer: UIView!
     @IBOutlet weak var outerMapContainer: UIView!
     @IBOutlet weak var dayLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var noDateLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var modelLabel: UILabel!
@@ -42,7 +42,10 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var outerContainer: UIView!
     @IBOutlet weak var lensLabel: UILabel!
     @IBOutlet weak var megaPixelLabel: UILabel!
+    @IBOutlet weak var megaPixelLabelDivider: UILabel!
     @IBOutlet weak var resolutionLabel: UILabel!
+    @IBOutlet weak var resolutionLabelDivider: UILabel!
+    @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var extensionLabel: UILabel!
     @IBOutlet weak var isoLabel: UILabel!
     @IBOutlet weak var lensSizeLabel: UILabel!
@@ -51,6 +54,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var shutterSpeedLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var downloadImageButton: UIButton!
+    @IBOutlet weak var dateContainer: UIView!
 
     private var metadata: tableMetadata?
     private var mapView: MKMapView?
@@ -80,29 +84,33 @@ class NCViewerMediaDetailView: UIView {
 
         outerMapContainer.isHidden = true
 
-        if mapView == nil, let latitude = exif.latitude, let longitude = exif.longitude {
+        if let latitude = exif.latitude, let longitude = exif.longitude {
+            outerMapContainer.isHidden = false
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            let region = MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
 
-            let mapView = MKMapView()
-            self.mapView = mapView
-            self.mapContainer.addSubview(mapView)
+            if mapView == nil, mapView?.region.center.latitude != latitude, mapView?.region.center.longitude != longitude {
+                let mapView = MKMapView()
+                self.mapView = mapView
+                mapContainer.subviews.forEach { $0.removeFromSuperview() }
+                self.mapContainer.addSubview(mapView)
 
-            mapView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                mapView.topAnchor.constraint(equalTo: self.mapContainer.topAnchor),
-                mapView.bottomAnchor.constraint(equalTo: self.mapContainer.bottomAnchor),
-                mapView.leadingAnchor.constraint(equalTo: self.mapContainer.leadingAnchor),
-                mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor)
-            ])
+                mapView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    mapView.topAnchor.constraint(equalTo: self.mapContainer.topAnchor),
+                    mapView.bottomAnchor.constraint(equalTo: self.mapContainer.bottomAnchor),
+                    mapView.leadingAnchor.constraint(equalTo: self.mapContainer.leadingAnchor),
+                    mapView.trailingAnchor.constraint(equalTo: self.mapContainer.trailingAnchor)
+                ])
 
-            mapView.isZoomEnabled = true
-            mapView.isScrollEnabled = false
-            mapView.isUserInteractionEnabled = false
-            mapView.addAnnotation(annotation)
-            mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
+                mapView.isZoomEnabled = true
+                mapView.isScrollEnabled = false
+                mapView.isUserInteractionEnabled = false
+                mapView.addAnnotation(annotation)
 
-            outerMapContainer.isHidden = false
+                mapView.setRegion(region, animated: false)
+            }
         }
 
         if let make = exif.make, let model = exif.model, let lensModel = exif.lensModel {
@@ -137,6 +145,9 @@ class NCViewerMediaDetailView: UIView {
         }
 
         if let date = exif.date {
+            dateContainer.isHidden = false
+            noDateLabel.isHidden = true
+
             let formatter = DateFormatter()
 
             formatter.dateFormat = "EEEE"
@@ -151,15 +162,18 @@ class NCViewerMediaDetailView: UIView {
             let timeString = formatter.string(from: date as Date)
             timeLabel.text = timeString
         } else {
-            dayLabel.text = NSLocalizedString("_no_day_", comment: "")
-            dateLabel.text = NSLocalizedString("_no_date_", comment: "")
-            timeLabel.text = NSLocalizedString("_no_time_", comment: "")
+            noDateLabel.text = NSLocalizedString("_no_date_information_", comment: "")
         }
 
-        if let image = image {
-            resolutionLabel.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
+        if let height = exif.height, let width = exif.width {
+            megaPixelLabel.isHidden = false
+            megaPixelLabelDivider.isHidden = false
+            resolutionLabel.isHidden = false
+            resolutionLabelDivider.isHidden = false
 
-            let megaPixels: Double = floor(image.size.width * image.size.height) / 1000000
+            resolutionLabel.text = "\(width) x \(height)"
+
+            let megaPixels: Double = Double(width * height) / 1000000
             megaPixelLabel.text = megaPixels < 1 ? String(format: "%.1f MP", megaPixels) : "\(Int(megaPixels)) MP"
         }
 

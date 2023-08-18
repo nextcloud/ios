@@ -804,13 +804,11 @@ class NCUtility: NSObject {
 
         geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
             if error == nil, let placemark = placemarks?.last {
-                let locationComponents: [String] = [placemark.thoroughfare, placemark.postalCode, placemark.locality, placemark.administrativeArea, placemark.country]
+                let locationComponents: [String] = [placemark.name, placemark.locality, placemark.country]
                     .compactMap{$0}
 
                 completion(locationComponents.joined(separator: ", "))
             }
-
-            completion(nil)
         }
     }
 }

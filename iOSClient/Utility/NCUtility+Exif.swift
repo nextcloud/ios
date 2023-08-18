@@ -50,20 +50,12 @@ extension NCUtility {
     func getExif(metadata: tableMetadata, completion: @escaping (ExifData) -> Void) {
         var data = ExifData()
 
-        if metadata.latitude != 0, metadata.longitude != 0 {
-            if data.latitude == nil { data.latitude = metadata.latitude }
-            if data.longitude == nil { data.longitude = metadata.longitude }
-        }
+        writeExifFromMetadata(metadata: metadata, data: &data)
 
         if let latitude = data.latitude, let longitude = data.longitude {
             getLocation(latitude: latitude, longitude: longitude) { location in
                 data.location = location
             }
-        }
-
-        if metadata.height != 0, metadata.width != 0 {
-            if data.height == nil { data.height = metadata.height }
-            if data.width == nil { data.width = metadata.width }
         }
 
         if metadata.classFile != "image" || !CCUtility.fileProviderStorageExists(metadata) {
@@ -127,10 +119,7 @@ extension NCUtility {
             data.speed = gpsData[kCGImagePropertyGPSSpeed] as? Double
         }
 
-        if metadata.latitude != 0, metadata.longitude != 0 {
-            if data.latitude == nil { data.latitude = metadata.latitude }
-            if data.longitude == nil { data.longitude = metadata.longitude }
-        }
+        writeExifFromMetadata(metadata: metadata, data: &data)
 
         if let latitude = data.latitude, let longitude = data.longitude {
             getLocation(latitude: latitude, longitude: longitude) { location in
@@ -139,11 +128,21 @@ extension NCUtility {
             }
         }
 
+        completion(data)
+    }
+
+    /**
+     Since non-downloaded images are usually thumbnails, the server sends some exif metadata of the real image. This function writes that data to the local exif object, if that data doesn't exist already.
+     */
+    private func writeExifFromMetadata(metadata: tableMetadata, data: inout ExifData) {
+        if metadata.latitude != 0, metadata.longitude != 0 {
+            if data.latitude == nil { data.latitude = metadata.latitude }
+            if data.longitude == nil { data.longitude = metadata.longitude }
+        }
+
         if metadata.height != 0, metadata.width != 0 {
             if data.height == nil { data.height = metadata.height }
             if data.width == nil { data.width = metadata.width }
         }
-
-        completion(data)
     }
 }
