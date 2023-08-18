@@ -34,14 +34,16 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
     let errorEncodeMetadata = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
 
-    func createFolderAndMarkE2EE(fileName: String, serverUrl: String, account: String, userId: String) async -> NKError {
+    func createFolderAndMarkE2EE(fileName: String, serverUrl: String, account: String, userId: String, createFolder: Bool) async -> NKError {
 
         let serverUrlFileName = serverUrl + "/" + fileName
         var error = NKError()
 
         // CREATE FOLDER
-        let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName)
-        if createFolderResults.error != .success { return createFolderResults.error }
+        if createFolder {
+            let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName)
+            if createFolderResults.error != .success { return createFolderResults.error }
+        }
 
         let readFileOrFolderResults = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
         error = readFileOrFolderResults.error
