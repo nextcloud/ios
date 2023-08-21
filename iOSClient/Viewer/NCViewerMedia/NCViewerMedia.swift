@@ -446,7 +446,6 @@ class NCViewerMedia: UIViewController {
 
 extension NCViewerMedia {
     @objc func openDetail(_ notification: NSNotification) {
-
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, ocId == metadata.ocId {
             openDetail()
         }
@@ -466,12 +465,6 @@ extension NCViewerMedia {
 
         NCUtility.shared.getExif(metadata: metadata) { [weak self] exif in
             guard let self else { return }
-
-//            if exif.latitude == nil && exif.longitude == nil {
-//                detailViewHeightConstraint.constant = 245
-//            } else {
-//                detailViewHeightConstraint.constant = 450
-//            }
 
             view.layoutIfNeeded()
             showDetailView(exif: exif)
