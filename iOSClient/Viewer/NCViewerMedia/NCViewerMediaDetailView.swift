@@ -55,6 +55,8 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var shutterSpeedLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var downloadImageButton: UIButton!
+    @IBOutlet weak var downloadImageLabel: UILabel!
+    @IBOutlet weak var downloadImageButtonContainer: UIStackView!
     @IBOutlet weak var dateContainer: UIView!
     @IBOutlet weak var lensInfoStackViewLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var lensInfoStackViewTrailingConstraint: NSLayoutConstraint!
@@ -89,7 +91,7 @@ class NCViewerMediaDetailView: UIView {
         self.delegate = delegate
 
         outerMapContainer.isHidden = true
-        downloadImageButton.isHidden = true
+        downloadImageButtonContainer.isHidden = true
 
         if let latitude = exif.latitude, let longitude = exif.longitude, NCNetworking.shared.networkReachability != .notReachable {
             outerMapContainer.isHidden = false
@@ -191,7 +193,8 @@ class NCViewerMediaDetailView: UIView {
 
         if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             downloadImageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
-            downloadImageButton.isHidden = false
+            downloadImageLabel.text = NSLocalizedString("_full_resolution_image_info_", comment: "")
+            downloadImageButtonContainer.isHidden = false
         }
 
         self.isHidden = false
