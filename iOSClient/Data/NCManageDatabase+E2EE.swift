@@ -34,7 +34,8 @@ class tableE2eEncryptionLock: Object {
     @Persisted var e2eToken = ""
 }
 
-class tableE2eEncryption: Object {
+typealias tableE2eEncryption = tableE2eEncryptionV2
+class tableE2eEncryptionV2: Object {
 
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var account = ""
