@@ -68,7 +68,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var pushed: Bool = false
 
     private var tipView: EasyTipView?
-
+    private var isTransitioning: Bool = false
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -788,9 +788,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func accountRequestAddAccount() {
         appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
-
+    
     func tapButtonSwitch(_ sender: Any) {
-
+        
+        guard isTransitioning == false else { return }
+        isTransitioning = true
+        
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
 
             // list layout
@@ -804,8 +807,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
-
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
         } else {
 
             // grid layout
@@ -823,7 +825,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
         }
     }
 
