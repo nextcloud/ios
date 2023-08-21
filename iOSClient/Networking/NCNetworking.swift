@@ -125,10 +125,11 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
 
-#if !EXTENSION
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
+#if !EXTENSION
                 NCService.shared.startRequestServicesServer()
+#endif
             }
             lastReachability = true
         } else {
@@ -139,7 +140,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
             lastReachability = false
         }
         networkReachability = typeReachability
-#endif
     }
 
     func authenticationChallenge(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
