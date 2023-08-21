@@ -280,14 +280,6 @@ class NCViewerMedia: UIViewController {
                     NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
                 }
             }
-
-//            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in
-//                let image = getImageMetadata(metadata)
-//                if self.metadata.ocId == metadata.ocId {
-//                    self.image = image
-//                    self.imageVideoContainer.image = image
-//                }
-//            }
         }
 
         // Get image
