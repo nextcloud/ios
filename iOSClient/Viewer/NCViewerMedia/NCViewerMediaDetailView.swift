@@ -198,6 +198,7 @@ class NCViewerMediaDetailView: UIView {
         }
 
         self.isHidden = false
+        layoutIfNeeded()
     }
 
     func hide() {

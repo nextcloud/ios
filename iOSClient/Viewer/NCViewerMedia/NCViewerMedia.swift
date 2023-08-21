@@ -37,7 +37,6 @@ public protocol NCViewerMediaViewDelegate: AnyObject {
 
 class NCViewerMedia: UIViewController {
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var detailViewHeighConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -400,6 +399,7 @@ class NCViewerMedia: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
 
         guard metadata.isImage else { return }
+        if UIDevice.current.userInterfaceIdiom == .phone && UIApplication.shared.isLandscape { return }
 
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
@@ -467,22 +467,23 @@ extension NCViewerMedia {
         NCUtility.shared.getExif(metadata: metadata) { [weak self] exif in
             guard let self else { return }
 
-            if exif.latitude == nil && exif.longitude == nil {
-                detailViewHeighConstraint.constant = 245
-            } else {
-                detailViewHeighConstraint.constant = 450
-            }
+//            if exif.latitude == nil && exif.longitude == nil {
+//                detailViewHeightConstraint.constant = 245
+//            } else {
+//                detailViewHeightConstraint.constant = 450
+//            }
 
             view.layoutIfNeeded()
             showDetailView(exif: exif)
 
+            print(detailView.frame.height)
             if let image = imageVideoContainer.image {
                 let ratioW = imageVideoContainer.frame.width / image.size.width
                 let ratioH = imageVideoContainer.frame.height / image.size.height
-                let ratio = ratioW < ratioH ? ratioW : ratioH
+                let ratio = min(ratioW, ratioH)
                 let imageHeight = image.size.height * ratio
-                let VideoContainerHeight = imageVideoContainer.frame.height * ratio
-                let height = max(imageHeight, VideoContainerHeight)
+                let imageContainerHeight = imageVideoContainer.frame.height * ratio
+                let height = max(imageHeight, imageContainerHeight)
                 imageViewConstraint = detailView.frame.height - ((view.frame.height - height) / 2) + view.safeAreaInsets.bottom
                 if imageViewConstraint < 0 { imageViewConstraint = 0 }
             }
@@ -490,7 +491,7 @@ extension NCViewerMedia {
             UIView.animate(withDuration: 0.3) {
                 self.imageViewTopConstraint.constant = -self.imageViewConstraint
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
-                self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
+                self.detailViewTopConstraint.constant = self.detailView.frame.height
                 self.view.layoutIfNeeded()
             }
 
