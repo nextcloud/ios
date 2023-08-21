@@ -235,7 +235,7 @@ extension tableMetadata {
         NCUtility.shared.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
     }
 
-    var isDirectoryTopE2EE: Bool {
+    var isDirectoryE2EETop: Bool {
         NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
     }
 
@@ -249,7 +249,7 @@ extension tableMetadata {
         guard NCGlobal.shared.capabilityFileSharingApiEnabled else { return false }
 
         if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20, isDirectoryE2EE {
-            return !isDirectoryTopE2EE
+            return !isDirectoryE2EETop
         } else if !e2eEncrypted && !isDirectoryE2EE {
             return true
         } else if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion26 && directory {

@@ -32,9 +32,6 @@ class NCNetworkingE2EERename: NSObject {
         return instance
     }()
 
-    let errorEncodeMetadata = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
-    let fileAlreadyExists = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_already_exists_")
-
     func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> (NKError) {
 
         var error = NKError()
@@ -44,7 +41,7 @@ class NCNetworkingE2EERename: NSObject {
             // Get last metadata
             let results = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
             guard results.error == .success, let e2eMetadata = results.e2eMetadata else {
-                return errorEncodeMetadata
+                return results.error
             }
 
             error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: results.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
@@ -63,7 +60,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-            return fileAlreadyExists
+            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_file_already_exists_")
         }
 
         // ** Lock **

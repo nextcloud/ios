@@ -773,20 +773,23 @@ class NCUtility: NSObject {
     }
 
     func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
+
         var serverUrl = serverUrl
-        var top = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl)
-        while true {
-            if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
-                serverUrl = String(url.absoluteString.dropLast())
-                if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
-                    if directory.e2eEncrypted {
-                        top = directory
-                    } else {
-                        return top
-                    }
-                } else { return top }
-            } else { return top }
+        var top: tableDirectory?
+
+        while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
+              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+
+            if directory.e2eEncrypted {
+                top = directory
+            } else {
+                return top
+            }
+
+            serverUrl = String(url.absoluteString.dropLast())
         }
+
+        return top
     }
 
     func createViewImageAndText(image: UIImage, title: String? = nil) -> UIView {

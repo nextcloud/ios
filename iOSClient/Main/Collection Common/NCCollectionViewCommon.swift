@@ -1445,6 +1445,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
+        defer {
+            if appDelegate.disableSharesView || !metadata.isSharable() {
+                cell.hideButtonShare(true)
+            }
+        }
+
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -1656,12 +1662,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.titleInfoTrailingFull()
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)
-        }
-
-        // ** IMPORT MUST BE AT THE END **
-        // Disable Share Button
-        if appDelegate.disableSharesView || !metadata.isSharable() {
-            cell.hideButtonShare(true)
         }
 
         return cell
