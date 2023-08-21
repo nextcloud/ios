@@ -38,7 +38,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var emptyDataSet: NCEmptyDataSet?
     internal var backgroundImageView = UIImageView()
     internal var serverUrl: String = ""
-    internal var isDirectoryE2EE = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var selectIndexPath: [IndexPath] = []
@@ -53,7 +52,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
-
     internal var groupByField = "name"
     internal var providers: [NKSearchProvider]?
     internal var searchResults: [NKSearchResult]?
@@ -953,8 +951,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func reloadDataSource(isForced: Bool = true) {
         guard !appDelegate.account.isEmpty else { return }
 
-        // E2EE
-        isDirectoryE2EE = NCUtility.shared.isDirectoryE2EE(serverUrl: serverUrl, userBase: appDelegate)
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
@@ -1073,16 +1069,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.metadataFolder = metadataFolder
                     // E2EE
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, _, data, error in
+                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, signature, data, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
-                                let result = NCEndToEndMetadata().decoderMetadata(e2eMetadata, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
-                                if result.error == .success {
+                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
+                                if error == .success {
                                     self.reloadDataSource()
                                 } else {
-                                    NCContentPresenter.shared.showError(error: result.error)
+                                    NCContentPresenter.shared.showError(error: error)
                                 }
                             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
-                                NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorDecodeMetadata, errorDescription: "_e2e_error_decode_metadata_"))
+                                NCContentPresenter.shared.showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                             }
                             completion(tableDirectory, metadatas, metadatasUpdate, metadatasDelete, error)
                         }
@@ -1449,6 +1445,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
+        defer {
+            if appDelegate.disableSharesView || !metadata.isSharable() {
+                cell.hideButtonShare(true)
+            }
+        }
+
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -1621,11 +1623,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        // Disable Share Button
-        if appDelegate.disableSharesView {
-            cell.hideButtonShare(true)
-        }
-
         // Separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 || isSearchingMode {
             cell.cellSeparatorView?.isHidden = true
@@ -1667,13 +1664,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.hideButtonMore(true)
         }
 
-        // ** IMPORT MUST BE AT THE END **
-        //
-
-        if !metadata.isSharable() {
-            cell.hideButtonShare(true)
-        }
-        
         return cell
     }
 

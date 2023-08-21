@@ -98,9 +98,12 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableVideo.className())
                     }
 
-                    if oldSchemaVersion < 304 {
+                    if oldSchemaVersion < 306 {
                         migration.deleteData(forType: tableChunk.className())
                         migration.deleteData(forType: tableMetadata.className())
+                        migration.deleteData(forType: tableE2eEncryptionLock.className())
+                        migration.deleteData(forType: tableE2eEncryption.className())
+                        migration.deleteData(forType: tableE2eMetadata.className())
                     }
 
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -202,6 +205,8 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableE2eEncryption.self, account: account)
         self.clearTable(tableE2eEncryptionLock.self, account: account)
         self.clearTable(tableE2eMetadata.self, account: account)
+        self.clearTable(tableE2eMetadataV2.self, account: account)
+        self.clearTable(tableE2eUsersV2.self, account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)

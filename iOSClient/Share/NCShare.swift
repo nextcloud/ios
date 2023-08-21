@@ -84,12 +84,12 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         guard let metadata = metadata else { return }
 
-        if metadata.e2eEncrypted {
+        if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
             searchFieldTopConstraint.constant = -50
             searchField.isHidden = true
-        } else {
+         } else {
             checkSharedWithYou()
-        }
+         }
 
         reloadData()
 
@@ -301,7 +301,7 @@ extension NCShare: UITableViewDataSource {
         guard let metadata = self.metadata else { return 0}
         var numRows = shares.share?.count ?? 0
         if section == 0 {
-            if metadata.e2eEncrypted {
+            if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 numRows = 1
             } else {
                 // don't allow link creation if reshare is disabled
@@ -317,7 +317,7 @@ extension NCShare: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell, let metadata = self.metadata
             else { return UITableViewCell() }
             cell.delegate = self
-            if metadata.e2eEncrypted {
+            if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
                 if indexPath.row == 0 {
