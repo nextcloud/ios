@@ -187,9 +187,7 @@ class NCViewerMediaDetailView: UIView {
 
         extensionLabel.text = metadata.fileExtension.uppercased()
 
-        if locationLabel.text != exif.location {
-            locationLabel.text = exif.location
-        }
+        locationLabel.text = exif.location
 
         if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             downloadImageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
