@@ -31,11 +31,11 @@ import JGProgressHUD
 import Alamofire
 
 public protocol NCViewerMediaViewDelegate: AnyObject {
-    func hasShownDetail()
+    func didOpenDetail()
+    func didCloseDetail()
 }
 
 class NCViewerMedia: UIViewController {
-
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var detailViewHeighConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
@@ -85,8 +85,6 @@ class NCViewerMedia: UIViewController {
         scrollView.minimumZoomScale = 1
 
         view.addGestureRecognizer(doubleTapGestureRecognizer)
-
-        parent?.navigationItem.rightBarButtonItems?.append((UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: nil)))
 
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = NCUtility.shared.loadImage(named: "livephoto", color: .gray)
@@ -214,6 +212,7 @@ class NCViewerMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(closeDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -461,12 +460,16 @@ extension NCViewerMedia {
         }
     }
 
+    @objc func closeDetail(_ notification: NSNotification) {
+        closeDetail()
+    }
+
     func toggleDetail () {
         detailView.isShown() ? closeDetail() : openDetail()
     }
 
     private func openDetail() {
-        delegate?.hasShownDetail()
+        delegate?.didOpenDetail()
         self.dismissTip()
 
         NCUtility.shared.getExif(metadata: metadata) { [weak self] exif in
@@ -504,6 +507,7 @@ extension NCViewerMedia {
     }
 
     private func closeDetail() {
+        delegate?.didCloseDetail()
         self.detailView.hide()
         imageViewConstraint = 0
 
@@ -572,7 +576,6 @@ extension NCViewerMedia: UIScrollViewDelegate {
 extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
     func downloadFullResolution() {
-        closeDetail()
         NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _, _ in }
     }
 }

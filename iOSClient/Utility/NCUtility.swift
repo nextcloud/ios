@@ -27,6 +27,7 @@ import PDFKit
 import Accelerate
 import CoreMedia
 import Photos
+import Alamofire
 
 #if !EXTENSION
 import SVGKit
@@ -37,7 +38,7 @@ class NCUtility: NSObject {
         let instance = NCUtility()
         return instance
     }()
-    
+
 #if !EXTENSION
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String? = nil, width: CGFloat? = nil, rewrite: Bool, account: String, id: Int? = nil, completion: @escaping (_ imageNamePath: String?, _ id: Int?) -> Void) {
         

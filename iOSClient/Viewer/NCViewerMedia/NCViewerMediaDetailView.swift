@@ -24,6 +24,7 @@
 import UIKit
 import MapKit
 import NextcloudKit
+import Alamofire
 
 public protocol NCViewerMediaDetailViewDelegate: AnyObject {
     func downloadFullResolution()
@@ -88,8 +89,9 @@ class NCViewerMediaDetailView: UIView {
         self.delegate = delegate
 
         outerMapContainer.isHidden = true
+        downloadImageButton.isHidden = true
 
-        if let latitude = exif.latitude, let longitude = exif.longitude {
+        if let latitude = exif.latitude, let longitude = exif.longitude, NCNetworking.shared.networkReachability != .notReachable {
             outerMapContainer.isHidden = false
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -100,7 +102,6 @@ class NCViewerMediaDetailView: UIView {
                 self.mapView = mapView
                 mapContainer.subviews.forEach { $0.removeFromSuperview() }
                 self.mapContainer.addSubview(mapView)
-
                 mapView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
                     mapView.topAnchor.constraint(equalTo: self.mapContainer.topAnchor),
@@ -185,9 +186,15 @@ class NCViewerMediaDetailView: UIView {
         }
 
         extensionLabel.text = metadata.fileExtension.uppercased()
-        locationLabel.text = exif.location
 
-        downloadImageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
+        if locationLabel.text != exif.location {
+            locationLabel.text = exif.location
+        }
+
+        if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
+            downloadImageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)
+            downloadImageButton.isHidden = false
+        }
 
         self.isHidden = false
     }
@@ -232,7 +239,7 @@ class NCViewerMediaDetailView: UIView {
         mapItem.openInMaps(launchOptions: options)
     }
 
-    @IBAction func touchMessage(_ sender: Any) {
+    @IBAction func touchDownload(_ sender: Any) {
         delegate?.downloadFullResolution()
     }
 }

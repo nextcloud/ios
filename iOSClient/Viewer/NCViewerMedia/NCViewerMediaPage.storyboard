@@ -99,7 +99,7 @@
                                         <rect key="frame" x="0.0" y="362" width="414" height="450"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Z0h-yS-myv">
-                                                <rect key="frame" x="15" y="10" width="384" height="425.5"/>
+                                                <rect key="frame" x="15" y="10" width="384" height="379"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="IBY-Wf-Fqo">
                                                         <rect key="frame" x="0.0" y="0.0" width="384" height="41"/>
@@ -430,12 +430,15 @@
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Umg-YQ-OqC">
-                                                        <rect key="frame" x="0.0" y="391" width="384" height="34.5"/>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Umg-YQ-OqC">
+                                                        <rect key="frame" x="0.0" y="379" width="384" height="0.0"/>
                                                         <state key="normal" title="Button"/>
                                                         <buttonConfiguration key="configuration" style="gray" title="Button">
                                                             <color key="baseBackgroundColor" systemColor="systemGray5Color"/>
                                                         </buttonConfiguration>
+                                                        <connections>
+                                                            <outletCollection property="gestureRecognizers" destination="LMd-B2-U1g" appends="YES" id="Gap-7a-xBo"/>
+                                                        </connections>
                                                     </button>
                                                 </subviews>
                                             </stackView>
@@ -519,10 +522,16 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbE-Jv-mLH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="fvW-pC-4g1">
+                <tapGestureRecognizer id="fvW-pC-4g1" userLabel="Open location Gesture Recognizer">
                     <connections>
                         <action selector="touchLocation:" destination="P8R-4f-zAl" id="qyd-d2-RyB"/>
                         <outlet property="delegate" destination="HcW-yY-GaX" id="YJT-UT-XvU"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="LMd-B2-U1g" userLabel="Download Gesture Recognizer">
+                    <connections>
+                        <action selector="touchDownload:" destination="P8R-4f-zAl" id="f13-sg-aRk"/>
+                        <outlet property="delegate" destination="HcW-yY-GaX" id="DQ1-PU-urs"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

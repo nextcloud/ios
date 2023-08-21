@@ -81,7 +81,7 @@ class NCViewerMediaPage: UIViewController {
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        
+
         viewerMediaScreenMode = .normal
     }
 
@@ -670,8 +670,13 @@ extension UIPageViewController {
 }
 
 extension NCViewerMediaPage: NCViewerMediaViewDelegate {
-    func hasShownDetail() {
+    func didOpenDetail() {
         changeScreenMode(mode: .normal)
+        imageDetailNavigationItem.image = UIImage(systemName: "info.circle.fill")
+    }
+
+    func didCloseDetail() {
+        imageDetailNavigationItem.image = UIImage(systemName: "info.circle")
     }
 }
 
