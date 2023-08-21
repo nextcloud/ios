@@ -86,7 +86,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) -> (metadata: String?, signature: String?) {
+    func encodeMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) -> (metadata: String?, signature: String?, error: NKError) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -133,8 +133,7 @@ extension NCEndToEndMetadata {
                     }
                     fileNameIdentifiers.append(e2eEncryption.fileNameIdentifier)
                 } catch let error {
-                    print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
-                    return (nil, nil)
+                    return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
                 }
             }
 
@@ -161,8 +160,7 @@ extension NCEndToEndMetadata {
                         filedrop.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
                 } catch let error {
-                    print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
-                    return (nil, nil)
+                    return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
                 }
             }
         }
@@ -185,10 +183,9 @@ extension NCEndToEndMetadata {
             if NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) == nil {
                 NCManageDatabase.shared.setE2eMetadata(account: account, serverUrl: serverUrl, metadataKey: metadataKey, version: metadataVersion)
             }
-            return (jsonString, nil)
+            return (jsonString, nil, NKError())
         } catch let error {
-            print("Serious internal error in encoding e2ee (" + error.localizedDescription + ")")
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
         }
     }
 
@@ -196,10 +193,10 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV12(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decodeMetadataV12(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
         }
 
         let decoder = JSONDecoder()
@@ -227,7 +224,7 @@ extension NCEndToEndMetadata {
                 let key = String(data: keyData, encoding: .utf8) {
                 metadataKey = key
             } else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt metadataKey")
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
             }
 
             // DATA
@@ -282,7 +279,7 @@ extension NCEndToEndMetadata {
                             }
 
                         } catch let error {
-                            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt file: " + error.localizedDescription)
+                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
                         }
                     }
                 }
@@ -341,7 +338,7 @@ extension NCEndToEndMetadata {
                             }
 
                         } catch let error {
-                            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt filedrop: " + error.localizedDescription)
+                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
                         }
                     }
                 }
@@ -352,10 +349,10 @@ extension NCEndToEndMetadata {
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.sharedManager().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
-                return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error checksum")
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: "_e2e_error_")
             }
         } catch let error {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: error.localizedDescription)
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
         }
 
         return NKError()
@@ -365,10 +362,10 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.1
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV1(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
+    func decodeMetadataV1(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding JSON")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
         }
 
         let decoder = JSONDecoder()
@@ -404,7 +401,7 @@ extension NCEndToEndMetadata {
             //
             if let tableE2eMetadata = NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) {
                 if tableE2eMetadata.version > metadataVersion {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify version \(tableE2eMetadata.version)")
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Version \(tableE2eMetadata.version)")
                 }
             }
 
@@ -458,13 +455,13 @@ extension NCEndToEndMetadata {
                             }
 
                         } catch let error {
-                            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt file: " + error.localizedDescription)
+                            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
                         }
                     }
                 }
             }
         } catch let error {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: error.localizedDescription)
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
         }
 
         return NKError()

@@ -99,11 +99,11 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, addUserId: String?, addCertificate: String?, removeUserId: String?) -> (metadata: String?, signature: String?) {
+    func encodeMetadataV20(account: String, serverUrl: String, ocIdServerUrl: String, userId: String, addUserId: String?, addCertificate: String?, removeUserId: String?) -> (metadata: String?, signature: String?, error: NKError) {
 
         guard let keyGenerated = NCEndToEndEncryption.sharedManager()?.generateKey() as? Data,
               let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
         let isDirectoryTop = NCUtility.shared.isDirectoryE2EETop(account: account, serverUrl: serverUrl)
@@ -159,7 +159,7 @@ extension NCEndToEndMetadata {
         }
 
         guard let e2eMetadataV2 = NCManageDatabase.shared.incrementCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, version: NCGlobal.shared.e2eeVersionV20) else {
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
         // Create ciphertext
@@ -185,7 +185,7 @@ extension NCEndToEndMetadata {
             let ciphertext = NCEndToEndEncryption.sharedManager().encryptPayloadFile(jsonZip, key: metadataKey, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
 
             guard var ciphertext, let initializationVector = initializationVector as? String, let authenticationTag = authenticationTag as? String else {
-                return (nil, nil)
+                return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEEncryptPayloadFile, errorDescription: "_e2e_error_"))
             }
 
             // Add initializationVector [ANDROID]
@@ -198,11 +198,10 @@ extension NCEndToEndMetadata {
 
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
             let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: CCUtility.getEndToEndCertificate(account))
-            return (e2eeJson, signature)
+            return (e2eeJson, signature, NKError())
 
         } catch let error {
-            print("Serious internal error in encoding metadata (" + error.localizedDescription + ")")
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription))
         }
     }
 
@@ -210,11 +209,11 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V2.0
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8),
               let directoryTop = NCUtility.shared.getDirectoryE2EETop(serverUrl: serverUrl, account: account) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Serious internal error in decoding metadata")
+            return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
         }
 
         func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String, blob: String) {
@@ -301,7 +300,7 @@ extension NCEndToEndMetadata {
                 // SIGNATURE CHECK
                 if let signature,
                     !verifySignature(account: account, signature: signature, userId: tableE2eUsersV2.userId, metadata: metadata, users: users, version: version, certificate: tableE2eUsersV2.certificate) {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error verify signature metadata")
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
                 }
 
                 // CIPHERTEXT
@@ -319,7 +318,7 @@ extension NCEndToEndMetadata {
                             if let keyChecksums = json.keyChecksums,
                                 let hash = NCEndToEndEncryption.sharedManager().createSHA256(decryptedMetadataKey),
                                 !keyChecksums.contains(hash) {
-                                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2ee_checksums_error_", comment: ""))
+                                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                             }
 
                             NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, counter: json.counter, folders: json.folders, version: version)
@@ -340,14 +339,14 @@ extension NCEndToEndMetadata {
                             return NKError(error: error)
                         }
                     } else {
-                        return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error unzip ciphertext metadata")
+                        return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
                     }
                 } else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decrypt ciphertext metadata")
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
                 }
             }
         } catch let error {
-            return NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: error.localizedDescription)
+            return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: error.localizedDescription)
         }
 
         return NKError()

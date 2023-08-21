@@ -30,21 +30,21 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Encode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
-    func encoderMetadata(account: String, serverUrl: String, userId: String, addUserId: String? = nil, addCertificate: String? = nil, removeUserId: String? = nil) -> (metadata: String?, signature: String?) {
+    func encodeMetadata(account: String, serverUrl: String, userId: String, addUserId: String? = nil, addCertificate: String? = nil, removeUserId: String? = nil) -> (metadata: String?, signature: String?, error: NKError) {
 
         let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
         switch e2EEApiVersion {
         case NCGlobal.shared.e2eeVersionV12:
-            return encoderMetadataV12(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId)
+            return encodeMetadataV12(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId)
         case NCGlobal.shared.e2eeVersionV20:
-            return encoderMetadataV20(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
+            return encodeMetadataV20(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
         default:
-            return (nil, nil)
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "_e2e_error_"))
         }
     }
 
@@ -52,10 +52,10 @@ class NCEndToEndMetadata: NSObject {
     // MARK: Decode JSON Metadata Bridge
     // --------------------------------------------------------------------------------------------
 
-    func decoderMetadata(_ json: String, signature: String?, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
+    func decodeMetadata(_ json: String, signature: String?, serverUrl: String, account: String, urlBase: String, userId: String, ownerId: String?) -> NKError {
 
         guard let data = json.data(using: .utf8), let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return (NKError(errorCode: NCGlobal.shared.errorE2EE, errorDescription: "Error decoding E2EE metadata"))
+            return (NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_"))
         }
 
         data.printJson()
@@ -63,11 +63,11 @@ class NCEndToEndMetadata: NSObject {
         let decoder = JSONDecoder()
 
         if (try? decoder.decode(E2eeV1.self, from: data)) != nil {
-            return decoderMetadataV1(json, serverUrl: serverUrl, account: account, ocIdServerUrl: directory.ocId, urlBase: urlBase, userId: userId)
+            return decodeMetadataV1(json, serverUrl: serverUrl, account: account, ocIdServerUrl: directory.ocId, urlBase: urlBase, userId: userId)
         } else if (try? decoder.decode(E2eeV12.self, from: data)) != nil {
-            return decoderMetadataV12(json, serverUrl: serverUrl, account: account, ocIdServerUrl: directory.ocId, urlBase: urlBase, userId: userId, ownerId: ownerId)
+            return decodeMetadataV12(json, serverUrl: serverUrl, account: account, ocIdServerUrl: directory.ocId, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else if (try? decoder.decode(E2eeV20.self, from: data)) != nil {
-            return decoderMetadataV20(json, signature: signature, serverUrl: serverUrl, account: account, ocIdServerUrl: directory.ocId, urlBase: urlBase, userId: userId, ownerId: ownerId)
+            return decodeMetadataV20(json, signature: signature, serverUrl: serverUrl, account: account, ocIdServerUrl: directory.ocId, urlBase: urlBase, userId: userId, ownerId: ownerId)
         } else {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Server E2EE version " + NCGlobal.shared.capabilityE2EEApiVersion + ", not compatible")
         }

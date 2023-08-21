@@ -47,20 +47,17 @@ class NCNetworkingE2EERename: NSObject {
                 return errorEncodeMetadata
             }
 
-            error = NCEndToEndMetadata().decoderMetadata(e2eMetadata, signature: results.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+            error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: results.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
             if error != .success { return error }
 
             // rename
             NCManageDatabase.shared.renameFileE2eEncryption(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account))
 
-            let resultEncoder = NCEndToEndMetadata().encoderMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
-            if resultEncoder.metadata == nil {
-                return errorEncodeMetadata
-            }
+            let resultsEncode = NCEndToEndMetadata().encodeMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
+            guard resultsEncode.error == .success, let e2eMetadata = resultsEncode.metadata else { return resultsEncode.error }
 
             // send metadata
-            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: resultEncoder.metadata, signature: resultEncoder.signature, method: "PUT")
-            
+            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncode.signature, method: "PUT")
             return putE2EEMetadataResults.error
         }
 

@@ -216,17 +216,25 @@ class NCGlobal: NSObject {
     @objc let errorBadServerResponse: Int           = -1011
     @objc let errorInternalError: Int               = -99999
     @objc let errorFileNotSaved: Int                = -99998
-    @objc let errorDecodeMetadata: Int              = -99997
-    @objc let errorE2EENotEnabled: Int              = -99996
-    @objc let errorE2EE: Int                        = -99995
-    @objc let errorOffline: Int                     = -99994
-    @objc let errorCharactersForbidden: Int         = -99993
-    @objc let errorCreationFile: Int                = -99992
-    @objc let errorReadFile: Int                    = -99991
-    @objc let errorUnauthorizedFilesPasscode: Int   = -99990
-    @objc let errorDisableFilesApp: Int             = -99989
-    @objc let errorE2EEKeyChecksums: Int            = -99988
-
+    @objc let errorOffline: Int                     = -99997
+    @objc let errorCharactersForbidden: Int         = -99996
+    @objc let errorCreationFile: Int                = -99995
+    @objc let errorReadFile: Int                    = -99994
+    @objc let errorUnauthorizedFilesPasscode: Int   = -99993
+    @objc let errorDisableFilesApp: Int             = -99992
+    @objc let errorUnexpectedResponseFromDB: Int    = -99991
+    // E2EE
+    @objc let errorE2EENotEnabled: Int              = -98000
+    @objc let errorE2EEVersion: Int                 = -98001
+    @objc let errorE2EEKeyChecksums: Int            = -98002
+    @objc let errorE2EEKeyEncodeMetadata: Int       = -98003
+    @objc let errorE2EEKeyDecodeMetadata: Int       = -98004
+    @objc let errorE2EEKeyVerifySignature: Int      = -98005
+    @objc let errorE2EEKeyCiphertext: Int           = -98006
+    @objc let errorE2EEJSon: Int                    = -98007
+    @objc let errorE2EELock: Int                    = -98008
+    @objc let errorE2EEEncryptFile: Int             = -98009
+    @objc let errorE2EEEncryptPayloadFile: Int      = -98010
 
     // Constants to identify the different permissions of a file
     //

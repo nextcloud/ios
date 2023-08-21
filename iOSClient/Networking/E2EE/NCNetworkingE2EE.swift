@@ -52,23 +52,17 @@ class NCNetworkingE2EE: NSObject {
             }
         }
 
-        let encoderResults = NCEndToEndMetadata().encoderMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
-
-        guard let metadata = encoderResults.metadata, let signature = encoderResults.signature else {
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
-        }
+        let resultsEncode = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
+        guard resultsEncode.error == .success, let e2eMetadata = resultsEncode.metadata, let signature = resultsEncode.signature else { return resultsEncode.error }
 
         let results = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
         error = results.error
-
         if error == .success, let e2eToken = results.e2eToken, let fileId = results.fileId {
-
-            let results = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: metadata, signature: signature, method: "PUT")
+            let results = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: signature, method: "PUT")
             error = results.error
         }
 
         await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
-
         return error
     }
 
@@ -79,7 +73,7 @@ class NCNetworkingE2EE: NSObject {
         var e2eCounter = "0"
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_e2e_error_lock_"))
+            return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
 
         if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
