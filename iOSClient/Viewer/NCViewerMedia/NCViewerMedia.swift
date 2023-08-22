@@ -134,8 +134,6 @@ class NCViewerMedia: UIViewController {
         self.imageVideoContainer.image = nil
 
         loadImage()
-
-
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -247,7 +245,7 @@ class NCViewerMedia: UIViewController {
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
-                if self.detailView.isShown() {
+                if self.detailView.isShown {
                     self.openDetail()
                 }
             }
@@ -384,7 +382,7 @@ class NCViewerMedia: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        guard metadata.isImage, !detailView.isShown()  else { return }
+        guard metadata.isImage, !detailView.isShown else { return }
 
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
@@ -409,7 +407,7 @@ class NCViewerMedia: UIViewController {
 
         switch gestureRecognizer.state {
         case .ended:
-            if detailView.isShown() {
+            if detailView.isShown {
                 self.imageViewTopConstraint.constant = -imageViewConstraint
                 self.imageViewBottomConstraint.constant = imageViewConstraint
             } else {
@@ -466,7 +464,7 @@ extension NCViewerMedia {
     }
 
     func toggleDetail () {
-        detailView.isShown() ? closeDetail() : openDetail()
+        detailView.isShown ? closeDetail() : openDetail()
     }
 
     private func openDetail() {
@@ -527,7 +525,7 @@ extension NCViewerMedia {
     }
 
     func reloadDetail() {
-        if self.detailView.isShown() {
+        if self.detailView.isShown {
             NCUtility.shared.getExif(metadata: metadata) { exif in
                 self.showDetailView(exif: exif)
             }

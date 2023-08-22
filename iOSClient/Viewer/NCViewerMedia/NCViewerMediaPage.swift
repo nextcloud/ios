@@ -240,7 +240,7 @@ class NCViewerMediaPage: UIViewController {
                 textColor = .label
             }
 
-        } else if !currentViewController.detailView.isShown() {
+        } else if !currentViewController.detailView.isShown {
 
             navigationController?.setNavigationBarHidden(true, animated: true)
             hideStatusBar = true
@@ -559,7 +559,7 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
             navigationItem.rightBarButtonItems = [moreNavigationItem]
         }
 
-        if nextViewController.detailView.isShown() {
+        if nextViewController.detailView.isShown {
             changeScreenMode(mode: .normal)
         }
     }
@@ -631,12 +631,10 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
         }
     }
 
-    //
-    // LIVE PHOTO
-    //
+    // MARK: - Live Photo
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
 
-        if !currentViewController.metadata.livePhoto { return }
+        if !currentViewController.metadata.livePhoto || currentViewController.detailView.isShown { return }
 
         if gestureRecognizer.state == .began {
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"

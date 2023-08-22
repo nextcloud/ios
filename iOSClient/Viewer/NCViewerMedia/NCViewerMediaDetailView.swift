@@ -70,6 +70,10 @@ class NCViewerMediaDetailView: UIView {
 
     private var exif: ExifData?
 
+    var isShown: Bool {
+        return !self.isHidden
+    }
+
     deinit {
         print("deinit NCViewerMediaDetailView")
 
@@ -205,10 +209,6 @@ class NCViewerMediaDetailView: UIView {
 
     func hide() {
         self.isHidden = true
-    }
-
-    func isShown() -> Bool {
-        return !self.isHidden
     }
 
     private func prepareLensInfoViewsForData() {
