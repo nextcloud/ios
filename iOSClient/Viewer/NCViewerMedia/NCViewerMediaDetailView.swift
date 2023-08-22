@@ -63,7 +63,6 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var lensInfoLeadingFakePadding: UILabel!
     @IBOutlet weak var lensInfoTrailingFakePadding: UILabel!
 
-
     private var metadata: tableMetadata?
     private var mapView: MKMapView?
     private var ncplayer: NCPlayer?
@@ -94,6 +93,9 @@ class NCViewerMediaDetailView: UIView {
         downloadImageButtonContainer.isHidden = true
 
         if let latitude = exif.latitude, let longitude = exif.longitude, NCNetworking.shared.networkReachability != .notReachable {
+            // We hide the map view on phones in landscape, since there is too little space to fit all of it.
+            mapContainer.isHidden = UIDevice.current.userInterfaceIdiom == .phone && UIDevice.current.orientation.isLandscape
+
             outerMapContainer.isHidden = false
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -224,13 +226,7 @@ class NCViewerMediaDetailView: UIView {
         let latitudeDeg: CLLocationDegrees = latitude
         let longitudeDeg: CLLocationDegrees = longitude
 
-        let regionDistance: CLLocationDistance = 10000
         let coordinates = CLLocationCoordinate2DMake(latitudeDeg, longitudeDeg)
-        let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
-        let options = [
-            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
-            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
-        ]
         let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
         let mapItem = MKMapItem(placemark: placemark)
 
@@ -238,7 +234,7 @@ class NCViewerMediaDetailView: UIView {
             mapItem.name = location
         }
 
-        mapItem.openInMaps(launchOptions: options)
+        mapItem.openInMaps()
     }
 
     @IBAction func touchDownload(_ sender: Any) {

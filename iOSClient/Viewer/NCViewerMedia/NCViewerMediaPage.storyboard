@@ -266,14 +266,14 @@
                                                                 </subviews>
                                                             </stackView>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EkY-Gj-aPB" userLabel="Separator">
-                                                                <rect key="frame" x="0.0" y="95.666666666666686" width="400" height="1"/>
+                                                                <rect key="frame" x="0.0" y="95.666666666666629" width="400" height="1"/>
                                                                 <color key="backgroundColor" systemColor="systemGray3Color"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="1" id="r0C-1B-Hav"/>
                                                                 </constraints>
                                                             </view>
                                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="IFA-TY-kPl">
-                                                                <rect key="frame" x="0.0" y="101.66666666666669" width="400" height="18"/>
+                                                                <rect key="frame" x="0.0" y="101.66666666666663" width="400" height="18"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="|" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TJr-Hv-2Gl">
                                                                         <rect key="frame" x="0.0" y="0.0" width="3.3333333333333335" height="18"/>
@@ -370,7 +370,7 @@
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
-                                                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SaG-ur-Ddq">
+                                                    <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="kH6-LI-qFN">
                                                         <rect key="frame" x="0.0" y="191.66666666666663" width="400" height="185"/>
                                                         <subviews>
                                                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJP-ZX-iug">
@@ -380,9 +380,6 @@
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="150" id="fJT-bf-c1B"/>
                                                                 </constraints>
-                                                                <connections>
-                                                                    <outletCollection property="gestureRecognizers" destination="fvW-pC-4g1" appends="YES" id="gVL-xL-CmY"/>
-                                                                </connections>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HcW-yY-GaX">
                                                                 <rect key="frame" x="0.0" y="150" width="400" height="35"/>
@@ -413,23 +410,15 @@
                                                                 </constraints>
                                                             </view>
                                                         </subviews>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="bottom" secondItem="HcW-yY-GaX" secondAttribute="bottom" id="C4x-PJ-hmU"/>
-                                                            <constraint firstAttribute="height" constant="185" id="FMA-sX-1tB"/>
-                                                            <constraint firstItem="dJP-ZX-iug" firstAttribute="leading" secondItem="SaG-ur-Ddq" secondAttribute="leading" id="KNj-Ft-kYe"/>
-                                                            <constraint firstItem="HcW-yY-GaX" firstAttribute="leading" secondItem="SaG-ur-Ddq" secondAttribute="leading" id="M7B-Kx-Cyp"/>
-                                                            <constraint firstItem="HcW-yY-GaX" firstAttribute="top" secondItem="dJP-ZX-iug" secondAttribute="bottom" id="TAv-hR-Orx"/>
-                                                            <constraint firstAttribute="trailing" secondItem="dJP-ZX-iug" secondAttribute="trailing" id="aWP-0M-PFf"/>
-                                                            <constraint firstAttribute="trailing" secondItem="HcW-yY-GaX" secondAttribute="trailing" id="aeA-PO-voe"/>
-                                                            <constraint firstItem="dJP-ZX-iug" firstAttribute="top" secondItem="SaG-ur-Ddq" secondAttribute="top" id="o3A-Yr-pjO"/>
-                                                        </constraints>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                                 <integer key="value" value="8"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
-                                                    </view>
+                                                        <connections>
+                                                            <outletCollection property="gestureRecognizers" destination="fvW-pC-4g1" appends="YES" id="DUs-ga-raf"/>
+                                                        </connections>
+                                                    </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="swf-k6-4W6">
                                                         <rect key="frame" x="0.0" y="388.66666666666663" width="400" height="56"/>
                                                         <subviews>
@@ -486,7 +475,7 @@
                                             <outlet property="nameLabel" destination="PVW-g9-z43" id="CC5-mu-Ftr"/>
                                             <outlet property="noDateLabel" destination="0Mb-ss-cAE" id="dH8-pr-6Jp"/>
                                             <outlet property="outerContainer" destination="YSP-f2-T7B" id="hxB-u3-8vl"/>
-                                            <outlet property="outerMapContainer" destination="SaG-ur-Ddq" id="aFx-3s-zSc"/>
+                                            <outlet property="outerMapContainer" destination="kH6-LI-qFN" id="5I3-oe-jgb"/>
                                             <outlet property="resolutionLabel" destination="6A5-qu-7x1" id="5Ei-Rx-Q4s"/>
                                             <outlet property="resolutionLabelDivider" destination="PVg-lD-V6e" id="p6g-6E-XM6"/>
                                             <outlet property="shutterSpeedLabel" destination="LOe-Mx-JH3" id="Qhq-jN-nXV"/>
@@ -537,13 +526,11 @@
                 <tapGestureRecognizer id="fvW-pC-4g1" userLabel="Open location Gesture Recognizer">
                     <connections>
                         <action selector="touchLocation:" destination="P8R-4f-zAl" id="qyd-d2-RyB"/>
-                        <outlet property="delegate" destination="HcW-yY-GaX" id="YJT-UT-XvU"/>
                     </connections>
                 </tapGestureRecognizer>
                 <tapGestureRecognizer id="LMd-B2-U1g" userLabel="Download Gesture Recognizer">
                     <connections>
                         <action selector="touchDownload:" destination="P8R-4f-zAl" id="f13-sg-aRk"/>
-                        <outlet property="delegate" destination="HcW-yY-GaX" id="DQ1-PU-urs"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

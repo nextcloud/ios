@@ -74,10 +74,13 @@ class NCViewerMedia: UIViewController {
 
         self.tipView?.dismiss()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(onOrientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
 
         scrollView.delegate = self
         scrollView.maximumZoomScale = 4
@@ -131,6 +134,8 @@ class NCViewerMedia: UIViewController {
         self.imageVideoContainer.image = nil
 
         loadImage()
+
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -399,7 +404,6 @@ class NCViewerMedia: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
 
         guard metadata.isImage else { return }
-        if UIDevice.current.userInterfaceIdiom == .phone && UIApplication.shared.isLandscape { return }
 
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
@@ -442,6 +446,12 @@ class NCViewerMedia: UIViewController {
             break
         }
     }
+
+    // MARK: - Orientation
+
+    @objc func onOrientationDidChange() {
+        closeDetail()
+    }
 }
 
 extension NCViewerMedia {
@@ -469,7 +479,6 @@ extension NCViewerMedia {
             view.layoutIfNeeded()
             showDetailView(exif: exif)
 
-            print(detailView.frame.height)
             if let image = imageVideoContainer.image {
                 let ratioW = imageVideoContainer.frame.width / image.size.width
                 let ratioH = imageVideoContainer.frame.height / image.size.height
