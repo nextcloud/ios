@@ -99,7 +99,7 @@ class NCViewerMediaDetailView: UIView {
 
         if let latitude = exif.latitude, let longitude = exif.longitude, NCNetworking.shared.networkReachability != .notReachable {
             // We hide the map view on phones in landscape, since there is too little space to fit all of it.
-            mapContainer.isHidden = UIDevice.current.userInterfaceIdiom == .phone && UIDevice.current.orientation.isLandscape
+            mapContainer.isHidden = UIDevice.current.orientation.isLandscapeHardCheck
 
             outerMapContainer.isHidden = false
             let annotation = MKPointAnnotation()
@@ -130,7 +130,10 @@ class NCViewerMediaDetailView: UIView {
 
         if let make = exif.make, let model = exif.model, let lensModel = exif.lensModel {
             modelLabel.text = "\(make) \(model)"
-            lensLabel.text = lensModel.replacingOccurrences(of: make, with: "").replacingOccurrences(of: model, with: "").trimmingCharacters(in: .whitespacesAndNewlines).firstUppercased
+            lensLabel.text = lensModel
+                .replacingOccurrences(of: make, with: "")
+                .replacingOccurrences(of: model, with: "")
+                .replacingOccurrences(of: "f/", with: "ƒ").trimmingCharacters(in: .whitespacesAndNewlines).firstUppercased
         } else {
             modelLabel.text = NSLocalizedString("_no_camera_information_", comment: "")
             lensLabel.text = NSLocalizedString("_no_lens_information_", comment: "")
@@ -196,7 +199,9 @@ class NCViewerMediaDetailView: UIView {
 
         extensionLabel.text = metadata.fileExtension.uppercased()
 
-        locationLabel.text = exif.location
+        if exif.location?.isEmpty == false {
+            locationLabel.text = exif.location
+        }
 
         if metadata.livePhoto {
             livePhotoImageView.isHidden = false

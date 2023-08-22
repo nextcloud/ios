@@ -623,6 +623,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     }
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        if currentViewController.detailView.isShown { return }
 
         if viewerMediaScreenMode == .full {
             changeScreenMode(mode: .normal)

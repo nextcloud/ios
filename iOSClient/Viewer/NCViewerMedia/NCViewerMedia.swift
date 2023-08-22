@@ -74,13 +74,10 @@ class NCViewerMedia: UIViewController {
 
         self.tipView?.dismiss()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(onOrientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
 
         scrollView.delegate = self
         scrollView.maximumZoomScale = 4
@@ -232,6 +229,10 @@ class NCViewerMedia: UIViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+
+//        if UIDevice.current.orientation.isValidInterfaceOrientation {
+            closeDetail()
+//        }
 
         self.tipView?.dismiss()
         if metadata.isVideo {
@@ -443,12 +444,6 @@ class NCViewerMedia: UIViewController {
         default:
             break
         }
-    }
-
-    // MARK: - Orientation
-
-    @objc func onOrientationDidChange() {
-        closeDetail()
     }
 }
 
