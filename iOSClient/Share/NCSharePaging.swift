@@ -95,7 +95,7 @@ class NCSharePaging: UIViewController {
         } else {
             pagingViewController.select(index: 0)
         }
-       
+
         (pagingViewController.view as? NCSharePagingView)?.setupConstraints()
         pagingViewController.reloadMenu()
     }

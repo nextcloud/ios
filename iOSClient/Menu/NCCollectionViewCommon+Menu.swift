@@ -145,24 +145,19 @@ extension NCCollectionViewCommon {
         }
 
         //
-        // SET FOLDER E2EE (ONLY ROOT)
+        // SET FOLDER E2EE -- IF > (ONLY ROOT) metadata.serverUrl == serverUrlHome,
         //
-        if metadata.serverUrl == serverUrlHome, metadata.isDirectoySettableE2EE {
+        if metadata.isDirectoySettableE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "lock"),
                     order: 30,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { account, error in
-                            if error == .success {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
-                                NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
-
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
-                            } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                        Task {
+                            let error = await NCNetworkingE2EECreateFolder.shared.createFolderAndMarkE2EE(fileName: metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account, userId: metadata.userId, createFolder: false)
+                            if error != .success {
+                                NCContentPresenter.shared.showError(error: error)
                             }
                         }
                     }
@@ -188,7 +183,7 @@ extension NCCollectionViewCommon {
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
                             } else {
-                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
                         }
                     }
