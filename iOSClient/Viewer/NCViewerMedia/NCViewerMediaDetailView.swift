@@ -48,6 +48,7 @@ class NCViewerMediaDetailView: UIView {
     @IBOutlet weak var resolutionLabelDivider: UILabel!
     @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var extensionLabel: UILabel!
+    @IBOutlet weak var livePhotoImageView: UIImageView!
     @IBOutlet weak var isoLabel: UILabel!
     @IBOutlet weak var lensSizeLabel: UILabel!
     @IBOutlet weak var exposureValueLabel: UILabel!
@@ -196,6 +197,10 @@ class NCViewerMediaDetailView: UIView {
         extensionLabel.text = metadata.fileExtension.uppercased()
 
         locationLabel.text = exif.location
+
+        if metadata.livePhoto {
+            livePhotoImageView.isHidden = false
+        }
 
         if metadata.isImage && !CCUtility.fileProviderStorageExists(metadata) && metadata.session.isEmpty {
             downloadImageButton.setTitle(NSLocalizedString("_try_download_full_resolution_", comment: ""), for: .normal)

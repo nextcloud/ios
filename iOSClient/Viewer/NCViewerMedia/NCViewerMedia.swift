@@ -471,6 +471,9 @@ extension NCViewerMedia {
         delegate?.didOpenDetail()
         self.dismissTip()
 
+        statusLabel.isHidden = true
+        statusViewImage.isHidden = true
+
         NCUtility.shared.getExif(metadata: metadata) { [weak self] exif in
             guard let self else { return }
 
@@ -503,6 +506,9 @@ extension NCViewerMedia {
         delegate?.didCloseDetail()
         self.detailView.hide()
         imageViewConstraint = 0
+
+        statusLabel.isHidden = false
+        statusViewImage.isHidden = false
 
         UIView.animate(withDuration: 0.3) {
             self.imageViewTopConstraint.constant = 0
