@@ -69,7 +69,7 @@ class NCViewerMediaPage: UIViewController {
     private var timerAutoHideSeconds: Double = 4
 
     private lazy var moreNavigationItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(openMenuMore))
-    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: UIImage(systemName: "info.circle")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(toggleDetail))
+    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: UIImage(systemName: "info.circle")!.image(color: .label, size: 22), style: .plain, target: self, action: #selector(toggleDetail))
 
     // MARK: - View Life Cycle
 
