@@ -113,11 +113,11 @@ class NCViewerMedia: UIViewController {
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
         preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
+        preferences.drawing.arrowPosition = .bottom
         preferences.drawing.cornerRadius = 10
 
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: -15)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -15)
         preferences.animating.showInitialAlpha = 0
         preferences.animating.showDuration = 0.5
         preferences.animating.dismissDuration = 0
@@ -261,9 +261,8 @@ class NCViewerMedia: UIViewController {
     // MARK: - Tip
 
     func showTip() {
-
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
-            self.tipView?.show(forView: view)
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            self.tipView?.show(forView: detailView)
         }
     }
 
