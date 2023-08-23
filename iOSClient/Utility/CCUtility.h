@@ -244,10 +244,6 @@
 + (BOOL)isPermissionToRead:(NSInteger) permissionValue;
 + (BOOL)isPermissionToReadCreateUpdate:(NSInteger) permissionValue;
 
-// ===== EXIF =====
-
-+ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date, NSString *lensModel))completition;
-
 // ===== Third parts =====
 
 + (NSString *)getExtension:(NSString*)fileName;

@@ -68,7 +68,6 @@
 		AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */; };
 		AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353627E4ED7B00FEA6C2 /* NCShareCells.swift */; };
 		AFCE353927E5DE0500FEA6C2 /* NCShare+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */; };
-		AFD33240276A02C100F5AE02 /* UIApplication+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD3323F276A02C000F5AE02 /* UIApplication+Extension.swift */; };
 		C0046CDD2A17B98400D87C9D /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0046CDC2A17B98400D87C9D /* LoginUITests.swift */; };
 		C03BA14A2A17BC57002C8BA3 /* XLForm in Frameworks */ = {isa = PBXBuildFile; productRef = C03BA1492A17BC57002C8BA3 /* XLForm */; };
 		C03BA14C2A17BC60002C8BA3 /* UICKeyChainStore in Frameworks */ = {isa = PBXBuildFile; productRef = C03BA14B2A17BC60002C8BA3 /* UICKeyChainStore */; };
@@ -117,6 +116,13 @@
 		F343A4BF2A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F343A4C02A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
 		F343A4C12A1E734600DDA874 /* Optional+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */; };
+		F359D8672A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
+		F359D8682A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
+		F359D8692A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
+		F359D86A2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
+		F359D86B2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
+		F359D86C2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
+		F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */ = {isa = PBXBuildFile; fileRef = F359D8662A7D03420023F405 /* NCUtility+Exif.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
 		F3A7AFC62A41AA82001FC89C /* BaseUIXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */; };
@@ -818,7 +824,6 @@
 		AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Extension.swift"; sourceTree = "<group>"; };
 		AFCE353627E4ED7B00FEA6C2 /* NCShareCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCells.swift; sourceTree = "<group>"; };
 		AFCE353827E5DE0400FEA6C2 /* NCShare+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCShare+Helper.swift"; sourceTree = "<group>"; };
-		AFD3323F276A02C000F5AE02 /* UIApplication+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extension.swift"; sourceTree = "<group>"; };
 		C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0046CDC2A17B98400D87C9D /* LoginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUITests.swift; sourceTree = "<group>"; };
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -834,6 +839,7 @@
 		F33AAF992A60394C006ECCBD /* NCMoreUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMoreUserCell.xib; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
+		F359D8662A7D03420023F405 /* NCUtility+Exif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCUtility+Exif.swift"; sourceTree = "<group>"; };
 		F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNCMoreCell.swift; sourceTree = "<group>"; };
 		F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseIntegrationXCTestCase.swift; sourceTree = "<group>"; };
 		F3A7AFC52A41AA82001FC89C /* BaseUIXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUIXCTestCase.swift; sourceTree = "<group>"; };
@@ -2103,7 +2109,6 @@
 				F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */,
 				F7A0D1342591FBC5008F8A13 /* String+Extension.swift */,
 				AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */,
-				AFD3323F276A02C000F5AE02 /* UIApplication+Extension.swift */,
 				AF7E504D27A2D8FF00B5E4AF /* UIBarButton+Extension.swift */,
 				F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */,
 				F79B645F26CA661600838ACA /* UIControl+Extension.swift */,
@@ -2229,6 +2234,7 @@
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				AF817EF0274BC781009ED85B /* NCUserBaseUrl.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
+				F359D8662A7D03420023F405 /* NCUtility+Exif.swift */,
 				AF93474B27E34120002537EE /* NCUtility+Image.swift */,
 				F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */,
 				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
@@ -3324,6 +3330,7 @@
 				AF4BF617275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
 				F7BF9D872934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F749B64F297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
+				F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				D575039F27146F93008DC9DC /* String+Extension.swift in Sources */,
 				F769CA1A2966EA3C00039397 /* ComponentView.swift in Sources */,
 				F757CC8829E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
@@ -3401,6 +3408,7 @@
 				F7490E8C29882D02009DCE94 /* CCUtility.m in Sources */,
 				F7490E7729882C10009DCE94 /* UIColor+Extension.swift in Sources */,
 				F70716E62987F81500E72C1D /* DocumentActionViewController.swift in Sources */,
+				F359D86C2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7490E8429882C89009DCE94 /* NCManageDatabase+Share.swift in Sources */,
 				F7490E6F29882B67009DCE94 /* UIImage+Extension.swift in Sources */,
 				F7490E7E29882C6E009DCE94 /* NCManageDatabase+Account.swift in Sources */,
@@ -3438,6 +3446,7 @@
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
+				F359D86A2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */,
@@ -3504,6 +3513,7 @@
 				F783030328B4C4DD00B84583 /* ThreadSafeDictionary.swift in Sources */,
 				F77ED59128C9CE9D00E24ED0 /* ToolbarData.swift in Sources */,
 				F78302F728B4C3C900B84583 /* NCManageDatabase.swift in Sources */,
+				F359D8682A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
@@ -3572,6 +3582,7 @@
 				F798F0E725880609000DAFFD /* UIColor+Extension.swift in Sources */,
 				F74B6D992A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F7D68FCF28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
+				F359D86B2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7864AD02A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				AF4BF61B27562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
@@ -3719,6 +3730,7 @@
 				F7CA212D25F1333300826ABB /* NCAccountRequest.swift in Sources */,
 				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F359D8672A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7581D2425EFDDDF004DC699 /* NCMedia+Menu.swift in Sources */,
 				F738D4902756740100CD1D38 /* NCLoginNavigationController.swift in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
@@ -3732,7 +3744,6 @@
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F7E8A391295DC5E0006CB2D0 /* View+Extension.swift in Sources */,
-				AFD33240276A02C100F5AE02 /* UIApplication+Extension.swift in Sources */,
 				F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+Extension.swift in Sources */,
 				F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */,
@@ -3818,6 +3829,7 @@
 				F7A8D73F28F181EF008BBE1C /* NCGlobal.swift in Sources */,
 				F74B6D972A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F749B653297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
+				F359D8692A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F763D29F2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F7A8D74328F1826F008BBE1C /* String+Extension.swift in Sources */,
 				F7A8D73728F17E1E008BBE1C /* NCManageDatabase+Account.swift in Sources */,

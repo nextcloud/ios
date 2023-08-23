@@ -473,7 +473,6 @@ class NCManageDatabase: NSObject {
         return nil
     }
 
-    // MARK: -
     // MARK: Table Photo Library
 
     @discardableResult

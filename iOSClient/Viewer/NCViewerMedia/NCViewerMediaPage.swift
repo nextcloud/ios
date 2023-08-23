@@ -24,8 +24,8 @@
 import UIKit
 import NextcloudKit
 import MediaPlayer
-import JGProgressHUD
 import Alamofire
+import JGProgressHUD
 
 enum ScreenMode {
     case full, normal
@@ -66,15 +66,10 @@ class NCViewerMediaPage: UIViewController {
     var previousTrackCommand: Any?
 
     var timerAutoHide: Timer?
-    var timerAutoHideSeconds: Double {
-        get {
-            if NCUtility.shared.isSimulator() {
-                return 4
-            } else {
-                return 4
-            }
-        }
-    }
+    private var timerAutoHideSeconds: Double = 4
+
+    private lazy var moreNavigationItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(openMenuMore))
+    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: UIImage(systemName: "info.circle")!.image(color: .label, size: 22), style: .plain, target: self, action: #selector(toggleDetail))
 
     // MARK: - View Life Cycle
 
@@ -86,18 +81,12 @@ class NCViewerMediaPage: UIViewController {
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        
+
         viewerMediaScreenMode = .normal
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        if metadatas.count == 1, let metadata = metadatas.first, !metadata.url.isEmpty {
-            // it's a video from URL
-        } else {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
-        }
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -116,7 +105,6 @@ class NCViewerMediaPage: UIViewController {
         progressView.tintColor = NCBrandColor.shared.brand
         progressView.trackTintColor = .clear
         progressView.progress = 0
-
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
@@ -138,6 +126,12 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+
+        if currentViewController.metadata.isImage {
+            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+        } else {
+            navigationItem.rightBarButtonItems = [moreNavigationItem]
+        }
     }
 
     deinit {
@@ -191,14 +185,13 @@ class NCViewerMediaPage: UIViewController {
         return hideStatusBar
     }
 
-    // MARK: -
-    
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
-        
+    
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
         viewerMedia.index = index
         viewerMedia.metadata = metadata
         viewerMedia.viewerMediaPage = self
+        viewerMedia.delegate = self
 
         singleTapGestureRecognizer.require(toFail: viewerMedia.doubleTapGestureRecognizer)
 
@@ -206,14 +199,17 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func viewUnload() {
-
         navigationController?.popViewController(animated: true)
     }
 
-    @objc func openMenuMore() {
+    @objc private func openMenuMore() {
 
         let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
         NCViewer.shared.toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
+    }
+
+    @objc private func toggleDetail() {
+        currentViewController.toggleDetail()
     }
 
     func changeScreenMode(mode: ScreenMode) {
@@ -240,11 +236,11 @@ class NCViewerMediaPage: UIViewController {
                 textColor = .white
             } else {
                 NCUtility.shared.colorNavigationController(navigationController, backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
-                view.backgroundColor = .systemBackground
+                view.backgroundColor = .systemGray6
                 textColor = .label
             }
 
-        } else {
+        } else if !currentViewController.detailView.isShown {
 
             navigationController?.setNavigationBarHidden(true, animated: true)
             hideStatusBar = true
@@ -274,13 +270,11 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func startTimerAutoHide() {
-
         timerAutoHide?.invalidate()
         timerAutoHide = Timer.scheduledTimer(timeInterval: timerAutoHideSeconds, target: self, selector: #selector(autoHide), userInfo: nil, repeats: true)
     }
 
     @objc func autoHide() {
-
         let metadata = currentViewController.metadata
         if metadata.isVideo, viewerMediaScreenMode == .normal {
             changeScreenMode(mode: .full)
@@ -558,6 +552,16 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
 
         guard let nextViewController = pendingViewControllers.first as? NCViewerMedia else { return }
         nextIndex = nextViewController.index
+
+        if nextViewController.metadata.isImage {
+            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+        } else {
+            navigationItem.rightBarButtonItems = [moreNavigationItem]
+        }
+
+        if nextViewController.detailView.isShown {
+            changeScreenMode(mode: .normal)
+        }
     }
 
     // END TRANSITION
@@ -619,6 +623,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     }
 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        if currentViewController.detailView.isShown { return }
 
         if viewerMediaScreenMode == .full {
             changeScreenMode(mode: .normal)
@@ -627,12 +632,10 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
         }
     }
 
-    //
-    // LIVE PHOTO
-    //
+    // MARK: - Live Photo
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
 
-        if !currentViewController.metadata.livePhoto { return }
+        if !currentViewController.metadata.livePhoto || currentViewController.detailView.isShown { return }
 
         if gestureRecognizer.state == .began {
             let fileName = (currentViewController.metadata.fileNameView as NSString).deletingPathExtension + ".mov"
@@ -664,3 +667,16 @@ extension UIPageViewController {
         }
     }
 }
+
+extension NCViewerMediaPage: NCViewerMediaViewDelegate {
+    func didOpenDetail() {
+        changeScreenMode(mode: .normal)
+        imageDetailNavigationItem.image = UIImage(systemName: "info.circle.fill")
+    }
+
+    func didCloseDetail() {
+        imageDetailNavigationItem.image = UIImage(systemName: "info.circle")
+    }
+}
+
+

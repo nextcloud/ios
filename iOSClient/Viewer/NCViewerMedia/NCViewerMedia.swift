@@ -30,10 +30,13 @@ import MobileVLCKit
 import JGProgressHUD
 import Alamofire
 
-class NCViewerMedia: UIViewController {
+public protocol NCViewerMediaViewDelegate: AnyObject {
+    func didOpenDetail()
+    func didCloseDetail()
+}
 
+class NCViewerMedia: UIViewController {
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var detailViewHeighConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -55,6 +58,7 @@ class NCViewerMedia: UIViewController {
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var imageViewConstraint: CGFloat = 0
     var isDetailViewInitializze: Bool = false
+    weak var delegate: NCViewerMediaViewDelegate?
 
     // MARK: - View Life Cycle
 
@@ -88,7 +92,7 @@ class NCViewerMedia: UIViewController {
             statusViewImage.image = nil
             statusLabel.text = ""
         }
-        
+
         if metadata.isAudioOrVideo {
 
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
@@ -109,11 +113,11 @@ class NCViewerMedia: UIViewController {
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
         preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
+        preferences.drawing.arrowPosition = .bottom
         preferences.drawing.cornerRadius = 10
 
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: -15)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -15)
         preferences.animating.showInitialAlpha = 0
         preferences.animating.showDuration = 0.5
         preferences.animating.dismissDuration = 0
@@ -133,7 +137,7 @@ class NCViewerMedia: UIViewController {
         super.viewWillAppear(animated)
 
         viewerMediaPage?.navigationController?.navigationBar.prefersLargeTitles = false
-        viewerMediaPage?.navigationItem.title = metadata.fileNameView
+        viewerMediaPage?.navigationItem.title = (metadata.fileNameView as NSString).deletingPathExtension
 
         if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {
             if viewerMediaPage.modifiedOcId.contains(metadata.ocId) {
@@ -147,7 +151,7 @@ class NCViewerMedia: UIViewController {
         super.viewDidAppear(animated)
 
         viewerMediaPage?.clearCommandCenter()
-        
+
         if metadata.isAudioOrVideo {
             if let ncplayer = self.ncplayer {
                 if ncplayer.url == nil {
@@ -207,6 +211,7 @@ class NCViewerMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(openDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(closeDetail(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -225,6 +230,10 @@ class NCViewerMedia: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 
+        if UIDevice.current.orientation.isValidInterfaceOrientation {
+            closeDetail()
+        }
+
         self.tipView?.dismiss()
         if metadata.isVideo {
             self.imageVideoContainer.isHidden = true
@@ -237,7 +246,7 @@ class NCViewerMedia: UIViewController {
             self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: context.transitionDuration) {
-                if self.detailView.isShow() {
+                if self.detailView.isShown {
                     self.openDetail()
                 }
             }
@@ -252,9 +261,8 @@ class NCViewerMedia: UIViewController {
     // MARK: - Tip
 
     func showTip() {
-
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView), let view = self.navigationController?.navigationBar {
-            self.tipView?.show(forView: view)
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            self.tipView?.show(forView: detailView)
         }
     }
 
@@ -272,14 +280,6 @@ class NCViewerMedia: UIViewController {
                 let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)), !CCUtility.fileProviderStorageExists(metadata) {
                     NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in }
-                }
-            }
-
-            NCNetworking.shared.download(metadata: metadata, selector: "") { _, _ in
-                let image = getImageMetadata(metadata)
-                if self.metadata.ocId == metadata.ocId {
-                    self.image = image
-                    self.imageVideoContainer.image = image
                 }
             }
         }
@@ -382,7 +382,7 @@ class NCViewerMedia: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
 
-        guard metadata.isImage, !detailView.isShow()  else { return }
+        guard metadata.isImage, !detailView.isShown else { return }
 
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
@@ -406,20 +406,8 @@ class NCViewerMedia: UIViewController {
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
         switch gestureRecognizer.state {
-
-        case .began:
-
-//        let velocity = gestureRecognizer.velocity(in: self.view)
-
-//            gesture moving Up
-//            if velocity.y < 0 {
-
-//            }
-            break
-
         case .ended:
-
-            if detailView.isShow() {
+            if detailView.isShown {
                 self.imageViewTopConstraint.constant = -imageViewConstraint
                 self.imageViewBottomConstraint.constant = imageViewConstraint
             } else {
@@ -428,7 +416,6 @@ class NCViewerMedia: UIViewController {
             }
 
         case .changed:
-
             imageViewTopConstraint.constant = (currentLocation.y - imageViewConstraint)
             imageViewBottomConstraint.constant = -(currentLocation.y - imageViewConstraint)
 
@@ -459,44 +446,39 @@ class NCViewerMedia: UIViewController {
     }
 }
 
-// MARK: -
-
 extension NCViewerMedia {
-
     @objc func openDetail(_ notification: NSNotification) {
-
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, ocId == metadata.ocId {
             openDetail()
         }
     }
 
+    @objc func closeDetail(_ notification: NSNotification) {
+        closeDetail()
+    }
+
+    func toggleDetail () {
+        detailView.isShown ? closeDetail() : openDetail()
+    }
+
     private func openDetail() {
-
+        delegate?.didOpenDetail()
         self.dismissTip()
-        
-        CCUtility.setExif(metadata) { latitude, longitude, location, date, lensModel in
 
-            if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
-                self.detailViewHeighConstraint.constant = self.view.bounds.height / 2
-            } else {
-                self.detailViewHeighConstraint.constant = 170
-            }
+        statusLabel.isHidden = true
+        statusViewImage.isHidden = true
+
+        NCUtility.shared.getExif(metadata: metadata) { exif in
             self.view.layoutIfNeeded()
-            self.detailView.show(
-                metadata: self.metadata,
-                image: self.image,
-                textColor: self.viewerMediaPage?.textColor,
-                mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
-                ncplayer: self.ncplayer,
-                delegate: self)
-                
+            self.showDetailView(exif: exif)
+
             if let image = self.imageVideoContainer.image {
                 let ratioW = self.imageVideoContainer.frame.width / image.size.width
                 let ratioH = self.imageVideoContainer.frame.height / image.size.height
-                let ratio = ratioW < ratioH ? ratioW : ratioH
+                let ratio = min(ratioW, ratioH)
                 let imageHeight = image.size.height * ratio
-                let VideoContainerHeight = self.imageVideoContainer.frame.height * ratio
-                let height = max(imageHeight, VideoContainerHeight)
+                let imageContainerHeight = self.imageVideoContainer.frame.height * ratio
+                let height = max(imageHeight, imageContainerHeight)
                 self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
                 if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
             }
@@ -504,9 +486,8 @@ extension NCViewerMedia {
             UIView.animate(withDuration: 0.3) {
                 self.imageViewTopConstraint.constant = -self.imageViewConstraint
                 self.imageViewBottomConstraint.constant = self.imageViewConstraint
-                self.detailViewTopConstraint.constant = self.detailViewHeighConstraint.constant
+                self.detailViewTopConstraint.constant = self.detailView.frame.height
                 self.view.layoutIfNeeded()
-            } completion: { _ in
             }
 
             self.scrollView.pinchGestureRecognizer?.isEnabled = false
@@ -514,38 +495,41 @@ extension NCViewerMedia {
     }
 
     private func closeDetail() {
-
+        delegate?.didCloseDetail()
         self.detailView.hide()
         imageViewConstraint = 0
+
+        statusLabel.isHidden = false
+        statusViewImage.isHidden = false
 
         UIView.animate(withDuration: 0.3) {
             self.imageViewTopConstraint.constant = 0
             self.imageViewBottomConstraint.constant = 0
             self.detailViewTopConstraint.constant = 0
             self.view.layoutIfNeeded()
-        } completion: { _ in
         }
 
         scrollView.pinchGestureRecognizer?.isEnabled = true
     }
 
-    func reloadDetail() {
+    private func showDetailView(exif: ExifData) {
+        self.detailView.show(
+            metadata: self.metadata,
+            image: self.image,
+            textColor: self.viewerMediaPage?.textColor,
+            exif: exif,
+            ncplayer: self.ncplayer,
+            delegate: self)
+    }
 
-        if self.detailView.isShow() {
-            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensModel) in
-                self.detailView.show(
-                    metadata: self.metadata,
-                    image: self.image,
-                    textColor: self.viewerMediaPage?.textColor,
-                    mediaMetadata: (latitude: latitude, longitude: longitude, location: location, date: date, lensModel: lensModel),
-                    ncplayer: self.ncplayer,
-                    delegate: self)
+    func reloadDetail() {
+        if self.detailView.isShown {
+            NCUtility.shared.getExif(metadata: metadata) { exif in
+                self.showDetailView(exif: exif)
             }
         }
     }
 }
-
-// MARK: -
 
 extension NCViewerMedia: UIScrollViewDelegate {
 
@@ -563,9 +547,9 @@ extension NCViewerMedia: UIScrollViewDelegate {
                 let ratio = ratioW < ratioH ? ratioW : ratioH
                 let newWidth = image.size.width * ratio
                 let newHeight = image.size.height * ratio
-                let conditionLeft = newWidth*scrollView.zoomScale > imageVideoContainer.frame.width
+                let conditionLeft = newWidth * scrollView.zoomScale > imageVideoContainer.frame.width
                 let left = 0.5 * (conditionLeft ? newWidth - imageVideoContainer.frame.width : (scrollView.frame.width - scrollView.contentSize.width))
-                let conditioTop = newHeight*scrollView.zoomScale > imageVideoContainer.frame.height
+                let conditioTop = newHeight * scrollView.zoomScale > imageVideoContainer.frame.height
 
                 let top = 0.5 * (conditioTop ? newHeight - imageVideoContainer.frame.height : (scrollView.frame.height - scrollView.contentSize.height))
 
@@ -583,7 +567,6 @@ extension NCViewerMedia: UIScrollViewDelegate {
 extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
     func downloadFullResolution() {
-        closeDetail()
         NCNetworking.shared.download(metadata: metadata, selector: NCGlobal.shared.selectorOpenDetail) { _, _ in }
     }
 }
