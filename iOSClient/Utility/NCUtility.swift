@@ -765,8 +765,12 @@ class NCUtility: NSObject {
     }
 
     func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
-        if let url = URL(string: serverUrl)?.deletingLastPathComponent() {
-            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: String(url.absoluteString.dropLast())) {
+
+        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
+        
+        if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
+           let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
+            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
                 return !directory.e2eEncrypted
             }
         }
