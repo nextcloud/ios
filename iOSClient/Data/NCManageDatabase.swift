@@ -463,6 +463,7 @@ class NCManageDatabase: NSObject {
 
         do {
             let realm = try Realm()
+            realm.refresh()
             let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first
             return result?.location
         } catch let error as NSError {
