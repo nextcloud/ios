@@ -468,21 +468,19 @@ extension NCViewerMedia {
         statusLabel.isHidden = true
         statusViewImage.isHidden = true
 
-        NCUtility.shared.getExif(metadata: metadata) { [weak self] exif in
-            guard let self else { return }
+        NCUtility.shared.getExif(metadata: metadata) { exif in
+            self.view.layoutIfNeeded()
+            self.showDetailView(exif: exif)
 
-            view.layoutIfNeeded()
-            showDetailView(exif: exif)
-
-            if let image = imageVideoContainer.image {
-                let ratioW = imageVideoContainer.frame.width / image.size.width
-                let ratioH = imageVideoContainer.frame.height / image.size.height
+            if let image = self.imageVideoContainer.image {
+                let ratioW = self.imageVideoContainer.frame.width / image.size.width
+                let ratioH = self.imageVideoContainer.frame.height / image.size.height
                 let ratio = min(ratioW, ratioH)
                 let imageHeight = image.size.height * ratio
-                let imageContainerHeight = imageVideoContainer.frame.height * ratio
+                let imageContainerHeight = self.imageVideoContainer.frame.height * ratio
                 let height = max(imageHeight, imageContainerHeight)
-                imageViewConstraint = detailView.frame.height - ((view.frame.height - height) / 2) + view.safeAreaInsets.bottom
-                if imageViewConstraint < 0 { imageViewConstraint = 0 }
+                self.imageViewConstraint = self.detailView.frame.height - ((self.view.frame.height - height) / 2) + self.view.safeAreaInsets.bottom
+                if self.imageViewConstraint < 0 { self.imageViewConstraint = 0 }
             }
 
             UIView.animate(withDuration: 0.3) {
@@ -492,7 +490,7 @@ extension NCViewerMedia {
                 self.view.layoutIfNeeded()
             }
 
-            scrollView.pinchGestureRecognizer?.isEnabled = false
+            self.scrollView.pinchGestureRecognizer?.isEnabled = false
         }
     }
 
