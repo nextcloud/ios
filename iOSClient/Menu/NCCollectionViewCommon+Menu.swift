@@ -155,7 +155,7 @@ extension NCCollectionViewCommon {
                     order: 30,
                     action: { _ in
                         Task {
-                            let error = await NCNetworkingE2EECreateFolder.shared.createFolderAndMarkE2EE(fileName: metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account, userId: metadata.userId)
+                            let error = await NCNetworkingE2EECreateFolder.shared.markFolderE2ee(account: metadata.account, fileName: metadata.fileName, serverUrl: metadata.serverUrl, userId: metadata.userId)
                             if error != .success {
                                 NCContentPresenter.shared.showError(error: error)
                             }
