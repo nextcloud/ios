@@ -381,14 +381,14 @@ extension NCManageDatabase {
         return nil
     }
 
-    func putCounterE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, counter: Int) {
+    func updateCounterE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, counter: Int) {
 
         do {
             let realm = try Realm()
             try realm.write {
                 let object = tableE2eMetadataV2.init(account: account, ocIdServerUrl: ocIdServerUrl)
                 object.serverUrl = serverUrl
-                object.counter = 1
+                object.counter = counter
                 realm.add(object, update: .all)
             }
         } catch let error {
