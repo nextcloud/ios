@@ -19,17 +19,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
-import OpenSSL
+import Foundation
 import NextcloudKit
-import CFNetwork
-import Alamofire
 
 class NCNetworkingE2EE: NSObject {
-    public static let shared: NCNetworkingE2EE = {
-        let instance = NCNetworkingE2EE()
-        return instance
-    }()
 
     func generateRandomIdentifier() -> String {
 
@@ -55,14 +48,14 @@ class NCNetworkingE2EE: NSObject {
         let resultsEncode = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
         guard resultsEncode.error == .success, let e2eMetadata = resultsEncode.metadata, let signature = resultsEncode.signature else { return resultsEncode.error }
 
-        let results = await NCNetworkingE2EE.shared.lock(account: account, serverUrl: serverUrl)
+        let results = await lock(account: account, serverUrl: serverUrl)
         error = results.error
         if error == .success, let e2eToken = results.e2eToken, let fileId = results.fileId {
             let results = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: signature, method: "PUT")
             error = results.error
         }
 
-        await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
+        await unlock(account: account, serverUrl: serverUrl)
         return error
     }
 

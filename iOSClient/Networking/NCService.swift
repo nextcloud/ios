@@ -48,7 +48,7 @@ class NCService: NSObject {
                 getAvatar(tableAccount: tableAccount)
                 requestServerCapabilities()
                 requestDashboardWidget()
-                NCNetworkingE2EE.shared.unlockAll(account: tableAccount.account)
+                NCNetworkingE2EE().unlockAll(account: tableAccount.account)
             }
         }
     }

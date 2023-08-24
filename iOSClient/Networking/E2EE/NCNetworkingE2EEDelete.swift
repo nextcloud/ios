@@ -19,24 +19,18 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
-import OpenSSL
-import NextcloudKit
-import CFNetwork
-import Alamofire
 import Foundation
+import NextcloudKit
 
 class NCNetworkingE2EEDelete: NSObject {
-    public static let shared: NCNetworkingE2EEDelete = {
-        let instance = NCNetworkingE2EEDelete()
-        return instance
-    }()
 
     func delete(metadata: tableMetadata) async -> (NKError) {
 
+        let networkingE2EE = NCNetworkingE2EE()
+
         defer {
             Task {
-                await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+                await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             }
         }
 
@@ -44,7 +38,7 @@ class NCNetworkingE2EEDelete: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
-        let resultsLock = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        let resultsLock = await networkingE2EE.lock(account: metadata.account, serverUrl: metadata.serverUrl)
         guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else { return resultsLock.error }
 
         let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])

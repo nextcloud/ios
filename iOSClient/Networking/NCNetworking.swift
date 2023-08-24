@@ -1300,14 +1300,14 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if metadata.isDirectoryE2EE {
 #if !EXTENSION
             if let metadataLive = metadataLive {
-                let error = await NCNetworkingE2EEDelete.shared.delete(metadata: metadataLive)
+                let error = await NCNetworkingE2EEDelete().delete(metadata: metadataLive)
                 if error == .success {
-                    return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                    return await NCNetworkingE2EEDelete().delete(metadata: metadata)
                 } else {
                     return error
                 }
             } else {
-                return await NCNetworkingE2EEDelete.shared.delete(metadata: metadata)
+                return await NCNetworkingE2EEDelete().delete(metadata: metadata)
             }
 #else
             return NKError()
@@ -1448,15 +1448,15 @@ class NCNetworking: NSObject, NKCommonDelegate {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
-                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadataLive, fileNameNew: fileNameNew, indexPath: indexPath)
+                    let error = await NCNetworkingE2EERename().rename(metadata: metadataLive, fileNameNew: fileNameNew, indexPath: indexPath)
                     if error == .success {
-                        let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
+                        let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                         DispatchQueue.main.async { completion(error) }
                     } else {
                         DispatchQueue.main.async { completion(error) }
                     }
                 } else {
-                    let error = await NCNetworkingE2EERename.shared.rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
+                    let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                     DispatchQueue.main.async { completion(error) }
                 }
             }

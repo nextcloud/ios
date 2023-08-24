@@ -42,6 +42,8 @@ class NCNetworkingE2EEUpload: NSObject {
         return instance
     }()
 
+    let networkingE2EE = NCNetworkingE2EE()
+
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (NKError) {
 
         var metadata = tableMetadata.init(value: metadata)
@@ -51,7 +53,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         defer {
             Task {
-                await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
+                await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             }
         }
 
@@ -59,7 +61,7 @@ class NCNetworkingE2EEUpload: NSObject {
         if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
         } else {
-            metadata.fileName = NCNetworkingE2EE.shared.generateRandomIdentifier()
+            metadata.fileName = networkingE2EE.generateRandomIdentifier()
         }
         metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
         metadata.sessionError = ""
@@ -72,7 +74,7 @@ class NCNetworkingE2EEUpload: NSObject {
         }
         metadata = result
 
-        let resultsLock = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        let resultsLock = await networkingE2EE.lock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))

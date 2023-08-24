@@ -313,7 +313,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared().pushNotification()
 
         // Unlock E2EE
-        NCNetworkingE2EE.shared.unlockAll(account: account)
+        NCNetworkingE2EE().unlockAll(account: account)
 
         // Start services
         NCService.shared.startRequestServicesServer()
