@@ -34,46 +34,40 @@ class NCNetworkingE2EEDelete: NSObject {
 
     func delete(metadata: tableMetadata) async -> (NKError) {
 
-        var error = NKError()
+        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
+        }
 
-        func sendE2EMetadata(e2eToken: String, fileId: String) async -> (NKError) {
-
-            // Get last metadata
-            let results = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
-            guard results.error == .success, let e2eMetadata = results.e2eMetadata else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyEncodeMetadata, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+        defer {
+            Task {
+                await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             }
+        }
 
-            let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: results.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
-            if error != .success { return error }
+        let resultsLock = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
+        guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else { return resultsLock.error }
 
-            // delete
+        let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
+        guard deleteMetadataPlainError == .success else { return deleteMetadataPlainError }
+
+        let resultsGetE2EEMetadata = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
+        guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
+            return NKError(errorCode: NCGlobal.shared.errorE2EEKeyEncodeMetadata, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+        }
+
+        let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+        guard resultsDecodeMetadataError == .success else { return resultsDecodeMetadataError }
+
+        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
+        guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else { return resultsEncodeMetadata.error }
+
+        let resultsPutE2EEMetadata = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: "PUT")
+
+        if resultsPutE2EEMetadata.error == .success {
+            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, serverUrl: metadata.serverUrl, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))
-
-            let resultsEncode = NCEndToEndMetadata().encodeMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
-            guard resultsEncode.error == .success, let e2eMetadata = resultsEncode.metadata else { return resultsEncode.error }
-
-            // Send metadata
-            let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncode.signature, method: "PUT")
-            return putE2EEMetadataResults.error
         }
 
-        // ** Lock **
-        let lockResults = await NCNetworkingE2EE.shared.lock(account: metadata.account, serverUrl: metadata.serverUrl)
-
-        error = lockResults.error
-        if error == .success, let e2eToken = lockResults.e2eToken, let fileId = lockResults.fileId {
-
-            let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
-            error = deleteMetadataPlainError
-            if error == .success {
-                let sendE2EMetadataError = await sendE2EMetadata(e2eToken: e2eToken, fileId: fileId)
-                error = sendE2EMetadataError
-            }
-        }
-
-        // ** Unlock **
-        await NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-        return error
+        return resultsPutE2EEMetadata.error
     }
 }

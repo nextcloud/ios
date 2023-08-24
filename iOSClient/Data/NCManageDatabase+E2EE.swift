@@ -386,10 +386,14 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let object = tableE2eMetadataV2.init(account: account, ocIdServerUrl: ocIdServerUrl)
-                object.serverUrl = serverUrl
-                object.counter = counter
-                realm.add(object, update: .all)
+                if let result = realm.objects(tableE2eMetadataV2.self).filter("account == %@ && ocIdServerUrl == %@", account, ocIdServerUrl).first {
+                    result.counter = counter
+                } else {
+                    let object = tableE2eMetadataV2.init(account: account, ocIdServerUrl: ocIdServerUrl)
+                    object.serverUrl = serverUrl
+                    object.counter = counter
+                    realm.add(object, update: .all)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
