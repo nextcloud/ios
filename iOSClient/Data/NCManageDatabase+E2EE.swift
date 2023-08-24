@@ -396,7 +396,7 @@ extension NCManageDatabase {
         }
     }
 
-    func addE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, keyChecksums: [String]?, deleted: Bool, counter: Int? = nil, folders: [String: String]?, version: String) {
+    func addE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, keyChecksums: [String]?, deleted: Bool, counter: Int, folders: [String: String]?, version: String) {
 
         do {
             let realm = try Realm()
@@ -406,9 +406,7 @@ extension NCManageDatabase {
                     object.keyChecksums.append(objectsIn: keyChecksums)
                 }
                 object.deleted = deleted
-                if let counter {
-                    object.counter = counter
-                }
+                object.counter = counter
                 let foldersDictionary = object.folders
                 if let folders {
                     for folder in folders {

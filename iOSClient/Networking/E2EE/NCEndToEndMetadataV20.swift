@@ -200,8 +200,6 @@ extension NCEndToEndMetadata {
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
             let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: CCUtility.getEndToEndCertificate(account))
 
-            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: keyChecksums, deleted: false, folders: folders, version: NCGlobal.shared.e2eeVersionV20)
-
             return (e2eeJson, signature, counter, NKError())
 
         } catch let error {
@@ -331,8 +329,7 @@ extension NCEndToEndMetadata {
                 // Check "counter"
                 if let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
                     if json.counter > e2eMetadataV2.counter {
-                        print("")
-                        //return NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                        return NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                     }
                 }
 
