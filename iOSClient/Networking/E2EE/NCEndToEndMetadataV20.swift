@@ -200,7 +200,7 @@ extension NCEndToEndMetadata {
             let e2eeJson = String(data: e2eeData, encoding: .utf8)
             let signature = createSignature(account: account, userId: userId, metadata: metadataCodable, users: usersCodable, version: NCGlobal.shared.e2eeVersionV20, certificate: CCUtility.getEndToEndCertificate(account))
 
-            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: keyChecksums, deleted: false, counter: counter, folders: folders, version: NCGlobal.shared.e2eeVersionV20)
+            NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: keyChecksums, deleted: false, folders: folders, version: NCGlobal.shared.e2eeVersionV20)
 
             return (e2eeJson, signature, NKError())
 
