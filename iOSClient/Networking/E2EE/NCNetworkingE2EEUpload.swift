@@ -37,10 +37,6 @@ extension uploadE2EEDelegate {
 }
 
 class NCNetworkingE2EEUpload: NSObject {
-    public static let shared: NCNetworkingE2EEUpload = {
-        let instance = NCNetworkingE2EEUpload()
-        return instance
-    }()
 
     let networkingE2EE = NCNetworkingE2EE()
 
