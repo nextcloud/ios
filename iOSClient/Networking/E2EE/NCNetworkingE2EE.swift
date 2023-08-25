@@ -33,8 +33,16 @@ class NCNetworkingE2EE: NSObject {
 
     func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String?, removeUserId: String?) async -> (NKError) {
 
-        var error = NKError()
         var addCertificate: String?
+        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
+            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
+        }
+
+        defer {
+            Task {
+                await unlock(account: account, serverUrl: serverUrl)
+            }
+        }
 
         if let addUserId {
             let results = await NextcloudKit.shared.getE2EECertificate(user: addUserId)
@@ -45,24 +53,22 @@ class NCNetworkingE2EE: NSObject {
             }
         }
 
-        let resultsEncode = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
-        guard resultsEncode.error == .success, let e2eMetadata = resultsEncode.metadata, let signature = resultsEncode.signature else { return resultsEncode.error }
+        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
+        guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata, let signature = resultsEncodeMetadata.signature else { return resultsEncodeMetadata.error }
 
-        let results = await lock(account: account, serverUrl: serverUrl)
-        error = results.error
-        if error == .success, let e2eToken = results.e2eToken, let fileId = results.fileId {
-            let results = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: signature, method: "PUT")
-            error = results.error
+        let resultsLock = await lock(account: account, serverUrl: serverUrl)
+        guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else { return resultsLock.error }
+
+        let resultsPutE2EEMetadata = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: signature, method: "PUT")
+        if resultsPutE2EEMetadata.error == .success, NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
         }
-
-        await unlock(account: account, serverUrl: serverUrl)
-        return error
+        return resultsPutE2EEMetadata.error
     }
 
     func lock(account: String, serverUrl: String) async -> (fileId: String?, e2eToken: String?, error: NKError) {
 
         var e2eToken: String?
-        let e2EEApiVersion = NCGlobal.shared.capabilityE2EEApiVersion
         var e2eCounter = "0"
 
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
@@ -73,17 +79,17 @@ class NCNetworkingE2EE: NSObject {
             e2eToken = tableLock.e2eToken
         }
 
-        if e2EEApiVersion == NCGlobal.shared.e2eeVersionV20, var counter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId) {
+        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20, var counter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId) {
             counter += 1
             e2eCounter = "\(counter)"
         }
 
-        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: e2eCounter, method: "POST")
-        if lockE2EEFolderResults.error == .success, let e2eToken = lockE2EEFolderResults.e2eToken {
+        let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: e2eCounter, method: "POST")
+        if resultsLockE2EEFolder.error == .success, let e2eToken = resultsLockE2EEFolder.e2eToken {
             NCManageDatabase.shared.setE2ETokenLock(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken)
         }
 
-        return (directory.fileId, lockE2EEFolderResults.e2eToken, lockE2EEFolderResults.error)
+        return (directory.fileId, resultsLockE2EEFolder.e2eToken, resultsLockE2EEFolder.error)
     }
 
     func unlock(account: String, serverUrl: String) async {
@@ -92,8 +98,8 @@ class NCNetworkingE2EE: NSObject {
             return
         }
 
-        let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, e2eCounter: nil, method: "DELETE")
-        if lockE2EEFolderResults.error == .success {
+        let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, e2eCounter: nil, method: "DELETE")
+        if resultsLockE2EEFolder.error == .success {
             NCManageDatabase.shared.deleteE2ETokenLock(account: account, serverUrl: serverUrl)
         }
 
@@ -105,8 +111,8 @@ class NCNetworkingE2EE: NSObject {
 
         Task {
             for result in NCManageDatabase.shared.getE2EAllTokenLock(account: account) {
-                let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE")
-                if lockE2EEFolderResults.error == .success {
+                let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolder(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE")
+                if resultsLockE2EEFolder.error == .success {
                     NCManageDatabase.shared.deleteE2ETokenLock(account: account, serverUrl: result.serverUrl)
                 }
             }

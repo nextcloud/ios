@@ -329,8 +329,10 @@ extension NCEndToEndMetadata {
                 // Check "counter"
                 if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
                     if json.counter > resultCounter {
-                        NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                        return NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                     }
+                } else {
+                    NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, counter: json.counter)
                 }
 
                 // Check "deleted"
