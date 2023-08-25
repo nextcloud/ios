@@ -47,7 +47,7 @@ class NCNetworkingProcessUpload: NSObject {
                 case .initial:
                     print("Initial")
                 case .update(_, let deletions, let insertions, let modifications):
-                    if (deletions.count > 0 || insertions.count > 0 || modifications.count > 0) {
+                    if deletions.count > 0 || insertions.count > 0 || modifications.count > 0 {
                         self?.invalidateObserveTableMetadata()
                         self?.start(completition: { items in
                             print("[LOG] PROCESS-UPLOAD-OBSERVE \(items)")
@@ -112,7 +112,7 @@ class NCNetworkingProcessUpload: NSObject {
 
             // Update Badge
             let counterBadge = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d OR status == %d)", self.appDelegate.account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusInUpload, NCGlobal.shared.metadataStatusUploading))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter":counterBadge.count])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber, userInfo: ["counter": counterBadge.count])
 
             // ** TEST ONLY ONE **
             // E2EE
@@ -328,4 +328,3 @@ class NCNetworkingProcessUpload: NSObject {
         }
     }
 }
-

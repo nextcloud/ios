@@ -39,7 +39,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     private var objectId = ""
     private var user = ""
     var indexPath = IndexPath()
-    
+
     weak var delegate: NCTransferCellDelegate?
     var namedButtonMore = ""
 
@@ -71,7 +71,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         get { return imageMore }
         set { imageMore = newValue }
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
 

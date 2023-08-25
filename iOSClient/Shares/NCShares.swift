@@ -92,7 +92,7 @@ class NCShares: NCCollectionViewCommon {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, data, error in
+        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { account, shares, _, error in
 
             self.refreshControl.endRefreshing()
             self.isReloadDataSourceNetworkInProgress = false

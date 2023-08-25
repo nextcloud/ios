@@ -47,7 +47,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         error = readFileOrFolderResults.error
         if error == .success, let file = readFileOrFolderResults.files.first {
 
-            // MARK AS E2EE
+            // MARK: AS E2EE
             let markE2EEFolderResults = await NextcloudKit.shared.markE2EEFolder(fileId: file.fileId, delete: false)
             if markE2EEFolderResults.error != .success { return markE2EEFolderResults.error }
 
@@ -112,7 +112,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // ** Unlock **
         await NCNetworkingE2EE.shared.unlock(account: account, serverUrl: serverUrl)
-        
+
         if error == .success, let ocId = ocId {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": account, "e2ee": true, "withPush": withPush])
         }
@@ -157,7 +157,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         guard resultsEncode.error == .success, let e2eMetadata = resultsEncode.metadata else { return resultsEncode.error }
 
         // send metadata
-        let putE2EEMetadataResults =  await NextcloudKit.shared.putE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncode.signature, method: method)
+        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileIdLock, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncode.signature, method: method)
         return putE2EEMetadataResults.error
     }
 
@@ -176,7 +176,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         let resultsEncode = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId)
         guard resultsEncode.error == .success, let e2eMetadata = resultsEncode.metadata else { return resultsEncode.error }
-        
+
         let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: lockResults.e2eToken!, e2eMetadata: e2eMetadata, signature: resultsEncode.signature, method: "POST")
         let error = putE2EEMetadataResults.error
 

@@ -157,7 +157,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
         return nil
     }
-    
+
     @IBAction func touchUpInsideShare(_ sender: Any) {
         delegate?.tapShareListItem(with: objectId, indexPath: indexPath, sender: sender)
     }
@@ -197,7 +197,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         titleTrailingConstraint.constant = 90
         infoTrailingConstraint.constant = 90
     }
-    
+
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image
@@ -292,7 +292,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 tag0.text = tag
                 if tags.count > 1 {
                     tag1.isHidden = false
-                    tag1.text = "+\(tags.count-1)"
+                    tag1.text = "+\(tags.count - 1)"
                 }
             }
         }

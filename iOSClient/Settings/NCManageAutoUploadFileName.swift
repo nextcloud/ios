@@ -132,7 +132,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         self.form.delegate = nil
 
         let maskFileName: XLFormRowDescriptor = self.form.formRow(withTag: "maskFileName")!
-        let previewFileName: XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+        let previewFileName: XLFormRowDescriptor = self.form.formRow(withTag: "previewFileName")!
         previewFileName.value = self.previewFileName(valueRename: maskFileName.value as? String)
 
         self.tableView.reloadData()
@@ -161,7 +161,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
 
             self.form.delegate = self
 
-            let previewFileName: XLFormRowDescriptor  = self.form.formRow(withTag: "previewFileName")!
+            let previewFileName: XLFormRowDescriptor = self.form.formRow(withTag: "previewFileName")!
             previewFileName.value = self.previewFileName(valueRename: formRow.value as? String)
 
             // reload cell

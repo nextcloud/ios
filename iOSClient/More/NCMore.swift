@@ -83,7 +83,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         super.viewWillAppear(animated)
 
         navigationController?.setGroupAppearance()
-        
+
         appDelegate.activeViewController = self
         loadItems()
         tableView.reloadData()
@@ -305,7 +305,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return sections.count
     }
-    
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection index: Int) -> CGFloat {
         let section = sections[index]
 
@@ -358,7 +358,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     cell.status.tapToScroll = false
                 }
             }
-            
+
             cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
 
             return cell
@@ -384,7 +384,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
             cell.removeCornerRadius()
             let rows = tableView.numberOfRows(inSection: indexPath.section)
-            
+
             if indexPath.row == 0 {
                 cell.applyCornerRadius()
                 if indexPath.row == rows - 1 {

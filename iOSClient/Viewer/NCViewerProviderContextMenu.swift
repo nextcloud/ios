@@ -51,10 +51,10 @@ class NCViewerProviderContextMenu: UIViewController {
 
         if metadata.directory {
 
-            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
+            var imageFolder = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
 
             if let image = self.image {
-                imageFolder =  image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon*2)
+                imageFolder = image.image(color: NCBrandColor.shared.brandElement, size: sizeIcon * 2)
             }
 
             imageView.image = imageFolder.colorizeFolder(metadata: metadata)
@@ -63,7 +63,7 @@ class NCViewerProviderContextMenu: UIViewController {
         } else {
 
             // ICON
-            if let image = UIImage(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon*2, height: sizeIcon*2)) {
+            if let image = UIImage(named: metadata.iconName)?.resizeImage(size: CGSize(width: sizeIcon * 2, height: sizeIcon * 2)) {
 
                 imageView.image = image
                 imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
@@ -239,7 +239,7 @@ class NCViewerProviderContextMenu: UIViewController {
 
     private func viewVideo(metadata: tableMetadata) {
 
-        NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay, _ in
+        NCNetworking.shared.getVideoUrl(metadata: metadata) { url, _, _ in
             if let url = url, let userAgent = CCUtility.getUserAgent() {
                 self.player.media = VLCMedia(url: url)
                 self.player.delegate = self

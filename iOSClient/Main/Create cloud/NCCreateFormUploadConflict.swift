@@ -58,7 +58,7 @@ class NCCreateFormUploadConflict: UIViewController {
 
     var metadatasConflictNewFiles: [String] = []
     var metadatasConflictAlreadyExistingFiles: [String] = []
-    let fileNamesPath = ThreadSafeDictionary<String,String>()
+    let fileNamesPath = ThreadSafeDictionary<String, String>()
     var blurView: UIVisualEffectView!
 
     // MARK: - View Life Cycle
@@ -311,8 +311,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             cell.backgroundColor = tableView.backgroundColor
             cell.switchNewFile.onTintColor = NCBrandColor.shared.brand
             cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brand
-            
-            let metadataNewFile =  tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
+
+            let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
@@ -324,7 +324,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             guard let metadataAlreadyExists = NCManageDatabase.shared.getMetadataConflict(account: metadataNewFile.account, serverUrl: metadataNewFile.serverUrl, fileNameView: metadataNewFile.fileNameView) else { return UITableViewCell() }
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag)) {
-                cell.imageAlreadyExistingFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag))
+                cell.imageAlreadyExistingFile.image = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag))
             } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView)) && metadataAlreadyExists.contentType == "application/pdf" {
 
                 let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView))
@@ -388,7 +388,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
                     // PREVIEW
                     let cameraRoll = NCCameraRoll()
-                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { metadata, fileNamePath, error in
+                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false, viewController: self, hud: JGProgressHUD()) { _, fileNamePath, error in
                         if !error {
                             self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {
@@ -413,7 +413,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else if FileManager().fileExists(atPath: filePathNewFile) {
 
                 do {
-                    if metadataNewFile.classFile ==  NKCommon.TypeClassFile.image.rawValue {
+                    if metadataNewFile.classFile == NKCommon.TypeClassFile.image.rawValue {
                         // preserver memory especially for very large files in Share extension
                         if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: filePathNewFile), to: cell.imageNewFile.frame.size) {
                             cell.imageNewFile.image = image
@@ -520,7 +520,6 @@ struct UploadConflictView: UIViewControllerRepresentable {
     var serverUrl: String
     var metadatasUploadInConflict: [tableMetadata]
     var metadatasNOConflict: [tableMetadata]
-
 
     func makeUIViewController(context: Context) -> UIViewControllerType {
 

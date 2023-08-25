@@ -105,7 +105,7 @@ extension NCMedia {
                     title: NSLocalizedString("_play_from_files_", comment: ""),
                     icon: NCUtility.shared.loadImage(named: "play.circle"),
                     action: { _ in
-                        if let tabBarController =  self.appDelegate.window?.rootViewController as? UITabBarController {
+                        if let tabBarController = self.appDelegate.window?.rootViewController as? UITabBarController {
                             self.documentPickerViewController = NCDocumentPickerViewController(tabBarController: tabBarController, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
                         }
                     }

@@ -137,7 +137,7 @@ class NCPlayerToolBar: UIView {
         }
 
         playerButtonView.isHidden = true
-        
+
         playButton.setImage(NCUtility.shared.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
 
         playbackSlider.value = position
@@ -481,7 +481,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 }, taskHandler: { _ in
                 }, progressHandler: { progress in
                     self.hud.progress = Float(progress.fractionCompleted)
-                }) { account, _, _, _, _, _, error in
+                }) { _, _, _, _, _, _, error in
                     self.hud.dismiss()
                     if error == .success {
                         self.addPlaybackSlave(type: type, metadata: metadata)

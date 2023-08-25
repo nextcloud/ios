@@ -280,10 +280,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         tipView?.dismiss()
 
-        coordinator.animate(alongsideTransition: { context in
+        coordinator.animate(alongsideTransition: { _ in
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfThumbnailScrollView.isHidden = true
-        }, completion: { context in
+        }, completion: { _ in
             self.pdfView.autoScales = true
         })
     }
@@ -384,7 +384,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
-
     @objc func renameFile(_ notification: NSNotification) {
 
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -481,7 +480,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         OpenPdfThumbnail()
     }
 
-
     // MARK: - OPEN / CLOSE Thumbnail
 
     func OpenPdfThumbnail() {
@@ -533,7 +531,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         guard let totalPages = pdfView.document?.pageCount else { return }
 
         let visibleRect = CGRect(x: pdfThumbnailScrollView.contentOffset.x, y: pdfThumbnailScrollView.contentOffset.y, width: pdfThumbnailScrollView.bounds.size.width, height: pdfThumbnailScrollView.bounds.size.height)
-        let centerPoint = CGPoint(x: visibleRect.size.width/2, y: visibleRect.size.height/2)
+        let centerPoint = CGPoint(x: visibleRect.size.width / 2, y: visibleRect.size.height / 2)
         let currentPageY = CGFloat(curPage) * thumbnailViewHeight + CGFloat(curPage) * thumbnailPadding
         var gotoY = currentPageY - centerPoint.y
 

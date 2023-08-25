@@ -34,7 +34,7 @@ class NCLoginWeb: UIViewController {
 
     var urlBase = ""
     var user: String?
-    
+
     var configServerUrl: String?
     var configUsername: String?
     var configPassword: String?
@@ -55,7 +55,7 @@ class NCLoginWeb: UIViewController {
         // load AppConfig
         if (NCBrandOptions.shared.disable_multiaccount == false) || (NCBrandOptions.shared.disable_multiaccount == true && accountCount == 0) {
             if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), NCBrandOptions.shared.use_AppConfig {
-                
+
                 if let serverUrl = configurationManaged[NCGlobal.shared.configuration_serverUrl] as? String {
                     self.configServerUrl = serverUrl
                 }
@@ -104,7 +104,7 @@ class NCLoginWeb: UIViewController {
                 urlBase = serverUrl
             }
         }
-        
+
         // ADD end point for Web Flow
         if urlBase != NCBrandOptions.shared.linkloginPreferredProviders {
             if loginFlowV2Available {
@@ -179,10 +179,10 @@ class NCLoginWeb: UIViewController {
 
         webView.load(request)
     }
-    
+
     func getAppPassword(serverUrl: String, username: String, password: String) {
-        
-        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, data, error in
+
+        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, _, error in
             if error == .success, let password = token {
                 self.createAccount(server: serverUrl, username: username, password: password)
             } else {
@@ -283,7 +283,7 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, data, error in
+                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
                     if error == .success && server != nil && loginName != nil && appPassword != nil {
                         self.createAccount(server: server!, username: loginName!, password: appPassword!)
                     }
@@ -310,7 +310,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         if NCManageDatabase.shared.getAccounts() == nil {
             NCUtility.shared.removeAllSettings()
         }
-        
+
         // Add new account
         NCManageDatabase.shared.deleteAccount(account)
         NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: username, password: password)

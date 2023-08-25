@@ -67,7 +67,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         // Progress view
         progressView.progress = 0
         progressView.progressTintColor = .green
-        progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+        progressView.trackTintColor = UIColor(red: 247.0 / 255.0, green: 247.0 / 255.0, blue: 247.0 / 255.0, alpha: 1.0)
 
         labelTimer.textColor = .label
         labelDuration.textColor = .label
@@ -131,7 +131,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         row.cellConfig["backgroundColor"] = cellBackgoundColor
 
-        row.cellConfig["imageView.image"] =  UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
+        row.cellConfig["imageView.image"] = UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement, size: 25)
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -203,7 +203,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             }
 
             // Update
-            let row: XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+            let row: XLFormRowDescriptor = self.form.formRow(withTag: "ButtonDestinationFolder")!
             row.title = self.titleServerUrl
             self.updateFormRow(row)
         }
@@ -211,7 +211,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
 
     @objc func save() {
 
-        let rowFileName: XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+        let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!
         guard let name = rowFileName.value else {
             return
         }
@@ -234,7 +234,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileNameSave) != nil {
 
             guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
-            
+
             conflict.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
             conflict.serverUrl = serverUrl
             conflict.metadatasUploadInConflict = [metadataForUpload]
@@ -291,7 +291,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     // MARK: Player - Timer
 
     func updateTimerUI() {
-        labelTimer.text =  String().formatSecondsToString(counterSecondPlayer)
+        labelTimer.text = String().formatSecondsToString(counterSecondPlayer)
         labelDuration.text = String().formatSecondsToString(durationPlayer)
         progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
