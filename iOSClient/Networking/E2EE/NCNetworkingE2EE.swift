@@ -61,6 +61,39 @@ class NCNetworkingE2EE: NSObject {
         return resultsPutE2EEMetadata.error
     }
 
+    func downloadMetadata(metadata: tableMetadata, fileId: String, e2eToken: String) async -> NKError {
+
+        let resultsGetE2EEMetadata = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
+        guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return NKError(errorCode: NCGlobal.shared.errorE2EEKeyEncodeMetadata, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+        }
+        let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
+        guard resultsDecodeMetadataError == .success else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return resultsDecodeMetadataError
+        }
+
+        return NKError()
+    }
+
+    func uploadMetadata(metadata: tableMetadata, fileId: String, e2eToken: String) async -> (counter: Int, error: NKError) {
+
+        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
+        guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return (0, resultsEncodeMetadata.error)
+        }
+
+        let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: "PUT")
+        guard putE2EEMetadataResults.error == .success else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return (0, putE2EEMetadataResults.error)
+        }
+
+        return (resultsEncodeMetadata.counter, NKError())
+    }
+
     func lock(account: String, serverUrl: String) async -> (fileId: String?, e2eToken: String?, error: NKError) {
 
         var e2eToken: String?
