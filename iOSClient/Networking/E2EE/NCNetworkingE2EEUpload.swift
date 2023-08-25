@@ -44,14 +44,6 @@ class NCNetworkingE2EEUpload: NSObject {
 
         var metadata = tableMetadata.init(value: metadata)
         let ocIdTemp = metadata.ocId
-        let account = metadata.account
-        let serverUrl = metadata.serverUrl
-
-        defer {
-            Task {
-                await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
-            }
-        }
 
         // Create metadata for upload
         if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
@@ -82,6 +74,7 @@ class NCNetworkingE2EEUpload: NSObject {
         guard resultsSendE2ee.error == .success else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": resultsSendE2ee])
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return resultsSendE2ee.error
         }
 
@@ -91,6 +84,9 @@ class NCNetworkingE2EEUpload: NSObject {
         }
 
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, uploadE2EEDelegate: uploadE2EEDelegate)
+
+        await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))

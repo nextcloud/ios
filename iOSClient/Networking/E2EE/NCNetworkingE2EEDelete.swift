@@ -28,12 +28,6 @@ class NCNetworkingE2EEDelete: NSObject {
 
         let networkingE2EE = NCNetworkingE2EE()
 
-        defer {
-            Task {
-                await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            }
-        }
-
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
@@ -42,15 +36,22 @@ class NCNetworkingE2EEDelete: NSObject {
         guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else { return resultsLock.error }
 
         let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
-        guard deleteMetadataPlainError == .success else { return deleteMetadataPlainError }
+        guard deleteMetadataPlainError == .success else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return deleteMetadataPlainError
+        }
 
         let resultsGetE2EEMetadata = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
         guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return NKError(errorCode: NCGlobal.shared.errorE2EEKeyEncodeMetadata, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
         let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
-        guard resultsDecodeMetadataError == .success else { return resultsDecodeMetadataError }
+        guard resultsDecodeMetadataError == .success else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return resultsDecodeMetadataError
+        }
 
         let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
         guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else { return resultsEncodeMetadata.error }
@@ -63,6 +64,8 @@ class NCNetworkingE2EEDelete: NSObject {
             }
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))
         }
+
+        await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         return resultsPutE2EEMetadata.error
     }

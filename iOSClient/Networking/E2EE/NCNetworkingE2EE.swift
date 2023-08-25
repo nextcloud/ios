@@ -38,12 +38,6 @@ class NCNetworkingE2EE: NSObject {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
-        defer {
-            Task {
-                await unlock(account: account, serverUrl: serverUrl)
-            }
-        }
-
         if let addUserId {
             let results = await NextcloudKit.shared.getE2EECertificate(user: addUserId)
             if results.error == .success, let certificateUser = results.certificateUser {
@@ -63,6 +57,7 @@ class NCNetworkingE2EE: NSObject {
         if resultsPutE2EEMetadata.error == .success, NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
         }
+        await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
         return resultsPutE2EEMetadata.error
     }
 
