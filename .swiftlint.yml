@@ -46,112 +46,112 @@ excluded:
 
   # iOS Files Quarantine
 
-#  - Brand/NCBrand.swift
-#  - File Provider Extension/FileProviderData.swift
-#  - File Provider Extension/FileProviderDomain.swift
-#  - File Provider Extension/FileProviderEnumerator.swift
-#  - File Provider Extension/FileProviderExtension+Actions.swift
-#  - File Provider Extension/FileProviderExtension+Thumbnail.swift
-#  - File Provider Extension/FileProviderExtension.swift
-#  - File Provider Extension/FileProviderUtility.swift
-#  - Notification Service Extension/NotificationService.swift
-#  - Widget/Widget.swift
-#  - Widget/Dashboard/DashboardData.swift
-#  - Widget/Dashboard/DashboardWidgetView.swift
-#  - Widget/Files/FilesData.swift
-#  - Widget/Files/FilesWidgetView.swift
-#  - Widget/Lockscreen/LockscreenData.swift
-#  - Widget/Lockscreen/LockscreenWidgetView.swift
-#  - Widget/Lockscreen/LockscreenWidgetProvider.swift
-#  - iOSClient/GUI
-#  - iOSClient/ExternalResources
-#  - iOSClient/Activity/NCActivity.swift
-#  - iOSClient/Activity/NCActivityTableViewCell.swift
-#  - iOSClient/AppDelegate.swift
-#  - iOSClient/BackgroundImageColor/NCBackgroundImageColor.swift
-#  - iOSClient/BrowserWeb/NCBrowserWeb.swift
-#  - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
-#  - iOSClient/EmptyView/NCEmptyDataSet.swift
-#  - iOSClient/Extensions/UIColor+Extensions.swift
-#  - iOSClient/Extensions/UIImage+Extensions.swift
-#  - iOSClient/FileViewInFolder/NCFileViewInFolder.swift
-#  - iOSClient/Login/NCAppConfigView.swift
-#  - iOSClient/Login/NCLogin.swift
-#  - iOSClient/Login/NCLoginWeb.swift
-#  - iOSClient/Main/Account Request/NCAccountRequest.swift
-#  - iOSClient/Main/AudioRecorder/NCAudioRecorderViewController.swift
-#  - iOSClient/Main/Collection Common/NCCollectionViewCommon.swift
-#  - iOSClient/Main/Collection Common/NCGridCell.swift
-#  - iOSClient/Main/Collection Common/NCListCell.swift
-#  - iOSClient/Main/Create cloud/NCCreateFormUploadAssets.swift
-#  - iOSClient/Main/Create cloud/NCCreateFormUploadConflict.swift
-#  - iOSClient/Main/Create cloud/NCCreateFormUploadConflictCell.swift
-#  - iOSClient/Main/Create cloud/NCCreateFormUploadDocuments.swift
-#  - iOSClient/Main/Create cloud/NCCreateFormUploadScanDocument.swift
-#  - iOSClient/Main/Create cloud/NCCreateFormUploadVoiceNote.swift
-#  - iOSClient/Main/Create cloud/NCCreateMenuAdd.swift
-#  - iOSClient/Main/NCFunctionCenter.swift
-#  - iOSClient/Main/NCMainTabBar.swift
-#  - iOSClient/Main/NCPickerViewController.swift
-#  - iOSClient/Main/Section Header Footer/NCSectionHeaderFooter.swift
-#  - iOSClient/Media/Cell/NCGridMediaCell.swift
-#  - iOSClient/Media/NCMedia.swift
-#  - iOSClient/Menu/AppDelegate+Menu.swift
-#  - iOSClient/Menu/NCCollectionViewCommon+Menu.swift
-#  - iOSClient/Menu/NCLoginWeb+Menu.swift
-#  - iOSClient/Menu/NCMedia+Menu.swift
-#  - iOSClient/Menu/NCSortMenu.swift
-#  - iOSClient/Menu/NCViewer+Menu.swift
-#  - iOSClient/More/NCMore.swift
-#  - iOSClient/NCGlobal.swift
-#  - iOSClient/Networking/NCAutoUpload.swift
-#  - iOSClient/Networking/NCNetworking.swift
-#  - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift
-#  - iOSClient/Networking/NCNetworkingChunkedUpload.swift
-#  - iOSClient/Networking/E2EE/NCNetworkingE2EE.swift
-#  - iOSClient/Networking/E2EE/NCNetworkingE2EEUpload.swift
-#  - iOSClient/Networking/E2EE/NCNetworkingE2EEDelete.swift
-#  - iOSClient/Networking/E2EE/NCNetworkingE2EERename.swift
-#  - iOSClient/Networking/E2EE/NCNetworkingE2EECreateFolder.swift
-#  - iOSClient/Networking/NCNetworkingProcessUpload.swift
-#  - iOSClient/Networking/NCOperationQueue.swift
-#  - iOSClient/Networking/NCService.swift
-#  - iOSClient/Networking/NCConfigServer.swift
-#  - iOSClient/Notification/NCNotification.swift
-#  - iOSClient/Recent/NCRecent.swift
-#  - iOSClient/Rename file/NCRenameFile.swift
-#  - iOSClient/RichWorkspace/NCRichWorkspaceCommon.swift
-#  - iOSClient/RichWorkspace/NCViewerRichWorkspace.swift
-#  - iOSClient/ScanDocument/ScanCollectionView.swift
-#  - iOSClient/Security/NCEndToEndMetadata.swift
-#  - iOSClient/Security/NCViewCertificateDetails.swift
-#  - iOSClient/Select/NCSelect.swift
-#  - iOSClient/Settings/NCEndToEndInitialize.swift
-#  - iOSClient/Settings/NCManageAutoUploadFileName.swift
-#  - iOSClient/Settings/NCManageE2EE.swift
-#  - iOSClient/Share/NCShareCommon.swift
-#  - iOSClient/Share/NCShareNetworking.swift
-#  - iOSClient/Shares/NCShares.swift
-#  - iOSClient/Transfers/NCTransferCell.swift
-#  - iOSClient/Transfers/NCTransfers.swift
-#  - iOSClient/UserStatus/NCUserStatus.swift
-#  - iOSClient/Utility/NCAskAuthorization.swift
-#  - iOSClient/Utility/NCContentPresenter.swift
-#  - iOSClient/Utility/NCLivePhoto.swift
-#  - iOSClient/Utility/NCPopupViewController.swift
-#  - iOSClient/Utility/NCStoreReview.swift
-#  - iOSClient/Utility/NCUtility.swift
-#  - iOSClient/Utility/NCUtilityFileSystem.swift
-#  - iOSClient/Utility/NCUtilityGUI.swift
-#  - iOSClient/Viewer/NCViewer.swift
-#  - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
-#  - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
-#  - iOSClient/Viewer/NCViewerMedia/NCViewerMedia.swift
-#  - iOSClient/Viewer/NCViewerMedia/NCViewerMediaPage.swift
-#  - iOSClient/Viewer/NCViewerNextcloudText/NCViewerNextcloudText.swift
-#  - iOSClient/Viewer/NCViewerPDF/NCViewerPDF.swift
-#  - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
-#  - iOSClient/Viewer/NCViewerProviderContextMenu.swift
-#  - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
+  - Brand/NCBrand.swift
+  - File Provider Extension/FileProviderData.swift
+  - File Provider Extension/FileProviderDomain.swift
+  - File Provider Extension/FileProviderEnumerator.swift
+  - File Provider Extension/FileProviderExtension+Actions.swift
+  - File Provider Extension/FileProviderExtension+Thumbnail.swift
+  - File Provider Extension/FileProviderExtension.swift
+  - File Provider Extension/FileProviderUtility.swift
+  - Notification Service Extension/NotificationService.swift
+  - Widget/Widget.swift
+  - Widget/Dashboard/DashboardData.swift
+  - Widget/Dashboard/DashboardWidgetView.swift
+  - Widget/Files/FilesData.swift
+  - Widget/Files/FilesWidgetView.swift
+  - Widget/Lockscreen/LockscreenData.swift
+  - Widget/Lockscreen/LockscreenWidgetView.swift
+  - Widget/Lockscreen/LockscreenWidgetProvider.swift
+  - iOSClient/GUI
+  - iOSClient/ExternalResources
+  - iOSClient/Activity/NCActivity.swift
+  - iOSClient/Activity/NCActivityTableViewCell.swift
+  - iOSClient/AppDelegate.swift
+  - iOSClient/BackgroundImageColor/NCBackgroundImageColor.swift
+  - iOSClient/BrowserWeb/NCBrowserWeb.swift
+  - iOSClient/Diagnostics/NCCapabilitiesViewController.swift
+  - iOSClient/EmptyView/NCEmptyDataSet.swift
+  - iOSClient/Extensions/UIColor+Extensions.swift
+  - iOSClient/Extensions/UIImage+Extensions.swift
+  - iOSClient/FileViewInFolder/NCFileViewInFolder.swift
+  - iOSClient/Login/NCAppConfigView.swift
+  - iOSClient/Login/NCLogin.swift
+  - iOSClient/Login/NCLoginWeb.swift
+  - iOSClient/Main/Account Request/NCAccountRequest.swift
+  - iOSClient/Main/AudioRecorder/NCAudioRecorderViewController.swift
+  - iOSClient/Main/Collection Common/NCCollectionViewCommon.swift
+  - iOSClient/Main/Collection Common/NCGridCell.swift
+  - iOSClient/Main/Collection Common/NCListCell.swift
+  - iOSClient/Main/Create cloud/NCCreateFormUploadAssets.swift
+  - iOSClient/Main/Create cloud/NCCreateFormUploadConflict.swift
+  - iOSClient/Main/Create cloud/NCCreateFormUploadConflictCell.swift
+  - iOSClient/Main/Create cloud/NCCreateFormUploadDocuments.swift
+  - iOSClient/Main/Create cloud/NCCreateFormUploadScanDocument.swift
+  - iOSClient/Main/Create cloud/NCCreateFormUploadVoiceNote.swift
+  - iOSClient/Main/Create cloud/NCCreateMenuAdd.swift
+  - iOSClient/Main/NCFunctionCenter.swift
+  - iOSClient/Main/NCMainTabBar.swift
+  - iOSClient/Main/NCPickerViewController.swift
+  - iOSClient/Main/Section Header Footer/NCSectionHeaderFooter.swift
+  - iOSClient/Media/Cell/NCGridMediaCell.swift
+  - iOSClient/Media/NCMedia.swift
+  - iOSClient/Menu/AppDelegate+Menu.swift
+  - iOSClient/Menu/NCCollectionViewCommon+Menu.swift
+  - iOSClient/Menu/NCLoginWeb+Menu.swift
+  - iOSClient/Menu/NCMedia+Menu.swift
+  - iOSClient/Menu/NCSortMenu.swift
+  - iOSClient/Menu/NCViewer+Menu.swift
+  - iOSClient/More/NCMore.swift
+  - iOSClient/NCGlobal.swift
+  - iOSClient/Networking/NCAutoUpload.swift
+  - iOSClient/Networking/NCNetworking.swift
+  - iOSClient/Networking/NCNetworkingCheckRemoteUser.swift
+  - iOSClient/Networking/NCNetworkingChunkedUpload.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EE.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EEUpload.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EEDelete.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EERename.swift
+  - iOSClient/Networking/E2EE/NCNetworkingE2EECreateFolder.swift
+  - iOSClient/Networking/NCNetworkingProcessUpload.swift
+  - iOSClient/Networking/NCOperationQueue.swift
+  - iOSClient/Networking/NCService.swift
+  - iOSClient/Networking/NCConfigServer.swift
+  - iOSClient/Notification/NCNotification.swift
+  - iOSClient/Recent/NCRecent.swift
+  - iOSClient/Rename file/NCRenameFile.swift
+  - iOSClient/RichWorkspace/NCRichWorkspaceCommon.swift
+  - iOSClient/RichWorkspace/NCViewerRichWorkspace.swift
+  - iOSClient/ScanDocument/ScanCollectionView.swift
+  - iOSClient/Security/NCEndToEndMetadata.swift
+  - iOSClient/Security/NCViewCertificateDetails.swift
+  - iOSClient/Select/NCSelect.swift
+  - iOSClient/Settings/NCEndToEndInitialize.swift
+  - iOSClient/Settings/NCManageAutoUploadFileName.swift
+  - iOSClient/Settings/NCManageE2EE.swift
+  - iOSClient/Share/NCShareCommon.swift
+  - iOSClient/Share/NCShareNetworking.swift
+  - iOSClient/Shares/NCShares.swift
+  - iOSClient/Transfers/NCTransferCell.swift
+  - iOSClient/Transfers/NCTransfers.swift
+  - iOSClient/UserStatus/NCUserStatus.swift
+  - iOSClient/Utility/NCAskAuthorization.swift
+  - iOSClient/Utility/NCContentPresenter.swift
+  - iOSClient/Utility/NCLivePhoto.swift
+  - iOSClient/Utility/NCPopupViewController.swift
+  - iOSClient/Utility/NCStoreReview.swift
+  - iOSClient/Utility/NCUtility.swift
+  - iOSClient/Utility/NCUtilityFileSystem.swift
+  - iOSClient/Utility/NCUtilityGUI.swift
+  - iOSClient/Viewer/NCViewer.swift
+  - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayer.swift
+  - iOSClient/Viewer/NCViewerMedia/NCPlayer/NCPlayerToolBar.swift
+  - iOSClient/Viewer/NCViewerMedia/NCViewerMedia.swift
+  - iOSClient/Viewer/NCViewerMedia/NCViewerMediaPage.swift
+  - iOSClient/Viewer/NCViewerNextcloudText/NCViewerNextcloudText.swift
+  - iOSClient/Viewer/NCViewerPDF/NCViewerPDF.swift
+  - iOSClient/Viewer/NCViewerPDF/NCViewerPDFSearch.swift
+  - iOSClient/Viewer/NCViewerProviderContextMenu.swift
+  - iOSClient/Viewer/NCViewerRichdocument/NCViewerRichdocument.swift
 
 reporter: "xcode"
