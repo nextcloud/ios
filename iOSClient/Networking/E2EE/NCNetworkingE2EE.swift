@@ -61,7 +61,7 @@ class NCNetworkingE2EE: NSObject {
 
         let resultsPutE2EEMetadata = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: signature, method: "PUT")
         if resultsPutE2EEMetadata.error == .success, NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
+            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
         }
         return resultsPutE2EEMetadata.error
     }

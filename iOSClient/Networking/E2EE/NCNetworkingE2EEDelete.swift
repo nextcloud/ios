@@ -59,7 +59,7 @@ class NCNetworkingE2EEDelete: NSObject {
 
         if resultsPutE2EEMetadata.error == .success {
             if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-                NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, serverUrl: metadata.serverUrl, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
+                NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
             }
             NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))
         }

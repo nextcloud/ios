@@ -332,7 +332,7 @@ extension NCEndToEndMetadata {
                         return NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                     }
                 } else {
-                    NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, counter: json.counter)
+                    NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl, counter: json.counter)
                 }
 
                 // Check "deleted"

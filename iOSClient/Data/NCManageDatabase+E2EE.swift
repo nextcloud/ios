@@ -421,7 +421,7 @@ extension NCManageDatabase {
         }
     }
 
-    func updateCounterE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, counter: Int) {
+    func updateCounterE2eMetadataV2(account: String, ocIdServerUrl: String, counter: Int) {
 
         do {
             let realm = try Realm()

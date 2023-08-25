@@ -87,7 +87,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // COUNTER
         if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, serverUrl: metadata.serverUrl, ocIdServerUrl: directory.ocId, counter: resultsSendE2ee.counter)
+            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, ocIdServerUrl: directory.ocId, counter: resultsSendE2ee.counter)
         }
 
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, uploadE2EEDelegate: uploadE2EEDelegate)
