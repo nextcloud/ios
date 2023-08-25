@@ -74,7 +74,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var enableSearchBar: Bool = false
     internal var headerMenuTransferView = false
     internal var headerMenuButtonsView: Bool = true
-    internal var headerRichWorkspaceDisable:Bool = false
+    internal var headerRichWorkspaceDisable: Bool = false
     internal var emptyImage: UIImage?
     internal var emptyTitle: String = ""
     internal var emptyDescription: String = ""
@@ -215,7 +215,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             reloadDataSourceNetwork()
         }
 
-        //FIXME: iPAD PDF landscape mode iOS 16
+        // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
@@ -270,7 +270,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView?.collectionViewLayout.invalidateLayout()
         self.collectionView?.reloadData()
         self.tipView?.dismiss()
-        
+
         coordinator.animate(alongsideTransition: nil) { _ in
             self.showTip()
         }
@@ -397,7 +397,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String,
               account == appDelegate.account
         else { return }
-        
+
         if isSearchingMode {
             reloadDataSourceNetwork()
         } else {
@@ -419,7 +419,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if e2ee {
             reloadDataSourceNetwork(isForced: true)
-        } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)  {
+        } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             reloadDataSource()
             if withPush {
                 pushMetadata(metadata)
@@ -626,55 +626,55 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationItem.title = titleCurrentFolder
 
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
-        
+
         // PROFILE BUTTON
-        
+
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
 
         let image = NCUtility.shared.loadUserImage(
             for: appDelegate.user,
                displayName: activeAccount?.displayName,
                userBaseUrl: appDelegate)
-        
+
         let button = UIButton(type: .custom)
         button.setImage(image, for: .normal)
-        
+
         if serverUrl == NCUtilityFileSystem.shared.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId) {
-            
+
             var titleButton = "  "
-            
+
             if getNavigationTitle() == activeAccount?.alias {
                 titleButton = ""
             } else {
                 titleButton += activeAccount?.displayName ?? ""
             }
-            
+
             button.setTitle(titleButton, for: .normal)
             button.setTitleColor(.systemBlue, for: .normal)
         }
-        
+
         button.semanticContentAttribute = .forceLeftToRight
         button.sizeToFit()
         button.action(for: .touchUpInside) { _ in
-            
+
             let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
             if accounts.count > 0 && !NCBrandOptions.shared.disable_multiaccount && !NCBrandOptions.shared.disable_manage_account {
-                
+
                 if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-                    
+
                     vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
                     vcAccountRequest.accounts = accounts
                     vcAccountRequest.enableTimerProgress = false
                     vcAccountRequest.enableAddAccount = true
                     vcAccountRequest.delegate = self
                     vcAccountRequest.dismissDidEnterBackground = true
-                    
-                    let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+
+                    let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
                     let numberCell = accounts.count + 1
                     let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
-                    
+
                     let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height)
-                    
+
                     self.present(popup, animated: true)
                 }
 
@@ -786,12 +786,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func accountRequestAddAccount() {
         appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
-    
+
     func tapButtonSwitch(_ sender: Any) {
-        
+
         guard isTransitioning == false else { return }
         isTransitioning = true
-        
+
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
 
             // list layout
@@ -865,7 +865,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
                 viewerRichWorkspace.serverUrl = serverUrl
                 viewerRichWorkspace.delegate = self
-                
+
                 navigationController.modalPresentationStyle = .fullScreen
                 self.present(navigationController, animated: true, completion: nil)
             }
@@ -981,11 +981,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { account, searchProviders in
+            NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { _, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
                 self.dataSource = NCDataSource(
-                    metadatas: [] ,
+                    metadatas: [],
                     account: self.appDelegate.account,
                     sort: self.layoutForView?.sort,
                     ascending: self.layoutForView?.ascending,
@@ -994,10 +994,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     filterLivePhoto: true,
                     providers: self.providers,
                     searchResults: self.searchResults)
-            } update: { account, id, searchResult, metadatas in
-                guard let metadatas = metadatas, metadatas.count > 0, self.isSearchingMode , let searchResult = searchResult else { return }
+            } update: { _, _, searchResult, metadatas in
+                guard let metadatas = metadatas, metadatas.count > 0, self.isSearchingMode, let searchResult = searchResult else { return }
                 NCOperationQueue.shared.unifiedSearchAddSection(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult)
-            } completion: { account, error in
+            } completion: { _, _ in
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.collectionView.reloadData()
@@ -1032,7 +1032,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { account, searchResult, metadatas, error in
+        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { _, searchResult, metadatas, error in
             if error != .success {
                 NCContentPresenter.shared.showError(error: error)
             }
@@ -1051,7 +1051,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { (account, metadataFolder, error) in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { account, metadataFolder, error in
             guard error == .success else {
                 completion(nil, nil, nil, nil, error)
                 return
@@ -1060,8 +1060,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadataFolder = metadataFolder {
                 tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
             }
+
             if isForced || tableDirectory?.etag != metadataFolder?.etag || metadataFolder?.e2eEncrypted ?? true {
-                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { account, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, error in
+                NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { _, metadataFolder, metadatas, metadatasUpdate, _, metadatasDelete, error in
                     guard error == .success else {
                         completion(tableDirectory, nil, nil, nil, error)
                         return
@@ -1069,7 +1070,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.metadataFolder = metadataFolder
                     // E2EE
                     if let metadataFolder = metadataFolder, metadataFolder.e2eEncrypted, CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
-                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { account, e2eMetadata, signature, data, error in
+                        NextcloudKit.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { _, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, ownerId: metadataFolder.ownerId)
                                 if error == .success {
@@ -1291,9 +1292,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
 
             pushMetadata(metadata)
-            
+
         } else {
-            
+
             let imageIcon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
@@ -1421,7 +1422,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
+
         let numberItems = dataSource.numberOfItemsInSection(section)
         emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
         return numberItems
@@ -1512,7 +1513,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 metadata.shareType.contains(3) ?
                 (cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic) :
                 (cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderSharedWithMe)
-            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(3)  {
+            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(3) {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderPublic
             } else if metadata.mountType == "group" {
                 cell.filePreviewImageView?.image = NCBrandColor.cacheImages.folderGroup
@@ -1649,8 +1650,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Color string find in search
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
-            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15)])
-            attributedString.setAttributes([NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor : UIColor.systemBlue], range: longestWordRange)
+            let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
+            attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
         }
 
@@ -1745,7 +1746,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             footer.buttonIsHidden(true)
             footer.hideActivityIndicatorSection()
 
-
             if isSearchingMode {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
@@ -1801,7 +1801,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         return size
     }
 
-    func getHeaderHeight(section:Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
+    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
 
         var headerRichWorkspace: CGFloat = 0
 
