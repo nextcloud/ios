@@ -131,14 +131,15 @@ class NCNetworkingE2EEUpload: NSObject {
             return (0, NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
         }
 
-        let resultGetE2EEMetadata = await NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken)
-        if resultGetE2EEMetadata.error == .success, let e2eMetadata = resultGetE2EEMetadata.e2eMetadata {
-            let errorDecodeMetadata = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultGetE2EEMetadata.signature, serverUrl: metadata.serverUrl, account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId, ownerId: metadata.ownerId)
-            guard errorDecodeMetadata == .success else { return (0, errorDecodeMetadata) }
+        // DOWNLOAD METADATA
+        //
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(metadata: metadata, fileId: fileId, e2eToken: e2eToken)
+        if errorDownloadMetadata == .success {
             method = "PUT"
+        } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
+            return (0, errorDownloadMetadata)
         }
 
-        // [REPLACE]
         NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileNameView))
 
         // Add new metadata
@@ -159,12 +160,15 @@ class NCNetworkingE2EEUpload: NSObject {
         object.serverUrl = metadata.serverUrl
         NCManageDatabase.shared.addE2eEncryption(object)
 
-        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
-        guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else { return (0, resultsEncodeMetadata.error) }
+        // UPLOAD METADATA
+        //
+        let resultsUploadMetadata = await networkingE2EE.uploadMetadata(metadata: metadata, fileId: fileId, e2eToken: e2eToken, method: method)
+        guard resultsUploadMetadata.error == .success else {
+            await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
+            return (0, resultsUploadMetadata.error)
+        }
 
-        let resultsPutE2EEMetadata = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: method)
-
-        return (resultsEncodeMetadata.counter, resultsPutE2EEMetadata.error)
+        return (resultsUploadMetadata.counter, resultsUploadMetadata.error)
     }
 
     private func sendFile(metadata: tableMetadata, e2eToken: String, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate? ,afError: AFError?, error: NKError) {
