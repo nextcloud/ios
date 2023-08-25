@@ -34,6 +34,8 @@ class NCManageDatabase: NSObject {
         return instance
     }()
 
+    let serialQueue = DispatchQueue(label: "realmSerialQueue")
+
     override init() {
 
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
