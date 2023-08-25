@@ -85,12 +85,11 @@ class NCNetworkingE2EEUpload: NSObject {
             return resultsSendE2ee.error
         }
 
-        // Update counter
-        NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, serverUrl: metadata.serverUrl, ocIdServerUrl: directory.ocId, counter: resultsSendE2ee.counter)
+        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: metadata.account, serverUrl: metadata.serverUrl, ocIdServerUrl: directory.ocId, counter: resultsSendE2ee.counter)
+        }
 
-        // Send file
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, uploadE2EEDelegate: uploadE2EEDelegate)
-
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
