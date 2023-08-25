@@ -31,7 +31,7 @@ class NCNetworkingE2EE: NSObject {
         return UUID
     }
 
-    func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String?, removeUserId: String?) async -> (NKError) {
+    func uploadMetadata(account: String, serverUrl: String, userId: String, addUserId: String?, removeUserId: String?) async -> NKError {
 
         var addCertificate: String?
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
@@ -47,18 +47,32 @@ class NCNetworkingE2EE: NSObject {
             }
         }
 
-        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
-        guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata, let signature = resultsEncodeMetadata.signature else { return resultsEncodeMetadata.error }
-
+        // LOCK
+        //
         let resultsLock = await lock(account: account, serverUrl: serverUrl)
-        guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else { return resultsLock.error }
-
-        let resultsPutE2EEMetadata = await NextcloudKit.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: signature, method: "PUT")
-        if resultsPutE2EEMetadata.error == .success, NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId, counter: resultsEncodeMetadata.counter)
+        guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else {
+            return resultsLock.error
         }
+
+        // UPLOAD METADATA
+        //
+        let resultsUploadMetadata = await uploadMetadata(account: account, serverUrl: serverUrl, fileId: fileId, userId: userId, e2eToken: e2eToken, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId)
+        guard resultsUploadMetadata.error == .success else {
+            await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
+            return resultsUploadMetadata.error
+        }
+
+        // UPDATE COUNTER
+        //
+        if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+            NCManageDatabase.shared.updateCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId, counter: resultsUploadMetadata.counter)
+        }
+
+        // UNLOCK
+        //
         await NCNetworkingE2EE().unlock(account: account, serverUrl: serverUrl)
-        return resultsPutE2EEMetadata.error
+
+        return NKError()
     }
 
     func downloadMetadata(metadata: tableMetadata, fileId: String, e2eToken: String) async -> NKError {
@@ -76,9 +90,17 @@ class NCNetworkingE2EE: NSObject {
         return NKError()
     }
 
-    func uploadMetadata(metadata: tableMetadata, fileId: String, e2eToken: String, method: String = "PUT") async -> (counter: Int, error: NKError) {
+    func uploadMetadata(account: String,
+                        serverUrl: String,
+                        fileId: String,
+                        userId: String,
+                        e2eToken: String,
+                        method: String = "PUT",
+                        addUserId: String? = nil,
+                        addCertificate: String? = nil,
+                        removeUserId: String? = nil) async -> (counter: Int, error: NKError) {
 
-        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: metadata.account, serverUrl: metadata.serverUrl, userId: metadata.userId)
+        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(account: account, serverUrl: serverUrl, userId: userId, addCertificate: addCertificate, removeUserId: removeUserId)
         guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else {
             return (0, resultsEncodeMetadata.error)
         }

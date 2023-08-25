@@ -59,7 +59,7 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // UPLOAD METADATA
         //
-        let resultsUploadMetadata = await networkingE2EE.uploadMetadata(metadata: metadata, fileId: fileId, e2eToken: e2eToken)
+        let resultsUploadMetadata = await networkingE2EE.uploadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileId: fileId, userId: metadata.userId, e2eToken: e2eToken)
         guard resultsUploadMetadata.error == .success else {
             await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return resultsUploadMetadata.error

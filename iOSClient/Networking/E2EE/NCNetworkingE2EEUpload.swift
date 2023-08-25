@@ -45,7 +45,6 @@ class NCNetworkingE2EEUpload: NSObject {
         var metadata = metadata
         let ocIdTemp = metadata.ocId
 
-        // Create metadata for upload
         if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
         } else {
@@ -168,7 +167,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // UPLOAD METADATA
         //
-        let resultsUploadMetadata = await networkingE2EE.uploadMetadata(metadata: metadata, fileId: fileId, e2eToken: e2eToken, method: method)
+        let resultsUploadMetadata = await networkingE2EE.uploadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileId: fileId, userId: metadata.userId, e2eToken: e2eToken, method: method)
         guard resultsUploadMetadata.error == .success else {
             await NCNetworkingE2EE().unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return (0, resultsUploadMetadata.error)
