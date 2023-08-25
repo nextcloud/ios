@@ -79,7 +79,7 @@ func getTitleFilesWidget(account: tableAccount?) -> String {
 }
 
 func getFilesItems(displaySize: CGSize) -> Int {
-    
+
     let height = Int((displaySize.height - 100) / 50)
     return height
 }
@@ -205,7 +205,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     } else {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
     }
-    
+
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { _, files, data, error in
         Task {
@@ -249,13 +249,13 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
-                let data = FilesData.init(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)
+                let data = FilesData(id: metadata.ocId, image: imageRecent, title: metadata.fileNameView, subTitle: subTitle, url: url)
                 datas.append(data)
                 if datas.count == filesItems { break}
             }
 
             let alias = (account.alias.isEmpty) ? "" : (" (" + account.alias + ")")
-            let footerText = "Files " + NSLocalizedString("_of_", comment: "") +  " " + account.displayName + alias
+            let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + account.displayName + alias
 
             if error != .success {
                 completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: account.userId, url: account.urlBase, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))

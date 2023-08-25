@@ -186,7 +186,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
-    
+
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
         viewerMedia.index = index
         viewerMedia.metadata = metadata
@@ -678,5 +678,3 @@ extension NCViewerMediaPage: NCViewerMediaViewDelegate {
         imageDetailNavigationItem.image = UIImage(systemName: "info.circle")
     }
 }
-
-

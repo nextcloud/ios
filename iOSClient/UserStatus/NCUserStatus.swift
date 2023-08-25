@@ -170,7 +170,7 @@ class NCUserStatus: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, data, error in
+        NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
 
             if error == .success {
 
@@ -335,7 +335,7 @@ class NCUserStatus: UIViewController {
 
     func getStatus() {
 
-        NextcloudKit.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, data, error in
+        NextcloudKit.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, _, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
@@ -368,7 +368,7 @@ class NCUserStatus: UIViewController {
                     print("No status")
                 }
 
-                NextcloudKit.shared.getUserStatusPredefinedStatuses { _, userStatuses, data, error in
+                NextcloudKit.shared.getUserStatusPredefinedStatuses { _, userStatuses, _, error in
 
                     if error == .success {
 

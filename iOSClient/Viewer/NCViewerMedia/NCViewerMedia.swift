@@ -181,7 +181,7 @@ class NCViewerMedia: UIViewController {
                                 downloadRequest = request
                             } progressHandler: { progress in
                                 hud.progress = Float(progress.fractionCompleted)
-                            } completion: { afError, error in
+                            } completion: { _, error in
                                 if error == .success {
                                     hud.dismiss()
                                     if CCUtility.fileProviderStorageExists(self.metadata) {
@@ -250,7 +250,7 @@ class NCViewerMedia: UIViewController {
                     self.openDetail()
                 }
             }
-        }, completion: { context in
+        }, completion: { _ in
             self.showTip()
             if self.metadata.isVideo {
                 self.imageVideoContainer.isHidden = false

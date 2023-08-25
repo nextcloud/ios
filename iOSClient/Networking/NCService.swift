@@ -102,11 +102,11 @@ class NCService: NSObject {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
                 NCContentPresenter.shared.showWarning(error: error, priority: .max)
                 return (false, nil)
-            } else if serverInfo.versionMajor <=  NCGlobal.shared.nextcloud_unsupported_version {
+            } else if serverInfo.versionMajor <= NCGlobal.shared.nextcloud_unsupported_version {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_unsupported_")
                 NCContentPresenter.shared.showWarning(error: error, priority: .max)
             }
-        case .failure(_):
+        case .failure:
             return(false, nil)
         }
 
@@ -172,7 +172,7 @@ class NCService: NSObject {
             }
 
             data.printJson()
-            
+
             NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
             NCManageDatabase.shared.setCapabilities(account: account, data: data)
 
@@ -196,7 +196,7 @@ class NCService: NSObject {
             // Text direct editor detail
             if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-                NextcloudKit.shared.NCTextObtainEditorDetails(options: options) { account, editors, creators, data, error in
+                NextcloudKit.shared.NCTextObtainEditorDetails(options: options) { account, editors, creators, _, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                     }
@@ -205,7 +205,7 @@ class NCService: NSObject {
 
             // External file Server
             if NCGlobal.shared.capabilityExternalSites {
-                NextcloudKit.shared.getExternalSite(options: options) { account, externalSites, data, error in
+                NextcloudKit.shared.getExternalSite(options: options) { account, externalSites, _, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.deleteExternalSites(account: account)
                         for externalSite in externalSites {
@@ -219,7 +219,7 @@ class NCService: NSObject {
 
             // User Status
             if NCGlobal.shared.capabilityUserStatusEnabled {
-                NextcloudKit.shared.getUserStatus(options: options) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, data, error in
+                NextcloudKit.shared.getUserStatus(options: options) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, _, error in
                     if error == .success && account == self.appDelegate.account && userId == self.appDelegate.userId {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                     }
@@ -244,7 +244,7 @@ class NCService: NSObject {
 
     private func requestDashboardWidget() {
 
-        @Sendable func convertDataToImage(data: Data?, size:CGSize, fileNameToWrite: String?) {
+        @Sendable func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) {
 
             guard let data = data else { return }
             var imageData: UIImage?
@@ -266,10 +266,10 @@ class NCService: NSObject {
         }
 
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        
+
         NextcloudKit.shared.getDashboardWidget(options: options) { account, dashboardWidgets, data, error in
             Task {
-                if error == .success, let dashboardWidgets = dashboardWidgets  {
+                if error == .success, let dashboardWidgets = dashboardWidgets {
                     NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
                     for widget in dashboardWidgets {
                         if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {

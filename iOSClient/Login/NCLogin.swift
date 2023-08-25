@@ -153,7 +153,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let description = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
-            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45),backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
+            NCContentPresenter.shared.alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45), backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
                     self.openShareAccountsViewController()
                 }
@@ -244,11 +244,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             vc.dismissDidEnterBackground = false
             vc.delegate = self
 
-            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+            let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
             let numberCell = shareAccounts.count
             let height = min(CGFloat(numberCell * Int(vc.heightCell) + 45), screenHeighMax)
 
-            let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height+20)
+            let popup = NCPopupViewController(contentController: vc, popupWidth: 300, popupHeight: height + 20)
 
             self.present(popup, animated: true)
         }
@@ -269,7 +269,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
 
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, data, error in
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
 
                     self.loginButton.isEnabled = true
 
@@ -393,7 +393,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             if NCManageDatabase.shared.getAccounts() == nil {
                 NCUtility.shared.removeAllSettings()
             }
-                           
+
             NCManageDatabase.shared.deleteAccount(account)
             NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, password: password)
 

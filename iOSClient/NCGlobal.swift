@@ -100,7 +100,7 @@ class NCGlobal: NSObject {
 
     // Nextcloud unsupported
     //
-    let nextcloud_unsupported_version: Int          = 16
+    let nextcloud_unsupported_version: Int = 16
 
     // Intro selector
     //
@@ -109,7 +109,7 @@ class NCGlobal: NSObject {
 
     // Varie size GUI
     //
-    @objc let heightCellSettings: CGFloat           = 50
+    @objc let heightCellSettings: CGFloat = 50
 
     // Avatar & Preview size
     //
@@ -189,11 +189,11 @@ class NCGlobal: NSObject {
 
     // Rich Workspace
     //
-    let fileNameRichWorkspace                       = "Readme.md"
+    let fileNameRichWorkspace = "Readme.md"
 
     // Extension
     //
-    @objc let extensionPreview                      = "ico"
+    @objc let extensionPreview = "ico"
 
     // ContentPresenter
     //
@@ -265,7 +265,7 @@ class NCGlobal: NSObject {
     @objc let permissionDefaultFileRemoteShareNoSupportShareOption: Int     = 3
     @objc let permissionDefaultFolderRemoteShareNoSupportShareOption: Int   = 15
     // ATTRIBUTES
-    @objc let permissionDownloadShare: Int          = 0
+    @objc let permissionDownloadShare: Int = 0
 
     // Filename Mask and Type
     //
@@ -319,7 +319,7 @@ class NCGlobal: NSObject {
 
     //  Hidden files included in the read
     //
-    let includeHiddenFiles: [String]                = [".LivePhoto"]
+    let includeHiddenFiles: [String] = [".LivePhoto"]
 
     // Auto upload subfolder granularity
     //
@@ -373,7 +373,7 @@ class NCGlobal: NSObject {
     let notificationCenterDownloadedThumbnail                   = "DownloadedThumbnail"             // userInfo: ocId
 
     let notificationCenterOpenMediaDetail                       = "openMediaDetail"                 // userInfo: ocId
-    
+
     let notificationCenterDismissScanDocument                   = "dismissScanDocument"
     let notificationCenterDismissUploadAssets                   = "dismissUploadAssets"
 
@@ -386,7 +386,7 @@ class NCGlobal: NSObject {
     let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
     let tipNCScanAddImage                                       = "tipncscanaddimage"
     let tipNCViewerMediaDetailView                              = "tipncviewermediadetailview"
-    
+
     // ACTION
     //
     let actionNoAction                                          = "no-action"
@@ -394,7 +394,7 @@ class NCGlobal: NSObject {
     let actionScanDocument                                      = "add-scan-document"
     let actionTextDocument                                      = "create-text-document"
     let actionVoiceMemo                                         = "create-voice-memo"
-    
+
     // WIDGET ACTION
     //
     let widgetActionNoAction                                    = "nextcloud://open-action?action=no-action"
@@ -402,7 +402,7 @@ class NCGlobal: NSObject {
     let widgetActionScanDocument                                = "nextcloud://open-action?action=add-scan-document"
     let widgetActionTextDocument                                = "nextcloud://open-action?action=create-text-document"
     let widgetActionVoiceMemo                                   = "nextcloud://open-action?action=create-voice-memo"
-    
+
     // APPCONFIG
     //
     let configuration_brand                                     = "brand"
@@ -411,7 +411,7 @@ class NCGlobal: NSObject {
     let configuration_username                                  = "username"
     let configuration_password                                  = "password"
     let configuration_apppassword                               = "apppassword"
-    
+
     let configuration_disable_intro                             = "disable_intro"
     let configuration_disable_multiaccount                      = "disable_multiaccount"
     let configuration_disable_crash_service                     = "disable_crash_service"
@@ -424,7 +424,7 @@ class NCGlobal: NSObject {
     //
     var capabilityServerVersionMajor: Int                       = 0
     @objc var capabilityServerVersion: String                   = ""
-    
+
     var capabilityFileSharingApiEnabled: Bool                   = false
     var capabilityFileSharingPubPasswdEnforced: Bool            = false
     var capabilityFileSharingPubExpireDateEnforced: Bool        = false
@@ -464,5 +464,5 @@ class NCGlobal: NSObject {
     let moreAppsUrl                                             = "https://www.apple.com/us/search/nextcloud?src=globalnav"
 
     // SNAPSHOT PREVIEW
-    let defaultSnapshotConfiguration                            = "DefaultPreviewConfiguration"
+    let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
 }

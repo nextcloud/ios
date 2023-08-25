@@ -152,10 +152,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
            let user = json["user"]?["id"].stringValue {
             cell.avatar.isHidden = false
             cell.avatarLeadingMargin.constant = 50
-            
+
             let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
             let fileNameLocalPath = String(CCUtility.getDirectoryUserData()) + "/" + fileName
-            
+
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
@@ -221,7 +221,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
                 for action in jsonActions {
 
-                    let label =  action["label"].stringValue
+                    let label = action["label"].stringValue
                     let primary = action["primary"].boolValue
 
                     if primary {
@@ -250,10 +250,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
 
     func tapRemove(with notification: NKNotifications) {
 
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification , method: "DELETE") { (account, error) in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE") { account, error in
             if error == .success && account == self.appDelegate.account {
                 if let index = self.notifications
-                    .firstIndex(where: { $0.idNotification == notification.idNotification })  {
+                    .firstIndex(where: { $0.idNotification == notification.idNotification }) {
                     self.notifications.remove(at: index)
                 }
                 self.tableView.reloadData()
@@ -282,7 +282,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
                 return
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, error) in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { account, error in
                 if error == .success && account == self.appDelegate.account {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
@@ -312,7 +312,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         isReloadDataSourceNetworkInProgress = true
         self.tableView.reloadData()
 
-        NextcloudKit.shared.getNotifications { account, notifications, data, error in
+        NextcloudKit.shared.getNotifications { account, notifications, _, error in
             if error == .success && account == self.appDelegate.account {
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
@@ -352,7 +352,6 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
 
     weak var delegate: NCNotificationCellDelegate?
     var notification: NKNotifications?
-
 
     var indexPath: IndexPath {
         get { return index }

@@ -48,10 +48,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var mainTabBar: NCMainTabBar?
     var activeMetadata: tableMetadata?
 
-    let listFilesVC = ThreadSafeDictionary<String,NCFiles>()
-    let listFavoriteVC = ThreadSafeDictionary<String,NCFavorite>()
-    let listOfflineVC = ThreadSafeDictionary<String,NCOffline>()
-    let listGroupfoldersVC = ThreadSafeDictionary<String,NCGroupfolders>()
+    let listFilesVC = ThreadSafeDictionary<String, NCFiles>()
+    let listFavoriteVC = ThreadSafeDictionary<String, NCFavorite>()
+    let listOfflineVC = ThreadSafeDictionary<String, NCOffline>()
+    let listGroupfoldersVC = ThreadSafeDictionary<String, NCGroupfolders>()
 
     var disableSharesView: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -166,7 +166,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             if !CCUtility.getIntro() {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() {
-                    let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
+                    let navigationController = NCLoginNavigationController(rootViewController: viewController)
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
                 }
@@ -190,7 +190,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
-        
+
         // START OBSERVE/TIMER UPLOAD PROCESS
         NCNetworkingProcessUpload.shared.observeTableMetadata()
         NCNetworkingProcessUpload.shared.startTimer()
@@ -229,7 +229,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Request TouchID, FaceID
         enableTouchFaceID()
-        
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
@@ -368,7 +368,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleRefreshTask(_ task: BGTask) {
         scheduleAppRefresh()
-        
+
         guard !account.isEmpty else {
             task.setTaskCompleted(success: true)
             return
@@ -387,7 +387,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleProcessingTask(_ task: BGTask) {
         scheduleAppProcessing()
-        
+
         guard !account.isEmpty else {
             task.setTaskCompleted(success: true)
             return
@@ -415,7 +415,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
 
-        if let pref = UserDefaults.init(suiteName: NCBrandOptions.shared.capabilitiesGroups),
+        if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups),
            let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
             nextcloudPushNotificationAction(data: data)
             pref.set(nil, forKey: "NOTIFICATION_DATA")
@@ -532,7 +532,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if contextViewController == nil {
             if let viewController = viewController {
-                let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
+                let navigationController = NCLoginNavigationController(rootViewController: viewController)
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
                 navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
@@ -546,7 +546,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } else {
             if let viewController = viewController, let contextViewController = contextViewController {
-                let navigationController = NCLoginNavigationController.init(rootViewController: viewController)
+                let navigationController = NCLoginNavigationController(rootViewController: viewController)
                 navigationController.modalPresentationStyle = .fullScreen
                 navigationController.navigationBar.barStyle = .black
                 navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
@@ -556,7 +556,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
     }
-    
+
     @objc func startTimerErrorNetworking() {
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking), userInfo: nil, repeats: true)
     }
@@ -566,7 +566,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             openLogin(viewController: window?.rootViewController, selector: NCGlobal.shared.introLogin, openLoginWeb: true)
         }
     }
-    
+
     func trustCertificateError(host: String) {
 
         guard let currentHost = URL(string: self.urlBase)?.host,
@@ -584,13 +584,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
 
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { action in
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
             NCNetworking.shared.writeCertificate(host: host)
         }))
 
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { action in }))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in }))
 
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { action in
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
             if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                 let viewController = navigationController.topViewController as! NCViewCertificateDetails
                 viewController.delegate = self
@@ -611,7 +611,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @objc func settingAccount(_ account: String, urlBase: String, user: String, userId: String, password: String, initialize: Bool = true) {
 
         let accountTestBackup = self.account + "/" + self.userId
-        let accountTest = account +  "/" + userId
+        let accountTest = account + "/" + userId
 
         self.account = account
         self.urlBase = urlBase
@@ -640,13 +640,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared().unsubscribingNextcloudServerPushNotification(account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
         }
-        
+
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         for result in results {
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(result.ocId))
         }
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
-        
+
         CCUtility.clearAllKeysEnd(toEnd: account)
         CCUtility.clearAllKeysPushNotification(account)
         CCUtility.setPassword(account, password: nil)
@@ -704,7 +704,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func accountRequestChangeAccount(account: String) {
         changeAccount(account)
     }
-    
+
     func requestAccount() {
 
         if isPasscodePresented() { return }
@@ -713,7 +713,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let accounts = NCManageDatabase.shared.getAllAccount()
 
         if accounts.count > 1 {
-            
+
             if let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
 
                 vcAccountRequest.activeAccount = NCManageDatabase.shared.getActiveAccount()
@@ -723,15 +723,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 vcAccountRequest.dismissDidEnterBackground = false
                 vcAccountRequest.delegate = self
 
-                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height/5)
+                let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
                 let numberCell = accounts.count
                 let height = min(CGFloat(numberCell * Int(vcAccountRequest.heightCell) + 45), screenHeighMax)
 
-                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height+20)
+                let popup = NCPopupViewController(contentController: vcAccountRequest, popupWidth: 300, popupHeight: height + 20)
                 popup.backgroundAlpha = 0.8
 
                 window?.rootViewController?.present(popup, animated: true)
-                
+
                 vcAccountRequest.startTimer()
             }
         }
@@ -739,7 +739,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Passcode
 
-    func presentPasscode(completion: @escaping () -> ()) {
+    func presentPasscode(completion: @escaping () -> Void) {
 
         let laContext = LAContext()
         var error: NSError?
@@ -757,9 +757,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         passcodeViewController.keypadButtonShowLettering = false
         if CCUtility.getEnableTouchFaceID() && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             if error == nil {
-                if laContext.biometryType == .faceID  {
+                if laContext.biometryType == .faceID {
                     passcodeViewController.biometryType = .faceID
-                } else if laContext.biometryType == .touchID  {
+                } else if laContext.biometryType == .touchID {
                     passcodeViewController.biometryType = .touchID
                 }
                 passcodeViewController.allowBiometricValidation = true
@@ -785,7 +785,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { (success, error) in
+            LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
                 if success {
                     DispatchQueue.main.async {
                         passcodeViewController.dismiss(animated: true) {
@@ -884,24 +884,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     return false
                 }
 
-
                 switch actionScheme {
                 case NCGlobal.shared.actionUploadAsset:
 
                     NCAskAuthorization.shared.askAuthorizationPhotoLibrary(viewController: rootViewController) { hasPermission in
-                        if hasPermission {
-                            NCPhotosPickerViewController.init(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
+                        if hasPermission {NCPhotosPickerViewController(viewController: rootViewController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
-                    
+
                 case NCGlobal.shared.actionScanDocument:
 
                     NCDocumentCamera.shared.openScannerDocument(viewController: rootViewController)
 
                 case NCGlobal.shared.actionTextDocument:
-                    
+
                     guard let navigationController = UIStoryboard(name: "NCCreateFormUploadDocuments", bundle: nil).instantiateInitialViewController(), let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account), let directEditingCreator = directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorText}) else { return false }
-                    
+
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
 
                     let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
@@ -912,9 +910,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
                     rootViewController.present(navigationController, animated: true, completion: nil)
-                    
+
                 case NCGlobal.shared.actionVoiceMemo:
-                    
+
                     NCAskAuthorization.shared.askAuthorizationAudioRecord(viewController: rootViewController) { hasPermission in
                         if hasPermission {
                             let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!

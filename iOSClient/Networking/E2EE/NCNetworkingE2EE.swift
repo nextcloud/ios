@@ -92,7 +92,7 @@ class NCNetworkingE2EE: NSObject {
         return (directory.fileId, lockE2EEFolderResults.e2eToken, lockE2EEFolderResults.error)
     }
 
-    func unlock(account: String, serverUrl: String) async -> () {
+    func unlock(account: String, serverUrl: String) async {
 
         guard let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) else {
             return

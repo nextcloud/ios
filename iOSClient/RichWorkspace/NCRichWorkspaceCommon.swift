@@ -41,7 +41,7 @@ import NextcloudKit
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
-        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, data, error in
+        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, _, error in
 
             NCActivityIndicator.shared.stop()
 
@@ -76,7 +76,7 @@ import NextcloudKit
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)!
-                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, data, error in
+                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, _, error in
 
                     NCActivityIndicator.shared.stop()
 

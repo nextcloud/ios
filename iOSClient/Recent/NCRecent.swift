@@ -142,14 +142,14 @@ class NCRecent: NCCollectionViewCommon {
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
-        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userId, lessDateString)
+        let requestBody = String(format: requestBodyRecent, "/files/" + appDelegate.userId, lessDateString)
 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
 
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, data, error in
+        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles(), options: options) { account, files, _, error in
 
             if error == .success {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
