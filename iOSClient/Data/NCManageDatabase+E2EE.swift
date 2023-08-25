@@ -80,7 +80,6 @@ class tableE2eMetadataV2: Object {
 
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var account = ""
-    @Persisted var counter: Int = 0
     @Persisted var deleted: Bool = false
     @Persisted var folders = Map<String, String>()
     @Persisted var keyChecksums = List<String>()
@@ -93,6 +92,22 @@ class tableE2eMetadataV2: Object {
         self.account = account
         self.ocIdServerUrl = ocIdServerUrl
         self.primaryKey = account + ocIdServerUrl
+     }
+}
+
+class tableE2eCounterV2: Object {
+
+    @Persisted(primaryKey: true) var primaryKey: String
+    @Persisted var account: String
+    @Persisted var counter: Int
+    @Persisted var ocIdServerUrl: String
+
+    convenience init(account: String, ocIdServerUrl: String, counter: Int) {
+        self.init()
+        self.account = account
+        self.ocIdServerUrl = ocIdServerUrl
+        self.primaryKey = account + ocIdServerUrl
+        self.counter = counter
      }
 }
 
@@ -381,27 +396,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func updateCounterE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, counter: Int) {
-
-        do {
-            let realm = try Realm()
-            realm.refresh()
-            try realm.write {
-                if let result = realm.objects(tableE2eMetadataV2.self).filter("account == %@ && ocIdServerUrl == %@", account, ocIdServerUrl).first {
-                    result.counter = counter
-                } else {
-                    let object = tableE2eMetadataV2.init(account: account, ocIdServerUrl: ocIdServerUrl)
-                    object.serverUrl = serverUrl
-                    object.counter = counter
-                    realm.add(object, update: .all)
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
-        }
-    }
-
-    func addE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, keyChecksums: [String]?, deleted: Bool, counter: Int, folders: [String: String]?, version: String) {
+    func addE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, keyChecksums: [String]?, deleted: Bool, folders: [String: String]?, version: String) {
 
         do {
             let realm = try Realm()
@@ -411,7 +406,6 @@ extension NCManageDatabase {
                     object.keyChecksums.append(objectsIn: keyChecksums)
                 }
                 object.deleted = deleted
-                object.counter = counter
                 let foldersDictionary = object.folders
                 if let folders {
                     for folder in folders {
@@ -425,5 +419,32 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
         }
+    }
+
+    func updateCounterE2eMetadataV2(account: String, serverUrl: String, ocIdServerUrl: String, counter: Int) {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            try realm.write {
+                let object = tableE2eCounterV2.init(account: account, ocIdServerUrl: ocIdServerUrl, counter: counter)
+                realm.add(object, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not write to database: \(error)")
+        }
+    }
+
+    func getCounterE2eMetadataV2(account: String, ocIdServerUrl: String) -> Int? {
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            return realm.objects(tableE2eCounterV2.self).filter("account == %@ && ocIdServerUrl == %@", account, ocIdServerUrl).first?.counter
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Could not access database: \(error)")
+        }
+
+        return nil
     }
 }

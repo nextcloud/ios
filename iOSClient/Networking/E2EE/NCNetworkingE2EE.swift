@@ -73,8 +73,9 @@ class NCNetworkingE2EE: NSObject {
             e2eToken = tableLock.e2eToken
         }
 
-        if e2EEApiVersion == NCGlobal.shared.e2eeVersionV20, let result = NCManageDatabase.shared.getE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId) {
-            e2eCounter = "\(result.counter)"
+        if e2EEApiVersion == NCGlobal.shared.e2eeVersionV20, var counter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: directory.ocId) {
+            counter += 1
+            e2eCounter = "\(counter)"
         }
 
         let lockE2EEFolderResults = await NextcloudKit.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: e2eCounter, method: "POST")

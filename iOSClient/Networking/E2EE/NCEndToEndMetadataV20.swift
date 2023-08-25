@@ -159,8 +159,8 @@ extension NCEndToEndMetadata {
             }
         }
 
-        if let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
-            counter = e2eMetadataV2.counter + 1
+        if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
+            counter = resultCounter + 1
         }
 
         // Create ciphertext
@@ -327,8 +327,8 @@ extension NCEndToEndMetadata {
                 }
 
                 // Check "counter"
-                if let e2eMetadataV2 = NCManageDatabase.shared.getE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
-                    if json.counter > e2eMetadataV2.counter {
+                if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadataV2(account: account, ocIdServerUrl: ocIdServerUrl) {
+                    if json.counter > resultCounter {
                         NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                     }
                 }
@@ -339,7 +339,7 @@ extension NCEndToEndMetadata {
                     // TODO: We need to check deleted, id yes ???
                 }
 
-                NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, counter: json.counter, folders: json.folders, version: version)
+                NCManageDatabase.shared.addE2eMetadataV2(account: account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, keyChecksums: json.keyChecksums, deleted: json.deleted ?? false, folders: json.folders, version: version)
 
                 if let files = json.files {
                     for file in files {
